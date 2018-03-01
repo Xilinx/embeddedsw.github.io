@@ -1,0 +1,139 @@
+/*B14143: Style used for the Product Title*/
+#title{
+margin-left: 0.8em;
+margin-bottom: 0.2em;
+margin-top: 0.1em;
+font: bold 18px Arial;
+vertical-align:top;
+}
+
+/*atalwar: Style used for to align the Tabs*/
+#tabs{
+margin-left:auto;
+margin-right:0px;}
+
+/*atalwar: Style used for the text displayed in the Tabs*/
+#tablist{
+padding: 3px 0;
+margin-left: 0;
+margin-bottom: 0.15em;
+margin-top: 2.2em;
+font: bold 12px Arial;
+ 
+}
+
+/*atalwar: Style used for the Tabs listing*/
+#tablist li{
+list-style: none;
+display: inline;
+border-bottom: none;
+margin: 0;
+}
+
+/*atalwar: Style used for the Tabs listing*/
+#tablist li a{
+padding: 4px 0.5em;
+margin-left: 3px;
+border: 1px solid #778;
+border-bottom: none;
+}
+
+/*atalwar: Style used for the visited Tabs listing*/
+#tablist li a:link, #tablist li a:visited{
+color: navy;
+}
+
+/*atalwar: Style used for the active Tabs listing*/
+#tablist li a.current{
+background: #e6eae9;
+}
+
+/*atalwar: Style used to draw a line on the page*/
+#tabsline{
+clear: both;
+padding: 0;
+width: 100%;
+height: 1px;
+border-top: 2px solid #778; /*Remove this to remove border between bar and tabs*/
+margin-bottom: none;
+}
+
+/*atalwar: Style used to stretch the header border. Please do not modify*/
+#headerline{
+clear: both;
+padding: none;
+width: 100%;
+height: 106;
+margin-top: 0.1em;
+vertical-align:top;
+border-top: none; /*Remove this to remove border between bar and tabs*/
+background: url(./images/xilinx_header.png) no-repeat; /*tab background image path*/
+}
+
+
+/*atalwar: Style used to display the product logo. Please do not modify*/
+#logo{
+clear: both;
+padding: 0;
+width: 400;
+height: 106;
+vertical-align:top;
+border-top: none; /*Remove this to remove border between bar and tabs*/
+background: url(./images/Xilinx_logo.png) no-repeat; /*tab background image path*/
+}
+
+
+/*atalwar: Style used to display the contents on the page. Please do not modify*/
+#tabcontentcontainer{
+width: 100%;
+height: auto;/* Insert Optional Height definition here to give all the content a unified height */
+margin-top: 0.2em;
+border: none;
+margin-bottom:0.5em;
+
+}
+
+/*atalwar: Style used for the document titles on the page.*/
+#doctitle{
+font: 14px Arial;
+margin-left: 0.8em;
+margin-top: 1.4em;
+}
+
+/*atalwar: Style used for the document description on the page.*/
+#docdescription{
+font: 14px Arial;
+margin-left: 0.8em;
+margin-bottom: 0.4em;
+}
+
+.tabcontent{
+display:none;
+}
+.maincontent{
+	font-family: arial; 
+	font-size:14px;
+  font-color: black;
+  margin-left: 0.8em;
+}
+
+.notetitle { font-weight: bold }
+.note { margin-top: 1em; margin-bottom : 1em; margin-left: 0.8em; font: 14px Arial;}
+.notetitle,
+div[class="note"]>h3{
+    background-image:url("./images/note.png") !important;
+    background-repeat:no-repeat;
+    padding:4px 4px 4px 23px;
+}
+p.subtopic{
+	font-family: arial; 
+	font-size:12pt;
+	font-weight:Bold;
+  color: #black;
+  padding-top:0px;
+  margin-bottom: -10px;
+}
+
+img.divider{
+margin-top: 0px;
+margin-bottom: 0px;}

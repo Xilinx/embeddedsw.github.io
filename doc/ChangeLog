@@ -1,0 +1,3078 @@
+Changes for 2017.4
+===============================
+
+qspipsu_v1_6:
+Flow for accessing flash parts with size more then 16MB
+made similar to u-boot and linux.(CR#984966)
+ICCARM compiler does not support __attribute__ syntax,
+instead #pragma is used for the similar functionality.(CR#988625)
+
+ttcps_v3_5:
+Updates XTtcPs_GetMatchValue and XTtcPs_SetMatchValue APIs
+to use correct match register width for zynq  (i.e. 16 bit)
+and zynq ultrascale+mpsoc (i.e. 32 bit). It fixes CR#986617
+
+v_csi2txss_v1_1:
+Exporting ulps API to subsystem
+
+sdps_v3_3:
+Use different commands for single and multi block transfers
+
+emacps_v3_6:
+Export PL PCS PMA information for ETH1/2/3- CR-984847.
+
+qspipsu_v1_6:
+Flow for accessing flash parts with size more then 16MB made similar to 
+u-boot and linux.(CR#984966) ICCARM compiler does not support 
+__attribute__ syntax, instead #pragma is used for the similar 
+functionality.(CR#988625)
+
+axidma_v9_5:
+CR#987026 Fixed issue poll_multi_pkt example fails on a53
+Fixed race condition in the XAxiDma_Reset() API.
+CR#988210 Add interface to query config based on base addr.
+
+lwip141_2_0:
+Correct assigment of TX BD ring in init_dma() and
+emacps_error_handler().
+CR#988210 Perform AXI DMA lookup based on base address.
+
+zdma_v1_4:
+Fixed compilation errors for IAR compiler.
+
+zynqmp_pmufw:
+- Exported efuse IP disable as part of version string in PmGetChipid to 
+recognize eg/cg/ev devices
+- Enabled Optimize for size compiler flag in HSI flow
+- Clearing master wakeup sources after master state is changed from 
+suspended to active
+- Fix pmufw warnings related to unused variable, uninitialized variable 
+and signed compare
+- Provided MMIO Read-only access to PMU LOCAL FPD lock status register
+- Changed PMU Firmware version to 2017.4
+- Added wrapper API for IPI poll for Ack in PMU Firmware
+
+zynqmp_fsbl:
+Updated cross compiler flags with hard floating point values
+Added functionality in FSBL to distinguish EV devices from EG devices
+
+Changes for 2017.3
+===============================
+
+v_sdirx_v1_0:
+Initial version for UHDSDI Rx soft IP
+
+v_sdirxss_v1_0:
+Initial version for UHDSDI Rx subsystem soft IP
+Added application support for SDI rx subsystem example design
+
+v_sditx_v1_0:
+Initial version for UHDSDI Tx soft IP
+
+v_sditxss_v1_0:
+Initial version for UHDSDI Tx subsystem soft IP
+
+Removed the below obsolete drivers & libraries (CR:981161)
+axi_cdma_v4_1
+axi_cdma_v4_2
+axi_dma_v9_2
+axiethernet_v5_1
+axiethernet_v5_2
+axi_pmon_v6_4
+can_v3_1
+canfd_v1_1
+canps_v3_1
+clk_wiz_v1_0
+coresightps_dcc_v1_2
+cpu_cortexa9_v2_2
+cpu_cortexa9_v2_3
+cpu_cortexa53_v1_1
+cpu_cortexa53_v1_2
+cpu_cortexr5_v1_1
+ddrpsu_v1_0
+dmaps_v2_2
+dphy_v1_0
+dprxss_v2_0
+dprxss_v3_0
+dptxss_v4_0
+emaclite_v4_2
+emacps_v3_2
+gpio_v4_2
+hdcp1x_v3_0
+hdcp22_cipher_v1_0
+hdcp22_mmult_v1_0
+hdcp22_rng_v1_0
+hdcp22_rx_v1_0
+hdcp22_tx_v1_0
+hwicap_v10_1
+iic_v3_3
+iicps_v3_2
+iicps_v3_3
+ipipsu_v2_0
+iomodule_v2_3
+mipicssi_v1_0
+mutex_v4_1
+nandpsu_v1_0
+qspipsu_v1_1
+qspipsu_v1_2
+rtcpsu_v1_2
+scugic_v3_3
+scugic_v3_4
+sdps_v2_8
+sysmon_v7_2
+sysmonpsu_v1_0
+sysmonpsu_v1_1
+tmrctr_v4_1
+ttcps_v3_1
+uartps_v3_1
+uartps_v3_2
+usb_v5_1
+usbps_v2_3
+usbpsu_v1_0
+v_axi4s_remap_v1_0
+v_csc_v2_0
+v_deinterlacer_v6_0
+v_deinterlacer_v6_1
+v_hcresampler_v2_0
+v_hcresampler_v2_1
+v_hdmirx_v1_1
+v_hdmirxss_v2_0
+v_hdmitx_v1_1
+v_hdmitxss_v2_0
+v_hscaler_v3_0
+v_letterbox_v2_0
+v_mix_v1_0
+v_tpg_v7_0
+v_vcresampler_v2_1
+v_vscaler_v2_0
+video_common_v3_0
+video_common_v3_1
+vphy_v1_1
+vprocss_v2_1
+zdma_v1_0
+xilffs_v3_3
+xilffs_v3_4
+xilfpga_v1_0
+xilisf_v5_6
+xilmfs_v2_0
+xilmfs_v2_1
+xilpm_v1_0
+xilrsa_v1_1
+xilsecure_v1_1
+xilskey_v5_0
+xilskey_v6_0
+lwip141_v1_4
+lwip141_v1_5
+standalone_v5_4
+standalone_v5_5
+standalone_v6_0
+freertos821_xilinx_v1_0
+freertos823_xilinx_v1_0
+freertos823_xilinx_v1_1
+freertos823_xilinx_v1_2
+
+v_csc_v2_2
+Added support for conversion from 420/422/444/RGB to 420/422/444/RGB
+
+v_demosaic_v1_0
+added initial version
+
+v_frmbuf_rd_v2_0
+added second buffer for semi-planar formats
+added 64-bit address support for memory mapped interface
+added new streaming and memory video formats
+
+v_frmbuf_wr_v2_0
+added second buffer for semi-planar formats
+added 64-bit address support for memory mapped interface
+added new memory video formats
+
+v_gamma_lut_v1_0
+added initial version
+
+v_mix_v3_0
+added second buffer for semi-planar formats
+added 64-bit address support for memory mapped interface
+re-ordered register map to group layers together
+
+video_common_v4_2
+Added new video modes, framerates, color formats for SDI
+New member AspectRatio is added to video stream structure
+Reordered XVidC_VideoMode enum variables and corrected the memory format enums
+Add XVIDC_VM_3840x2160_60_P_RB video format
+Added new streaming alpha formats and new memory formats
+
+vprocss_v2_4
+Added support for conversion from 420/422/444/RGB to 420/422/444/RGB in
+CSC-only topology
+
+mbox_v4_2:
+Added support for FIFO reset using hardware control register
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+mipicsiss_v1_1:
+Added application support for mipi csi subsystem example design
+
+lwip141_v1_9:
+Updated xemacpsif_physpeed.c to use smc calls to access thr CRL_APB,
+this is done to support the applications running over EL1 NS mode.
+Add freertos support for axiethernet fifo configuration.
+SW workaround for TI DP83867 PHY Data integrity issues on KCU116/VCU118 Boards.
+Change compiler used on A9.
+Fixed conflicting types of variable xInsideISR to fix CR-981909.
+Fix various warning messages in the lwip141 axiethernet adapter.
+Add support for CCI.
+Add rx_reset_nodata workaround for Zynq GEM in freertos case.
+Disable L1 prefetch for ARMv8 in init_dma function in xemacpsif_dma.c to fix CR-981973.
+
+llfifo_v5_2:
+CR#978769 Fix doxygen issues in the driver.
+Updated comments in the usage section as per example code.
+Fixed doxygen warnings in the driver.
+
+axidma_v9_4:
+CR#974218 Add support for cyclic DMA mode.
+
+axiethernet_v5_6:
+CR#979636 lwip stop's working as soon as something is plugged to it's
+AXI stream bus.
+CR#979023 Intr fifo example failed to compile.
+Add support for axiethernet with mcdma configuration.
+Fix pmufw bsp compilation error for axi-ethernet based designs.
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+axipmon_v6_6:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+axivdma_v6_4:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+bram_v4_2:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+cpu_cortexa53_v1_4:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+cpu_cortexa9_v2_5:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+devcfg_v3_5:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+dp_v5_3:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+cpu_cortexr5_v1_4:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+hdcp1x_v4_1
+Updating the XHdcp1x_TxIsInProgress function to keep track of a pending
+authentication request.
+Added flag IsAuthReqPending to the XHdcp1x_Tx data structure to track any
+pending authentication requests.
+Updated the XHdcp1x_CipherHandleInterrupt function to not mask the interrupts,
+as it is being done in hardware now.
+Updated the initialization to memset the XHdcp1x structure to 0.
+
+hwicap_v11_1
+Updated software reset api by adding delay
+Fixed compilation warnings
+
+intc_v3_7:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+iomodule_v2_5:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+mcdma_v1_0:
+Initial version of mcdma driver
+
+nandpsu_v1_3
+Added support to import examples in SDK.
+Added CCI support.
+
+mig_7series_v2_1:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+mutex_v4_3:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+Fixed compilation warnings.
+
+nandps_v2_3:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+prc_v1_1:
+Added a new parameter "Cp_Compression" and status error flags
+Updated api.tcl. Fix for CR-978747.
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+qspipsu_v1_5:
+Added index.html for importing example from the system.mss
+Added support for readind ID till 5th byte as MT25Q series flash supports FSRFlag
+but 128Mb and 256Mb parts are single die only. If the 6th bit of 5th ID byte
+is 1 then we can set the FSRFlag.
+Added CCI support.
+Modified the checks for 4 byte addressing and commands in examples.
+
+qspips_v3_4
+Added QSPI Buswidth parameter in canonical defines.
+
+rtcpsu_v1_5:
+Fixed compilation warnings, source code cleanup. CR-983311
+
+standalone_v6_4:
+Updated arm/common/xil_exception.c to fix warnings in C level exception handlers
+of ARM 32 bit processors.
+Updated cortexa53/64bit/gcc/asm_vectors.S to fix bug in  IRQInterruptHandler code
+snippet, which checks for the FPEN bit of CPACR_EL1 register.
+Supports XGetPSVersion_Info function for PMUFW - Fix for CR-967248
+Supports XGetPlatform_Info function for PMUFW. Fix for CR-978237
+Updated Xil_In32BE function in xil_io.h to fix bug.It fixes CR#979740.
+Updated standalone tcl to generate xparameter XPAR_PL_IS_CACHE_COHERENT, if
+h/w design got created with HPC port.
+Updated a53 64 bit translation table to mark  memory as a outer shareable for
+EL1 NS execution. This change has been done to support CCI enabled IP's.
+Updated a53 64 bit boot code to implement ARM erratum 855873.This fixes CR#982209.
+Made changes to fix various issues in R5 MPU handling logic. Added new APIs. CR#981028.
+
+scugic_v3_8:
+Updated xdefine_gic_params proc in driver tcl to export correct canonical
+definitions for pl to ps interrupts.Fix for CR#980534
+Updated get_psu_interrupt_id proc in scugic tcl, to check if sink pin is
+connected to any peripheral.This check has been added to avoid the BSP
+creation failure, if interrupt pin is connected externally.Fix for
+CR#980414.
+
+spi_v4_3:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+sysmon_v7_4:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+tft_v6_1:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+tmrctr_v4_4:
+Updated XTmrCtr_DisableIntr macro to not to clear T0INT flag.It fixes
+CR#980512.
+Resolve compilation warning
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+tpg_v3_1:
+Updated NUM_INSTANCES parameter in xparameters.h and
+xtpg_sinit.c to avoid errors. Fix for cr-976944.
+
+trafgen_v4_2:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+ttcps_v3_4:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+uartns550_v3_5:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+wdttb_v4_2:
+Added U suffix for all macros in xparameters.h. Fix for CR#963131.
+
+xilfpga_v3_0:
+Added PL configuration registers readback support.
+Added Device-key Encrypted BitStream Loading support to the xilfpga library.
+
+sdps_v3_3:
+Add support for 64bit DMA addressing
+Add support for 200MHz in SD driver
+Fixed compilation warnings
+Removed SD0_OTAPDLYENA and SD1_OTAPDLYENA bits
+Modify driver to support 64-bit DMA in arm64 only
+sdps: Prevent SD0_OTAPDLYENA and SD01_OTAPDLYENA bit to set
+Properly set OTAPDLY value by clearing previous bit settings
+Added CCI support for SD
+Updated for Word Access System support
+Resolved compilation errors with IAR toolchain
+Added UHS_MODE_ENABLE macro to enable UHS mode
+
+xilisf_v5_9:
+Expanded the description of serial_flash_family and serial_flash_interface.
+Fix for CR-967359.
+Added 4Byte addressing support for Micron devices. CR-980169
+Added doxygen tags.
+
+xilffs_v3_7:
+Added configurable option for _FS_RPATH
+
+xilflash_v4_4:
+Added doxygen tags
+
+libmetal_v1_3:
+- Sync libmetal OSS project with upstream
+
+openamp_v1.4:
+- Sync openamp OSS project with upstream
+
+openamp_rpc_demo:
+openamp_matrix_multiply_demo:
+openamp_echo_test:
+- Update to work with updated openamp and libmetal libs
+
+zdma_v1_3:
+Updated driver and examples to support CCI at EL1 NS.
+
+emacps_v3_5:
+Export CCI enablement information and add support in examples.
+
+xilsecure_v2_2:
+Added doxygen tags.
+Added RSA decrypt with private key and encrypt with public key support.
+Added RSA 2048 support.
+Added APIs to support xilsecure functionalities in linux.
+
+xilskey_v6_3:
+Provided support for programming eFUSE and BBRAM of kintex Ultrascale plus.
+
+zynqmp_fsbl:
+- For secure boot added PPK invaliadity checks in FSBL.
+- Implemented Secondary boot as specified in image header of the boot image.
+- Enable qspi boot in 1-bit and 2-bit qspi buswidths.
+- Clear all pending interrupts in case of APU only Restart.
+- Unconditionally remove PS-PL isolation in PS-only reset.
+- Disable all alarms before and re-enable them after applying
+  protection configuration.
+- Clear total byte counter after every cycle of ADMA to prevent byte count overflow
+  interrupt from being set.
+- Modify the max transfer length in DMA to make it 64 it aligned, this is to eliminate
+  ECC errors.
+- Added a macro indicating wait time for PL power up, customers can set their respective
+  values, default value is zero.
+- Enable propagation PROG signal to PL after ps-only reset which is gated during ps-only reset.
+- Rectify ID code of ZU6EG devices.
+
+zynqmp_pmufw:
+- Added three level debug prints for PMU Firmware application
+- Updated scheduler task removal logic to ensure that no task will be removed
+  before its execution
+- Enabling Isolation before powering down any power domain/power island to
+  avoid any bus hang when accessed and disabling the same when powering up
+- Added extra prints to give detailed information to the user when XMPU/XPPU
+  violation occurs
+- Added disabling and re-enabling of PMU interrupts before coming out of
+  interrupt handler to acknowledge any pending interrupts
+- Added boot pin control register access to MMIO access region
+- Updated HSI TCL to get compiler flags from command line
+- Updated PMU Firmware DDR driver
+- Enabling broadcasting of inner shareable transactions if PL is configured
+  for coherency in HW design
+- Ignoring the PLL use count for floating clocks to avoid PLL use accounting to
+  be disrupted. And assigning the usb3dual clock to both usb0 and usb1 slaves
+- Fixed MISRA-C violations in PMU Firmware base code
+- Disabling WDT recovery when PM master is entering suspended or killed state.
+  And enabling WDT recovery when PM master comes to active state
+- Changed LPD WDT timeout value to 90 milliseconds to meet safety requirement
+- Updated the PMU EM module to set/remove the error action for any error at
+  run time using IPI. And log the errors and send when the target requests
+- Added SRST support for FPD WDT
+- Put SysOsc in sleep mode and change UART requirements while going to deep
+  sleep mode to avoid more power consumption
+- Added xilsecure API calls to support xilsecure functionality from Linux
+
+Changes for 2017.2
+================================
+
+cpu_cortexr5_v1_3
+Added -mfloat-abi=hard and -mfpu=vfpv3-d16 in extra compiler flags,
+to support hard flaoting point for cortex-r5 standalone BSP.
+
+gpiops_v3_3:
+Added notes about gpio pin description for zcu102 and zc702
+boards. Fix for cr-955076
+
+ipipsu_v2_3:
+Added suffix U for all macros of ipipsu in xparameters.h
+Fix for CR-963131.
+
+qspispu_v1_5:
+Added support for accessing upper DDR in qspi boot mode and example.
+Fix for CR-972531
+
+scugic_v3_7:
+Added suffix U for all macros of scugic in xparameters.h
+Fix for CR-963131.
+
+standlone_v6_3:
+Added hard floating point support in the cortex-r5 BSP.
+Updated Cortex-a53 32 bit BSP boot code to fix bug in the HW coherency
+enablement. It fixes the CR#973287
+Updated Cortex-a53 64 bit BSP boot code, to remove redundant write to
+the L2CTLR_EL1 register. It fixes the CR#974698
+
+sysmonpsu_v2_2:
+Corrected temperature conversion formulas
+
+xilsecure_v2_1
+Added SHA2 binary for freertos R5 with soft floating point and
+standalone R5 binary with hard floating point.
+
+xilfpga_v2_1:
+Fixed the check logic issue in Xfpga_PL_BitStream_Load().
+
+zynqmp_fsbl:
+Added word alignement to AuthBuffer, by adding attribute.
+
+zynqmp_pmufw:
+Bypass RPLL in system reset for Silicon 1.0. This is a workaround for a bug in Silicon 1.0 which was fixed in other versions of Silicon
+Binding main and lsbus top switch clocks to the DDR node to ensure that PLLs which drive these clocks do not get reset/bypassed as long as the DDR being accessed.
+
+axiethernet_v5_5:
+Increase Timeout value in the driver as per new h/w update CR#976244.
+
+Change Log for 2017.1
+=================================
+
+Removed the below obsolete drivers & libraries (CR:966227)
+axi_cdma_v3_0
+axi_cdma_v4_0
+axi_dma_v8_1
+axi_dma_v9_0
+axi_dma_v9_1
+axiethernet_v4_3
+axiethernet_v4_4
+axiethernet_v5_0
+axi_pcie_v3_0
+axi_pmon_v6_1
+axi_pmon_v6_2
+axi_pmon_v6_3
+axi_vdma_v5_0
+axi_vdma_v5_1
+axi_vdma_v6_0
+bram_v4_0
+can_v3_0
+canfd_v1_0
+canps_v3_0
+coresightps_dcc_v1_0
+coresightps_dcc_v1_1
+cpu_cortexa9_v2_1
+cpu_cortexa53_v1_0
+cpu_cortexr5_v1_0
+cpu_v2_4
+csudma_v1_0
+devcfg_v3_3
+dp_v1_0
+dp_v2_0
+dp_v3_0
+dp_v4_0
+dprxss_v1_0
+dptxss_v1_0
+dptxss_v2_0
+dptxss_v3_0
+emaclite_v4_0
+emaclite_v4_1
+emacps_v2_2
+emacps_v3_0
+emacps_v3_1
+gpio_v4_0
+gpio_v4_1
+gpiops_v2_2
+gpiops_v3_0
+hdcp1x_v1_0
+hdcp1x_v2_0
+hwicap_v9_0
+hwicap_v10_0
+iic_v3_0
+iic_v3_1
+iic_v3_2
+iicps_v2_3
+iicps_v3_0
+iicps_v3_1
+intc_v3_3
+intc_v3_4
+llfifo_v4_0
+llfifo_v5_0
+iomodule_v2_1
+iomodule_v2_2
+ipipsu_v1_0
+mbox_v4_0
+mutex_v4_0
+qspips_v3_2
+qspipsu_v1_0
+rtcpsu_v1_0
+rtcpsu_v1_1
+scugic_v2_1
+scugic_v3_0
+scugic_v3_1
+scugic_v3_2
+scutimer_v2_0
+scuwdt_v2_0
+sdps_v2_3
+sdps_v2_4
+sdps_v2_5
+sdps_v2_6
+sdps_v2_7
+spi_v4_0
+spi_v4_1
+spips_v2_0
+srio_v1_0
+sysmon_v7_0
+sysmon_v7_1
+tmrctr_v3_0
+tmrctr_v4_0
+tpg_v3_0
+trafgen_v3_2
+trafgen_v4_0
+ttcps_v3_0
+uartlite_v3_0
+uartlite_v3_1
+uartns550_v3_2
+uartps_v3_0
+usb_v5_0
+usbps_v2_2
+v_csc_v1_0
+v_deinterlacer_v5_0
+v_hcresampler_v1_0
+v_hdmirx_v1_0
+v_hdmirxss_v1_0
+v_hdmitx_v1_0
+v_hdmitxss_v1_0
+v_hscaler_v1_0
+v_hscaler_v2_0
+v_letterbox_v1_0
+v_vcresampler_v1_0
+v_vcresampler_v2_0
+v_vscaler_v1_0
+video_common_v1_1
+video_common_v2_0
+video_common_v2_1
+video_common_v2_2
+vphy_v1_0
+vprocss_v1_0
+vprocss_v2_0
+vtc_v6_1
+vtc_v7_0
+wdtps_v2_0
+xadcps_v2_0
+xadcps_v2_1
+ycrcb2rgb_v6
+xilffs_v2_1
+xilffs_v2_2
+xilffs_v3_0
+xilffs_v3_1
+xilffs_v3_2
+xilflash_v4_0
+xilflash_v4_1
+xilisf_v5_0
+xilisf_v5_1
+xilisf_v5_2
+xilisf_v5_3
+xilisf_v5_4
+xilisf_v5_5
+xilrsa_v1_0
+xilsecure_v1_0
+xilskey_v2_0
+xilskey_v2_1
+xilskey_v3_0
+xilskey_v4_0
+lwip140_v2_3
+lwip141_v1_0
+lwip141_v1_1
+lwip141_v1_2
+lwip141_v1_3
+xilkernel_v6_2
+standalone_v4_2
+standalone_v5_0
+standalone_v5_1
+standalone_v5_2
+standalone_v5_3
+standalone_v5_6
+xilapufw_v1_0
+xilopenamp_v1_0
+
+
+
+
+
+
+
+axiethernet_v5_4:
+Add Support for TI PHY DP83867 SGMII Mode configuration in the examples.
+Fixed CR#971367 fix race condition in the tcl for a multi mac design
+(AXI_CONNECTED_TYPE defined only for one instance).
+
+axipmon_v6_5:
+Updated the makefile to fix the bug, to avoid the compilation failure
+of the axipmon applications.It fixes the CR#974412
+
+axivdma_v6_3:
+Fixed compilation errors. CR-969129
+
+coresightps_dcc_v1_4:
+Fixed MISRA C mandatory violations CR#970529.
+
+ccm_v6_1:
+Modified num instances parameter as XPAR_XCCM_NUM_INSTANCES
+in xparameters.h, xccm_sinit.c to avoid compilation errors because it
+was updated as XPAR_CCM_NUM_INSTANCES in both files. Fix for CR#966099.
+
+cfa_v7_1:
+Modified num instances parameter as XPAR_XCFA_NUM_INSTANCES
+in xparameters.h, xcfa_sinit.c to avoid compilation errors because it
+was updated as XPAR_CFA_NUM_INSTANCES in both files. Fix for CR#966099
+
+clk_wiz_v1_2:
+Fixed compilation errors and warnings. CR-970507.
+
+cpu_cortexa9_v2_4:
+Updated makefile with "clean" target
+Updated tcl to check each extra compiler flag individually
+for linaro toolchain and if any default flags are missing,
+it adds the required flags. It fixes CR#965023.
+Added "-Wall -Wextra" to the extra compiler flags.
+Updated cpu_cortexa9.tcl to guard xparameters.h by protection macros.
+It fixes CR#963130.
+
+cpu_cortexa53_v1_3:
+Updated makefile with "clean" target
+Added "-Wall -Wextra" to the extra compiler flags.
+Updated cpu_cortexa53.tcl to guard xparameters.h by protection macros.
+It fixes CR#963130.
+
+cpu_cortexr5_v1_2:
+Updated makefile with "clean" target
+Added "-Wall -Wextra" to the extra compiler flags.
+Updated tcl to support IAR compiler.
+Updated cpu_cortexr5.tcl to guard xparameters.h by protection macros.
+It fixes CR#963130.
+
+cpu_v2_6:
+Added "ffunction-sections" and  "fdata-sections"
+to the deafult extra complier flags, and remove "-g" from
+the same.It fixes CR#965574.
+Added "-Wall -Wextra" to the extra compiler flags.
+
+cresample_v4_1:
+Modified num instances parameter as XPAR_XCRESAMPLE_NUM_INSTANCES
+in xparameters.h, xcresample_sinit.c to avoid compilation errors because it
+was updated as XPAR_CRESAMPLE_NUM_INSTANCES in both files. Fix for CR#966099
+
+emacps_v3_4:
+Updated emacps tcl to export PCS definitions for newer version of
+Xilinx PCS PMA core where PHY address is not a parameter.
+Fixed Compilation warnings - CR#957004
+
+enhance_v7_1:
+Updated num instances parameter as XPAR_XENHANCE_NUM_INSTANCES
+by modifying tcl and _sinit.c files to avoid compilation error. Fix
+for CR-967548.
+
+freertos901_xilinx_v1_0:
+Added latest freertos version freertos901_xilinx.
+Updated tcl as per standalone directory structure.
+Updated makefiles to fix build issue on windows.
+Updated the tcl to set value of configTIMER_QUEUE_LENGTH  properly.
+It fixes CR#968541
+Updated traceTASK_DELAY_UNTIL macro in FreeRTOSSTMTrace.h to
+fix errors in BSP, built with the stm event trace enabled. It
+fixes CR#969576
+
+gpiops_v3_2:
+Fixed Compilation warnings - CR#957004.
+
+hwicap_v11_0:
+Adopted read-back configuration data frame support for 8-series devices
+
+iicps_v3_5:
+Workaround for SLVMON issue in zynq.
+As per user guide when SLVMON bit is cleared in control register,
+master should stop sending the address.But, this is not happening
+with the zynq I2C IP.
+
+intc_v3_6:
+Updated xredefine_intc function in tcl to avoid errors,
+for design in which number of interrupt sources connected
+to AXI INTC is 0.It fixes CR#966295
+Updated xredefine_intc and intc_define_vector_table functions
+to generate separate canonical definitions and constants
+definitions for interrupt IDs/Masks, if interrupt pin of
+same IP is connected to two axi intc pins
+Updated xredefine_intc and intc_define_vector_table functions in
+tcl, to add "LOW_PRIORITY" string in canonical/constant names of
+interrupts connected to higher pin number of INTC, only if specific interrupt
+port of IP is interrupting through more than one INTC pins.
+Fixed compilation warnings in driver source code.It fixes CR#970483.
+
+iomodule_v2_4:
+Fixed compilation warnings
+
+ipipsu_v2_2:
+Modified the ipipsu.tcl script to have array size in config table. Fixes
+CR#963134
+Add support for updating ConfigTable at run time.CR#969385
+
+lwip141_v1_8:
+Updated xemacpsif_physpeed.c to scan for phy addr when newer version of
+Xilinx PCS PMA core is used.
+Add Support for TI PHY DP83867 SGMII Mode configuration.
+Fixed Compilation warnings - CR#957004
+Add jumbo frame support for ZynqMP GEM.
+Correct TI PHYCR initialization in xemacpsif_physpeed.c
+Add SW workaround for TI DP83867 PHY link instability.
+
+nandpsu_v1_2:
+change memcpy to Xil_MemCpy. fixes CR#960462
+fix for the failure of reading nand first redundant paramter page
+CR#966603
+Fixed compilation warning in _g.c
+Fixed MISRAC mandatory violation - CR#970533
+
+prd_v1_1:
+Modified num instances parameter as XPAR_XPRD_NUM_INSTANCES in xparameters.h,
+xprd_sinit.c to avoid compilation errors because it was updated as
+XPAR_PR_DECOUPLER_NUM_INSTANCES in both files. Fix for CR#966099
+
+qspipsu_v1_4:
+Fixed Compilation warnings - CR#957004
+
+rtcpsu_v1_4:
+Fixed Compilation warnings - CR#957004
+Correct  the calibration and frequency macros to generate the accurate time.
+
+rgb2ycrcb_v7_1:
+Modified num instances parameter as XPAR_XRGB2YCRCB_NUM_INSTANCES
+in xparameters.h, xrgb2ycrcb_sinit.c to avoid compilation errors
+because it was updated as XPAR_RGB2YCRCB_NUM_INSTANCES in both
+files. Fix for CR#966099
+
+scugic_v3_6:
+Added new API XScuGic_Stop to Disable distributor and interrupts
+in case they are being used only by current cpu. It also removes
+current cpu from interrupt target registers for all interrupts.
+Modified the scugic.tcl script to have array size in config table. Fixes
+CR#963134
+Add support for changing GIC CPU master at run time.CR#969386
+Make the CpuId as static variable and Added new XScugiC_GetCpuId to access
+CpuId.
+Revert the changes made for CR#964552
+
+sdps_v3_2:
+Corrected voltage switching sequence
+Fixed Compilation warnings - CR#957004
+Add DDR and HSD support for eMMC
+Support for bus width switching based on hdf
+Added support for A53-32bit on ZynqMP.
+Fixed MISRAC mandatory violation - CR#970531
+Fixed UR data flow anomalies
+Add support in EL1 non secure mode
+
+standlone_v6_2:
+Added Xil_MemCpy for word alinged data access
+Added support for Floating point access for Cortex-A53 64bit mode standalone BSP
+Added support for Cortex-A53 64bit EL1 Non-secure execution on hypervisor.
+If hypervisor_guest is set true in bsp settings, it will be compiled for
+EL1 Non-secure, else it will be compiled for EL3. By default Cortex A53 64bit
+BSP is built for EL3 Secure Monitor.
+Modified Cortex-A53 translation table for upper ps DDR. The 0x800000000 -
+0xFFFFFFFFF range is marked normal memory for the DDR size defined in hdf
+and rest of the memory in that 32GB region is marked as reserved to avoid
+any speculative access
+Fixed Compilation warnings - CR#957004
+Updated makefiles of R5 and a53 64 bit/32 bit processors to fix error in clean
+target.It fixes the CR#966900.
+Added IAR compiler support for Cortex R5 BSP.
+Add safe Xil_Out32 implementation.
+Fixed issues with Xil_DCacheDisable API. This is for CR#966220.
+Updated arm/common, arm/cortexa9, arm/cortexa53 files for doxygen
+compliant comments
+Updated cortexa53/64bit/boot.S to clear FPUStatus variable to make sure
+that it contains initial status of FPU i.e. disabled. In case of a warm
+restart execution when bss sections are not cleared, it may contain
+previously updated value which does not hold true once processor resumes.
+This fixes CR#966826.
+Updated common,microblaze and arm/cortexr5 files with doxygen compliant
+comments.
+Updated Cortex R5 IAR boot code to clear c15 registers and configure the
+timer.
+Added arm/cortexa53/64bit/xil_smc.c, xil_smc.h files to provide a C wrapper for
+smc calling which can be used by cortex-A53 64bit EL1 Non-secure application
+Added support thumb mode. CR-970805
+Fixed MISRA C mandatory standard violations in ARM cortexr5 and cortexa53 BSP.
+It fixes CR#970543
+Fixed the CR#970859. The MB intrusive profiling when enabled was causing a crash
+because of invalid HSI command being used. This change fixes it.
+Updated standalone tcl to generate xparameter XPAR_FPD_IS_CACHE_COHERENT, if
+any FPD peripheral is configured to use CCI.This change is applicable only for
+psu_pmu processor bsp.It fixes CR#972638
+
+sysmonpsu_v2_1:
+Fixed Compilation warnings - CR#957004
+Added voltage conversion macro for Vcco_psio
+Add PL reset check before PL sysmon reset
+
+tmrctr_v4_3:
+Updated tmrctr_tapp tcl to avoid errors, if axi timer interrupt is connected
+to more than one pins of interrupt controller.
+
+tmr_inject_v1_0:
+Initial version of tmr_inject driver
+
+tmr_manager_v1_0:
+Initial version of tmr_manager driver
+
+ttcps_v3_3:
+Updated ttcps_tapp.tcl to check whether ttc device is interrupting current
+processor or not.If device is not interrupting the current processor then,
+do not include ttc driver instance and interrupt example source/header files to
+peripheral test. It fixes CR#970569.
+Updated gen_testfunc_call proc in ttcps_tapp.tclto fix bug in
+instance number calculation.It fixes the CR#972418.
+
+uartlite_v3_2:
+Added supported peripheral tmr_sem
+
+uartps_v3_4:
+sync UART_CLK_FREQ_HZ parameter with xparameters.h file uart frequency
+parameter macro
+Fixed Compilation warnings - CR#957004
+
+usbpsu_1_2:
+Updated source code to fix compilation errors for IAR compiler.
+Corrected code for dereferncing event data CR#969056
+
+video_common_v4_1
+Added new memory formats
+Added API to get video mode id with matching blanking information
+Fixed c++ compilation warnings
+
+v_frmbuf_rd_v1_0
+added initial version
+
+v_frmbuf_wr_v1_0
+added initial version
+
+vmix_v2_1
+Added check to make sure logo layer is enabled before loading logo pixel alpha
+Define size of configtable array in tcl and update generated g.c
+Updated PowerOnDefault API to read video stream property from IP configuration
+Updated processor name in example to reflect change in hardware example design
+
+vprocss_v2_3
+Make log feature optional
+Updated example design FULL topology test cases
+Updated makefile to add compiler flags to seggregate dat and text sections
+Updated mdd to remove sub-core version dependency
+Added HasMADI flag to subsystem configuration and fix for CR#964829
+Fixed c++ compilation warnings
+
+xilfpga_v2_0:
+Added Encrypted BitStream Loading support to the xilfpga library.
+Added Authenticated BitStream Loading support to the xilfpga library.
+
+wdttb_v4_1:
+Fixed race condition in the driver CR#966068
+
+xilffs_v3_6:
+Fixed Compilation warnings - CR#957004
+Added configurable option for USE_STRFUNC
+
+xilflash_v4_3:
+Fixed Compilation warnings - CR#957004
+
+xilisf_v5_8:
+Fixed FastReadData bug - CR#968476
+
+xilmfs_v2_3:
+Fixed Compilation warnings - CR#957004
+
+xilopenamp_v1_0:
+obsoleted lib (was replaced in 2016.1 release by openamp lib)
+This is mainly a name change to better match the github project library name.
+
+xilpm_v2_1:
+- Modified clean rule in makefile to remove libxilpm.a. Fix for
+CR#962551.
+- Fixed Compilation warnings - CR#957004
+- Added PM_INIT_FINALIZE API
+- Added SET_CONFIGURATION API to load the config object
+- Added config object generator tcl to generate the config data from HDF
+
+xilrsa_v1_3:
+Updated makefile to add clean rule.Fix for CR#962551.
+
+xilsecure_v2_0:
+Added support for PMU
+Added comments with .nky fields for aes encryption example.
+Provided genric APIs for encryption and decryption of data.
+Provided separate example for encryption and decryption of data.
+Support for Calculation of exponential value can also be done internally
+Modified AES APIs such that, data passed to APIs should be in little endian
+format.
+Fixed compilation warning CR#971971
+
+xilskey_v6_2:
+On ZynqMP Added CRC check after programming whole AES key.
+For each ZynqMP eFUSE bit programming added verification with all 3 margin reads
+Removed temperaure and voltage checks for every eFUSE bit programming for ZynqMP
+Added support for programming more secure control bits-Lbist,LPD/FPD SC enable
+Modified PROG_GATE programming from three inputs to one.
+
+ycrcb2rgb_v7_1:
+Updated num instances parameter as XPAR_XYCRCB2RGB_NUM_INSTANCES
+by modifying tcl and _sinit.c files to avoid compilation error. Fix
+for CR-967548.
+
+zdma_1_2:
+Updated driver to fix compilation errors for IAR compiler.
+
+zynqmp_fsbl:
+- Added support for micron QSPI 2G part.
+- Added PL clearing based on the user configuration
+- Added HIVEC support
+- Fixed Vector regions overwritten in R5 FSBL with secure partitions CR#953663
+- Enhanced secure bitstream authentication to more security.
+- Added PPK hash and SPKI ID verification for eFUSE RSA authentication
+- Locks XMPU/XPPU from further access after applying protection configuration,
+but bypasses this configuration by default.
+- Enabled ZCU106 board specific code.
+- Replaced PM_INIT with SET_CONFIGURATION call.
+- Restricts the FSBL creation if any mandatory IP for FSBL is either isolated for
+the given processor or not exists in the design, or if OCM is not sufficient
+- Added USB boot mode support in FSBL.
+- Added APU ONLY reset.
+- Made Xilpm library as mandatory for FSBL.
+- Added authentication of image header prior to use.
+- Modified Destination CPU check to check PMUFW CPU.
+- Added LTO flags for FSBL
+- Fix for multiple program sections in FSBL.
+- Modified code for MISRA-C:2012 Compliance
+- Fix to access BRAM in PS only reset.
+- Fix to write correct value to ANALOG_BUS register
+
+libmetal_v1_2:
+- Sync libmetal OSS project with upstream
+
+openamp_v1.3:
+- Sync libmetal OSS project with upstream, i.e:
+- Allow APU to restart independently from RPU
+- Keep working with latest kernel
+
+openamp_rpc_demo:
+openamp_matrix_multiply_demo:
+openamp_echo_test:
+- Update to work with updated openamp and libmetal libs
+- Added reconnection to echo_test
+
+zynqmp_pmufw:
+- Added support for APU sub-system restart
+- Added support for WDT triggered APU restart and escalation
+- Fixes for DDR Self-Refresh issues
+- Added SET_CONFIGURATION API implementation to enable config object loading
+- PM operations now depend on the config object loaded by FSBL
+- Added PM_INIT_FINALIZE API call
+- Added support for handling masters without PM enabled
+- Debug prints are disabled by default. Can be enabled by defining DEBUG_MODE
+- Fixes for mandatory MISRA C 2012 violations
+- PMUFW now enables broadcasting of inner shareable transaction, if any LPD/FPD
+  peripheral is configured to use CCI.This change is required to support CCI enabled
+  peripherals in linux.
+- Fixed build issues when ENABLE_PM is not defined
+- Added PM_SECURE_RSA_AES API call to support secure image handling
+- xilsecure is used by PMUFW to support encryption/decryption features
+- Restore clocks config when APU reboots regardless of nodes state.
+- Clear power down request bit when processor is forced down.
+- Release reset after powering up a GPU pixel processor
+- PmInitFinalize PM API call is added, which is used to inform the PFW that the caller master has initialized its own power management. Until a master calls PmInitFinalize, PFW will keep running/On all slaves which the master can use (this is defined with permissions provided in the configuration object). If a master doesn't have PM support, it will never call PmInitFinalize, so PFW will always ensure that all slaves that the master can use remain running.
+- New 'uninitialized' state is used to capture that a master has not called PmInitFinalize. All masters are initially 'uninitialized'.
+
+Change Log for 2016.4
+=================================
+axiethernet_v5_3:
+Fixed compilation errors for PMU template firmware on ZynqMP
+for AXI-Ethernet based designs
+
+axipmon_v6_5:
+Updated OCM axipmon example for proper ID
+
+iic_v3_4:
+Reduce the usleep time in Bus-busy check condition.
+Reduce the usleep time from 1000 to 100 usec in Bus-busy check condition.
+
+xilfpga_v1_1:
+Added PL power-up and Isolation sequence to the xilfpga library
+Added PS-PL Reset sequence.
+Added Preprocessor check for XPAR_NUM_FABRIC_RESETS to avoid the
+compilation errors.
+Added gpio assert logic to properly reset the PL from PS.
+
+freertos823_xilinx_v1_3:
+Added APIs handle_stdin_parameter and handle_stdout_parameter in
+FreeRTOS tcl.::hsi::utils::handle_stdin and
+::hsi::utils::handle_stdout are taken as a base for these APIs and
+modifications are done on top of it to handle stdin and stdout parameters for
+design which doesnt have UART.
+It fixes CR#953681
+
+scugic_v3_5:
+Fixed incorrect modification of interrupt target processor register in
+XScuGic_InterruptMaptoCpu
+
+sdps_v3_1:
+Fixed compilation warnings
+Reduce the delay during power cycle
+Use emmc_hwreset pin to reset eMMC card
+Add delay between assert/deassert of emmc reset
+Enable Rst_n bit in ext_csd reg if disabled
+Add dll reset during auto tuning
+
+ttcps_v3_2:
+Modified XTtcPs_GetCounterValue,XTtcPs_GetInterval and
+XTtcPs_CalcIntervalFromFreq functions to use 32 bit counter/
+interval values for zynq ultrascale+mpsoc.It fixes CR#962482.
+
+xilffs_v3_5:
+Removed enable_mmc option
+Added support for FreeRTOS
+
+xilskey_v6_1:
+Removed Zynq BBRAM control bits as they are part of the eFUSE
+Fixed compilation warnings
+Added support for PUF registration and eFUSE programming with PUF data
+Removed xilinx specific bits programming
+
+v_deinterlacer_v6_2:
+Fix c++ compile problem
+
+v_hscaler_v3_1:
+Fixed configuration validation check for RGB input
+
+vprocss_v2_2:
+Capture failure during router data flow setup in log buffer
+
+Standalone_v6_1:
+Defines interrupt ID number for FPD_SWDT, renamed XPS_WDT_INT_ID
+as XPS_LPD_SWDT_INT_ID in xparameters_ps.h of cortex r5 and for
+32bit, 64bit of cortex a53 and also removed SCUTIMER, SCUWDT
+parameters as they are private timers for a9 only.
+Fix for CR-962858.
+Modified CortexA9 translation table to correct explanation for memory
+attributes to fix CR#963345
+
+Removes DMAPS and PS7 definitions as they are supported
+by Zynq, and modifies interrupt ID number for FPGA in
+xparameters_ps.h of cortex r5 and for 32bit, 64bit of cortex a53.
+Fix for CR-963258.
+
+openamp_v1_2:
+sync with upstream (fix mem allocator, run as rpmsg master, flood ping)
+
+libmetal_v1_1:
+sync with upstream (fix interrupt handling for more than one handler)
+
+openamp apps: echo_test, rpc_demo, mat_mul
+sync with upstream demo apps
+remove duplicated definitions
+update linker script to have vector table and boot section together
+
+xilmfs_v2_2:
+CR#962571: Update Makefile to fix the compilation issues due to incremental
+build
+
+dprxss_v4_0:
+CR#960371: Move DP159 files out of video_common to dprxss.
+CR#964969: Added interrupt handler for HDCP authentication.
+
+video_common_v4_0:
+CR#956975: Modified functions to return fixed point instead of floating point
+CR#960371: Move DP159 files out of video_common to dprxss.
+
+xilpm_v2_0:
+- Added missing API IDs to sync up with PMUFW
+- Migrated to a new shutdown interface to support passing shutdown type and sub-type arguments
+
+zynqmp_pmufw:
+- Fixed DDR self-refresh sequence to trigger RDIMM init and update drift settings
+- Split MMIO regions for finer granularity in permissions
+- Added GET_CHIPID API to query the silicon version register value
+- Removed shutdown callbacks. Now shutdown requests are executed as they come in.
+- Fixed build errors when DEBUG_MODE is disabled
+- Error Management module is disabled by default and should be enabled by adding ENABLE_EM to build flags
+- MISRA C related fixes have been applied
+- Migrated to a new shutdown interface to support passing shutdown type and sub-type arguments
+- Updated XPfw_UserStartUp function to enable broadcasting of inner shareable transaction, if
+  any LPD/FPD peripheral is configured to use CCI.This change is required to support CCI enabled
+  peripherals in linux.
+
+zynqmp_fsbl:
+- PS PL isolation is now removed by calling psu_ps_pl_isolation_removal_data() from psu_init.c
+instead of using fsbl local API XFsbl_PowerUpIsland(). psu_ps_pl_isolation_removal_data()
+function also has AXI data width configurations which are required.
+- Added support for initializing upper PS DDR (earlier only lower PS DDR was supported).
+- Fixed GT mux configuration logic in FSBL for ZCU102, by making each lane individually configurable.
+- For ZCU102, FSBL sets VADJ in the board specific configuration. Since, this needs to be done only
+if design has PL DDR (to take PL DDR out of reset), this code is now included under the
+corresponding conditional.
+
+axicdma_v4_3:
+- Fixed compilation warnings
+
+canfd_v1_2:
+- Fixed compilation warnings
+
+canps_v3_2:
+- Fixed compilation warnings
+
+dmaps_v2_2:
+- Fixed compilation warnings
+
+gpio_v4_3:
+- Fixed compilation warnings
+
+hwicap_v10_2:
+- Fixed compilation warnings
+
+iicps_v3_4:
+- Fixed compilation warnings
+
+iomodule_v2_4:
+- Fixed compilation warnings
+
+nandpsu_v1_1:
+- Fixed compilation warnings
+
+qspispu_v1_3:
+- GQSPI PollData/PollTimeout for dualparallel configurations
+
+tmrctr_v4_2:
+- Used UINTPTR instead of u32 for Baseaddress
+
+- Changed the prototype of XTmrCtr_CfgInitialize API
+
+- Fixed wrong canonical defines for axi_timer
+
+uartps_v3_3:
+- Fixed compilation warnings
+
+usbpsu_v1_1:
+- Added USB 3.0/2.0 backward capability
+
+Change Log for 2016.3
+=================================
+freertos823_xilinx_v1_2:
+Created new version to support event trace through Coresight STM
+Updated tcl files as per modified standalone BSP structure.
+
+lwip141_v1_6:
+Add support for freertos in the emaclite adapter. Fix for CR#957572.
+Expose NO_SYS_NO_TIMERS and LWIP_TCP_KEEPALIVE as options
+
+emaclite_v4_3:
+Fix compilation warning.
+
+axidma_v9_3:
+Reduce the size of the buffer descriptor to 64 bytes
+
+axicdma_v4_2:
+Fix compilation warining in the 64-bit platforms.
+
+axipmon
+
+axivdma_v6_2:
+Fix compilation warining in the 64-bit platforms.
+
+axis_switch_v1_1:
+Used UINTPTR type for BaseAddress
+
+coresightps_dcc_v1_1:
+Created a new version of the driver to ensure that for MB based systems the driver
+is not included. This fixes the CR#953056.
+
+cpu_cortexa53_v1_2:
+Added new parameter for A53 execution mode
+
+ddrcpsu_v1_1:
+Export ddr freq value to xparameters.h file.
+
+dmaps_v2_2:
+Removed definition of "INLINE" macro from xdmaps.c to avoid
+re-definition of the same, since "INLINE" macro is defined
+in xil_io.h.
+
+v_hdmirxss_v3_0:
+update SI5324 driver to support fast-switching mode
+Improve HDCP 1.4 authentication
+
+v_hdmitxss_v3_0:
+update SI5324 driver to support fast-switching mode
+Update function call sequence in XV_HdmiTxSs_StreamUpCallback
+
+v_hdmirx_v1_2:
+squash unused variable compiler warning
+Resolve wrong image size issue when HTotal=0
+
+v_hdmitx_v1_2:
+Added API to set AXI4-Lite clock frequency
+squash unused variable compiler warning
+
+v_hdmirxss_v3_0:
+Combine multiple report API into one ReportInfo
+Clean up warnings
+Add Event Log
+
+v_hdmitxss_v3_0:
+Add Config to get AXI4-Lite clock frequency from HW and set hdmi tx core
+Added Event Log
+Combine Report function into one ReportInfo
+squash unused variable compiler warning
+Update XV_HdmiTxSs_SetAudioChannels
+
+v_hdmirx_v1_2:
+Up version to 1.2 with the following updates:
+Update Address data type to support ZynqMP
+Update HDCP support
+
+v_hdmitx_v1_2:
+Up version to 1.2 with the following updates:
+Remove checking VideoMode
+Update Address data type to support ZynqMP
+
+v_hdmirxss_v3_0:
+Up version to 3.0 with the following updates:
+Add HDCP repeater support
+Add HDCP 1.4 & 2.2 auto switching support
+Add Import Example Design support
+Update to optimize out HDCP when excluded
+
+v_hdmirxss_v3_2:
+Fix to prevent HDCP protocol switching when only one protocol is in the design
+
+v_hdmitxss_v3_0:
+Up version to 3.0 with the following updates:
+Add HDCP repeater support
+Add HDCP 1.4 & 2.2 auto switching support
+Add Import Example Design support
+Update Address data type to support ZynqMP
+Remove checking VideoMode
+Update to optimize out HDCP when excluded
+
+
+dptx_v3_0:
+Obsoleted in lieu of the dp driver.
+
+dp_v5_1:
+Updated version from 5.0 to 5.1.
+Updated to access timing table from video_common using APIs.
+Use consolidated usleep rather than deprecated MB_Sleep.
+Updated self-test to reflect IP updates.
+Update to use new video_common v3.1.
+RX to support maximum pre-emphasis level of 1.
+
+dprxss_v3_1:
+Updated version from 3.0 to 3.1.
+Synchronize with new HDCP API modifications.
+Added HDCP timeout functionality.
+Update to use new video_common v3.1.
+
+dptxss_v4_1:
+Updated version from 4.0 to 4.1.
+Synchronize with new HDCP API modifications.
+Reordered VTC enable and DPTX core enable.
+Update to use new video_common v3.1.
+Fix for native video mode compilation.
+
+gpio_v4_2:
+Used UINTPTR type for BaseAddress
+
+iicps_v3_3:
+Modified code for MISRA-C:2012 Compliance
+
+ipipsu_v2_1:
+Modified code for MISRA-C:2012 Compliance
+
+sysmonpsu_v1_1:
+Modified driver code for MISRA-C:2012 Compliance
+Added SEQ_CH2_REG and SEQ_AVG2_REG, SEQ_INPUT2, SEQ_ACQ2
+and CFG3_REG configurations
+
+emacps_v3_3:
+Fixed IEEE1588 example issue for Zynq (CR#951152
+
+qspipsu_v1_2:
+Add LQSPI support
+Added Tap delay support.
+Added PollData and PollTimeout Support
+Update PollData and PollTimeout for dualparallel configurations
+
+v_mix_v2_0:
+Add support for logo layer per pixel alpha feature
+
+scugic_v3_4:
+Updated tcl to return correct PL ips' interruptIDs when no interrupt is connected to pl_ps_irq0 to fix CR#953335
+Made changes in xscugic.c. Created a new static function DoDistributorInit to simplify the flow and avoid code duplication.
+Changes are made for USE_AMP use case for R5. In a scenario (in R5 split mode) when one R5 is operating with A53 in open amp config
+and other R5 is running baremetal application, the existing code had the potential to stop AMP to work (if for some reason
+the R5 running the baremetal app tasked to initialize the Distributor hangs or crashes before initializing the Distributor).
+Changes are made so that the R5 under AMP first checks if the distributor is enabled or not and if not, it does the standard Distributor initialization.
+This fixes the CR#952962.
+
+standalone_v6_0:
+Make Xil_AsserWait a global variable
+Updated cortexr5/mpu.c to move the code related to Init_MPU to .boot section since it is part of boot process to fix CR#949555
+Program the counter frequency in boot code for CortexA53
+Update get_pins command in the standalone bsp tcl as per 2016.3 hsi
+Updated the sleep_common function in microblaze_sleep.c. Fix for CR#954191.
+Restructured the BSP to avoid code duplication across all BSPs.Source code directories specific to ARM processor's are
+moved to src/arm directory(i.e. src/cortexa53,src/cortexa9 and src/cortexr5 moved to src/arm/cortexa53,src/arm/cortexa9
+and src/arm/cortexr5 respectively).Files xil_printf.c,xil_printf.h,print.c,xil_io.c and xil_io.h are consolidated across all
+BSPs into common file each and consolidated files are kept at src/common directory.Files putnum.c,vectors.c,vectors.h,
+xil_exception.c and xil_exception.h are consolidated across all ARM BSPs into common file each and consolidated
+files are kept at src/arm/common directory.GCC files related to file operations are consolidated and kept at src/arm/common/gcc
+directory.
+All io interfacing functions (i.e. All variants of xil_out, xil_in ) are made as static inline and implementation
+is kept in consolidated common/xil_io.h,xil_io.h must be included as a header file to access io interfacing functions.
+Added undefined exception handler for A53 32 bit and R5 processor.
+Updated xtime_l.c in R5 BSP to remove implementation of XTime_SetTime API, since TTC counter value register is read only.
+Updated the signature for functions sleep/usleep. This fixes the CR#956899.
+Added PSS_PSU_REF_CLK macro to xparameters.h for ZynqMP A53 and R5.
+Removed unused variables from xil_printf.c and xplatform_info.c
+Defined ARMA53_32 flag in cortexa53/32bit/xparameters_ps.h.
+Defined ARMR5 flag in cortexr5/xparameters_ps.h.
+Added support for zynq 7000s devices
+Modified xil_io.h to remove __LITTLE_ENDIAN__ flag check for all ARM processors.
+
+sdps_v3_0:
+Added support for mkfs.
+Updated the copyright year to 2016.
+Used usleep API instead of MB_Sleep API.
+Added BUS_WIDTH, BUS_WIDTH, MIO_Bank and HAS_EMIO parameters.
+Added support for UHS modes.
+Corrected the logic.
+Added tap delays for SD/eMMC.
+Removed sleep.h file from xsdps.h file
+
+uartps_v3_2:
+Modified the transmission break bit set logic.
+
+v_axi4s_remap:
+Used UINTPTR type for BaseAddress
+
+v_csc_v2_1:
+Used UINTPTR type for BaseAddress
+
+v_deinterlacer_v6_1:
+Used UINTPTR type for BaseAddress
+
+v_hcresampler_v3_0:
+Used UINTPTR type for BaseAddress
+Added passthrough mode support
+Removed layer1 API's for coefficient peek/poke
+
+v_vcresampler_v3_0:
+Used UINTPTR type for BaseAddress
+Added passthrough mode support
+Removed layer1 API's for coefficient peek/poke
+
+v_hscaler_v3_0:
+Used UINTPTR type for BaseAddress
+Added optional color format conversion handling
+
+v_vscaler_v3_0:
+Used UINTPTR type for BaseAddress
+Added optional color format conversion handling
+
+v_letterbox_v2_1:
+Used UINTPTR type for BaseAddress
+
+v_mix_v2_0:
+Used UINTPTR type for BaseAddress
+Added per pixel alpha support to logo layer
+
+v_procss_v2_1:
+Used UINTPTR type for BaseAddress
+Added optional color format conversion hadnling in scale-only topology
+Added support to maintain user defined PIP background color after pipe reset
+Replace deprecated MB_Sleep with usleep
+
+video_common_v3_1:
+Updated version from 3.0 to 3.1.
+Reordered wait for PLL lock.
+
+vtc_v7_2:
+Added compilation protection in case driver is included without instantiation.
+Used UINTPTR type for BaseAddress
+
+xilffs_v3_4:
+Added support for mkfs.
+Added support for multi partitions.
+Added support for multiple logical drives.
+Updated the copyright year to 2016.
+Corrected the data type of temp variable.
+Enable the _WORD_ACCESS option.
+Used usleep API instead of MB_Sleep API.
+Included sleep.h in diskio.c file
+
+xilisf_v5_7:
+Added support for SubSector erase.
+Updated subsector erase function for Atmel/Winbond
+
+xilkernel_v6_4:
+Fixed CR:955364 update get_pins command as per 2016.3 hsi changes are made in
+the bsp tcl file.
+Updated the DEPENDS in mld, tcl and makefile to standalone_v6_0 from standalone.
+
+xilskey_v6_0:
+Added margin 2 read checks for Zynq eFUSE PS and PL.
+Ultrscale eFUSE programming is handled using hardware
+module, Hardware module is controlled through GPIO pins,
+Modified Ultrascale eFUSE example and input.h files to
+accept GPIO pin numbers from user, Corrected sysmon
+temperature read to 16-bit resolution.
+Fixed CR #954260 to correct the sequence of Zynq eFUSE programming
+Modified ZynqMP PS eFUSE's single USER key programming to
+separate 32 bit User keys. Provided single bit programming
+for User Key.
+For Ultrascale: Added 128 bit user key programming.
+Provided single bit programming for User keys 32 and
+128 bit User keys. Added error codes on failures.
+BBRAM is updated to have DPA protection, and
+count configuration.
+
+xilmfs_v2_1:
+CR#958938: Update freertos OS name in xilmfs.mld as per latest freertos port.
+
+libmetal_v1_0:
+Add libmetal open-source project to support OpenAMP
+
+libmetal_echo_demo_v1_0:
+Add an echo demo to show the communication between baremetal
+and Linux application with libmetal APIs
+
+openamp_v1.1:
+Use libmetal to abstract OS services.
+Automatically set extra compiler flags -DUNDEFINE_FILE_OPS
+based on WITH_PROXY parameter setting in the GUI.
+
+openamp_rpc_demo:
+openamp_matrix_multiply_demo:
+openamp_echo_test:
+Apps changed to use vector table in TCM
+Initialization changed for libmetal support.
+Added some debug print with xil_printf.
+
+freertos_lwip_echo_server:
+Fix echo thread stack size. CR#958898.
+
+zynqmp_pmufw:
+
+- The IPI Framework is now fully integrated with IPI Driver.
+So PMUFW now works only with a HDF generated from 2016.3 release
+and uses the IPI configuration as specified in HDF.
+
+- FPD power-off suspend is now supported with DDR in self-refresh mode.
+The sequences required for transitioning DDR into and out of Self-Refresh
+are included in this release.
+
+- Clocks dependencies are modelled and PLLs usage is accounted. This enables
+suspending of unused PLLs.
+
+- PMUFW syncs up with FSBL to initialize the clock/PLL related data structures.
+IPI or a Register Poll is used as a sync mechanism depending on the order in
+which FSBL and PMUFW are loaded. A corresponding change in FSBL is also in
+this release, which means the sync mechanism is taken care seamlessly in the flow.
+
+- Linker script has fixes to account for the exact size of PMU RAM available for
+Firmware, which is 125.7 KB. By default PMUFW is built with -O0 optimization.
+In case of insufficient memory due to addition of custom code, optimization
+can be changed to -Os.
+
+- PMUFW uses XilFPGA library and it is included by default in the build.
+APIs to load bitstream into PL have been added.
+
+- TCMs are initialized to prevent ECC errors during a power cycle and all
+dependencies to make TCMs accessible are handled.
+
+- FPD power up/down routines are made available as hooks which can be used to
+override default handlers.
+
+- Power operations (using PM module) on unavailable islands have been blocked and
+return an error.
+
+- Each module now resides in its own file with xpfw_mod_ prefix. All modules
+should follow the same prefix to differentiate from core files and
+segregate functionality.
+
+zynqmp_fsbl:
+- Avoided multiple IPI triggers during PMUFW load. FSBL now triggers IPI for just the first partition of PMUFW. FSBL wakes up PMU after loading all partitions.
+- Added compile time check to ensure FSBL (A53_64) is built only with EL3 BSP.
+- Added support for SHA3 checksum validation by FSBL for partitions that it loads.
+- FSBL identifies device type and restricts handoff to unavailable CPU cores accordingly.
+- To optimize usage of OCM, reduced stack usage of exception handlers (R5) and removed stacks for EL0/1/2.
+- Changed the ECC Initialization code to use ADMA for DMA transfers. Earlier, GDMA was used, which cannot be accessed when FPD is powered down.
+- FSBL now calls protection/security configuration functions defined by psu_init. This is used for XMPU/XPPU configuration, if any, as per design.
+- Changed FSBL error code storage register to PMU_GLOBAL_PERS_GLOB_GEN_STORAGE4 (0xFFD80040).
+- Added XFsbl_PmInit call to notify PMU firmware that initialization of all PM related registers is complete.
+- Corrected print format for Performance measurement value (fractional part).
+- Authentication Certificate for the partition will now be copied separately to an OCM buffer (not to memory area where partition is to be loaded).
+- Changed the FSBL memory layout to have more space for ATF in OCM. FSBL now starts at 0xFFFC0000 and ends at 0xFFFEA000.
+- Added support for TCM ECC Initialization in FSBL (always in R5 and conditionally in A53).
+- Added a hook in FSBL to facilitate users to define different variants of psu_init() functions based on different configurations in Vivado.
+- Remove inline specifier from function prototypes (as per new version of GCC).
+- Corrected (feature include/exclude) logic to resolve DDRless build failure.
+- Change done to calculate the actual read offset including bad blocks while reading from NAND. This read offset will be calculated against each read call from FSBL.
+- Disabled the use_mkfs option in FSBL.
+
+zynq_fsbl:
+- Fabric Initialization sequence is modified to check the PL power before sequence starts and checking INIT_B reset status twice in case of failure.
+
+
+Change Log for 2016.2
+=================================
+axidma_v9_2:
+Fixed compilation warnings in the driver and examples
+
+axiethernet_v5_2:
+Fixed compilation errors for a specific axi ethernet design
+
+csudma_v1_1:
+Fixed race condition in the recv path when source and destination
+points to the same buffer
+
+ddrcpsu:
+Added initial version of DDRC driver
+
+dp_v5_0:
+Updated version from 4.0 to 5.0.
+Added additional color encoding support.
+
+dptxss_v4_0:
+Updated version from 3.0 to 4.0.
+Expose API to set (a)synchronous clock mode.
+
+iicps_v3_2:
+Added workaround for repeated start issue on zynq.
+
+scugic_v3_3:
+Modified XScuGic_InterruptMaptoCpu to write proper value to interrupt target register to fix CR#951848.
+
+sdps_v2_8:
+Added new workaround for auto tuning.
+Changed the Sleep time in Microblaze.
+Modified the standard speed of SD to 19MHz.
+
+sysmon_v7_3:
+Updated interrupt example to support ZynqMP
+sysmon: Corrected conversion formulae
+sysmon: Corrected interrupt ID of ZynqMP
+
+qspipsu_v1_1:
+qspipsu: Added debug message prints.
+
+usb_v5_2:
+Updated the driver to support 64-bit DMA addressing
+
+v_hdmirx_v1_1:
+Updated VTD control in HDMI RX core driver
+
+v_hdmirxss_v2_0:
+Added DDC peripheral HDCP mode selection to XV_HdmiRxSs_HdcpEnable
+
+v_hdmirx_v1_1:
+Add DDC mode selection for HDCP 1.4 and HDCP 2.2
+
+v_hdmitxss_v2_0:
+
+1. Files changed: xv_hdmirxss.c, xv_hdmirxss_coreinit.c, xv_hdmitxss.c, xv_hdmitxss_coreinit.c
+2. VTC driver has been updated to avoid processor exceptions. Workarounds have been removed.
+3. HDCP 1.x driver now uses AXI timer 4.1, so updated to use AXI Timer config structure to determine timer clock frequency
+4. HDCP 1.x driver has fixed the problem where the reset for the receiver causes the entire DDC peripheral to get reset. Based on this change the driver has been updated to use XV_HdmiTxSs_HdcpReset and XV_HdmiRxSs_HdcpReset functions directly.
+5. Updated XV_HdmiTxSs_HdcpEnable and XV_HdmiRxSs_HdcpEnable functions to ensure that HDCP 1.4 and 2.2 are mutually exclusive. This fixes the problem where HDCP 1.4 and 2.2 state machines are running simultaneously.
+
+video_common_v3_0:
+Updated version from 2.2 to 3.0. All video drivers have been updated to use 3.0.
+Added API to search on reduced blanking video modes.
+Updated DP159 to poll I2C bus busy prior to initiation of reads and writes.
+Added Y-only color format.
+
+xilpm_v2:
+XPm_ClientSuspendFinalize API for RPU now disables lock-step fault log before going to wfi. This ensures that false lock-step errors are not triggered during a power-cycle.
+Example now uses XPm_ClientSuspendFinalize API instead of a direct wfi
+call
+
+xilfpga_v1_0:
+Added supported_peripheral field in mld for xilfpga library.
+It supports only for ZynqMp.
+
+xilffs_v3_3:
+Added one second delay before CD pin check.
+Corrected the if condition logic.
+
+xilisf_v5_6:
+Added support for MT25QU02G part.
+Corrected the missing WE before erase.
+
+zynqmp_fsbl:
+Added support for DDR ECC Initialization Fixed the bug causing PMUMB
+wakeup right after loading of first PMUFW partition in boot images with only FSBL and PMUFW present. Now it is being done after all partitions of PMUFW are loaded.
+ATF handoff parameter addresses are now being stored in PMU_GLOBAL.
+Printing address in case of address error.
+Bypassed debouncing logic for SD card so that SD controller doesn't wait for long durations for card to be stable.
+Removed enabling of debug logic for R5 lock-step mode.
+
+zynq_fsbl:
+Added symbols to linker script to prevent linking failures in absence of spec file.
+
+zynqmp_pmufw
+Fixed context saving/reset issue when powering down FPD IPI calls are
+always acknowledged in case of invalid payload RPU, PS-Only and PL
+resets have been added to pm_reset API Fixes related to compiler
+warnings and uninitialized variables mmio_write API has been fixed to
+use the mask argument correctly
+
+
+Change Log for 2016.1
+=================================
+Removed the following versions from the 2016.1 build:
+axicdma_v2_03_a, axidma_v7_02_a, axidma_v8_0, axiethernet_v3_02_a, axiethernet_v4_0,
+axiethernet_v4_1, axiethernet_v4_2, axiethernet_v4_3, axipcie_v2_03_a, axipcie_v2_04_a,
+axipmon_v4_00_a, axipmon_v5_00_a, axivdma_v4_05_a, axivdma_v4_06_a, bram_v3_02_a, bram_v3_03_a,
+canps_v1_01_a, canps_v1_02_a, canps_v2_0, ccm_v4_00_a, ccm_v5_0, cfa_v5_00_a, cfa_v6_0,
+cpu_cortexa9_v1_01_a, cpu_cortexa9_v2_0, cpu_v1_15_a, cresample_v2_00_a, cresample_v3_0,
+deinterlacer_v2_00_a, deinterlacer_v3_0, deinterlacer_v3_1, devcfg_v2_03_a, devcfg_v2_04_a,
+devcfg_v3_0, devcfg_v3_1, devcfg_v3_2, dmaps_v1_05_a, dmaps_v1_06_a, dmaps_v1_07_a, dmaps_v2_0,
+dptx_v1_0, dptx_v2_0, emaclite_v3_04_a, emacps_v1_04_a, emacps_v1_05_a, emacps_v1_06_a,
+emacps_v2_0, emacps_v2_1, emc_v3_01_a, enhance_v5_00_a, enhance_v6_0, gamma_v5_01_a, gpio_v3_01_a,
+gpiops_v1_01_a, gpiops_v1_02_a, gpiops_v2_0, gpiops_v2_1, hwicap_v8_01_a, ic_v3_00_a, iic_v2_07_a,
+iic_v2_08_a, iicps_v1_03_a, iicps_v1_04_a, iicps_v2_0, iicps_v2_1, iicps_v2_2, intc_v2_06_a,
+intc_v2_07_a, intc_v3_0, intc_v3_1, intc_v3_2, iomodule_v1_04_a, iomodule_v2_0, llfifo_v2_03_a,
+llfifo_v3_00_a, manr_v3_00_a, mbox_v3_04_a, mig_7series_v1_00_a, mutex_v3_02_a, nandps_v1_04_a,
+nandps_v2_0, nandps_v2_1, noise_v4_00_a, os_v3_00_a, osd_v2_00_a, osd_v3_0, qspips_v2_02_a,
+qspips_v2_03_a, qspips_v3_0, qspips_v3_1, rgb2ycrcb_v5_01_a, rgb2ycrcb_v6_0, scaler_v4_03_a,
+scaler_v5_00_a, scaler_v6_0, scugic_v1_04_a, scugic_v1_05_a, scugic_v1_06_a, scugic_v2_0,
+scutimer_v1_02_a, scuwdt_v1_02_a, sdps_v1_00_a, sdps_v2_0, sdps_v2_1, sdps_v2_2, spi_v3_05_a,
+spi_v3_06_a, spi_v3_07_a, spips_v1_05_a, spips_v1_06_a, stats_v4_00_a, sysmon_v5_03_a, sysmon_v6_0,
+tft_v4_00_a, tft_v4_01_a, tft_v5_0, tmrctr_v2_05_a, tpg_v1_00_a, tpg_v2_0, trafgen_v1_00_a,
+trafgen_v2_00_a, trafgen_v2_01_a, trafgen_v3_0, trafgen_v3_1, ttcps_v1_01_a, ttcps_v2_0,
+uartlite_v2_01_a, uartns550_v2_01_a, uartns550_v2_02_a, uartns550_v3_0, uartns550_v3_1,
+usb_v4_03_a, usb_v4_04_a, usbps_v1_04_a, usbps_v1_05_a, usbps_v1_06_a, usbps_v2_0, usbps_v2_1,
+vtc_v4_00_a, vtc_v5_00_a, vtc_v6_0, wdtps_v1_02_a, wdttb_v2_00_a, xadcps_v1_01_a, xadcps_v1_02_a,
+xadcps_v1_03_a, ycrcb2rgb_v5_01_a, standalone_v3_10_a, standalone_v3_11_a, standalone_v3_12_a,
+standalone_v4_0, standalone_v4_1, xilkernel_v5_01_a, xilkernel_v5_02_a, xilkernel_v6_0, xilkernel_v6_1,
+xilisf_v3_02_a, xilisf_v4_0, xilskey_v1_00_a, xilmfs_v1_00_a, lwip140_v1_05_a, lwip140_v1_06_a,
+lwip140_v2_0, lwip140_v2_1, lwip140_v2_2
+
+axicdma_v4_1:
+Updated examples with MIG DDR3 defines
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+
+axidma_v9_1:
+Updated examples with MIG DDR3 defines
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Minor changes in the driver and examples for removing warnings.
+
+axiethernet_v5_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XAxiEthernet_CfgInitialize API.
+Fix compilation errors in case of zynqmp to fix CR#933825.
+Updated the tcl to removed delete filename statement to fix CR# 784758.
+
+axipcie_v3_0:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XAxiPcie_CfgInitialize API.
+
+axipmon_v6_4:
+Added interrupt example support for ZynqMP.
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+
+axivdma_v6_1:
+Updated examples with MIG DDR3 defines.
+Fix example compilation issue on zynqmp.
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XAxiVdma_CfgInitialize API.
+
+bram_v4_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XBram_CfgInitialize API.
+Updated the tcl to removed delete filename statement to fix CR# 784758.
+
+can_v2_00_a:
+Removed from the build.
+Fixed the CR#911958 (RecvFrame not working with data length less than 8bytes and greater than 4 bytes).
+
+canfd_v1_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XCanFd_CfgInitialize API.
+
+canps_v3_1:
+Fixed CR#911958 to add support for Tx Watermark example.
+Data mismatch while sending data less than 8 bytes.
+Updated XCanPs_IntrHandler in xcanps_intr.c to handle error interrupts correctly for CR#925615
+Fixed missing error interrupts, during can compliance test.
+Modified tapp tcl to support microblaze.
+Modified xcanps_intr_example to support intc interrupt controller.
+
+Changed file name ccm.h to xccm.h.
+Moved register offsets and bit definitions to xccm_hw.h file.
+Added enums.
+Added range macros.
+Added the structure type definitions XCcm_Config and XCcm.
+Removed the functional macros.
+Added the following macros:
+XCcm_Enable, XCcm_Disable,XCcm_RegUpdateEnable, XCcm_SyncReset, XCcm_Reset, XCcm_IntrGetPending,
+XCcm_IntrEnable, XCcm_IntrDisable, XCcm_StatusGetPending, XCcm_IntrClear, XCcm_Start, XCcm_Stop.
+Added the register offsets and bit masks for the registers.
+Added backward compatibility macros.
+Changed filename ccm to xccm.c.
+Implemented the following functions:
+XCcm_CfgInitialize, XCcm_Setup, XCcm_GetVersion, XCcm_EnableDbgByPass, XCcm_IsDbgByPassEnabled,
+XCcm_DisableDbgByPass, XCcm_EnableDbgTestPattern, XCcm_IsDbgTestPatternEnabled,
+XCcm_DisableDbgTestPattern, XCcm_GetDbgFrameCount, XCcm_GetDbgLineCount, XCcm_GetDbgPixelCount,
+XCcm_SetActiveSize, XCcm_GetActiveSize, XCcm_SetCoefMatrix, XCcm_GetCoefMatrix, XCcm_SetRgbOffset,
+XCcm_GetRgbOffset,XCcm_SetClip, XCcm_GetClip, XCcm_SetClamp XCcm_GetClamp XCcm_FloatToFixedConv,
+and XCcm_FixedToFloatConv.
+Implemented XCcm_SelfTest function.
+Implemented XCcm_LookupConfig function.
+Implemented the functions: XCcm_IntrHandler, XCcm_SetCallBack.
+
+cpu_cortexa9_v2_2:
+Modified cpu_cortexa9 driver mdd file to change compiler to arm-none-eabi-gcc (Linaro)
+and archiver to arm-none-eabi-ar (Linaro). Modified the extra_compiler_flags to
+"-mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -nostartfiles". Linaro toolchain supports hard-float.
+Modified cpu_cortexa9 driver tcl to properly update for the extra compiler flag for different
+compilers (Linaro GCC, armcc, IARCC).
+Added --cpu=Cortex-A9 flag to compiler flag for iccarm to fix CR#938718
+Modified the tcl to take only the toolchain name when a complete path is passed. This fixes CR#939108.
+Made changes in the tcl to have separate cases for code sourcery and armcc toolchains.
+
+cpu_cortexa53_v1_1:
+Modified the cpu_cortexa53 tcl to add the extra compiler flag ARMA53_32 for A53 32bit BSP
+Added timestamp clock frequency to xparamters.h by adding C_TIMESTAMP_CLK_FREQ to cpu driver tcl
+
+cpu_v2_4:
+Updated generate and post_generate procs, not to generate cpu macros, when microblaze is
+connected as one of the streaming slaves to itself. This is for CR#876604.
+
+csi_v1_0:
+Added the initial version of MIPI CSI2 RX Controller driver.
+Add Word Count Corruption interrupt feature
+
+devcfg_v3_4:
+Fix for CR#784758. Changes in driver tcl to delete filename statement.
+
+dp_v4_0
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+Added APIs:
+- XDp_IsLinkRateValid
+- XDp_IsLaneCountValid
+- XDp_RxGetBpc
+- XDp_RxGetColorComponent
+- XDp_RxSetLineReset
+- XDp_RxAllocatePayloadStream
+XDp_RxAllocatePayloadStream is to be called from within RX allocate payload ISR.
+API changed: XDp_TxAllocatePayloadVcIdTable now takes an additional arg StartTs.
+Removed soft reset when enabling RX DTG.
+
+dphy_v1_0:
+Added the initial version of MIPI DPHY Controller driver.
+Added support for HS_SETTLE register
+
+dprxss_v3_0:
+Added support for multiple subsystems in a design.
+Added handlers as enum for HDCP callback registration.
+Added function: XDpRxSs_DownstreamReady
+
+dptxss_v3_0:
+Added support for multiple subsystems in a design.
+Added handlers as enum for HDCP callback registration.
+Added function: XDpTxSs_ReadDownstream, XDpTxSs_HandleTimeout
+
+dsitxss_v1_0:
+Initial version of MIPI DSI TX Subsystem Driver
+
+dsi_v1_0:
+Initial version for DSI Controller Driver
+
+emaclite_v4_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR#867425.
+Changed the prototype of XEmacLite_CfgInitialize API.
+Fix compilation errors due to conflicting data types (CR#917930).
+Updated interrupt example to support Zynq and ZynqMP (CR#938244).
+
+emacps_v3_2:
+Change BD typedef and number of words
+Modified xemacps_example_intr_dma and tapp tcl to support test
+app interrupt example for microblaze.
+Added option to enable SGMII.
+Removed emacps from peripheral tests for Zynq Ultracale MPSoC
+Replaced counter based timeout with sleep routine in xemacps_example_intr_dma
+
+gpio_v4_1:
+Updated to use cannonical xparameters in examples and clean up of the comments,
+removed support for DCR bridge and removed xgpio_intr_example for CR 900381.
+Used UINTPTR type for BaseAddress.
+
+hdcp1x_v4_0:
+Updated the tmrctr being refered to in the hdcp1x.mdd file to tmrctr_v4_1.
+Updated the drivers to use an individual timer with each hdcp interface.
+Updated the drivers to support repeater fucntionality for HDMI.
+Added following fucntions:
+  XHdcp1x_RxSetRepeaterBcaps, XHdcp1x_RxIsInComputations,
+  XHdcp1x_TxIsInComputations, XHdcp1x_RxIsInWaitforready,
+  XHdcp1x_TxIsInWaitforready, XHdcp1x_RxHandleTimeout,
+  XHdcp1x_RxStartTimer, XHdcp1x_RxStopTimer,
+  XHdcp1x_RxBusyDelay, XHdcp1x_RxSetTopologyUpdate,
+  XHdcp1x_RxSetTopology, XHdcp1x_TxGetTopology,
+  XHdcp1x_RxSetTopologyKSVList, XHdcp1x_TxGetTopologyKSVList,
+  XHdcp1x_RxSetTopologyDepth, XHdcp1x_TxGetTopologyDepth,
+  XHdcp1x_RxSetTopologyDeviceCnt, XHdcp1x_TxGetTopologyDeviceCnt,
+  XHdcp1x_RxSetTopologyMaxCascadeExceeded, XHdcp1x_TxGetTopologyMaxCascadeExceeded,
+  XHdcp1x_RxSetTopologyMaxDevsExceeded, XHdcp1x_TxGetTopologyMaxDevsExceeded,
+  XHdcp1x_RxCheckEncryptionChange, XHdcp1x_TxIsDownstrmCapable,
+  XHdcp1x_TxIsRepeater, XHdcp1x_TxEnableBlank,
+  XHdcp1x_TxDisableBlank, XHdcp1x_TxGetTopologyBKSV
+
+hdcp1x_v3_0:
+Updated the drivers to support HDCP Repeater functionality.
+Added following functions:
+  XHdcp1x_DownstreamReady, XHdcp1x_GetRepeaterInfo,
+  XHdcp1x_SetCallBack, XHdcp1x_ReadDownstream.
+  XHdcp1x_TxReadDownstream, XHdcp1x_TxSetCallBack,
+  XHdcp1x_TxTriggerDownstreamAuth.
+  XHdcp1x_RxDownstreamReady, XHdcp1x_RxGetRepeaterInfo,
+  XHdcp1x_RxDownstreamReadyCallback,
+  XHdcp1x_RxSetCallBack.
+Updated the hdcp drivers for HDMI support for HDCP 2.2.
+Added the following functions:
+  XHdcp1x_IsEnabled, XHdcp1x_ProcessAKsv,
+  XHdcp1x_RxIsEnabled, XHdcp1x_RxIsInProgress
+Assigned callback function in XHdcp1x_PortHdmiTxAdaptor to NULL.
+Disabled hdcp call back in function XHdcp1x_PortHdmiRxEnable.
+Added DDC write and read handlers.
+Added callback type used for calling DDC read and write functions
+Added enumeration XHdcp1x_HandlerType to identify callback functions.
+Added a check in xhdcp1x_g.c file to check if HDCP is present.
+Updated the hdcp1x.h file to add documentation and driver description.
+Updated the hdcp1x.h file to add documentation for Repeater system.
+Removed all references to HDMI DDC registers in the hdcp drivers.
+
+hdcp22_cipher_v1_0:
+Added the initial version of Xilinx HDCP Cipher core driver.
+Updated the driver for nested HIP support.
+Added the GetVersion function.
+
+hdcp22_common_v1_0:
+Added the initial version of Xilinx HDCP Cipher common driver.
+Updated the driver for nested HIP support.
+Updated to BigDigits v2.5
+Removed floating point operations.
+
+hdcp22_common_v1_1:
+Fixed warnings and errors for gcc and g++ compilers.
+
+hdcp22_common_v2_0:
+Changed DIGIT_T type to u32 for 64-bit support
+
+hdcp22_mmult_v1_0:
+Added the initial version of the driver that can be used to access the Xilinx HDCP22
+Montogmery Multiplier(Mmult) core.
+Updated the driver for nested HIP support.
+Added default configuration file xhdcp22_cipher_g.c
+
+hdcp22_mmult_v1_1:
+Added 64 bit address support.
+
+hdcp22_rng_v1_0:
+Added the initial version of the driver that can be used to access the Xilinx HDCP22
+Random Number Generator(RNG) core.
+Updated the driver for nested HIP support.
+
+hdcp22_rng_v1_1:
+Added 64 bit address support.
+
+hdcp22_rng_v1_2:
+Fix for pointer word alignment.
+
+hdcp22_rx_v1_0:
+Added the initial version of the Xilinx HDCP 2.2 Receiver driver.
+Updated the driver for nested HIP support.
+Updated LoadPrivateKey function to calculate Montgomery constants.
+Fixes for HDCP 2.2 complaince testing
+
+hdcp22_rx_v2_0:
+Added repeater upstream support.
+Added 64 bit address support.
+Fixes for warnings reductions.
+
+hdcp22_rx_v2_1:
+Fixed warnings and errors for gcc and g++ compilers.
+
+hdcp22_rx_v2_2:
+Updated for 64-bit support.
+
+hdcp22_tx_v1_0:
+Added the initial version of the Xilinx HDCP 2.2 Tx core driver.
+Updated the driver for nested HIP support.
+Added authenticated callback function.
+Fixes for HDCP 2.2 complaince testing
+
+hdcp22_tx_v2_0:
+Add repeater downstream support.
+Added 64 bit address support.
+Fixes for warnings reductions.
+Fixes for transmitter compliance.
+
+hdcp22_tx_v2_1:
+Fixed pairing table update
+Fixed warnings and errors for gcc and g++ compilers.
+
+hdcp22_tx_v2_3:
+Updated for 64-bit ARM support.
+Enhancement to perform HDCP2 Capable check for re-authentication attempts.
+Enhancement to cipher enablement to avoid unessary AXI bus transactions.
+Fix in XHdcp22Tx_WaitForReceiver to poll RxStatus based on fixed interval.
+Fix in XHdcp22Tx_WaitForReceiver to wait for READY and non-zero Message_Size before reading message buffer.
+Fix to check return status of DDC write/read when polling RxStatus register.
+
+hwicap_v10_1:
+Updated driver, to read 7 Series FPGA frame data correctly.
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XHwIcap_CfgInitialize API.
+Removed xhwicap_clb_srinv.h, xhwicap_clb_ff.h, xhwicap_clb_lut.h files
+Removed xhwicap_lut.c and xhwicap_ff.c examples
+Removed defines XHI_FAR_MAJOR_FRAME_MASK, XHI_FAR_MINOR_FRAME_MASK,
+XHI_FAR_MAJOR_FRAME_SHIFT, XHI_FAR_MINOR_FRAME_SHIFT, XHI_C0R_1.
+Fix for CR#909615 to make the following changes:
+Updated XHI_FAR_COLUMN_ADDR_MASK to 0x3FF
+Updated XHI_FAR_BLOCK_SHIFT to 23
+Updated XHI_FAR_TOP_BOTTOM_SHIFT to 22
+Updated XHI_FAR_ROW_ADDR_SHIFT to 17
+Updated XHI_NUM_FRAME_BYTES to 404
+Updated XHI_NUM_FRAME_WORDS to 101
+Updated XHI_NUM_WORDS_FRAME_INCL_NULL_FRAME to 202
+
+iic_v3_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XIic_CfgInitialize API.
+In Low level driver in repeated start condition NACK for last byte is added.
+Changes are done in XIic_Recv for CR# 862303
+
+
+iicps_v3_1:
+Updates example files xiicps_eeprom_intr_example.c, xiicps_eeprom_polled_example.c,
+xiicps_slave_monitor_example.c.
+Re-order the master_send and master_receive functions to handle the
+interrupts properly.
+
+intc_v3_5:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+
+iomodule_v2_3:
+Updated xdefine_canonical_xpars in iomodule.tcl to generate canonical definitions,
+whose canonical name is not the same as hardware instance name.
+
+ipipsu_v2_0:
+Created new major version.
+Fix response buffer address calculation.
+
+llfifo_v5_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototypes of XLlFifo_CfgInitialize, XLlFifo_Initialize APIs.
+Fix Incorrect AXI4 Base address being exported to the xparameters.h file (CR#885653).
+
+mbox_v4_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototypes of XMbox_CfgInitialize API.
+The driver tcl is updated to remove delete filename statement to fix CR# 784758.
+
+mig_v1_0:
+Added initial version of MIG driver for UltraScale DDR3.
+This driver is created only to allow the SDK tools to create a memory test application
+and to populate xparameters.h with memory range constants.
+
+mipicsiss_v1_0:
+Added initial version of Xilinx MIPI CSI Rx Subsystem driver.
+Add Word Count Corruption interrupt feature
+
+mutex_v4_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XMutex_CfgInitialize API.
+
+qspipsu_v3_3:
+Modified the API prototypes according to MISRAC standards to remove compilation
+warnings for fixing CR# 868893.
+Made changes in xqspips_g128_flash_example.c to add support for Macronix 256Mb and 1Gb
+flash parts.
+
+qspipsu_v1_0:
+Added Support for Macronix 1Gb part.
+
+rtcpsu_v1_3:
+Corrected calibration and fractional masks.
+Once we write the RTC time it gets reflected in the current time register after 1sec delay,
+so corrected the RTC read and write logic in the code for giving correct time.
+
+scugic_v3_2:
+Modified xscugic_hw.h file to correct the interrupt target processor mask value for
+cpu interface 2 i.e. XSCUGIC_SPI_CPU2_MASK
+Modified DistributorInit function for CPU while executing in AMP
+Modified tcl to support PL interrupts for ZynqMP Soc
+Modified the DistributorInit in xscigic.c. The change ensures that for Zynq AMP case
+the GIC distributor is left unchanged under the assumption that Linux master will
+initialize it. The change fixes the CR#937243.
+Modified scugic tcl to compute the interrupt ID instead of reading from interrupt pin
+property for PL ips in get_psu_interrupt_id for zynqmpsoc to fix CR#940127
+
+sdps_v2_7:
+Made changes to considered the slot type befoe checking CD/WP pins.
+Added support for MMC cards.
+Added workaround for issue in auto tuning mode of SDR50, SDR104 and HS200.
+Corrected the Tuning logic in driver.
+Removed Bus width check for eMMC.
+Added Tap Delay configurations.
+
+spi_v4_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XSpi_CfgInitialize API.
+Updated the tcl to remove delete filename statement (CR# 784758).
+
+spips_v3_0:
+Made changes in XSpiPs_Abort and XSpiPs_ResetHw to read all RX_FIFO entries.
+
+srio_v1_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XSrio_CfgInitialize API.
+
+sysmon_v7_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XSysMon_CfgInitialize API.
+Updated interrupt example to support Zynq and ZynqMP (CR#938326).
+Fix for CR#910905. Remove incorrect use of configuration register 3
+for 7 series.
+Fixed compilation errors when sysmon is configured in Streaming mode (CR#940976)
+
+sysmonpsu_v1_0 :
+Added new system monitor driver.
+Correct the assert function call.
+Modified interrupt examples.
+Corrected valid list of Single and External Mux channels.
+
+tmrctr_v4_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XTmrCtr_CfgInitialize API.
+Updated tcl, to generate correct device id for timer canonical define
+
+trafgen_v4_1:
+Made changes in tcl to remove delete filename statement to fix CR# 784758.
+
+ttcps_v3_1:
+Made changes in tcl to remove delete filename statement to fix CR# 784758.
+Modified XTtcPs_CfgInitialize to add XTtcps_stop before configuring the TTC.
+Removed invokation of XTtcps_stop from examples (before TTC configuration).
+Modified ttcps_tapp.tcl to generate proper device and interrupt IDs for
+peripheral test and exclude ttc3 for cortexr5 in peripheral test. Also
+made changes to xttcps_tapp_example.c to add status check after SetupTicker
+is called by TmrInterruptExample to fix CR#938908.
+Modified cortexr5/xtime_l.c to avoid enabling overflow interrupt, instead
+modified cortexr5/sleep.c and usleep.c to poll the counter value and compare
+it with previous value to detect the overflow to fix CR#940209.
+
+uartlite_v3_2:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XUartLite_CfgInitialize API.
+
+uartns550_v3_4:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XUartNs550_CfgInitialize API.
+
+uartps_v3_1:
+Modified code for latest RTL changes.
+Added platform variable in driver instance structure.
+Modified uartps_tapp.tcl to support microblaze.
+Modified xuartps_intr_example to support intc interrupt controller.
+Fix compilation errors in peripheral test for no interrupt uartps designs.
+
+usb_v5_1:
+Used UINTPTR instead of u32 for Baseaddress to fix CR# 867425.
+Changed the prototype of XUsb_CfgInitialize API.
+
+usbps_v2_2:
+Fix for CR#873974 (Zynq PS7 USB - Update Driver to Invalidate Caches After Buffer Receive
+in Endpoint Buffer Handler Code).
+Fix for CR#873972 (Zynq PS7 USB - Update Driver to Handle Moving of dTD Head/Tail Pointers).
+
+usbpsu_v1_3:
+Added Cache Coherency(CCI) support.
+
+usbpsu_v1_2:
+Added Reset/disconnect and ch9 handler callback functions
+Added DFU example
+Made changes to assign EP number and direction from wIndex field
+removed unnecessary declaration of XUsbPsu_SetConfiguration in xusbpsu.h file
+Corrected InstancePtr->UnalignedTx with Ept->UnalignedTx in xusbpsu_controltransfers.c
+
+v_axi4s_remap_v1_0:
+Initial version of the driver (Generated by Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC).
+
+v_csc_v2_0:
+Updated tcl to include new args ENABLE_422 and ENABLE_WINDOW.
+Is422Enabled, IsDemoWindowEnabled added to XV_csc_Config structure.
+Made changes to integrate layer-1 with layer-2.
+Made changes so that IsDemoWindowEnabled prevents access to absent HW regs.
+Corrected typo in XV_CscSetColorspace setting K31 FW reg.
+Updated the XV_CscDbgReportStatus routine.
+Changes made so that macros query Is422Enabled, IsDemoWindowEnabled flags which were added to
+the XV_csc_Config structure.
+
+v_deinterlacer_v6_0:
+Made changes to integrate layer-1 with layer-2.
+Added WaitForIdle function.
+
+v_hcresampler_v2_0:
+Made changes to integrate layer-1 with layer-2.
+
+v_hdmirxss_v2_0 :
+Added Cable (dis)connect printf
+
+v_hdmirx_v1_1:
+Added support for read not complete DDC event
+
+v_hdmitx_v1_1 :
+Added XV_HdmiTx_SetHdmiMode and XV_HdmiTx_SetDviMode
+Removed support for reduced blanking
+
+v_hdmirxss_v2_0 :
+Moved HDCP 2.2 reset from stream up/down callback to connect callback
+Added HDCP authenticated callback support
+Remove xintc.h from xv_hdmirxss.h as it is processor dependent
+Updated for Zync ARM support. CR#949087
+
+v_hdmirxss_v3_2 :
+Removed authentication request flag from xhdcp.c/h
+
+v_hdmitxss_v2_0 :
+Added XV_HdmiTxSs_SetHdmiMode and XV_HdmiTxSs_SetDviMode
+Removed reduced blanking support
+Moved HDCP 2.2 reset from stream up/down callback to connect callback
+Add XV_HdmiTxSs_SendGenericAuxInfoframe function
+Updated for Zync ARM support. CR#949087
+
+v_hdmitxss_v3_2 :
+Removed authentication request flag from xhdcp.c/h
+
+v_hdmirx_v1_1:
+Added Link Check callback
+Added pixel clock calculation to HdmiRx_TmrIntrHandler
+Update to fix compiler warnings. CR#949087
+
+v_hdmitx_v1_1 :
+Reorganization of code
+
+v_hdmirxss_v2_0 :
+Add HDCP Support
+
+v_hdmitxss_v2_0 :
+Add HDCP Support
+
+v_hdmirxss_v2_0:
+Updated version from 1.0 to 2.0
+
+1. Added 3D support
+2. Added Native Video Support
+3. Added NTSC/PAL/420 Support
+
+v_hdmitxss_v2_0:
+Updated version from 1.0 to 2.0
+
+1. Fixed Audio Infoframe issue
+2. Added 3D support
+3. Added Native Video Support
+4. Added NTSC/PAL/420 Support
+
+v_hdmirx_v1_1:
+Updated version from 1.0 to 1.1
+
+v_hdmitx_v1_1:
+Updated version from 1.0 to 1.1
+
+v_hdmirx_v1_0:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+
+v_hdmitx_v1_0:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+
+v_hscaler_v2_0:
+Made changes to integrate layer-1 with layer-2.
+Updated the XV_HScalerDbgReportStatus routine.
+Added macro to query the Is422Enabled flag that was added to the XV_hscaler_Config structure.
+
+v_letterbox_v2_0:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+Made changes to integrate layer-1 with layer-2.
+
+v_mix_v1_0:
+Added initial version of Mix Layer-2 Driver (Generated by Vivado(TM) HLS).
+Added stride and memory interface alignment requirements
+Added new interface types for each layer
+Export per layer video format (color format) user parameter to driver
+Updated example design to align with hw changes
+Added fix for stream layer not working
+Added fix for offset alignment to example design
+Added fix for window coordinate 0,0
+
+v_tpg_v7_0:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+
+v_vcresampler_v2_0:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+Made changes to integrate layer-1 with layer-2.
+
+v_vscaler_v2_0:
+Made changes to integrate layer-1 with layer-2.
+
+v_dpt4175:
+Initial Commit for 2016.3
+Added 64 Bit Support (UINTPTR)
+Removed xil_printf
+Added -Wall-Wextra in Makefile
+
+v_pt4175:
+Initial Commit for 2016.3
+Added 64 Bit Support (UINTPTR)
+Removed xil_printf
+Added -Wall-Wextra in Makefile
+Added PixPerPacket Function
+
+v_voip_decap_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Fixed mismatch in MASK parameter (CR 952247)
+Added 64 Bit Support (UINTPTR)
+Added register support for Dynamic PayloadType
+
+v_voip_framer_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Added 64 Bit Address Support (UINTPTR)
+Fixed mismatched function with PG (CR 955024)
+Removed all the xil_printf from the drivers
+Added 64 Bit Support (UINTPTR)
+
+v_voip_packetizer56_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Added 64 Bit Support (UINTPTR)
+
+v_voip_depacketizer_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Added 64 Bit Support (UINTPTR)
+
+v_voip_fec_tx_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Revert back option version in mdd file to 1.0 as this is initial version
+Update debug statistic offset
+Added 64 Bit Support (UINTPTR)
+
+v_voip_fec_rx_v1_0:
+Initial Commit for 2016.1
+Change space to tab in the Makefile
+Add debug status and statistic function for the core
+Added 64 Bit Support (UINTPTR)
+
+video_common_v2_2:
+Changes made so that functions with pointer arguments that don't modify contents are now const.
+Added ability to insert a custom video timing table: XVidC_RegisterCustomTimingModes and
+XVidC_UnregisterCustomTimingMode.
+Added 3D support.
+Fixed video timings for some resolutions.
+
+vphy_v1_1:
+Made changes in mdd file to change OPTION DEPENDS to video_common_v2_2.
+Corrected PllParams.Cdr[1] values for DP and HDMI.
+Added GTPE2 and GTHE4 Support and Enhanced Event Log
+Updates for DP GTPE2 Support
+Fixed 1PPC MMCM parameter calculation in HDMI
+Corrected TX_CLK25_DIV1 and added RX_CLK25_DIV1 initialization
+Updated the RXCDRCFG2 values for GTHE4
+Updated xvphy_gtpe2.c to take the correct refclk frequency for DP
+
+vphy_v1_2:
+Added HdmiFastSwitch in XVphy_Config
+Fixed bug in XVphy_IsPllLocked function
+Updates for 64-bit compilation
+Used usleep API instead of MB_Sleep API
+Replaced xil_printf with log events for debugging
+Modified XVphy_DruGetRefClkFreqHz API
+Fixed Null pointer dereference in XVphy_IBufDsEnable
+Suppressed warning messages due to unused arguments
+
+vphy_v1_3:
+Added comments in xvphy_hdmi_intr.c on the XVphy_WaitUs usage.
+Added error message in XVphy_HdmiCpllParam when DRU is enabled and RX TMDS ratio is 1/40
+Fixed rounding of DRU and RX refclk frequencies
+Fixed race condition in XVphy_HdmiRxClkDetFreqChangeHandler when storing RxRefClkHz value
+
+vphy_v1_4:
+Reorganized the vphy.c/.h files reduce the number of APIs exposed to users
+Created xvphy_i.c/h to contain APIs from vphy.c/.h which are shared by HDMI and DP
+Added preprocessor directives for SW footprint reduction
+Made debug log optional (can be disabled via makefile)
+Added type_defs and APIs to implement the optional err_irq port (xilinx internal)
+Added mechanism to re-trigger GT TX reset when TX align get stuck in xvphy_hdmi_intr.c
+Added N2=8 divider for GTHE3 & GTHE4 CPLL for DP only
+Implemented 2/4 byte GT mode switching HDMI
+Fixed c++ compiler warnings
+Added Transceiver_Width, C_Err_Irq_En, AXI_LITE_FREQ_HZ Parameters in xvphy_g.c and in vphy main data structure
+Added XVphy_GtUserRdyEnable for TX and RX in XVphy_DpInitialize API
+
+vphy_v1_5:
+Updated the Updated the RXPI_CFG0 calculation in xvphy_gthe4.c
+Corrected RXCDR_CFG values for DP in xvphy_gthe4.c
+Added XVphy_CfgCpllCalPeriodandTol API in xvphy_gthe4.c adn vphy_i.h
+Added Div in HdmiCfgCalcMmcmParam search algorithm in xvphy_hdmi.c
+Added DrpClkFreq in XVphy_Config
+
+vphy_v1_6:
+Marked XVphy_DrpRead & XVphy_DrpWrite as deprecated APIs
+Added XVphy_DrpRd & XVphy_DrpWr to replace the deprecated equivalent APIs
+Added XVphy_SetErrorCallback, XVphy_ErrorHandler & XVphy_PllLayoutErrorHandler APIs
+Adjusted GTXE2 CPLL DRU linerate to 2.5 Gbps
+Improved stability and robustness during GTXE2 bonded mode
+Changed ClkOutxDiv declaration to u16 in vphy.h
+Added XVPHY_LOG_EVT_NO_QPLL_ERR & XVPHY_LOG_EVT_DRU_CLK_ERR log events
+Added XVphy_RegisterDebug API in vphy.c/h
+Fixed bug in HdmiCfgCalcMmcmParam when linerate exceeds 3.4 Gbps when oversampling is enabled
+Improved stability to avoid SW hang when HdmiCfgCalcMmcmParam is not able to find the applicable divider for ARM processors
+Fixed XVphy_HdmiDebugInfo printout for RX only configuration
+Added doxygen tags
+Added XVphy_Hdmi_CfgInitialize to replace the deprecated XVphy_HdmiInitialize API
+
+vprocss_v2_1:
+Added new version 2.1
+Added optional color format conversion handling in scaler only topology
+Updated tcl to support multiple instances
+
+wdttb_v4_0:
+Updated Window watchdog support.
+Updated XWdtTb_Config structure with Window WDT parameters.
+Updated XWdtTb core structure with config parameter and removed RegBaseAddress parameter.
+Added following static inline functions:
+XWdtTb_GetTbValue, XWdtTb_SetRegSpaceAccessMode,
+XWdtTb_GetRegSpaceAccessMode, XWdtTb_GetLastEvent,
+XWdtTb_GetFailCounter, XWdtTb_IsResetPending,
+XWdtTb_GetIntrStatus, XWdtTb_IsWrongCfg.
+Added following functions:
+XWdtTb_AlwaysEnable, XWdtTb_ClearLastEvent,
+XWdtTb_ClearResetPending, XWdtTb_IntrClear,
+XWdtTb_SetByteCount, XWdtTb_GetByteCount,
+XWdtTb_SetByteSegment, XWdtTb_GetByteSegment,
+XWdtTb_EnableSst, XWdtTb_DisableSst, XWdtTb_EnablePsm,
+XWdtTb_DisablePsm, XWdtTb_EnableFailCounter,
+XWdtTb_DisableFailCounter, XWdtTb_EnableExtraProtection,
+XWdtTb_DisableExtraProtection, XWdtTb_SetWindowCount, XWdtTb_CfgInitialize.
+Updated following functions with Window WDT feature:
+XWdtTb_Start, XWdtTb_Stop, XWdtTb_IsWdtExpired, XWdtTb_RestartWdt.
+Changed multi line comments to single line comments wherever required.
+Moved XWdtTb_LookupConfig definition to xwdttb_sinit.c.
+Changes made to adherence to coding and Doxygen guidelines.
+Removed included xil_io, xil_types, xparameters and xil_assert header files.
+Moved XWdtTb_GetTbValue to xwdttb.h file.
+Changes made to adhere to MISRA-C guidelines.
+Added new files xwdttb_hw.h and xwdttb_sinit.c.
+Added masks and shifts macros for Window WDT:
+Added macros for Window WDT feature.
+
+zdma_v1_1:
+Added new version 1.1
+Modified XZDma_SetMode API
+Corrected XZDma_SetChDataConfig API
+
+standalone_v5_4:
+Updated xplatform_info.h to add macros for support for A53 32 bit.
+Modified boot.s to disable ACTLR.DBWR bit to avoid potential R5 deadlock for errata 780125.
+Modified file xil_misc_psreset_api.c to improve the description for XOcm_Remap function to avoid
+confusion for Cortex-A9.
+Enabled I-Cache and D-Cache in boot code for a53 32 bit BSP in the initialization.
+Modified file xil_misc_psreset_api.c to correct the description for XOcm_Remap function to avoid confusion for
+Microblaze.
+Added #defines for mmu attributes which can be used with Xil_SetTlbAttributes API for cortex-a9.
+Added default undefined exception handler with debug print of the instruction causing undefined exception for
+Cortex-A9 BSP.
+Included #defines for silicon for checking the current executing platform using XGet_Zynq_UltraMp_Platform_info API
+for ZynqMP Soc. Updated xplatform_info.h and xplatform_info.c accordingly. Added a new API XGetPSVersion_Info to
+return information for PS Silicon version. Modified APIs for platform information to add support for
+Cortex-A53 32bit mode.
+Initialize global constructor for C++ applications for Cortex-A53 (32 and 64 bit) and Cortex-R5.
+Updadted the translation table according to proper address map for cortex-A53 (32 and 64 bit).
+MPU initialization is corrected based on proper address map for cortex-R5 (mpu.c).
+Modified boot.S file to set the reset vector register RVBAR equivalent to vector table base address for
+cortex-A53 (32 and 64 bit).
+Modified cortexa9 gcc Makefile to update the extra compiler flag as per the toolchain update.
+Corrected the sleep and usleep routines to avoid hardcoding the timer frequency, instead take it
+from xparameters.h to properly configure the timestamp clock frequency.
+Updated cortexa9 BSP to add macros: asm_cp15_inval_dc_line_mva_poc, asm_cp15_clean_inval_dc_line_mva_poc,
+asm_cp15_inval_ic_line_mva_pou, asm_cp15_inval_dc_line_sw, asm_cp15_clean_inval_dc_line_sw. These macros are
+used CACHE APIs to replace inline assembly code. This is done for better MISRA C compliance.
+Modified prototypes of xil_In32 and xil_Out32 for cortexa9 to remove warnings.
+Added axipmon interrupt id's in xparameter_ps.h for cortexa53 BSP.
+Added axipmon interrupt id's in xparameter_ps.h for cortexr5 BSP.
+Updated A53 64 bit BSP xil_io.c APIs Xil_Out8, Xil_Out16, Xil_Out32, Xil_Out64 to use volatiles.
+Updated A53 32 bit BSP xil_io.c APIs Xil_Out8, Xil_Out16, Xil_Out32 to use volatiles.
+Changes across various files in the BSP for MISRA C compliance.
+Added interrupt ID macros for system monitor in A53 and R5 BSPs (xparameters_ps.h).
+Removed macro XPAR_SCUTIMER_DEVICE_ID from Cortex-R5 xparameters_ps.h (as it is not relevant).
+Updated boot.S in Cortex-R5 to add support for R5 lock-step mode (enabling the comparator logic and
+enabling fault log.
+Renamed USEAMP to VEC_TABLE_IN_OCM in boot.S to avoid confusion with USE_AMP for Cortex-R5.
+Renamed USEAMP and USE_AMP to UNDEFINE_FILE_OPS around file operation open(),read(), write() etc for
+Cortex-A9 and Cortex-R5.
+Removed the upper 512MB remapping to 0 in boot.S for USE_AMP flag for Cortex-A9.
+Added support for 64 bit address extension for MicroBlaze BSP. Updated mb_interface.h to add macros for
+new assembly instructions. The macros added are: mfeare, mfpvre, lwea, lhuea, lbuea, swea, shea, sbea.
+Made changes in MicroBlaze BSP xil_io.c and xil_io.h to convert Xil_In8, Xil_In16, Xil_In32, Xil_Out8,
+Xil_Out16, Xil_Out32 into static inline functions. Made changes in xil_io.c and xil_io.h to change u32
+to UINTPTR.
+Made changes in MicroBlaze BSP to add implementation for xil_printf (added the file xil_printf.c). Earlier
+xil_printf was part of toolchain which is now removed from toolchain and made part of BSP.
+Modified cortexr5/xtime_l.c to add an API XTime_StartTimer and updated cortexr5/xil-crt0.S to configure
+the TTC3 timer when present. Modified cortexr5/sleep.c, cortexr5/usleep.c to use TTC3 when present otherwise
+use set of assembly instructions to provide required delay to fix CR#913249.
+Made changes in A53 and R5 BSPs to replace the _exit with exit (xil-crt0.S). This fixes the CR#937036.
+Modified the boot code for cortex-r5 in cortexr5/gcc/boot.S to initialize the floating point registers,
+banked registers for various modes and enabled the cache ECC check before enabling the fault log for
+lock step mode and updates the cortex-r5 bsp makefile at cortexr5/gcc/Makefile to support the floating
+point registers initialization boot code to fix the CR#937490
+Updated the exit function in cortexr5/gcc/_exit.c to enable the debug logic in case of lock-step mode
+when fault log is enabled to fix the CR#938281
+Included instrinsics.h header file to cortexa9/iccarm/xpseudo_asm_iccarm.h for inline assembly instructions
+definitions used in C. It also modifies cortexa9/iccarm/Makefile to remove --cpu=Cortex-A9 flag to add it in
+compiler flags of BSP to fix CR#938718
+Fix for CR#938738. Added print.c in MB BSP.
+Updated cortexr5/sleep.c and usleep.c to avoid disabling the interrupts when sleep/usleep is being executed
+using assembly instructions to fix CR#913249.
+Modified cortexr5/boot.S to reset the dbg_lpd_reset before enabling the fault log to avoid intervention for
+lock-step mode and cortexr5/_exit.c to enable the dbg_lpd_reset once the fault log is disabled to fix
+CR#947335
+
+xilskey_v5_0:
+Modified JtagWrite_Ultrascale.
+Added verification for programming bits.
+Added checks for programming.
+AES key programmed is verified.
+Calculated CRC of provided AES key.
+Added Ultrascale BBRAM programming.
+Added example for Ultrascale BBRAM.
+Modified TCL for supporting all platforms.
+Fixed Array out of bounds error.
+
+xilffs_v3_2:
+Added support for LFN.
+Added support for use_lfn option.
+Added use_lfn option.
+Ignore CD/WP checks for Embedded slot.
+Corrected ST_WORD and ST_DWORD macros.
+
+xilflash_v4_2:
+Added support to change BPI Flash from sync to async in examples.
+Added support to unlock the MicronG18 flash in examples.
+Added canonical name to FLASH_BASEADDR in examples.
+
+xilisf_v5_3:
+Updated xilisf_stm_read_write_example.c to remove compilation error.
+
+xilisf_v5_4:
+Updated xilisf_stm_read_write_example.c to remove compilation error.
+
+xilisf_v5_5:
+Updated xilisf_stm_read_write_example.c to remove compilation error.
+Fix compilation errors and warnings.
+Added support for spansion in extended address mode.
+Added support for S25FL512S and S25FL256S.
+Added support for MT25QU01G
+Used 3byte command with 4 byte addressing for Micron.
+
+xilrsa_v1_2:
+Added support for Linaro tool chain in tcl.
+Updated the version number.
+Added binary for Linaro Tool chain.
+
+xilsecure_v1_1:
+Updated the silsecure library.
+
+freertos823_xilinx_v1_1:
+Modifies the makefiles, mld and tcl for freertos bsp to update them to latest standalone bsp 5.4.
+
+lwip141_1_4:
+Made changes for lwip to work on A53 with caches enabled.
+Corrected writing default values to last tx and rx BDs and then re-writing.
+Added support for TI phy with axi ethernet interface.
+Zynq BD space made normal non-cacheable.
+Corrected Zynq GEM clock config when GEM1 is selected.
+Added support for MicroBlaze FreeRTOS.
+Made changes to add support for Axi Etherent on ZyqnMP.
+Made changes in tcl to ensure that the parameter LWIP_COMPAT_MUTEX is defines as 1 for
+MicroBlaze FreeRTOS use case.
+Made changes to remove an incorrect assert in sys_arch.c (sys_arch_mbox_fetch) for FreeRTOS use case.
+Made other miscellaneous changes in adapter files for removing warnings.
+Made changes in lwip.tcl to Fix issues with the Axi Ethernet on ZynqMP R5.
+Fix compilation errors for Axi Ethernet on ZynqMP.
+
+freertos_hello_world:
+Updated the freertos hello world application to add a timer. The timer
+times out after 10 seconds and kills the tasks and prints a success message.
+Updated the tcl to add checks for A53 32 bit. The application is not supported
+for A53 32 bit.
+
+lwip_echo_server:
+Made changes not to disable D-cache for A53.
+
+xilopenamp_v1.0:
+Deprecate xilopenamp_v1.0 now replaced by openamp_v1.0
+
+openamp_v1.0:
+New openamp library in sync with open-source project
+
+openamp_echo_test:
+Made changes not to call vTaskEndScheduler (FreeRTOS R5 based application). Removed the timer being
+created for this purpose.
+Removed the assert print which was caused because of calling endscheduler API for cortex-r5 freertos bsp
+Reworked code to use new openamp library
+
+openamp_matrix_multiply:
+Made changes not to call vTaskEndScheduler (FreeRTOS R5 based application). Removed the timer being
+created for this purpose.
+Reworked code to use new openamp library
+
+openamp_rpc_demo:
+Made changes not to call vTaskEndScheduler (FreeRTOS R5 based application). Removed the timer being
+created for this purpose.
+Reworked code to use new openamp library
+
+xilkernel_thread_demo:
+Updated xilkernel thread demo tcl (to check for IP_NAME not for instance name).
+
+freertos_lwip_echo_server:
+Added a new lwip echo server app to be used only with FreeRTOS BSP. The functionality of this app
+is exactly same as lwip_echo_server except the fact that it does not support 1000BaseX, sgmii modes and
+is exclusively for FreeRTOS.
+
+zynqmp_fsbl:
+Fix for decryption only secure test failure in R5, by disabling data cache.
+Workaround provided in FSBL for SD card insert/remove detection.
+Added performance measurement feature, with which time taken by various stages of FSBL can be monitored.
+When FSBL runs on R5, FSBL's vectors are overwritten with those of user applications. This is now avoided for non-secure boot.
+Added support for Winbond 64M and ISSI 128M QSPI parts.
+Fix the issue in FSBL when only WDT1 is present in design.
+R5 BSP now disables debug logic and enables comparators. For R5 Lockstep, in JTAG bootmode, Turn-off comparators and enable debug logic so that further applications can be ran on JTAG.
+Added the PL reset capability using EMIO[95-92] in FSBL after successful PL configuration.
+Fix the logic to determine the bank crossing condition in case of a dual parallel qspi connection. Also corresponding change fix done to calculate the number of bytes to be programmed in a given bank.
+A workaround is provided in FSBL to power-up PL before MIO configuration (for Silicon versions 1 and 2). Also, removal of isolation for PL is now deferred until its configuration is done.
+Added support for PS-Only reset, i.e. only the PS component is reset without re-configuring the PL component.
+Added support for Macronix QSPI flash parts.
+Changed linker script. With this, FSBL now fails to build (linker error) if FSBL's loadable sections exceed the OCM region allotted to it. This avoids possible overlap of FSBL with other applications built for OCM.
+Added support for ZCU102 board specific configuration, including GT configuration.
+Updated extra compiler flags for A53-64 (ARMA53_64), A53-32 (ARMA53_32).
+Added support for PL bitstream loading in DDRless system.
+To minimize the possibility of speculative access of DDR before it is initialized, in A53 FSBL's translation table (duplicated from BSP), DDR region is marked as "reserved". DDR region is again marked as "Memory" after DDR initialization.
+Due to a bug in 1.0 Silicon, PS hangs after System Reset if RPLL is used. Hence, just for 1.0 Silicon, RPLL clock is bypassed before giving System Reset (this is workaround in FSBL).
+When multiboot register value is non zero and when second SD instance is used, the bin filename was incorrectly determined in FSBL. This is fixed now.
+Fix for failure in authenticating PL bitsream.
+Restrict cores for which FSBL can be created (throw error if not running on A53-0, R5-0, R5-L).
+Renamed stack names in A53 FSBL linker script.
+
+zynq_fsbl:
+PS UART code is now referred only when PS UART is present in design. This is since STDOUT_BASEADDRESS is defined even for coresight UART.
+Added support for Macronix flash.
+Removed the hard coded value of qspi read command and configured to pick from LQSPI_CFG register.
+As xilrsa is not mandatory for zynq, remove xilrsa check while creating application in SDK.
+
+
+Change Log for 2015.4
+=================================
+can_v3_1:
+Fixed the issue wrong values for the IP Parameters being exported to the xparameters.h file
+
+coresightps_dcc_v1_2
+Added support for IAR Compiler.
+
+dp_v3_0
+Fixed fractional TU bytes calculation.
+Updated PHY status check to work cores instantiated with a single lane.
+Qualify interrupt status with interrupt mask.
+Added MSA callback.
+Fixed TPS3 mask value.
+Move waiting for PHY to be ready to link training rather than initialization to allow more flexible usage in pass-through systems.
+
+dprxss_v2_0
+Removed HDCP handler types.
+Added HDCP and Timer Counter support.
+Protected HDCP under macro number of instances.
+Added Timer Counter reset value macro.
+Generate a HPD interrupt whenever RX cable disconnect/unplug interrupt is detected.
+Removed DP159 bit error count code. Used DP159 bit error count function from Video Common library.
+
+dptxss_v2_0
+Added support for customized main stream attributes for SST and MST
+Added HDCP instance into global sub-cores structure.
+Added new handler types: lane count, link rate, pre-emphasis voltage swing adjust and set MSA.
+Added function: XDpTxSs_SetHasRedriverInPath.
+Updated register offsets in debug MSA info.
+Removed cross checking user set resolution with RX EDID.
+Set interlace to zero when video mode is XVIDC_VM_CUSTOM.
+Removed video mode check.
+Added HDCP and Timer Counter support.
+Removed cross checking user set resolution with RX EDID.
+
+hdcp1x_v2_0
+Added dependency on timer counter driver.
+Updated for integration in subsystems for cases that an HDCP core is not instantiated (default *_g.c and protection macros).
+Added EffectiveAddr argument to XHdcp1x_CfgInitialize.
+Updated naming of HDMI references as xv_hdmi* rather than xhdmi* to match new HDMI drivers.
+
+rtcpsu_v1_1
+Enabled rtc controller switching to battery supply when vcc_psaux is not available
+
+tmrctr_v4_0
+Added alternate initialization sequence to allow for setting a different EffectiveAddress (using standard CfgInitialize and InitHw).
+Updated for integration in subsystems for cases that an HDCP core is not instantiated (default *_g.c and protection macros).
+Creation of xtmrctr_sinit.c file. Moved LookupConfig from xtmrctr.c.
+
+v_hdmirx_v1_0
+Initial release.
+
+v_hdmirxss_v1_0
+Initial release.
+
+v_hdmitx_v1_0
+Initial release.
+
+v_hdmitxss_v1_0
+Initial release.
+
+video_common_v2_1
+Fixed video timings for some resolutions.
+   XVIDC_VM_720x480_60_I,
+   XVIDC_VM_720x576_50_I,
+   XVIDC_VM_1440x480_60_I,
+   XVIDC_VM_1440x576_50_I,
+   XVIDC_VM_1920x1080_50_I,
+   XVIDC_VM_1920x1080_60_I,
+   XVIDC_VM_1280x720_50_P,
+   XVIDC_VM_1680x720_50_P,
+   XVIDC_VM_1680x720_60_P.
+
+vphy_v1_0
+Initial release.
+
+vtc_v7_1:
+Corrected VsyncStart Calculations
+Added interlaced programming feature.
+
+standalone_v5_3:
+Modified Cortex-A9 BSP to add openamp support
+Modified assembly instruction for iar compiler for cortex-a9
+
+sdps_v2_6:
+Polled for Transfer Complete bit after cmd6.
+Dont switch to 1.8V
+Added support for SD v1.0
+
+zdma_v1_0:
+Modified ZDMA simple transfer example
+Modified XZDma_CreateBDList API
+
+zynqmp_fsbl:
+Fix for SD1 boot failure in FSBL when the design has SD1 and no SD0/eMMC
+Skip power-up requests for QEMU
+Corrected the ReadBuffer index value in QSPI-24 bit (for Spansion)
+Corrected logic to trigger PMU_0 IPI
+Added support for SD1 and SD1 with level shifter bootmodes
+Removed UART initialization workaround in FSBL
+Power state not to be checked before sending powering up request
+
+zynqmp_pmufw:
+Skip UART configuration during PMUFW init
+Updated PM API
+Added PS-Only Reset Support
+Added DAP wake handling
+
+xilisf_v5_4
+updated the IntelStmDevices list to support Micron N25Q256A flash device.
+xilskey_v4_0:
+Added DFT control bits programming feature for Zynq Platform
+Modified JtagWrite API for programming eFUSE on Zynq Platform
+Added efuse PS and bbram PS support  for Zynq MP SoC
+Added Xilskey write and read regs APIs for ZynqMP SoC
+Added efuseps APIs for Zynq MP
+Added BBRAM PS functionality for Zynq MP SoC
+Added Example for Zynq MP efusePs
+Added BBRAM Ps example for Zynq MP SoC
+Corrected error code names of efuse PL programming for Ultrascale
+Added c++ boundary blocks for header files xilskey_eps.h, xilskey_utils.h and xilskey_jtag.h.
+
+freertos823_xilinx_v1_0:
+The freertos821_xilinx_v1_0 version is changed to freertos823_xilinx_v1_0 to upgrade the
+freertos kernel version to 8.2.3 with the support for processor cortex-a53 64bit mode.
+
+lwip141_v1_3:
+Made changes in xemacpsif_dma.c to add required barriers.
+Remove repeated sysarch protect and unprotect calls.
+Replace printf with xil_printf.
+Add support for TI phy.
+
+Change Log for 2015.3
+=================================
+axicdma_v4_0
+Added support for 64-bit Addressing.
+Mark only BD Memory region as uncacheable.
+
+axidma_v9_0
+Added support for 64-bit Addressing.
+Fix bug in the number of words in a buffer descriptor
+
+axiethernet_v5_0
+Updated the driver tcl for Hier IP(To support User parameters).
+Fixed CR 870631 AXI Ethernet with FIFO will fail to create the BSP if the interrupt pin on the FIFO is unconnected.
+
+axipmon_v6_2
+New version of the driver for Ultrascale+ ZynqMP SoC with the following changes
+Added Is32BitFiltering in XAxiPmon_Config structure.
+Updated XAxiPmon_SetWriteId, XAxiPmon_SetReadId,XAxiPmon_GetWriteId, XAxiPmon_GetReadId
+XAxiPmon_SetWriteIdMask, XAxiPmon_SetReadIdMask, XAxiPmon_GetWriteIdMask, XAxiPmon_GetReadIdMask
+functions in xaxipmon.c.
+Added XAPM_RID_OFFSET and XAPM_RIDMASK_OFFSET in xaxipmon_hw.h
+
+axipmon_v6_3
+Updated version to comply to MISRA-C:2012 guidelines.
+
+axis_switch_v1_0
+New version of the driver to support to axis_switch
+
+axivdma_v6_0
+Added support for a vdma triple buffer api and added support for 64 bit addressing.
+
+canfd_v1_0
+First version of the driver for can_fd.
+
+coresightps_dcc_v1_1
+Updated for Ultrascale+ ZynqMP SoC support
+
+cpu_cortexa53_v1_0
+New driver for cortex a53
+
+cpu_cortexr5_v1_0
+New driver for cortex R5
+
+cpu_cortexr5_v1_1
+Minor updates in the tcl file
+
+csu_dma_v1_0
+First version of the driver for CSU DMA in Ultrascale+ ZynqMP SoC
+
+dp_v2_0:
+Added MST functionality to RX. New APIs added are:
+- XDp_RxHandleDownReq, XDp_RxGetIicMapEntry,
+- XDp_RxSetIicMapEntry, XDp_RxSetDpcdMap,
+- XDp_RxMstExposePort, XDp_RxMstSetPort,
+- XDp_RxMstSetInputPort, XDp_RxMstSetPbn,
+- XDp_RxSetIntrDownReqHandler, XDp_RxSetIntrDownReplyHandler,
+- XDp_RxSetIntrAudioOverHandler, XDp_RxSetIntrPayloadAllocHandler,
+- XDp_RxSetIntrActRxHandler, XDp_RxSetIntrCrcTestHandler
+Added Intr*Handler and Intr*CallbackRef interrupt-related members to XDp_Rx
+structure for:
+- DownReq, DownReply, AudioOver, PayloadAlloc, ActRx,CrcTest
+Added new data structures related to RX MST topology:
+- XDp_RxIicMapEntry, XDp_RxDpcdMap, XDp_RxPort, XDp_RxTopology
+Renamed XDp_Tx* to XDp_* to reflect commonality with RX for:
+- XDp_TxSbMsgLinkAddressReplyPortDetail
+- XDp_TxSbMsgLinkAddressReplyDeviceInfo
+GUID type change for ease of use:
+- 'u32 Guid[4]' changed to 'u8 Guid[16]'
+Added handlers and setter functions for HDCP and unplug
+events.
+Added callbacks for lane count changes, link rate changes
+and pre-emphasis + voltage swing adjust requests.
+
+dptxss_v1_0:
+Initial version of the driver for the Display Port Tx Sub System Driver
+
+dual_splitter_v1_0
+Initial version of the Xilinx Dual Splitter core
+
+emaclite_v4_1
+Added Length check in XEmacLite_AlignedWrite function in xemaclite_l.c file to
+avoid extra write operation - CR 843707
+
+emacps_v3_1
+Do not call error handler with '0' error code when there is no error- CR 869403
+
+gpiops_v3_1
+Added support for Zynq Ultrascale+ MP -  CR 856980.
+
+iomodule_v2_2
+Updated XIOModule_Uart_InterruptHandler function in xiomodule_uart_intr.c file
+to read Status register instead of reading Interrupt Pending register - CR #862715
+
+ipipsu_v1_0:
+Initial version of the IPI driver for Ultrascale+ ZynqMPSoC
+
+nandpsu_v1_0
+Initial version of the NAND driver for Ultrascale+ ZynqMPSoC
+
+qspipsu_v1_0
+Initial version of the QSPI driver for Ultrascale+ ZynqMPSoC
+
+rtcpsu_v1_0
+Initial version of the RTC driver for Ultrascale+ ZynqMPSoC
+
+sdps_v2_5
+Added SD 3.0 features and updated the code according to MISRAC-2012.
+
+devcfg_v3_3:
+Minor driver version upgrade that fixes the XDcfg_ReadMultiBootConfig macro which was passing
+wrong number of arguments
+
+llfifo_v5_0:
+Major driver version that updates the register offsets in the AXI4 data path as per latest IP version(v4.1)
+
+sysmon_v7_1:
+Minor driver version upgrade that modifies temperature transfer function for for Ultrascale.
+
+video_common_v2_0
+Added new timings:
+   XVIDC_VM_1440x480_60_I,
+   XVIDC_VM_1440x576_50_I,
+   XVIDC_VM_1440x240_60_P,
+   XVIDC_VM_1680x720_50_P,
+   XVIDC_VM_1680x720_60_P,
+   XVIDC_VM_1680x720_100_P,
+   XVIDC_VM_1680x720_120_P,
+   XVIDC_VM_1680x1050_50_P,
+   XVIDC_VM_1920x1080_100_P,
+   XVIDC_VM_1920x1080_120_P,
+   XVIDC_VM_2560x1080_50_P,
+   XVIDC_VM_2560x1080_60_P,
+   XVIDC_VM_2560x1080_100_P,
+   XVIDC_VM_2560x1080_120_P,
+   XVIDC_VM_4096x2160_24_P,
+   XVIDC_VM_4096x2160_25_P,
+   XVIDC_VM_4096x2160_30_P,
+   XVIDC_VM_4096x2160_50_P,
+   XVIDC_VM_4096x2160_60_P,
+   XVIDC_VM_4096x2160_60_P_RB,
+   XVIDC_VM_CUSTOM.
+Modified XVIDC_DP159_CT_PWR -> XVIDC_DP159_CT_UNPLUG.
+Added bit error count function.
+Removed extra DP159 register programming as per new DP159 programming guide.
+
+vtc_v7_0:
+Major driver version upgrade that makes the following changes:
+Adds interlaced field to XVtc_Signal structure. Removes XVtc_RegUpdate as there are is one more API
+XVtc_RegUpdateEnable present with same functionality.
+Modifies HActiveVideo value to 1920 for XVTC_VMODE_1080I mode.
+Removes Major, Minor and Revision parameters from XVtc_GetVersion.
+Modifies return type of XVtc_GetVersion from void to u32.
+Adds progressive and interlaced mode switching feature.
+Modifies XVtc_SetGenerator, XVtc_GetGenerator, XVtc_GetDetector, XVtc_ConvTiming2Signal and XVtc_ConvSignal2Timing APIs.
+Removes XVTC_ERR_FIL_MASK macro because it is  not present in latest product guide.
+Modifies register offsets from XVTC_* to XVTC_*_OFFSET for consistency.
+Adds new file xvtc_selftest.c.
+Removed call to Reset from initialization function to avoid processor exception. See CR#949946
+
+xadcps_v2_2:
+Minor driver version upgrade that uses correct Device Config base address in xadcps.c.
+
+zdma_v1_0:
+New version of the LPD/FPD DMA driver for Ultrascale+ ZynqMPSoC
+
+usbps_v2_3:
+Created new version
+Fixed CR#873972 - corrected logic for moving of dTD Head/Tail Pointers
+Fixed CR#873974 - invalidated Caches After Buffer Receive in Endpoint Buffer Handler
+
+uartps_v3_1:
+Added support for Zynq Ultrascale+ MP related changes
+
+uartns550_v3_3:
+Fixed an issue with the clock divisor - CR 857013
+
+uartlite_v3_0:
+XUartLite_ReceiveBuffer function in xuartlite.c is updated to receive data into user buffer in critical region - CR#865787.
+
+standalone_v5_2:
+Corrected interrupt ID's of TTC.
+Added PSU definitions for TEST APP.
+Modified translation table in a53 32bit bsp
+Changed A53 32bit bsp makefile
+Added interrupt IDs for RTC
+Rearranged the Cortex A53 folder structure
+Modified translation_table.s for Zynq DDR-less system
+Modified Xil_DCacheFlushRange, Xil_DCacheInvalidateRange and Xil_ICacheInvalidateRange API to add
+Support for addresses higher than 4GB by not truncating the addresses to 32bit
+Added support for 64bit print in xil_printf
+xil_settlbattributes modified for addresses > 4GB
+Changed in boot.s to include more memory attributes
+
+xilffs_v3_1:
+Used --create option for armcc compiler
+Modify makefile to check for IAR compiler
+Card detection checked after disk status
+Added support for SD1
+Removed Change Bus Speed, Clock API's in glue layer
+Added Read_Only option
+Add card check logic to support Zynq Ultrascale+ MPSoC
+
+xilisf_v5_4:
+Modified SPIPS examples to support on ZynqMP.
+Added examples to test QSPIPSU interface.
+
+xilflash_v4_1:
+Fix Write buffer programming for IntelStrataFlash
+Fix Spansion write buffer programming
+Added Pass/Fail string to readwrite_example
+
+xilskey_v3_0:
+Added ultrascale efuse functionality
+Added new functions
+Added API for clk calculations
+
+lwip141_v1_2:
+Add support for A53
+Update autonegotiation for ZynqMP
+Use updated autonegotiation for Zynq as well
+Give error message when A53 32 bit compiler is used
+Fix bsp compilation errors when elite is configured with interrupts though a concat IP
+
+zynq_fsbl:
+In the file pcap.c, changes done to write to devcfg.STATUS register to clear the DMA done count.
+
+freertos821_xilinx_v1_0:
+FreeRTOS BSP that supports MicroBlaze, CortexA9 and CortexR5
+
+xilopenamp_v1_0:
+XilOpenAMP library that supports Cortex-R5 slave
+
+freertos_hello_world:
+New FreeRTOS demo application
+
+openamp_matrix_multiply
+openamp_rpc_demo
+openamp_echo_test:
+OpenAMP demo applications to run on R5 slave and are based on xilopenamp_v1_0.
+
+xilkenrel_v6_3:
+CR:938727 configuring the config_bufmalloc exporting invalid number of statifc bufs.
+
+xilpm_v2_0:
+Replace ACK_CB_STANDARD with ACK_NON_BLOCKING
+Removed latency argument for XPm_ReleaseNode
+Migrate to IPI driver
+Added XPm_ResetAssert and XPm_ResetGetStatus PM API calls
+PM return value changes to be compliant with PMU-FW
+Added resume_address to self suspend and request wake-up APIs
+Add callback APIs
+Add MMIO API calls
+Added PM node IDs for all remaining devices
+Added capability CAP_WAKEUP
+Updated example to as per API changes
+
