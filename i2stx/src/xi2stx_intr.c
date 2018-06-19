@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2017 Xilinx, Inc. All rights reserved.
+ * Copyright (C) 2017 - 2018 Xilinx, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 /**
  *
  * @file xi2stx_intr.c
- * @addtogroup i2stx_v1_0
+ * @addtogroup i2stx_v1_1
  * @{
  *
  * This file contains functions related to i2s_transmitter interrupt handling.
@@ -46,6 +46,7 @@
  * Ver   Who   Date       Changes
  * ----- ----- ---------- -----------------------------------------------
  * 1.0   kar   11/16/17   Initial release.
+ * 1.1   kar   04/02/18   Changed log write API's argument to i2stx instance.
  * </pre>
  *
  *****************************************************************************/
@@ -102,12 +103,11 @@ void XI2s_Tx_IntrHandler(void *InstancePtr)
 	/* Read the interrupt control register */
 	EnableMask = XI2s_Tx_ReadReg(TxPtr->Config.BaseAddress,
 			XI2S_TX_IRQCTRL_OFFSET);
-	Data = Data & EnableMask;
 	/* AES Block Complete Detected */
 	if (Data & EnableMask & XI2S_TX_INTR_AES_BLKCMPLT_MASK) {
 		/* Clear AES Block Complete event */
 		XI2s_Tx_IntrClear(TxPtr, XI2S_TX_INTR_AES_BLKCMPLT_MASK);
-		XI2s_Tx_LogWrite(&TxPtr->Log, XI2S_TX_AES_BLKCMPLT_EVT, 0);
+		XI2s_Tx_LogWrite(TxPtr, XI2S_TX_AES_BLKCMPLT_EVT, 0);
 
 		/* Call the AES Block Complete Handler */
 		if (TxPtr->AesBlkCmpltHandler)
@@ -117,7 +117,7 @@ void XI2s_Tx_IntrHandler(void *InstancePtr)
 	if (Data & EnableMask & XI2S_TX_INTR_AES_BLKSYNCERR_MASK) {
 		/* Clear AES Block Synchronization Error event */
 		XI2s_Tx_IntrClear(TxPtr, XI2S_TX_INTR_AES_BLKSYNCERR_MASK);
-		XI2s_Tx_LogWrite(&TxPtr->Log, XI2S_TX_AES_BLKSYNCERR_EVT, 0);
+		XI2s_Tx_LogWrite(TxPtr, XI2S_TX_AES_BLKSYNCERR_EVT, 0);
 
 		/* Call the AES Block Synchronization Error Handler */
 		if (TxPtr->AesBlkSyncErrHandler)
@@ -127,7 +127,7 @@ void XI2s_Tx_IntrHandler(void *InstancePtr)
 	if (Data & EnableMask & XI2S_TX_INTR_AES_CHSTSUPD_MASK) {
 		/* Clear the AES Channel Status Updated event */
 		XI2s_Tx_IntrClear(TxPtr, XI2S_TX_INTR_AES_CHSTSUPD_MASK);
-		XI2s_Tx_LogWrite(&TxPtr->Log, XI2S_TX_AES_CHSTSUPD_EVT, 0);
+		XI2s_Tx_LogWrite(TxPtr, XI2S_TX_AES_CHSTSUPD_EVT, 0);
 
 		/* Call the AES Channel Status Updated Handler */
 		if (TxPtr->AesChStsUpdHandler)
@@ -137,7 +137,7 @@ void XI2s_Tx_IntrHandler(void *InstancePtr)
 	if (Data & EnableMask & XI2S_TX_INTR_AUDUNDRFLW_MASK) {
 		/* Clear the Audio Underflow Detected event */
 		XI2s_Tx_IntrClear(TxPtr, XI2S_TX_INTR_AUDUNDRFLW_MASK);
-		XI2s_Tx_LogWrite(&TxPtr->Log, XI2S_TX_AUD_UNDRFLW_EVT, 0);
+		XI2s_Tx_LogWrite(TxPtr, XI2S_TX_AUD_UNDRFLW_EVT, 0);
 
 		/* Call the Audio Underflow Detected Handler */
 		if (TxPtr->AudUndrflwHandler)

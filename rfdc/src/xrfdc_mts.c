@@ -33,7 +33,7 @@
 /**
 *
 * @file xrfdc_mts.c
-* @addtogroup xrfdc_v3_2
+* @addtogroup xrfdc_v4_0
 * @{
 *
 * Contains the multi tile sync functions of the XRFdc driver.
@@ -47,6 +47,9 @@
 * 3.2   jm     03/12/18 Fixed DAC latency calculation.
 *       jm     03/12/18 Added support for reloading DTC scans.
 *       jm     03/12/18 Add option to configure sysref capture after MTS.
+* 4.0   sk     04/09/18 Added API to enable/disable the sysref.
+*       rk     04/17/18 Adjust calculated latency by sysref period, where doing
+*                       so results in closer alignment to the target latency.
 *
 * </pre>
 *
@@ -167,10 +170,18 @@ static u32 XRFdc_MTS_Sysref_Ctrl(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 		XRFdc_MTS_RMW_DRP(InstancePtr, BaseAddr, XRFDC_MTS_SRCAP_DIG,
 				XRFDC_MTS_SRCAP_DIG_M, RegData);
 
+		/* Set SysRef Cap Clear */
+		XRFdc_MTS_RMW_DRP(InstancePtr, BaseAddr, XRFDC_MTS_SRCAP_T1,
+		XRFDC_MTS_SRCLR_T1_M, XRFDC_MTS_SRCLR_T1_M);
+
 		/* Analog Cap enable */
 		RegData  = (Enable_Cap) ? XRFDC_MTS_SRCAP_T1_EN : 0;
 		XRFdc_MTS_RMW_DRP(InstancePtr, BaseAddr, XRFDC_MTS_SRCAP_T1,
 				XRFDC_MTS_SRCAP_T1_EN, RegData);
+
+		/* Unset SysRef Cap Clear */
+		XRFdc_MTS_RMW_DRP(InstancePtr, BaseAddr, XRFDC_MTS_SRCAP_T1,
+		XRFDC_MTS_SRCLR_T1_M, 0);
 	}
 
 	return XRFDC_MTS_OK;
@@ -851,7 +862,8 @@ static u32 XRFdc_MTS_GetMarker(XRFdc* InstancePtr, u32 Type, u32 Tiles,
 * 		- XRFDC_MTS_TARGET_LOW
 * 		-
 *
-* @note		None
+* @note     Latency calculation will use Sysref frequency counters
+*           logic which will work with IP version 2.0.1 and above.
 *
 ******************************************************************************/
 static u32 XRFdc_MTS_Latency(XRFdc* InstancePtr, u32 Type,
@@ -874,12 +886,20 @@ static u32 XRFdc_MTS_Latency(XRFdc* InstancePtr, u32 Type,
 	u32 BaseAddr;
 	u32 RegAddr;
 	u32 RegData;
+	u32 Write_Words;
+	u32 SysRefFreqCntrDone;
+	int SysRefT1Period;
+	int Target_Latency = -1;
+	int LatencyDiff;
+	int LatencyOffset;
+	int LatencyOffsetDiff;
 
 	Status = XRFDC_MTS_OK;
 	if (Type == XRFDC_ADC_TILE) {
 		XRFdc_GetDecimationFactor(InstancePtr, Config->RefTile, 0, &Factor);
 	} else {
 		XRFdc_GetInterpolationFactor(InstancePtr, Config->RefTile, 0, &Factor);
+		XRFdc_GetFabWrVldWords(InstancePtr, Type, Config->RefTile, 0, &Write_Words);
 	}
     XRFdc_GetFabRdVldWords(InstancePtr, Type, Config->RefTile, 0, &Read_Words);
     Count_w = Read_Words * Factor;
@@ -888,17 +908,75 @@ static u32 XRFdc_MTS_Latency(XRFdc* InstancePtr, u32 Type,
     metal_log(METAL_LOG_DEBUG,
 			"Count_w %d, loc_w %d\n", Count_w, Loc_w);
 
-	/* Find the individual latencies */
-	Max_Latency=0;
-	for (i = 0; i < 4; i++) {
+    /* Find the individual latencies */
+    Max_Latency=0;
+
+    /* Determine relative SysRef frequency */
+    RegData = XRFdc_ReadReg(InstancePtr, 0, XRFDC_MTS_SRFREQ_VAL);
+    if (Type == XRFDC_ADC_TILE) {
+		/* ADC SysRef frequency information contained in lower 16 bits */
+		RegData = RegData & 0XFFFF;
+    } else {
+		/* DAC SysRef frequency information contained in upper 16 bits */
+		RegData = (RegData >> 16) & 0XFFFF;
+    }
+
+    /* 
+     * Ensure SysRef frequency counter has completed.
+     * Sysref frequency counters logic will work with IP version
+     * 2.0.1 and above.
+     */
+    SysRefFreqCntrDone = RegData & 0x1;
+    if (SysRefFreqCntrDone == 0U) {
+		metal_log(METAL_LOG_ERROR, "Error : %s SysRef frequency counter not yet done\n",
+			(Type == XRFDC_ADC_TILE) ? "ADC" : "DAC");
+		Status |= XRFDC_MTS_SYSREF_FREQ_NDONE;
+		/* Set SysRef period in terms of T1's will not be used */
+		SysRefT1Period = 0;
+    } else {
+		SysRefT1Period = (RegData >> 1) * Count_w;
+		if (Type == XRFDC_DAC_TILE) {
+			/*
+			 * DAC marker counter is on the tile clock domain so need
+			 * to update SysRef period accordingly
+			 */
+			SysRefT1Period = (SysRefT1Period * Write_Words) / Read_Words;
+		}
+		metal_log(METAL_LOG_INFO, "SysRef period in terms of %s T1s = %d\n",
+			(Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", SysRefT1Period);
+    }
+
+    /* Work out the latencies */
+    for (i = 0; i < 4; i++) {
 		if ((1 << i) & Config->Tiles ) {
-			Latency = (Markers->Count[i] * Count_w) +
-								(Markers->Loc[i] * Loc_w);
+			Latency = (Markers->Count[i] * Count_w) + (Markers->Loc[i] * Loc_w);
+			/* Set marker counter target on first tile */
+			if (Target_Latency < 0) {
+				Target_Latency = Config->Target_Latency;
+				if (Target_Latency < 0)
+					Target_Latency = Latency;
+				metal_log(METAL_LOG_INFO, "%s target latency = %d\n",
+					(Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Target_Latency);
+			}
+
+			/*
+			 * Adjust reported counter values if offsetting by a SysRef
+			 * period reduces distance between current and target latencies
+			 */
+			LatencyDiff = Target_Latency - Latency;
+			LatencyOffset = (LatencyDiff > 0) ? (Latency + SysRefT1Period) :
+					(Latency - SysRefT1Period);
+			LatencyOffsetDiff = Target_Latency - LatencyOffset;
+			if (abs(LatencyDiff) > abs(LatencyOffsetDiff)) {
+				Latency = LatencyOffset;
+				metal_log(METAL_LOG_INFO, "%s%d latency offset by a SysRef period to %d\n",
+					(Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", i, Latency);
+			}
 			Config->Latency[i] = Latency;
 			if (Latency > Max_Latency)
 				Max_Latency = Latency;
-			metal_log(METAL_LOG_DEBUG,
-				"Tile %d, latency %d, max %d\n", i, Latency, Max_Latency);
+			metal_log(METAL_LOG_DEBUG, "Tile %d, latency %d, max %d\n",
+					i, Latency, Max_Latency);
 		}
 	}
 
@@ -910,15 +988,10 @@ static u32 XRFdc_MTS_Latency(XRFdc* InstancePtr, u32 Type,
 							Config->Target_Latency;
 
 	if (Target < Max_Latency) {
-		metal_log(METAL_LOG_INFO,
-			"\n Requested target latency of %d less than minimum possible %d\n",
-				Target, Max_Latency);
-
 		/* Cannot correct for -ve latencies, so default to aligning */
-		Target  = Max_Latency;
-        metal_log(METAL_LOG_ERROR,
-                  "%s alignment target latency < minimum possible\n"
-                  , (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC");
+		Target = Max_Latency;
+		metal_log(METAL_LOG_ERROR, "Error : %s alignment target latency of %d < minimum possible %d\n",
+				(Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Target, Max_Latency);
 		Status |= XRFDC_MTS_TARGET_LOW;
 	}
 
@@ -965,6 +1038,50 @@ static u32 XRFdc_MTS_Latency(XRFdc* InstancePtr, u32 Type,
 			XRFdc_MTS_Sysref_Ctrl(InstancePtr, Type, i, 0, Config->SysRef_Enable, 0);
 		}
 	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+*
+* This API is used to enable/disable the sysref.
+*
+*
+* @param	InstancePtr is a pointer to the XRfdc instance.
+* @param	DACSyncConfig is pointer to DAC Multi-Tile Sync config structure.
+* @param	ADCSyncConfig is pointer to ADC Multi-Tile Sync config structure.
+* @param	SysRefEnable valid values are 0(disable) and 1(enable).
+*
+* @return
+* 		- XRFDC_MTS_OK if successful.
+*
+* @note		None
+*
+******************************************************************************/
+u32 XRFdc_MTS_Sysref_Config(XRFdc* InstancePtr,
+			XRFdc_MultiConverter_Sync_Config* DACSyncConfig,
+			XRFdc_MultiConverter_Sync_Config* ADCSyncConfig, u32 SysRefEnable)
+{
+	u32 Status;
+	int Tile;
+
+	/* Enable/disable SysRef Capture on all DACs participating in MTS */
+	for (Tile = 0; Tile < 4; Tile++) {
+		if((1 << Tile) & DACSyncConfig->Tiles)
+			XRFdc_MTS_Sysref_Ctrl(InstancePtr, XRFDC_DAC_TILE, Tile, 0,
+								SysRefEnable, 0);
+	}
+
+	/* Enable/Disable SysRef Capture on all ADCs participating in MTS */
+	for (Tile = 0; Tile < 4; Tile++) {
+		if((1 << Tile) & ADCSyncConfig->Tiles)
+			XRFdc_MTS_Sysref_Ctrl(InstancePtr, XRFDC_ADC_TILE, Tile, 0,
+								SysRefEnable, 0);
+	}
+
+	/* Enable/Disable SysRef TRX */
+	Status = XRFdc_MTS_Sysref_TRx(InstancePtr, SysRefEnable);
 
 	return Status;
 }

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2013 - 2016 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 /**
 *
 * @file xsdps.c
-* @addtogroup sdps_v3_4
+* @addtogroup sdps_v3_5
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -90,6 +90,7 @@
 * 3.4   mn     10/17/17 Use different commands for single and multi block
 *                       transfers
 *       mn     03/02/18 Move UHS macro check to SD card initialization routine
+* 3.5   mn     04/18/18 Resolve compilation warnings for sdps driver
 * </pre>
 *
 ******************************************************************************/
@@ -1270,6 +1271,7 @@ u32 XSdPs_FrameCmd(XSdPs *InstancePtr, u32 Cmd)
 		case CMD24:
 		case CMD25:
 			RetVal |= RESP_R1 | (u32)XSDPS_DAT_PRESENT_SEL_MASK;
+		break;
 		case ACMD41:
 			RetVal |= RESP_R3;
 		break;

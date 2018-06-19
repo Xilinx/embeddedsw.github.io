@@ -42,6 +42,7 @@
  * Ver   Who    Date      Changes
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    01/25/18  Initial release.
+ * 1.1   kar    04/02/18  Changed Channel Status clear API to clear all regs.
  * </pre>
  *
  *****************************************************************************/
@@ -353,5 +354,15 @@ void XI2s_Rx_ClrAesChStatRegs(XI2s_Rx *InstancePtr)
 
 	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
 			(XI2S_RX_AES_CHSTS0_OFFSET), (u32)0);
+	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_RX_AES_CHSTS1_OFFSET), (u32)0);
+	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_RX_AES_CHSTS2_OFFSET), (u32)0);
+	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_RX_AES_CHSTS3_OFFSET), (u32)0);
+	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_RX_AES_CHSTS4_OFFSET), (u32)0);
+	XI2s_Rx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_RX_AES_CHSTS5_OFFSET), (u32)0);
 }
 /** @} */

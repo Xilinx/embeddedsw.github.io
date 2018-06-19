@@ -42,6 +42,9 @@
  * Ver	 Who	Date		Changes
  * ----  ---	--------	-----------------------------------------------
  * 1.0	 kar	02/16/18	First release
+ * 1.1   kar    04/25/18        Changed default value of the clk phase bit to 1.
+ *                              Removed version register macro.
+ *                              Removed get version API call from the self test.
  * </pre>
  *
  ****************************************************************************/
@@ -62,8 +65,8 @@
 #define SDIAUD_1_DEVICE_ID	XPAR_XSDIAUD_1_DEVICE_ID
 #endif
 
-#define XSDIAUD_IPVERSION_NUMBER 0x01 /* IP version number */
 #define XSDIAUD_NUM_REG 9 /* Number of registers to be read after reset */
+#define XSDIAUD_ACR 3 /*loop count value to read the audio control register */
 
 /**************************** Type Definitions ********************************/
 
@@ -142,13 +145,13 @@ int SdiAud_SelfTestExample(u16 DeviceId)
 
 	Status = XSdiAud_ReadReg(SdiAud0.Config.BaseAddress, (XSDIAUD_INT_EN_REG_OFFSET + (4 * XSdiAud_TstLoop)));
 
-	if (Status != XST_SUCCESS)
+	if ((SdiAud0.Config.IsEmbed == TRUE) && (XSdiAud_TstLoop == XSDIAUD_ACR) && (Status == TRUE))
+		Status = XST_SUCCESS;
+
+    if (Status != XST_SUCCESS)
 		return XST_FAILURE;
 	}
 
-	Status = XSdiAud_GetVersion(&SdiAud0);
-	if (Status != XSDIAUD_IPVERSION_NUMBER)
-	return XST_FAILURE;
 	Status = XST_SUCCESS;
 
 	return Status;

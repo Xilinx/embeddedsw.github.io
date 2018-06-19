@@ -33,7 +33,7 @@
 /**
 *
 * @file xrfdc.h
-* @addtogroup rfdc_v3_2
+* @addtogroup rfdc_v4_0
 * @{
 * @details
 *
@@ -143,6 +143,19 @@
 *       jm     03/12/18 Added support for reloading DTC scans.
 *       jm     03/12/18 Add option to configure sysref capture after MTS.
 *       sk     03/22/18 Updated PLL settings based on latest IP values.
+* 4.0   sk     04/09/18 Added API to enable/disable the sysref.
+*       sk     04/09/18 Updated max VCO to 13108MHz to support max DAC
+*                       sample rate of 6.554MHz.
+*       rk     04/17/18 Adjust calculated latency by sysref period, where doing
+*                       so results in closer alignment to the target latency.
+*       sk     04/17/18 Corrected Set/Get MixerSettings API description for
+*                       FineMixerScale parameter.
+*       sk     04/19/18 Enable VCO Auto selection while configuring the clock.
+*       sk     04/24/18 Add API to get PLL Configurations.
+*       sk     04/24/18 Add API to get the Link Coupling mode.
+*       sk     04/28/18 Implement timeouts for PLL Lock, Startup and shutdown.
+*       sk     05/30/18 Removed CalibrationMode check for DAC.
+*       sk     06/05/18 Updated minimum Ref clock value to 102.40625MHz.
 *
 * </pre>
 *
@@ -164,6 +177,7 @@ extern "C" {
 #ifdef __BAREMETAL__
 #include "xil_assert.h"
 #include "xdebug.h"
+#include "sleep.h"
 #endif
 #ifndef __MICROBLAZE__
 #include <metal/sys.h>
@@ -171,6 +185,7 @@ extern "C" {
 #include <metal/irq.h>
 #include <metal/atomic.h>
 #include <metal/io.h>
+#include <metal/sleep.h>
 #include "metal/alloc.h"
 #endif
 #include "xrfdc_hw.h"
@@ -213,9 +228,9 @@ typedef struct {
 	u32 RefClkDivider;
 	u32 FeedbackDivider;
 	u32 OutputDivider;
-	u32 FractionalMode;
-	u64 FractionalData;
-	u32 FractWidth;
+	u32 FractionalMode;	/* Fractional mode is currently not supported */
+	u64 FractionalData;	/* Fractional data is currently not supported */
+	u32 FractWidth;	/* Fractional width is currently not supported */
 } XRFdc_PLL_Settings;
 
 /**
@@ -345,6 +360,8 @@ typedef struct {
 	double SamplingRate;
 	double RefClkFreq;
 	double FabClkFreq;
+	u32 FeedbackDiv;
+	u32 OutputDiv;
 	XRFdc_DACBlock_AnalogDataPath_Config DACBlock_Analog_Config[4];
 	XRFdc_DACBlock_DigitalDataPath_Config DACBlock_Digital_Config[4];
 } XRFdc_DACTile_Config;
@@ -358,6 +375,8 @@ typedef struct {
 	double SamplingRate;
 	double RefClkFreq;
 	double FabClkFreq;
+	u32 FeedbackDiv;
+	u32 OutputDiv;
 	XRFdc_ADCBlock_AnalogDataPath_Config ADCBlock_Analog_Config[4];
 	XRFdc_ADCBlock_DigitalDataPath_Config ADCBlock_Digital_Config[4];
 } XRFdc_ADCTile_Config;
@@ -507,6 +526,8 @@ typedef struct {
 
 #define XRFDC_DATA_TYPE_IQ			0x00000001U
 #define XRFDC_DATA_TYPE_REAL		0x00000000U
+
+#define XRFDC_TRSHD_OFF				0x0U
 #define XRFDC_TRSHD_STICKY_OVER		0x00000001U
 #define XRFDC_TRSHD_STICKY_UNDER	0x00000002U
 #define XRFDC_TRSHD_HYSTERISIS		0x00000003U
@@ -598,7 +619,7 @@ typedef struct {
 #define PLL_DIVIDER_MIN			2U
 #define PLL_DIVIDER_MAX			130U
 #define VCO_RANGE_MIN			8500U
-#define VCO_RANGE_MAX			12800U
+#define VCO_RANGE_MAX			13108U
 #define XRFDC_PLL_LPF1_VAL		0x6U
 #define XRFDC_PLL_CRS2_VAL		0x7008U
 #define XRFDC_VCO_UPPER_BAND	0x0U
@@ -621,6 +642,9 @@ typedef struct {
 #define XRFDC_MB_C2R_BLK1	0x0
 
 #define XRFDC_MIXER_MODE_BYPASS		0x2
+
+#define XRFDC_LINK_COUPLING_DC	0x0
+#define XRFDC_LINK_COUPLING_AC	0x1
 
 /*****************************************************************************/
 /**
@@ -1037,6 +1061,52 @@ static inline int XRFdc_GetConnectedQData(XRFdc* InstancePtr, u32 Type,
 /*****************************************************************************/
 /**
 *
+* This API is used to get the PLL Configurations.
+*
+* @param	InstancePtr is a pointer to the XRfdc instance.
+* @param	Type represents ADC or DAC.
+* @param	Tile_Id Valid values are 0-3.
+* @param	PLLSettings pointer to the XRFdc_PLL_Settings structure to get
+*           the PLL configurations
+*
+* @return   None
+*
+******************************************************************************/
+static inline void XRFdc_GetPLLConfig(XRFdc* InstancePtr, u32 Type,
+					u32 Tile_Id, XRFdc_PLL_Settings *PLLSettings)
+{
+	if (Type == XRFDC_ADC_TILE) {
+		PLLSettings->Enabled =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.Enabled;
+		PLLSettings->FeedbackDivider =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.FeedbackDivider;
+		PLLSettings->OutputDivider =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.OutputDivider;
+		PLLSettings->RefClkDivider =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.RefClkDivider;
+		PLLSettings->RefClkFreq =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.RefClkFreq;
+		PLLSettings->SampleRate =
+				InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.SampleRate;
+	} else {
+		PLLSettings->Enabled =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.Enabled;
+		PLLSettings->FeedbackDivider =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.FeedbackDivider;
+		PLLSettings->OutputDivider =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.OutputDivider;
+		PLLSettings->RefClkDivider =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.RefClkDivider;
+		PLLSettings->RefClkFreq =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.RefClkFreq;
+		PLLSettings->SampleRate =
+				InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.SampleRate;
+	}
+}
+
+/*****************************************************************************/
+/**
+*
 * This API is used to get the driver version.
 *
 * @param	None
@@ -1049,7 +1119,7 @@ static inline int XRFdc_GetConnectedQData(XRFdc* InstancePtr, u32 Type,
 ******************************************************************************/
 static inline double XRFdc_GetDriverVersion()
 {
-	return 3.2;
+	return 4.0;
 }
 
 /************************** Function Prototypes ******************************/
@@ -1149,6 +1219,8 @@ u32 XRFdc_SetInvSincFIR(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id,
 								u16 Enable);
 u32 XRFdc_GetInvSincFIR(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id,
 								u16 *Enable);
+u32 XRFdc_GetLinkCoupling(XRFdc* InstancePtr, u32 Tile_Id, u32 Block_Id,
+								u32 *Mode);
 
 #ifdef __cplusplus
 }

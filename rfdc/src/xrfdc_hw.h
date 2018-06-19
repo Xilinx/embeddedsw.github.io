@@ -33,7 +33,7 @@
 /**
 *
 * @file xrfdc_hw.h
-* @addtogroup rfdc_v3_2
+* @addtogroup rfdc_v4_0
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -54,6 +54,7 @@
 * 3.0   sg     13/01/18 Added PLL and external clock switch support
 * 3.1   jm     01/24/18 Add Multi-tile sync support.
 *       sk     02/27/18 Add API's to configure Multiband.
+* 4.0   sk     04/09/18 Removed redundant inclusion of xparameters.h file.
 * </pre>
 *
 ******************************************************************************/
@@ -70,7 +71,6 @@ extern "C" {
 #ifdef __BAREMETAL__
 #include "xil_io.h"
 #endif
-#include "xparameters.h"
 #ifndef __MICROBLAZE__
 #include "metal/io.h"
 #endif
@@ -308,6 +308,7 @@ extern "C" {
 #define XRFDC_MTS_CLKSTAT			(0x24U << 2U)
 #define XRFDC_MTS_SRCOUNT_CTRL		0x004CU
 #define XRFDC_MTS_SRCOUNT_VAL		0x0050U
+#define XRFDC_MTS_SRFREQ_VAL		0x0054U
 #define XRFDC_MTS_FIFO_CTRL_ADC		0x0010U
 #define XRFDC_MTS_FIFO_CTRL_DAC		0x0014U
 #define XRFDC_MTS_DELAY_CTRL		0x0028U
@@ -1477,6 +1478,7 @@ extern "C" {
  */
 
 #define XRFDC_RX_MC_CFG0_MASK		0x0000FFFFU	/**< RX MC config0 */
+#define XRFDC_RX_MC_CFG0_CM_MASK	0x00000040U /**< Coupling mode mask */
 
 /* @} */
 
@@ -1934,6 +1936,7 @@ extern "C" {
  */
 
 #define XRFDC_PLL_CRS1_VCO_SEL_MASK		0x00008001U /**< VCO SEL Mask */
+#define XRFDC_PLL_VCO_SEL_AUTO_MASK		0x00008000U /**< VCO Auto SEL Mask */
 
 /* @} */
 

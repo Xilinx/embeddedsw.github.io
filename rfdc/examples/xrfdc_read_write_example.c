@@ -50,6 +50,10 @@
 *
 * NOTE: The purpose of the example is to show how to use the driver APIs.
 * For real user scenarios this example will not be relevant.
+*
+* For zcu111 board users are expected to define XPS_BOARD_ZCU111 macro
+* while compiling this example.
+*
 * <pre>
 *
 * MODIFICATION HISTORY:
@@ -63,6 +67,8 @@
 *       sk     09/25/17 Add GetOutput Current test case.
 * 2.4   sk     12/11/17 Add test case for DDC and DUC.
 * 3.2   sk     03/01/18 Add test case for Multiband.
+* 4.0   sd     04/28/18 Add Clock configuration support for ZCU111.
+*       sd     05/15/18 Updated Clock configuration for lmk.
 *
 * </pre>
 *
@@ -72,6 +78,9 @@
 
 #include "xparameters.h"
 #include "xrfdc.h"
+#ifdef XPS_BOARD_ZCU111
+#include "xrfdc_clk.h"
+#endif
 
 /************************** Constant Definitions ****************************/
 
@@ -108,6 +117,14 @@ static int CompareThresholdSettings(XRFdc_Threshold_Settings *SetThresholdSettin
 /************************** Variable Definitions ****************************/
 
 static XRFdc RFdcInst;      /* RFdc driver instance */
+#ifdef XPS_BOARD_ZCU111
+unsigned int LMK04208_CKin[1][26] = {
+		{0x00160040,0x80140320,0x80140321,0x80140322,
+		0xC0140023,0x40140024,0x80141E05,0x03300006,0x01300007,0x06010008,
+		0x55555549,0x9102410A,0x0401100B,0x1B0C006C,0x2302886D,0x0200000E,
+		0x8000800F,0xC1550410,0x00000058,0x02C9C419,0x8FA8001A,0x10001E1B,
+		0x0021201C,0x0180033D,0x0200033E,0x003F001F }};
+#endif
 
 /****************************************************************************/
 /**
@@ -197,6 +214,8 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 	u8 GetCalibrationMode;
 	u16 SetInvSinc;
 	u16 GetInvSinc;
+	u32 GetLinkCM;
+	XRFdc_PLL_Settings PLLSettings;
 #ifndef __BAREMETAL__
 	struct metal_device *device;
 	struct metal_io_region *io;
@@ -221,6 +240,17 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 	if (Status != XRFDC_SUCCESS) {
 		return XRFDC_FAILURE;
 	}
+
+#ifdef XPS_BOARD_ZCU111
+printf("\n Configuring the Clock \r\n");
+#ifdef __BAREMETAL__
+	LMK04208ClockConfig(1, LMK04208_CKin);
+	LMX2594ClockConfig(1, 3932160);
+#else
+	LMK04208ClockConfig(12, LMK04208_CKin);
+	LMX2594ClockConfig(12, 3932160);
+#endif
+#endif
 
 #ifndef __BAREMETAL__
 	ret = metal_device_open(BUS_NAME, RFDC_DEV_NAME, &device);
@@ -269,7 +299,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 						XRFDC_FINE_MIXER_MOD_COMPLX_TO_REAL;	// C2R
 				SetMixerSettings.PhaseOffset = 22.56789;
-				SetMixerSettings.FineMixerScale = 0x2;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_0P7;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_IMMEDIATE;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_DAC_TILE, Tile, Block, &SetMixerSettings);
@@ -296,7 +326,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 						XRFDC_FINE_MIXER_MOD_COMPLX_TO_REAL;	// C2R
 				SetMixerSettings.PhaseOffset = -30.925;
-				SetMixerSettings.FineMixerScale = 0x1;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_1P0;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_IMMEDIATE;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_DAC_TILE, Tile, Block, &SetMixerSettings);
@@ -524,7 +554,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 						XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;	// R2C
 				SetMixerSettings.PhaseOffset = 14.0612;
-				SetMixerSettings.FineMixerScale = 0x1;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_1P0;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block, &SetMixerSettings);
@@ -550,7 +580,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 						XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;	// R2C
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block, &SetMixerSettings);
@@ -745,7 +775,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -772,7 +802,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -799,7 +829,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -826,7 +856,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -871,7 +901,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -898,7 +928,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -925,7 +955,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -952,7 +982,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 				SetMixerSettings.FineMixerMode =
 					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
-				SetMixerSettings.FineMixerScale = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
 						XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
@@ -970,7 +1000,22 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 						&GetMixerSettings);
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
+				Status = XRFdc_GetLinkCoupling(RFdcInstPtr, Tile, Block, &GetLinkCM);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				printf("\n ADC%d%d: Link Coupling Mode is %d \r\n", Tile, Block, GetLinkCM);
 			}
+		}
+		if (XRFdc_GetNoOfADCBlocks(RFdcInstPtr, Tile) != 0U) {
+			XRFdc_GetPLLConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile, &PLLSettings);
+			printf("\n ADC%d PLL Configurations:: PLL Enable is %d \tFeedback Divider is %d \tOutputDivider is %d \tReferenceClk Divider is %d \r\n",
+				Tile, PLLSettings.Enabled, PLLSettings.FeedbackDivider, PLLSettings.OutputDivider, PLLSettings.RefClkDivider);
+		}
+
+		if (XRFdc_GetNoOfDACBlock(RFdcInstPtr, Tile) != 0U) {
+			XRFdc_GetPLLConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile, &PLLSettings);
+			printf("\n DAC%d PLL Configurations:: PLL Enable is %d \tFeedback Divider is %d \tOutputDivider is %d \tReferenceClk Divider is %d \r\n",
+				Tile, PLLSettings.Enabled, PLLSettings.FeedbackDivider, PLLSettings.OutputDivider, PLLSettings.RefClkDivider);
 		}
 	}
 

@@ -33,7 +33,7 @@
 /**
 *
 * @file xrfdc_mts.c
-* @addtogroup xrfdc_v3_2
+* @addtogroup xrfdc_v4_0
 * @{
 *
 * Contains the multi tile sync related structures, Macros of the XRFdc driver.
@@ -47,6 +47,9 @@
 * 3.2   jm     03/12/18 Fixed DAC latency calculation.
 *       jm     03/12/18 Added support for reloading DTC scans.
 *       jm     03/12/18 Add option to configure sysref capture after MTS.
+* 4.0   sk     04/09/18 Added API to enable/disable the sysref.
+*       rk     04/17/18 Adjust calculated latency by sysref period, where doing
+*                       so results in closer alignment to the target latency.
 *
 * </pre>
 *
@@ -109,6 +112,9 @@ typedef struct {
 #define METAL_LOG_ERROR XDBG_DEBUG_ERROR
 #endif
 
+#define XRFDC_MTS_SYSREF_DISABLE	0U
+#define XRFDC_MTS_SYSREF_ENABLE		1U
+
 #define XRFDC_MTS_NUM_DTC			128U
 #define XRFDC_MTS_REF_TARGET		64U
 #define XRFDC_MTS_MAX_CODE			16U
@@ -145,6 +151,8 @@ typedef struct {
 #define XRFDC_MTS_IP_NOT_READY      64L
 #define XRFDC_MTS_DTC_INVALID       128L
 #define XRFDC_MTS_NOT_ENABLED       512L
+#define XRFDC_MTS_SYSREF_GATE_ERROR 2048L
+#define XRFDC_MTS_SYSREF_FREQ_NDONE 4096L
 
 
 /*****************************************************************************/
@@ -178,6 +186,9 @@ u32 XRFdc_MultiConverter_Sync (XRFdc* InstancePtr, u32 Type,
 							XRFdc_MultiConverter_Sync_Config* Config);
 void XRFdc_MultiConverter_Init (XRFdc_MultiConverter_Sync_Config* Config,
 						int *PLL_Codes, int *T1_Codes);
+u32 XRFdc_MTS_Sysref_Config(XRFdc* InstancePtr,
+			XRFdc_MultiConverter_Sync_Config* DACSyncConfig,
+			XRFdc_MultiConverter_Sync_Config* ADCSyncConfig, u32 SysRefEnable);
 
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2016 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 /**
 *
 * @file xsysmonpsu.c
+* @addtogroup sysmonpsu_v2_4
 *
 * Functions in this file are the minimum required functions for the XSysMonPsu
 * driver. See xsysmonpsu.h for a detailed description of the driver.
@@ -64,6 +65,7 @@
 * 2.1   sk     03/03/16 Check for PL reset before doing PL Sysmon reset.
 * 2.3   mn     12/13/17 Correct the AMS block channel numbers
 *       mn     03/08/18 Update Clock Divisor to the proper value
+* 2.4   mn     04/20/18 Remove looping check for PL accessible bit
 *
 * </pre>
 *
@@ -111,7 +113,6 @@ s32 XSysMonPsu_CfgInitialize(XSysMonPsu *InstancePtr, XSysMonPsu_Config *ConfigP
 			  u32 EffectiveAddr)
 {
 	u32 PsSysmonControlStatus;
-	u32 PlSysmonControlStatus;
 	u32 IntrStatus;
 
 	/* Assert the input arguments. */
@@ -141,15 +142,10 @@ s32 XSysMonPsu_CfgInitialize(XSysMonPsu *InstancePtr, XSysMonPsu_Config *ConfigP
 					XSYSMONPSU_PS_SYSMON_CSTS_OFFSET);
 	}
 
-	PlSysmonControlStatus = XSysmonPsu_ReadReg(InstancePtr->Config.BaseAddress +
-			XSYSMONPSU_PL_SYSMON_CSTS_OFFSET);
-
-	/* Check if the PL Sysmon is accessible to PS Sysmon or not */
-	while((PlSysmonControlStatus & XSYSMONPSU_PL_SYSMON_CSTS_ACESBLE_MASK)
-				!= XSYSMONPSU_PL_SYSMON_CSTS_ACESBLE_MASK) {
-		PlSysmonControlStatus = XSysmonPsu_ReadReg(InstancePtr->Config.BaseAddress +
-					XSYSMONPSU_PL_SYSMON_CSTS_OFFSET);
-	}
+	InstancePtr->IsPlAccessibleByPs =
+			XSysmonPsu_ReadReg(InstancePtr->Config.BaseAddress +
+			XSYSMONPSU_PL_SYSMON_CSTS_OFFSET) &
+			XSYSMONPSU_PL_SYSMON_CSTS_ACESBLE_MASK;
 
 	/* Indicate the instance is now ready to use, initialized without error */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;

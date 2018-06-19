@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2017 Xilinx, Inc. All rights reserved.
+ * Copyright (C) 2017 - 2018 Xilinx, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 /**
  *
  * @file xi2stx_debug.h
- * @addtogroup i2stx_v1_0
+ * @addtogroup i2stx_v1_1
  * @{
  *
  * This file contains defintions of data structures used in debugging and
@@ -47,6 +47,7 @@
  * Ver   Who    Date     Changes
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    11/16/17 Initial release.
+ * 1.1   kar    04/02/18 Moved debug function prototypes to xi2stx.h file.
  * </pre>
  *
  *****************************************************************************/
@@ -65,24 +66,23 @@ extern "C" {
 
 /************************** Constant Definitions *****************************/
 /** @ name Log Item Buffer Size
-* @{
-*/
+ * @{
+ */
 #define XI2S_TX_LOG_ITEM_BUFFER_SIZE (256)
 /** @} */
 
 /**************************** Type Definitions *******************************/
 
 /** @name XI2s_Tx_LogEvt
-* @{
-*/
+ * @{
+ */
 /**
-* These constants specify different types of handlers and is used to
-* differentiate interrupt requests from the I2S Transmitter peripheral.
-*/
+ * These constants specify different types of handlers and is used to
+ * differentiate interrupt requests from the I2S Transmitter peripheral.
+ */
 typedef enum {
 		XI2S_TX_AES_BLKCMPLT_EVT,    /**< AES Block Complete Event */
-		XI2S_TX_AES_BLKSYNCERR_EVT,  /**< AES Block Synchronization
-					       Error Event */
+		XI2S_TX_AES_BLKSYNCERR_EVT,  /**< AES Block Sync Error Event */
 		XI2S_TX_AES_CHSTSUPD_EVT,/**< AES Channel Status Updated Event*/
 		XI2S_TX_AUD_UNDRFLW_EVT,   /**< Audio Underflow Detected Event*/
 		XI2S_TX_LOG_EVT_INVALID      /**< Invalid Log Event */
@@ -90,16 +90,16 @@ typedef enum {
 /*@}*/
 
 /**
-* This structure is used to store log events
-*/
+ * This structure is used to store log events
+ */
 typedef struct {
 	XI2s_Tx_LogEvt Event;   /**< Log Event */
 	u32            Data;     /**< Optional Data */
 } XI2s_Tx_LogItem;
 
 /**
-* The I2s Transmitter Log buffer.
-*/
+ * The I2s Transmitter Log buffer.
+ */
 typedef struct {
 		XI2s_Tx_LogItem Items[XI2S_TX_LOG_ITEM_BUFFER_SIZE];
 		/**< Log item buffer */
@@ -111,9 +111,6 @@ typedef struct {
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Function Prototypes ******************************/
-void XI2s_Tx_LogWrite(XI2s_Tx_Log *InstancePtr, XI2s_Tx_LogEvt Event,
-u8 Data);
-XI2s_Tx_LogItem *XI2s_Tx_LogRead(XI2s_Tx_Log *InstancePtr);
 
 /************************** Variable Declarations ****************************/
 

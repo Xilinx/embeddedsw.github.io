@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2017 Xilinx, Inc. All rights reserved.
+ * Copyright (C) 2017 - 2018 Xilinx, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 /**
  *
  * @file xi2stx.c
- * @addtogroup i2stx_v1_0
+ * @addtogroup i2stx_v1_1
  * @{
  *
  * Contains a minimal set of functions for the i2s_transmitter driver
@@ -48,6 +48,7 @@
  * Ver   Who    Date     Changes
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    11/16/17 Initial release.
+ * 1.1   kar    04/02/18 Changed channel status clear API to clear all regs.
  * </pre>
  *
  *****************************************************************************/
@@ -335,5 +336,15 @@ void XI2s_Tx_ClrAesChStatRegs(XI2s_Tx *InstancePtr)
 
 	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
 			(XI2S_TX_AES_CHSTS0_OFFSET), (u32)0);
+	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_TX_AES_CHSTS1_OFFSET), (u32)0);
+	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_TX_AES_CHSTS2_OFFSET), (u32)0);
+	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_TX_AES_CHSTS3_OFFSET), (u32)0);
+	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_TX_AES_CHSTS4_OFFSET), (u32)0);
+	XI2s_Tx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XI2S_TX_AES_CHSTS5_OFFSET), (u32)0);
 }
 /** @} */

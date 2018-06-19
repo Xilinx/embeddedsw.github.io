@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2016-2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@
 /*****************************************************************************/
 /**
 * @file xsysmonpsu.h
+* @addtogroup sysmonpsu_v2_4
 *
 * The XSysMon driver supports the Xilinx System Monitor device.
 *
@@ -178,6 +179,7 @@
 *       ms     01/04/18 Provided conditional checks for interrupt example
 *                       in sysmonpsu_header.h
 *       mn     03/08/18 Update Clock Divisor to the proper value
+* 2.4   mn     04/20/18 Remove looping check for PL accessible bit
 *
 * </pre>
 *
@@ -402,6 +404,7 @@ typedef struct {
 	u32 IsReady;				/**< Device is initialized and ready */
 	XSysMonPsu_Handler Handler;
 	void *CallBackRef;			/**< Callback reference for event handler */
+	u32 IsPlAccessibleByPs;		/**< PL is accessible by PS */
 } XSysMonPsu;
 
 /* BaseAddress Offsets */

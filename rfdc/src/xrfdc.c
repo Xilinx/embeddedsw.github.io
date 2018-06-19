@@ -33,7 +33,7 @@
 /**
 *
 * @file xrfdc.c
-* @addtogroup xrfdc_v3_2
+* @addtogroup xrfdc_v4_0
 * @{
 *
 * Contains the interface functions of the XRFdc driver.
@@ -98,6 +98,14 @@
 *       sk     03/09/18 Removed FIFO disable check in DDC and DUC APIs.
 *       sk     03/09/18 Add support for Marker event source for DAC block.
 *       sk     03/22/18 Updated PLL settings based on latest IP values.
+* 4.0   sk     04/17/18 Corrected Set/Get MixerSettings API description for
+*                       FineMixerScale parameter.
+*       sk     04/19/18 Enable VCO Auto selection while configuring the clock.
+*       sk     04/24/18 Add API to get PLL Configurations.
+*       sk     04/24/18 Add API to get the Link Coupling mode.
+*       sk     04/28/18 Implement timeouts for PLL Lock, Startup and shutdown.
+*       sk     05/30/18 Removed CalibrationMode check for DAC.
+*       sk     06/05/18 Updated minimum Ref clock value to 102.40625MHz.
 * </pre>
 *
 ******************************************************************************/
@@ -117,6 +125,7 @@ u32 PllTuningMatrix [8][4][2] = {
 		{{0x7FEC, 0xFFFF}, {0x7FEE, 0x3FFF}, { 0x7F9C, 0xFFFF}}
 };
 
+#define XRFDC_PLL_LOCK_DLY_CNT		1000
 
 /**************************** Type Definitions *******************************/
 
@@ -214,6 +223,16 @@ int XRFdc_CfgInitialize(XRFdc* InstancePtr, XRFdc_Config *Config)
 				InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].PLLEnable;
 		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.Enabled =
 				InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].PLLEnable;
+		InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.FeedbackDivider =
+				InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].FeedbackDiv;
+		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.FeedbackDivider =
+				InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].FeedbackDiv;
+		InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.OutputDivider =
+				InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].OutputDiv;
+		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.OutputDivider =
+				InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].OutputDiv;
+		InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.RefClkDivider = 0x1;
+		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.RefClkDivider = 0x1;
 	}
 
 	for (Tile_Id = 0; Tile_Id < 4U; Tile_Id++) {
@@ -835,11 +854,11 @@ RETURN_PATH:
 *       - XRFDC_FAILURE if Block not enabled.
 *
 * @note		FineMixerScale in Mixer_Settings structure can have 3 values.
-*		XRFDC_MXR_SCALE_* represents the valid values.
-*		XRFDC_MXR_SCALE_NO_CHANGE - If mixer mode R2C, Mixer Scale is
+*		XRFDC_MIXER_SCALE_* represents the valid values.
+*		XRFDC_MIXER_SCALE_AUTO - If mixer mode is R2C, Mixer Scale is
 *		set to 1 and for other modes mixer scale is set to 0.7
-*		XRFDC_MXR_SCALE_ONE - To set fine mixer scale to 1.
-*		XRFDC_MXR_SCALE_ZERO_DOT_SEVEN - To set fine mixer scale to 0.7.
+*		XRFDC_MIXER_SCALE_1P0 - To set fine mixer scale to 1.
+*		XRFDC_MIXER_SCALE_0P7 - To set fine mixer scale to 0.7.
 *
 ******************************************************************************/
 int XRFdc_SetMixerSettings(XRFdc* InstancePtr, u32 Type, int Tile_Id,
@@ -1505,11 +1524,11 @@ RETURN_PATH:
 *       - XRFDC_FAILURE if Block not enabled.
 *
 * @note		FineMixerScale in Mixer_Settings structure can have 3 values.
-*		XRFDC_MXR_SCALE_* represents the valid return values.
-*		XRFDC_MXR_SCALE_NO_CHANGE - Default driver implementation.
-*		XRFDC_MXR_SCALE_ONE - If fine Mixer Scale is set to 1 by user.
-*		XRFDC_MXR_SCALE_ZERO_DOT_SEVEN - If fine mixer scale is set
-*		to 0.7 by user.
+*		XRFDC_MIXER_SCALE_* represents the valid values.
+*		XRFDC_MIXER_SCALE_AUTO - If mixer mode is R2C, Mixer Scale is
+*		set to 1 and for other modes mixer scale is set to 0.7
+*		XRFDC_MIXER_SCALE_1P0 - To set fine mixer scale to 1.
+*		XRFDC_MIXER_SCALE_0P7 - To set fine mixer scale to 0.7.
 *
 ******************************************************************************/
 int XRFdc_GetMixerSettings(XRFdc* InstancePtr, u32 Type, int Tile_Id,
@@ -1857,7 +1876,8 @@ int XRFdc_GetMixerSettings(XRFdc* InstancePtr, u32 Type, int Tile_Id,
 		} while ((NCOFreq > ((SamplingRate * 1000) / 2.0)) ||
 				(NCOFreq < -((SamplingRate * 1000) / 2.0)));
 	}
-	if (CalibrationMode == XRFDC_CALIB_MODE1)
+	if ((Type == XRFDC_ADC_TILE) &&
+			(CalibrationMode == XRFDC_CALIB_MODE1))
 		Mixer_Settings->Freq += (SamplingRate * 1000) / 2.0;
 
 	(void)BaseAddr;
@@ -5032,7 +5052,8 @@ int XRFdc_GetNyquistZone(XRFdc* InstancePtr, u32 Type, int Tile_Id,
 		} else {
 			*NyquistZone = XRFDC_EVEN_NYQUIST_ZONE;
 		}
-		if (CalibrationMode == XRFDC_CALIB_MODE1) {
+		if ((Type == XRFDC_ADC_TILE) &&
+				(CalibrationMode == XRFDC_CALIB_MODE1)) {
 			if (*NyquistZone == XRFDC_EVEN_NYQUIST_ZONE)
 				*NyquistZone = XRFDC_ODD_NYQUIST_ZONE;
 			else
@@ -5650,7 +5671,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 	u32 DivideValue = 0x0U;
 	u32 PllFreqIndex = 0x0U;
 	u32 FbDivIndex = 0x0U;
-	u8 VCOBand = XRFDC_VCO_UPPER_BAND;
 
 	/*
 	 * Sweep valid integer values of FeedbackDiv(N) and record a list
@@ -5773,7 +5793,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 30U) {
 				FbDivIndex = 1U;
 			}
-			VCOBand = XRFDC_VCO_LOWER_BAND;
 		} else if(PllFreq < 10070U) {
 			PllFreqIndex = 1U;
 			FbDivIndex = 2U;
@@ -5782,7 +5801,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 30U) {
 				FbDivIndex = 1U;
 			}
-			VCOBand = XRFDC_VCO_LOWER_BAND;
 		} else if(PllFreq < 10690U) {
 			PllFreqIndex = 2U;
 			FbDivIndex = 3U;
@@ -5793,7 +5811,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 35U) {
 				FbDivIndex = 2U;
 			}
-			VCOBand = XRFDC_VCO_LOWER_BAND;
 		} else if(PllFreq < 10990U) {
 			PllFreqIndex = 3U;
 			FbDivIndex = 3U;
@@ -5804,7 +5821,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 38U) {
 				FbDivIndex = 2U;
 			}
-			VCOBand = XRFDC_VCO_LOWER_BAND;
 		} else if(PllFreq < 11430U) {
 			PllFreqIndex = 4U;
 			FbDivIndex = 3U;
@@ -5815,7 +5831,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 38U) {
 				FbDivIndex = 2U;
 			}
-			VCOBand = XRFDC_VCO_UPPER_BAND;
 		} else if(PllFreq < 12040U) {
 			PllFreqIndex = 5U;
 			FbDivIndex = 3U;
@@ -5826,7 +5841,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 40U) {
 				FbDivIndex = 2U;
 			}
-			VCOBand = XRFDC_VCO_UPPER_BAND;
 		} else if(PllFreq < 12530U) {
 			PllFreqIndex = 6U;
 			FbDivIndex = 3U;
@@ -5837,7 +5851,6 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 42U) {
 				FbDivIndex = 2U;
 			}
-			VCOBand = XRFDC_VCO_UPPER_BAND;
 		} else if(PllFreq < 20000U) {
 			PllFreqIndex = 7U;
 			FbDivIndex = 2U;
@@ -5850,15 +5863,15 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 			} else if(Best_FeedbackDiv < 39U) {
 				FbDivIndex = 1U;
 			}
-			VCOBand = XRFDC_VCO_UPPER_BAND;
 		}
 
 		/*
-		 * Disable automatic selection of the VCO
+		 * Enable automatic selection of the VCO, this will work with the
+		 * IP version 2.0.1 and above and using older version of IP is
+		 * not likely to work.
 		 */
 		ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_PLL_CRS1);
-		ReadReg &= ~XRFDC_PLL_CRS1_VCO_SEL_MASK;
-		ReadReg |= VCOBand;
+		ReadReg |= XRFDC_PLL_VCO_SEL_AUTO_MASK;
 		XRFdc_WriteReg16(InstancePtr, BaseAddr, XRFDC_PLL_CRS1, ReadReg);
 
 		/*
@@ -5905,14 +5918,17 @@ static u32 XRFdc_SetPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 * @param	Type indicates ADC/DAC
 * @param	Tile_Id indicates Tile number (0-3)
 * @param	Source Clock source internal PLL or external clock source
-* @param	RefClkFreq Reference Clock Frequency in MHz(50MHz - 1.2GHz)
-* @param	SamplingRate Sampling Rate in MHz(0.5- 6.4 GHz)
+* @param	RefClkFreq Reference Clock Frequency in MHz(102.40625MHz - 1.2GHz)
+* @param	SamplingRate Sampling Rate in MHz(0.1- 6.554GHz for DAC and
+*           0.5/1.0 - 2.058/4.116GHz for ADC based on the device package).
 *
 * @return
 *       - XRFDC_SUCCESS if successful.
 *       - XRFDC_FAILURE if Tile not enabled.
 *
-* @note		None.
+* @note		This API enables automatic selection of the VCO which will work in
+*           IP version 2.0.1 and above. Using older version of IP this API is
+*           not likely to work.
 *
 ******************************************************************************/
 u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
@@ -5924,6 +5940,7 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 	u32 BaseAddr;
 	u32 ReadReg;
 	u32 PLLEnable = 0x0;
+	u32 DelayCount = 0;
 
 	/*
 	 * Get Tile clock source information
@@ -5955,6 +5972,41 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 		Status = XRFDC_SUCCESS;
 		goto RETURN_PATH;
 	} else {
+		if((((SamplingRate < 100) || (SamplingRate > 6554)) &&
+				(Type == XRFDC_DAC_TILE))) {
+#ifdef __MICROBLAZE__
+			xdbg_printf(XDBG_DEBUG_ERROR, "\n Invalid sampling "
+						"rate value in %s\r\n", __func__);
+#else
+			metal_log(METAL_LOG_ERROR,  "\n Invalid sampling "
+					"rate value in %s\r\n", __func__);
+#endif
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		} else if((((SamplingRate < 1000) || (SamplingRate > 4116)) &&
+			((Type == XRFDC_ADC_TILE) && (InstancePtr->ADC4GSPS == XRFDC_ADC_4GSPS)))) {
+#ifdef __MICROBLAZE__
+			xdbg_printf(XDBG_DEBUG_ERROR, "\n Invalid sampling "
+						"rate value in %s\r\n", __func__);
+#else
+			metal_log(METAL_LOG_ERROR,  "\n Invalid sampling "
+					"rate value in %s\r\n", __func__);
+#endif
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		} else if((((SamplingRate < 500) || (SamplingRate > 2058)) &&
+			((Type == XRFDC_ADC_TILE) && (InstancePtr->ADC4GSPS != XRFDC_ADC_4GSPS)))) {
+#ifdef __MICROBLAZE__
+			xdbg_printf(XDBG_DEBUG_ERROR, "\n Invalid sampling "
+						"rate value in %s\r\n", __func__);
+#else
+			metal_log(METAL_LOG_ERROR,  "\n Invalid sampling "
+					"rate value in %s\r\n", __func__);
+#endif
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		}
+
 		/*
 		 * Stop the ADC or DAC tile by putting tile in reset state
 		 */
@@ -5971,7 +6023,27 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 		else
 			BaseAddr = XRFDC_DAC_TILE_CTRL_STATS_ADDR(Tile_Id);
 
-		while(XRFdc_ReadReg16(InstancePtr,BaseAddr, XRFDC_RESTART_OFFSET) != 0U);
+		while(XRFdc_ReadReg16(InstancePtr,BaseAddr, XRFDC_RESTART_OFFSET) != 0U) {
+			if (DelayCount == XRFDC_PLL_LOCK_DLY_CNT) {
+#ifdef __MICROBLAZE__
+				xdbg_printf(XDBG_DEBUG_ERROR, "\n Failed to shutdown "
+						"the tile in %s\r\n", __func__);
+#else
+				metal_log(METAL_LOG_ERROR,  "\n Failed to shutdown "
+					"the tile in %s\r\n", __func__);
+#endif
+				Status = XRFDC_FAILURE;
+				goto RETURN_PATH;
+			} else {
+				/* Wait for 1 msec */
+#ifdef __BAREMETAL__
+				usleep(1000);
+#else
+				metal_sleep_usec(1000);
+#endif
+				DelayCount++;
+			}
+		}
 
 		if(Type == XRFDC_ADC_TILE)
 			BaseAddr = XRFDC_ADC_TILE_DRP_ADDR(Tile_Id);
@@ -5982,25 +6054,13 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 
 		if (Source == XRFDC_INTERNAL_PLL_CLK) {
 
-			if((RefClkFreq < 50) ||  (RefClkFreq > 1200)){
+			if((RefClkFreq < 102.40625) || (RefClkFreq > 1200)) {
 		#ifdef __MICROBLAZE__
 				xdbg_printf(XDBG_DEBUG_ERROR, "\n Invalid Reference "
 							"clock value in %s\r\n", __func__);
 		#else
 				metal_log(METAL_LOG_ERROR,  "\n Invalid Reference "
 						"clock value in %s\r\n", __func__);
-		#endif
-				Status = XRFDC_FAILURE;
-				goto RETURN_PATH;
-			}
-
-			if((SamplingRate < 500) || (SamplingRate > 6400)){
-		#ifdef __MICROBLAZE__
-				xdbg_printf(XDBG_DEBUG_ERROR, "\n Invalid sampling "
-							"rate value in %s\r\n", __func__);
-		#else
-				metal_log(METAL_LOG_ERROR,  "\n Invalid sampling "
-						"rate value in %s\r\n", __func__);
 		#endif
 				Status = XRFDC_FAILURE;
 				goto RETURN_PATH;
@@ -6043,13 +6103,35 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 		/*
 		 * Wait for internal PLL to lock
 		 */
-		do {
-			if (XRFdc_GetPLLLockStatus(InstancePtr, Type, Tile_Id,
-					&LockStatus) != XRFDC_SUCCESS) {
+		if (XRFdc_GetPLLLockStatus(InstancePtr, Type, Tile_Id,
+				&LockStatus) != XRFDC_SUCCESS) {
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		}
+		DelayCount = 0;
+		while (LockStatus != XRFDC_PLL_LOCKED) {
+			if (DelayCount == XRFDC_PLL_LOCK_DLY_CNT) {
+#ifdef __MICROBLAZE__
+				xdbg_printf(XDBG_DEBUG_ERROR, "\n PLL Lock timeout "
+						"error in %s\r\n", __func__);
+#else
+				metal_log(METAL_LOG_ERROR,  "\n PLL Lock timeout "
+					"error in %s\r\n", __func__);
+#endif
 				Status = XRFDC_FAILURE;
 				goto RETURN_PATH;
+			} else {
+				/* Wait for 1 msec */
+#ifdef __BAREMETAL__
+				usleep(1000);
+#else
+				metal_sleep_usec(1000);
+#endif
+				DelayCount++;
+				XRFdc_GetPLLLockStatus(InstancePtr, Type, Tile_Id,
+								&LockStatus);
 			}
-		} while (LockStatus != XRFDC_PLL_LOCKED);
+		}
 	}
 
 	/*
@@ -6060,7 +6142,28 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 	else
 		BaseAddr = XRFDC_DAC_TILE_CTRL_STATS_ADDR(Tile_Id);
 
-	while (XRFdc_ReadReg16(InstancePtr,BaseAddr, XRFDC_RESTART_OFFSET) != 0U);
+	DelayCount = 0;
+	while (XRFdc_ReadReg16(InstancePtr,BaseAddr, XRFDC_RESTART_OFFSET) != 0U) {
+		if (DelayCount == XRFDC_PLL_LOCK_DLY_CNT) {
+#ifdef __MICROBLAZE__
+			xdbg_printf(XDBG_DEBUG_ERROR, "\n Failed to Restart "
+					"the tile in %s\r\n", __func__);
+#else
+			metal_log(METAL_LOG_ERROR,  "\n Failed to Restart "
+				"the tile in %s\r\n", __func__);
+#endif
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		} else {
+			/* Wait for 1 msec */
+#ifdef __BAREMETAL__
+			usleep(1000);
+#else
+			metal_sleep_usec(1000);
+#endif
+			DelayCount++;
+		}
+	}
 
 	if(Type == XRFDC_ADC_TILE) {
 		InstancePtr->ADC_Tile[Tile_Id].PLL_Settings.SampleRate =
@@ -6072,6 +6175,65 @@ u32 XRFdc_DynamicPLLConfig(XRFdc* InstancePtr, u32 Type, u32 Tile_Id,
 					(SamplingRate/1000);
 		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.RefClkFreq = RefClkFreq;
 		InstancePtr->DAC_Tile[Tile_Id].PLL_Settings.Enabled = PLLEnable;
+	}
+
+	Status = XRFDC_SUCCESS;
+RETURN_PATH:
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is used to get the Link Coupling mode.
+*
+* @param	InstancePtr is a pointer to the XRfdc instance.
+* @param	Tile_Id indicates Tile number (0-3).
+* @param    Block_Id indicates Block number(0-3 for 2G, 0-1 for 4G).
+* @param	Mode pointer to get link coupling mode.
+*
+* @return
+*       - XRFDC_SUCCESS if successful.
+*       - XRFDC_FAILURE if Tile not enabled.
+*
+* @note		Only for ADC blocks
+*
+******************************************************************************/
+u32 XRFdc_GetLinkCoupling(XRFdc* InstancePtr, u32 Tile_Id, u32 Block_Id,
+							u32 *Mode)
+{
+	u32 Status;
+	u16 ReadReg;
+	u32 IsBlockAvail;
+	u32 BaseAddr;
+
+#ifdef __BAREMETAL__
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+#endif
+
+	IsBlockAvail = XRFdc_IsADCBlockEnabled(InstancePtr, Tile_Id, Block_Id);
+	if (IsBlockAvail == 0U) {
+#ifdef __MICROBLAZE__
+		xdbg_printf(XDBG_DEBUG_ERROR, "\n Requested Block %d not "
+					"enabled in %s\r\n", Tile_Id, __func__);
+#else
+		metal_log(METAL_LOG_ERROR, "\n Requested Block %d not "
+					"enabled in %s\r\n", Tile_Id, __func__);
+#endif
+		Status = XRFDC_FAILURE;
+		goto RETURN_PATH;
+	} else {
+		if ((InstancePtr->ADC4GSPS == XRFDC_ADC_4GSPS) && (Block_Id == 1U))
+			Block_Id = 2U;
+		BaseAddr = XRFDC_ADC_TILE_DRP_ADDR(Tile_Id) +
+							XRFDC_BLOCK_ADDR_OFFSET(Block_Id);
+		ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr,
+						XRFDC_ADC_RXPR_MC_CFG0_OFFSET);
+		if (ReadReg & XRFDC_RX_MC_CFG0_CM_MASK)
+			*Mode = XRFDC_LINK_COUPLING_AC;
+		else
+			*Mode = XRFDC_LINK_COUPLING_DC;
 	}
 
 	Status = XRFDC_SUCCESS;
