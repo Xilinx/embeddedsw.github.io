@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (C) 2011 - 2014 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2011 - 2018 Xilinx, Inc.  All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 #
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-#
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -53,6 +49,8 @@
 #          sk     11/09/15 Removed delete filename statement CR# 784758.
 # 2.5      ms     04/18/17 Modified tcl file to add suffix U for all macros
 #                          definitions of iomodule in xparameters.h
+# 2.6      mus    09/25/18 Updated tcl to replace "hsi::get_cells -of_object"
+#                          with the "hsi::get_cells -of_objects". CR#1011395.
 ##############################################################################
 
 
@@ -109,7 +107,7 @@ proc generate {drv_handle} {
     }
 
     # 7. INTC
-    set intc_params [list "C_INTC_USE_EXT_INTR" "C_INTC_INTR_SIZE" "C_INTC_HAS_FAST" "C_INTC_BASE_VECTORS"]
+    set intc_params [list "C_INTC_USE_EXT_INTR" "C_INTC_INTR_SIZE" "C_INTC_HAS_FAST" "C_INTC_BASE_VECTORS" "C_INTC_ADDR_WIDTH "]
 
     # 8. IO BUS
     set io_params [list "C_USE_IO_BUS" "C_IO_BASEADDR" "C_IO_HIGHADDR" "C_IO_MASK"]
@@ -186,7 +184,7 @@ proc iomodule_define_config_file {drv_handle periphs config_inc} {
     set isr_options XIN_SVC_SGL_ISR_OPTION
     set file_name "xiomodule_g.c"
     set drv_string "XIOModule"
-    set args [list "DEVICE_ID" "C_BASEADDR" "C_IO_BASEADDR" "C_INTC_HAS_FAST" "C_INTC_BASE_VECTORS"]
+    set args [list "DEVICE_ID" "C_BASEADDR" "C_IO_BASEADDR" "C_INTC_HAS_FAST" "C_INTC_BASE_VECTORS" "C_INTC_ADDR_WIDTH "]
     set filename [file join "src" $file_name]
     set config_file [open $filename w]
     hsi::utils::write_c_header $config_file "Driver configuration"
@@ -645,7 +643,7 @@ proc xfind_instance {drvhandle instname} {
 # (from external source).
 ##########################################################################
 proc xget_port_type {periph} {
-    set mhs [hsi::get_cells -of_object $periph]
+    set mhs [hsi::get_cells -of_objects $periph]
     if {[llength $mhs] == 0} {
         return "global"
     } else {

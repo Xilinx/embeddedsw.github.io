@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xcsudma_hw.h
-* @addtogroup csudma_v1_2
+* @addtogroup csudma_v1_3
 * @{
 *
 * This header file contains identifiers and register-level driver functions (or
@@ -88,7 +84,7 @@ extern "C" {
 /** @name CSU Base address and CSU_DMA reset offset
  * @{
  */
-#define XCSU_BASEADDRESS	0xFFCA0000
+#define XCSU_BASEADDRESS	0xFFCA0000U
 						/**< CSU Base Address */
 #define XCSU_DMA_RESET_OFFSET	0x0000000CU	/**< CSU_DMA Reset offset */
 /*@}*/
@@ -259,6 +255,8 @@ extern "C" {
 #define XCSUDMA_MSB_ADDR_SHIFT	32U		/**< Shift for MSB bits of
 						  *  address */
 /*@}*/
+
+#define XCSUDMA_DONE_TIMEOUT_VAL 3000000U
 
 /***************** Macros (Inline Functions) Definitions *********************/
 

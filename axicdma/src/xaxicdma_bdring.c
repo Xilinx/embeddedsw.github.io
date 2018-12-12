@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -32,7 +28,7 @@
 /*****************************************************************************/
 /**
  *  @file xaxicdma_bdring.c
-* @addtogroup axicdma_v4_3
+* @addtogroup axicdma_v4_5
 * @{
  *
  * Implementation for support on Scatter Gather (SG) transfers.
@@ -47,6 +43,7 @@
  * 1.00a jz   04/18/10 First release
  * 2.01a rkv  01/25/11 Replaced with "\r\n" in place on "\n\r" in printf statements
  * 4.3   mi   09/21/16 Fixed compilation warnings
+ * 4.5   rsp  07/04/18 Fixed cppcheck warning
  * </pre>
  *
  *****************************************************************************/
@@ -727,7 +724,6 @@ static void StubCallBackFn(void *CallBackRef, u32 IrqMask, int *NumBdPtr)
 	XAxiCdma_Bd *BdPtr;
 	int TargetNum;
 	int BdCount;
-	int Status;
 
 	InstancePtr = (XAxiCdma *)CallBackRef;
 	TargetNum = *NumBdPtr;
@@ -736,6 +732,7 @@ static void StubCallBackFn(void *CallBackRef, u32 IrqMask, int *NumBdPtr)
 	BdCount = XAxiCdma_BdRingFromHw(InstancePtr, TargetNum, &BdPtr);
 
 	if (BdCount > 0) {
+		int Status;
 		Status = XAxiCdma_BdRingFree(InstancePtr, BdCount, BdPtr);
 		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_ERROR, "CallBack: BdRingFree()"

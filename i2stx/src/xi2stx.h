@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -53,6 +49,8 @@
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    11/16/17 Initial release.
  * 1.1   kar    04/02/18 Added debug log function prototypes.
+ * 2.0   kar    09/28/18 Added new API to enable justification.
+ *                       Added new API to select left/right justification.
  * </pre>
  *
  *****************************************************************************/
@@ -100,6 +98,16 @@ typedef enum {
 	XI2S_TX_CHID3, //!< Channel 3
 	XI2S_TX_NUM_CHANNELS //!<Number of Channel ID's
 } XI2s_Tx_ChannelId;
+
+/*@}*/
+
+/**
+ * @brief This typedef specifies the justification of the the XI2s Transmitter.
+ */
+typedef enum {
+		XI2S_TX_JUSTIFY_LEFT = 0, //!< Left Justification is enabled.
+		XI2S_TX_JUSTIFY_RIGHT     //!< Right Justification is enabled.
+} XI2s_Tx_Justification;
 
 /*@}*/
 
@@ -276,6 +284,10 @@ u32 XI2s_Tx_SetSclkOutDiv(XI2s_Tx *InstancePtr, u32 MClk, u32 Fs);
 
 void XI2s_Tx_IntrEnable(XI2s_Tx *InstancePtr, u32 Mask);
 void XI2S_Tx_IntrDisable(XI2s_Tx *InstancePtr, u32 Mask);
+
+/* Justification related functions in XI2stx.c */
+void XI2s_Tx_JustifyEnable(XI2s_Tx *InstancePtr, u8 Enable);
+void XI2s_Tx_Justify(XI2s_Tx *InstancePtr, XI2s_Tx_Justification Justify);
 
 /* Interrupt related functions in xi2stx_intr.c */
 void XI2s_Tx_IntrHandler(void *InstancePtr);

@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xresetps_g.c
-* @addtogroup xresetps_v1_1
+* @addtogroup xresetps_v1_2
 * @{
 *
 * This file contains a table that specifies the configuration of the reset
@@ -46,6 +42,8 @@
 * Ver   Who    Date     Changes
 * ----- ------ -------- ---------------------------------------------
 * 1.00  cjp    09/05/17 First release
+* 1.2   cjp    04/27/18 Updated for clockps interdependency
+* 1.2   sd     07/20/18 Fixed Doxygen warnings
 * </pre>
 *
 ******************************************************************************/
@@ -73,14 +71,13 @@
  * This table contains configuration information for each reset controller
  * device in the system.
  *
- * @Note:
+ * Note:
  * This is a dummy instance since reset system doesnot have a dedicated
  * controller
  */
 XResetPs_Config XResetPs_ConfigTable[XPAR_XRESETPS_NUM_INSTANCES] = {
 	{
 		(u16)XPAR_XRESETPS_DEVICE_ID,
-		(u32)XPAR_XRESETPS_BASEADDR
 	}
 };
 /** @} */

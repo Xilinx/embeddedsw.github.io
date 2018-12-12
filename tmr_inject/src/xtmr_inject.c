@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xtmr_inject.c
-* @addtogroup tmr_inject_v1_0
+* @addtogroup tmr_inject_v1_1
 * @{
 *
 * Contains required functions for the XTMR_Inject driver. See the xtmr_inject.h
@@ -45,6 +41,8 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -----------------------------------------------
 * 1.0   sa   04/05/17 First release
+* 1.1   mus  10/25/18 Updated XTMR_Inject_CfgInitialize to support
+*                     64 bit fault address.
 *
 * </pre>
 *
@@ -64,8 +62,8 @@
 
 /************************** Variable Definitions ****************************/
 
-extern u32 xtmr_inject_instr;
-static u32 xtmr_inject_addr = (u32)&xtmr_inject_instr;
+extern UINTPTR xtmr_inject_instr;
+static UINTPTR xtmr_inject_addr = (UINTPTR)&xtmr_inject_instr;
 
 
 /***************** Macros (Inline Functions) Definitions ********************/
@@ -156,8 +154,13 @@ int XTMR_Inject_CfgInitialize(XTMR_Inject *InstancePtr,
 
 	/* Initialize the address inject and instruction inject registers.
 	 */
-	XTMR_Inject_WriteReg(InstancePtr->RegBaseAddress, XTI_AIR_OFFSET,
+	if (Config->LMBAddrWidth > XTI_STANDARD_LMB_WIDTH) {
+		XTMR_Inject_WriteReg64(InstancePtr->RegBaseAddress, XTI_EAIR_OFFSET,
 				xtmr_inject_addr);
+	} else {
+		XTMR_Inject_WriteReg(InstancePtr->RegBaseAddress, XTI_AIR_OFFSET,
+				xtmr_inject_addr);
+	}
 	XTMR_Inject_WriteReg(InstancePtr->RegBaseAddress, XTI_IIR_OFFSET,
 				xtmr_inject_instr);
 

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2015 - 2016 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -76,22 +72,6 @@ XIpiPsu_Config XIpiPsu_ConfigTable[] =
 			{
 				XPAR_PSU_IPI_6_BIT_MASK,
 				XPAR_PSU_IPI_6_BUFFER_INDEX
-			},
-			{
-				XPAR_PSU_IPI_7_BIT_MASK,
-				XPAR_PSU_IPI_7_BUFFER_INDEX
-			},
-			{
-				XPAR_PSU_IPI_8_BIT_MASK,
-				XPAR_PSU_IPI_8_BUFFER_INDEX
-			},
-			{
-				XPAR_PSU_IPI_9_BIT_MASK,
-				XPAR_PSU_IPI_9_BUFFER_INDEX
-			},
-			{
-				XPAR_PSU_IPI_10_BIT_MASK,
-				XPAR_PSU_IPI_10_BUFFER_INDEX
 			}
 		}
 	}

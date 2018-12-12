@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -46,6 +42,7 @@
 * Ver   Who    Date     Changes
 * ----- ------ -------- --------------------------------------------------
 * 1.0   jsr    07/17/17 Initial release.
+# 2.0   vve    10/03/18 Add support for ST352 in C Stream
 * </pre>
 *
 ******************************************************************************/
@@ -78,7 +75,7 @@ extern "C" {
 #define XV_SDITX_TX_ST352_DATA_CH3_OFFSET		((XV_SDITX_BASE)+(10*4))
 #define XV_SDITX_TX_ST352_DATA_CH4_OFFSET		((XV_SDITX_BASE)+(11*4))
 #define XV_SDITX_TX_ST352_DATA_CH5_OFFSET		((XV_SDITX_BASE)+(12*4))
-#define XV_SDITX_TX_ST352_DATA_CH6_OFFSET		((XV_SDITX_BASE)+(12*4))
+#define XV_SDITX_TX_ST352_DATA_CH6_OFFSET		((XV_SDITX_BASE)+(13*4))
 #define XV_SDITX_TX_ST352_DATA_CH7_OFFSET		((XV_SDITX_BASE)+(14*4))
 
 #define XV_SDITX_VER_OFFSET				((XV_SDITX_BASE)+(15*4))
@@ -88,6 +85,15 @@ extern "C" {
 
 #define XV_SDITX_BRIDGE_STS_OFFSET			((XV_SDITX_BASE)+(26*4))
 #define XV_SDITX_AXI4S_VID_OUT_STS_OFFSET		((XV_SDITX_BASE)+(27*4))
+
+#define XV_SDITX_TX_ST352_DATA_CH0_C_OFFSET		((XV_SDITX_BASE)+(28*4))
+#define XV_SDITX_TX_ST352_DATA_CH1_C_OFFSET		((XV_SDITX_BASE)+(29*4))
+#define XV_SDITX_TX_ST352_DATA_CH2_C_OFFSET		((XV_SDITX_BASE)+(30*4))
+#define XV_SDITX_TX_ST352_DATA_CH3_C_OFFSET		((XV_SDITX_BASE)+(31*4))
+#define XV_SDITX_TX_ST352_DATA_CH4_C_OFFSET		((XV_SDITX_BASE)+(32*4))
+#define XV_SDITX_TX_ST352_DATA_CH5_C_OFFSET		((XV_SDITX_BASE)+(33*4))
+#define XV_SDITX_TX_ST352_DATA_CH6_C_OFFSET		((XV_SDITX_BASE)+(34*4))
+#define XV_SDITX_TX_ST352_DATA_CH7_C_OFFSET		((XV_SDITX_BASE)+(35*4))
 
 /* RST_CTRL register masks */
 #define XV_SDITX_RST_CTRL_SDITX_SS_EN_MASK		(1<<0)
@@ -113,6 +119,8 @@ extern "C" {
 #define XV_SDITX_MDL_CTRL_INS_LN_MASK			(1<<19)
 #define XV_SDITX_MDL_CTRL_INS_EDH_MASK			(1<<20)
 #define XV_SDITX_MDL_CTRL_VID_FRMT_MASK			0x600000
+#define XV_SDITX_MDL_CTRL_C_ST352_MASK			(1<<23)
+#define XV_SDITX_MDL_CTRL_C_ST352_SWITCH_3GA_MASK	(1<<24)
 #define XV_SDITX_MDL_CTRL_MODE_SHIFT			4
 #define XV_SDITX_MDL_CTRL_M_SHIFT			7
 #define XV_SDITX_MDL_CTRL_MUX_PATTERN_SHIFT		8

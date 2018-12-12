@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -118,7 +114,7 @@ u32 XCsi_CfgInitialize(XCsi *InstancePtr, XCsi_Config *CfgPtr,
 	InstancePtr->DPhyLvlErrCallBack = StubErrCallBack;
 	InstancePtr->ProtDecodeErrCallBack = StubErrCallBack;
 	InstancePtr->PktLvlErrCallBack = StubErrCallBack;
-
+	InstancePtr->VCXErrCallBack = StubErrCallBack;
 	InstancePtr->ErrorCallBack = StubErrCallBack;
 
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
@@ -435,26 +431,10 @@ void XCsi_GetVCInfo(XCsi *InstancePtr, u8 Vc, XCsi_VCInfo *VCInfo)
 	Xil_AssertVoid(Vc < XCSI_MAX_VC);
 
 	/* Read the Information Registers for each Virtual Channel */
-	switch (Vc) {
-		case 0:
-			Offset = XCSI_VC0INF1R_OFFSET;
-			break;
-
-		case 1:
-			Offset = XCSI_VC1INF1R_OFFSET;
-			break;
-
-		case 2:
-			Offset = XCSI_VC2INF1R_OFFSET;
-			break;
-
-		case 3:
-			Offset = XCSI_VC3INF1R_OFFSET;
-			break;
-
-		default:
-			break;
-	}
+	if (Vc & 0x1)
+		Offset = ((Vc * 0x10) + XCSI_VC1INF1R_OFFSET);
+	else
+		Offset = ((Vc * 0x10) + XCSI_VC0INF1R_OFFSET);
 
 	/* Read from Info Reg 1 and Info Reg 2 of particular VC */
 	Value1 = XCsi_ReadReg(InstancePtr->Config.BaseAddr, Offset);

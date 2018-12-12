@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -61,6 +57,7 @@ XV_SdiTxSs_Config XV_SdiTxSs_ConfigTable[XPAR_XV_SDITXSS_NUM_INSTANCES] =
 		XPAR_V_SMPTE_UHDSDI_TX_SS_BASEADDR,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_INCLUDE_ADV_FEATURES,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_LINE_RATE,
+		XPAR_V_SMPTE_UHDSDI_TX_SS_TX_INSERT_C_STR_ST352,
 
 		{
 			XPAR_V_SMPTE_UHDSDI_TX_SS_V_SMPTE_UHDSDI_TX_PRESENT,

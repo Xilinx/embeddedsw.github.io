@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xzdma.c
-* @addtogroup zdma_v1_5
+* @addtogroup zdma_v1_6
 * @{
 *
 * This file contains the implementation of the interface functions for ZDMA
@@ -281,7 +277,8 @@ u32 XZDma_CreateBDList(XZDma *InstancePtr, XZDma_DscrType TypeOfDscr,
 						(NoOfBytes >> 1) / Size;
 	InstancePtr->Descriptor.SrcDscrPtr = (void *)Dscr_MemPtr;
 	InstancePtr->Descriptor.DstDscrPtr =
-			(void *)(Dscr_MemPtr + (Size * InstancePtr->Descriptor.DscrCount));
+			(void *)(Dscr_MemPtr +
+			(UINTPTR)(Size * InstancePtr->Descriptor.DscrCount));
 
 	if (!InstancePtr->Config.IsCacheCoherent)
 	Xil_DCacheInvalidateRange((INTPTR)Dscr_MemPtr, NoOfBytes);
@@ -919,6 +916,12 @@ static void XZDma_ScatterGather(XZDma *InstancePtr, XZDma_Transfer *Data,
 {
 	u32 Count = 0x00U;
 	u8 Last;
+
+	/* Verify arguments */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(Data != NULL);
+	Xil_AssertVoid(Num != 0x00U);
+
 	XZDma_Transfer *LocalData = Data;
 	XZDma_LiDscr *LiSrcDscr =
 		(XZDma_LiDscr *)(void *)(InstancePtr->Descriptor.SrcDscrPtr);
@@ -928,11 +931,6 @@ static void XZDma_ScatterGather(XZDma *InstancePtr, XZDma_Transfer *Data,
 		(XZDma_LlDscr *)(void *)(InstancePtr->Descriptor.SrcDscrPtr);
 	XZDma_LlDscr *LlDstDscr =
 		(XZDma_LlDscr *)(void *)(InstancePtr->Descriptor.DstDscrPtr);
-
-	/* Verify arguments */
-	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(Data != NULL);
-	Xil_AssertVoid(Num != 0x00U);
 
 	if (InstancePtr->Descriptor.DscrType == XZDMA_LINEAR) {
 		Last = FALSE;

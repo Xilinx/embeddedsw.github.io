@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -82,7 +78,7 @@
 * to build and link only those parts of the driver that are necessary.
 *
 * @file xcsudma.h
-* @addtogroup csudma_v1_2
+* @addtogroup csudma_v1_3
 * @{
 * @details
 *
@@ -106,6 +102,10 @@
 * 1.2   adk     11/22/17 Added peripheral test app support for CSUDMA driver.
 *	adk	09/03/18 Added new API XCsuDma_64BitTransfer() useful for 64-bit
 *			 dma transfers through PMU processor(CR#996201).
+* 1.3   adk     13/07/18 Fixed doxygen warnings in the driver(CR#1006262).
+*	adk	08/08/18 Added new API XCsuDma_WaitForDoneTimeout() useful for
+*			 polling dma transfer done.
+* 1.4   adk     28/08/18 Fixed misra-c required standard violations..
 * </pre>
 *
 ******************************************************************************/
@@ -128,8 +128,8 @@ extern "C" {
 
 /************************** Constant Definitions *****************************/
 
-/** @name CSU_DMA Channels
- * @{
+/**
+ * This typedef contains CSU_DMA Channel Types.
  */
 typedef enum {
 	XCSUDMA_SRC_CHANNEL = 0U,	/**< Source Channel of CSU_DMA */
@@ -137,8 +137,8 @@ typedef enum {
 }XCsuDma_Channel;
 /*@}*/
 
-/** @name CSU_DMA pause types
- * @{
+/**
+ * This typedef contains CSU_DMA Pause Types.
  */
 typedef enum {
 	XCSUDMA_PAUSE_MEMORY,		/**< Pauses memory data transfer
@@ -153,7 +153,7 @@ typedef enum {
 /** @name Ranges of Size
  * @{
  */
-#define XCSUDMA_SIZE_MAX 0x07FFFFFF	/**< Maximum allowed no of words */
+#define XCSUDMA_SIZE_MAX 0x07FFFFFFU	/**< Maximum allowed no of words */
 
 /*@}*/
 
@@ -163,8 +163,6 @@ typedef enum {
 /**
 *
 * This function resets the CSU_DMA core.
-*
-* @param	None.
 *
 * @return	None.
 *
@@ -204,6 +202,38 @@ typedef enum {
 			((u32)(XCSUDMA_I_STS_OFFSET) + \
 			((u32)(Channel) * (u32)(XCSUDMA_OFFSET_DIFF)))) & \
 		(u32)(XCSUDMA_IXR_DONE_MASK)) != (XCSUDMA_IXR_DONE_MASK))
+
+/*****************************************************************************/
+/**
+* This function will poll for completion of data transfer periodically until
+* DMA done bit set or till the timeout occurs.
+*
+* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
+* @param	Channel represents the type of channel either it is Source or
+*		Destination.
+*		Source channel      - XCSUDMA_SRC_CHANNEL
+*		Destination Channel - XCSUDMA_DST_CHANNEL
+*
+* @return	XST_SUCCESS - Incase of Success
+*		XST_FAILURE - Incase of Timeout.
+*
+* @note.
+*		C-style signature:
+*		int XCsuDma_WaitForDoneTimeout(XCsuDma *InstancePtr,
+*					       XCsuDma_Channel Channel)
+*
+******************************************************************************/
+#define XCsuDma_WaitForDoneTimeout(InstancePtr, Channel) \
+({	\
+	u32 Regval; \
+	int Timeout; \
+	Timeout = Xil_poll_timeout(XCsuDma_In32,(((InstancePtr)->Config.BaseAddress)+ \
+			 ((u32)(XCSUDMA_I_STS_OFFSET) + \
+			 ((u32)(Channel) * (u32)(XCSUDMA_OFFSET_DIFF)))), Regval, \
+			 ((Regval & XCSUDMA_IXR_DONE_MASK) == XCSUDMA_IXR_DONE_MASK), \
+			 XCSUDMA_DONE_TIMEOUT_VAL); \
+	(Timeout == -1) ? XST_FAILURE : XST_SUCCESS; \
+})
 
 /*****************************************************************************/
 /**

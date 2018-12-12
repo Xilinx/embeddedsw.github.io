@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -37,22 +33,21 @@
  * This file demonstrates how to use the mcdma driver on the Xilinx AXI
  * MCDMA core (AXI MCDMA) to transfer packets in polling mode.
  *
- * This examples shows how to do multiple packets transfers,
- * as well as how to do multiple show how to do multiple packets transfers,
- * as well as how to do multiple BD's per packet transfers.
+ * This examples shows how to do multiple packets and multiple BD's
+ * per packet transfers.
  *
- * H/W Requirments:
+ * H/W Requirements:
  * In order to test this example at the h/w level AXI MCDMA MM2S should
  * connect with the S2MM.
  *
- * System level Considerations for ZynqUltrascale+ designs:
- * On ZU+ MPSOC for PL IP's 3 differnet ports are availble HP, HPC and ACP.
+ * System level Considerations for Zynq UltraScale+ designs:
+ * On ZU+ MPSOC for PL IP's 3 different ports are available HP, HPC and ACP.
  *
  * The explanation below talks about HPC and HP port.
  *
  * HPC design considerations:
  * ZU+ MPSOC has in-built cache coherent interconnect(CCI) to take care of
- * coherency through HPC port.
+ * Coherency through HPC port.
  * Following needs to be done by the users before running the examples.
  * 1) Snooping should be enabled in the S3 (0xFD6E4000)
  * 2) Mark the DDR memory being used for buffers as outer sharable.
@@ -62,8 +57,8 @@
  * to
  * .set Memory,	0x405 | (2 << 8) | (0x0).
  *
- * Please uncomment below define for HPC design so that applicaiton won't do
- * Any Cache flush/invalidation.
+ * Please uncomment below define for HPC design so that application won't do
+ * Any cache flush/invalidation.
  *
  * //#define HPC_DESIGN
  *
@@ -73,18 +68,20 @@
  * The example uses un-cached memory for buffer descriptors and uses
  * Normal memory for buffers..
  *
- * A53 does not provide seperate instruction for cache invalidation.
+ * A53 does not provide separate instruction for cache invalidation.
  * It supports flush (clean + invalidation). Before a DMA starts,
  * Application is expected to do a cache flush for the relevant memory.
  * Once DMA ends, the data can simply be read from memory.
- * However, there will be occasions when A53 L1 cache system can prefetch memory locations
- * Which were earlier flushed. On such scenarios there is high probablity that CPU reads
- * Memory from cache and DMA is still not complete for this memory. This leads lost
- * Coherency between cache and memory. Subsequent data verification(after DMA is complete) thus fails.
+ * However, there will be occasions when A53 L1 cache system can prefetch
+ * Memory locations which were earlier flushed. On such scenarios there is
+ * High probability that CPU reads memory from cache and DMA is still not
+ * Complete for this memory. This leads lost coherency between cache and
+ * Memory. Subsequent data verification(after DMA is complete) thus fails.
  *
- * It is generally an unpredictable behavior. It is highly unlikely to happen for a single buffer usecase.
- * But for multiple buffers staying in adjacent cache locations,
- * There is a high probability that users can get into such failures.
+ * It is generally an unpredictable behavior. It is highly unlikely to happen
+ * For a single buffer usecase. But for multiple buffers staying in adjacent
+ * Cache locations,There is a high probability that users can get into such
+ * Failures.
  *
  *  The L1 prefetch is a feature of the L1 cache system for improving performance.
  *  The L1 cache has its own algorithm to prefetch. The prefetch stops when:
@@ -95,15 +92,19 @@
  * Accordingly the solution for the above problem is:
  *
  * 1) Use dsb
- *     The location of the dsb is crucial. The programmer needs to predict the maximum probabilty
- *     When the L1 prefetch will happen for relevant DMA addresses.
- *     It will be typically in the DMA done interrupt (where the data verification happens for a buffer).
- *     The cache line size is 64 bytes. The prefetch obviously will happen in chunks of 64 bytes.
- *     However, because of the unpredictability nature of the prefetch, it is difficult to find out the exact point of dsb.
- *     To be at a safer side, the dsb can be put for every memory location fetched.
+ *     The location of the dsb is crucial. The programmer needs to predict the
+ *     Maximum probability when the L1 prefetch will happen for relevant DMA
+ *     Addresses.It will be typically in the DMA done interrupt (where the
+ *     Data verification happens for a buffer).The cache line size is 64 bytes.
+ *     The prefetch obviously will happen in chunks of 64 bytes.
  *
- *     There will be heavy performance penalty. Every dsb clears the store buffers.
- *     Executing dsbs very frequently will degrade the performance significantly.
+ *     However, because of the unpredictability nature of the prefetch, it is
+ *     Difficult to find out the exact point of dsb.To be at a safer side,
+ *     The dsb can be put for every memory location fetched.
+ *
+ *     There will be heavy performance penalty. Every dsb clears the store
+ *     Buffers. Executing dsbs very frequently will degrade the performance
+ *     Significantly.
  *
  *    2) Disable Prefetch of L1 Cahe
  *       This can be done by setting the CPUACTLR_EL1 register.
@@ -116,6 +117,9 @@
  * Ver   Who  Date       Changes
  * ----- ---- --------   -------------------------------------------------------
  * 1.0	 adk  18/07/2017 Initial Version.
+ * 1.2	 rsp  07/19/2018 Read channel count from IP config.
+ *       rsp  08/17/2018 Fix typos and rephrase comments.
+ *	 rsp  08/17/2018 Read Length register value from IP config.
  * </pre>
  *
  * ***************************************************************************
@@ -178,7 +182,7 @@
 #define MAX_PKT_LEN		1024
 #define BLOCK_SIZE_2MB 0x200000U
 
-#define NUM_CHANNELS	16
+#define NUM_MAX_CHANNELS	16
 
 #define TEST_START_VALUE	0xC
 
@@ -186,8 +190,8 @@
 // #define HPC_DESIGN
 #endif
 
-int TxPattern[NUM_CHANNELS + 1];
-int RxPattern[NUM_CHANNELS + 1];
+int TxPattern[NUM_MAX_CHANNELS + 1];
+int RxPattern[NUM_MAX_CHANNELS + 1];
 int TestStartValue[] = {0xC, 0xB, 0x3, 0x55, 0x33, 0x20, 0x80, 0x66, 0x88};
 
 /**************************** Type Definitions *******************************/
@@ -212,6 +216,7 @@ XMcdma AxiMcdma;
 
 volatile int TxDone;
 volatile int RxDone;
+int num_channels;
 
 /*
  * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
@@ -277,6 +282,8 @@ int main(void)
 		return XST_FAILURE;
 	}
 
+	/* Read numbers of channels from IP config */
+	num_channels = Mcdma_Config->RxNumChannels;
 
 	Status = TxSetup(&AxiMcdma);
 	if (Status != XST_SUCCESS) {
@@ -299,7 +306,7 @@ int main(void)
 	/* Check DMA transfer result */
     while (1) {
         Mcdma_Poll(&AxiMcdma);
-        if (RxDone >= NUMBER_OF_BDS_TO_TRANSFER * NUM_CHANNELS)
+        if (RxDone >= NUMBER_OF_BDS_TO_TRANSFER * num_channels)
               break;
    }
 
@@ -343,7 +350,7 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 	RxBufferPtr = RX_BUFFER_BASE;
 	RxBdSpacePtr = RX_BD_SPACE_BASE;
 
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Rx_Chan = XMcdma_GetMcdmaRxChan(McDmaInstPtr, ChanId);
 
 		/* Disable all interrupts */
@@ -427,7 +434,7 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 	TxBufferPtr = TX_BUFFER_BASE;
 	TxBdSpacePtr = TX_BD_SPACE_BASE;
 
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
 
 		/* Disable all interrupts */
@@ -546,6 +553,7 @@ static int CheckDmaResult(XMcdma *McDmaInstPtr, u32 Chan_id)
         XMcdma_ChanCtrl *Rx_Chan = 0, *Tx_Chan = 0;
         XMcdma_Bd *BdPtr1;
         int ProcessedBdCount, i;
+        int MaxTransferBytes;
 
         Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, Chan_id);
         ProcessedBdCount = XMcdma_BdChainFromHW(Tx_Chan,
@@ -558,12 +566,13 @@ static int CheckDmaResult(XMcdma *McDmaInstPtr, u32 Chan_id)
                                                         0xFFFF,
                                                         &BdPtr1);
         RxDone += ProcessedBdCount;
+        MaxTransferBytes = MAX_TRANSFER_LEN(McDmaInstPtr->Config.MaxTransferlen - 1);
 
         /* Check received data */
         for (i = 0; i < ProcessedBdCount; i++) {
                 if (CheckData((u8 *)XMcdma_BdRead64(BdPtr1, XMCDMA_BD_BUFA_OFFSET),
-                                          XMcDma_BdGetActualLength(BdPtr1, 0x00FFFFFF), Chan_id) != XST_SUCCESS) {
-                        xil_printf("Data check failied for the Chan %x\n\r", Chan_id);
+                                          XMcDma_BdGetActualLength(BdPtr1, MaxTransferBytes), Chan_id) != XST_SUCCESS) {
+                        xil_printf("Data check failed for the Chan %x\n\r", Chan_id);
                         return XST_FAILURE;
                 }
                 BdPtr1 = (XMcdma_Bd *) XMcdma_BdRead64(BdPtr1, XMCDMA_BD_NDESC_OFFSET);
@@ -597,7 +606,7 @@ static int SendPacket(XMcdma *McDmaInstPtr)
 	u8 Value;
 	u32 ChanId;
 
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
 
 		BdCurPtr = XMcdma_GetChanCurBd(Tx_Chan);

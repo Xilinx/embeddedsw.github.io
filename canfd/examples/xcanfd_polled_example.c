@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015-2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -57,7 +53,8 @@
 *                       available in all examples. This is a fix for CR-965028.
 *       ms     04/05/17 Added tabspace for return statements in functions
 *                       for proper documentation while generating doxygen.
-*
+* 2.0   ask    08/08/18 Changed the Can ID to 11 bit value as standard Can ID
+*						is 11 bit.
 * </pre>
 *
 ******************************************************************************/
@@ -80,7 +77,7 @@
 #define FRAME_DATA_LENGTH 		64
 
 /* Message Id Constant */
-#define TEST_MESSAGE_ID			2650
+#define TEST_MESSAGE_ID			1024
 
 /*
  * The Baud Rate Prescaler Register (BRPR) and Bit Timing Register (BTR)

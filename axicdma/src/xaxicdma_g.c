@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xaxicdma_g.c
-* @addtogroup axicdma_v4_3
+* @addtogroup axicdma_v4_5
 * @{
 *
 * Provide a template for user to define their own hardware settings.
@@ -46,6 +42,7 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.00a jz   08/16/10 First release
+* 4.5   rsp  07/04/18 Sync XAxiCdma_Config initializer fields
 * </pre>
 *
 ******************************************************************************/
@@ -63,7 +60,9 @@ XAxiCdma_Config XAxiCdma_ConfigTable[] =
 		XPAR_AXICDMA_0_BASEADDR,
 		XPAR_AXICDMA_0_INCLUDE_DRE,
 		XPAR_AXICDMA_0_USE_DATAMOVER_LITE,
-		XPAR_AXICDMA_0_M_AXI_DATA_WIDTH
+		XPAR_AXICDMA_0_M_AXI_DATA_WIDTH,
+		XPAR_AXICDMA_0_M_AXI_MAX_BURST_LEN,
+		XPAR_AXICDMA_0_ADDR_WIDTH
 	}
 };
 /** @} */

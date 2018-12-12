@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsysmonpsu.c
-* @addtogroup sysmonpsu_v2_4
+* @addtogroup sysmonpsu_v2_5
 *
 * Functions in this file are the minimum required functions for the XSysMonPsu
 * driver. See xsysmonpsu.h for a detailed description of the driver.
@@ -66,6 +62,8 @@
 * 2.3   mn     12/13/17 Correct the AMS block channel numbers
 *       mn     03/08/18 Update Clock Divisor to the proper value
 * 2.4   mn     04/20/18 Remove looping check for PL accessible bit
+* 2.5   mn     07/06/18 Fixed Cppcheck warnings
+*       mn     07/31/18 Modified code for MISRA-C:2012 Compliance.
 *
 * </pre>
 *
@@ -125,7 +123,7 @@ s32 XSysMonPsu_CfgInitialize(XSysMonPsu *InstancePtr, XSysMonPsu_Config *ConfigP
 	InstancePtr->Config.InputClockMHz = ConfigPtr->InputClockMHz;
 
 	/* Set all handlers to stub values, let user configure this data later. */
-	InstancePtr->Handler = XSysMonPsu_StubHandler;
+	InstancePtr->Handler = (XSysMonPsu_Handler)XSysMonPsu_StubHandler;
 
 	XSysMonPsu_UpdateAdcClkDivisor(InstancePtr, XSYSMON_PS);
 	XSysMonPsu_UpdateAdcClkDivisor(InstancePtr, XSYSMON_PL);
@@ -205,7 +203,7 @@ void XSysMonPsu_Reset(XSysMonPsu *InstancePtr)
 			XSYSMONPSU_VP_VN_OFFSET, XSYSMONPSU_VP_VN_MASK);
 
 	/* Check for PL is under reset or not */
-	IsPlReset = (XSysmonPsu_ReadReg(CSU_BASEADDR + PCAP_STATUS_OFFSET) &
+	IsPlReset = (XSysmonPsu_ReadReg(XSYSMONPSU_CSU_BASEADDR + PCAP_STATUS_OFFSET) &
 						PL_CFG_RESET_MASK) >> PL_CFG_RESET_SHIFT;
 	if (IsPlReset != 0U) {
 		/* RESET the PL SYSMON */
@@ -1183,7 +1181,7 @@ u8 XSysMonPsu_UpdateAdcClkDivisor(XSysMonPsu *InstancePtr, u32 SysmonBlk)
 	u16 Divisor;
 	u32 EffectiveBaseAddress;
 	u32 RegValue;
-	u32 InputFreq = InstancePtr->Config.InputClockMHz;
+	u32 InputFreq;
 
 	/* Assert the arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1194,6 +1192,7 @@ u8 XSysMonPsu_UpdateAdcClkDivisor(XSysMonPsu *InstancePtr, u32 SysmonBlk)
 			XSysMonPsu_GetEffBaseAddress(InstancePtr->Config.BaseAddress,
 					SysmonBlk);
 
+	InputFreq = InstancePtr->Config.InputClockMHz;
 	/* Read the divisor value from the Configuration Register 2. */
 	Divisor = (u16) XSysmonPsu_ReadReg(EffectiveBaseAddress +
 							XSYSMONPSU_CFG_REG2_OFFSET);
@@ -1855,7 +1854,7 @@ void XSysMonPsu_SetPSAutoConversion(XSysMonPsu *InstancePtr)
 * 		definations present in xsysmonpsu_hw.h for knowing the status.
 *
 * @note		None
-* .
+*
 *****************************************************************************/
 u32 XSysMonPsu_GetMonitorStatus(XSysMonPsu *InstancePtr)
 {

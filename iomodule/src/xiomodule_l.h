@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xiomodule_l.h
-* @addtogroup iomodule_v2_5
+* @addtogroup iomodule_v2_6
 * @{
 *
 * This header file contains identifiers and low-level driver functions (or
@@ -127,6 +123,8 @@ extern "C" {
 #define XIN_IVAR_OFFSET	      0x00000080  /**< Intr Vector Address Register,
 					       Interrupt 0 offset, present
 					       only for Fast Interrupt   - W */
+#define XIN_IVEAR_OFFSET      0x00000100  /**< Intr Extended Vector Address
+					       Register  - W*/
 
 /**
  * UART status register bit position masks

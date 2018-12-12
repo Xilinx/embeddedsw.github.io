@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xcanfd_selftest.c
-* @addtogroup canfd_v1_2
+* @addtogroup canfd_v2_0
 * @{
 *
 * This file contains a diagnostic self-test function for the XCanFd driver.
@@ -47,6 +43,12 @@
 * ----- ---- -------- ------------------------------------------------------
 * 1.0   nsk  06/04/15 First release
 * 1.2   mi   09/22/16 Fixed compilation warnings.
+* 2.0   ask  08/08/18 Fixed Cppcheck warnings and updated the Canfd Id with
+*						11 bit value
+*	ask  09/21/18 Fixed CanFD hang issue in selftest by correcting the
+*                     Configuration regarding the Baud Rate and bit timing
+*		      for both Arbitration and Data Phase.
+* 2.0  ask  9/12/18  Added support for canfd 2.0 spec sequential mode
 *
 * </pre>
 *
@@ -74,16 +76,26 @@ static u32 RxFrame[XCANFD_MAX_FRAME_SIZE_IN_BYTES];
 /************************** Function Prototypes *****************************/
 
 /* Message Id Constant. */
-#define TEST_MESSAGE_ID	2650
+#define TEST_MESSAGE_ID	1024
 
 /* CAN Dlc Value */
 #define TEST_CANFD_DLC	8
 
 /* CAN FD FilterIndex Value */
-#define TEST_FILTER_INDEX	1
 #define TEST_MAIL_BOX_MASK 0xFFFFFFFF
 
-/*****************************************************************************/
+#define TEST_BRPR_BAUD_PRESCALAR	29
+
+#define TEST_BTR_SYNCJUMPWIDTH		3
+#define TEST_BTR_SECOND_TIMESEGMENT	2
+#define TEST_BTR_FIRST_TIMESEGMENT	15
+
+#define TEST_FBRPR_BAUD_PRESCALAR	29
+
+#define TEST_FBTR_SYNCJUMPWIDTH		3
+#define TEST_FBTR_SECOND_TIMESEGMENT	2
+#define TEST_FBTR_FIRST_TIMESEGMENT	15
+
 /**
 *
 * This function runs a self-test on the CAN driver/device. The test resets
@@ -115,7 +127,6 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	u32 Index;
 	u32 TxBuffer;
 	u32 Dlc;
-	u32 ReceivedDlc;
 	u32 Status;
 
 	u32 IdValue;
@@ -141,11 +152,26 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	 * (BTR) such that CAN baud rate equals 40Kbps, given the CAN clock
 	 * equal to 24MHz.
 	 */
-	XCanFd_SetBaudRatePrescaler(InstancePtr, 29);
-	XCanFd_SetBitTiming(InstancePtr, 3,2,15);
 
-	XCanFd_SetFBaudRatePrescaler(InstancePtr, 29);
-	XCanFd_SetFBitTiming(InstancePtr,3,2,15);
+	/*
+	 * Configure the Baud Rate Prescalar in
+	 * Arbitration Phase
+	 */
+	XCanFd_SetBaudRatePrescaler(InstancePtr, TEST_BRPR_BAUD_PRESCALAR);
+
+	/*
+	 * Configure the Bit Timing Values in
+	 * Arbitration Phase.
+	 */
+	XCanFd_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH,
+		TEST_BTR_SECOND_TIMESEGMENT,TEST_BTR_FIRST_TIMESEGMENT);
+
+	 /* Configure the Baud Rate Prescalar in Data Phase */
+	XCanFd_SetFBaudRatePrescaler(InstancePtr, TEST_FBRPR_BAUD_PRESCALAR);
+
+	/* Configure the Bit Timing Values in Data Phase */
+	XCanFd_SetFBitTiming(InstancePtr,TEST_FBTR_SYNCJUMPWIDTH,
+		TEST_FBTR_SECOND_TIMESEGMENT,TEST_FBTR_FIRST_TIMESEGMENT);
 
 	XCanFd_EnterMode(InstancePtr, XCANFD_MODE_LOOPBACK);
 	while (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_LOOPBACK);
@@ -200,7 +226,7 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
-	Dlc = ReceivedDlc = XCanFd_GetDlc2len(RxFrame[1] & XCANFD_DLCR_DLC_MASK);
+	Dlc = XCanFd_GetDlc2len(RxFrame[1] & XCANFD_DLCR_DLC_MASK);
 
 	/* Verify Identifier and Data Length Code. */
 	if (RxFrame[0] != XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0)) {

@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -46,6 +42,9 @@
  * 2.00  kar    01/25/18 Second  release.
  *       jsr    02/23/2018 Added YUV420 color format support
  *       jsr	03/02/2018 Added core settings API
+ * 2.1   jsr    07/03/2018 Corrected 720x480_60_I to be 720x486_60_I for SD mode
+ * 2.2   jsr    10/01/2018 Programming the Field register for 720x480_60_I SD mode
+ * 3.0   vve    10/03/18 Add support for ST352 in C Stream
  * </pre>
  *
  ******************************************************************************/
@@ -69,6 +68,10 @@
 #define AXI4_STREAM	0
 #define NATIVE_VIDEO 1
 #define NATIVE_SDI 2
+#define XSDITXSS_XVTC_ASIZE_VERT_SHIFT 16
+#define XSDITXSS_XVTC_ASIZE_VERT_MASK	0x1FFF0000
+#define XSDITXSS_XVTC_GASIZE_F1_OFFSET	0x094
+#define XSDITXSS_SD_NTSC_F1_V_ACTIVE	244
 
 /**************************** Type Definitions *******************************/
 /**
@@ -87,7 +90,6 @@ XV_SdiTxSs_SubCores XV_SdiTxSs_SubCoreRepo[XPAR_XV_SDITXSS_NUM_INSTANCES];
 /************************** Function Prototypes ******************************/
 static int XV_SdiTxSs_VtcSetup(XVtc *XVtcPtr, XV_SdiTx *SdiTxPtr);
 static void XV_SdiTxSs_ReportCoreInfo(XV_SdiTxSs *InstancePtr);
-static void XV_SdiTxSs_ReportSubcoreVersion(XV_SdiTxSs *InstancePtr);
 static void XV_SdiTxSs_ReportTiming(XV_SdiTxSs *InstancePtr);
 static void XV_SdiTxSs_GtReadyCallback(void *CallbackRef);
 static void XV_SdiTxSs_OverFlowCallback(void *CallbackRef);
@@ -510,6 +512,45 @@ void XV_SdiTxSs_Stop(XV_SdiTxSs *InstancePtr)
 /*****************************************************************************/
 /**
 *
+* This function enables the ST352 value to be used from DS2 instead of DS3 register
+* in C stream of the SDI TX Ss core.
+*
+* @param	InstancePtr is a pointer to the XV_SdiTxSs core instance.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_SdiTxSs_ST352CSwitch3GA(XV_SdiTxSs *InstancePtr)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->Config.InsertCSTRST352);
+	XV_SdiTx_ST352CSwitch3GA(InstancePtr->SdiTxPtr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function enables the insertion of ST352 in C stream of the SDI TX Ss core.
+*
+* @param	InstancePtr is a pointer to the XV_SdiTxSs core instance.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_SdiTxSs_ST352CStreamEnable(XV_SdiTxSs *InstancePtr)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->Config.InsertCSTRST352);
+	XV_SdiTx_ST352CStreamEnable(InstancePtr->SdiTxPtr);
+}
+
+/*****************************************************************************/
+/**
+*
 * This function Set the video format of the SDI TX Ss core.
 *
 * @param	InstancePtr is a pointer to the XV_SdiTxSs core instance.
@@ -546,6 +587,7 @@ static int XV_SdiTxSs_VtcSetup(XVtc *XVtcPtr, XV_SdiTx *SdiTxPtr)
 	XVtc_Timing VideoTiming;
 	u32 SdiTx_Hblank;
 	u32 Vtc_Hblank;
+	u32 RegValue;
 
 	/* Disable Generator */
 	XVtc_Reset(XVtcPtr);
@@ -682,6 +724,16 @@ static int XV_SdiTxSs_VtcSetup(XVtc *XVtcPtr, XV_SdiTx *SdiTxPtr)
 
 	XVtc_SetGeneratorTiming(XVtcPtr, &VideoTiming);
 
+	/* Only for XVIDC_VM_720x486_60_I (SDI NTSC), the FIELD1 vactive
+	 * size is different from FIELD0. As there is no vactive FIELD1
+	 * entry in the video common library, program it separately as below */
+	if (SdiTxPtr->Stream[0].Video.VmId == XVIDC_VM_720x486_60_I)
+	{
+		RegValue = (XSDITXSS_SD_NTSC_F1_V_ACTIVE << XSDITXSS_XVTC_ASIZE_VERT_SHIFT) &
+				XSDITXSS_XVTC_ASIZE_VERT_MASK;
+		XVtc_WriteReg(XVtcPtr->Config.BaseAddress,
+				XSDITXSS_XVTC_GASIZE_F1_OFFSET, RegValue);
+	}
 	/* Set up Polarity of all outputs */
 	memset((void *)&Polarity, 0, sizeof(XVtc_Polarity));
 	Polarity.ActiveChromaPol = 1;
@@ -698,7 +750,7 @@ static int XV_SdiTxSs_VtcSetup(XVtc *XVtcPtr, XV_SdiTx *SdiTxPtr)
 * is in the Video Common Library for SD SDI modes. As a workaround
 * they're manually set to 1.
 */
-	if (SdiTxPtr->Stream[0].Video.VmId == XVIDC_VM_720x480_60_I ||
+	if (SdiTxPtr->Stream[0].Video.VmId == XVIDC_VM_720x486_60_I ||
 			SdiTxPtr->Stream[0].Video.VmId == XVIDC_VM_720x576_50_I) {
 		Polarity.VBlankPol = 1;
 		Polarity.VSyncPol = 1;
@@ -796,7 +848,7 @@ void XV_SdiTxSs_StreamConfig(XV_SdiTxSs *InstancePtr)
 	switch (InstancePtr->SdiTxPtr->Transport.TMode) {
 	case XSDIVID_MODE_SD:
 		if (InstancePtr->SdiTxPtr->Stream[0].Video.VmId
-				== XVIDC_VM_720x480_60_I) {
+				== XVIDC_VM_720x486_60_I) {
 			/* NTSC */
 			PayloadLineNum1 = XV_SDITX_PAYLOADLN1_SDNTSC;
 			PayloadLineNum2 = XV_SDITX_PAYLOADLN2_SDNTSC;
@@ -926,35 +978,6 @@ void XV_SdiTxSs_ReportDetectedError(XV_SdiTxSs *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function prints the SDI TX SS subcore versions
-*
-* @param  InstancePtr pointer to XV_SdiTxSs instance
-*
-* @return None.
-*
-* @note   None.
-*
-******************************************************************************/
-static void XV_SdiTxSs_ReportSubcoreVersion(XV_SdiTxSs *InstancePtr)
-{
-	u32 Data;
-
-	if (InstancePtr->SdiTxPtr) {
-		Data = XV_SdiTx_GetVersion(InstancePtr->SdiTxPtr);
-		xil_printf("  SDI TX version : %02d.%02d (%04x)\n\r",
-		((Data >> 24) & 0xFF), ((Data >> 16) & 0xFF), (Data & 0xFFFF));
-	}
-
-	if (InstancePtr->VtcPtr) {
-		Data = XVtc_GetVersion(InstancePtr->VtcPtr);
-		xil_printf("  VTC version     : %02d.%02d (%04x)\n\r",
-		((Data >> 24) & 0xFF), ((Data >> 16) & 0xFF), (Data & 0xFFFF));
-	}
-}
-
-/*****************************************************************************/
-/**
-*
 * This function prints the SDI TX SS information.
 *
 * @param  InstancePtr pointer to XV_SdiTxSs instance
@@ -972,7 +995,6 @@ void XV_SdiTxSs_ReportInfo(XV_SdiTxSs *InstancePtr)
 	xil_printf("SDI TX SubSystem\n\r");
 	xil_printf("------------\n\r");
 	XV_SdiTxSs_ReportCoreInfo(InstancePtr);
-	/* XV_SdiTxSs_ReportSubcoreVersion(InstancePtr); */
 	xil_printf("\n\r");
 	xil_printf("SDI stream info\n\r");
 	xil_printf("------------\n\r");

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2009 - 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2009 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xnandps_bbm.c
-* @addtogroup nandps_v2_3
+* @addtogroup nandps_v2_4
 * @{
 * This file implements the Bad Block Management (BBM) functionality.
 * See xnandps_bbm.h for more details.
@@ -47,6 +43,9 @@
 * ----- ----   ----------  -----------------------------------------------
 * 1.00a nm     12/10/2010  First release
 * 1.03a nm     10/22/2012  Fixed CR# 683787.
+* 2.4   nsk    06/20/2018  Fixed BBT offset overflow in XNandPs_WriteBbt()
+*			   and XNandPs_ReadBbt(), overflow causes incorrect
+*			   BBT writes.
 * </pre>
 *
 ******************************************************************************/
@@ -406,8 +405,8 @@ static int XNandPs_ReadBbt(XNandPs *InstancePtr)
 		 * Valid BBT & Mirror BBT found
 		 */
 		if (Desc->Version > MirrorDesc->Version) {
-			Offset = Desc->PageOffset *
-				InstancePtr->Geometry.BytesPerPage;
+			Offset = ((u64)Desc->PageOffset) *
+				((u64)InstancePtr->Geometry.BytesPerPage);
 			XNandPs_Read(InstancePtr, Offset, BbtLen, &Buf, NULL);
 
 			/*
@@ -425,8 +424,8 @@ static int XNandPs_ReadBbt(XNandPs *InstancePtr)
 				return Status;
 			}
 		} else if (Desc->Version < MirrorDesc->Version) {
-			Offset = MirrorDesc->PageOffset *
-				InstancePtr->Geometry.BytesPerPage;
+			Offset = ((u64)MirrorDesc->PageOffset) *
+				((u64)InstancePtr->Geometry.BytesPerPage);
 			XNandPs_Read(InstancePtr, Offset, BbtLen, &Buf, NULL);
 
 			/*
@@ -445,8 +444,8 @@ static int XNandPs_ReadBbt(XNandPs *InstancePtr)
 			}
 		} else {
 			/* Both are up-to-date */
-			Offset = Desc->PageOffset *
-				InstancePtr->Geometry.BytesPerPage;
+			Offset = ((u64)Desc->PageOffset) *
+				((u64)InstancePtr->Geometry.BytesPerPage);
 			XNandPs_Read(InstancePtr, Offset, BbtLen, &Buf, NULL);
 
 			/*
@@ -458,7 +457,7 @@ static int XNandPs_ReadBbt(XNandPs *InstancePtr)
 		/*
 		 * Valid Primary BBT found
 		 */
-		Offset = Desc->PageOffset * InstancePtr->Geometry.BytesPerPage;
+		Offset = ((u64)Desc->PageOffset) * ((u64)InstancePtr->Geometry.BytesPerPage);
 		XNandPs_Read(InstancePtr, Offset, BbtLen, &Buf, NULL);
 
 		/*
@@ -478,8 +477,8 @@ static int XNandPs_ReadBbt(XNandPs *InstancePtr)
 		/*
 		 * Valid Mirror BBT found
 		 */
-		Offset = MirrorDesc->PageOffset *
-			InstancePtr->Geometry.BytesPerPage;
+		Offset = ((u64)MirrorDesc->PageOffset) *
+			((u64)InstancePtr->Geometry.BytesPerPage);
 		XNandPs_Read(InstancePtr, Offset, BbtLen, &Buf, NULL);
 
 		/*
@@ -678,7 +677,7 @@ static int XNandPs_WriteBbt(XNandPs *InstancePtr, XNandPs_BbtDesc *Desc,
 	/*
 	 * Write the BBT to page offset
 	 */
-	Offset = Desc->PageOffset * InstancePtr->Geometry.BytesPerPage;
+	Offset = ((u64)Desc->PageOffset) * ((u64)InstancePtr->Geometry.BytesPerPage);
 	Status = XNandPs_Write(InstancePtr, Offset, BbtLen, &Buf[0], SpareBuf);
 	if (Status != XST_SUCCESS) {
 		return Status;

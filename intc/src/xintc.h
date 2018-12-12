@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xintc.h
-* @addtogroup intc_v3_7
+* @addtogroup intc_v3_8
 * @{
 * @details
 *
@@ -282,6 +278,8 @@ extern "C" {
  */
 #define XIN_CONTROLLER_MAX_INTRS	32  /* Each Controller has 32
 					       interrupt pins */
+
+#define XINTC_STANDARD_VECTOR_ADDRESS_WIDTH	32U
 /*@}*/
 
 /**************************** Type Definitions *******************************/
@@ -296,6 +294,7 @@ typedef struct {
 	int FastIntr;		/**< Fast Interrupt enabled */
 	u32 IntVectorAddr;	/**< Interrupt Vector Address */
 	int NumberofIntrs;      /**< Number of Interrupt sources */
+	u8 VectorAddrWidth;		/**< Width of vector address */
 	u32 Options;		/**< Device options */
 	int IntcType;		/**< Intc type 0 - No Cascade Mode
 				               1 - primary instance

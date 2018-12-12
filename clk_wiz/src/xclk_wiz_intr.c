@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -244,6 +240,7 @@ int XClk_Wiz_SetCallBack(XClk_Wiz *InstancePtr, u32 HandleType,
 		case XCLK_WIZ_HANDLER_CLK_STOP:
 			InstancePtr->ClkStopCallBack = (XClk_Wiz_CallBack)CallBackFunc;
 			InstancePtr->ClkStopRef = CallBackRef;
+			break;
 		case XCLK_WIZ_HANDLER_CLK_OTHER_ERROR:
 			InstancePtr->ErrorCallBack = (XClk_Wiz_CallBack)CallBackFunc;
 			InstancePtr->ErrRef = CallBackRef;

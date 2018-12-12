@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -65,12 +61,17 @@ extern "C" {
 /************************** Constant Definitions *****************************/
 
 /**************************** Type Definitions *******************************/
+
+#if defined (__ICCARM__)
+#pragma pack(push, 1)
+#endif
+
 typedef struct {
 	USB_STD_CFG_DESC stdCfg;
 	USB_STD_IF_DESC ifCfg;
 	USB_STD_EP_DESC epin;
 	USB_STD_EP_DESC epout;
-} __attribute__((__packed__))USB_CONFIG;
+} attribute(USB_CONFIG);
 
 typedef struct {
 	USB_STD_CFG_DESC stdCfg;
@@ -79,7 +80,12 @@ typedef struct {
 	USB_STD_EP_SS_COMP_DESC epssin;
 	USB_STD_EP_DESC epout;
 	USB_STD_EP_SS_COMP_DESC epssout;
-} __attribute__((__packed__))USB30_CONFIG;
+
+} attribute(USB30_CONFIG);
+
+#if defined (__ICCARM__)
+#pragma pack(pop)
+#endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
 /* Check where these defines need to go  */

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -64,6 +60,8 @@
  * 9.4   adk  25/07/17 Initial version.
  * 9.6   rsp  02/14/18 Support data buffers above 4GB.Use UINTPTR for storing
  *                     and typecasting buffer address(CR-992638).
+ * 9.8   rsp  07/24/18 Set TX DMACR[Cyclic BD enable] before starting DMA
+ *                     operation i.e. in TxSetup.
  * </pre>
  *
  * ***************************************************************************
@@ -976,6 +974,10 @@ static int TxSetup(XAxiDma * AxiDmaInstPtr)
 		return XST_FAILURE;
 	}
 
+	/* Enable Cyclic DMA mode */
+	XAxiDma_BdRingEnableCyclicDMA(TxRingPtr);
+	XAxiDma_SelectCyclicMode(AxiDmaInstPtr, XAXIDMA_DMA_TO_DEVICE, 1);
+
 	/* Enable all TX interrupts */
 	XAxiDma_BdRingIntEnable(TxRingPtr, XAXIDMA_IRQ_ALL_MASK);
 
@@ -1124,9 +1126,6 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 		}
 	}
 
-	/* Enable Cyclic DMA mode */
-	XAxiDma_BdRingEnableCyclicDMA(TxRingPtr);
-	XAxiDma_SelectCyclicMode(AxiDmaInstPtr, XAXIDMA_DMA_TO_DEVICE, 1);
 	/* Give the BD to hardware */
 	Status = XAxiDma_BdRingToHw(TxRingPtr, NUMBER_OF_BDS_TO_TRANSFER,
 						BdPtr);

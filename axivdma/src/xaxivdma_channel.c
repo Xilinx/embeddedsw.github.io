@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2012 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xaxivdma_channel.c
-* @addtogroup axivdma_v6_5
+* @addtogroup axivdma_v6_6
 * * @{
 *
 * Implementation of the channel related functions. These functions are used
@@ -74,6 +70,7 @@
 *			parameters (CR: 703738)
 * 4.05a srt  04/26/13 - Added unalignment checks for Hsize and Stride
 *			(CR 710279)
+* 6.6   rsp  07/02/18 - Program vertical flip state for S2MM channel
 *
 * </pre>
 *
@@ -776,6 +773,16 @@ int XAxiVdma_ChannelConfig(XAxiVdma_Channel *Channel,
 	 */
 	XAxiVdma_WriteReg(Channel->ChanBase, XAXIVDMA_CR_OFFSET,
 	    CrBits);
+
+	if (Channel->HasVFlip && !Channel->IsRead) {
+		u32 RegValue;
+		RegValue = XAxiVdma_ReadReg(Channel->InstanceBase,
+				XAXIVDMA_VFLIP_OFFSET);
+		RegValue &= ~XAXIVDMA_VFLIP_EN_MASK;
+		RegValue |= (ChannelCfgPtr->EnableVFlip & XAXIVDMA_VFLIP_EN_MASK);
+		XAxiVdma_WriteReg(Channel->InstanceBase, XAXIVDMA_VFLIP_OFFSET,
+			RegValue);
+	}
 
 	if (Channel->HasSG) {
 		/* Setup the information in BDs

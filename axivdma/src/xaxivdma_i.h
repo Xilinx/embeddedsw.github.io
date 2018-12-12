@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2012 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -32,7 +28,7 @@
 /*****************************************************************************/
 /**
  *  @file xaxivdma_i.h
-* @addtogroup axivdma_v6_5
+* @addtogroup axivdma_v6_6
 * @{
  *
  * Internal API definitions shared by driver files.
@@ -57,8 +53,9 @@
  *		       structure (CR 691866).
  * 4.04a srt  03/03/13 Support for the GenlockRepeat Control bit (Bit 15)
  *                     added in the new version of IP v5.04 (CR: 691391)
- *					 - Support for *_ENABLE_DEBUG_INFO_* debug configuration
- *			           parameters (CR: 703738)
+ *		       Support for *_ENABLE_DEBUG_INFO_* debug configuration
+ *		       parameters (CR: 703738)
+ * 6.6  rsp  07/02/18  Add vertical flip states in config structures
  *
  * </pre>
  *
@@ -117,6 +114,7 @@ typedef struct {
     u32 DbgFeatureFlags; /* Debug Parameter Flags */
 	int AddrWidth;
 	int direction;	/* Determines whether Read or write channel */
+	u8 HasVFlip;  /* Whether hardware has Vertical Flip enabled */
 }XAxiVdma_Channel;
 
 /* Duplicate layout of XAxiVdma_DmaSetup
@@ -137,6 +135,7 @@ typedef struct {
                             /**< Start Addresses of Frame Store Buffers. */
     int FixedFrameStoreAddr;/**< Fixed Frame Store Address index */
     int GenLockRepeat;      /**< Gen-Lock Repeat? */
+    u8 EnableVFlip;	    /**< Vertical Flip state */
 }XAxiVdma_ChannelSetup;
 
 /************************** Function Prototypes ******************************/

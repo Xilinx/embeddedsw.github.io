@@ -11,10 +11,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -68,7 +64,8 @@ XCsiSs_Config XCsiSs_ConfigTable[] =
 		XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_DPY_LINE_RATE,
 		XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_CSI_EN_CRC,
 		XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_CSI_EN_ACTIVELANES,
-
+		XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_EN_CSI_V2_0,
+		XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_EN_VCX,
 		{
 			XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_AXI_IIC_0_PRESENT,
 			XPAR_MIPI_CSI2_RX_SUBSYSTEM_0_AXI_IIC_0_DEVICE_ID,

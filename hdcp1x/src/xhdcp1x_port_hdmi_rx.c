@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -53,6 +49,8 @@
 * 3.1   yas    07/28/16 Added function XHdcp1x_PortHdmiRxSetRepeater
 * 3.2   yas    10/27/16 Updated the XHdcp1x_PortHdmiRxDisable function to not
 *                       clear the AKSV, An and AInfo values in the DDC space.
+* 4.2   yas    08/15/18 Updated XHdcp1x_PortHdmiRxDisable function to clear
+*                       KSV_FIFO.
 * </pre>
 *
 ******************************************************************************/
@@ -192,7 +190,7 @@ static int XHdcp1x_PortHdmiRxDisable(XHdcp1x *InstancePtr)
 
 	/* Clear HDCP register space for KSV FIFO (0x43) */
 	Value = 0;
-	XHdcp1x_PortHdmiRxWrite(InstancePtr, XHDCP1X_PORT_OFFSET_BCAPS,
+	XHdcp1x_PortHdmiRxWrite(InstancePtr, XHDCP1X_PORT_OFFSET_KSVFIFO,
 					&Value, 1);
 
 	return (Status);

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2016 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -91,6 +87,7 @@
 * 3.3   als  06/27/16 Added Low-level XIic_CheckIsBusBusy API.
 * 3.3   als  06/27/16 Added low-level XIic_WaitBusFree API.
 * 3.4	nk   16/11/16 Reduced sleeping time in Bus-busy check.
+* 3.5   sd   08/29/18 Fix bus busy check for the NACK case.
 * </pre>
 *
 ****************************************************************************/
@@ -495,17 +492,19 @@ unsigned XIic_Send(UINTPTR BaseAddress, u8 Address,
 		if ((ControlReg & XIIC_CR_MSMS_MASK) != 0) {
 			XIic_WriteReg(BaseAddress,  XIIC_CR_REG_OFFSET,
 				 (ControlReg & ~XIIC_CR_MSMS_MASK));
+		}
+
+		if ((XIic_ReadReg(BaseAddress, XIIC_SR_REG_OFFSET) &
+		    XIIC_SR_ADDR_AS_SLAVE_MASK) != 0) {
+			XIic_WriteReg(BaseAddress,  XIIC_CR_REG_OFFSET, 0);
+		}
+		else {
 			StatusReg = XIic_ReadReg(BaseAddress,
 					XIIC_SR_REG_OFFSET);
 			while ((StatusReg & XIIC_SR_BUS_BUSY_MASK) != 0) {
 				StatusReg = XIic_ReadReg(BaseAddress,
 						XIIC_SR_REG_OFFSET);
 			}
-		}
-
-		if ((XIic_ReadReg(BaseAddress, XIIC_SR_REG_OFFSET) &
-		    XIIC_SR_ADDR_AS_SLAVE_MASK) != 0) {
-			XIic_WriteReg(BaseAddress,  XIIC_CR_REG_OFFSET, 0);
 		}
 	}
 

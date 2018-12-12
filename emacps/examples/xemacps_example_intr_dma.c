@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -120,6 +116,7 @@
 *                   CR-965028.
 * 3.5 hk    08/14/17 Dont perform data cache operations when CCI is enabled
 *                    on ZynqMP.
+* 3.8 hk    10/01/18 Fix warning for redefinition of interrupt number.
 *
 * </pre>
 *
@@ -147,25 +144,22 @@
 #define INTC		XIntc
 #define EMACPS_DEVICE_ID	XPAR_XEMACPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
-#define EMACPS_IRPT_INTR	XPAR_AXI_INTC_0_PROCESSING_SYSTEM7_0_IRQ_P2F_ENET0_INTR
 #else
 #define INTC		XScuGic
 #define EMACPS_DEVICE_ID	XPAR_XEMACPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
-#define EMACPS_IRPT_INTR	XPS_GEM0_INT_ID
 #endif
 
-#ifdef XPAR_PSU_ETHERNET_3_DEVICE_ID
-#define EMACPS_IRPT_INTR	XPS_GEM3_INT_ID
-#endif
-#ifdef XPAR_PSU_ETHERNET_2_DEVICE_ID
-#define EMACPS_IRPT_INTR	XPS_GEM2_INT_ID
-#endif
-#ifdef XPAR_PSU_ETHERNET_1_DEVICE_ID
-#define EMACPS_IRPT_INTR	XPS_GEM1_INT_ID
-#endif
-#ifdef XPAR_PSU_ETHERNET_0_DEVICE_ID
+#if defined(XPAR_INTC_0_DEVICE_ID)
+#define EMACPS_IRPT_INTR	XPAR_AXI_INTC_0_PROCESSING_SYSTEM7_0_IRQ_P2F_ENET0_INTR
+#elif defined(XPAR_PSU_ETHERNET_0_DEVICE_ID) || defined(XPAR_PS7_ETHERNET_0_DEVICE_ID)
 #define EMACPS_IRPT_INTR	XPS_GEM0_INT_ID
+#elif defined(XPAR_PSU_ETHERNET_1_DEVICE_ID) || defined(XPAR_PS7_ETHERNET_1_DEVICE_ID)
+#define EMACPS_IRPT_INTR	XPS_GEM1_INT_ID
+#elif defined(XPAR_PSU_ETHERNET_2_DEVICE_ID)
+#define EMACPS_IRPT_INTR	XPS_GEM2_INT_ID
+#elif defined(XPAR_PSU_ETHERNET_3_DEVICE_ID)
+#define EMACPS_IRPT_INTR	XPS_GEM3_INT_ID
 #endif
 
 #define RXBD_CNT       32	/* Number of RxBDs to use */
@@ -1296,9 +1290,7 @@ static void XEmacPsErrorHandler(void *Callback, u8 Direction, u32 ErrorWord)
 *****************************************************************************/
 void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 {
-	u32 SlcrTxClkCntrl;
-	u32 CrlApbClkCntrl;
-
+	u32 ClkCntrl;
 	if (GemVersion == 2)
 	{
 		/*************************************/
@@ -1311,24 +1303,24 @@ void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 	if (EmacPsIntrId == XPS_GEM0_INT_ID) {
 #ifdef XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0
 		/* GEM0 1G clock configuration*/
-		SlcrTxClkCntrl =
+		ClkCntrl =
 		*(volatile unsigned int *)(SLCR_GEM0_CLK_CTRL_ADDR);
-		SlcrTxClkCntrl &= EMACPS_SLCR_DIV_MASK;
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV1 << 20);
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0 << 8);
+		ClkCntrl &= EMACPS_SLCR_DIV_MASK;
+		ClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV1 << 20);
+		ClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0 << 8);
 		*(volatile unsigned int *)(SLCR_GEM0_CLK_CTRL_ADDR) =
-								SlcrTxClkCntrl;
+								ClkCntrl;
 #endif
 	} else if (EmacPsIntrId == XPS_GEM1_INT_ID) {
 #ifdef XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1
 		/* GEM1 1G clock configuration*/
-		SlcrTxClkCntrl =
+		ClkCntrl =
 		*(volatile unsigned int *)(SLCR_GEM1_CLK_CTRL_ADDR);
-		SlcrTxClkCntrl &= EMACPS_SLCR_DIV_MASK;
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1 << 20);
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV0 << 8);
+		ClkCntrl &= EMACPS_SLCR_DIV_MASK;
+		ClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1 << 20);
+		ClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV0 << 8);
 		*(volatile unsigned int *)(SLCR_GEM1_CLK_CTRL_ADDR) =
-								SlcrTxClkCntrl;
+								ClkCntrl;
 #endif
 	}
 #else
@@ -1336,13 +1328,13 @@ void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 	if (EmacPsIntrId == XPAR_AXI_INTC_0_PROCESSING_SYSTEM7_0_IRQ_P2F_ENET0_INTR) {
 #ifdef XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0
 		/* GEM0 1G clock configuration*/
-		SlcrTxClkCntrl =
+		ClkCntrl =
 		*(volatile unsigned int *)(SLCR_GEM0_CLK_CTRL_ADDR);
-		SlcrTxClkCntrl &= EMACPS_SLCR_DIV_MASK;
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV1 << 20);
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0 << 8);
+		ClkCntrl &= EMACPS_SLCR_DIV_MASK;
+		ClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV1 << 20);
+		ClkCntrl |= (XPAR_PS7_ETHERNET_0_ENET_SLCR_1000MBPS_DIV0 << 8);
 		*(volatile unsigned int *)(SLCR_GEM0_CLK_CTRL_ADDR) =
-								SlcrTxClkCntrl;
+								ClkCntrl;
 #endif
 	}
 #endif
@@ -1350,13 +1342,13 @@ void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 	if (EmacPsIntrId == XPAR_AXI_INTC_0_PROCESSING_SYSTEM7_1_IRQ_P2F_ENET1_INTR) {
 #ifdef XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1
 		/* GEM1 1G clock configuration*/
-		SlcrTxClkCntrl =
+		ClkCntrl =
 		*(volatile unsigned int *)(SLCR_GEM1_CLK_CTRL_ADDR);
-		SlcrTxClkCntrl &= EMACPS_SLCR_DIV_MASK;
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1 << 20);
-		SlcrTxClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV0 << 8);
+		ClkCntrl &= EMACPS_SLCR_DIV_MASK;
+		ClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV1 << 20);
+		ClkCntrl |= (XPAR_PS7_ETHERNET_1_ENET_SLCR_1000MBPS_DIV0 << 8);
 		*(volatile unsigned int *)(SLCR_GEM1_CLK_CTRL_ADDR) =
-								SlcrTxClkCntrl;
+								ClkCntrl;
 #endif
 	}
 #endif
@@ -1379,13 +1371,13 @@ void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 #ifdef XPAR_PSU_ETHERNET_0_DEVICE_ID
 		if (EmacPsIntrId == XPS_GEM0_INT_ID) {
 			/* GEM0 1G clock configuration*/
-			CrlApbClkCntrl =
+			ClkCntrl =
 			*(volatile unsigned int *)(CRL_GEM0_REF_CTRL);
-			CrlApbClkCntrl &= ~CRL_GEM_DIV_MASK;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV1;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV0;
+			ClkCntrl &= ~CRL_GEM_DIV_MASK;
+			ClkCntrl |= CRL_GEM_1G_DIV1;
+			ClkCntrl |= CRL_GEM_1G_DIV0;
 			*(volatile unsigned int *)(CRL_GEM0_REF_CTRL) =
-									CrlApbClkCntrl;
+									ClkCntrl;
 
 		}
 #endif
@@ -1393,39 +1385,39 @@ void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
 		if (EmacPsIntrId == XPS_GEM1_INT_ID) {
 
 			/* GEM1 1G clock configuration*/
-			CrlApbClkCntrl =
+			ClkCntrl =
 			*(volatile unsigned int *)(CRL_GEM1_REF_CTRL);
-			CrlApbClkCntrl &= ~CRL_GEM_DIV_MASK;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV1;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV0;
+			ClkCntrl &= ~CRL_GEM_DIV_MASK;
+			ClkCntrl |= CRL_GEM_1G_DIV1;
+			ClkCntrl |= CRL_GEM_1G_DIV0;
 			*(volatile unsigned int *)(CRL_GEM1_REF_CTRL) =
-									CrlApbClkCntrl;
+									ClkCntrl;
 		}
 #endif
 #ifdef XPAR_PSU_ETHERNET_2_DEVICE_ID
 		if (EmacPsIntrId == XPS_GEM2_INT_ID) {
 
 			/* GEM2 1G clock configuration*/
-			CrlApbClkCntrl =
+			ClkCntrl =
 			*(volatile unsigned int *)(CRL_GEM2_REF_CTRL);
-			CrlApbClkCntrl &= ~CRL_GEM_DIV_MASK;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV1;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV0;
+			ClkCntrl &= ~CRL_GEM_DIV_MASK;
+			ClkCntrl |= CRL_GEM_1G_DIV1;
+			ClkCntrl |= CRL_GEM_1G_DIV0;
 			*(volatile unsigned int *)(CRL_GEM2_REF_CTRL) =
-									CrlApbClkCntrl;
+									ClkCntrl;
 
 		}
 #endif
 #ifdef XPAR_PSU_ETHERNET_3_DEVICE_ID
 		if (EmacPsIntrId == XPS_GEM3_INT_ID) {
 			/* GEM3 1G clock configuration*/
-			CrlApbClkCntrl =
+			ClkCntrl =
 			*(volatile unsigned int *)(CRL_GEM3_REF_CTRL);
-			CrlApbClkCntrl &= ~CRL_GEM_DIV_MASK;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV1;
-			CrlApbClkCntrl |= CRL_GEM_1G_DIV0;
+			ClkCntrl &= ~CRL_GEM_DIV_MASK;
+			ClkCntrl |= CRL_GEM_1G_DIV1;
+			ClkCntrl |= CRL_GEM_1G_DIV0;
 			*(volatile unsigned int *)(CRL_GEM3_REF_CTRL) =
-									CrlApbClkCntrl;
+									ClkCntrl;
 		}
 #endif
 	}

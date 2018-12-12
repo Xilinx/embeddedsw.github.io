@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -44,6 +40,8 @@
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    01/25/18  Initial release.
  * 1.1   kar    04/02/18  Added debug log function prototypes.
+ * 2.0   kar    09/28/18  Added new API to enable justification.
+ *                        Added new API to select left/right justification.
  * </pre>
  *
  *****************************************************************************/
@@ -170,6 +168,14 @@ typedef enum {
 		XI2S_RX_CHMUX_WAVEGEN,      //!< Wave Generator
 } XI2s_Rx_ChMuxInput;
 
+/**
+ * @brief This typedef specifies the justification of the the XI2s Receiver.
+ */
+typedef enum {
+		XI2S_RX_JUSTIFY_LEFT = 0, //!< Left Justification is enabled.
+		XI2S_RX_JUSTIFY_RIGHT     //!< Right Justification is enabled.
+} XI2s_Rx_Justification;
+
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /*****************************************************************************/
@@ -266,6 +272,10 @@ u32 XI2s_Rx_SetSclkOutDiv(XI2s_Rx *InstancePtr, u32 MClk, u32 Fs);
 
 void XI2s_Rx_IntrEnable(XI2s_Rx *InstancePtr, u32 Mask);
 void XI2s_Rx_IntrDisable(XI2s_Rx *InstancePtr, u32 Mask);
+
+/* Justification related functions in the XI2srx.c */
+void XI2s_Rx_JustifyEnable(XI2s_Rx *InstancePtr, u8 Enable);
+void XI2s_Rx_Justify(XI2s_Rx *InstancePtr, XI2s_Rx_Justification Justify);
 
 /* Interrupt related functions in XI2srx_intr.c */
 void XI2s_Rx_IntrHandler(void *InstancePtr);

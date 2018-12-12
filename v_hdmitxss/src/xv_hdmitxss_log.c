@@ -12,14 +12,10 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
@@ -272,6 +268,9 @@ void XV_HdmiTxSs_LogDisplay(XV_HdmiTxSs *InstancePtr)
 	    case (XV_HDMITXSS_LOG_EVT_VTC_RES_ERR):
 			xil_printf(ANSI_COLOR_RED "Unsupported Video by VTC"
 					ANSI_COLOR_RESET "\r\n", Data);
+			break;
+	    case (XV_HDMITXSS_LOG_EVT_BRDG_UNLOCKED):
+			xil_printf("VID Bridge Unlocked\r\n", Data);
 			break;
 		default:
 			xil_printf("Unknown event\r\n");

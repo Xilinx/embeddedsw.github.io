@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -37,15 +33,14 @@
  * This file demonstrates how to use the mcdma driver on the Xilinx AXI
  * MCDMA core (AXI MCDMA) to transfer packets in interrupt mode.
  *
- * This examples shows how to do multiple packets transfers,
- * as well as how to do multiple show how to do multiple packets transfers,
- * as well as how to do multiple BD's per packet transfers.
+ * This examples shows how to do multiple packets and multiple BD's
+ * Per packet transfers.
  *
- * H/W Requirments:
+ * H/W Requirements:
  * In order to test this example at the h/w level AXI MCDMA MM2S should
  * connect with the S2MM.
  *
- * System level Considerations for ZynqUltrascale+ designs:
+ * System level Considerations for Zynq UltraScale+ designs:
  * Please refer xmcdma_polled_example.c file.
  *
  * <pre>
@@ -54,6 +49,10 @@
  * Ver   Who  Date      Changes
  * ----- ---- --------  -------------------------------------------------------
  * 1.0	 adk  18/07/17	Initial Version.
+ * 1.2	 rsp  07/19/18  Read channel count from IP config.
+ *			Fix gcc 'pointer from integer without a cast' warning.
+ *	 rsp  08/17/18	Fix typos and rephrase comments.
+ *	 rsp  08/17/18  Read Length register value from IP config.
  * </pre>
  *
  * ***************************************************************************
@@ -136,8 +135,6 @@
 #define MAX_PKT_LEN		1024
 #define BLOCK_SIZE_2MB 0x200000U
 
-#define NUM_CHANNELS	8
-
 #define TEST_START_VALUE	0xC
 #ifdef __aarch64__
 // #define HPC_DESIGN
@@ -181,6 +178,7 @@ volatile int TxChanDone;
 volatile int RxDone;
 volatile int TxDone;
 volatile int Error;
+int num_channels;
 
 
 /*
@@ -244,6 +242,9 @@ int main(void)
 		return XST_FAILURE;
 	}
 
+	/* Read numbers of channels from IP config */
+	num_channels = Mcdma_Config->RxNumChannels;
+
 	Status = TxSetup(&AxiMcdma);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
@@ -255,7 +256,7 @@ int main(void)
 		return XST_FAILURE;
 	}
 
-	/* Initalize flgas */
+	/* Initialize flags */
 	RxChanDone = 0;
 	TxChanDone  = 0;
 	RxDone = 0;
@@ -269,7 +270,7 @@ int main(void)
 	}
 
 	 while (1) {
-	        if ((RxDone >= NUMBER_OF_BDS_TO_TRANSFER * NUM_CHANNELS) && !Error)
+	        if ((RxDone >= NUMBER_OF_BDS_TO_TRANSFER * num_channels) && !Error)
 	              break;
 	 }
 
@@ -313,7 +314,7 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 	RxBdSpacePtr = RX_BD_SPACE_BASE;
 
 
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Rx_Chan = XMcdma_GetMcdmaRxChan(McDmaInstPtr, ChanId);
 
 		/* Disable all interrupts */
@@ -420,7 +421,7 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 	TxBufferPtr = TX_BUFFER_BASE;
 	TxBdSpacePtr = TX_BD_SPACE_BASE;
 
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
 
 		/* Disable all interrupts */
@@ -545,7 +546,7 @@ static int SendPacket(XMcdma *McDmaInstPtr)
 	u32 ChanId;
 
 	BdCurPtr = (XMcdma_Bd *)TX_BD_SPACE_BASE;
-	for (ChanId = 1; ChanId <= NUM_CHANNELS; ChanId++) {
+	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
 
 		for(Index = 0; Index < NUMBER_OF_PKTS_TO_TRANSFER; Index++) {
@@ -594,17 +595,19 @@ static void DoneHandler(void *CallBackRef, u32 Chan_id)
         XMcdma_ChanCtrl *Rx_Chan = 0;
         XMcdma_Bd *BdPtr1, *FreeBdPtr;
         int ProcessedBdCount, i;
+        int MaxTransferBytes;
 
         Rx_Chan = XMcdma_GetMcdmaRxChan(InstancePtr, Chan_id);
         ProcessedBdCount = XMcdma_BdChainFromHW(Rx_Chan, NUMBER_OF_BDS_TO_TRANSFER, &BdPtr1);
         RxDone += ProcessedBdCount;
 
         FreeBdPtr = BdPtr1;
+        MaxTransferBytes = MAX_TRANSFER_LEN(InstancePtr->Config.MaxTransferlen - 1);
 
         for (i = 0; i < ProcessedBdCount; i++) {
-                if (CheckData(XMcdma_BdRead64(FreeBdPtr, XMCDMA_BD_BUFA_OFFSET),
-			      XMcDma_BdGetActualLength(FreeBdPtr, 0x00FFFFFF)) != XST_SUCCESS) {
-                        xil_printf("Data check failied for the Chan %x\n\r", Chan_id);
+                if (CheckData((void *)XMcdma_BdRead64(FreeBdPtr, XMCDMA_BD_BUFA_OFFSET),
+			      XMcDma_BdGetActualLength(FreeBdPtr, MaxTransferBytes)) != XST_SUCCESS) {
+                        xil_printf("Data check failed for the Chan %x\n\r", Chan_id);
                 }
                 FreeBdPtr = (XMcdma_Bd *) XMcdma_BdRead64(FreeBdPtr, XMCDMA_BD_NDESC_OFFSET);
         }

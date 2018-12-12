@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017-2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -53,14 +49,20 @@
 *                       Baremetal.
 * 4.0   sd     04/28/18 Add Clock configuration support for ZCU111.
 *       sd     05/15/18 Updated Clock configuration for lmk.
+* 5.0   sk     08/03/18 For baremetal, add metal device structure for rfdc
+*                       device and register the device to libmetal generic bus.
+*       mus    08/18/18 Updated to remove xparameters.h dependency for linux
+*                       platform.
+*
 *
 * </pre>
 *
 *****************************************************************************/
 
 /***************************** Include Files ********************************/
-
+#ifdef __BAREMETAL__
 #include "xparameters.h"
+#endif
 #include "xrfdc.h"
 #ifdef XPS_BOARD_ZCU111
 #include "xrfdc_clk.h"
@@ -73,10 +75,14 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
-#ifndef __BAREMETAL__
-#define BUS_NAME        "platform"
+#ifdef __BAREMETAL__
+#define BUS_NAME        "generic"
 #define RFDC_DEV_NAME    XPAR_XRFDC_0_DEV_NAME
+#define XRFDC_BASE_ADDR		XPAR_XRFDC_0_BASEADDR
+#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
+#else
+#define BUS_NAME        "platform"
+#define RFDC_DEVICE_ID 	0
 #endif
 
 /**************************** Type Definitions ******************************/
@@ -90,6 +96,9 @@
 
 static int SelfTestExample(u16 SysMonDeviceId);
 static int CompareFabricRate(u32 SetFabricRate, u32 GetFabricRate);
+#ifdef __BAREMETAL__
+int register_metal_device(void);
+#endif
 
 /************************** Variable Definitions ****************************/
 
@@ -101,6 +110,37 @@ unsigned int LMK04208_CKin[1][26] = {
 		0x55555549,0x9102410A,0x0401100B,0x1B0C006C,0x2302886D,0x0200000E,
 		0x8000800F,0xC1550410,0x00000058,0x02C9C419,0x8FA8001A,0x10001E1B,
 		0x0021201C,0x0180033D,0x0200033E,0x003F001F }};
+#endif
+struct metal_device *device;
+struct metal_io_region *io;
+
+#ifdef __BAREMETAL__
+const metal_phys_addr_t metal_phys[] = {
+		XRFDC_BASE_ADDR
+};
+
+static struct metal_device metal_dev_table[] = {
+	{
+		/* RFdc device */
+		.name = RFDC_DEV_NAME,
+		.bus = NULL,
+		.num_regions = 1,
+		.regions = {
+			{
+				.virt = (void *)XRFDC_BASE_ADDR,
+				.physmap = &metal_phys[0],
+				.size = 0x40000,
+				.page_shift = (unsigned)(-1),
+				.page_mask = (unsigned)(-1),
+				.mem_flags = 0x0,
+				.ops = {NULL},
+			}
+		},
+		.node = {NULL},
+		.irq_num = 0,
+		.irq_info = NULL,
+	}
+};
 #endif
 
 /****************************************************************************/
@@ -137,6 +177,38 @@ int main(void)
 	return XRFDC_SUCCESS;
 }
 
+#ifdef __BAREMETAL__
+/****************************************************************************/
+/**
+*
+* This function registers devices to the libmetal generic bus.
+* Before accessing the device with libmetal device operation,
+* register the device to a libmetal supported bus. For non-Linux system,
+* libmetal only supports "generic" bus to manage memory mapped devices.
+*
+* @param	None.
+*
+* @return
+*		0 - succeeded, non-zero for failures.
+*
+* @note		None.
+*
+*****************************************************************************/
+int register_metal_device(void)
+{
+	unsigned int i;
+	int ret;
+
+	for (i = 0; i < 1; i++) {
+		device = &metal_dev_table[i];
+		xil_printf("registering: %d, name=%s\n", i, device->name);
+		ret = metal_register_generic_device(device);
+		if (ret)
+			return ret;
+	}
+	return 0;
+}
+#endif
 
 /****************************************************************************/
 /**
@@ -170,12 +242,10 @@ int SelfTestExample(u16 RFdcDeviceId)
 	u32 ADCSetFabricRate[4];
 	u32 DACSetFabricRate[4];
 	u32 GetFabricRate;
-
 #ifndef __BAREMETAL__
-	struct metal_device *device;
-	struct metal_io_region *io;
-	int ret = 0;
+	char DeviceName[NAME_MAX];
 #endif
+	int ret = 0;
 
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
 
@@ -206,12 +276,30 @@ printf("\n Configuring the Clock \r\n");
 #endif
 #endif
 
-#ifndef __BAREMETAL__
+#ifdef __BAREMETAL__
+	ret = register_metal_device();
+	if (ret) {
+		printf("%s: failed to register devices: %d\n", __func__, ret);
+		return ret;
+	}
 	ret = metal_device_open(BUS_NAME, RFDC_DEV_NAME, &device);
 	if (ret) {
-		printf("ERROR: Failed to open device a0000000.usp_rf_data_converter.\n");
+		printf("ERROR: Failed to open device usp_rf_data_converter.\n");
 		return XRFDC_FAILURE;
 	}
+#else
+	Status = XRFdc_GetDeviceNameByDeviceId(DeviceName, RFDC_DEVICE_ID);
+	if (Status < 0) {
+		printf("ERROR: Failed to find rfdc device with device id %d\n",
+				RFDC_DEVICE_ID);
+		return XRFDC_FAILURE;
+	}
+	ret = metal_device_open(BUS_NAME, DeviceName, &device);
+	if (ret) {
+		printf("ERROR: Failed to open device %s.\n", DeviceName);
+		return XRFDC_FAILURE;
+	}
+#endif
 
 	/* Map RFDC device IO region */
 	io = metal_device_io_region(device, 0);
@@ -222,7 +310,6 @@ printf("\n Configuring the Clock \r\n");
 	}
 	RFdcInstPtr->device = device;
 	RFdcInstPtr->io = io;
-#endif
 
 	Tile = 0x0;
 	for (Block = 0; Block <4; Block++) {

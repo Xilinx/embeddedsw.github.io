@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsdps.c
-* @addtogroup sdps_v3_5
+* @addtogroup sdps_v3_6
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -91,6 +87,13 @@
 *                       transfers
 *       mn     03/02/18 Move UHS macro check to SD card initialization routine
 * 3.5   mn     04/18/18 Resolve compilation warnings for sdps driver
+* 3.6   mn     07/06/18 Fix Cppcheck and Doxygen warnings for sdps driver
+*       mn     08/01/18 Add support for using 64Bit DMA with 32-Bit Processor
+*       mn     08/01/18 Add cache invalidation call before returning from
+*                       ReadPolled API
+*       mn     08/14/18 Resolve compilation warnings for ARMCC toolchain
+*       mn     10/01/18 Change Expected Response for CMD3 to R1 for MMC
+ * 3.6  mus 11/05/18 Support 64 bit DMA addresses for Microblaze-X platform.
 * </pre>
 *
 ******************************************************************************/
@@ -124,6 +127,7 @@
 #define EXT_CSD_DEVICE_TYPE_SDR_1V2_HS200		0x20U
 #define CSD_SPEC_VER_3		0x3U
 #define SCR_SPEC_VER_3		0x80U
+#define ADDRESS_BEYOND_32BIT	0x100000000U
 
 /**************************** Type Definitions *******************************/
 
@@ -133,6 +137,7 @@
 u32 XSdPs_FrameCmd(XSdPs *InstancePtr, u32 Cmd);
 s32 XSdPs_CmdTransfer(XSdPs *InstancePtr, u32 Cmd, u32 Arg, u32 BlkCnt);
 void XSdPs_SetupADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff);
+void XSdPs_SetupADMA2DescTbl64Bit(XSdPs *InstancePtr, u32 BlkCnt);
 extern s32 XSdPs_Uhs_ModeInit(XSdPs *InstancePtr, u8 Mode);
 static s32 XSdPs_IdentifyCard(XSdPs *InstancePtr);
 static s32 XSdPs_Switch_Voltage(XSdPs *InstancePtr);
@@ -194,6 +199,7 @@ s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
 	InstancePtr->SectorCount = 0;
 	InstancePtr->Mode = XSDPS_DEFAULT_SPEED_MODE;
 	InstancePtr->Config_TapDelay = NULL;
+	InstancePtr->Dma64BitAddr = 0U;
 
 	/* Disable bus power and issue emmc hw reset */
 	if ((XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
@@ -270,17 +276,17 @@ s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
 			XSDPS_POWER_CTRL_OFFSET,
 			PowerLevel | XSDPS_PC_BUS_PWR_MASK);
 
-#ifdef __aarch64__
-	/* Enable ADMA2 in 64bit mode. */
-	XSdPs_WriteReg8(InstancePtr->Config.BaseAddress,
-			XSDPS_HOST_CTRL1_OFFSET,
-			XSDPS_HC_DMA_ADMA2_64_MASK);
-#else
-	/* Enable ADMA2 in 32bit mode. */
-	XSdPs_WriteReg8(InstancePtr->Config.BaseAddress,
-			XSDPS_HOST_CTRL1_OFFSET,
-			XSDPS_HC_DMA_ADMA2_32_MASK);
-#endif
+	if (InstancePtr->HC_Version == XSDPS_HC_SPEC_V3) {
+		/* Enable ADMA2 in 64bit mode. */
+		XSdPs_WriteReg8(InstancePtr->Config.BaseAddress,
+				XSDPS_HOST_CTRL1_OFFSET,
+				XSDPS_HC_DMA_ADMA2_64_MASK);
+	} else {
+		/* Enable ADMA2 in 32bit mode. */
+		XSdPs_WriteReg8(InstancePtr->Config.BaseAddress,
+				XSDPS_HOST_CTRL1_OFFSET,
+				XSDPS_HC_DMA_ADMA2_32_MASK);
+	}
 
 	/* Enable all interrupt status except card interrupt initially */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
@@ -566,7 +572,7 @@ s32 XSdPs_CardInitialize(XSdPs *InstancePtr)
 #pragma data_alignment = 4
 #else
 	static u8 ExtCsd[512] __attribute__ ((aligned(32)));
-	u8 SCR[8] __attribute__ ((aligned(32))) = { 0U };
+	static u8 SCR[8] __attribute__ ((aligned(32))) = { 0U };
 #endif
 	u8 ReadBuff[64] = { 0U };
 	s32 Status;
@@ -1199,7 +1205,8 @@ RETURN_PATH:
 * This value is already shifted to be upper 16 bits and can be directly
 * OR'ed with transfer mode register value.
 *
-* @param	Command to be sent.
+* @param	InstancePtr is a pointer to the instance to be worked on.
+* @param	Cmd is the Command to be sent.
 *
 * @return	Command register value complete with response type and
 * 		data, CRC and index related flags.
@@ -1222,7 +1229,11 @@ u32 XSdPs_FrameCmd(XSdPs *InstancePtr, u32 Cmd)
 			RetVal |= RESP_R2;
 		break;
 		case CMD3:
-			RetVal |= RESP_R6;
+			if (InstancePtr->CardType == XSDPS_CARD_SD) {
+				RetVal |= RESP_R6;
+			} else {
+				RetVal |= RESP_R1;
+			}
 		break;
 		case CMD4:
 			RetVal |= RESP_NONE;
@@ -1342,10 +1353,14 @@ s32 XSdPs_ReadPolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff)
 		}
 	}
 
-	XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
-	if (InstancePtr->Config.IsCacheCoherent == 0) {
-		Xil_DCacheInvalidateRange((INTPTR)Buff,
-			BlkCnt * XSDPS_BLK_SIZE_512_MASK);
+	if (InstancePtr->Dma64BitAddr >= ADDRESS_BEYOND_32BIT) {
+		XSdPs_SetupADMA2DescTbl64Bit(InstancePtr, BlkCnt);
+	} else {
+		XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
+		if (InstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheInvalidateRange((INTPTR)Buff,
+				BlkCnt * XSDPS_BLK_SIZE_512_MASK);
+		}
 	}
 
 	if (BlkCnt == 1U) {
@@ -1388,8 +1403,11 @@ s32 XSdPs_ReadPolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff)
 	/* Write to clear bit */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
+
+	if (InstancePtr->Config.IsCacheCoherent == 0) {
+		Xil_DCacheInvalidateRange((INTPTR)Buff,
+				BlkCnt * XSDPS_BLK_SIZE_512_MASK);
+	}
 
 	Status = XST_SUCCESS;
 
@@ -1445,10 +1463,14 @@ s32 XSdPs_WritePolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, const u8 *Buff)
 
 	}
 
-	XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
-	if (InstancePtr->Config.IsCacheCoherent == 0) {
-		Xil_DCacheFlushRange((INTPTR)Buff,
-			BlkCnt * XSDPS_BLK_SIZE_512_MASK);
+	if (InstancePtr->Dma64BitAddr >= ADDRESS_BEYOND_32BIT) {
+		XSdPs_SetupADMA2DescTbl64Bit(InstancePtr, BlkCnt);
+	} else {
+		XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
+		if (InstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheFlushRange((INTPTR)Buff,
+				BlkCnt * XSDPS_BLK_SIZE_512_MASK);
+		}
 	}
 
 	if (BlkCnt == 1U) {
@@ -1517,7 +1539,7 @@ s32 XSdPs_WritePolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, const u8 *Buff)
 ******************************************************************************/
 s32 XSdPs_Select_Card (XSdPs *InstancePtr)
 {
-	s32 Status = 0;
+	s32 Status;
 
 	/* Send CMD7 - Select card */
 	Status = XSdPs_CmdTransfer(InstancePtr, CMD7,
@@ -1529,6 +1551,78 @@ s32 XSdPs_Select_Card (XSdPs *InstancePtr)
 
 RETURN_PATH:
 		return Status;
+
+}
+
+/*****************************************************************************/
+/**
+*
+* API to setup ADMA2 descriptor table for 64 Bit DMA
+*
+*
+* @param	InstancePtr is a pointer to the XSdPs instance.
+* @param	BlkCnt - block count.
+*
+* @return	None
+*
+* @note		None.
+*
+******************************************************************************/
+void XSdPs_SetupADMA2DescTbl64Bit(XSdPs *InstancePtr, u32 BlkCnt)
+{
+	u32 TotalDescLines;
+	u32 DescNum;
+	u32 BlkSize;
+
+	/* Setup ADMA2 - Write descriptor table and point ADMA SAR to it */
+	BlkSize = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+					XSDPS_BLK_SIZE_OFFSET) &
+					XSDPS_BLK_SIZE_MASK;
+
+	if((BlkCnt*BlkSize) < XSDPS_DESC_MAX_LENGTH) {
+
+		TotalDescLines = 1U;
+
+	} else {
+
+		TotalDescLines = ((BlkCnt*BlkSize) / XSDPS_DESC_MAX_LENGTH);
+		if (((BlkCnt * BlkSize) % XSDPS_DESC_MAX_LENGTH) != 0U) {
+			TotalDescLines += 1U;
+		}
+
+	}
+
+	for (DescNum = 0U; DescNum < (TotalDescLines-1); DescNum++) {
+		InstancePtr->Adma2_DescrTbl[DescNum].Address =
+				InstancePtr->Dma64BitAddr +
+				(DescNum*XSDPS_DESC_MAX_LENGTH);
+		InstancePtr->Adma2_DescrTbl[DescNum].Attribute =
+				XSDPS_DESC_TRAN | XSDPS_DESC_VALID;
+		/* This will write '0' to length field which indicates 65536 */
+		InstancePtr->Adma2_DescrTbl[DescNum].Length =
+				(u16)XSDPS_DESC_MAX_LENGTH;
+	}
+
+	InstancePtr->Adma2_DescrTbl[TotalDescLines-1].Address =
+				InstancePtr->Dma64BitAddr +
+				(DescNum*XSDPS_DESC_MAX_LENGTH);
+
+	InstancePtr->Adma2_DescrTbl[TotalDescLines-1].Attribute =
+			XSDPS_DESC_TRAN | XSDPS_DESC_END | XSDPS_DESC_VALID;
+
+	InstancePtr->Adma2_DescrTbl[TotalDescLines-1].Length =
+			(u16)((BlkCnt*BlkSize) - (DescNum*XSDPS_DESC_MAX_LENGTH));
+
+	XSdPs_WriteReg(InstancePtr->Config.BaseAddress, XSDPS_ADMA_SAR_OFFSET,
+			(u32)(UINTPTR)&(InstancePtr->Adma2_DescrTbl[0]));
+
+	if (InstancePtr->Config.IsCacheCoherent == 0) {
+		Xil_DCacheFlushRange((INTPTR)&(InstancePtr->Adma2_DescrTbl[0]),
+			sizeof(XSdPs_Adma2Descriptor) * 32U);
+	}
+
+	/* Clear the 64-Bit Address variable */
+	InstancePtr->Dma64BitAddr = 0U;
 
 }
 
@@ -1549,14 +1643,14 @@ RETURN_PATH:
 ******************************************************************************/
 void XSdPs_SetupADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 {
-	u32 TotalDescLines = 0U;
-	u32 DescNum = 0U;
-	u32 BlkSize = 0U;
+	u32 TotalDescLines;
+	u32 DescNum;
+	u32 BlkSize;
 
 	/* Setup ADMA2 - Write descriptor table and point ADMA SAR to it */
 	BlkSize = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
-					XSDPS_BLK_SIZE_OFFSET);
-	BlkSize = BlkSize & XSDPS_BLK_SIZE_MASK;
+					XSDPS_BLK_SIZE_OFFSET) &
+					XSDPS_BLK_SIZE_MASK;
 
 	if((BlkCnt*BlkSize) < XSDPS_DESC_MAX_LENGTH) {
 
@@ -1572,7 +1666,7 @@ void XSdPs_SetupADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 	}
 
 	for (DescNum = 0U; DescNum < (TotalDescLines-1); DescNum++) {
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__arch64__)
 		InstancePtr->Adma2_DescrTbl[DescNum].Address =
 				(u64)((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
 #else
@@ -1586,7 +1680,7 @@ void XSdPs_SetupADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 				(u16)XSDPS_DESC_MAX_LENGTH;
 	}
 
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__arch64__)
 	InstancePtr->Adma2_DescrTbl[TotalDescLines-1].Address =
 			(u64)((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
 #else
@@ -1600,7 +1694,7 @@ void XSdPs_SetupADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 	InstancePtr->Adma2_DescrTbl[TotalDescLines-1].Length =
 			(u16)((BlkCnt*BlkSize) - (DescNum*XSDPS_DESC_MAX_LENGTH));
 
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__arch64__)
 	XSdPs_WriteReg(InstancePtr->Config.BaseAddress, XSDPS_ADMA_SAR_EXT_OFFSET,
 			(u32)(((u64)&(InstancePtr->Adma2_DescrTbl[0]))>>32));
 #endif

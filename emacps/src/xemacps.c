@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xemacps.c
-* @addtogroup emacps_v3_7
+* @addtogroup emacps_v3_8
 * @{
 *
 * The XEmacPs driver. Functions in this file are the minimum required functions
@@ -54,6 +50,8 @@
 * 3.1  hk   08/10/15 Update upper 32 bit tx and rx queue ptr registers
 * 3.5  hk   08/14/17 Update cache coherency information of the interface in
 *                    its config structure.
+* 3.8  hk   09/17/18 Cleanup stale comments.
+* 3.8  mus  11/05/18 Support 64 bit DMA addresses for Microblaze-X platform.
 *
 * </pre>
 ******************************************************************************/
@@ -356,12 +354,10 @@ void XEmacPs_Reset(XEmacPs *InstancePtr)
 				(u32)XEMACPS_DMACR_TXSIZE_MASK);
 
 
-	/* Single bursts */
-	/* FIXME: Why Single bursts? */
 	if (InstancePtr->Version > 2) {
 		XEmacPs_WriteReg(InstancePtr->Config.BaseAddress, XEMACPS_DMACR_OFFSET,
 			(XEmacPs_ReadReg(InstancePtr->Config.BaseAddress, XEMACPS_DMACR_OFFSET) |
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__arch64__)
 			(u32)XEMACPS_DMACR_ADDR_WIDTH_64 |
 #endif
 			(u32)XEMACPS_DMACR_INCR16_AHB_BURST));
@@ -438,9 +434,9 @@ void XEmacPs_StubHandler(void)
 * This function sets the start address of the transmit/receive buffer queue.
 *
 * @param	InstancePtr is a pointer to the instance to be worked on.
-* @QPtr		Address of the Queue to be written
-* @QueueNum	Buffer Queue Index
-* @Direction	Transmit/Recive
+* @param	QPtr is the address of the Queue to be written
+* @param	QueueNum is the Buffer Queue Index
+* @param	Direction indicates Transmit/Recive
 *
 * @note
 * The buffer queue addresses has to be set before starting the transfer, so

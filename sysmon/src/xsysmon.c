@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsysmon.c
-* @addtogroup sysmon_v7_4
+* @addtogroup sysmon_v7_5
 * @{
 *
 * This file contains the driver API functions that can be used to access
@@ -77,6 +73,7 @@
 * 7.2   asa Made changes to use XSM_CFR3_OFFSET (configuration register 3)
 *           only for Ultrascale. Changes were made in APIs XSysMon_SetAlarmEnables
 *           and XSysMon_GetAlarmEnables. This is to fix CR#910905.
+* 7.5	mn    07/06/18  Fixed Doxygen warnings
 * </pre>
 *
 *****************************************************************************/
@@ -1888,6 +1885,7 @@ void XSysMon_DisableTempUpdate(XSysMon *InstancePtr)
 * This function sets the number of Wait Cycles for Temperature updation logic
 *
 * @param	InstancePtr is a pointer to the XSysMon instance.
+* @param	WaitCycles is number of wait cycles
 *
 * @return	None.
 *

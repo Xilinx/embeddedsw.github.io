@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xtmr_inject_l.h
-* @addtogroup tmr_inject_v1_0
+* @addtogroup tmr_inject_v1_1
 * @{
 *
 * This header file contains identifiers and low-level driver functions (or
@@ -70,6 +66,7 @@ extern "C" {
 #define XTI_CR_OFFSET		0	/* control register, write only */
 #define XTI_AIR_OFFSET		4	/* address register, write only */
 #define XTI_IIR_OFFSET		8	/* instruction register, write only */
+#define XTI_EAIR_OFFSET		0x10	/* address register, write only */
 
 /* Control Register bit positions and masks */
 
@@ -89,6 +86,7 @@ extern "C" {
  */
 
 #define XTMR_Inject_Out32 Xil_Out32
+#define XTMR_Inject_Out64 Xil_Out64
 
 
 /****************************************************************************/
@@ -109,6 +107,26 @@ extern "C" {
 ****************************************************************************/
 #define XTMR_Inject_WriteReg(BaseAddress, RegOffset, Data) \
 	XTMR_Inject_Out32((BaseAddress) + (RegOffset), (u32)(Data))
+
+
+/****************************************************************************/
+/**
+*
+* Write a value to a TMRInject register. A 64 bit write is performed.
+*
+* @param	BaseAddress is the base address of the TMRInject device.
+* @param	RegOffset is the register offset from the base to write to.
+* @param	Data is the data written to the register.
+*
+* @return	None.
+*
+* @note		C-style signature:
+*		void XTMR_Inject_WriteReg64(UINTPTR BaseAddress, u32 RegOffset,
+*					u64 Data)
+*
+****************************************************************************/
+#define XTMR_Inject_WriteReg64(BaseAddress, RegOffset, Data) \
+	XTMR_Inject_Out64((BaseAddress) + (RegOffset), (UINTPTR)(Data))
 
 
 /****************************************************************************/

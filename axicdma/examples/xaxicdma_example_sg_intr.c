@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -72,6 +68,9 @@
  *                     generation of examples.
  * 4.4   rsp  02/22/18 Support data buffers above 4GB.Use UINTPTR for storing
  *                     and typecasting buffer address(CR-995116).
+ * 4.5   rsp  03/10/18 Fix compilation error in CheckData function when DEBUG
+ *                     mode is enabled.
+ *                     Reset error and done states before starting the DMA.
  * </pre>
  *
  ****************************************************************************/
@@ -762,8 +761,8 @@ static int CheckData(u8 *SrcPtr, u8 *DestPtr, int Length)
 		if ( DestPtr[Index] != SrcPtr[Index]) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
 			    "Data check failure %d: %x/%x\r\n",
-			    Index, (unsigned int)DestPtr[i],
-			    (unsigned int)SrcPtr[i]);
+			    Index, (unsigned int)DestPtr[Index],
+			    (unsigned int)SrcPtr[Index]);
 
 			return XST_FAILURE;
 		}
@@ -853,6 +852,9 @@ int XAxiCdma_SgIntrExample(XScuGic *IntcInstancePtr, XAxiCdma *InstancePtr,
 	/* Enable completion and error interrupts
 	 */
 	XAxiCdma_IntrEnable(InstancePtr, XAXICDMA_XR_IRQ_ALL_MASK);
+
+	Done = 0;
+	Error = 0;
 
 	/* Start the DMA transfer
 	 */

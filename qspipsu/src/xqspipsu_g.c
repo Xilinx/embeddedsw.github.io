@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xqspipsu_g.c
-* @addtogroup qspipsu_v1_7
+* @addtogroup qspipsu_v1_8
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -46,6 +42,7 @@
 * ----- --- -------- -----------------------------------------------
 * 1.0   hk  08/21/14 First release
 *       sk  04/24/15 Modified the code according to MISRAC-2012.
+* 1.8	tjs 07/09/18 Fixed gcc warnigs. (CR#1006336).
 * </pre>
 *
 ******************************************************************************/
@@ -79,7 +76,8 @@ XQspiPsu_Config XQspiPsu_ConfigTable[XPAR_XQSPIPSU_NUM_INSTANCES] = {
 		XPAR_XQSPIPSU_0_BASEADDR,  /* Device base address */
 		XPAR_XQSPIPSU_0_QSPI_CLK_FREQ_HZ,
 		XPAR_XQSPIPSU_0_QSPI_MODE,
-		XPAR_XQSPIPSU_0_QSPI_BUS_WIDTH
+		XPAR_XQSPIPSU_0_QSPI_BUS_WIDTH,
+		XPAR_XQSPIPSU_0_IS_CACHE_COHERENT
 	},
 };
 /** @} */

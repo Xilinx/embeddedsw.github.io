@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -32,8 +28,8 @@
 /*****************************************************************************/
 /**
 *
-* @file xsysmon_selftest.c
-* @addtogroup sysmonpsu_v2_4
+* @file xsysmonpsu_selftest.c
+* @addtogroup sysmonpsu_v2_5
 *
 * This file contains a diagnostic self test function for the XSysMon driver.
 * The self test function does a simple read/write test of the Alarm Threshold
@@ -50,6 +46,7 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.0   kvn   12/15/15  First release
+* 2.5   mn     07/06/18 Fixed Doxygen warnings
 *
 * </pre>
 *

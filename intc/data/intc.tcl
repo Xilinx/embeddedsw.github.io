@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (C) 2005 - 2014 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2005 - 2018 Xilinx, Inc.  All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 #
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-#
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -79,6 +75,9 @@
 ##                  to generate separate canonical definitions and constants
 ##                  definitions for interrupt IDs/Masks, if interrupt pin of same IP
 ##                  is connected to two axi intc pins
+##     06/28/18 mus Updated check_cascade proc, to add check
+##                  for irq_in pin, while detecting cascaded
+##                  interrupt controllers.It fixes CR#1005371.
 ##
 ##
 ##
@@ -149,7 +148,7 @@ proc generate {drv_handle} {
 	}
 
 	::hsi::utils::define_if_all $drv_handle "xparameters.h" "XIntc" "C_HAS_IPR" "C_HAS_SIE" "C_HAS_CIE" "C_HAS_IVR" "C_HAS_ILR"
-	::hsi::utils::define_include_file $drv_handle "xparameters.h" "XIntc" "NUM_INSTANCES" "DEVICE_ID" "C_BASEADDR" "C_HIGHADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS"
+	::hsi::utils::define_include_file $drv_handle "xparameters.h" "XIntc" "NUM_INSTANCES" "DEVICE_ID" "C_BASEADDR" "C_HIGHADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS" "C_ADDR_WIDTH"
 
 
 	# Define XPAR_SINGLE_DEVICE_ID
@@ -167,7 +166,7 @@ proc generate {drv_handle} {
 	close $config_inc
 
 	# Generate canonical xparameters
-	xdefine_canonical_xpars $drv_handle "xparameters.h" "Intc" "DEVICE_ID" "C_BASEADDR" "C_HIGHADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS"
+	xdefine_canonical_xpars $drv_handle "xparameters.h" "Intc" "DEVICE_ID" "C_BASEADDR" "C_HIGHADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS" "C_ADDR_WIDTH"
 }
 
 
@@ -187,7 +186,7 @@ proc intc_define_config_file {drv_handle periphs config_inc} {
 	set isr_options XIN_SVC_SGL_ISR_OPTION
 	set file_name "xintc_g.c"
 	set drv_string "XIntc"
-	set args [list "DEVICE_ID" "C_BASEADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS"]
+	set args [list "DEVICE_ID" "C_BASEADDR" "C_KIND_OF_INTR" "C_HAS_FAST" "C_IVAR_RESET_VALUE" "C_NUM_INTR_INPUTS" "C_ADDR_WIDTH"]
 	set filename [file join "src" $file_name]
 	set config_file [open $filename w]
 	::hsi::utils::write_c_header $config_file "Driver configuration"
@@ -645,6 +644,11 @@ proc check_cascade {drv_handle} {
     foreach periph $periphs {
 		set i 0
 		set source_pins [::hsi::utils::get_interrupt_sources $periph]
+        set irq_input [::hsi::get_pins -of_objects $periph irq_in]
+        set irq [::hsi::utils::get_source_pins $irq_input]
+        if { [llength $irq] > 0 } {
+            lappend source_pins $irq
+        }
         foreach source_pin $source_pins {
             set source_pin_name($i) [common::get_property NAME $source_pin]
             if { [::hsi::utils::is_external_pin $source_pin] } {

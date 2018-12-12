@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -60,6 +56,7 @@
 * 1.00  jsr  07/17/17 Initial release.
 * 2.00  kar  01/25/18 Second  release.
 *       jsr  03/02/2018 Added core settings API
+* 3.0   vve  10/03/18 Add support for ST352 in C Stream
 * </pre>
 *
 ******************************************************************************/
@@ -159,6 +156,7 @@ typedef struct {
     UINTPTR BaseAddress;	/**< BaseAddress is the physical base address of the					subsystem address range */
     XVidC_PixelsPerClock Ppc;	/**< Supported Pixel per Clock */
     u8 MaxRateSupported;
+    u8 InsertCSTRST352;         /**< Insert ST352 in C stream */
     XV_SdiTxSs_SubCore SdiTx;	/**< Sub-core instance configuration */
 	XV_SdiTxSs_SubCore Vtc;	/**< Sub-core instance configuration */
 } XV_SdiTxSs_Config;
@@ -285,6 +283,8 @@ void XV_SdiTxSs_LogWrite(XV_SdiTxSs *InstancePtr,
 u16 XV_SdiTxSs_LogRead(XV_SdiTxSs *InstancePtr);
 void XV_SdiTxSs_LogDisplay(XV_SdiTxSs *InstancePtr);
 int XV_SdiTxSs_SetColorFormat(XV_SdiTxSs *InstancePtr, XVidC_ColorFormat ColorFormat);
+void XV_SdiTxSs_ST352CStreamEnable(XV_SdiTxSs *InstancePtr);
+void XV_SdiTxSs_ST352CSwitch3GA(XV_SdiTxSs *InstancePtr);
 void XV_SdiTxSs_SetCoreSettings(XV_SdiTxSs *InstancePtr,
 					XV_SdiTxSs_CoreSelId SelId, u8 Data);
 

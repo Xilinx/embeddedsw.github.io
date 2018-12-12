@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
  *
  * @file xsdiaud_selftest.c
- * @addtogroup sdiaud_v1_1
+ * @addtogroup sdiaud_v2_0
  * @{
  * Contains an basic self-test API
  * @note None
@@ -45,6 +41,11 @@
  * ----- ----- ---------- -----------------------------------------------
  * 1.0    kar  02/14/18    Initial release.
  * 1.1    kar  04/02/18    Added new macros for UHD-SDI standard and channels.
+ * 2.0    vve  09/27/18    Add 32 channel support
+ *                         Add support for channel status extraction logic both
+ *                         on embed and extract side.
+ *                         Add APIs to detect group change, sample rate change,
+ *                         active channel change
  * </pre>
  *
  ******************************************************************************/
@@ -193,8 +194,11 @@ int XSdiAud_SelfTest(XSdiAud *InstancePtr)
 	case 7:
 		SdiAud_NumCh = XSDIAUD_16_CHANNELS;
 		break;
+	case 8:
+		SdiAud_NumCh = XSDIAUD_32_CHANNELS;
+		break;
 	default:
-		SdiAud_NumCh = XSDIAUD_16_CHANNELS;
+		SdiAud_NumCh = XSDIAUD_32_CHANNELS;
 		break;
 	}
 

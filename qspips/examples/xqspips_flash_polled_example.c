@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -41,8 +37,9 @@
 * available. It is recommended to use Manual CS + Auto start for
 * best performance.
 * The hardware which this example runs on. must have a serial FLASH (Numonyx
-* N25Q, Winbond W25Q, or Spansion S25FL) for it to run. This example has been
-* tested with the Numonyx Serial Flash (N25Q128).
+* N25Q, Winbond W25Q, Spansion S25FL, ISSI IS25WP) for it to run. This example
+* has been tested with the Numonyx Serial Flash (N25Q128) and IS25WP series
+* flash parts.
 *
 * @note
 *
@@ -73,6 +70,8 @@
 *       ms  04/05/17 Modified Comment lines in functions to
 *                    recognize it as documentation block for doxygen
 *                    generation.
+* 3.5	tjs 07/16/18 Added support for low density ISSI flash parts.
+*		     Added FlashQuadEnable API to enable quad mode in flash.
 *</pre>
 *
 ******************************************************************************/
@@ -122,9 +121,11 @@
 #define ADDRESS_3_OFFSET	3 /* LSB byte of address to read or write */
 #define DATA_OFFSET		4 /* Start of Data for Read/Write */
 #define DUMMY_OFFSET		4 /* Dummy byte offset for fast, dual and quad
-				     reads */
+				   * reads
+				   */
 #define DUMMY_SIZE		1 /* Number of dummy bytes for fast, dual and
-				     quad reads */
+				   * quad reads
+				   */
 #define RD_ID_SIZE		4 /* Read ID command + 3 bytes ID response */
 #define BULK_ERASE_SIZE		1 /* Bulk Erase command size */
 #define SEC_ERASE_SIZE		4 /* Sector Erase command + Sector address */
@@ -146,14 +147,10 @@
 #define NUM_PAGES		0x10000
 #define PAGE_SIZE		256
 
-/*
- * Number of flash pages to be written.
- */
+/* Number of flash pages to be written.*/
 #define PAGE_COUNT		16
 
-/*
- * Flash address to which data is ot be written.
- */
+/* Flash address to which data is ot be written.*/
 #define TEST_ADDRESS		0x00055000
 #define UNIQUE_VALUE		0x05
 /*
@@ -161,7 +158,7 @@
  * the buffer required to hold the data and overhead to transfer the data to
  * and from the FLASH.
  */
-#define MAX_DATA		PAGE_COUNT * PAGE_SIZE
+#define MAX_DATA		(PAGE_COUNT * PAGE_SIZE)
 
 /**************************** Type Definitions *******************************/
 
@@ -176,6 +173,8 @@ void FlashWrite(XQspiPs *QspiPtr, u32 Address, u32 ByteCount, u8 Command);
 void FlashRead(XQspiPs *QspiPtr, u32 Address, u32 ByteCount, u8 Command);
 
 int FlashReadID(void);
+
+void FlashQuadEnable(XQspiPs *QspiPtr);
 
 int QspiFlashPolledExample(XQspiPs *QspiInstancePtr, u16 QspiDeviceId);
 
@@ -220,9 +219,7 @@ int main(void)
 
 	xil_printf("QSPI FLASH Polled Example Test \r\n");
 
-	/*
-	 * Run the Qspi Interrupt example.
-	 */
+	/* Run the Qspi Interrupt example.*/
 	Status = QspiFlashPolledExample(&QspiInstance, QSPI_DEVICE_ID);
 	if (Status != XST_SUCCESS) {
 		xil_printf("QSPI FLASH Polled Example Test Failed\r\n");
@@ -256,11 +253,9 @@ int QspiFlashPolledExample(XQspiPs *QspiInstancePtr, u16 QspiDeviceId)
 	int Page;
 	XQspiPs_Config *QspiConfig;
 
-	/*
-	 * Initialize the QSPI driver so that it's ready to use
-	 */
+	/* Initialize the QSPI driver so that it's ready to use*/
 	QspiConfig = XQspiPs_LookupConfig(QspiDeviceId);
-	if (NULL == QspiConfig) {
+	if (QspiConfig == NULL) {
 		return XST_FAILURE;
 	}
 
@@ -270,9 +265,7 @@ int QspiFlashPolledExample(XQspiPs *QspiInstancePtr, u16 QspiDeviceId)
 		return XST_FAILURE;
 	}
 
-	/*
-	 * Perform a self-test to check hardware build
-	 */
+	/* Perform a self-test to check hardware build*/
 	Status = XQspiPs_SelfTest(QspiInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
@@ -298,22 +291,18 @@ int QspiFlashPolledExample(XQspiPs *QspiInstancePtr, u16 QspiDeviceId)
 			XQSPIPS_FORCE_SSELECT_OPTION |
 			XQSPIPS_HOLD_B_DRIVE_OPTION);
 
-	/*
-	 * Set the prescaler for QSPI clock
-	 */
+	/* Set the prescaler for QSPI clock*/
 	XQspiPs_SetClkPrescaler(QspiInstancePtr, XQSPIPS_CLK_PRESCALE_8);
 
-	/*
-	 * Assert the FLASH chip select.
-	 */
+	/* Assert the FLASH chip select.*/
 	XQspiPs_SetSlaveSelect(QspiInstancePtr);
 
 
 	FlashReadID();
 
-	/*
-	 * Erase the flash.
-	 */
+	FlashQuadEnable(QspiInstancePtr);
+
+	/* Erase the flash.*/
 	FlashErase(QspiInstancePtr, TEST_ADDRESS, MAX_DATA);
 
 	/*
@@ -424,9 +413,7 @@ int QspiFlashPolledExample(XQspiPs *QspiInstancePtr, u16 QspiDeviceId)
 	XQspiPs_SetOptions(QspiInstancePtr, XQSPIPS_FORCE_SSELECT_OPTION |
 			XQSPIPS_HOLD_B_DRIVE_OPTION);
 
-	/*
-	 * Erase the flash.
-	 */
+	/* Erase the flash.*/
 	FlashErase(QspiInstancePtr, TEST_ADDRESS, MAX_DATA);
 
 	/*
@@ -676,9 +663,7 @@ void FlashErase(XQspiPs *QspiPtr, u32 Address, u32 ByteCount)
 		XQspiPs_PolledTransfer(QspiPtr, &WriteEnableCmd, NULL,
 				  sizeof(WriteEnableCmd));
 
-		/*
-		 * Setup the bulk erase command
-		 */
+		/* Setup the bulk erase command*/
 		WriteBuffer[COMMAND_OFFSET]   = BULK_ERASE_CMD;
 
 		/*
@@ -688,9 +673,7 @@ void FlashErase(XQspiPs *QspiPtr, u32 Address, u32 ByteCount)
 		XQspiPs_PolledTransfer(QspiPtr, WriteBuffer, NULL,
 					BULK_ERASE_SIZE);
 
-		/*
-		 * Wait for the erase command to the FLASH to be completed
-		 */
+		/* Wait for the erase command to the FLASH to be completed*/
 		while (1) {
 			/*
 			 * Poll the status register of the device to determine
@@ -746,7 +729,8 @@ void FlashErase(XQspiPs *QspiPtr, u32 Address, u32 ByteCount)
 					SEC_ERASE_SIZE);
 
 		/*
-		 * Wait for the sector erse command to the FLASH to be completed
+		 * Wait for the sector erse command to the
+		 * FLASH to be completed
 		 */
 		while (1) {
 			/*
@@ -790,9 +774,7 @@ int FlashReadID(void)
 {
 	int Status;
 
-	/*
-	 * Read ID in Auto mode.
-	 */
+	/* Read ID in Auto mode.*/
 	WriteBuffer[COMMAND_OFFSET]   = READ_ID;
 	WriteBuffer[ADDRESS_1_OFFSET] = 0x23;		/* 3 dummy bytes */
 	WriteBuffer[ADDRESS_2_OFFSET] = 0x08;
@@ -808,4 +790,42 @@ int FlashReadID(void)
 		   ReadBuffer[3]);
 
 	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+
+/**
+ *
+ * This function enables quad mode in the serial flash connected to the
+ * SPI interface.
+ *
+ * @param	QspiPtr is a pointer to the QSPI driver component to use.
+ *
+ * @return	None.
+ *
+ * @note		None.
+ *
+ ******************************************************************************/
+void FlashQuadEnable(XQspiPs *QspiPtr)
+{
+	u8 WriteEnableCmd = {WRITE_ENABLE_CMD};
+	u8 ReadStatusCmd[] = {READ_STATUS_CMD, 0};
+	u8 QuadEnableCmd[] = {WRITE_STATUS_CMD, 0};
+	u8 FlashStatus[2];
+
+
+	if (ReadBuffer[1] == 0x9D) {
+
+		XQspiPs_PolledTransfer(QspiPtr, ReadStatusCmd,
+					FlashStatus,
+					sizeof(ReadStatusCmd));
+
+		QuadEnableCmd[1] = FlashStatus[1] | 1 << 6;
+
+		XQspiPs_PolledTransfer(QspiPtr, &WriteEnableCmd, NULL,
+				  sizeof(WriteEnableCmd));
+
+		XQspiPs_PolledTransfer(QspiPtr, QuadEnableCmd, NULL,
+					sizeof(QuadEnableCmd));
+	}
 }

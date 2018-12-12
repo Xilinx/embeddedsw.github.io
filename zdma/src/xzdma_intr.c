@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xzdma_intr.c
-* @addtogroup zdma_v1_5
+* @addtogroup zdma_v1_6
 * @{
 *
 * This file contains interrupt related functions of Xilinx ZDMA core.
@@ -45,6 +41,7 @@
 * Ver   Who     Date     Changes
 * ----- ------  -------- ------------------------------------------------------
 * 1.0   vns     2/27/15  First release
+* 1.6   aru     08/18/18 Resolved MISRA-C mandatory violations.(CR#1007757)
 * </pre>
 *
 ******************************************************************************/
@@ -94,8 +91,7 @@ void XZDma_IntrHandler(void *Instance)
 {
 	u32 PendingIntr;
 	u32 ErrorStatus;
-	XZDma *InstancePtr = NULL;
-	InstancePtr = (XZDma *)((void *)Instance);
+	XZDma *InstancePtr = (XZDma *)((void *)Instance);
 
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -194,7 +190,6 @@ s32 XZDma_SetCallBack(XZDma *InstancePtr, XZDma_Handler HandlerType,
 			InstancePtr->ErrorRef = CallBackRef;
 			Status = (XST_SUCCESS);
 			break;
-
 		default:
 			Status = (XST_INVALID_PARAM);
 			break;

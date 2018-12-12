@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -46,6 +42,9 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 3.1   jm     01/24/18 First release
+* 5.0   sk     09/05/18 Rename XRFdc_MTS_RMW_DRP as XRFdc_ClrSetReg.
+* 5 0   mus    08/18/18 Updated to remove xparameters.h dependency for linux
+*                       platform.
 *
 * </pre>
 *
@@ -53,7 +52,9 @@
 
 /***************************** Include Files ********************************/
 
+#ifdef __BAREMETAL__
 #include "xparameters.h"
+#endif
 #include "xrfdc.h"
 #include "xrfdc_mts.h"
 /************************** Constant Definitions ****************************/
@@ -63,10 +64,12 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
+
 #ifndef __BAREMETAL__
 #define BUS_NAME        "platform"
-#define RFDC_DEV_NAME    XPAR_XRFDC_0_DEV_NAME
+#define RFDC_DEVICE_ID	0U
+#else
+#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
 #endif
 
 /**************************** Type Definitions ******************************/
@@ -146,6 +149,7 @@ int RFdcMTS_Example(u16 RFdcDeviceId)
 	struct metal_device *device;
 	struct metal_io_region *io;
 	int ret = 0;
+	char DeviceName[NAME_MAX];
 #endif
 
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -166,9 +170,15 @@ int RFdcMTS_Example(u16 RFdcDeviceId)
     }
 
 #ifndef __BAREMETAL__
-	ret = metal_device_open(BUS_NAME, RFDC_DEV_NAME, &device);
+	status = XRFdc_GetDeviceNameByDeviceId(DeviceName, RFDC_DEVICE_ID);
+	if (status < 0) {
+		printf("ERROR: Failed to find rfdc device with device id %d\n",
+				RFDC_DEVICE_ID);
+		return XRFDC_FAILURE;
+	}
+	ret = metal_device_open(BUS_NAME, DeviceName, &device);
 	if (ret) {
-		printf("ERROR: Failed to open device a0000000.usp_rf_data_converter.\n");
+		printf("ERROR: Failed to open device %s.\n", DeviceName);
 		return XRFDC_FAILURE;
 	}
 
@@ -194,8 +204,8 @@ int RFdcMTS_Example(u16 RFdcDeviceId)
     /* Run MTS for the ADC & DAC */
     printf("\n=== Run DAC Sync ===\n");
 
-    XRFdc_MTS_RMW_DRP(RFdcInstPtr, XRFDC_ADC_TILE_DRP_ADDR(1) + XRFDC_HSCOM_ADDR,  0xB0, 0x0F, 0x01);
-    XRFdc_MTS_RMW_DRP(RFdcInstPtr, XRFDC_ADC_TILE_DRP_ADDR(3) + XRFDC_HSCOM_ADDR,  0xB0, 0x0F, 0x01);
+    XRFdc_ClrSetReg(RFdcInstPtr, XRFDC_ADC_TILE_DRP_ADDR(1) + XRFDC_HSCOM_ADDR,  0xB0, 0x0F, 0x01);
+    XRFdc_ClrSetReg(RFdcInstPtr, XRFDC_ADC_TILE_DRP_ADDR(3) + XRFDC_HSCOM_ADDR,  0xB0, 0x0F, 0x01);
 
     /* Initialize DAC MTS Settings */
     XRFdc_MultiConverter_Init (&DAC_Sync_Config, 0, 0);

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2012 - 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -70,6 +66,7 @@
  *                     are available in all examples. This is a fix for
  *                     CR-965028.
  * 6.5   rsp  12/01/17 Set TX/RX framebuffer count to IP default. CR-990409
+ * 6.6   rsp  07/02/18 Set Vertical Flip state to IP default. CR-989453
  * </pre>
  *
  * ***************************************************************************
@@ -588,6 +585,8 @@ static int WriteSetup(XAxiVdma * InstancePtr)
 	WriteCfg.EnableFrameCounter = 0; /* Endless transfers */
 
 	WriteCfg.FixedFrameStoreAddr = 0; /* We are not doing parking */
+
+	WriteCfg.EnableVFlip = 1; /* Enable vertical flip */
 
 	Status = XAxiVdma_DmaConfig(InstancePtr, XAXIVDMA_WRITE, &WriteCfg);
 	if (Status != XST_SUCCESS) {

@@ -12,10 +12,6 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
-#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -63,6 +59,8 @@
 ## 2.7     mus 04/17/18 Updated the generate proc to add HW parameter based compiler
 ##                      flags for microblaze. Till now this setting was being done by
 ##                      HSI.
+## 2.8     mga 06/27/18 Added -Os and LTO to extra_compiler_flags for pmu bsp
+## 2.8     mus 09/11/18 Added support for Microblaze-X
 # uses xillib.tcl
 
 ########################################
@@ -136,6 +134,8 @@ proc generate {drv_handle} {
         set libxil_multiplier ""
         set pattern ""
         set fpu ""
+        set m64 ""
+        set flag_m64 ""
 
         set libc "libc"
         set libm "libm"
@@ -195,8 +195,14 @@ proc generate {drv_handle} {
             set libxil_multiplier "m"
 	}
 
-	set libc [format "%s%s%s%s%s%s" $libc $endian $multiplier $shifter $pattern ".a"]
-	set libm [format "%s%s%s%s%s%s%s" $libm $endian $multiplier $shifter $pattern $fpu ".a"]
+        set data_size [common::get_property CONFIG.C_DATA_SIZE $periph]
+        if {[string compare -nocase "64" $data_size] == 0 } {
+            set m64 "_m64"
+            set flag_m64 "m64"
+        }
+
+	set libc [format "%s%s%s%s%s%s%s" $libc $m64 $endian $multiplier $shifter $pattern ".a"]
+	set libm [format "%s%s%s%s%s%s%s%s" $libm $m64 $endian $multiplier $shifter $pattern $fpu ".a"]
 	set libxil "libgloss.a"
 	set libgcc "libgcc.a"
 	set targetdir "../../lib/"
@@ -232,14 +238,22 @@ proc generate {drv_handle} {
    file copy -force [file join $library_dir $libm] $libmfilename
    make_writable $osname $libmfilename
 
-   set libxil_path [file join $library_dir $libxil_shifter $libxil_multiplier $libxil_endian $libxil]
+   set m64_library_dir [file join $library_dir "m64"]
+   if { ![file exists $m64_library_dir] } {
+       #toolchain from older SDK release (< 2018.3)
+       set libxil_path [file join $library_dir $libxil_shifter $libxil_multiplier $libxil_endian $libxil]
+       set libgcc_path [file join $libgcc_dir $libxil_shifter $libxil_multiplier $libxil_endian $libgcc]
+   } else {
+        set libxil_path [file join $library_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libxil]
+        set libgcc_path [file join $libgcc_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libgcc]
+   }
    set symlink [file type $libxil_path]
    if { ![file exists $libxil_path] || $symlink == "link"} {
 	# no libgloss.a in older SDK use libxil.a
 	set libxil "libxil.a"
 	set libxil_path [file join $library_dir $libxil_shifter $libxil_multiplier $libxil_endian $libxil]
    }
-   set libgcc_path [file join $libgcc_dir $libxil_shifter $libxil_multiplier $libxil_endian $libgcc]
+
    if { ![file exists $libxil_path] } {
 	set libxil_path [file join $env(XILINX_SDK) "data/embeddedsw/lib/microblaze/" $libxil]
    }
@@ -348,10 +362,24 @@ proc generate {drv_handle} {
 	if {[string compare -nocase "2" $freq_opt] == 0 } {
 		append compiler_flags " -mxl-frequency"
 	}
+	if {[string compare -nocase "64" $data_size] == 0 } {
+		append compiler_flags " -m64"
+	}
     }
     append compiler_flags " -mcpu=v" $cpu_version
 
     common::set_property CONFIG.compiler_flags $compiler_flags $drv_handle
+
+    # Append LTO flag in extra_compiler_flags for PMU Firmware BSP
+    if {[string compare "psu_pmu" $proctype] == 0} {
+
+        set extra_flags [common::get_property CONFIG.extra_compiler_flags [hsi::get_sw_processor]]
+        #Check if LTO flag in EXTRA_COMPILER_FLAGS exist previoulsy
+        if {[string first "-flto" $extra_flags] == -1 } {
+                append extra_flags " -Os -flto -ffat-lto-objects"
+                common::set_property -name {EXTRA_COMPILER_FLAGS} -value $extra_flags -objects [hsi::get_sw_processor]
+        }
+    }
 
 	#------------------------------------------------------------------------------
 	# If the processor is PMU Microblaze, then generate required params and return

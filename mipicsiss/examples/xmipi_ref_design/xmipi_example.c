@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -107,12 +103,12 @@
 #define VID_PHY_DEVICE_ID	VPHY_DEV_ID
 #define VID_PHY_INTR_ID		VPHY_INTRID
 
-#define GPIO_TPG_RESET_DEVICE_ID	XPAR_PROCESSING_SS_AXI_GPIO_1_DEVICE_ID
+#define GPIO_TPG_RESET_DEVICE_ID	XPAR_GPIO_3_DEVICE_ID
 
-#define V_TPG_DEVICE_ID		XPAR_PROCESSING_SS_V_TPG_1_DEVICE_ID
+#define V_TPG_DEVICE_ID		XPAR_XV_TPG_0_DEVICE_ID
 
 #define GPIO_SENSOR		XPAR_AXI_GPIO_0_SENSOR_BASEADDR
-#define GPIO_IP_RESET	XPAR_PROCESSING_SS_AXI_GPIO_IP_RESET_BASEADDR
+#define GPIO_IP_RESET	XPAR_GPIO_4_BASEADDR
 
 #ifdef XPAR_PSU_ACPU_GIC_DEVICE_ID
 #define PSU_INTR_DEVICE_ID	XPAR_PSU_ACPU_GIC_DEVICE_ID
@@ -1069,8 +1065,7 @@ int main(void)
 	}
 
 	/* Initialize HDMI VPHY */
-	Status = XVphy_HdmiInitialize(&Vphy, 0, XVphyCfgPtr,
-			XPAR_CPU_CORE_CLOCK_FREQ_HZ);
+	Status = XVphy_Hdmi_CfgInitialize(&Vphy, 0, XVphyCfgPtr);
 	if (Status != XST_SUCCESS) {
 		print("HDMI VPHY initialization error\n\r");
 		return XST_FAILURE;

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xtmr_inject.h
-* @addtogroup tmr_inject_v1_0
+* @addtogroup tmr_inject_v1_1
 * @{
 * @details
 *
@@ -74,6 +70,8 @@
 * 1.0   sa   04/05/17 First release
 *       ms   03/17/17 Added readme.txt file in examples folder for doxygen
 *                     generation.
+* 1.1   mus  10/25/18 Added new member "LMBAddrWidth" to config structure.
+*                     It contains value of C_INJECT_LMB_AWIDTH parameter.
 * </pre>
 *
 *****************************************************************************/
@@ -92,7 +90,7 @@ extern "C" {
 #include "xstatus.h"
 
 /************************** Constant Definitions ****************************/
-
+#define XTI_STANDARD_LMB_WIDTH		32U
 /**************************** Type Definitions ******************************/
 
 /**
@@ -103,6 +101,7 @@ typedef struct {
 	UINTPTR RegBaseAddr;	/**< Register base address */
 	u8  MagicByte;		/**< Magic Byte parameter */
 	u8  CpuId;		/**< CPU to Inject parameter */
+	u8  LMBAddrWidth;		/**< LMB address width */
 } XTMR_Inject_Config;
 
 /**

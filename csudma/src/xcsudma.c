@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -34,7 +30,7 @@
 /**
 *
 * @file xcsudma.c
-* @addtogroup csudma_v1_2
+* @addtogroup csudma_v1_3
 * @{
 *
 * This file contains the implementation of the interface functions for CSU_DMA
@@ -170,7 +166,7 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 	XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 		((u32)(XCSUDMA_ADDR_MSB_OFFSET) +
 			((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
-		(((u64)Addr >> (u32)(XCSUDMA_MSB_ADDR_SHIFT)) &
+			((u32)((Addr & ULONG64_HI_MASK) >> XCSUDMA_MSB_ADDR_SHIFT) &
 					(u32)(XCSUDMA_MSB_ADDR_MASK)));
 
 	if (EnDataLast == (u8)(XCSUDMA_LAST_WORD_MASK)) {
@@ -509,8 +505,7 @@ void XCsuDma_Resume(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 		((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
 		(Data &
 				(~(XCSUDMA_CTRL_PAUSE_MEM_MASK))));
-	}
-	if (Type == (XCSUDMA_PAUSE_STREAM)) {
+	} else {
 		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 		((u32)(XCSUDMA_CTRL_OFFSET) +
 		(((u32)Channel) * (u32)(XCSUDMA_OFFSET_DIFF))),

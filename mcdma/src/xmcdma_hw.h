@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -36,6 +32,8 @@
 * Ver   Who     Date     Changes
 * ----- ------  -------- ------------------------------------------------------
 * 1.0   adk 	18/07/17 Initial version.
+* 1.2   mj      05/03/18 Defined XMCDMA_BD_SW_ID_OFFSET
+* 1.2   rsp     08/17/18 Remove unused XMCDMA_BD_LEN_MASK
 ******************************************************************************/
 #ifndef XMCDMA_HW_H_
 #define XMCDMA_HW_H_		/**< Prevent circular inclusions
@@ -167,10 +165,10 @@ extern "C" {
 
 #define XMCDMA_BD_HAS_DRE_OFFSET	0x34 /**< First unused field by h/w */
 #define XMCDMA_BD_HAS_CTRLSTS_OFFSET	0x38
+#define XMCDMA_BD_SW_ID_OFFSET		0x3C  /**< Sw ID */
 
 /*@}*/
 #define XMCDMA_BD_CTRL_SBAND_OFFSET	0x18  /**< Status */
-#define XMCDMA_BD_LEN_MASK		0x007FFFFF
 
 #define XMCDMA_BD_CTRL_SOF_MASK		0x80000000
 #define XMCDMA_BD_CTRL_EOF_MASK		0x40000000

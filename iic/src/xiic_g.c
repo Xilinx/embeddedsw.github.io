@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -79,14 +75,14 @@ XIic_Config XIic_ConfigTable[XPAR_XIIC_NUM_INSTANCES] = {
 	 XPAR_IIC_0_DEVICE_ID,	/* Device ID for instance */
 	 XPAR_IIC_0_BASEADDR,	/* Base address */
 	 XPAR_IIC_0_TEN_BIT_ADR,/* Uses 10 bit addressing */
-	 XPAR_IIC_0_GPO_WIDTH,	/* Number of bits in GPO register */
+	 XPAR_IIC_0_GPO_WIDTH	/* Number of bits in GPO register */
 	}
 	,
 	{
 	 XPAR_IIC_1_DEVICE_ID,	/* Device ID for instance */
 	 XPAR_IIC_1_BASEADDR,	/* Base address */
-	 XPAR_IIC_1_TEN_BIT_ADR	/* Uses 10 bit addressing */
-	 XPAR_IIC_1_GPO_WIDTH,	/* Number of bits in GPO register */
+	 XPAR_IIC_1_TEN_BIT_ADR, /* Uses 10 bit addressing */
+	 XPAR_IIC_1_GPO_WIDTH	/* Number of bits in GPO register */
 	}
 };
 /** @} */

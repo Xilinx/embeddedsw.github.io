@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -298,7 +294,7 @@ int Clk_Wiz_Reconfig(XClk_Wiz_Config *CfgPtr_Dynamic)
     }
 
     /* Calculation of Input Freq and Divide factors*/
-    Freq = (CLK_WIZ_VCO_FACTOR/DYNAMIC_INPUT_FREQ_FACTOR);
+    Freq = ((float) CLK_WIZ_VCO_FACTOR/ DYNAMIC_INPUT_FREQ_FACTOR);
 
     Divide = Freq;
     Freq = (float)(Freq - Divide);
@@ -329,7 +325,7 @@ int Clk_Wiz_Reconfig(XClk_Wiz_Config *CfgPtr_Dynamic)
     *(u32 *)(CfgPtr_Dynamic->BaseAddr + 0x204) = 0x00;
 
     /* Calculation of Output Freq and Divide factors*/
-    Freq = (CLK_WIZ_VCO_FACTOR / DYNAMIC_OUTPUT_FREQFACTOR);
+    Freq = ((float) CLK_WIZ_VCO_FACTOR / DYNAMIC_OUTPUT_FREQFACTOR);
 
     Divide = Freq;
     Freq = (float)(Freq - Divide);

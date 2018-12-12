@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xmcdma.h
-* @addtogroup mcdma_v1_0
+* @addtogroup mcdma_v1_2
 * @{
 * @details
 *
@@ -139,6 +135,9 @@
 * 1.0   adk 	18/07/17 Initial version.
 * 1.0   adk     09/02/18 Fixed CR#994435 Changes are made in the
 *			 driver tcl file.
+* 1.2   mj      05/03/18 Exported APIs XMcdma_BdChainFree() and
+*                        XMcDma_BdSetAppWord().
+* 1.2   mus    11/05/18 Support 64 bit DMA addresses for Microblaze-X platform.
 ******************************************************************************/
 #ifndef XMCDMA_H_
 #define XMCDMA_H_
@@ -574,7 +573,7 @@ typedef struct {
 	XMcdma_ReadReg(InstancePtr->Config.BaseAddress, (((ObsId - 1) * XMCDMA_NXTOBS_OFFSET) + \
 		       XMCDMA_RX_OFFSET + XMCDMA_CHOBS1_OFFSET))
 
-#if defined (__aarch64__)
+#if defined (__aarch64__) || defined (__arch64__)
 #define MAX_TRANSFER_LEN(h) \
 	(((~0UL) << (0)) & (~0UL >> (64 - 1 - (h))))
 #else
@@ -582,7 +581,7 @@ typedef struct {
 	(((~0UL) << (0)) & (~0UL >> (32 - 1 - (h))))
 #endif
 
-#if defined (__aarch64__)
+#if defined (__aarch64__) || defined (__arch64__)
 #define WRR_MASK(h, l) \
          (((~0UL) << (l)) & (~0UL >> (64 - 1 - (h))))
 #else
@@ -595,6 +594,7 @@ typedef struct {
 
 /************************ Prototypes of functions **************************/
 XMcdma_Config *XMcdma_LookupConfig(u16 DeviceId);
+XMcdma_Config *XMcdma_LookupConfigBaseAddr(UINTPTR Baseaddr);
 s32 XMcDma_CfgInitialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr);
 s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr);
 void XMcDma_Reset(XMcdma *InstancePtr);
@@ -621,9 +621,12 @@ u32 XMcDma_ChanSubmit(XMcdma_ChanCtrl *Chan, UINTPTR BufAddr, u32 len);
 u32 XMcDma_ChanToHw(XMcdma_ChanCtrl *Chan);
 int XMcdma_BdChainFromHW(XMcdma_ChanCtrl *Chan, u32 BdLimit,
 			 XMcdma_Bd **BdSetPtr);
+int XMcdma_BdChainFree(XMcdma_ChanCtrl *Chan, int BdCount, XMcdma_Bd *BdSetPtr);
 u32 XMcdma_BdSetBufAddr(XMcdma_Bd *BdPtr, UINTPTR Addr);
 void XMcDma_BdSetCtrl(XMcdma_Bd *BdPtr, u32 Data);
 void XMcDma_DumpBd(XMcdma_Bd* BdPtr);
+
+int XMcDma_BdSetAppWord(XMcdma_Bd* BdPtr, int Offset, u32 Word);
 
 /* Gloabal OR'ed Single interrupt */
 void XMcdma_IntrHandler(void *Instance);

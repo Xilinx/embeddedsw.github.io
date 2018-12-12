@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -50,6 +46,7 @@
 * ----- -----  -------- -----------------------------------------------------
 * 1.0   sd     04/11/18 First release
 * 4.0   sd     05/22/18 Updated lmx configuration
+* 5.0   sd     09/05/18 Updated lmx reset sequence
 *
 * </pre>
 *
@@ -513,17 +510,15 @@ static void Lmx2594Updatei2c(int XIicDevFile,unsigned int  r[LMX2594_A_count])
  * 5. Program register R0 one additional time with FCAL_EN = 1 to ensure that the VCO calibration runs from a
  * stable state.
  */
-	val = 0x2;
-	tx_array[2] = (unsigned char) val & (0xFF);
-	tx_array[1] = (unsigned char) val & (0xFF);
-	tx_array[0] = (unsigned char) (val >> 16) & (0xFF);
+	tx_array[2] = 0x2;
+	tx_array[1] = 0;
+	tx_array[0] = 0;
 	val = tx_array[0] | (tx_array[1] << 8) | (tx_array[2] << 16 ) ;
 	IicWriteData(XIicDevFile, 0xd, 3, tx_array);
 	usleep(100000);
-	val = 0x0;
-	tx_array[2] = (unsigned char) val & (0xFF);
-	tx_array[1] = (unsigned char) val & (0xFF);
-	tx_array[0] = (unsigned char) (val >> 16) & (0xFF);
+	tx_array[2] = 0;
+	tx_array[1] = 0;
+	tx_array[0] = 0;
 	val = tx_array[0] | (tx_array[1] << 8) | (tx_array[2] << 16 ) ;
 	IicWriteData(XIicDevFile, 0xd, 3, tx_array);
 	usleep(100000);
@@ -546,14 +541,12 @@ static void Lmx2594Updatei2c(int XIicDevFile,unsigned int  r[LMX2594_A_count])
 static int Lmx2594UpdateFreq(int XIicDevFile,int  XFrequency)
 {
 	int XFreqIndex=0;
-	int val;
 	unsigned char tx_array[3];
 	int freq_index=0;
 	if (XFrequency == 0) {
-		val = 0x3;
-		tx_array[2] = (unsigned char) val & (0xFF);
-		tx_array[1] = (unsigned char) val & (0xFF);
-		tx_array[0] = (unsigned char) (val >> 16) & (0xFF);
+		tx_array[2] = 0x3;
+		tx_array[1] = 0;
+		tx_array[0] = 0;
 
 		IicWriteData(XIicDevFile, 0xd, 3, tx_array);
 		return 0;

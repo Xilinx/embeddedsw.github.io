@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -148,7 +144,8 @@ extern "C" {
 #define XCSI_HANDLER_PROTLVL		3
 #define XCSI_HANDLER_SHORTPACKET	4
 #define XCSI_HANDLER_FRAMERECVD		5
-#define XCSI_HANDLER_OTHERERROR		6
+#define XCSI_HANDLER_VCXERR			6
+#define XCSI_HANDLER_OTHERERROR		7
 
 /*@}*/
 
@@ -156,7 +153,10 @@ extern "C" {
 #define XCSI_DISABLE	0	/**< Flag denoting disabling of CSI */
 
 #define XCSI_MAX_LANES	4	/**< Max Lanes supported by CSI */
-#define XCSI_MAX_VC	4	/**< Max Virtual Channels supported by CSI */
+
+#define XCSI_V10_MAX_VC	4	/**< Max Virtual Channels supported for v1.0 */
+#define XCSI_V20_MAX_VC	16	/**< Max Virtual Channels supported for v2.0 */
+#define XCSI_MAX_VC	16	/**< Max Virtual Channels supported for CSI */
 
 /**************************** Type Definitions *******************************/
 
@@ -269,6 +269,10 @@ typedef struct {
 					  *  like Stream Line Buffer Full,
 					  *  Stop State errors */
 	void *ErrRef; /**< To be passed to the Error Call back */
+	XCsi_CallBack VCXErrCallBack;	/**< Call back function for rest all errors
+					  *  like Stream Line Buffer Full,
+					  *  Stop State errors */
+	void *VCXErrRef; /**< To be passed to the Error Call back */
 	u32 IsReady; /**< Driver is ready */
 } XCsi;
 

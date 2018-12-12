@@ -12,10 +12,6 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
-#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -37,14 +33,16 @@ proc generate {drv_handle} {
     "AXI_CTRL_BASEADDR" \
     "AXI_CTRL_HIGHADDR" \
     "C_INCLUDE_EDH" \
-    "C_LINE_RATE"
+    "C_LINE_RATE" \
+    "C_TX_INSERT_C_STR_ST352"
 
     xdefine_config_file $drv_handle "xv_sditx_g.c" \
     "XV_SdiTx" \
     "DEVICE_ID" \
     "AXI_CTRL_BASEADDR" \
     "C_INCLUDE_EDH" \
-    "C_LINE_RATE"
+    "C_LINE_RATE" \
+    "C_TX_INSERT_C_STR_ST352"
 
     xdefine_canonical_xpars $drv_handle "xparameters.h" "XV_SdiTx" \
     "NUM_INSTANCES" \
@@ -52,7 +50,8 @@ proc generate {drv_handle} {
     "AXI_CTRL_BASEADDR" \
     "AXI_CTRL_HIGHADDR" \
     "C_INCLUDE_EDH" \
-    "C_LINE_RATE"
+    "C_LINE_RATE" \
+    "C_TX_INSERT_C_STR_ST352"
 set orig_dir [pwd]
 cd ../../include/
 

@@ -12,14 +12,10 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* XILINX CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+* XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
@@ -53,6 +49,8 @@
 *       GM   07/12/17 Changed printf usage to xil_printf
 *                     Changed "\n\r" in xil_printf calls to "\r\n"
 *       MH   08/04/17 Added ability to change HDCP capability
+* 3.03  YB   08/14/18 Clubbing Repeater specific code under the
+*                     'ENABLE_HDCP_REPEATER' macro.
 *</pre>
 *
 *****************************************************************************/
@@ -61,12 +59,9 @@
 #include <string.h>
 #include "xhdcp.h"
 #include "xparameters.h"
+#include "xhdmi_example.h"
 
 /************************** Constant Definitions ****************************/
-#if defined (XPAR_XHDCP_NUM_INSTANCES) || defined (XPAR_XHDCP22_RX_NUM_INSTANCES) || defined (XPAR_XHDCP22_TX_NUM_INSTANCES)
-/* If HDCP 1.4 or HDCP 2.2 is in the system then use the HDCP abstraction layer */
-#define USE_HDCP
-#endif
 
 /**************************** Type Definitions ******************************/
 
@@ -77,15 +72,17 @@
 /************************** Function Prototypes *****************************/
 #ifdef USE_HDCP
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 static void XHdcp_TopologyAvailableCallback(void *HdcpInstancePtr);
 static void XHdcp_AssembleTopology(XHdcp_Repeater *InstancePtr);
 static void XHdcp_DisplayTopology(XHdcp_Repeater *InstancePtr, u8 Verbose);
-static void XHdcp_SetContentStreamType(XHdcp_Repeater *InstancePtr,
-              XV_HdmiTxSs_HdcpContentStreamType StreamType);
 static void XHdcp_AuthenticationRequestCallback(void *HdcpInstancePtr);
 static void XHdcp_TopologyUpdateCallback(void *HdcpInstancePtr);
-static void XHdcp_StreamManageRequestCallback(void *HdcpInstancePtr);
 static int  XHdcp_Flag2Count(u32 Flag);
+#endif
+static void XHdcp_SetContentStreamType(XHdcp_Repeater *InstancePtr,
+              XV_HdmiTxSs_HdcpContentStreamType StreamType);
+static void XHdcp_StreamManageRequestCallback(void *HdcpInstancePtr);
 #endif
 #ifdef XPAR_XV_HDMIRXSS_NUM_INSTANCES
 static void XHdcp_UpstreamAuthenticatedCallback(void *HdcpInstancePtr);
@@ -171,6 +168,7 @@ int XHdcp_SetUpstream(XHdcp_Repeater *InstancePtr,
   InstancePtr->UpstreamInstancePtr = UpstreamInstancePtr;
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
   /* Set callback functions */
   Status = XV_HdmiRxSs_SetCallback(UpstreamInstancePtr,
     XV_HDMIRXSS_HANDLER_HDCP_AUTHENTICATION_REQUEST,
@@ -182,17 +180,18 @@ int XHdcp_SetUpstream(XHdcp_Repeater *InstancePtr,
   }
 
   Status = XV_HdmiRxSs_SetCallback(UpstreamInstancePtr,
-    XV_HDMIRXSS_HANDLER_HDCP_STREAM_MANAGE_REQUEST,
-	(void *)XHdcp_StreamManageRequestCallback,
+    XV_HDMIRXSS_HANDLER_HDCP_TOPOLOGY_UPDATE,
+	(void *)XHdcp_TopologyUpdateCallback,
     (void *)InstancePtr);
 
   if (Status != XST_SUCCESS) {
     return (XST_FAILURE);
   }
+#endif
 
   Status = XV_HdmiRxSs_SetCallback(UpstreamInstancePtr,
-    XV_HDMIRXSS_HANDLER_HDCP_TOPOLOGY_UPDATE,
-	(void *)XHdcp_TopologyUpdateCallback,
+    XV_HDMIRXSS_HANDLER_HDCP_STREAM_MANAGE_REQUEST,
+	(void *)XHdcp_StreamManageRequestCallback,
     (void *)InstancePtr);
 
   if (Status != XST_SUCCESS) {
@@ -280,6 +279,7 @@ int XHdcp_SetDownstream(XHdcp_Repeater *InstancePtr,
   }
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
   /* Set callback functions */
   Status = XV_HdmiTxSs_SetCallback(DownstreamInstancePtr,
     XV_HDMITXSS_HANDLER_HDCP_DOWNSTREAM_TOPOLOGY_AVAILABLE,
@@ -289,6 +289,7 @@ int XHdcp_SetDownstream(XHdcp_Repeater *InstancePtr,
   if (Status != XST_SUCCESS) {
     return (XST_FAILURE);
   }
+#endif
 #endif
 
   Status = XV_HdmiTxSs_SetCallback(DownstreamInstancePtr,
@@ -387,10 +388,12 @@ void XHdcp_Poll(XHdcp_Repeater *InstancePtr)
 #endif
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
     /* HDCP 1.4 Only */
     if(XV_HdmiRxSs_HdcpIsInWaitforready(InstancePtr->UpstreamInstancePtr)) {
       XHdcp_AssembleTopology(InstancePtr);
     }
+#endif
 #endif
   }
 }
@@ -547,9 +550,11 @@ void XHdcp_DisplayInfo(XHdcp_Repeater *InstancePtr, u8 Verbose)
   xil_printf("Downstream Stream-Up: 0x%08x\r\n", InstancePtr->DownstreamInstanceStreamUp);
 #endif
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
   if (XV_HdmiRxSs_HdcpIsRepeater(InstancePtr->UpstreamInstancePtr))
     xil_printf("StreamType: %d\r\n", InstancePtr->StreamType);
   XHdcp_DisplayTopology(InstancePtr, Verbose);
+#endif
 #endif
 }
 
@@ -585,6 +590,7 @@ void XHdcp_EnableEncryption(XHdcp_Repeater *InstancePtr, u8 Set)
 #endif
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -620,6 +626,7 @@ void XHdcp_SetRepeater(XHdcp_Repeater *InstancePtr, u8 Set)
 
   }
 }
+#endif
 #endif
 
 /*****************************************************************************/
@@ -776,14 +783,14 @@ void XHdcp_StreamConnectCallback(void *HdcpInstancePtr)
   if (DownstreamInstanceConnected && !(InstancePtr->DownstreamInstanceConnected)) {
     if (IsRepeater) {
       if (XV_HdmiRxSs_IsStreamConnected(InstancePtr->UpstreamInstancePtr)) {
-        XV_HdmiRxSs_SetHpd(InstancePtr->UpstreamInstancePtr, (TRUE));
+        SetHdmiRxHpd(&Vphy, InstancePtr->UpstreamInstancePtr, (TRUE));
       }
     }
   }
 
   /* Set HPD low when no active downstream devices are connected */
   if (!(DownstreamInstanceConnected) && IsRepeater) {
-    XV_HdmiRxSs_SetHpd(InstancePtr->UpstreamInstancePtr, (FALSE));
+    SetHdmiRxHpd(&Vphy, InstancePtr->UpstreamInstancePtr, (FALSE));
   }
 #endif
 
@@ -848,7 +855,7 @@ void XHdcp_StreamDisconnectCallback(void *HdcpInstancePtr)
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
   /* When no downstream interfaces are connected drive the HPD low */
   if (!(DownstreamInstanceConnected) && IsRepeater) {
-    XV_HdmiRxSs_SetHpd(InstancePtr->UpstreamInstancePtr, (FALSE));
+	  SetHdmiRxHpd(&Vphy, InstancePtr->UpstreamInstancePtr, (FALSE));
   }
 #endif
 
@@ -1072,6 +1079,7 @@ static void XHdcp_UpstreamEncryptionUpdateCallback(void *HdcpInstancePtr)
 #endif
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1099,9 +1107,10 @@ static void XHdcp_AuthenticationRequestCallback(void *HdcpInstancePtr)
   /* Clear topology */
   memset(&InstancePtr->Topology, 0, sizeof(XHdcp_Topology));
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
-#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 
+#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 /*****************************************************************************/
 /**
 *
@@ -1142,8 +1151,9 @@ static void XHdcp_StreamManageRequestCallback(void *HdcpInstancePtr)
   }
 }
 #endif
-#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 
+#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1167,9 +1177,11 @@ static void XHdcp_TopologyUpdateCallback(void *HdcpInstancePtr)
   /* Assemble topology */
   XHdcp_AssembleTopology(InstancePtr);
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
-#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 
+#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1193,9 +1205,11 @@ static void XHdcp_TopologyAvailableCallback(void *HdcpInstancePtr)
   /* Assemble topology */
   XHdcp_AssembleTopology(InstancePtr);
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
-#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 
+#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1370,9 +1384,11 @@ static void XHdcp_AssembleTopology(XHdcp_Repeater *InstancePtr)
     }
   }
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
-#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
 
+#if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1416,6 +1432,7 @@ static void XHdcp_DisplayTopology(XHdcp_Repeater *InstancePtr, u8 Verbose)
     }
   }
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
 
 #ifdef XPAR_XV_HDMITXSS_NUM_INSTANCES
@@ -1512,6 +1529,7 @@ static void XHdcp_EnforceBlank(XHdcp_Repeater *InstancePtr)
 #endif
 
 #if defined (XPAR_XV_HDMITXSS_NUM_INSTANCES) && defined (XPAR_XV_HDMIRXSS_NUM_INSTANCES)
+#if ENABLE_HDCP_REPEATER
 /*****************************************************************************/
 /**
 *
@@ -1537,6 +1555,7 @@ static int XHdcp_Flag2Count(u32 Flag)
 
   return Count;
 }
+#endif /* end of #if ENABLE_HDCP_REPEATER */
 #endif
 
-#endif // USE_HDCP
+#endif /* USE_HDCP */

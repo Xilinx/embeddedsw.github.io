@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsdps_g.c
-* @addtogroup sdps_v3_5
+* @addtogroup sdps_v3_6
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -45,6 +41,8 @@
 * Ver   Who    Date     Changes
 * ----- ---    -------- -----------------------------------------------
 * 1.00a hk/sg  10/17/13 Initial release
+* 3.6   mn     07/06/18 Add initialization macros in sdps
+*       mn     07/13/18 Add initializer macro for HasEMIO
 *
 * </pre>
 *
@@ -64,7 +62,13 @@ XSdPs_Config XSdPs_ConfigTable[] =
 	{
 		XPAR_XSDPS_0_DEVICE_ID,
 		XPAR_XSDPS_0_BASEADDR,
-		XPAR_XSDPS_0_SDIO_CLK_FREQ_HZ
+		XPAR_XSDPS_0_SDIO_CLK_FREQ_HZ,
+		XPAR_XSDPS_0_HAS_CD,
+		XPAR_XSDPS_0_HAS_WP,
+		XPAR_XSDPS_0_BUS_WIDTH,
+		XPAR_XSDPS_0_MIO_BANK,
+		XPAR_XSDPS_0_HAS_EMIO,
+		XPAR_XSDPS_0_IS_CACHE_COHERENT
 	}
 };
 /** @} */

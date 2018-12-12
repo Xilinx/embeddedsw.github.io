@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xttcps.c
-* @addtogroup ttcps_v3_5
+* @addtogroup ttcps_v3_7
 * @{
 *
 * This file contains the implementation of the XTtcPs driver. This driver
@@ -58,6 +54,11 @@
 *                       It fixes CR# 986617
 * 3.6   srm    04/25/18 Corrected the Match register initialization in
 						XTtcPs_CfgInitialize API.
+* 3.7   mus    09/20/18 Modified XTtcPs_CalcIntervalFromFreq API to use
+*						XTTCPS_MAX_INTERVAL_COUNT instead of hardcoding
+*						MAX interval count to 16 bit value(i.e.65532),
+*						which is incorrect for  zynq ultrascale+mpsoc
+*						(i.e. max interval count is 32 bit).
 * </pre>
 *
 ******************************************************************************/
@@ -387,7 +388,7 @@ void XTtcPs_CalcIntervalFromFreq(XTtcPs *InstancePtr, u32 Freq,
         XInterval *Interval, u8 *Prescaler)
 {
 	u8 TmpPrescaler;
-	u32 TempValue;
+	UINTPTR TempValue;
 	u32 InputClock;
 
 	InputClock = InstancePtr->Config.InputClockHz;
@@ -411,7 +412,7 @@ void XTtcPs_CalcIntervalFromFreq(XTtcPs *InstancePtr, u32 Freq,
 	/*
 	 * First, do we need a prescaler or not?
 	 */
-	if (((u32)65536U) > TempValue) {
+	if (((UINTPTR)XTTCPS_MAX_INTERVAL_COUNT) > TempValue) {
 		/*
 		 * We do not need a prescaler, so set the values appropriately
 		 */
@@ -428,7 +429,7 @@ void XTtcPs_CalcIntervalFromFreq(XTtcPs *InstancePtr, u32 Freq,
 		/*
 		 * The first value less than 2^16 is the best bet
 		 */
-		if (((u32)65536U) > TempValue) {
+		if (((UINTPTR)XTTCPS_MAX_INTERVAL_COUNT) > TempValue) {
 			/*
 			 * Set the values appropriately
 			 */

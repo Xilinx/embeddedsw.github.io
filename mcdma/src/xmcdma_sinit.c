@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xmcdma_sinit.c
-* @addtogroup mcdma_v1_0
+* @addtogroup mcdma_v1_2
 * @{
 *
 * This file contains static initialization methods for Xilinx MCDMA core.
@@ -44,6 +40,8 @@
 * Ver   Who     Date     Changes
 * ----- ------  -------- ------------------------------------------------------
 * 1.0   adk     18/07/17 Initial version.
+* 1.2   mj      05/03/18 Implemented XMcdma_LookupConfigBaseAddr() to lookup
+*                        configuration based on base address.
 * </pre>
 *
 ******************************************************************************/
@@ -102,5 +100,38 @@ XMcdma_Config *XMcdma_LookupConfig(u16 DeviceId)
 	}
 
 	return (XMcdma_Config *)CfgPtr;
+}
+
+/*****************************************************************************/
+/**
+*
+* XMcdma_LookupConfigBaseAddr returns a reference to an XMcdma_Config structure
+* based on base address. The return value will refer to an entry in the device
+* configuration table defined in the xmcdma_g.c file.
+*
+* @param	Baseaddr is the base address of the device to lookup for
+*
+* @return	CfgPtr is a reference to a config record in the configuration
+*		table (in xmcdma_g.c) corresponding to Baseaddr, or
+*		NULL if no match is found.
+*
+* @note		None.
+******************************************************************************/
+XMcdma_Config *XMcdma_LookupConfigBaseAddr(UINTPTR Baseaddr)
+{
+	extern XMcdma_Config XMcdma_ConfigTable[XPAR_XMCDMA_NUM_INSTANCES];
+	XMcdma_Config *CfgPtr = NULL;
+	u32 Index;
+
+	/* Checks all the instances */
+	for (Index = (u32)0x0; Index < (u32)(XPAR_XMCDMA_NUM_INSTANCES);
+								Index++) {
+		if (XMcdma_ConfigTable[Index].BaseAddress == Baseaddr) {
+			CfgPtr = &XMcdma_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
 }
 /** @} */

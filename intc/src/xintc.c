@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xintc.c
-* @addtogroup intc_v3_7
+* @addtogroup intc_v3_8
 * @{
 *
 * Contains required functions for the XIntc driver for the Xilinx Interrupt
@@ -230,17 +226,32 @@ int XIntc_Initialize(XIntc * InstancePtr, u16 DeviceId)
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IMR_OFFSET, 0);
 
 #ifdef XPAR_MICROBLAZE_BASE_VECTORS
-		for (Id = 0; Id < 32 ; Id++)
-		{
-			XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-				+ (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
+		if (InstancePtr->CfgPtr->VectorAddrWidth >
+				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
+				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
+				+ (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
 				+ 0x10);
+			}
+		} else {
+			for (Id = 0; Id < 32 ; Id++) {
+				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
+					+ (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
+					+ 0x10);
+			}
 		}
 #else
-		for (Id = 0; Id < 32 ; Id++)
-		{
-			XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-							+ (Id * 4), 0x10);
+		if (InstancePtr->CfgPtr->VectorAddrWidth >
+			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
+				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
+				+ (Id * 8), 0x10);
+			}
+		} else {
+			for (Id = 0; Id < 32 ; Id++) {
+				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
+								+ (Id * 4), 0x10);
+			}
 		}
 #endif
 	}

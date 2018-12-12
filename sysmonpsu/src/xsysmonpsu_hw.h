@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsysmonpsu_hw.h
-* @addtogroup sysmonpsu_v2_4
+* @addtogroup sysmonpsu_v2_5
 *
 * This header file contains the identifiers and basic driver functions (or
 * macros) that can be used to access the device. Other driver functions
@@ -2283,7 +2279,7 @@ extern "C" {
 #define XSYSMONPSU_MIN_TEMP_REMTE_WIDTH   16U
 #define XSYSMONPSU_MIN_TEMP_REMTE_MASK    0x0000ffffU
 
-#define CSU_BASEADDR			0xFFCA0000U
+#define XSYSMONPSU_CSU_BASEADDR		0xFFCA0000U
 #define PCAP_STATUS_OFFSET		0x00003010U
 #define PL_CFG_RESET_MASK		0x00000040U
 #define PL_CFG_RESET_SHIFT		6U

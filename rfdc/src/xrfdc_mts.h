@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xrfdc_mts.c
-* @addtogroup xrfdc_v4_0
+* @addtogroup xrfdc_v5_0
 * @{
 *
 * Contains the multi tile sync related structures, Macros of the XRFdc driver.
@@ -50,6 +46,10 @@
 * 4.0   sk     04/09/18 Added API to enable/disable the sysref.
 *       rk     04/17/18 Adjust calculated latency by sysref period, where doing
 *                       so results in closer alignment to the target latency.
+* 5.0   sk     08/03/18 Fixed MISRAC warnings.
+*       sk     08/03/18 Check for Block0 enable for tiles participating in MTS.
+*       sk     08/24/18 Reorganize the code to improve readability and
+*                       optimization.
 *
 * </pre>
 *
@@ -67,10 +67,8 @@ extern "C" {
 
 /************************** Constant Definitions *****************************/
 
-#define XRFDC_MTS_RMW(read, mask, data)    ((read & ~mask) | (data & mask))
-#define XRFDC_MTS_FIELD(data, mask, shift) ((data & mask) >> shift)
-
-#define XRFDC_MTS_ABS(val)               ( ((val) < 0) ? -(val) : (val) )
+#define XRFDC_MTS_RMW(read, mask, data)    (((read) & ~(mask)) | ((data) & (mask)))
+#define XRFDC_MTS_FIELD(data, mask, shift) (((data) & (mask)) >> (shift))
 
 /**************************** Type Definitions *******************************/
 
@@ -105,13 +103,6 @@ typedef struct {
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-#ifdef __MICROBLAZE__
-#define metal_log xdbg_printf
-#define METAL_LOG_DEBUG 0x4L
-#define METAL_LOG_INFO XDBG_DEBUG_GENERAL
-#define METAL_LOG_ERROR XDBG_DEBUG_ERROR
-#endif
-
 #define XRFDC_MTS_SYSREF_DISABLE	0U
 #define XRFDC_MTS_SYSREF_ENABLE		1U
 
@@ -124,7 +115,7 @@ typedef struct {
 #define XRFDC_MTS_DTC_COUNT			10U
 #define XRFDC_MTS_MARKER_COUNT		4U
 #define XRFDC_MTS_SCAN_INIT			0U
-#define XRFDC_MTS_SCAN_RELOAD   	1U
+#define XRFDC_MTS_SCAN_RELOAD		1U
 #define XRFDC_MTS_SRCOUNT_TIMEOUT	1000U
 #define XRFDC_MTS_DELAY_MAX			31U
 #define XRFDC_MTS_CHECK_ALL_FIFOS	0U
@@ -141,54 +132,28 @@ typedef struct {
 #define XRFDC_MTS_DLY_ALIGNER		0x28U
 
 /* Error Codes */
-#define XRFDC_MTS_OK				0L
-#define XRFDC_MTS_NOT_SUPPORTED		1L
-#define XRFDC_MTS_TIMEOUT			2L
-#define XRFDC_MTS_MARKER_RUN		4L
-#define XRFDC_MTS_MARKER_MISM		8L
-#define XRFDC_MTS_DELAY_OVER		16L
-#define XRFDC_MTS_TARGET_LOW		32L
-#define XRFDC_MTS_IP_NOT_READY      64L
-#define XRFDC_MTS_DTC_INVALID       128L
-#define XRFDC_MTS_NOT_ENABLED       512L
-#define XRFDC_MTS_SYSREF_GATE_ERROR 2048L
-#define XRFDC_MTS_SYSREF_FREQ_NDONE 4096L
-
-
-/*****************************************************************************/
-/**
-*
-* Execute Read modify Write
-*
-* @param	InstancePtr is a pointer to the XRfdc instance.
-* @param	BaseAddr is address of a block.
-* @param	RegAddr is register offset value.
-* @param	Mask contains bit mask value.
-* @param	Data contains value to be written to register.
-*
-* @return
-*		- None
-*
-******************************************************************************/
-static inline void XRFdc_MTS_RMW_DRP(XRFdc* InstancePtr, u32 BaseAddr,
-						u32 RegAddr, u16 Mask, u16 Data)
-{
-	u16 ReadReg;
-
-	ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, RegAddr);
-	ReadReg = (ReadReg & ~Mask) | (Data & Mask);
-	XRFdc_WriteReg16(InstancePtr, BaseAddr, RegAddr, ReadReg);
-}
+#define XRFDC_MTS_OK				0U
+#define XRFDC_MTS_NOT_SUPPORTED		1U
+#define XRFDC_MTS_TIMEOUT			2U
+#define XRFDC_MTS_MARKER_RUN		4U
+#define XRFDC_MTS_MARKER_MISM		8U
+#define XRFDC_MTS_DELAY_OVER		16U
+#define XRFDC_MTS_TARGET_LOW		32U
+#define XRFDC_MTS_IP_NOT_READY      64U
+#define XRFDC_MTS_DTC_INVALID       128U
+#define XRFDC_MTS_NOT_ENABLED       512U
+#define XRFDC_MTS_SYSREF_GATE_ERROR 2048U
+#define XRFDC_MTS_SYSREF_FREQ_NDONE 4096U
 
 /************************** Function Prototypes ******************************/
 
-u32 XRFdc_MultiConverter_Sync (XRFdc* InstancePtr, u32 Type,
-							XRFdc_MultiConverter_Sync_Config* Config);
-void XRFdc_MultiConverter_Init (XRFdc_MultiConverter_Sync_Config* Config,
-						int *PLL_Codes, int *T1_Codes);
-u32 XRFdc_MTS_Sysref_Config(XRFdc* InstancePtr,
-			XRFdc_MultiConverter_Sync_Config* DACSyncConfig,
-			XRFdc_MultiConverter_Sync_Config* ADCSyncConfig, u32 SysRefEnable);
+u32 XRFdc_MultiConverter_Sync(XRFdc *InstancePtr, u32 Type,
+							XRFdc_MultiConverter_Sync_Config *ConfigPtr);
+void XRFdc_MultiConverter_Init(XRFdc_MultiConverter_Sync_Config *ConfigPtr,
+						int *PLL_CodesPtr, int *T1_CodesPtr);
+u32 XRFdc_MTS_Sysref_Config(XRFdc *InstancePtr,
+		XRFdc_MultiConverter_Sync_Config *DACSyncConfigPtr,
+		XRFdc_MultiConverter_Sync_Config *ADCSyncConfigPtr, u32 SysRefEnable);
 
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2002 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xintc_l.c
-* @addtogroup intc_v3_7
+* @addtogroup intc_v3_8
 * @{
 *
 * This file contains low-level driver functions that can be used to access the
@@ -495,9 +491,14 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
 							(CurrentIER & ~Mask));
 		}
-
-		XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET +
+		if (CfgPtr->VectorAddrWidth >
+			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			XIntc_Out64(CfgPtr->BaseAddress + XIN_IVEAR_OFFSET +
+				((Id%32) * 8), (UINTPTR) FastHandler);
+		} else {
+			XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET +
 					((Id%32) * 4), (u32) FastHandler);
+		}
 
 		/* Slave controllers in Cascade Mode should have all as Fast
 		 * interrupts or Normal interrupts, mixed interrupts are not
@@ -527,8 +528,15 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 							(CurrentIER & ~Mask));
 		}
 
-		XIntc_Out32(BaseAddress + XIN_IVAR_OFFSET + (Id * 4),
+		CfgPtr = XIntc_LookupConfig(Id/32);
+		if (CfgPtr->VectorAddrWidth >
+			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			XIntc_Out64(BaseAddress + XIN_IVEAR_OFFSET +
+				(Id * 8), (UINTPTR) FastHandler);
+		} else {
+			XIntc_Out32(BaseAddress + XIN_IVAR_OFFSET + (Id * 4),
 						(u32) FastHandler);
+		}
 
 		Imr = XIntc_In32(BaseAddress + XIN_IMR_OFFSET);
 		XIntc_Out32(BaseAddress + XIN_IMR_OFFSET, Imr | Mask);

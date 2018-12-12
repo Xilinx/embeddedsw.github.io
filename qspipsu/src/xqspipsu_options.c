@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xqspipsu_options.c
-* @addtogroup qspipsu_v1_7
+* @addtogroup qspipsu_v1_8
 * @{
 *
 * This file implements funcitons to configure the QSPIPSU component,
@@ -53,6 +49,8 @@
 *       rk  07/15/16 Added support for TapDelays at different frequencies.
 * 1.7	tjs 01/17/18 Added support to toggle the WP pin of flash. (PR#2448)
 * 1.7	tjs	03/14/18 Added support in EL1 NS mode. (CR#974882)
+* 1.8	tjs 05/02/18 Added support for IS25LP064 and IS25WP064.
+* 1.8	tjs 07/26/18 Resolved cppcheck errors. (CR#1006336)
 *
 * </pre>
 *
@@ -72,12 +70,12 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 #if defined (ARMR5) || (__aarch64__)
-#define TAPDLY_BYPASS_VALVE_40MHZ 0x01
-#define TAPDLY_BYPASS_VALVE_100MHZ 0x01
-#define USE_DLY_LPBK  0x01
-#define USE_DATA_DLY_ADJ 0x01
-#define DATA_DLY_ADJ_DLY 0X02
-#define LPBK_DLY_ADJ_DLY0 0X02
+#define TAPDLY_BYPASS_VALVE_40MHZ 0x01U
+#define TAPDLY_BYPASS_VALVE_100MHZ 0x01U
+#define USE_DLY_LPBK  0x01U
+#define USE_DATA_DLY_ADJ 0x01U
+#define DATA_DLY_ADJ_DLY 0X02U
+#define LPBK_DLY_ADJ_DLY0 0X02U
 #endif
 
 /************************** Function Prototypes ******************************/
@@ -183,13 +181,16 @@ s32 XQspiPsu_SetOptions(XQspiPsu *InstancePtr, u32 Options)
 		 */
 		ConfigReg = XQspiPsu_ReadReg(XQSPIPS_BASEADDR,XQSPIPSU_LQSPI_CR_OFFSET);
 
-			if (QspiPsuOptions & XQSPIPSU_LQSPI_MODE_OPTION) {
-			XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_LQSPI_CR_OFFSET,XQSPIPS_LQSPI_CR_4_BYTE_STATE);
+		if (QspiPsuOptions & XQSPIPSU_LQSPI_MODE_OPTION) {
+			if (Options & XQSPIPSU_LQSPI_LESS_THEN_SIXTEENMB) {
+				XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_LQSPI_CR_OFFSET,XQSPIPS_LQSPI_CR_RST_STATE);
+			} else {
+				XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_LQSPI_CR_OFFSET,XQSPIPS_LQSPI_CR_4_BYTE_STATE);
+			}
 			XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_CFG_OFFSET,XQSPIPS_LQSPI_CFG_RST_STATE);
 			/* Enable the QSPI controller */
 			XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_EN_OFFSET,XQSPIPSU_EN_MASK);
-		}
-		 else {
+		} else {
 			ConfigReg &= ~(XQSPIPSU_LQSPI_CR_LINEAR_MASK);
 			XQspiPsu_WriteReg(XQSPIPS_BASEADDR,XQSPIPSU_LQSPI_CR_OFFSET, ConfigReg);
 		}

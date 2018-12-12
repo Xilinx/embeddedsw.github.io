@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsysmonpsu_g.c
-* @addtogroup sysmonpsu_v2_4
+* @addtogroup sysmonpsu_v2_5
 *
 * This file contains a configuration table that specifies the configuration
 * of SYSMON devices in the system.
@@ -44,6 +40,7 @@
 * Ver   Who    Date	Changes
 * ----- -----  -------- -------------------------------------------------------
 * 1.0   kvn  04/21/15 First release.
+* 2.5   mn     07/06/18 Added Input Clock Frequency Information
 * </pre>
 *
 ******************************************************************************/
@@ -73,7 +70,8 @@
  */
 XSysMonPsu_Config XSysMonPsu_ConfigTable[XPAR_XSYSMONPSU_NUM_INSTANCES] = {
 	{
-		(u16)XPAR_XSYSMONPSU_0_DEVICE_ID,	/* Unique ID of device */
-		(u32)XPAR_XSYSMONPSU_0_BASEADDR	/* Base address of device */
+		(u16)XPAR_XSYSMONPSU_0_DEVICE_ID,/* Unique ID of device */
+		(u32)XPAR_XSYSMONPSU_0_BASEADDR, /* Base address of device */
+		XPAR_XSYSMONPSU_0_REF_FREQMHZ    /* Input Clock Frequency */
 	}
 };

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xemacps_g.c
-* @addtogroup emacps_v3_7
+* @addtogroup emacps_v3_8
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -81,12 +77,14 @@
 XEmacPs_Config XEmacPs_ConfigTable[XPAR_XEMACPS_NUM_INSTANCES] = {
 	{
 		(u16)XPAR_XEMACPS_0_DEVICE_ID,  /* Device ID */
-		(UINTPTR)XPAR_XEMACPS_0_BASEADDR    /* Device base address */
+		(UINTPTR)XPAR_XEMACPS_0_BASEADDR,    /* Device base address */
+		(u16)XPAR_XEMACPS_0_IS_CACHE_COHERENT,  /* Device ID */
 	},
 #ifdef XPAR_XEMACPS_1_DEVICE_ID
 	{
 		(u16)XPAR_XEMACPS_1_DEVICE_ID,  /* Device ID */
-		(UINTPTR)XPAR_XEMACPS_1_BASEADDR    /* Device base address */
+		(UINTPTR)XPAR_XEMACPS_1_BASEADDR,    /* Device base address */
+		(u16)XPAR_XEMACPS_1_IS_CACHE_COHERENT,  /* Device ID */
 	}
 #endif
 };

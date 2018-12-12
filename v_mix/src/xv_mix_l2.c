@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -66,12 +62,18 @@
 * 3.00  vyc   10/04/17   Add second buffer pointer for semi-planar formats
 * 4.00  vyc   04/04/18   Add 8th overlayer
 *                        Move logo layer enable fromb bit 8 to bit 15
+* 5.00  pv    11/10/18   Added flushing feature support in driver.
+*                        flush bit should be set and held (until reset) by
+*                        software to flush pending transactions.IP is expecting
+*                        a hard reset, when flushing is done.(There is a flush
+*                        status bit and is asserted when the flush is done).
 * </pre>
 *
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
 #include <string.h>
+#include <sleep.h>
 #include "xv_mix_l2.h"
 
 /************************** Constant Definitions *****************************/
@@ -82,6 +84,8 @@
 #define XVMIX_MIN_STRM_HEIGHT           (64u)
 #define XVMIX_MIN_LOGO_WIDTH            (32u)
 #define XVMIX_MIN_LOGO_HEIGHT           (32u)
+#define XV_WAIT_FOR_FLUSH_DONE		    (25)
+#define XV_WAIT_FOR_FLUSH_DONE_TIMEOUT	(2000)
 
 /* Pixel values in 8 bit resolution in YUV color space*/
 static const u8 bkgndColorYUV[XVMIX_BKGND_LAST][3] =
@@ -264,10 +268,25 @@ void XVMix_Start(XV_Mix_l2 *InstancePtr)
 ******************************************************************************/
 void XVMix_Stop(XV_Mix_l2 *InstancePtr)
 {
+  u32 Data = 0;
+  u32 cnt = 0;
+
   Xil_AssertVoid(InstancePtr != NULL);
 
   /* Clear autostart bit */
   XV_mix_DisableAutoRestart(&InstancePtr->Mix);
+
+  /* Flush the core bit */
+  XV_mix_SetFlushbit(&InstancePtr->Mix);
+
+  do {
+    Data = XV_mix_Get_FlushDone(&InstancePtr->Mix);
+    usleep(XV_WAIT_FOR_FLUSH_DONE_TIMEOUT);
+    cnt++;
+  } while ((Data == 0) && (cnt < XV_WAIT_FOR_FLUSH_DONE));
+
+  if (Data == 0)
+        return;
 }
 
 /*****************************************************************************/

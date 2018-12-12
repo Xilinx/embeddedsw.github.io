@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xsdps_options.c
-* @addtogroup sdps_v3_5
+* @addtogroup sdps_v3_6
 * @{
 *
 * Contains API's for changing the various options in host and card.
@@ -75,6 +71,7 @@
 *                       operations when it is enabled.
 *       mn     08/22/17 Updated for Word Access System support
 * 3.4   mn     01/22/18 Separated out SDR104 and HS200 clock defines
+* 3.6   mn     07/06/18 Fix Cppcheck warnings for sdps driver
 *
 * </pre>
 *
@@ -143,9 +140,6 @@ s32 XSdPs_SetBlkSize(XSdPs *InstancePtr, u16 BlkSize)
 		Status = XST_FAILURE;
 		goto RETURN_PATH;
 	}
-
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
 
 	/* Set block size to the value passed */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress, XSDPS_BLK_SIZE_OFFSET,
@@ -239,9 +233,6 @@ s32 XSdPs_Get_BusWidth(XSdPs *InstancePtr, u8 *SCR)
 	/* Write to clear bit */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
-
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
 
 	Status = XST_SUCCESS;
 
@@ -376,9 +367,6 @@ s32 XSdPs_Change_BusWidth(XSdPs *InstancePtr)
 				XSDPS_HOST_CTRL2_OFFSET, StatusReg);
 	}
 
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
-
 	Status = XST_SUCCESS;
 
 	RETURN_PATH:
@@ -461,9 +449,6 @@ s32 XSdPs_Get_BusSpeed(XSdPs *InstancePtr, u8 *ReadBuff)
 	/* Write to clear bit */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
-
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
 
 	Status = XST_SUCCESS;
 
@@ -656,10 +641,6 @@ s32 XSdPs_Change_BusSpeed(XSdPs *InstancePtr)
 	StatusReg |= XSDPS_HC_SPEED_MASK;
 	XSdPs_WriteReg8(InstancePtr->Config.BaseAddress,
 			XSDPS_HOST_CTRL1_OFFSET, (u8)StatusReg);
-
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
-
 
 	Status = XST_SUCCESS;
 
@@ -906,9 +887,6 @@ s32 XSdPs_Get_Mmc_ExtCsd(XSdPs *InstancePtr, u8 *ReadBuff)
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
 
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
-
 	Status = XST_SUCCESS;
 
 	RETURN_PATH:
@@ -964,9 +942,6 @@ s32 XSdPs_Set_Mmc_ExtCsd(XSdPs *InstancePtr, u32 Arg)
 	/* Write to clear bit */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
-
-	Status = (s32)XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-			XSDPS_RESP0_OFFSET);
 
 	Status = XST_SUCCESS;
 

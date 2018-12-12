@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -66,9 +62,11 @@
 #if defined(XPAR_XV_HDMIRX_NUM_INSTANCES) && (XPAR_XV_HDMIRX_NUM_INSTANCES > 0)
 #define INCLUDE_HDMI_RX
 #endif
-#if defined(XPAR_XDP_NUM_INSTANCES) && (XPAR_XDP_NUM_INSTANCES > 0)
-#define INCLUDE_DP_TX
+#if defined(XPAR_XDPRXSS_NUM_INSTANCES) && (XPAR_XDPRXSS_NUM_INSTANCES > 0)
 #define INCLUDE_DP_RX
+#endif
+#if defined(XPAR_XDPTXSS_NUM_INSTANCES) && (XPAR_XDPTXSS_NUM_INSTANCES > 0)
+#define INCLUDE_DP_TX
 #endif
 
 /**************************** Type Definitions *******************************/

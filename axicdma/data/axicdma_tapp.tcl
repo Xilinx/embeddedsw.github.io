@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (C) 2004 - 2014 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2004 - 2018 Xilinx, Inc.  All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 #
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-#
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -32,6 +28,8 @@
 # Ver      Who    Date     Changes
 # -------- ------ -------- ----------------------------------------------------
 #  3.0     adk    12/10/13 Updated as per the New Tcl API's
+#  4.5     rsp    07/06/18 Remove space b/w backslash and newline
+#  4.5     rsp    10/03/18 Fix typos
 ##############################################################################
 
 ## @BEGIN_CHANGELOG EDK_I_SP1
@@ -259,7 +257,7 @@ proc gen_testfunc_call {swproj mhsinst} {
    {
       int status;
             
-      print(\"\\r\\n Runnning XAxiCdma_SimplePollExample() for ${ipname}...\\r\\n\");
+      print(\"\\r\\n Running XAxiCdma_SimplePollExample() for ${ipname}...\\r\\n\");
       
       status = XAxiCdma_SimplePollExample(${deviceid});
       
@@ -287,7 +285,7 @@ proc gen_testfunc_call {swproj mhsinst} {
    
       print(\"\\r\\n Running XAxiCdma_SimpleIntrExample  for ${ipname}...\\r\\n\");
          
-      status = XAxiCdma_SimpleIntrExample(&${intcvar}, &${ipname}, \\   
+      status = XAxiCdma_SimpleIntrExample(&${intcvar}, &${ipname}, \\
 				${deviceid},
 				${intr_id});
    	
@@ -307,7 +305,7 @@ proc gen_testfunc_call {swproj mhsinst} {
    {
       int status;
 
-      print(\"\\r\\n Runnning XAxiCdma_SgPollExample() for ${ipname}...\\r\\n\");
+      print(\"\\r\\n Running XAxiCdma_SgPollExample() for ${ipname}...\\r\\n\");
 
       status = XAxiCdma_SgPollExample(${deviceid});
 
@@ -335,7 +333,7 @@ proc gen_testfunc_call {swproj mhsinst} {
    
       print(\"\\r\\n Running XAxiCdma_SgIntrExample  for ${ipname}...\\r\\n\");
          
-      status = XAxiCdma_SgIntrExample(&${intcvar}, &${ipname}, \\   
+      status = XAxiCdma_SgIntrExample(&${intcvar}, &${ipname}, \\
 				${deviceid},
 				${intr_id});
    	

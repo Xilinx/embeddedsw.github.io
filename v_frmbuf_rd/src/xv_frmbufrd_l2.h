@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -500,6 +496,7 @@ typedef struct {
 int XVFrmbufRd_Initialize(XV_FrmbufRd_l2 *InstancePtr, u16 DeviceId);
 void XVFrmbufRd_Start(XV_FrmbufRd_l2 *InstancePtr);
 int XVFrmbufRd_Stop(XV_FrmbufRd_l2 *InstancePtr);
+int XVFrmbufRd_WaitForIdle(XV_FrmbufRd_l2 *InstancePtr);
 int XVFrmbufRd_SetMemFormat(XV_FrmbufRd_l2 *InstancePtr,
                             u32 StrideInBytes,
                             XVidC_ColorFormat MemFmt,

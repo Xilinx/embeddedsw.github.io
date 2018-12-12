@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -212,6 +208,7 @@ void XCsi_InterruptClear(XCsi *InstancePtr, u32 Mask)
 * (XCSI_HANDLER_PKTLVL)		PktLvlErrCallBack
 * (XCSI_HANDLER_SHORTPACKET)	ShortPacketCallBack
 * (XCSI_HANDLER_FRAMERECVD)	FrameRecvdCallBack
+* (XCSI_HANDLER_VCXERR)		VCXErrCallBack
 * (XCSI_HANDLER_OTHERERROR)	ErrorCallBack
 * </pre>
 *
@@ -264,6 +261,11 @@ int XCsi_SetCallBack(XCsi *InstancePtr, u32 HandleType,
 			InstancePtr->FrameRecvdRef = Callbackref;
 			break;
 
+		case XCSI_HANDLER_VCXERR:
+			InstancePtr->VCXErrCallBack = Callbackfunc;
+			InstancePtr->VCXErrRef = Callbackref;
+
+			break;
 		case XCSI_HANDLER_OTHERERROR:
 			InstancePtr->ErrorCallBack = Callbackfunc;
 			InstancePtr->ErrRef = Callbackref;
@@ -339,6 +341,15 @@ void XCsi_IntrHandler(void *InstancePtr)
 		XCsiPtr->DPhyLvlErrCallBack(XCsiPtr->DPhyLvlErrRef, Mask);
 	}
 
+	Mask = ActiveIntr & XCSI_INTR_VCXFE_MASK;
+	if (Mask) {
+		/* Handle VCx Errors */
+		Mask = XCsi_ReadReg(XCsiPtr->Config.BaseAddr,
+				    XCSI_VCX_FE_OFFSET);
+		Mask &= XCSI_INTR_VCFE_MASK;
+		XCsiPtr->VCXErrCallBack(XCsiPtr->VCXErrRef, Mask);
+		XCsi_WriteReg(XCsiPtr->Config.BaseAddr, XCSI_VCX_FE_OFFSET, Mask);
+	}
 
 	Mask = ActiveIntr & XCSI_INTR_PROT_MASK;
 	if (Mask) {

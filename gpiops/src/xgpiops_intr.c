@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2010 - 2015 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xgpiops_intr.c
-* @addtogroup gpiops_v3_3
+* @addtogroup gpiops_v3_4
 * @{
 *
 * This file contains functions related to GPIO interrupt handling.
@@ -48,6 +44,9 @@
 * 					  passed to API's. CR# 822636
 * 3.00  kvn  02/13/15 Modified code for MISRA-C:2012 compliance.
 * 3.1	kvn  04/13/15 Add support for Zynq Ultrascale+ MP. CR# 856980.
+* 3.1   aru  07/13/18 Ressolved doxygen reported warnings. CR# 1006331.
+* 3.4   aru  08/09/18 Ressolved cppcheck warnings.
+* 3.4   aru  08/17/18 Resolved MISRA-C mandatory violations. CR# 1007751
 * </pre>
 *
 ******************************************************************************/
@@ -115,7 +114,7 @@ void XGpioPs_IntrEnablePin(XGpioPs *InstancePtr, u32 Pin)
 {
 	u8 Bank;
 	u8 PinNumber;
-	u32 IntrReg = 0U;
+	u32 IntrReg;
 
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -177,7 +176,7 @@ void XGpioPs_IntrDisablePin(XGpioPs *InstancePtr, u32 Pin)
 {
 	u8 Bank;
 	u8 PinNumber;
-	u32 IntrReg = 0U;
+	u32 IntrReg;
 
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -186,7 +185,7 @@ void XGpioPs_IntrDisablePin(XGpioPs *InstancePtr, u32 Pin)
 	/* Get the Bank number and Pin number within the bank. */
 	XGpioPs_GetBankPin((u8)Pin, &Bank, &PinNumber);
 
-	IntrReg =  ((u32)1 << (u32)PinNumber);
+	IntrReg = ((u32)1 << (u32)PinNumber);
 	XGpioPs_WriteReg(InstancePtr->GpioConfig.BaseAddr,
 			  ((u32)(Bank) * XGPIOPS_REG_MASK_OFFSET) +
 			  XGPIOPS_INTDIS_OFFSET, IntrReg);
@@ -644,7 +643,7 @@ u8 XGpioPs_GetIntrTypePin(XGpioPs *InstancePtr, u32 Pin)
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	CallBackRef is the upper layer callback reference passed back
 *		when the callback function is invoked.
-* @param	FuncPtr is the pointer to the callback function.
+* @param	FuncPointer is the pointer to the callback function.
 *
 *
 * @return	None.
@@ -661,7 +660,7 @@ void XGpioPs_SetCallbackHandler(XGpioPs *InstancePtr, void *CallBackRef,
 	Xil_AssertVoid(FuncPointer != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	InstancePtr->Handler = FuncPointer;
+	InstancePtr->Handler = (XGpioPs_Handler)FuncPointer;
 	InstancePtr->CallBackRef = CallBackRef;
 }
 

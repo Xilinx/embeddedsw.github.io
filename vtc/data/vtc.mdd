@@ -12,10 +12,6 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# Use of the Software is limited solely to applications:
-# (a) running on a Xilinx device, or
-# (b) that interact with a Xilinx device through a bus or interconnect.
-#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -32,6 +28,9 @@
 # Ver      Who    Date     Changes
 # -------- ------ -------- --------------------------------------------------
 # 6.0     adk    10/12/13  Removed interrupt handler entry
+# 8.0     jsr    10/01/18  Removed hard coded programming of vactive size
+# 			   values from driver
+# 	  jsr    10/03/18  Corrected VGA resoution from 656x496 to 640x480
 ###############################################################################
 OPTION psf_version = 2.1;
 
@@ -40,7 +39,7 @@ BEGIN driver vtc
   OPTION supported_peripherals = (v_tc);
   OPTION driver_state = ACTIVE;
   OPTION copyfiles = all;
-  OPTION VERSION = 7.2;
+  OPTION VERSION = 8.0;
   OPTION NAME = vtc;
 
 END driver

@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -72,7 +68,16 @@ extern u8 VirtFlash[];
 /*
  * Pre-manufactured response to the SCSI Inquiry command.
  */
+#if __ICCARM__
+#ifdef PLATFORM_ZYNQMP
+#pragma data_alignment = 64
+#else
+#pragma data_alignment = 32
+#endif
+const static SCSI_INQUIRY scsiInquiry[] = {
+#else
 const static SCSI_INQUIRY scsiInquiry[] ALIGNMENT_CACHELINE = {
+#endif
 	{
 		0x00,
 		0x80,
@@ -101,7 +106,11 @@ const static SCSI_INQUIRY scsiInquiry[] ALIGNMENT_CACHELINE = {
 	}
 };
 
+#ifdef __ICCARM__
+static u8 MaxLUN = 0;
+#else
 static u8 MaxLUN ALIGNMENT_CACHELINE = 0;
+#endif
 
 extern USB_CBW CBW;
 extern USB_CSW CSW;
@@ -110,7 +119,15 @@ extern u32	rxBytesLeft;
 extern u8	*VirtFlashWritePointer;
 
 /* Local transmit buffer for simple replies. */
+#ifdef __ICCARM__
+static u8 txBuffer[128];
+#else
 static u8 txBuffer[128] ALIGNMENT_CACHELINE;
+#endif
+
+#ifdef __ICCARM__
+#pragma data_alignment = 4
+#endif
 
 /*****************************************************************************/
 /**

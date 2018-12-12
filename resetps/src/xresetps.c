@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -33,7 +29,7 @@
 /**
 *
 * @file xresetps.c
-* @addtogroup xresetps_v1_1
+* @addtogroup xresetps_v1_2
 * @{
 *
 * Contains the implementation of interface functions of the XResetPs driver.
@@ -45,6 +41,9 @@
 * ----- ------ -------- ---------------------------------------------
 * 1.00  cjp    09/05/17 First release
 * 1.1   Nava   04/20/18 Fixed compilation warnings.
+* 1.2   cjp    04/27/18 Updated for clockps interdependency
+* 1.2   Nava   05/21/18 Fixed compilation warnings on R5.
+* 1.2   sd     07/20/18 Fixed Doxygen Reported warnings.
 * </pre>
 *
 ******************************************************************************/
@@ -438,9 +437,6 @@ static const XResetPs_Lookup ResetMap[] = {
 *
 * @param	InstancePtr is a pointer to the XResetPs instance.
 * @param	ConfigPtr is the config structure.
-* @param	EffectiveAddress is the base address for the device. It could be
-*		a virtual address if address translation is supported in the
-*		system, otherwise it is the physical address.
 *
 * @return
 *		- XST_SUCCESS if initialization was successful.
@@ -449,7 +445,7 @@ static const XResetPs_Lookup ResetMap[] = {
 *
 ******************************************************************************/
 XStatus XResetPs_CfgInitialize(XResetPs *InstancePtr,
-			       XResetPs_Config *ConfigPtr, u32 EffectiveAddress)
+					       XResetPs_Config *ConfigPtr)
 {
 	/* Arguments validation */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -457,7 +453,6 @@ XStatus XResetPs_CfgInitialize(XResetPs *InstancePtr,
 
 	/* Copying instance */
 	InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
-	InstancePtr->Config.BaseAddress = EffectiveAddress;
 
 	return XST_SUCCESS;
 }
@@ -758,8 +753,9 @@ XStatus XResetPs_ResetAssert(XResetPs *InstancePtr,
 {
 	/* Arguments validation */
 	Xil_AssertNonvoid(InstancePtr != NULL);
-	if ((ResetID > XRESETPS_RSTID_END) ||
-		(ResetID < XRESETPS_RSTID_START)) {
+	if (!((ResetID <= XRESETPS_RSTID_END) &&
+		 ((ResetID > XRESETPS_RSTID_START)||
+		  (ResetID == XRESETPS_RSTID_START)))) {
 		return XST_INVALID_PARAM;
 	}
 
@@ -816,8 +812,9 @@ XStatus XResetPs_ResetDeassert(XResetPs *InstancePtr,
 {
 	/* Arguments validation */
 	Xil_AssertNonvoid(InstancePtr != NULL);
-	if ((ResetID > XRESETPS_RSTID_END) ||
-		(ResetID < XRESETPS_RSTID_START)) {
+	if (!((ResetID <= XRESETPS_RSTID_END) &&
+		((ResetID > XRESETPS_RSTID_START) ||
+		(ResetID == XRESETPS_RSTID_START)))) {
 		return XST_INVALID_PARAM;
 	}
 
@@ -873,8 +870,9 @@ XStatus XResetPs_ResetPulse(XResetPs *InstancePtr, const XResetPs_RstId ResetID)
 {
 	/* Arguments validation */
 	Xil_AssertNonvoid(InstancePtr != NULL);
-	if ((ResetID > XRESETPS_RSTID_END) ||
-		(ResetID < XRESETPS_RSTID_START)) {
+	if (!((ResetID <= XRESETPS_RSTID_END) &&
+		((ResetID > XRESETPS_RSTID_START)||
+		(ResetID == XRESETPS_RSTID_START)))) {
 		return XST_INVALID_PARAM;
 	}
 
@@ -978,8 +976,9 @@ XStatus XResetPs_ResetStatus(XResetPs *InstancePtr,
 	/* Arguments validation */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(Status != NULL);
-	if ((ResetID > XRESETPS_RSTID_END) ||
-		(ResetID < XRESETPS_RSTID_START)) {
+	if (!((ResetID <= XRESETPS_RSTID_END) &&
+		((ResetID > XRESETPS_RSTID_START)||
+		 (ResetID == XRESETPS_RSTID_START)))) {
 		return XST_INVALID_PARAM;
 	}
 

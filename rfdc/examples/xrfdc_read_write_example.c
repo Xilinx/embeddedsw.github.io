@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017-2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -69,14 +65,22 @@
 * 3.2   sk     03/01/18 Add test case for Multiband.
 * 4.0   sd     04/28/18 Add Clock configuration support for ZCU111.
 *       sd     05/15/18 Updated Clock configuration for lmk.
+* 5.0   sk     07/20/18 Update mixer settings test cases to consider MixerType.
+*       sk     08/03/18 For baremetal, add metal device structure for rfdc
+*                       device and register the device to libmetal generic bus.
+*       mus    08/18/18 Updated to remove xparameters.h dependency for linux
+*                       platform.
+*       sk     09/07/18 Modified phasecorrection factor as per  QMC Phase
+*                       correction factor range in driver
 *
 * </pre>
 *
 *****************************************************************************/
 
 /***************************** Include Files ********************************/
-
+#ifdef __BAREMETAL__
 #include "xparameters.h"
+#endif
 #include "xrfdc.h"
 #ifdef XPS_BOARD_ZCU111
 #include "xrfdc_clk.h"
@@ -89,11 +93,16 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifdef __BAREMETAL__
+#define BUS_NAME        "generic"
+#define XRFDC_BASE_ADDR		XPAR_XRFDC_0_BASEADDR
 #define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
-#ifndef __BAREMETAL__
-#define BUS_NAME        "platform"
 #define RFDC_DEV_NAME    XPAR_XRFDC_0_DEV_NAME
+#else
+#define BUS_NAME        "platform"
+#define RFDC_DEVICE_ID 	0
 #endif
+
 
 /**************************** Type Definitions ******************************/
 
@@ -113,10 +122,16 @@ static int CompareCoarseDelaySettings(XRFdc_CoarseDelay_Settings *SetCoarseDlySe
 								 XRFdc_CoarseDelay_Settings *GetCoarseDlySettings);
 static int CompareThresholdSettings(XRFdc_Threshold_Settings *SetThresholdSettings,
 								 XRFdc_Threshold_Settings *GetThresholdSettings);
+#ifdef __BAREMETAL__
+int register_metal_device(void);
+#endif
 
 /************************** Variable Definitions ****************************/
 
 static XRFdc RFdcInst;      /* RFdc driver instance */
+struct metal_device *device;
+struct metal_io_region *io;
+
 #ifdef XPS_BOARD_ZCU111
 unsigned int LMK04208_CKin[1][26] = {
 		{0x00160040,0x80140320,0x80140321,0x80140322,
@@ -124,6 +139,35 @@ unsigned int LMK04208_CKin[1][26] = {
 		0x55555549,0x9102410A,0x0401100B,0x1B0C006C,0x2302886D,0x0200000E,
 		0x8000800F,0xC1550410,0x00000058,0x02C9C419,0x8FA8001A,0x10001E1B,
 		0x0021201C,0x0180033D,0x0200033E,0x003F001F }};
+#endif
+
+#ifdef __BAREMETAL__
+const metal_phys_addr_t metal_phys[] = {
+		XRFDC_BASE_ADDR
+};
+
+static struct metal_device metal_dev_table[] = {
+	{
+		/* RFdc device */
+		.name = RFDC_DEV_NAME,
+		.bus = NULL,
+		.num_regions = 1,
+		.regions = {
+			{
+				.virt = (void *)XRFDC_BASE_ADDR,
+				.physmap = &metal_phys[0],
+				.size = 0x40000,
+				.page_shift = (unsigned)(-1),
+				.page_mask = (unsigned)(-1),
+				.mem_flags = 0x0,
+				.ops = {NULL},
+			}
+		},
+		.node = {NULL},
+		.irq_num = 0,
+		.irq_info = NULL,
+	}
+};
 #endif
 
 /****************************************************************************/
@@ -160,6 +204,38 @@ int main(void)
 	return XRFDC_SUCCESS;
 }
 
+#ifdef __BAREMETAL__
+/****************************************************************************/
+/**
+*
+* This function registers devices to the libmetal generic bus.
+* Before accessing the device with libmetal device operation,
+* register the device to a libmetal supported bus. For non-Linux system,
+* libmetal only supports "generic" bus to manage memory mapped devices.
+*
+* @param	None.
+*
+* @return
+*		0 - succeeded, non-zero for failures.
+*
+* @note		None.
+*
+*****************************************************************************/
+int register_metal_device(void)
+{
+	unsigned int i;
+	int ret;
+
+	for (i = 0; i < 1; i++) {
+		device = &metal_dev_table[i];
+		printf("registering: %d, name=%s\n", i, device->name);
+		ret = metal_register_generic_device(device);
+		if (ret)
+			return ret;
+	}
+	return 0;
+}
+#endif
 
 /****************************************************************************/
 /**
@@ -203,7 +279,7 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 	u32 SetNyquistZone;
 	u32 GetNyquistZone;
 	XRFdc_BlockStatus BlockStatus;
-	int OutputCurr;
+	u32 OutputCurr;
 	u8 SetFIFOEnable;
 	u8 GetFIFOEnable;
 	u32 SetInterpolationFactor;
@@ -215,11 +291,12 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 	u16 SetInvSinc;
 	u16 GetInvSinc;
 	u32 GetLinkCM;
+	u16 SetFabClkDiv;
+	u16 GetFabClkDiv;
 	XRFdc_PLL_Settings PLLSettings;
-#ifndef __BAREMETAL__
-	struct metal_device *device;
-	struct metal_io_region *io;
 	int ret = 0;
+#ifndef __BAREMETAL__
+	char DeviceName[NAME_MAX];
 #endif
 
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -252,13 +329,29 @@ printf("\n Configuring the Clock \r\n");
 #endif
 #endif
 
-#ifndef __BAREMETAL__
+#ifdef __BAREMETAL__
+	ret = register_metal_device();
+	if (ret) {
+		printf("%s: failed to register devices: %d\n", __func__, ret);
+		return ret;
+	}
 	ret = metal_device_open(BUS_NAME, RFDC_DEV_NAME, &device);
 	if (ret) {
-		printf("ERROR: Failed to open device a0000000.usp_rf_data_converter.\n");
+		printf("ERROR: Failed to open device usp_rf_data_converter.\n");
 		return XRFDC_FAILURE;
 	}
-
+#else
+	Status = XRFdc_GetDeviceNameByDeviceId(DeviceName, RFDC_DEVICE_ID);
+	if (Status < 0) {
+		printf("ERROR: Failed to find rfdc device with device id %d\n",RFDC_DEVICE_ID);
+		return XRFDC_FAILURE;
+	}
+	ret = metal_device_open(BUS_NAME, DeviceName, &device);
+	if (ret) {
+		printf("ERROR: Failed to open device %s.\n", DeviceName);
+		return XRFDC_FAILURE;
+	}
+#endif
 	/* Map RFDC device IO region */
 	io = metal_device_io_region(device, 0);
 	if (!io) {
@@ -268,7 +361,6 @@ printf("\n Configuring the Clock \r\n");
 	}
 	RFdcInstPtr->device = device;
 	RFdcInstPtr->io = io;
-#endif
 
 	for (Tile = 0; Tile <4; Tile++) {
 		for (Block = 0; Block <4; Block++) {
@@ -292,12 +384,10 @@ printf("\n Configuring the Clock \r\n");
 				}
 
 				/* Set new mixer configurations */
-				SetMixerSettings.CoarseMixFreq = 0x0;	// Coarse mix OFF
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
-				SetMixerSettings.Freq = -2000;	//MHz
-				SetMixerSettings.FineMixerMode =
-						XRFDC_FINE_MIXER_MOD_COMPLX_TO_REAL;	// C2R
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_BYPASS;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2R;
+				SetMixerSettings.Freq = 0x0;
 				SetMixerSettings.PhaseOffset = 22.56789;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_0P7;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_IMMEDIATE;
@@ -319,14 +409,12 @@ printf("\n Configuring the Clock \r\n");
 				}
 
 				/* Set new mixer configurations */
-				SetMixerSettings.CoarseMixFreq = 0x10;	// Coarse mix BYPASS
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
-				SetMixerSettings.Freq = 2000;	//MHz
-				SetMixerSettings.FineMixerMode =
-						XRFDC_FINE_MIXER_MOD_COMPLX_TO_REAL;	// C2R
-				SetMixerSettings.PhaseOffset = -30.925;
-				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_1P0;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2R;
+				SetMixerSettings.Freq = -2000;
+				SetMixerSettings.PhaseOffset = 22.56789;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_0P7;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_IMMEDIATE;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_DAC_TILE, Tile, Block, &SetMixerSettings);
@@ -352,7 +440,7 @@ printf("\n Configuring the Clock \r\n");
 				SetQMCSettings.EnableGain = 0;
 				SetQMCSettings.EnablePhase = 0;
 				SetQMCSettings.OffsetCorrectionFactor = -4;
-				SetQMCSettings.PhaseCorrectionFactor = 26.5;
+				SetQMCSettings.PhaseCorrectionFactor = 26.499;
 				SetQMCSettings.EventSource = XRFDC_EVNT_SRC_SYSREF;
 				/* Set QMC settings */
 				Status = XRFdc_SetQMCSettings(RFdcInstPtr, XRFDC_DAC_TILE, Tile, Block, &SetQMCSettings);
@@ -518,6 +606,42 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 				if (SetInvSinc != GetInvSinc)
 					return XRFDC_FAILURE;
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV1;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV16;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV4;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_DAC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
 			}
 
 			/* Check if the ADC block is enabled */
@@ -547,14 +671,13 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS) {
 					return XRFDC_FAILURE;
 				}
-				SetMixerSettings.CoarseMixFreq = 0x0; 	//CoarseMix OFF
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
-				SetMixerSettings.Freq = -250; 	//MHz
-				SetMixerSettings.FineMixerMode =
-						XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;	// R2C
-				SetMixerSettings.PhaseOffset = 14.0612;
-				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_1P0;
+
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
+				SetMixerSettings.Freq = 0x0;
+				SetMixerSettings.PhaseOffset = 0x0;
+				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_0P7;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_SYSREF;
 				/* Set Mixer settings */
 				Status = XRFdc_SetMixerSettings(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block, &SetMixerSettings);
@@ -573,12 +696,10 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 				}
 
-				SetMixerSettings.CoarseMixFreq = 0x10; 	//CoarseMix BYPASS
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
-				SetMixerSettings.Freq = 350; 	//MHz
-				SetMixerSettings.FineMixerMode =
-						XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;	// R2C
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
+				SetMixerSettings.Freq = 350;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource = XRFDC_EVNT_SRC_SYSREF;
@@ -767,13 +888,10 @@ printf("\n Configuring the Clock \r\n");
 				if (SetCalibrationMode != GetCalibrationMode)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
 				SetMixerSettings.Freq = 700;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -794,13 +912,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2C;
 				SetMixerSettings.Freq = 1200;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -821,13 +936,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
 				SetMixerSettings.Freq = 2300;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -848,13 +960,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_FOUR;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_MIN_SAMPLE_FREQ_BY_FOUR;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2C;
 				SetMixerSettings.Freq = -2500;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -893,13 +1002,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_TWO;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_BYPASS;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
 				SetMixerSettings.Freq = 4500;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -920,13 +1026,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_TWO;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_BYPASS;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_COARSE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2C;
 				SetMixerSettings.Freq = 700;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -947,13 +1050,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_TWO;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_R2C;
 				SetMixerSettings.Freq = 1200;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -974,13 +1074,10 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 
-				SetMixerSettings.CoarseMixFreq =
-					XRFDC_COARSE_MIX_SAMPLE_FREQ_BY_TWO;
-				SetMixerSettings.CoarseMixMode =
-						XRFDC_COARSE_MIX_MODE_C2C_C2R;
+				SetMixerSettings.CoarseMixFreq = XRFDC_COARSE_MIX_OFF;
+				SetMixerSettings.MixerType = XRFDC_MIXER_TYPE_FINE;
+				SetMixerSettings.MixerMode = XRFDC_MIXER_MODE_C2C;
 				SetMixerSettings.Freq = 2300;
-				SetMixerSettings.FineMixerMode =
-					XRFDC_FINE_MIXER_MOD_REAL_TO_COMPLX;
 				SetMixerSettings.PhaseOffset = -9.0565;
 				SetMixerSettings.FineMixerScale = XRFDC_MIXER_SCALE_AUTO;
 				SetMixerSettings.EventSource =
@@ -1004,6 +1101,42 @@ printf("\n Configuring the Clock \r\n");
 				if (Status != XRFDC_SUCCESS)
 					return XRFDC_FAILURE;
 				printf("\n ADC%d%d: Link Coupling Mode is %d \r\n", Tile, Block, GetLinkCM);
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV4;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV16;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
+
+				SetFabClkDiv = XRFDC_FAB_CLK_DIV8;
+				Status = XRFdc_SetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, SetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				Status = XRFdc_GetFabClkOutDiv(RFdcInstPtr, XRFDC_ADC_TILE,
+						Tile, &GetFabClkDiv);
+				if (Status != XRFDC_SUCCESS)
+					return XRFDC_FAILURE;
+				if (SetFabClkDiv != GetFabClkDiv)
+					return XRFDC_FAILURE;
 			}
 		}
 		if (XRFdc_GetNoOfADCBlocks(RFdcInstPtr, Tile) != 0U) {
@@ -1038,6 +1171,8 @@ printf("\n Configuring the Clock \r\n");
 					Block, XRFdc_GetConnectedQData(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block));
 		}
 	}
+	printf("\n ADC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile));
+	printf("\n DAC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
 	printf("\n ============================================\r\n");
 
 	/* ADC-4G Singleband R2C */
@@ -1062,6 +1197,7 @@ printf("\n Configuring the Clock \r\n");
 				return XRFDC_FAILURE;
 		}
 	}
+	printf("\n ADC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile));
 	printf("\n ================================================\r\n");
 
 	if (RFdcInstPtr->ADC_Tile[Tile].NumOfADCBlocks >= 2U) {
@@ -1087,6 +1223,7 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 			}
 		}
+		printf("\n ADC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile));
 		printf("\n ================================================\r\n");
 
 		/* ADC-4G Multiband 2x C2C */
@@ -1111,6 +1248,31 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 			}
 		}
+		printf("\n ADC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile));
+		printf("\n ================================================\r\n");
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_ADC_TILE, Tile, 0x2, XRFDC_MB_DATATYPE_R2C, 0x2);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+
+		printf("=============ADC0,1-4G SB Configuration R2C==========\r\n");
+		for (Block = 0; Block <4; Block++) {
+			/* Check if the ADC block is enabled */
+			if (XRFdc_IsADCBlockEnabled(RFdcInstPtr, Tile, Block)) {
+				printf("\n ADC DigitalDataPath%d-> Connected I data = %d",
+						Block, XRFdc_GetConnectedIData(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block));
+				printf("\n ADC DigitalDataPath%d-> Connected Q data = %d",
+						Block, XRFdc_GetConnectedQData(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block));
+			}
+			if (Block == 1) {
+				if (XRFdc_GetConnectedIData(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block) != 1)
+					return XRFDC_FAILURE;
+				if (XRFdc_GetConnectedQData(RFdcInstPtr, XRFDC_ADC_TILE, Tile, Block) != -1)
+					return XRFDC_FAILURE;
+			}
+		}
+		printf("\n ADC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_ADC_TILE, Tile));
 		printf("\n ================================================\r\n");
 	}
 
@@ -1136,6 +1298,7 @@ printf("\n Configuring the Clock \r\n");
 				return XRFDC_FAILURE;
 		}
 	}
+	printf("\n DAC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
 	printf("\n ============================================\r\n");
 
 	if (RFdcInstPtr->DAC_Tile[Tile].NumOfDACBlocks >= 2U) {
@@ -1161,6 +1324,7 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 			}
 		}
+		printf("\n DAC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
 		printf("\n ============================================\r\n");
 
 		/* DAC Multiband 2x C2C */
@@ -1185,7 +1349,62 @@ printf("\n Configuring the Clock \r\n");
 					return XRFDC_FAILURE;
 			}
 		}
+		printf("\n DAC0 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
 		printf("\n ============================================\r\n");
+	}
+
+	if (RFdcInstPtr->DAC_Tile[Tile].NumOfDACBlocks == 4U) {
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0xC, XRFDC_MB_DATATYPE_C2C, 0xC);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC2,3 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0xF, XRFDC_MB_DATATYPE_C2C, 0xF);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC 4X MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0x3, XRFDC_MB_DATATYPE_C2C, 0x3);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC0,1 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0xC, XRFDC_MB_DATATYPE_C2C, 0xC);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC2,3 MB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0x1, XRFDC_MB_DATATYPE_C2C, 0x1);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0x2, XRFDC_MB_DATATYPE_C2C, 0x2);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC0, 1 SB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0x4, XRFDC_MB_DATATYPE_C2C, 0x4);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		Status = XRFdc_MultiBand(RFdcInstPtr, XRFDC_DAC_TILE, Tile, 0x8, XRFDC_MB_DATATYPE_C2C, 0x8);
+		if (Status != XRFDC_SUCCESS) {
+			return XRFDC_FAILURE;
+		}
+		printf("\n DAC2, 3 SB Config is %d \r\n", XRFdc_GetMultibandConfig(RFdcInstPtr, XRFDC_DAC_TILE, Tile));
+	}
+
+	for (Tile = XRFDC_BLK_ID0; Tile <= XRFDC_BLOCK_ID_MAX; Tile++) {
+		if (XRFdc_CheckTileEnabled(RFdcInstPtr, XRFDC_ADC_TILE, Tile) == XRFDC_SUCCESS)
+			XRFdc_DumpRegs(RFdcInstPtr, XRFDC_ADC_TILE, Tile);
+
+		if (XRFdc_CheckTileEnabled(RFdcInstPtr, XRFDC_DAC_TILE, Tile) == XRFDC_SUCCESS)
+			XRFdc_DumpRegs(RFdcInstPtr, XRFDC_DAC_TILE, Tile);
 	}
 
 	return XRFDC_SUCCESS;
@@ -1218,11 +1437,11 @@ static int CompareMixerSettings(XRFdc_Mixer_Settings *SetMixerSettings,
 					GetMixerSettings->PhaseOffset) < 0.1) &&
 			(SetMixerSettings->FineMixerScale ==
 					GetMixerSettings->FineMixerScale) &&
-			(SetMixerSettings->FineMixerMode == GetMixerSettings->FineMixerMode) &&
+			(SetMixerSettings->MixerMode == GetMixerSettings->MixerMode) &&
 			(SetMixerSettings->CoarseMixFreq ==
 					GetMixerSettings->CoarseMixFreq) &&
-			(SetMixerSettings->CoarseMixMode ==
-				GetMixerSettings->CoarseMixMode))
+			(SetMixerSettings->MixerType ==
+				GetMixerSettings->MixerType))
 		return 0;
 	else
 		return 1;

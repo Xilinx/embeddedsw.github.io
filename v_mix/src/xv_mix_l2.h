@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -413,6 +409,8 @@ typedef struct {
 /**************************** Function Prototypes *****************************/
 int XVMix_Initialize(XV_Mix_l2 *InstancePtr, u16 DeviceId);
 void XVMix_Start(XV_Mix_l2 *InstancePtr);
+void XV_mix_SetFlushbit(XV_mix *InstancePtr);
+u32 XV_mix_Get_FlushDone(XV_mix *InstancePtr);
 void XVMix_Stop(XV_Mix_l2 *InstancePtr);
 void XVMix_SetVidStream(XV_Mix_l2 *InstancePtr,
                         const XVidC_VideoStream *StrmIn);

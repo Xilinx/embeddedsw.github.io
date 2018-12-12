@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2012 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -48,6 +44,11 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
+* 4.5   mus  07/05/18 Updated example to call TmrCtrDisableIntr function
+*                     with correct arguments. Presently device id is
+*                     being passed instead of interrupt id. It fixes
+*                     CR#1006251.
+* 4.5   mus  07/05/18 Fixed checkpatch errors and warnings.
 *
 *</pre>
 ******************************************************************************/
@@ -94,23 +95,23 @@
 
 /************************** Function Prototypes ******************************/
 
-int TmrCtrFastIntrExample(XIntc* IntcInstancePtr,
-			XTmrCtr* InstancePtr,
+int TmrCtrFastIntrExample(XIntc *IntcInstancePtr,
+			XTmrCtr *InstancePtr,
 			u16 DeviceId,
 			u16 IntrId,
 			u8 TmrCtrNumber);
 
-static int TmrCtrSetupIntrSystem(XIntc* IntcInstancePtr,
-				XTmrCtr* InstancePtr,
+static int TmrCtrSetupIntrSystem(XIntc *IntcInstancePtr,
+				XTmrCtr *InstancePtr,
 				u16 DeviceId,
 				u16 IntrId,
 				u8 TmrCtrNumber);
 
-void TimerCounterHandler(void *CallBackRef, u8 TmrCtrNumber);
+static void TimerCounterHandler(void *CallBackRef, u8 TmrCtrNumber);
 
-void TmrCtrDisableIntr(XIntc* IntcInstancePtr, u16 IntrId);
+static void TmrCtrDisableIntr(XIntc *IntcInstancePtr, u16 IntrId);
 
-void TmrCtr_FastHandler(void) __attribute__ ((fast_interrupt));
+static void TmrCtr_FastHandler(void) __attribute__ ((fast_interrupt));
 
 /************************** Variable Definitions *****************************/
 
@@ -190,8 +191,8 @@ int main(void)
 *		are not working it may never return.
 *
 *****************************************************************************/
-int TmrCtrFastIntrExample(XIntc* IntcInstancePtr,
-			XTmrCtr* TmrCtrInstancePtr,
+int TmrCtrFastIntrExample(XIntc *IntcInstancePtr,
+			XTmrCtr *TmrCtrInstancePtr,
 			u16 DeviceId,
 			u16 IntrId,
 			u8 TmrCtrNumber)
@@ -281,7 +282,7 @@ int TmrCtrFastIntrExample(XIntc* IntcInstancePtr,
 		}
 	}
 
-	TmrCtrDisableIntr(IntcInstancePtr, DeviceId);
+	TmrCtrDisableIntr(IntcInstancePtr, IntrId);
 	return XST_SUCCESS;
 }
 
@@ -349,8 +350,8 @@ void TimerCounterHandler(void *CallBackRef, u8 TmrCtrNumber)
 *
 *
 ******************************************************************************/
-static int TmrCtrSetupIntrSystem(XIntc* IntcInstancePtr,
-				 XTmrCtr* TmrCtrInstancePtr,
+static int TmrCtrSetupIntrSystem(XIntc *IntcInstancePtr,
+				 XTmrCtr *TmrCtrInstancePtr,
 				 u16 DeviceId,
 				 u16 IntrId,
 				 u8 TmrCtrNumber)
@@ -429,14 +430,12 @@ static int TmrCtrSetupIntrSystem(XIntc* IntcInstancePtr,
 * @note		None.
 *
 ******************************************************************************/
-void TmrCtrDisableIntr(XIntc* IntcInstancePtr, u16 IntrId)
+void TmrCtrDisableIntr(XIntc *IntcInstancePtr, u16 IntrId)
 {
 	/*
 	 * Disable the interrupt for the timer counter
 	 */
 	XIntc_Disable(IntcInstancePtr, IntrId);
-
-	return;
 }
 
 
@@ -454,5 +453,5 @@ void TmrCtr_FastHandler(void)
 {
 
 	/* Call the TmrCtr Interrupt handler */
- 	XTmrCtr_InterruptHandler(&TimerCounterInst);
+	XTmrCtr_InterruptHandler(&TimerCounterInst);
 }

@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -44,6 +40,8 @@
  * Ver   Who    Date     Changes
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    11/16/17 Initial release.
+ * 2.0   kar    09/28/18 Added justication enable masks and shifts.
+ *                       Added left and right justification masks and shifts.
  * </pre>
  *
  *****************************************************************************/
@@ -112,6 +110,14 @@ extern "C" {
 #define XI2S_TX_REG_CTRL_EN_SHIFT (0) /**< Module Enable bit shift */
 #define XI2S_TX_REG_CTRL_EN_MASK  \
 	(1 << XI2S_TX_REG_CTRL_EN_SHIFT) /**< Module Enable mask */
+#define XI2S_TX_REG_CTRL_JFE_SHIFT (1)
+//!< Justification Enable or Disable shift
+#define XI2S_TX_REG_CTRL_JFE_MASK (1 << XI2S_TX_REG_CTRL_JFE_SHIFT)
+//!< Justification Enable or Disable mask
+#define XI2S_TX_REG_CTRL_LORJF_SHIFT (2)
+//!< Left or Right Justification shift
+#define XI2S_TX_REG_CTRL_LORJF_MASK (1 << XI2S_TX_REG_CTRL_LORJF_SHIFT)
+//!< Left or Right Justification mask
 /* @} */
 /**
 * @name Interrupt masks and shifts

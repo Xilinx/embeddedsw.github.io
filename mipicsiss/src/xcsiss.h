@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -191,6 +187,7 @@ extern "C" {
 #define XCSISS_HANDLER_SHORTPACKET	XCSI_HANDLER_SHORTPACKET
 #define XCSISS_HANDLER_FRAMERECVD	XCSI_HANDLER_FRAMERECVD
 #define XCSISS_HANDLER_OTHERERROR	XCSI_HANDLER_OTHERERROR
+#define XCSISS_HANDLER_VCX		XCSI_HANDLER_VCXFRAMEERROR
 /*@}*/
 
 /**
@@ -249,6 +246,8 @@ typedef struct {
 	u32 EnableCrc;		/**< CRC Calculation optimization enabled */
 	u32 EnableActiveLanes;	/**< Active Lanes programming optimization
 				  *  enabled */
+	u8 EnableCSIv20; /* csiv2.0 support*/
+	u8 EnableVCx;	/* vcx feature support*/
 	CsiRxSsSubCore IicInfo;	/**< IIC sub-core configuration */
 	CsiRxSsSubCore CsiInfo;	/**< CSI sub-core configuration */
 	CsiRxSsSubCore DphyInfo;	/**< DPHY sub-core configuration */

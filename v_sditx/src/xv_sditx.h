@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -41,6 +37,7 @@
 * ----- ------ -------- --------------------------------------------------
 * 1.00  jsr    07/17/17 Initial release.
 * 	jsr    02/23/2018 YUV420 color format support.
+# 2.0   vve    10/03/18 Add support for ST352 in C Stream
 * </pre>
 *
 ******************************************************************************/
@@ -172,6 +169,7 @@ typedef struct {
 			     * base address of the core's registers */
     u8 IsEdhIncluded;
     u8 MaxRateSupported;
+    u8 InsertCSTRST352;         /**< Insert ST352 in C stream */
 } XV_SdiTx_Config;
 
 /**
@@ -291,6 +289,8 @@ u8 XV_SdiTx_GetPayloadAspectRatio(XVidC_AspectRatio AspectRatio);
 u32 XV_SdiTx_GetPayloadByte1(u16 VActiveValid, XSdiVid_TransMode SdiMode, u8 *Data);
 u8 XV_SdiTx_GetPayloadColorFormat(XSdiVid_TransMode SdiMode, XVidC_ColorFormat ColorFormatId);
 int XV_SdiTx_SetColorFormat(XV_SdiTx *InstancePtr, XVidC_ColorFormat ColorFormat);
+void XV_SdiTx_ST352CStreamEnable(XV_SdiTx *InstancePtr);
+void XV_SdiTx_ST352CSwitch3GA(XV_SdiTx *InstancePtr);
 
 /* Bridge and reset specific functions */
 void XV_SdiTx_VidBridgeEnable(XV_SdiTx *InstancePtr);

@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -66,11 +62,20 @@
 
 /************************** Variable Definitions *****************************/
 extern USB_CBW CBW;
+extern u8 Phase;
 
 /*
  * Device Descriptors
  */
+#ifdef  __ICCARM__
+#pragma data_alignment = 16
+#endif
+
+#ifdef __ICCARM__
+USB_STD_DEV_DESC deviceDesc[] = {
+#else
 USB_STD_DEV_DESC __attribute__ ((aligned(16))) deviceDesc[] = {
+#endif
 	{/*
 	  * USB 2.0
 	  */
@@ -112,7 +117,11 @@ USB_STD_DEV_DESC __attribute__ ((aligned(16))) deviceDesc[] = {
 /*
  * Configuration Descriptors
  */
+#ifdef __ICCARM__
+USB30_CONFIG config3 = {
+#else
 USB30_CONFIG __attribute__ ((aligned(16))) config3 = {
+#endif
 	{/*
 	  * Std Config
 	  */
@@ -180,7 +189,11 @@ USB30_CONFIG __attribute__ ((aligned(16))) config3 = {
 	}
 };
 
+#ifdef __ICCARM__
+USB_CONFIG config2 = {
+#else
 USB_CONFIG __attribute__ ((aligned(16))) config2 = {
+#endif
 	{/*
 	  * Std Config
 	  */
@@ -229,6 +242,10 @@ USB_CONFIG __attribute__ ((aligned(16))) config2 = {
 		0x00					/* bInterval */
 	}
 };
+
+#ifdef __ICCARM__
+#pragma data_alignment = 4
+#endif
 
 /*
  * String Descriptors
@@ -440,7 +457,12 @@ u32 Usb_Ch9SetupStrDescReply(struct Usb_DevData *InstancePtr,
 u32 Usb_Ch9SetupBosDescReply(u8 *BufPtr, u32 BufLen)
 {
 
-	USB_BOS_DESC __attribute__ ((aligned(16))) bosDesc = {
+#ifdef __ICCARM__
+#pragma data_alignment = 16
+	static USB_BOS_DESC bosDesc = {
+#else
+	static USB_BOS_DESC __attribute__ ((aligned(16))) bosDesc = {
+#endif
 		/* BOS descriptor */
 		{sizeof(USB_STD_BOS_DESC), /* bLength */
 		USB_TYPE_BOS_DESC, /* DescriptorType */
@@ -461,6 +483,10 @@ u32 Usb_Ch9SetupBosDescReply(u8 *BufPtr, u32 BufLen)
 		0x01, /* bU1DevExitLat */
 		(0x01F4)} /* wU2DevExitLat */
 	};
+
+#ifdef __ICCARM__
+#pragma data_alignment = 4
+#endif
 
 	/* Check buffer pointer is OK and buffer is big enough. */
 	if (!BufPtr) {
@@ -537,6 +563,7 @@ s32 Usb_SetConfiguration(struct Usb_DevData *InstancePtr, SetupPacket *Ctrl)
 *		except control endpoints when this command is received.
 *
 *****************************************************************************/
+
 s32 Usb_SetConfigurationApp(struct Usb_DevData *InstancePtr,
 								 SetupPacket *SetupData)
 {
@@ -571,6 +598,10 @@ s32 Usb_SetConfigurationApp(struct Usb_DevData *InstancePtr,
 		}
 
 		SetConfigDone(InstancePtr->PrivateData, 1U);
+
+		/* Reset the Phase to default COMMAND STATE */
+		Phase = USB_EP_STATE_COMMAND;
+
 		/*
 		 * As per Mass storage specification we receive 31 byte length
 		 * Command Block Wrapper first. So lets make OUT Endpoint ready
@@ -595,6 +626,9 @@ s32 Usb_SetConfigurationApp(struct Usb_DevData *InstancePtr,
 		}
 
 		SetConfigDone(InstancePtr->PrivateData, 0U);
+
+		/* Reset the Phase to default COMMAND STATE */
+		Phase = USB_EP_STATE_COMMAND;
 	}
 
 	return XST_SUCCESS;

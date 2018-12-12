@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -432,11 +428,17 @@ void XCsiSs_GetLaneInfo(XCsiSs *InstancePtr)
 void XCsiSs_GetVCInfo(XCsiSs *InstancePtr)
 {
 	u8 Index;
+	u8 MaxVC;
 
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	for (Index = 0; Index < XCSI_MAX_VC; Index++) {
+	if(InstancePtr->Config.EnableVCx)
+		MaxVC = XCSI_V20_MAX_VC;
+	else
+		MaxVC = XCSI_V10_MAX_VC;
+
+	for (Index = 0; Index < MaxVC; Index++) {
 		XCsi_GetVCInfo(InstancePtr->CsiPtr, Index,
 			&InstancePtr->VCInfo[Index]);
 	}

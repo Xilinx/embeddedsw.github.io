@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * Use of the Software is limited solely to applications:
- * (a) running on a Xilinx device, or
- * (b) that interact with a Xilinx device through a bus or interconnect.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -49,13 +45,15 @@
  * Ver   Who    Date     Changes
  * ----- ------ -------- --------------------------------------------------
  * 1.0   kar    11/16/17 Initial release.
+ * 2.0   kar    10/01/18 included xil_types and xil_assert header files.
  * </pre>
  *
  *****************************************************************************/
 
 /***************************** Include Files *********************************/
 #include "xi2stx.h"
-#include "xbasic_types.h"
+#include "xil_types.h"
+#include "xil_assert.h"
 
 /************************** Constant Definitions *****************************/
 

@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -43,6 +39,7 @@
 * Ver	Who	   Date		Changes
 * ----- ------ -------- --------------------------------------------------
 * 1.0	jsr    07/17/17 Initial release.
+#       vve    10/03/18 Add support for ST352 in C-Stream
 * </pre>
 *
 ******************************************************************************/
@@ -697,7 +694,12 @@ u32 XV_SdiRx_GetPayloadId(XV_SdiRx *InstancePtr, u8 DataStream)
 
 	RegValue = XV_SdiRx_ReadReg(InstancePtr->Config.BaseAddress,
 					(XV_SDIRX_RX_ST352_VLD_OFFSET));
-	RegValue = (RegValue >> DataStream) & 0x00000001;
+	if (InstancePtr->Transport.TMode == XSDIVID_MODE_6G ||
+		InstancePtr->Transport.TMode == XSDIVID_MODE_12G) {
+		RegValue = (RegValue >> DataStream) & 0x00000101;
+	} else {
+		RegValue = (RegValue >> DataStream) & 0x00000001;
+	}
 
 	if (RegValue) {
 		RegValue = XV_SdiRx_ReadReg(InstancePtr->Config.BaseAddress,

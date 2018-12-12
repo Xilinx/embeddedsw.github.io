@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -44,6 +40,10 @@
 * ----- ------ -------- -------------------------------------------------------
 * 1.00  jsr    07/17/17 Initial release.
 *       jsr    02/23/2018 YUV420 color format support
+# 2.0   vve    10/03/18 Add support for ST352 in C Stream
+	jsr    10/05/18 Moved 3GB specific video modes timing
+			parameters from video common library
+			to SDI common driver
 * </pre>
 *
 ******************************************************************************/
@@ -70,7 +70,10 @@
 #define XSDITX_LINE_RATE_3G	0
 #define XSDITX_LINE_RATE_6G	1
 #define XSDITX_LINE_RATE_12G8DS	2
-
+#define CHROMA_ST352_REG_OFFSET \
+	(XV_SDITX_TX_ST352_DATA_CH0_C_OFFSET - \
+	 XV_SDITX_TX_ST352_DATA_CH0_OFFSET) / 4
+#define XSDITX_VIDMODE_SHIFT 3
 /**************************** Type Definitions *******************************/
 
 /************************** Function Prototypes ******************************/
@@ -283,8 +286,26 @@ u32 XV_SdiTx_SetStream(XV_SdiTx *InstancePtr, XV_SdiTx_StreamSelId SelId,
 
 	switch (SelId) {
 	case XV_SDITX_STREAMSELID_VMID:
-		/* Get the timing from the video timing table. */
-		TimingPtr = XVidC_GetTimingInfo((u32)Data);
+		if((Data == XVIDC_VM_1920x1080_96_I) ||
+		   (Data == XVIDC_VM_1920x1080_100_I) ||
+		   (Data == XVIDC_VM_1920x1080_120_I) ) {
+			u32 index;
+
+			index = Data - XVIDC_VM_1920x1080_96_I;
+			TimingPtr = &(XVidC_SdiVidTimingModes[index].Timing);
+		} else if ((Data == XVIDC_VM_2048x1080_96_I) ||
+			   (Data == XVIDC_VM_2048x1080_100_I) ||
+			   (Data == XVIDC_VM_2048x1080_120_I)) {
+			u32 index;
+
+			index = Data - XVIDC_VM_2048x1080_96_I +
+				XSDITX_VIDMODE_SHIFT;
+			TimingPtr = &(XVidC_SdiVidTimingModes[index].Timing);
+		} else {
+			/* Get the timing from the video timing table. */
+			TimingPtr = XVidC_GetTimingInfo((u32)Data);
+		}
+
 		if (!TimingPtr) {
 			return XST_FAILURE;
 		}
@@ -857,6 +878,16 @@ void XV_SdiTx_StreamStart(XV_SdiTx *InstancePtr)
 		InstancePtr->Stream[StreamId].PayloadId);
 	}
 
+	Data = XV_SdiTx_ReadReg(InstancePtr->Config.BaseAddress,
+				XV_SDITX_MDL_CTRL_OFFSET);
+	if (Data & XV_SDITX_MDL_CTRL_C_ST352_MASK) {
+		for (int StreamId = 0; StreamId < XV_SDITX_MAX_DATASTREAM;
+			StreamId++) {
+			XV_SdiTx_SetPayloadId(InstancePtr,
+					      StreamId + CHROMA_ST352_REG_OFFSET,
+					      InstancePtr->Stream[StreamId].PayloadId);
+		}
+	}
 	switch (InstancePtr->Transport.TMode) {
 	case XSDIVID_MODE_SD:
 	case XSDIVID_MODE_HD:
@@ -1007,6 +1038,60 @@ int XV_SdiTx_StopSdi(XV_SdiTx *InstancePtr)
 				(Data));
 
 	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function enables the ST352 value to be used from DS2 instead of DS3 register
+* in C stream of the SDI TX Ss core.
+*
+* @param	InstancePtr is a pointer to the XV_SdiTx core instance.
+*
+* @return       None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_SdiTx_ST352CSwitch3GA(XV_SdiTx *InstancePtr)
+{
+	u32 Data;
+
+	Data = XV_SdiTx_ReadReg(InstancePtr->Config.BaseAddress,
+				XV_SDITX_MDL_CTRL_OFFSET);
+	Xil_AssertVoid(Data & XV_SDITX_MDL_CTRL_C_ST352_MASK);
+	Data = XV_SdiTx_ReadReg(InstancePtr->Config.BaseAddress,
+				XV_SDITX_MDL_CTRL_OFFSET);
+	Data |= XV_SDITX_MDL_CTRL_C_ST352_SWITCH_3GA_MASK;
+
+	XV_SdiTx_WriteReg((InstancePtr)->Config.BaseAddress,
+			   XV_SDITX_MDL_CTRL_OFFSET,
+			   Data);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function enables the insertion of ST352 in C stream of the SDI TX Ss core.
+*
+* @param	InstancePtr is a pointer to the XV_SdiTx core instance.
+*
+* @return       None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_SdiTx_ST352CStreamEnable(XV_SdiTx *InstancePtr)
+{
+	u32 Data;
+
+	Data = XV_SdiTx_ReadReg(InstancePtr->Config.BaseAddress,
+				XV_SDITX_MDL_CTRL_OFFSET);
+	Data |= XV_SDITX_MDL_CTRL_C_ST352_MASK;
+
+	XV_SdiTx_WriteReg((InstancePtr)->Config.BaseAddress,
+			   XV_SDITX_MDL_CTRL_OFFSET,
+			   Data);
 }
 
 /*****************************************************************************/

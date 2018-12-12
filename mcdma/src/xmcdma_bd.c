@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2017 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2018 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -11,10 +11,6 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,7 +29,7 @@
 /**
 *
 * @file xmcdma_bd.c
-* @addtogroup mcdma_v1_0
+* @addtogroup mcdma_v1_2
 * @{
 *
 * This file implements all the Scatter/Gather handling for the MCDMA Core,
@@ -44,6 +40,7 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -------------------------------------------------------
 *  1.0  adk  18/07/17 Initial Version.
+* 1.2   mus    11/05/18 Support 64 bit DMA addresses for Microblaze-X platform.
 ******************************************************************************/
 
 #include "xmcdma.h"
@@ -538,7 +535,7 @@ u32 XMcdma_BdSetBufAddr(XMcdma_Bd *BdPtr, UINTPTR Addr)
 		}
 	}
 
-#if defined(__aarch64__)
+#if defined(__aarch64__) || defined(__arch64__)
 	XMcdma_BdWrite64(BdPtr, XMCDMA_BD_BUFA_OFFSET, Addr);
 #else
 	XMcdma_BdWrite(BdPtr, XMCDMA_BD_BUFA_OFFSET, Addr);

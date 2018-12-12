@@ -12,10 +12,6 @@
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
 *
-* Use of the Software is limited solely to applications:
-* (a) running on a Xilinx device, or
-* (b) that interact with a Xilinx device through a bus or interconnect.
-*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -120,6 +116,7 @@
 * 6.3	kvn  07/02/15	Modified code according to MISRA-C:2012 guidelines.
 * 6.4   sk   11/10/15 Used UINTPTR instead of u32 for Baseaddress CR# 867425.
 *                     Changed the prototype of XAxiPmon_CfgInitialize API.
+* 6.7   sd   17/11/18 Fix Doxygen reported warnings
 * </pre>
 *
 *****************************************************************************/
@@ -606,7 +603,7 @@ s32 XAxiPmon_SetMetrics(XAxiPmon *InstancePtr, u8 Slot, u8 Metrics,
 *		The valid values are 0 to 9.
 * @param	Metrics is a reference parameter from application where metrics
 *		of specified counter is filled.
-* @praram	Slot is a reference parameter in which slot Id of
+* @param	Slot is a reference parameter in which slot Id of
 *		specified counter is filled
 * @return	XST_SUCCESS if Success
 *		XST_FAILURE if Failure
@@ -1028,7 +1025,7 @@ s32 XAxiPmon_StopEventLog(XAxiPmon *InstancePtr)
 *   - All sampled metric counters
 *
 * @param    InstancePtr is a pointer to the XAxiPmon instance.
-*           SampleInterval is the sample interval for the sampled metric
+* @param    SampleInterval is the sample interval for the sampled metric
 *           counters
 *
 * @return   XST_SUCCESS
