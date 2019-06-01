@@ -2,6 +2,8 @@ var struct_x_dp_rx_ss =
 [
     [ "Config", "struct_x_dp_rx_ss.html#a38c927311884c9c247ce6bb7299b8f5d", null ],
     [ "DpPtr", "struct_x_dp_rx_ss.html#aeaf3eee6d864238c89084759cfe0f6eb", null ],
+    [ "EdidDataPtr", "struct_x_dp_rx_ss.html#a7f5ddceb5414dc0d84b2349ee7762bd7", null ],
+    [ "EdidSize", "struct_x_dp_rx_ss.html#a279708d0f5f7640e96809d7d1ac92622", null ],
     [ "IicPtr", "struct_x_dp_rx_ss.html#a82173e2b23c1d47d9240fa58d091b2c6", null ],
     [ "IsReady", "struct_x_dp_rx_ss.html#a6691a5af4ef59d41e4a64a4bc64947b2", null ],
     [ "LinkBwCallback", "struct_x_dp_rx_ss.html#ae0e1bd70063b93a5b105d8d3ab2ea6c6", null ],

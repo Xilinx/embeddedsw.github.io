@@ -4,6 +4,7 @@ var struct_x_dp_rx_ss___config =
     [ "ColorFormat", "struct_x_dp_rx_ss___config.html#a1783e6e0b59b36314ec3a874cd58d6e7", null ],
     [ "DeviceId", "struct_x_dp_rx_ss___config.html#a97e296a5d464e36bb8d0a77cbf0a390c", null ],
     [ "DpSubCore", "struct_x_dp_rx_ss___config.html#abb687e5c8ca0d9f94d97f302b65f9427", null ],
+    [ "Hdcp22Enable", "struct_x_dp_rx_ss___config.html#a32ebe7a54d610bfbc6c1940bc30cb889", null ],
     [ "HdcpEnable", "struct_x_dp_rx_ss___config.html#a6dabb89d18ef5262ca4b527804923365", null ],
     [ "IicSubCore", "struct_x_dp_rx_ss___config.html#a1503a7da8b668879f291553428cd8a04", null ],
     [ "MaxBpc", "struct_x_dp_rx_ss___config.html#a7a18d32ddf160bf0b9022cc29bb9fa2d", null ],

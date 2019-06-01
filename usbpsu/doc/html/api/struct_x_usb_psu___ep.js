@@ -1,6 +1,6 @@
 var struct_x_usb_psu___ep =
 [
-    [ "ALIGNMENT_CACHELINE", "struct_x_usb_psu___ep.html#afa297e0d951485e61bd188d4223b64d2", null ],
+    [ "ALIGNMENT_CACHELINE", "struct_x_usb_psu___ep.html#abf2a2982e71d8fdfc40e424ec0b5e12a", null ],
     [ "BufferPtr", "struct_x_usb_psu___ep.html#a540a84bf7626bc472f26617c0b329221", null ],
     [ "BytesTxed", "struct_x_usb_psu___ep.html#afe5ecb3fc2462b344e48f092f9ca3e5b", null ],
     [ "CurUf", "struct_x_usb_psu___ep.html#a9cccdeed84d1af2bbc01731f62c170c7", null ],

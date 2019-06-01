@@ -15,7 +15,7 @@ var struct_x_nand_ps_tag =
     [ "Features", "struct_x_nand_ps_tag.html#aaef39c1b3d681967d9097bdae9069a27", null ],
     [ "Geometry", "struct_x_nand_ps_tag.html#ae87fd6bcc9622ee7d41abdbdaad61c35", null ],
     [ "IsReady", "struct_x_nand_ps_tag.html#aad4084a7b6b1ea6b1ec350dd22203e50", null ],
-    [ "ReadPage", "struct_x_nand_ps_tag.html#ab17e210f600664fa7639a535f07a1e71", null ],
+    [ "ReadPage", "struct_x_nand_ps_tag.html#aa589f70667fa1b52e24e2384e421aa01", null ],
     [ "SpareBufPtr", "struct_x_nand_ps_tag.html#a25507ef0fe95e9b0b871e03e65731cba", null ],
-    [ "WritePage", "struct_x_nand_ps_tag.html#a0fdb4fa82248796a6a294cdbace8f114", null ]
+    [ "WritePage", "struct_x_nand_ps_tag.html#a8d00d94fd28aadf317edc5fa9e4e0e38", null ]
 ];

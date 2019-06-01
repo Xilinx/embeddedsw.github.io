@@ -12,8 +12,8 @@ var struct_x_bram___config =
     [ "EccPresent", "struct_x_bram___config.html#a75f61a0ada77e92ed76040a4556fc6d4", null ],
     [ "EccStatusInterruptPresent", "struct_x_bram___config.html#ac12c18f690cc9dbc18392ee8c01c29d7", null ],
     [ "FaultInjectionPresent", "struct_x_bram___config.html#a58c670c0f23257fa4521b4fc219773bc", null ],
-    [ "MemBaseAddress", "struct_x_bram___config.html#aef90bb07681243210803842ba12a43da", null ],
-    [ "MemHighAddress", "struct_x_bram___config.html#ae9461811eea019ba314302d12eb35c7f", null ],
+    [ "MemBaseAddress", "struct_x_bram___config.html#a70b1c37ca7ecdeb186a05e75d8844a03", null ],
+    [ "MemHighAddress", "struct_x_bram___config.html#acd853cc9fe73dd4fc7c9af2da45b5a81", null ],
     [ "UncorrectableFailingDataRegs", "struct_x_bram___config.html#a33d6e8224ae0b1a661e4c2dad194377c", null ],
     [ "UncorrectableFailingRegisters", "struct_x_bram___config.html#aaa48d2b7251ca2b7020514d29e56f97c", null ],
     [ "WriteAccess", "struct_x_bram___config.html#ae19b307a3c7a9ed5649503385272072f", null ]

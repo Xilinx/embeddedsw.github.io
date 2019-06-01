@@ -1,6 +1,6 @@
 var struct_x_i_o_module =
 [
-    [ "BaseAddress", "struct_x_i_o_module.html#a3835c68413c43911f73971744614d2f9", null ],
+    [ "BaseAddress", "struct_x_i_o_module.html#ae5c5a9e707642378f9e46a235bf7a3c6", null ],
     [ "CallBackRef", "struct_x_i_o_module.html#a8b9fe4734807b32893f78a90e8c6a9de", null ],
     [ "CfgPtr", "struct_x_i_o_module.html#ad44f07ede4a771acec5e5ae601868957", null ],
     [ "CurrentIER", "struct_x_i_o_module.html#aa587d9b5ceed79935fa1c5cf842531d8", null ],
@@ -10,7 +10,7 @@ var struct_x_i_o_module =
     [ "CurrentUBRR", "struct_x_i_o_module.html#a40ef038a466867f27010e474e5e27aa2", null ],
     [ "GpoValue", "struct_x_i_o_module.html#ae52b176be0e933fa2a882feb0e6af143", null ],
     [ "Handler", "struct_x_i_o_module.html#aab92470605904d886037b7dc51b87dec", null ],
-    [ "IoBaseAddress", "struct_x_i_o_module.html#a3b3ad3e436996946d62750a2939c429d", null ],
+    [ "IoBaseAddress", "struct_x_i_o_module.html#ad7e23291bb2fd05ef464f8ee3f446076", null ],
     [ "IsReady", "struct_x_i_o_module.html#a0cee7cfb4687662370f0900c9c0b31d0", null ],
     [ "IsStarted", "struct_x_i_o_module.html#abf03d83df86afa14879087ed5f792d9d", null ],
     [ "ReceiveBuffer", "struct_x_i_o_module.html#a9779459fb73d4db975bdf4d112d63408", null ],
