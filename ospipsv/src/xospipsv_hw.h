@@ -15,24 +15,22 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
 /**
 *
 * @file xospipsv_hw.h
-* @addtogroup ospipsv_v1_0
+* @addtogroup ospipsv_v1_1
 * @{
 *
-* This file contains low level access funcitons using the base address
+* This file contains low level access functions using the base address
 * directly without an instance.
 *
 * <pre>
@@ -1736,6 +1734,13 @@ extern "C" {
 #define XPMC_IOU_SLCR_BASEADDR		0xF1060000U
 #define XPMC_IOU_SLCR_OSPI_MUX_SEL		0x00000504U
 #define XPMC_IOU_SLCR_OSPI_MUX_SEL_DAC_MASK		0x00000002U
+
+#define XPMC_MIO12_MASK		0x1000U
+#define XPMC_GPIO_DIRM		0xF1020204U
+#define XPMC_GPIO_OUTEN		0xF1020208U
+#define XPMC_GPIO_DATA		0xF1020040U
+#define XPMC_BNK0_EN_RX_SCHMITT_HYST	0xF106010CU
+#define XPMC_IOU_MIO_TRI0				0xF1060200U
 
 #ifdef __cplusplus
 }

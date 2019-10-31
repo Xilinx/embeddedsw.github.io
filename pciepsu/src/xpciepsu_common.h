@@ -15,14 +15,12 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 *******************************************************************************/
 /******************************************************************************/
@@ -141,23 +139,21 @@ extern "C" {
 #define XPCIEPSU_MODE_ENDPOINT		0X0
 #define XPCIEPSU_MODE_ROOTCOMPLEX	0X1
 
-/* Print log macros */
-#define XPciePsu_Print(MSG, ...)	xil_printf("pcie_psu: "MSG,##__VA_ARGS__)
-#define XPciePsu_Error(MSG, ...)	xil_printf("pcie_psu: "MSG,##__VA_ARGS__)
-
 /* Conditional debugging prints */
-#define XPciePsu_Err(MSG, ...) \
+#define XPciePsu_Err(...) \
 		do { \
-			XPciePsu_Error(MSG, ##__VA_ARGS__); \
+			xil_printf("pcie_psu: "); \
+			xil_printf(__VA_ARGS__);  \
 		} while (0)
 
 #ifdef DEBUG_MODE
-#define XPciePsu_Dbg(MSG, ...) \
+#define XPciePsu_Dbg(...) \
 		do { \
-			XPciePsu_Print(MSG, ##__VA_ARGS__); \
+			xil_printf("pcie_psu: "); \
+			xil_printf(__VA_ARGS__);  \
 		} while (0)
 #else
-	#define XPciePsu_Dbg(MSG, ...)	{}
+	#define XPciePsu_Dbg(...)	{}
 #endif
 
 /***************************** Function Prototypes ****************************/

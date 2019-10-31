@@ -15,14 +15,12 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
@@ -451,7 +449,8 @@ int XHdcp22Rx_Disable(XHdcp22_Rx *InstancePtr)
 	XHdcp22Rx_LogWr(InstancePtr, XHDCP22_RX_LOG_EVT_INFO, XHDCP22_RX_LOG_INFO_DISABLE);
 
 	/* Set ReauthReq for recovery when already authenticated */
-	XHdcp22Rx_SetDdcReauthReq(InstancePtr);
+	if (InstancePtr->Info.AuthenticationStatus == XHDCP22_RX_AUTHENTICATED)
+		XHdcp22Rx_SetDdcReauthReq(InstancePtr);
 
 	/* Disable, Rng, Cipher, and Timer */
 	XHdcp22Rng_Disable(&InstancePtr->RngInst);
@@ -4756,6 +4755,39 @@ u32 XHdcp22_RxSetRxCaps(XHdcp22_Rx *InstancePtr, u8 enable)
 		return XST_FAILURE;
 
 	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+ * This function sets Stream Type.
+ *
+ * @param	InstancePtr is the receiver instance.
+ *
+ * @return	None.
+ *
+ * @note	None.
+ *
+ ******************************************************************************/
+void XHdcp22_RxSetStreamType(XHdcp22_Rx *InstancePtr)
+{
+	u8 buf[R_IV_SIZE] = {0};
+
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+
+	/*Read Stream Type from DPCD*/
+	InstancePtr->Handles.RxDpAuxReadCallback(
+			InstancePtr->Handles.RxDpAuxReadCallbackRef,
+			RX_STREAM_TYPE_OFFSET,
+			InstancePtr->Params.StreamIdType+1,
+			Rx_STREAM_TYPE_SIZE);
+
+	/*Xor Riv[7] with 0x01 if the Stream Type is not 0*/
+	if (InstancePtr->Params.StreamIdType[1]) {
+		memcpy(buf, InstancePtr->Params.Riv, R_IV_SIZE);
+		buf[R_IV_SIZE - 1] ^= 0x01;
+		XHdcp22Cipher_SetRiv(&InstancePtr->CipherInst, buf, R_IV_SIZE);
+	}
 }
 
 /** @} */

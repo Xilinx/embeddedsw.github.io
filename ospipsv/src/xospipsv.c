@@ -15,21 +15,19 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
 /**
 *
 * @file xospipsv.c
-* @addtogroup xospipsv_v1_0
+* @addtogroup xospipsv_v1_1
 * @{
 *
 * This file implements the functions required to use the OSPIPSV hardware to
@@ -47,6 +45,9 @@
 *                     Added support for unaligned byte count read.
 *       sk   02/04/19 Added support for SDR+PHY and DDR+PHY modes.
 *       sk   02/07/19 Added OSPI Idling sequence.
+* 1.1   sk   07/22/19 Added RX Tuning algorithm for SDR and DDR modes.
+* 1.1   mus  07/31/19 Added CCI support at EL1 NS
+*       sk   08/08/19 Added flash device reset support.
 *
 * </pre>
 *
@@ -55,6 +56,7 @@
 /***************************** Include Files *********************************/
 
 #include "xospipsv.h"
+#include "sleep.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -145,6 +147,7 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->IsBusy = FALSE;
 		InstancePtr->Config.BaseAddress = ConfigPtr->BaseAddress;
 		InstancePtr->Config.InputClockHz = ConfigPtr->InputClockHz;
+		InstancePtr->Config.IsCacheCoherent = ConfigPtr->IsCacheCoherent;
 		/* Other instance variable initializations */
 		InstancePtr->SendBufferPtr = NULL;
 		InstancePtr->RecvBufferPtr = NULL;
@@ -154,6 +157,8 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->IsUnaligned = 0U;
 		InstancePtr->StatusHandler = StubStatusHandler;
 		InstancePtr->SdrDdrMode = XOSPIPSV_EDGE_MODE_SDR_NON_PHY;
+		InstancePtr->DeviceIdData = 0U;
+		InstancePtr->Extra_DummyCycle = 0U;
 
 		/*
 		 * Reset the OSPIPSV device to get it into its initial state. It is
@@ -196,6 +201,68 @@ void XOspiPsv_Reset(const XOspiPsv *InstancePtr)
 
 	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_DEV_DELAY_REG,
 			XOSPIPSV_DELY_DEF_VALUE);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function reset the OSPI flash device.
+*
+*
+* @param	Type is Reset type.
+*
+* @return	- XST_SUCCESS if successful.
+*		- XST_FAILURE for invalid Reset Type.
+*
+* @note		None
+*
+******************************************************************************/
+u32 XOspiPsv_DeviceReset(u8 Type)
+{
+	u32 Status;
+
+	if (Type == XOSPIPSV_HWPIN_RESET) {
+#if EL1_NONSECURE
+		Xil_Smc(PIN_REQUEST_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
+		Xil_Smc(PIN_SET_CONFIG_SMC_FID, (((u64)PIN_CONFIG_SCHMITT_CMOS << 32) |
+				PMC_GPIO_NODE_12_ID) , 0x1, 0, 0, 0, 0, 0);
+		Xil_Smc(PIN_RELEASE_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
+#else
+		XOspiPsv_WriteReg(XPMC_BNK0_EN_RX_SCHMITT_HYST, 0,
+			XOspiPsv_ReadReg(XPMC_BNK0_EN_RX_SCHMITT_HYST, 0) |
+			XPMC_MIO12_MASK);
+#endif
+		XOspiPsv_WriteReg(XPMC_GPIO_DIRM, 0,
+			XOspiPsv_ReadReg(XPMC_GPIO_DIRM, 0) | XPMC_MIO12_MASK);
+		XOspiPsv_WriteReg(XPMC_GPIO_OUTEN, 0,
+			XOspiPsv_ReadReg(XPMC_GPIO_OUTEN, 0) | XPMC_MIO12_MASK);
+		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
+			XOspiPsv_ReadReg(XPMC_GPIO_DATA, 0) | XPMC_MIO12_MASK);
+#if EL1_NONSECURE
+		Xil_Smc(PIN_REQUEST_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
+		Xil_Smc(PIN_SET_CONFIG_SMC_FID, (((u64)PIN_CONFIG_TRI_STATE << 32) |
+				PMC_GPIO_NODE_12_ID) , 0, 0, 0, 0, 0, 0);
+		Xil_Smc(PIN_RELEASE_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
+#else
+		XOspiPsv_WriteReg(XPMC_IOU_MIO_TRI0, 0,
+			XOspiPsv_ReadReg(XPMC_IOU_MIO_TRI0, 0) & ~XPMC_MIO12_MASK);
+#endif
+		usleep(1);
+		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
+			XOspiPsv_ReadReg(XPMC_GPIO_DATA, 0) & ~XPMC_MIO12_MASK);
+		usleep(1);
+		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
+			XOspiPsv_ReadReg(XPMC_GPIO_DATA, 0) | XPMC_MIO12_MASK);
+		usleep(1);
+	} else {
+		/* TODO In-band reset */
+		Status = (u32)XST_FAILURE;
+		goto RETURN_PATH;
+	}
+
+	Status = XST_SUCCESS;
+RETURN_PATH:
+	return Status;
 }
 
 /*****************************************************************************/
@@ -902,7 +969,9 @@ static inline void XOspiPsv_Dma_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 		XOspiPsv_Config_Dma(InstancePtr,Msg);
 		XOspiPsv_Config_IndirectAhb(InstancePtr,Msg);
 		XOspiPsv_Exec_Dma(InstancePtr);
-		Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+		if (InstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+		}
 		if (InstancePtr->IsUnaligned != 0U) {
 			InstancePtr->RecvBufferPtr += Msg->ByteCount;
 			Msg->Addr += Msg->ByteCount;
@@ -916,7 +985,9 @@ static inline void XOspiPsv_Dma_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 		XOspiPsv_Config_Dma(InstancePtr,Msg);
 		XOspiPsv_Config_IndirectAhb(InstancePtr,Msg);
 		XOspiPsv_Exec_Dma(InstancePtr);
-		Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+		if (InstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+		}
 		Xil_MemCpy(InstancePtr->RecvBufferPtr, InstancePtr->UnalignReadBuffer,
 				InstancePtr->RxBytes);
 		InstancePtr->IsUnaligned = 0U;
@@ -947,7 +1018,9 @@ static inline void XOspiPsv_Config_Dma(const XOspiPsv *InstancePtr,
 	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 		XOSPIPSV_DMA_PERIPH_CONFIG_REG, XOSPIPSV_DMA_PERIPH_CONFIG_VAL);
 
-	Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+	if (InstancePtr->Config.IsCacheCoherent == 0) {
+		Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+	}
 	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 		XOSPIPSV_OSPIDMA_DST_ADDR, (u32)AddrTemp);
 
@@ -1301,9 +1374,13 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 {
 	u32 StatusReg;
 	u32 DmaStatusReg;
-	XOspiPsv_Msg *Msg = InstancePtr->Msg;
+	XOspiPsv_Msg *Msg;
+	u32 IntrMask;
+	u32 ReadReg;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	Msg = InstancePtr->Msg;
 
 	if (((Msg->Flags & XOSPIPSV_MSG_FLAG_RX) != 0U) &&
 					(Msg->Addrvalid != 0U)) {
@@ -1313,7 +1390,9 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG,
 				(XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG_IND_OPS_DONE_STATUS_FLD_MASK));
-			Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+			if (InstancePtr->Config.IsCacheCoherent == 0) {
+				Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+			}
 			/* Clear the ISR */
 			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_OSPIDMA_DST_I_STS, XOSPIPSV_OSPIDMA_DST_I_EN_DONE_MASK);
@@ -1350,38 +1429,44 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 		if (((Msg->Flags & XOSPIPSV_MSG_FLAG_RX) != 0U) &&
 					(Msg->Addrvalid == 0U)) {
 			if ((StatusReg & XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK) != 0U) {
-				/* Clear the ISR */
-				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_STATUS_REG,
-					XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK);
 				/* Read the data from FIFO */
 				XOspiPsv_FifoRead(InstancePtr, Msg);
-				/* Disable the interrupt */
-				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_MASK_REG,
-					XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_MASK_REG) &
-					~(u32)XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK);
 				StatusReg &= ~(u32)XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK;
 				StatusReg |= (u32)XST_SPI_TRANSFER_DONE;
 			}
 		} else {
 			if (((Msg->Flags & XOSPIPSV_MSG_FLAG_TX) != 0U) &&
 				((StatusReg & XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK) != 0U)) {
-				/* Clear the interrupt */
-				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_STATUS_REG,
-					XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK);
-				/* Disable the interrupts */
-				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_MASK_REG,
-					XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_IRQ_MASK_REG) &
-					~(u32)XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK);
 				StatusReg &= ~(u32)XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK;
 				StatusReg |= (u32)XST_SPI_TRANSFER_DONE;
 
 			}
+		}
+
+		/* Clear the interrupts */
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+			XOSPIPSV_IRQ_STATUS_REG,
+			XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_IRQ_STATUS_REG));
+		IntrMask = ((u32)XOSPIPSV_IRQ_MASK_REG_STIG_REQ_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_TX_CRC_CHUNK_BRK_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_RX_CRC_DATA_VAL_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_RX_CRC_DATA_ERR_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_INDIRECT_XFER_LEVEL_BREACH_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_ILLEGAL_ACCESS_DET_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_PROT_WR_ATTEMPT_MASK_FLD_MASK |
+			(u32)XOSPIPSV_IRQ_MASK_REG_INDIRECT_TRANSFER_REJECT_MASK_FLD_MASK);
+		 /* Disable the interrupts */
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+			XOSPIPSV_IRQ_MASK_REG,
+			XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_IRQ_MASK_REG) & ~IntrMask);
+		/* Wait for Idle */
+		ReadReg = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_CONFIG_REG);
+		while((ReadReg & XOSPIPSV_CONFIG_REG_IDLE_FLD_MASK) == 0U) {
+			ReadReg = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+					XOSPIPSV_CONFIG_REG);
 		}
 		InstancePtr->StatusHandler(InstancePtr->StatusRef, StatusReg);
 		XOspiPsv_DeAssertCS(InstancePtr);

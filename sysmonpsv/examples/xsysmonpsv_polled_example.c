@@ -15,14 +15,12 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /****************************************************************************/
@@ -44,7 +42,10 @@
 *
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
-* 1.0   add    27/2/19 First release
+* 1.0   add    02/27/19 First release
+* 1.1   add    07/16/19 Added register unlock
+* 1.1   add    07/21/19 Added Temperature measurement
+*
 * </pre>
 *
 *****************************************************************************/
@@ -58,14 +59,15 @@
 
 /************************** Constant Definitions ****************************/
 #define INTR_0		0
-#define SYSMONPSV_TIMEOUT	0xFFFFFFFE
+#define SYSMONPSV_TIMEOUT	100000
+#define LOCK_CODE		0xF9E8D7C6
 
 /**************************** Type Definitions ******************************/
 
 
 /***************** Macros (Inline Functions) Definitions ********************/
 
-#define printf xil_printf /* Small foot-print printf function */
+
 
 /************************** Function Prototypes *****************************/
 
@@ -136,6 +138,8 @@ int SysMonPsvPolledExample()
 	float Voltage;
 	XSysMonPsv *SysMonInstPtr = &SysMonInst;
 	XSysMonPsv_Supply Supply = 0;
+	u32 CurrentMin, CurrentMax;
+	float TempMin, TempMax;
 
 	printf("\r\nEntering the SysMon Polled Example. \r\n");
 
@@ -146,6 +150,10 @@ int SysMonPsvPolledExample()
 	}
 
 	XSysMonPsv_CfgInitialize(SysMonInstPtr, ConfigPtr);
+
+	/* Unlock the sysmon register space */
+	XSysMonPsv_WriteReg(SysMonInstPtr->Config.BaseAddress + XSYSMONPSV_PCSR_LOCK,
+			    LOCK_CODE);
 
 	/* Clear any bits set in the Interrupt Status Register. */
 	IntrStatus = XSysMonPsv_IntrGetStatus(SysMonInstPtr);
@@ -188,7 +196,18 @@ int SysMonPsvPolledExample()
 
 	Voltage = XSysMonPsv_RawToVoltage(RawVoltage);
 
-	printf("Voltage =%fv", Voltage);
+	printf("Voltage =%fv \r\n", Voltage);
+
+	/* There is no polling mechanism to read the new temperature data */
+	CurrentMin = XSysMonPsv_ReadDeviceTemp(SysMonInstPtr, XSYSMONPSV_VAL_VREF_MIN);
+	TempMin = XSysMonPsv_FixedToFloat(CurrentMin);
+	printf("Current Minimum Temperature on the chip = %fC \r\n", TempMin);
+
+	CurrentMax = XSysMonPsv_ReadDeviceTemp(SysMonInstPtr, XSYSMONPSV_VAL_VREF_MAX);
+	TempMax = XSysMonPsv_FixedToFloat(CurrentMax);
+	printf("Current Maximum Temperature on the chip = %fC \r\n", TempMax);
+
+
 
 	printf("Exiting the SysMon Polled Example. \r\n");
 

@@ -15,20 +15,20 @@
  # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- # XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- # SOFTWARE.
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
  #
- # Except as contained in this notice, the name of the Xilinx shall not be used
- # in advertising or otherwise to promote the sale, use or other dealings in
- # this Software without prior written authorization from Xilinx.
+#
  #
  #
  # MODIFICATION HISTORY:
  # Ver      Who    Date     Changes
  # -------- ------ -------- ------------------------------------
- # 1.0	    mus	   03/16/19 First Release.
+ # 1.0      mus    03/16/19 First Release.
+ #          mn     09/05/19 Correct the variable name for C0_DDR_CH2 block
+ #          mn     09/12/19 Check only for initial block name for DDR region
  #
  ################################################################################
 
@@ -49,6 +49,9 @@ proc define_addr_params {drv_handle file_name} {
    set is_ddr_low_1 0
    set is_ddr_low_2 0
    set is_ddr_low_3 0
+   set is_ddr_ch_1 0
+   set is_ddr_ch_2 0
+   set is_ddr_ch_3 0
 
    set sw_proc [hsi::get_sw_processor]
    set periphs [::hsi::utils::get_common_driver_ips $drv_handle]
@@ -63,7 +66,7 @@ proc define_addr_params {drv_handle file_name} {
 	set i 0
 	foreach block_name $interface_block_names {
 
-		if {$block_name == "C0_DDR_LOW0" } {
+		if {[string match "C0_DDR_LOW0*" $block_name]} {
 			if {$is_ddr_low_0 == 0} {
 				set base_value_0 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
 					-of_objects [get_cells -hier $sw_proc] $periph] $i]]
@@ -72,7 +75,7 @@ proc define_addr_params {drv_handle file_name} {
                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
 			set is_ddr_low_0 1
 
-		} elseif {$block_name == "C0_DDR_LOW1" } {
+		} elseif {[string match "C0_DDR_LOW1*" $block_name]} {
                         if {$is_ddr_low_1 == 0} {
                                 set base_value_1 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
                                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
@@ -81,7 +84,7 @@ proc define_addr_params {drv_handle file_name} {
                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
                         set is_ddr_low_1 1
 
-		} elseif {$block_name == "C0_DDR_LOW2" } {
+		} elseif {[string match "C0_DDR_LOW2*" $block_name]} {
                         if {$is_ddr_low_2 == 0} {
                                 set base_value_2 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
                                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
@@ -90,7 +93,7 @@ proc define_addr_params {drv_handle file_name} {
                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
                         set is_ddr_low_2 1
 
-		} elseif {$block_name == "C0_DDR_LOW3" } {
+		} elseif {[string match "C0_DDR_LOW3*" $block_name]} {
                         if {$is_ddr_low_3 == "0"} {
                                 set base_value_3 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
                                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
@@ -98,6 +101,30 @@ proc define_addr_params {drv_handle file_name} {
                         set high_value_3 [common::get_property HIGH_VALUE [lindex [get_mem_ranges \
                         -of_objects [get_cells -hier $sw_proc] $periph] $i]]
                         set is_ddr_low_3 1
+		} elseif {[string match "C0_DDR_CH1*" $block_name]} {
+                        if {$is_ddr_ch_1 == "0"} {
+                                set base_value_4 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
+                                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        }
+                        set high_value_4 [common::get_property HIGH_VALUE [lindex [get_mem_ranges \
+                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        set is_ddr_ch_1 1
+		} elseif {[string match "C0_DDR_CH2*" $block_name]} {
+                        if {$is_ddr_ch_2 == "0"} {
+                                set base_value_5 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
+                                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        }
+                        set high_value_5 [common::get_property HIGH_VALUE [lindex [get_mem_ranges \
+                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        set is_ddr_ch_2 1
+		} elseif {[string match "C0_DDR_CH3*" $block_name]} {
+                        if {$is_ddr_ch_3 == "0"} {
+                                set base_value_6 [common::get_property BASE_VALUE [lindex [get_mem_ranges \
+                                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        }
+                        set high_value_6 [common::get_property HIGH_VALUE [lindex [get_mem_ranges \
+                        -of_objects [get_cells -hier $sw_proc] $periph] $i]]
+                        set is_ddr_ch_3 1
 		}
 
 		incr i
@@ -133,6 +160,28 @@ proc define_addr_params {drv_handle file_name} {
 		puts $file_handle "#define XPAR_AXI_NOC_DDR_LOW_3_HIGHADDR $high_value_3"
 		puts $file_handle ""
 	}
+
+
+	if {$is_ddr_ch_1 == 1} {
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_1_BASEADDR $base_value_4"
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_1_HIGHADDR $high_value_4"
+		puts $file_handle ""
+	}
+
+
+	if {$is_ddr_ch_2 == 1} {
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_2_BASEADDR $base_value_5"
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_2_HIGHADDR $high_value_5"
+		puts $file_handle ""
+	}
+
+
+	if {$is_ddr_ch_3 == 1} {
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_3_BASEADDR $base_value_6"
+		puts $file_handle "#define XPAR_AXI_NOC_DDR_CH_3_HIGHADDR $high_value_6"
+		puts $file_handle ""
+	}
+
    }
 
    puts $file_handle "\n/******************************************************************/\n"

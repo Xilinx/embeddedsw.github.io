@@ -15,21 +15,19 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
 /**
 *
 * @file xsysmonpsv_hw.h
-* @addtogroup sysmonpsv_v1_0
+* @addtogroup sysmonpsv_v1_1
 *
 * This header file contains the identifiers and basic driver functions (or
 * macros) that can be used to access the device. Other driver functions
@@ -40,7 +38,8 @@
 *
 * Ver   Who    Date	Changes
 * ----- -----  -------- -----------------------------------------------
-* 1.0   aad    09/11/18 First release
+* 1.0   aad    11/09/18 First release
+* 1.1   aad    07/11/19 Fixed NEW_DATA_MASK
 *
 * </pre>
 *
@@ -2055,7 +2054,7 @@ extern "C" {
  */
 #define XSYSMONPSV_NEW_DATA_INT_SRC     0X00001F80
 
-#define XSYSMONPSV_INTR_NEW_DATA_MASK	0x00000F00
+#define XSYSMONPSV_INTR_NEW_DATA_MASK	0x0000F000
 #define XSYSMONPSV_INTR_NEW_DATA_SHIFT	12
 
 #define XSYSMONPSV_NEW_DATA_INT_SRC_ADDR_ID3_SHIFT   24

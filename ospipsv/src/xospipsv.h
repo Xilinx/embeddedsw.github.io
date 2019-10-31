@@ -15,21 +15,19 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
 /**
 *
 * @file xospipsv.h
-* @addtogroup ospipsv_v1_0
+* @addtogroup ospipsv_v1_1
 * @{
 * @details
 *
@@ -48,6 +46,9 @@
 *       sk   02/04/19 Added support for SDR+PHY and DDR+PHY modes.
 *       sk   02/07/19 Added OSPI Idling sequence.
 * 1.0   akm 03/29/19 Fixed data alignment issues on IAR compiler.
+* 1.1   sk   07/22/19 Added RX Tuning algorithm for SDR and DDR modes.
+*       sk   08/08/19 Added flash device reset support.
+*       sk   08/16/19 Set Read Delay Fld to 0x1 for Non-Phy mode.
 *
 * </pre>
 *
@@ -65,6 +66,9 @@ extern "C" {
 #include "xospipsv_hw.h"
 #include "xil_cache.h"
 #include "xil_mem.h"
+#if defined (__aarch64__)
+#include "xil_smc.h"
+#endif
 
 /**************************** Type Definitions *******************************/
 /**
@@ -108,6 +112,7 @@ typedef struct {
 	u16 DeviceId;		/**< Unique ID  of device */
 	u32 BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
+	u8 IsCacheCoherent;		/**< If OSPI is Cache Coherent or not */
 } XOspiPsv_Config;
 
 /**
@@ -130,6 +135,8 @@ typedef struct {
 	XOspiPsv_StatusHandler StatusHandler;
 	void *StatusRef;  	 /**< Callback reference for status handler */
 	u8 IsUnaligned;		/* Flag used to indicate bytecnt is aligned or not */
+	u32 DeviceIdData;	/* Contains Device Id Data information */
+	u8 Extra_DummyCycle;
 #ifdef __ICCARM__
 #pragma pack(push, 8)
 	u8 UnalignReadBuffer[4];	/**< Buffer used to read the unaligned bytes in DMA */
@@ -221,15 +228,20 @@ typedef struct {
 #define XOSPIPSV_EDGE_MODE_DDR_PHY			0x2U
 
 #define XOSPIPSV_REMAP_ADDR_VAL		0x40000000U
-#define XOSPIPSV_SDR_TX_RX_DLY_VAL		0x00140014U
-#define XOSPIPSV_DDR_TX_RX_DLY_VAL		0x00400040U
+#define XOSPIPSV_SDR_TX_VAL			0x5U
+#define XOSPIPSV_DDR_TX_VAL			0x0U
+
+#define XOSPIPSV_HWPIN_RESET	0x0U
+#define XOSPIPSV_INBAND_RESET	0x1U
+
+#define XOSPIPSV_NON_PHY_RD_DLY		0x1
 
 /* Initialization and reset */
 XOspiPsv_Config *XOspiPsv_LookupConfig(u16 DeviceId);
 u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr, const XOspiPsv_Config *ConfigPtr);
 void XOspiPsv_Reset(const XOspiPsv *InstancePtr);
 /* Configuration functions */
-u32 XOspiPsv_SetClkPrescaler(const XOspiPsv *InstancePtr, u8 Prescaler);
+u32 XOspiPsv_SetClkPrescaler(XOspiPsv *InstancePtr, u8 Prescaler);
 u32 XOspiPsv_SelectFlash(XOspiPsv *InstancePtr, u8 chip_select);
 u32 XOspiPsv_SetOptions(XOspiPsv *InstancePtr, u32 Options);
 u32 XOspiPsv_GetOptions(const XOspiPsv *InstancePtr);
@@ -241,6 +253,7 @@ void XOspiPsv_SetStatusHandler(XOspiPsv *InstancePtr, void *CallBackRef,
 u32 XOspiPsv_SetSdrDdrMode(XOspiPsv *InstancePtr, u32 Mode);
 void XOspiPsv_ConfigureAutoPolling(XOspiPsv *InstancePtr, u32 FlashMode);
 void XOspiPsv_Idle(const XOspiPsv *InstancePtr);
+u32 XOspiPsv_DeviceReset(u8 Type);
 #ifdef __cplusplus
 }
 #endif

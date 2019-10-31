@@ -15,14 +15,12 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* XILINX BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
 *
-* Except as contained in this notice, the name of the Xilinx shall not be used
-* in advertising or otherwise to promote the sale, use or other dealings in
-* this Software without prior written authorization from Xilinx.
+*
 *
 ******************************************************************************/
 /*****************************************************************************/
@@ -148,6 +146,8 @@ extern "C" {
 #define R_IV_OFFSET			0x328
 #define R_IV_SIZE			8
 #define RX_STATUS_OFFSET		0x493
+#define RX_STREAM_TYPE_OFFSET		0x494
+#define Rx_STREAM_TYPE_SIZE		1
 
 #define RX_STATUS_REPEATER_READY_AVAILABLE	0x01
 #define RX_STATUS_H_PRIME_AVAILABLE		0x02
@@ -724,6 +724,7 @@ void XHdcp22_timer_attach(XHdcp22_Rx *InstancePtr, XTmrCtr *TmrCtrPtr);
 void XHdcp22Rx_TimerHandler(void *CallbackRef, u8 TmrCntNumber);
 void XHdcp22_RxSetLaneCount(XHdcp22_Rx *InstancePtr, u8 LaneCount);
 u32 XHdcp22_RxSetRxCaps(XHdcp22_Rx *InstancePtr, u8 enable);
+void XHdcp22_RxSetStreamType(XHdcp22_Rx *InstancePtr);
 /* Functions for loading authentication constants */
 void XHdcp22Rx_LoadLc128(XHdcp22_Rx *InstancePtr, const u8 *Lc128Ptr);
 void XHdcp22Rx_LoadPublicCert(XHdcp22_Rx *InstancePtr, const u8 *PublicCertPtr);
