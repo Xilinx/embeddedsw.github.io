@@ -14,8 +14,8 @@ INCLUDES=-I./. -I${INCLUDEDIR}
 
 OUTS = *.o
 
-INCLUDEFILES=*.h ./vdma/*.h
-LIBSOURCES=*.c ./vdma/*.c
+INCLUDEFILES=$(wildcard *.h) $(wildcard ./vdma/*.h)
+LIBSOURCES=$(wildcard *.c) $(wildcard ./vdma/*.c)
 
 OBJECTS = $(addsuffix .o, $(basename ./vdma/xvprocss_vdma.c $(wildcard *.c)))
 

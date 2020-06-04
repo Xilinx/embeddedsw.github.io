@@ -1,33 +1,13 @@
 /******************************************************************************
-*
-* Copyright (C) 2017 - 2018 Xilinx, Inc. All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*
-*
-*
+* Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
+* SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 /*****************************************************************************/
 /**
 *
 * @file xdprxss.c
-* @addtogroup dprxss_v5_0
+* @addtogroup dprxss_v6_0
 * @{
 *
 * This is the main file for Xilinx DisplayPort Receiver Subsystem driver.
@@ -62,6 +42,11 @@
 *                   XDpRxSs_CfgInitialize function
 * 5.0  yas 01/28/18 Added support for DP 1.4.
 * 5.0  jb  02/19/19 Added support for HDCP22
+* 6.0  rg  11/19/19 Added support to use PS I2C instance too.
+* 6.0  jb  02/14/20 The DP Rx subsystems assumes that the HDCP configuration is
+* 		    same for all the instances in multiple subsystems in the
+* 		    design. This driver wont support for different configuration
+* 		    of the subsystems.
 * </pre>
 *
 ******************************************************************************/
@@ -70,7 +55,6 @@
 
 #include "xdprxss.h"
 #include "xdprxss_mcdp6000.h"
-#include "xdprxss_dp159.h"
 #include "string.h"
 #include "xdebug.h"
 
@@ -87,7 +71,9 @@ extern u32 MCDP6000_IC_Rev;
 /* Subsystem sub-core's structure includes instances of each sub-core */
 typedef struct {
 	XDp DpInst;
+#ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic IicInst;
+#endif
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	XHdcp1x Hdcp1xInst;
 #endif
@@ -190,7 +176,9 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	XHdcp1x_Config Hdcp1xConfig;
 #endif
+#ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic_Config IicConfig;
+#endif
 	XDp_Config DpConfig;
 	u32 Status;
 
@@ -209,7 +197,8 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 	DpRxSs_GetIncludedSubCores(InstancePtr);
 
 	/* Check for IIC availability */
-	if (InstancePtr->IicPtr) {
+#ifdef XPAR_XIIC_NUM_INSTANCES
+	if (InstancePtr->Config.IncludeAxiIic && InstancePtr->IicPtr) {
 		xdbg_printf((XDBG_DEBUG_GENERAL),"SS INFO: Initializing "
 			"IIC IP\n\r");
 
@@ -233,11 +222,6 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 
-		/* Reset DP159 */
-		if (InstancePtr->DpPtr->Config.DpProtocol != XDP_PROTOCOL_DP_1_4) {
-			XDpRxSs_Dp159Reset(InstancePtr->IicPtr, TRUE);
-		}
-
 		/* IIC initialization for dynamic functionality */
 		Status = XIic_DynamicInitialize(InstancePtr->IicPtr);
 		if (Status != XST_SUCCESS) {
@@ -246,7 +230,7 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 	}
-
+#endif
 	/* Check for DisplayPort availability */
 	if (InstancePtr->DpPtr) {
 		xdbg_printf((XDBG_DEBUG_GENERAL),"SS INFO: Initializing "
@@ -286,18 +270,8 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		XDp_RxSetLaneCount(InstancePtr->DpPtr,
 				InstancePtr->Config.MaxLaneCount);
 
-		/* Bring DP159 out of reset */
-		if (InstancePtr->DpPtr->Config.DpProtocol != XDP_PROTOCOL_DP_1_4) {
-			XDpRxSs_Dp159Reset(InstancePtr->IicPtr, FALSE);
-		}
-
 		/* Wait for us */
 		XDp_WaitUs(InstancePtr->DpPtr, 1000);
-
-		/* Initialize DP159 */
-		if (InstancePtr->DpPtr->Config.DpProtocol != XDP_PROTOCOL_DP_1_4) {
-			XDpRxSs_Dp159Initialize(InstancePtr->IicPtr);
-		}
 
 		/* Wait for us */
 		XDp_WaitUs(InstancePtr->DpPtr, 1000);
@@ -536,7 +510,20 @@ void XDpRxSs_Reset(XDpRxSs *InstancePtr)
 				XDP_RX_SOFT_RESET_AUX_MASK);
 
 	/* Reset the IIC core */
-	XIic_Reset(InstancePtr->IicPtr);
+#ifdef XPAR_XIIC_NUM_INSTANCES
+	if (InstancePtr->Config.IncludeAxiIic && InstancePtr->IicPtr) {
+		XIic_Reset(InstancePtr->IicPtr);
+	}
+	else
+#endif
+	{
+#ifdef XPAR_XIICPS_NUM_INSTANCES
+		if (InstancePtr->IicPsPtr) {
+			/* Reset the IIC core */
+			XIicPs_Reset(InstancePtr->IicPsPtr);
+		}
+#endif
+	}
 }
 
 /*****************************************************************************/
@@ -1577,11 +1564,15 @@ static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr)
 	/* Assign instance of DisplayPort core */
 	InstancePtr->DpPtr = ((InstancePtr->Config.DpSubCore.IsPresent) ?
 		(&DpRxSsSubCores[InstancePtr->Config.DeviceId].DpInst) : NULL);
-
+#ifdef XPAR_XIIC_NUM_INSTANCES
+	if (InstancePtr->Config.IncludeAxiIic) {
 	/* Assign instance of IIC core */
-	InstancePtr->IicPtr = ((InstancePtr->Config.DpSubCore.IsPresent) ?
-		(&DpRxSsSubCores[
-			InstancePtr->Config.DeviceId].IicInst) : NULL);
+		InstancePtr->IicPtr =
+			((InstancePtr->Config.DpSubCore.IsPresent) ?
+			(&DpRxSsSubCores[InstancePtr->Config.DeviceId].IicInst)
+			: NULL);
+	}
+#endif
 
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	/* Assign instance of HDCP core */
@@ -1756,15 +1747,8 @@ static void StubTp1Callback(void *InstancePtr)
 		XDpRxSs_ReadReg(DpRxSsPtr->DpPtr->Config.BaseAddr,
 			XDPRXSS_DPCD_LANE_COUNT_SET);
 
-	if (DpRxSsPtr->DpPtr->Config.DpProtocol != XDP_PROTOCOL_DP_1_4) {
-		/* DP159 config for TP1 */
-		XDpRxSs_Dp159Config(DpRxSsPtr->IicPtr, XDPRXSS_DP159_CT_TP1,
-					DpRxSsPtr->UsrOpt.LinkRate,
-					DpRxSsPtr->UsrOpt.LaneCount);
-	}
-
 	if (MCDP6000_IC_Rev == 0x2100) {
-		XDpRxSs_MCDP6000_AccessLaneSet(DpRxSsPtr->IicPtr->BaseAddress,
+		XDpRxSs_MCDP6000_AccessLaneSet(DpRxSsPtr,
 				XDPRXSS_MCDP6000_IIC_SLAVE);
 	}
 
@@ -1835,11 +1819,6 @@ static void StubTp2Callback(void *InstancePtr)
 		DpRxSsPtr->ltState = 2;
 		return;
 	}
-
-	/* DP159 config for TP2 */
-	XDpRxSs_Dp159Config(DpRxSsPtr->IicPtr, XDPRXSS_DP159_CT_TP2,
-			DpRxSsPtr->UsrOpt.LinkRate,
-				DpRxSsPtr->UsrOpt.LaneCount);
 }
 
 /*****************************************************************************/
@@ -1871,18 +1850,11 @@ static void StubUnplugCallback(void *InstancePtr)
 	}
  
 	if (MCDP6000_IC_Rev == 0x2100) {
-		XDpRxSs_MCDP6000_ResetDpPath(DpRxSsPtr->IicPtr->BaseAddress,
+		XDpRxSs_MCDP6000_ResetDpPath(DpRxSsPtr,
 				XDPRXSS_MCDP6000_IIC_SLAVE);
 	}
 
-	if (DpRxSsPtr->DpPtr->Config.DpProtocol != XDP_PROTOCOL_DP_1_4) {
-		/* DP159 config for TP2 */
-		XDpRxSs_Dp159Config(DpRxSsPtr->IicPtr, XDPRXSS_DP159_CT_UNPLUG,
-					DpRxSsPtr->UsrOpt.LinkRate,
-					DpRxSsPtr->UsrOpt.LaneCount);
-	}
-
-	XDpRxSs_MCDP6000_ModifyRegister(DpRxSsPtr->IicPtr->BaseAddress,
+	XDpRxSs_MCDP6000_ModifyRegister(DpRxSsPtr,
 			XDPRXSS_MCDP6000_IIC_SLAVE, 0x0A00,
 			0x55000000, 0x55000000);
 
@@ -1934,7 +1906,7 @@ static void StubAccessLaneSetCallback(void *InstancePtr)
 
 		if (MCDP6000_IC_Rev==0x2100) {
 			if (DpRxSsPtr->ceRequestValue != read_val) {
-				XDpRxSs_MCDP6000_AccessLaneSet(DpRxSsPtr->IicPtr->BaseAddress,
+				XDpRxSs_MCDP6000_AccessLaneSet(DpRxSsPtr,
 					       XDPRXSS_MCDP6000_IIC_SLAVE);
 			}
 		}
@@ -1960,15 +1932,13 @@ static void StubAccessLaneSetCallback(void *InstancePtr)
 * @note		None.
 *
 ******************************************************************************/
-void XDpRxSs_McDp6000_init(void *InstancePtr, u32 I2CAddress)
+void XDpRxSs_McDp6000_init(void *InstancePtr)
 {
 	/* Verify argument.*/
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	XDpRxSs *DpRxSsPtr = (XDpRxSs *)InstancePtr;
-	DpRxSsPtr->IicPtr->BaseAddress = I2CAddress;
-
-	XDpRxSs_MCDP6000_DpInit(DpRxSsPtr->IicPtr->BaseAddress,
+	XDpRxSs_MCDP6000_DpInit(DpRxSsPtr,
 				XDPRXSS_MCDP6000_IIC_SLAVE);
 
 }

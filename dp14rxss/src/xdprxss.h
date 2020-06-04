@@ -1,33 +1,13 @@
 /******************************************************************************
-*
-* Copyright (C) 2015 - 2016 Xilinx, Inc. All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*
-*
-*
+* Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
+* SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 /*****************************************************************************/
 /**
 *
 * @file xdprxss.h
-* @addtogroup dprxss_v4_2
+* @addtogroup dprxss_v6_0
 * @{
 * @details
 *
@@ -128,7 +108,6 @@ extern "C" {
 #include "xdprxss_dprx.h"
 #include "xdprxss_iic.h"
 #include "xdprxss_hdcp1x.h"
-#include "xdprxss_mcdp6000.h"
 #if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 #include "xdprxss_hdcp22.h"
 #endif
@@ -291,8 +270,10 @@ typedef struct {
 typedef struct {
 	u16 IsPresent;		/**< Flag to hold the presence of DisplayPort
 				  *  Receiver core. */
+#ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic_Config IicConfig;	/**< IIC core configuration
 				  *  information */
+#endif
 } XDpRxSs_IicSubCore;
 
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
@@ -347,6 +328,8 @@ typedef struct {
 				  *  by this core instance. */
 	u8 ColorFormat;		/**< Type of color format supported by this
 				  *  core instance. */
+	u8 IncludeAxiIic;  	/** < axi i2c support > */
+
 	XDpRxSs_DpSubCore DpSubCore;	/**< DisplayPort Configuration */
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	XDpRxSs_Hdcp1xSubCore Hdcp1xSubCore;	/**< HDCP Configuration */
@@ -384,7 +367,12 @@ typedef struct {
 					  *  initialized */
 	/* Sub-core instances */
 	XDp *DpPtr;			/**< DisplayPort sub-core instance */
+#ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic *IicPtr;			/**< IIC sub-core instance */
+#endif
+#ifdef XPAR_XIICPS_NUM_INSTANCES
+	XIicPs *IicPsPtr;		/**< PS i2c core instance */
+#endif
 #if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	XHdcp1x *Hdcp1xPtr;		/**< HDCP sub-core instance */
 #endif
@@ -663,7 +651,7 @@ void XDpRxSs_DrvNoVideoHandler(void *InstancePtr);
 void XDpRxSs_DrvVideoHandler(void *InstancePtr);
 void XDpRxSs_DrvPowerChangeHandler(void *InstancePtr);
 
-void XDpRxSs_McDp6000_init(void *InstancePtr, u32 I2CAddress);
+void XDpRxSs_McDp6000_init(void *InstancePtr);
 
 #if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 void XDpRxSs_Hdcp22LicFailHandler(void *InstancePtr);

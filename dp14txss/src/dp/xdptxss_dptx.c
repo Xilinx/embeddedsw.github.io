@@ -1,28 +1,8 @@
 /******************************************************************************
-*
-* Copyright (C) 2015 - 2016 Xilinx, Inc. All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*
-*
-*
+* Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
+* SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 /*****************************************************************************/
 /**
 *
@@ -56,7 +36,6 @@
 #include "xvidc_edid.h"
 #include "xdebug.h"
 #include "string.h"
-#include "xvphy_dp.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -1117,13 +1096,13 @@ static void Dp_ConfigVideoPackingClockControl(XDp *InstancePtr, u8 Bpc)
 
 		switch (InstancePtr->TxInstance.LinkConfig.LinkRate) {
 		case XDP_TX_LINK_BW_SET_540GBPS:
-			DpLinkRateHz = XVPHY_DP_LINK_RATE_HZ_540GBPS;
+			DpLinkRateHz = DP_LINK_RATE_HZ_540GBPS;
 			break;
 		case XDP_TX_LINK_BW_SET_270GBPS:
-			DpLinkRateHz = XVPHY_DP_LINK_RATE_HZ_270GBPS;
+			DpLinkRateHz = DP_LINK_RATE_HZ_270GBPS;
 			break;
 		default:
-			DpLinkRateHz = XVPHY_DP_LINK_RATE_HZ_162GBPS;
+			DpLinkRateHz = DP_LINK_RATE_HZ_162GBPS;
 			break;
 		}
 		/* link clock */

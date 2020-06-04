@@ -1,28 +1,8 @@
 /******************************************************************************
- *
- * Copyright (C) 2018 Xilinx, Inc.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- *
- *
+* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
 *******************************************************************************/
+
 /*****************************************************************************/
 /**
 *
@@ -45,7 +25,7 @@
 #include "xiic.h"
 #include "xil_exception.h"
 #include "function_prototype.h"
-#include "imx274_cfgs.h"
+#include "pcam_5C_cfgs.h"
 #include "xstatus.h"
 #include "xaxivdma.h"
 #include "xil_printf.h"
@@ -585,12 +565,35 @@ void EnableCSI(void)
 }
 void EnableDSI(void)
 {
-	XDsiTxSs_Activate(&DsiTxSs, XCSI_ENABLE);
+	int Status;
+//	XDsiTxSs_Activate(&DsiTxSs, XCSI_ENABLE);
+	Status = XDsiTxSs_Activate(&DsiTxSs, XDSITXSS_DSI, XDSITXSS_ENABLE);
+	Status = XDsiTxSs_Activate(&DsiTxSs, XDSITXSS_PHY, XDSITXSS_ENABLE);
 }
 
 void InitDSI(void)
 {
+	 u32 Status;
 	 XDsi_VideoTiming Timing = { 0 };
+	 /* Disable DSI core only. So removed DPHY register interface in design*/
+		Status = XDsiTxSs_Activate(&DsiTxSs, XDSITXSS_DSI, XDSITXSS_DISABLE);
+		Status = XDsiTxSs_Activate(&DsiTxSs, XDSITXSS_PHY, XDSITXSS_DISABLE);
+
+
+		XDsiTxSs_Reset(&DsiTxSs);
+
+	 usleep(100000);
+		Status = XDsiTxSs_Activate(&DsiTxSs, XDSITXSS_PHY, XDSITXSS_ENABLE);
+	 //	XDphy_Activate(DsiTxSs.DphyPtr, XDSITXSS_ENABLE);
+
+	 /*	if (!XDsiTxSs_IsControllerReady(&DsiTxSs)) {
+			xil_printf("DSI Controller NOT Ready!!!!\r\n");
+			return;
+		}*/
+		do {
+			Status = XDsiTxSs_IsControllerReady(&DsiTxSs);
+		} while (!Status);
+
 
 	        Timing.HActive = DSI_DISPLAY_HORI_VAL;
 	        Timing.VActive = DSI_DISPLAY_VERT_VAL;

@@ -1,28 +1,8 @@
 /*******************************************************************************
- *
- * Copyright (C) 2018 Xilinx, Inc.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- *
- *
+* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
 *******************************************************************************/
+
 /*****************************************************************************/
 /**
 *
@@ -40,12 +20,12 @@
 #include "main.h"
 #include "rx.h"
 
-u8 rx_unplugged = 0;
-u16 DrpVal=0;
-u16 DrpVal_lower_lane0=0;
-u16 DrpVal_lower_lane1=0;
-u16 DrpVal_lower_lane2=0;
-u16 DrpVal_lower_lane3=0;
+volatile u8 rx_unplugged = 0;
+volatile u16 DrpVal=0;
+volatile u16 DrpVal_lower_lane0=0;
+volatile u16 DrpVal_lower_lane1=0;
+volatile u16 DrpVal_lower_lane2=0;
+volatile u16 DrpVal_lower_lane3=0;
 extern u8 tx_after_rx;
 //extern u8 audio_info_avail;
 
@@ -289,6 +269,7 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 	DpRxSsInst.no_video_trigger = 1;
 
 	AudioinfoFrame.frame_count=0;
+	AudioinfoFrame.all_count=0;
 	XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
 			XDP_RX_INTERRUPT_MASK_INFO_PKT_MASK);
 
@@ -353,6 +334,7 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 	tx_after_rx = 0;
 //	audio_info_avail = 0;
     AudioinfoFrame.frame_count = 0;
+    AudioinfoFrame.all_count = 0;
 	if (rx_trained == 1) {
 		xil_printf ("Training Lost !!\r\n");
 	}
@@ -427,6 +409,7 @@ void DpRxSs_UnplugHandler(void *InstancePtr)
 //	XDpRxSs_AudioDisable(&DpRxSsInst);
 //    audio_info_avail = 0;
     AudioinfoFrame.frame_count = 0;
+    AudioinfoFrame.all_count = 0;
 	SdpExtFrame.Header[1] = 0;
 	SdpExtFrame_q.Header[1] = 0;
 	SdpExtFrame.frame_count = 0;
@@ -692,9 +675,9 @@ void DpRxSs_AccessLinkQualHandler(void *InstancePtr)
 			       XVPHY_RX_CONTROL_REG, DrpVal);
 
 		/*Set PRBS mode in Retimer*/
-		XDpRxSs_MCDP6000_EnablePrbs7_Rx(XPAR_IIC_0_BASEADDR,
+		XDpRxSs_MCDP6000_EnablePrbs7_Rx(&DpRxSsInst,
 					I2C_MCDP6000_ADDR);
-		XDpRxSs_MCDP6000_ClearCounter(XPAR_IIC_0_BASEADDR,
+		XDpRxSs_MCDP6000_ClearCounter(&DpRxSsInst,
 				      I2C_MCDP6000_ADDR);
 	//    	MCDP6000_EnableCounter(XPAR_IIC_0_BASEADDR, I2C_MCDP6000_ADDR);
 	} else {
@@ -706,9 +689,9 @@ void DpRxSs_AccessLinkQualHandler(void *InstancePtr)
 			       XVPHY_RX_CONTROL_REG, DrpVal);
 
 		/*Disable PRBS mode in Retimer*/
-		XDpRxSs_MCDP6000_DisablePrbs7_Rx(XPAR_IIC_0_BASEADDR,
+		XDpRxSs_MCDP6000_DisablePrbs7_Rx(&DpRxSsInst,
 											I2C_MCDP6000_ADDR);
-		XDpRxSs_MCDP6000_ClearCounter(XPAR_IIC_0_BASEADDR,
+		XDpRxSs_MCDP6000_ClearCounter(&DpRxSsInst,
 				      I2C_MCDP6000_ADDR);
 	//    	MCDP6000_EnableCounter(XPAR_IIC_0_BASEADDR, I2C_MCDP6000_ADDR);
 	}
