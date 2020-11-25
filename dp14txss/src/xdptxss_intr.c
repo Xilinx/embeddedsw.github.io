@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss_intr.c
-* @addtogroup dptxss_v6_3
+* @addtogroup dptxss_v6_4
 * @{
 *
 * This file contains interrupt related functions of Xilinx DisplayPort TX
@@ -33,6 +33,13 @@
 * 5.0  jb  02/21/19 Added HDCP22 callback handles.
 * 					Made the Timer counter interrupt handler available
 * 					for both HDCP1x and 22.
+* 					Added switch case for
+* 6.5  rg  09/01/20 Added switch case XDPTXSS_HANDLER_DP_EXT_PKT_EVENT
+*                   to register callback with extended packet transmit
+*                   done handler.
+* 6.4  rg  09/26/20 Added driver handler function XDpTxSs_WriteVscExtPktProcess
+*		    for programming the extended packet up on receiving extended
+*		    packet transmission done interrupt.
 * </pre>
 *
 ******************************************************************************/
@@ -338,6 +345,36 @@ void XDpTxSs_HpdPulseProcess(void *InstancePtr)
 /*****************************************************************************/
 /**
 *
+* This function writes the pixel encoding format and colorimetry formats in to
+* the extended packet registers at DP TX offset addresses "0x0330 to 0x0350".
+*
+* @param	InstancePtr is a pointer to the XDpTxSs core instance that
+*		just interrupted.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XDpTxSs_WriteVscExtPktProcess(void *InstancePtr)
+{
+	int i;
+	XDpTxSs *XDpTxSsPtr = (XDpTxSs *)InstancePtr;
+	XDp *XDpPtr = XDpTxSsPtr->DpPtr;
+
+	if (XDpPtr->TxInstance.ColorimetryThroughVsc) {
+		XDp_WriteReg(XDpPtr->Config.BaseAddr, XDP_TX_AUDIO_EXT_DATA(1),
+			XDpPtr->TxInstance.VscPacket.Header);
+		for (i = 0; i < XDPTXSS_EXT_DATA_2ND_TO_9TH_WORD; i++) {
+			XDp_WriteReg(XDpPtr->Config.BaseAddr, XDP_TX_AUDIO_EXT_DATA(i+2),
+					XDpPtr->TxInstance.VscPacket.Payload[i]);
+		}
+	}
+}
+
+/*****************************************************************************/
+/**
+*
 * This function installs an asynchronous callback function for the given
 * HandlerType:
 *
@@ -349,6 +386,9 @@ void XDpTxSs_HpdPulseProcess(void *InstancePtr)
 * (XDPTXSS_HANDLER_DP_LANE_COUNT_CHG)      XDP_TX_HANDLER_LANECNTCHANGE
 * (XDPTXSS_HANDLER_DP_LINK_RATE_CHG)       XDP_TX_HANDLER_LINKRATECHANGE
 * (XDPTXSS_HANDLER_DP_PE_VS_ADJUST)        XDP_TX_HANDLER_PEVSADJUST
+* (XDPTXSS_HANDLER_DP_EXT_PKT_EVENT)       XDP_TX_HANDLER_EXTPKT_TXD
+* (XDPTXSS_DRV_HANDLER_DP_EXT_PKT_EVENT)   XDP_TX_HANDLER_DRV_EXTPKT_TXD
+* (XDPTXSS_HANDLER_DP_VSYNC)               XDP_TX_HANDLER_VSYNC
 * (XDPTXSS_HANDLER_HDCP_RPTR_EXCHG)        XHdcp1x_SetCallBack
 * (XDPTXSS_HANDLER_DP_SET_MSA)             XDP_TX_HANDLER_SETMSA
 * </pre>
@@ -426,6 +466,27 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 		case XDPTXSS_HANDLER_DP_PE_VS_ADJUST:
 			XDp_TxSetCallback(InstancePtr->DpPtr,
 				XDP_TX_HANDLER_PEVSADJUST,
+				CallbackFunc, CallbackRef);
+			Status = XST_SUCCESS;
+			break;
+
+		case XDPTXSS_HANDLER_DP_EXT_PKT_EVENT:
+			XDp_TxSetCallback(InstancePtr->DpPtr,
+				XDP_TX_HANDLER_EXTPKT_TXD,
+				CallbackFunc, CallbackRef);
+			Status = XST_SUCCESS;
+			break;
+
+		case XDPTXSS_DRV_HANDLER_DP_EXT_PKT_EVENT:
+			XDp_TxSetCallback(InstancePtr->DpPtr,
+					XDP_TX_HANDLER_DRV_EXTPKT_TXD,
+				CallbackFunc, CallbackRef);
+			Status = XST_SUCCESS;
+			break;
+
+		case XDPTXSS_HANDLER_DP_VSYNC:
+			XDp_TxSetCallback(InstancePtr->DpPtr,
+					XDP_TX_HANDLER_VSYNC,
 				CallbackFunc, CallbackRef);
 			Status = XST_SUCCESS;
 			break;

@@ -7,7 +7,7 @@
 /**
  *
  * @file xdp_intr.c
- * @addtogroup dp_v7_3
+ * @addtogroup dp_v7_4
  * @{
  *
  * This file contains functions related to XDp interrupt handling.
@@ -33,6 +33,10 @@
  * 6.0   tu   09/08/17 Added three interrupt handler that addresses callback
  *                     function of application
  * 6.0   jb   02/19/19 Added HDCP22 interrupts.
+ * 7.5   rg   08/19/20 Added a interrupt handler that addresses driver's
+ *                     internal callback function of application
+ *                     ExtPktCallbackHandler
+ *
  * </pre>
  *
 *******************************************************************************/
@@ -313,6 +317,24 @@ int XDp_TxSetCallback(XDp *InstancePtr,	XDp_Tx_HandlerType HandlerType,
 		Status = XST_SUCCESS;
 		break;
 
+	case XDP_TX_HANDLER_EXTPKT_TXD:
+		InstancePtr->TxInstance.ExtPktCallbackHandler = CallbackFunc;
+		InstancePtr->TxInstance.ExtPktCallbackHandlerRef = CallbackRef;
+		Status = XST_SUCCESS;
+		break;
+
+	case XDP_TX_HANDLER_DRV_EXTPKT_TXD:
+		InstancePtr->TxInstance.DrvExtPktCallbackHandler = CallbackFunc;
+		InstancePtr->TxInstance.DrvExtPktCallbackHandlerRef = CallbackRef;
+		Status = XST_SUCCESS;
+		break;
+
+	case XDP_TX_HANDLER_VSYNC:
+		InstancePtr->TxInstance.VsyncCallbackHandler = CallbackFunc;
+		InstancePtr->TxInstance.VsyncCallbackHandlerRef = CallbackRef;
+		Status = XST_SUCCESS;
+		break;
+
 	default:
 		Status = XST_INVALID_PARAM;
 		break;
@@ -458,6 +480,26 @@ int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 		if (InstancePtr->Config.DpProtocol == XDP_PROTOCOL_DP_1_4) {
 			InstancePtr->RxInstance.IntrTp4Handler = CallbackFunc;
 			InstancePtr->RxInstance.IntrTp4CallbackRef = CallbackRef;
+			Status = XST_SUCCESS;
+		} else {
+			Status = XST_FAILURE;
+		}
+		break;
+
+	case XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP:
+		if (InstancePtr->Config.DpProtocol == XDP_PROTOCOL_DP_1_4) {
+			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler = CallbackFunc;
+			InstancePtr->RxInstance.IntrAdapatveSyncSdpCallbackRef = CallbackRef;
+			Status = XST_SUCCESS;
+		} else {
+			Status = XST_FAILURE;
+		}
+		break;
+
+	case XDP_RX_HANDLER_ADAPTIVE_SYNC_VBLANK:
+		if (InstancePtr->Config.DpProtocol == XDP_PROTOCOL_DP_1_4) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncVbHandler = CallbackFunc;
+			InstancePtr->RxInstance.IntrAdaptiveSyncVbCallbackRef = CallbackRef;
 			Status = XST_SUCCESS;
 		} else {
 			Status = XST_FAILURE;
@@ -725,6 +767,21 @@ static void XDp_TxInterruptHandler(XDp *InstancePtr)
 				InstancePtr->TxInstance.HpdPulseHandler(
 				InstancePtr->TxInstance.HpdPulseCallbackRef);
 		}
+	}
+
+	if(IntrStatus & XDP_TX_INTERRUPT_STATUS_EXT_PKT_TXD_MASK){
+		if (InstancePtr->TxInstance.ExtPktCallbackHandler)
+			InstancePtr->TxInstance.ExtPktCallbackHandler(
+				InstancePtr->TxInstance.ExtPktCallbackHandlerRef);
+		if (InstancePtr->TxInstance.DrvExtPktCallbackHandler)
+			InstancePtr->TxInstance.DrvExtPktCallbackHandler(
+				InstancePtr->TxInstance.DrvExtPktCallbackHandlerRef);
+	}
+
+	if(IntrStatus & XDP_TX_INTERRUPT_STATUS_VBLANK_STREAM1_MASK){
+		if (InstancePtr->TxInstance.VsyncCallbackHandler)
+			InstancePtr->TxInstance.VsyncCallbackHandler(
+				InstancePtr->TxInstance.VsyncCallbackHandlerRef);
 	}
 }
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
@@ -1040,6 +1097,7 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 	/* DP 1.4 related interrupt handling */
 	if (InstancePtr->Config.DpProtocol == XDP_PROTOCOL_DP_1_4) {
 		u32 IntrStatus1;
+		u32 IntrStatus2;
 
 		/* Determine what kind of interrupts have occurred.
 		 * Note: XDP_RX_INTERRUPT_CAUSE is a RC (read-clear) register. */
@@ -1048,6 +1106,10 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 		/* Mask out required interrupts. */
 		IntrStatus1 &= ~XDp_ReadReg(InstancePtr->Config.BaseAddr,
 					    XDP_RX_INTERRUPT_MASK_1);
+
+		/* Adaptive-Sync interrupts */
+		IntrStatus2 = XDp_ReadReg(InstancePtr->Config.BaseAddr,
+						XDP_RX_INTERRUPT_CAUSE_2);
 
 		/* The VerticalBlanking_Flag in the VB-ID field of the received
 		 * stream 2 indicates the start of the vertical blanking
@@ -1109,6 +1171,19 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 			InstancePtr->RxInstance.IntrAccessErrorCounterHandler(
 				InstancePtr->RxInstance.IntrAccessErrorCounterCallbackRef);
 		}
+		/* Adaptive-Sync SDP packet received event*/
+		if ((IntrStatus2 & XDP_RX_INTERRUPT_MASK_ADAPTIVE_SYNC_SDP_MASK) &&
+				InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler) {
+			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler(
+				InstancePtr->RxInstance.IntrAccessErrorCounterCallbackRef);
+		}
+		/* vblank difference detected event */
+		if ((IntrStatus2 & XDP_RX_INTERRUPT_MASK_ADAPTIVE_SYNC_VB_MASK) &&
+				InstancePtr->RxInstance.IntrAdaptiveSyncVbHandler) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncVbHandler(
+				InstancePtr->RxInstance.IntrAdaptiveSyncVbCallbackRef);
+		}
+
 	}
 
 }

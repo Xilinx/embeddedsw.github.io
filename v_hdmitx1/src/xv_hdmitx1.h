@@ -180,7 +180,8 @@ typedef enum {
 */
 typedef enum {
 	XV_HDMITX1_AUDFMT_LPCM = 0,    /* L-PCM*/
-	XV_HDMITX1_AUDFMT_HBR          /* HBR*/
+	XV_HDMITX1_AUDFMT_HBR,         /* HBR*/
+	XV_HDMITX1_AUDFMT_3D,           /* 3D Audio */
 } XV_HdmiTx1_AudioFormatType;
 
 /** @name HDMI TX SCDC Fields
@@ -227,6 +228,7 @@ typedef struct {
 				  *  of the HDMI TX core */
 	UINTPTR BaseAddress;    /**< BaseAddress is the physical
 				  * base address of the core's registers */
+	u32 MaxFrlRate ;	/**< Maximum FRL Rate Supported */
 	u32 AxiLiteClkFreq;
 } XV_HdmiTx1_Config;
 
@@ -246,6 +248,7 @@ typedef struct {
 */
 typedef struct {
 	XVidC_VideoStream       Video;		/**< Video stream for HDMI TX */
+	XVidC_PixelsPerClock	CorePixPerClk;	/**< Core operates at a fixed 4PPC */
 	XV_HdmiTx1_AudioStream  Audio;		/**< Audio stream for HDMI TX */
 	XV_HdmiTx1_Frl		Frl;		/**< FRL for HDMI TX */
 	u8                      Vic;		/**< Video Identification code

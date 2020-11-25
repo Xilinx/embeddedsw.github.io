@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfclk.c
-* @addtogroup xrfclk_v1_3
+* @addtogroup xrfclk_v1_1
 * @{
 *
 * Contains the API of the XRFclk middleware.
@@ -41,7 +41,6 @@
 #include "xil_assert.h"
 #include "xil_types.h"
 #include "xstatus.h"
-#include "platform.h"
 #include "xil_printf.h"
 #include "xiicps.h"
 #define PRINTF xil_printf /* Print macro for BM */

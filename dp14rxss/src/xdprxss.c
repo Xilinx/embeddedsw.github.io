@@ -7,7 +7,7 @@
 /**
 *
 * @file xdprxss.c
-* @addtogroup dprxss_v6_0
+* @addtogroup dprxss_v6_1
 * @{
 *
 * This is the main file for Xilinx DisplayPort Receiver Subsystem driver.
@@ -47,6 +47,18 @@
 * 		    same for all the instances in multiple subsystems in the
 * 		    design. This driver wont support for different configuration
 * 		    of the subsystems.
+* 6.1  rg  08/13/20 Added below list APIs related to Adaptive-Sync feature.
+* 					XDpRxSs_SetAdaptiveSyncCaps
+* 					XDpRxSs_MaskAdaptiveIntr
+* 					XDpRxSs_UnMaskAdaptiveIntr
+* 					XDpRxSs_GetVblank
+* 					XDpRxSs_GetVtotal
+* 6.1  rg  09/23/20 Added below list of APIs related to color encoding
+*                   parameters,
+*                   XDpRxss_GetBpc
+*                   XDpRxss_GetColorComponent
+*                   XDpRxss_GetColorimetry
+*                   XDpRxss_GetDynamicRange
 * </pre>
 *
 ******************************************************************************/
@@ -777,6 +789,126 @@ void XDpRxSs_SetUserPixelWidth(XDpRxSs *InstancePtr, u8 UserPixelWidth)
 
 	/* Set user pixel width */
 	XDp_RxSetUserPixelWidth(InstancePtr->DpPtr, UserPixelWidth);
+}
+
+/******************************************************************************/
+/**
+ * This function extracts the bits per color from MISC0 or VSC SDP packet based
+ * on whether reception of colorimetry information through VSC SDP packets or
+ * through MISC registers of the stream.
+ *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @param	Stream is the stream number to make the calculations for.
+ *
+ * @return	The bits per color for the stream.
+ *
+ * @note	RX clock must be stable.
+ *
+*******************************************************************************/
+u8 XDpRxss_GetBpc(XDpRxSs *InstancePtr, u8 Stream)
+{
+	u8 Bpc;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+						(Stream == XDP_TX_STREAM_ID2) ||
+						(Stream == XDP_TX_STREAM_ID3) ||
+						(Stream == XDP_TX_STREAM_ID4));
+
+	Bpc = XDp_RxGetBpc(InstancePtr->DpPtr, Stream);
+
+	return Bpc;
+}
+
+/******************************************************************************/
+/**
+ * This function extracts the color component format from MISC0 or VSC SDP packet
+ * based on whether reception of colorimetry information through VSC SDP packets or
+ * through MISC registers of the stream.
+ *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @param	Stream is the stream number to make the calculations for.
+ *
+ * @return	The color component for the stream.
+ *
+ * @note	RX clock must be stable.
+ *
+*******************************************************************************/
+u8 XDpRxss_GetColorComponent(XDpRxSs *InstancePtr, u8 Stream)
+{
+	u8 ColorComponent;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+						(Stream == XDP_TX_STREAM_ID2) ||
+						(Stream == XDP_TX_STREAM_ID3) ||
+						(Stream == XDP_TX_STREAM_ID4));
+
+	ColorComponent = XDp_RxGetColorComponent(InstancePtr->DpPtr, Stream);
+
+	return ColorComponent;
+}
+
+/******************************************************************************/
+/**
+ * This function extracts the YCbCrColorimetry from MISC0 or VSC SDP packet
+ * based on whether reception of colorimetry information through VSC SDP packets
+ * or through MISC registers of the stream.
+ *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @param	Stream is the stream number to make the calculations for.
+ *
+ * @return	The colorimetry format for the stream.
+ *
+ * @note	RX clock must be stable.
+ *
+*******************************************************************************/
+u8 XDpRxss_GetColorimetry(XDpRxSs *InstancePtr, u8 Stream)
+{
+	u8 YCbCrColorimetry;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+						(Stream == XDP_TX_STREAM_ID2) ||
+						(Stream == XDP_TX_STREAM_ID3) ||
+						(Stream == XDP_TX_STREAM_ID4));
+
+	YCbCrColorimetry = XDp_RxGetColorimetry(InstancePtr->DpPtr, Stream);
+
+	return YCbCrColorimetry;
+}
+
+/******************************************************************************/
+/**
+ * This function extracts the dynamic range from MISC0 or VSC SDP packet
+ * based on whether reception of colorimetry information through VSC SDP packets or
+ * through MISC registers of the stream.
+ *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @param	Stream is the stream number to make the calculations for.
+ *
+ * @return	The dynamic range value for the stream.
+ *
+ * @note	RX clock must be stable.
+ *
+*******************************************************************************/
+u8 XDpRxss_GetDynamicRange(XDpRxSs *InstancePtr, u8 Stream)
+{
+	u8 DynamicRange;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+						(Stream == XDP_TX_STREAM_ID2) ||
+						(Stream == XDP_TX_STREAM_ID3) ||
+						(Stream == XDP_TX_STREAM_ID4));
+
+	DynamicRange = XDp_RxGetDynamicRange(InstancePtr->DpPtr, Stream);
+
+	return DynamicRange;
 }
 
 /*****************************************************************************/
@@ -2082,5 +2214,155 @@ void XDpRxSs_Hdcp22SetKey(XDpRxSs *InstancePtr,
 	}
 }
 #endif
+
+/*****************************************************************************/
+/**
+ *
+ * This function sets Adaptive-Sync capabilities to DisplayPort
+ * RX Subsystem
+ *
+ * @param InstancePtr is a pointer to the XDpRxSs instance.
+ * @param Enable is to enable/disable the Adaptive-Sync
+ *        capabilities in DisplayPort Rx Subsystem
+ *
+ * @return XST_SUCCESS
+ *
+ * @note   None.
+ *
+ ******************************************************************************/
+void XDpRxSs_SetAdaptiveSyncCaps(XDpRxSs *InstancePtr, u32 Enable)
+{
+	u32 RegVal;
+
+	/* Verify argument. */
+	Xil_AssertVoid(InstancePtr);
+	RegVal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+				 XDP_RX_DTG_ENABLE);
+	if (Enable) {
+		RegVal |= XDP_RX_ADAPTIVESYNC_SDP_SUPPORTED_MASK |
+				XDP_RX_MSA_TIMINGPAR_IGNORED_MASK;
+	} else {
+		RegVal &= ~(XDP_RX_ADAPTIVESYNC_SDP_SUPPORTED_MASK |
+				XDP_RX_MSA_TIMINGPAR_IGNORED_MASK);
+	}
+
+	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+			 XDP_RX_DTG_ENABLE, RegVal);
+}
+
+/*****************************************************************************/
+/**
+ *
+ * This function masks the Adaptive-Sync interrupts
+ * from DisplayPort RX Subsystem
+ *
+ * @param InstancePtr is a pointer to the XDpRxSs instance.
+ * @param Interrupts to mask
+ *
+ * @note   None.
+ *
+ ******************************************************************************/
+void XDpRxSs_MaskAdaptiveIntr(XDpRxSs *InstancePtr, u32 Mask)
+{
+	u32 RegVal;
+
+	/* Verify argument. */
+	Xil_AssertVoid(InstancePtr);
+	RegVal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+				 XDP_RX_INTERRUPT_MASK_2);
+	RegVal |= (Mask & XDP_RX_ADAPTIVESYNC_SDP_VBLANK_INTERRUPT_MASK);
+	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+			 XDP_RX_INTERRUPT_MASK_2, RegVal);
+}
+
+/*****************************************************************************/
+/**
+ *
+ * This function unmasks Adaptive-Sync interrupt
+ * from DisplayPort RX Subsystem
+ *
+ * @param InstancePtr is a pointer to the XDpRxSs instance.
+ * @param Interrupts to unmask
+ *
+ * @note   None.
+ *
+ ******************************************************************************/
+void XDpRxSs_UnMaskAdaptiveIntr(XDpRxSs *InstancePtr, u32 Mask)
+{
+	u32 RegVal;
+
+	/* Verify argument. */
+	Xil_AssertVoid(InstancePtr);
+	RegVal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+				 XDP_RX_INTERRUPT_MASK_2);
+	RegVal &= (~Mask);
+	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+			 XDP_RX_INTERRUPT_MASK_2, RegVal);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function retrieves the current vblank value of
+* the incoming video stream.
+*
+* @param	InstancePtr is a pointer to the XDpRxSs core instance.
+*
+* @return
+*		- The current vblank value
+*
+* @note		This function has to be called after
+		assertion of Bit-30 of XDP_RX_INTERRUPT_CAUSE_2
+		register
+*
+******************************************************************************/
+int XDpRxSs_GetVblank(XDpRxSs *InstancePtr)
+{
+	u32 VBlank;
+
+	/* Verify arguments.*/
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* Get the current vblank value */
+	VBlank = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+				 XDP_RX_ADAPTIVE_VBLANK_VTOTAL);
+	VBlank &= XDP_RX_ADAPTIVE_VBLANK_MASK;
+
+	return VBlank;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function retrieves the current VTotal value of
+* the incoming video stream.
+*
+* @param	InstancePtr is a pointer to the XDpRxSs core instance.
+*
+* Note: This function has to be called after
+* assertion Bit-30 of XDP_RX_INTERRUPT_CAUSE_2 register
+*
+* @return
+*		- The current VTotal value
+*
+* @note		This function has to be called after
+		assertion of Bit-30 of XDP_RX_INTERRUPT_CAUSE_2
+		register
+*
+******************************************************************************/
+int XDpRxSs_GetVtotal(XDpRxSs *InstancePtr)
+{
+	u32 VTotal;
+
+	/* Verify arguments.*/
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* Get stream map of the stream(s) */
+	VTotal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+				 XDP_RX_ADAPTIVE_VBLANK_VTOTAL);
+	VTotal = VTotal >> XDP_RX_ADAPTIVE_VTOTAL_SHIFT;
+
+	return VTotal;
+}
 
 /** @} */

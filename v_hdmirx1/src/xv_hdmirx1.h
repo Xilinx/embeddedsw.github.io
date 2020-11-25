@@ -204,7 +204,8 @@ typedef enum {
 typedef enum {
 	XV_HDMIRX1_AUDFMT_UNKNOWN = 0,
 	XV_HDMIRX1_AUDFMT_LPCM,     /* L-PCM*/
-	XV_HDMIRX1_AUDFMT_HBR       /* HBR*/
+	XV_HDMIRX1_AUDFMT_HBR,      /* HBR*/
+	XV_HDMIRX1_AUDFMT_3D,	    /* 3D Audio */
 } XV_HdmiRx1_AudioFormatType;
 
 /** @name HDMI RX EDID RAM Size
@@ -233,6 +234,7 @@ typedef struct {
 	u32 AxiLiteClkFreq;
 	u32 FRLClkFreqkHz;
 	u32 VideoClkFreqkHz;
+	u32 MaxFrlRate; /** < Maximum FRL Rate Supporte */
 	XV_HdmiRx1_EdidSize EdidRamSize;
 } XV_HdmiRx1_Config;
 
@@ -250,6 +252,7 @@ typedef struct {
 */
 typedef struct {
 	XVidC_VideoStream 	Video;		/* Video stream for HDMI RX */
+	XVidC_PixelsPerClock	CorePixPerClk;	/* Core operates at a fixed 4PPC */
 	XV_HdmiRx1_AudioStream	Audio;		/* Audio stream */
 	XV_HdmiRx1_Frl		Frl;		/* FRL for HDMI TR */
 	u8 	Vic;				/* Video Identification code flag */

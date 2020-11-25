@@ -23,6 +23,10 @@
 * 4.1  als 08/03/16 Use video common API rather than internal structure when
 *                   checking for interlaced mode.
 * 5.0  tu  08/10/17 Adjusted BS symbol for equal timing
+* 6.4  rg  08/28/20 Added XDpTxSs_VtcAdaptiveSyncSetup and
+*                   XDpTxSs_VtcDisableAdaptiveSync API's.
+* 6.4  rg  09/26/20 Added support for YUV420 color format
+*
 * </pre>
 *
 ******************************************************************************/
@@ -106,15 +110,32 @@ u32 XDpTxSs_VtcSetup(XVtc *InstancePtr, XDp_TxMainStreamAttributes *MsaConfig,
 	/* Set source */
 	XVtc_SetSource(InstancePtr, &SourceSelect);
 
+	/* For YCbCr 4:2:0 color component format, consider
+	 * half of the actual Horizontal timing */
+	if (MsaConfig->ComponentFormat ==
+			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420)
+	{
+		VideoTiming.HActiveVideo =
+			MsaConfig->Vtm.Timing.HActive / (UserPixelWidth * 2);
+		VideoTiming.HFrontPorch =
+			MsaConfig->Vtm.Timing.HFrontPorch / (UserPixelWidth * 2);
+		VideoTiming.HSyncWidth =
+			MsaConfig->Vtm.Timing.HSyncWidth / (UserPixelWidth * 2);
+		VideoTiming.HBackPorch =
+			MsaConfig->Vtm.Timing.HBackPorch / (UserPixelWidth * 2);
+	}
+	else {
 	/* Horizontal timing */
-	VideoTiming.HActiveVideo =
+		VideoTiming.HActiveVideo =
 			MsaConfig->Vtm.Timing.HActive / UserPixelWidth;
-	VideoTiming.HFrontPorch =
+		VideoTiming.HFrontPorch =
 			MsaConfig->Vtm.Timing.HFrontPorch / UserPixelWidth;
-	VideoTiming.HSyncWidth =
+		VideoTiming.HSyncWidth =
 			MsaConfig->Vtm.Timing.HSyncWidth / UserPixelWidth;
-	VideoTiming.HBackPorch =
+		VideoTiming.HBackPorch =
 			MsaConfig->Vtm.Timing.HBackPorch / UserPixelWidth;
+	}
+
 	if (VtcAdjustBs) {
 		u16 HBlank;
 		u16 HReducedBlank;
@@ -210,4 +231,52 @@ u32 XDpTxSs_VtcSetup(XVtc *InstancePtr, XDp_TxMainStreamAttributes *MsaConfig,
 	XVtc_RegUpdateEnable(InstancePtr);
 
 	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function configures Video Timing Controller with Adaptive-Sync mode
+* to be work on and sets vertical front porch stretch limit
+*
+* @param	InstancePtr is a pointer to the XVtc instance.
+* @param	mode is a Adaptive-Sync mechanism to be work on
+* @param	StretchLimit is a max limit of vertical front porch
+* 		stretching
+*
+* @return
+*		None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XDpTxSs_VtcAdaptiveSyncSetup(XVtc *InstancePtr, XVtc_AdaptiveSyncMode mode,
+					u32 StretchLimit)
+{
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	/* Enable Adaptive-sync and set mode */
+	XVtc_SetAdaptiveSyncMode(InstancePtr, mode);
+	XVtc_SetVfpStretchLimit(InstancePtr, StretchLimit);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function disables Adaptive-Sync feature in Video Timing Controller.
+*
+* @param	InstancePtr is a pointer to the XVtc instance.
+*
+* @return
+*		None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XDpTxSs_VtcDisableAdaptiveSync(XVtc *InstancePtr)
+{
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	/* Disable Adaptive-sync */
+	XVtc_DisableAdaptiveSync(InstancePtr);
 }

@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss.h
-* @addtogroup dptxss_v6_3
+* @addtogroup dptxss_v6_4
 * @{
 * @details
 *
@@ -98,6 +98,10 @@
 *                   and XDpTxSs_UsrHpdEventData
 * 5.0  jb  02/21/19 Added HDCP22 support.
 * 					Made the Timer counter available for both HDCP1x and 22.
+* 6.4  rg  09/01/20 Added handler type as enum for extended packet transmit
+*                   done interrupt.
+* 6.4  rg  09/26/20 Added support for YUV420 color format.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -171,9 +175,20 @@ typedef enum {
 	XDPTXSS_DRV_HANDLER_DP_HPD_EVENT,	/**< Driver's internal HPD
 						  *  event interrupt type for
 						  *  DisplayPort core */
-	XDPTXSS_DRV_HANDLER_DP_HPD_PULSE	/**< Driver's HPD pulse
+	XDPTXSS_DRV_HANDLER_DP_HPD_PULSE,	/**< Driver's HPD pulse
 						  *  interrupt type for
 						  *  DisplayPort core */
+	XDPTXSS_HANDLER_DP_EXT_PKT_EVENT,	/**< Driver's extended
+						  *  packet transmit done
+						  *  interrupt type for
+						  *  DisplayPort core */
+	XDPTXSS_DRV_HANDLER_DP_EXT_PKT_EVENT,	/**< Driver's extended
+						  *	 packet transmit done
+						  *	 interrupt type for
+						  *	 DisplayPort core */
+	XDPTXSS_HANDLER_DP_VSYNC	/**< A Vsync interrupt
+						  *  type for DisplayPort
+						  *  core */
 } XDpTxSs_HandlerType;
 
 /**
@@ -481,10 +496,14 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 			void *CallbackFunc, void *CallbackRef);
 void XDpTxSs_SetUserTimerHandler(XDpTxSs *InstancePtr,
 		XDpTxSs_TimerHandler CallbackFunc, void *CallbackRef);
+u32 XDpTxSs_CheckVscColorimetrySupport(XDpTxSs *InstancePtr);
+u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt);
+void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 Enable);
 
 /* DpTxSs Interrupt Related Internal Functions */
 void XDpTxSs_HpdEventProcess(void *InstancePtr);
 void XDpTxSs_HpdPulseProcess(void *InstancePtr);
+void XDpTxSs_WriteVscExtPktProcess(void * InstancePtr);
 
 /******************* Macros (Inline Functions) Definitions *******************/
 
