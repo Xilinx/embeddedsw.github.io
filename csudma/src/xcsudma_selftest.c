@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
 *
 * @file xcsudma_selftest.c
-* @addtogroup csudma_v1_7
+* @addtogroup csudma_v1_8
 * @{
 *
 * This file contains a diagnostic self-test function for the CSU_DMA driver.

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (C) 2011 - 2020 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2011 - 2021 Xilinx, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -59,7 +59,7 @@ proc gen_testfunc_call {swproj mhsinst} {
     return ""
   }
 
-  set ipname [common::get_property NAME $mhsinst]
+  set ipname [common::get_property IP_NAME $mhsinst]
   set decl "   static XScuGic ${ipname};"
   set deviceid [::hsi::utils::get_ip_param_name $mhsinst "DEVICE_ID"]
   set stdout [common::get_property CONFIG.STDOUT [hsi::get_os]]

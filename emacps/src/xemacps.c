@@ -7,7 +7,7 @@
 /**
 *
 * @file xemacps.c
-* @addtogroup emacps_v3_12
+* @addtogroup emacps_v3_13
 * @{
 *
 * The XEmacPs driver. Functions in this file are the minimum required functions
@@ -91,6 +91,13 @@ LONG XEmacPs_CfgInitialize(XEmacPs *InstancePtr, XEmacPs_Config * CfgPtr,
 #if defined  (XCLOCKING)
 	InstancePtr->Config.RefClk = CfgPtr->RefClk;
 #endif
+
+	InstancePtr->Config.S1GDiv0 = CfgPtr->S1GDiv0;
+	InstancePtr->Config.S1GDiv1 = CfgPtr->S1GDiv1;
+	InstancePtr->Config.S100MDiv0 = CfgPtr->S100MDiv0;
+	InstancePtr->Config.S100MDiv1 = CfgPtr->S100MDiv1;
+	InstancePtr->Config.S10MDiv0 = CfgPtr->S10MDiv0;
+	InstancePtr->Config.S10MDiv1 = CfgPtr->S10MDiv1;
 
 	/* Set callbacks to an initial stub routine */
 	InstancePtr->SendHandler = ((XEmacPs_Handler)((void*)XEmacPs_StubHandler));

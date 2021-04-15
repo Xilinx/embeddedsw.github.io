@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
 *
 * @file xcsudma.c
-* @addtogroup csudma_v1_7
+* @addtogroup csudma_v1_8
 * @{
 *
 * This file contains the implementation of the interface functions for CSU_DMA

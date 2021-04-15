@@ -21,6 +21,7 @@ var xsysmonpsv__hw_8h =
     [ "XSYSMONPSV_BASEADDR", "xsysmonpsv__hw_8h.html#a818f06eaca79f0f447cad974fbd49dab", null ],
     [ "XSYSMONPSV_CLOCK_GATE_OR", "xsysmonpsv__hw_8h.html#a773326dae8bb2062c4ddfbba43ed3808", null ],
     [ "XSYSMONPSV_CONFIG0", "xsysmonpsv__hw_8h.html#a5d71db49f452734e44cf43a6c5b123e8", null ],
+    [ "XSYSMONPSV_DEVICE_TEMP", "xsysmonpsv__hw_8h.html#a03224481cdc9d26f1e2e6bf50b2b719e", null ],
     [ "XSYSMONPSV_DEVICE_TEMP_MAX", "xsysmonpsv__hw_8h.html#af0370703ede011a34abca3fe003a9fd3", null ],
     [ "XSYSMONPSV_DEVICE_TEMP_MAX_MAX", "xsysmonpsv__hw_8h.html#a1dc13e5fe83b2345990971199aa14de6", null ],
     [ "XSYSMONPSV_DEVICE_TEMP_MIN", "xsysmonpsv__hw_8h.html#ace21addbb92c3b2f249745f6fbfe6c02", null ],
