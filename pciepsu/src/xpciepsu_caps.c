@@ -33,6 +33,22 @@
 
 /***************************** Function Prototypes ****************************/
 
+/******************************************************************************/
+/*******************************************************************************/
+/**
+* This function calculates the Capability List Start Address from the Capabilty
+* Pointer Offset value. As per spec, of the first 16 bits in this offset,
+* least 2 significant bits must be ignored, hence the additional shifting.
+*
+* @param   Val   Capability pointer offset value
+*
+* @return  Capability List Start Address
+*
+*******************************************************************************/
+static u16 XPciePsu_GetCapabilityAddr(u32 Val)
+{
+	return ((u16)((Val >> 2U) & 0xFFFFU));
+}
 
 /******************************************************************************/
 /**
@@ -53,9 +69,11 @@ static u32 XPciePsu_GetBaseCapability(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 {
 	u32 CapBase = 0x0;
 
-	XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device, Function,
-			XPCIEPSU_CFG_P_CAP_PTR_T1_REG, &CapBase);
-	return (CapBase & XPCIEPSU_CAP_PTR_LOC);
+	if (XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device, Function,
+		XPCIEPSU_CFG_P_CAP_PTR_T1_REG, &CapBase) != (u8)XST_SUCCESS) {
+		return (u32)CAP_NOT_PRESENT;
+	}
+	return (u32)(CapBase & XPCIEPSU_CAP_PTR_LOC);
 }
 
 /******************************************************************************/
@@ -80,23 +98,25 @@ u8 XPciePsu_HasCapability(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 	u32 CapBase = XPciePsu_GetBaseCapability(InstancePtr, Bus, Device,
 			Function);
 
-	while (CapBase) {
-		XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
-					       Function, XPCIEPSU_DOUBLEWORD(CapBase), &CapBase);
+	while (CapBase != 0U) {
+		if (XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
+		       Function, XPciePsu_GetCapabilityAddr(CapBase), &CapBase) != (u8)XST_SUCCESS) {
+			break;
+		}
 		if (CapId == (CapBase & XPCIEPSU_CFG_CAP_ID_LOC)){
 			CapStatus =  CAP_PRESENT;
-			goto End;
+			break;
 		}
 
 
-		CapBase = (CapBase >> XPCIEPSU_CAP_SHIFT) & XPCIEPSU_CAP_PTR_LOC;
+		CapBase = (u32)((CapBase >> XPCIEPSU_CAP_SHIFT) & (u32)XPCIEPSU_CAP_PTR_LOC);
 	}
 
-End:
 	return CapStatus;
 
 }
 
+#if defined(__aarch64__) || defined(__arch64__)
 /******************************************************************************/
 /**
 * This function returns offset to the matching capability ID from the
@@ -122,21 +142,24 @@ u64 XPciePsu_GetCapability(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 	u32 Offset;
 
 
-	while (CapBase) {
+	while (CapBase != 0U) {
 		Adr = CapBase;
-		XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
-				Function, XPCIEPSU_DOUBLEWORD(CapBase), &CapBase);
+		if (XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
+			Function, XPciePsu_GetCapabilityAddr(CapBase), &CapBase) != (u8)XST_SUCCESS) {
+			break;
+		}
 		if (CapId == (CapBase & XPCIEPSU_CFG_CAP_ID_LOC)) {
 			Offset = XPciePsu_ComposeExternalConfigAddress(
-					Bus, Device, Function, XPCIEPSU_DOUBLEWORD(Adr));
+					Bus, Device, Function, XPciePsu_GetCapabilityAddr(Adr));
 			Location = (InstancePtr->Config.Ecam) + (Offset);
-			goto End;
+			break;
 		}
-		CapBase = (CapBase >> XPCIEPSU_CAP_SHIFT) & XPCIEPSU_CAP_PTR_LOC;
+		CapBase = (u32)((CapBase >> XPCIEPSU_CAP_SHIFT) & (u32)XPCIEPSU_CAP_PTR_LOC);
 	}
-End:
+
 	return Location;
 }
+#endif
 
 /******************************************************************************/
 /**
@@ -159,11 +182,13 @@ u8 XPciePsu_PrintAllCapabilites(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 			Function);
 
 	xil_printf("CAP-IDs:");
-	while (CapBase) {
-		XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
-				Function, XPCIEPSU_DOUBLEWORD(CapBase), &CapBase);
+	while (CapBase != 0U) {
+		if (XPciePsu_ReadConfigSpace(InstancePtr, Bus, Device,
+			Function, XPciePsu_GetCapabilityAddr(CapBase), &CapBase) != (u8)XST_SUCCESS) {
+			return XST_FAILURE;
+		}
 		xil_printf("0x%X ", CapBase & XPCIEPSU_CFG_CAP_ID_LOC);
-		CapBase = (CapBase >> XPCIEPSU_CAP_SHIFT) & XPCIEPSU_CAP_PTR_LOC;
+		CapBase = (u32)((CapBase >> XPCIEPSU_CAP_SHIFT) & (u32)XPCIEPSU_CAP_PTR_LOC);
 	}
 	xil_printf("\r\n");
 	return XST_SUCCESS;

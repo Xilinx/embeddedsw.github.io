@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2006 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2006 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xiic_intr.c
-* @addtogroup iic_v3_7
+* @addtogroup iic_v3_8
 * @{
 *
 * Contains interrupt functions of the XIic driver.  This file is required

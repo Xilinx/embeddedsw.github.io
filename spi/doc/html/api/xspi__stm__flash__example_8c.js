@@ -1,7 +1,7 @@
 var xspi__stm__flash__example_8c =
 [
     [ "STM_READ_WRITE_EXTRA_BYTES", "xspi__stm__flash__example_8c.html#a03934c6901a241dda61e923bca702633", null ],
-    [ "main", "xspi__stm__flash__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4", null ],
+    [ "main", "xspi__stm__flash__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "SpiHandler", "xspi__stm__flash__example_8c.html#aacdc7be0761bc23854d5f1b9c6dbe36a", null ],
     [ "SpiStmFlashBulkErase", "xspi__stm__flash__example_8c.html#a9cf6f63c9b15b121231880b384d2d6fe", null ],
     [ "SpiStmFlashGetStatus", "xspi__stm__flash__example_8c.html#a7dccfc93abc36cebd86eaeb6aa3ec13e", null ],

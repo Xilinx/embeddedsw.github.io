@@ -1,26 +1,8 @@
 /******************************************************************************
-*
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMANGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*
+* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 
 /*****************************************************************************/
 /**
@@ -116,9 +98,8 @@ AieRC XAie_PerfCounterGet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* Compute absolute address and write to register */
 	CounterRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		CounterRegOffset;
-	*CounterVal = XAie_Read32(DevInst, CounterRegAddr);
 
-	return XAIE_OK;
+	return XAie_Read32(DevInst, CounterRegAddr, CounterVal);
 }
 /*****************************************************************************/
 /* This API configures the control registers corresponding to the counters
@@ -221,9 +202,8 @@ AieRC XAie_PerfCounterControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	/* Compute absolute address and write to register */
 	RegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) + RegOffset;
-	XAie_MaskWrite32(DevInst, RegAddr, FldMask, FldVal);
 
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, RegAddr, FldMask, FldVal);
 }
 
 /*****************************************************************************/
@@ -320,9 +300,9 @@ AieRC XAie_PerfCounterResetControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* Compute absolute address and write to register */
 	ResetRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		ResetRegOffset;
-	XAie_MaskWrite32(DevInst, ResetRegAddr, ResetFldMask, ResetFldVal);
 
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, ResetRegAddr, ResetFldMask,
+			ResetFldVal);
 }
 
 /*****************************************************************************/
@@ -391,9 +371,8 @@ AieRC XAie_PerfCounterSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* Compute absolute address and write to register */
 	CounterRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row ,Loc.Col) +
 		CounterRegOffset;
-	XAie_Write32(DevInst, CounterRegAddr, CounterVal);
 
-	return XAIE_OK;
+	return XAie_Write32(DevInst, CounterRegAddr, CounterVal);
 }
 /*****************************************************************************/
 /* This API sets the performance counter event value for the given tile.
@@ -459,9 +438,8 @@ AieRC XAie_PerfCounterEventValueSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* Compute absolute address and write to register */
 	CounterRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		CounterRegOffset;
-	XAie_Write32(DevInst, CounterRegAddr, EventVal);
 
-	return XAIE_OK;
+	return XAie_Write32(DevInst, CounterRegAddr, EventVal);
 }
 
 /*****************************************************************************/
@@ -700,7 +678,10 @@ AieRC XAie_PerfCounterGetControlConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 			(Counter / 2U * PerfMod->PerfCtrlOffsetAdd);
 	StartStopRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 				StartStopRegOffset;
-	StartStopEvent = XAie_Read32(DevInst, StartStopRegAddr);
+	RC = XAie_Read32(DevInst, StartStopRegAddr, &StartStopEvent);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	/* Get both start and stop event for given counter */
 	StartStopEvent >>= PerfMod->StartStopShift * (Counter % 2U);
@@ -723,7 +704,10 @@ AieRC XAie_PerfCounterGetControlConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 	ResetRegOffset = PerfMod->PerfCtrlResetBaseAddr;
 	ResetRegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 			ResetRegOffset;
-	RegEvent = XAie_Read32(DevInst, ResetRegAddr);
+	RC = XAie_Read32(DevInst, ResetRegAddr, &RegEvent);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	/* Get reset event for given counter and store in the event pointer */
 	RegEvent = RegEvent >> Counter * PerfMod->ResetShift;

@@ -84,9 +84,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ab0d9f429af93cfc3bf3a97e5fc63692c"><td class="memItemLeft" align="right" valign="top">UINTPTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1___config.html#ab0d9f429af93cfc3bf3a97e5fc63692c">BaseAddress</a></td></tr>
 <tr class="memdesc:ab0d9f429af93cfc3bf3a97e5fc63692c"><td class="mdescLeft">&#160;</td><td class="mdescRight">BaseAddress is the physical base address of the core's registers.  <a href="#ab0d9f429af93cfc3bf3a97e5fc63692c">More...</a><br/></td></tr>
 <tr class="separator:ab0d9f429af93cfc3bf3a97e5fc63692c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a526dba811e9b4ec12efca908b7f35a42"><td class="memItemLeft" align="right" valign="top">XV_HdmiRx1_EdidSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1___config.html#a526dba811e9b4ec12efca908b7f35a42">EdidRamSize</a></td></tr>
-<tr class="memdesc:a526dba811e9b4ec12efca908b7f35a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum FRL Rate Supporte  <a href="#a526dba811e9b4ec12efca908b7f35a42">More...</a><br/></td></tr>
-<tr class="separator:a526dba811e9b4ec12efca908b7f35a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429bd4e2abdedeb2f459e2bc9cd7723c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1___config.html#a429bd4e2abdedeb2f459e2bc9cd7723c">DynamicHDR</a></td></tr>
+<tr class="memdesc:a429bd4e2abdedeb2f459e2bc9cd7723c"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum FRL Rate Supporte  <a href="#a429bd4e2abdedeb2f459e2bc9cd7723c">More...</a><br/></td></tr>
+<tr class="separator:a429bd4e2abdedeb2f459e2bc9cd7723c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This typedef contains configuration information for the HDMI RX core. </p>
@@ -122,17 +122,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a526dba811e9b4ec12efca908b7f35a42"></a>
+<a class="anchor" id="a429bd4e2abdedeb2f459e2bc9cd7723c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">XV_HdmiRx1_EdidSize XV_HdmiRx1_Config::EdidRamSize</td>
+          <td class="memname">u32 XV_HdmiRx1_Config::DynamicHDR</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>&lt; Maximum FRL Rate Supporte </p>
+<p>Dynamic HDR supported </p>
+
+<p>Referenced by <a class="el" href="xv__hdmirx1_8h.html#aa8d5e2d39022661864bdf89e0fca6b3d">XV_HdmiRx1_DynHDR_GetInfo()</a>, and <a class="el" href="xv__hdmirx1_8h.html#aadab16501ebe113f3881aa7c7d2091f1">XV_HdmiRx1_DynHDR_SetAddr()</a>.</p>
 
 </div>
 </div>

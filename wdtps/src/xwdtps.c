@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdtps.c
-* @addtogroup wdtps_v3_4
+* @addtogroup wdtps_v3_5
 * @{
 *
 * Contains the implementation of interface functions of the XWdtPs driver.
@@ -69,7 +69,7 @@
 *
 ******************************************************************************/
 s32 XWdtPs_CfgInitialize(XWdtPs *InstancePtr,
-			XWdtPs_Config *ConfigPtr, u32 EffectiveAddress)
+			XWdtPs_Config *ConfigPtr, UINTPTR EffectiveAddress)
 {
 	s32 Status;
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -82,7 +82,7 @@ s32 XWdtPs_CfgInitialize(XWdtPs *InstancePtr,
 	 * initializing.
 	 */
 	if (InstancePtr->IsStarted == XIL_COMPONENT_IS_STARTED) {
-		Status = XST_DEVICE_IS_STARTED;
+		Status = (s32)XST_DEVICE_IS_STARTED;
 	} else {
 
 		/*
@@ -102,7 +102,7 @@ s32 XWdtPs_CfgInitialize(XWdtPs *InstancePtr,
 		 */
 		InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 
-		Status = XST_SUCCESS;
+		Status = (s32)XST_SUCCESS;
 	}
 	return Status;
 }
@@ -185,7 +185,7 @@ void XWdtPs_Stop(XWdtPs *InstancePtr)
 	 * Disable the Timer field in the register and
 	 * Set the access key for the write to be done the register.
 	 */
-	Register &= (u32)(~XWDTPS_ZMR_WDEN_MASK);
+	Register &= ~((u32)XWDTPS_ZMR_WDEN_MASK);
 	Register |= XWDTPS_ZMR_ZKEY_VAL;
 
 	/*
@@ -292,13 +292,13 @@ void XWdtPs_DisableOutput(XWdtPs *InstancePtr, u8 Signal)
 		/*
 		 * Disable the field in the register.
 		 */
-		Register &= (u32)(~XWDTPS_ZMR_RSTEN_MASK);
+		Register &= ~((u32)XWDTPS_ZMR_RSTEN_MASK);
 
 	} else {
 		/*
 		 * Disable the field in the register.
 		 */
-		Register &= (u32)(~XWDTPS_ZMR_IRQEN_MASK);
+		Register &= ~((u32)XWDTPS_ZMR_IRQEN_MASK);
 
 	}
 
@@ -420,13 +420,13 @@ void XWdtPs_SetControlValue(XWdtPs *InstancePtr, u8 Control, u32 Value)
 		/*
 		 * Zero the field in the register.
 		 */
-		Register &= (u32)(~XWDTPS_CCR_CLKSEL_MASK);
+		Register &= ~((u32)XWDTPS_CCR_CLKSEL_MASK);
 
 	} else {
 		/*
 		 * Zero the field in the register.
 		 */
-		Register &= (u32)(~XWDTPS_CCR_CRV_MASK);
+		Register &= ~((u32)XWDTPS_CCR_CRV_MASK);
 
 		/*
 		 * Shift Value over to the proper positions.

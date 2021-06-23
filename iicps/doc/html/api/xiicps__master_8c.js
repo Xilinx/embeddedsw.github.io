@@ -1,5 +1,6 @@
 var xiicps__master_8c =
 [
+    [ "TX_MAX_LOOPCNT", "xiicps__master_8c.html#ga15d5d2b9d158b3b550f7202d17bb8831", null ],
     [ "XIicPs_DisableSlaveMonitor", "xiicps__master_8c.html#ga15f2e8071ff8d8e1ec1dc56d29ab202b", null ],
     [ "XIicPs_EnableSlaveMonitor", "xiicps__master_8c.html#ga597faa64ccaf3d8034e3e92989048f06", null ],
     [ "XIicPs_MasterInterruptHandler", "xiicps__master_8c.html#gad64f0389aa694ecf21ca8a39e44cf13f", null ],

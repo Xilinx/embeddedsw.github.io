@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdtps_sinit.c
-* @addtogroup wdtps_v3_4
+* @addtogroup wdtps_v3_5
 * @{
 *
 * This file contains method for static initialization (compile-time) of the
@@ -36,8 +36,6 @@
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-/*************************** Variable Definitions ****************************/
-extern XWdtPs_Config XWdtPs_ConfigTable[XPAR_XWDTPS_NUM_INSTANCES];
 
 /************************** Function Prototypes ******************************/
 

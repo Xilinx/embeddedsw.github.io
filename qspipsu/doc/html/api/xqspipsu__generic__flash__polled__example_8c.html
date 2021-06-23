@@ -101,7 +101,9 @@ $(document).ready(function(){initNavTree('xqspipsu__generic__flash__polled__exam
  1.9   akm 02/27/19 Added support for IS25LP128, IS25WP128, IS25LP256,
                      IS25WP256, IS25LP512, IS25WP512 Flash Devices
  1.9   akm 04/03/19 Fixed data alignment warnings on IAR compiler.
- 1.10  akm 09/05/19 Added Multi Die Erase and Muti Die Read support.</pre><pre></pre> </div><table class="memberdecls">
+ 1.10  akm 09/05/19 Added Multi Die Erase and Muti Die Read support.
+ 1.13  akm 11/30/20 Removed unwanted header files.
+ 1.13  akm 12/10/20 Set Read command as per the qspi bus width.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac7a0e7a44578f580f46491eb6f6ce726"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xqspipsu__generic__flash__polled__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726">QspiPsuPolledFlashExample</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *QspiPsuInstancePtr, u16 QspiPsuDeviceId)</td></tr>
@@ -177,7 +179,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
-    <tr><td class="paramname">WritBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
   </table>
   </dd>
 </dl>
@@ -215,7 +217,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
-    <tr><td class="paramname">WritBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
   </table>
   </dd>
 </dl>
@@ -242,7 +244,7 @@ Functions</h2></td></tr>
 <p>For S25FL-L series flash parts this is required as the default configuration is x1/x2 mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">QspiPtr</td><td>is a pointer to the QSPIPSU driver component to use.</td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use.</td></tr>
   </table>
   </dd>
 </dl>
@@ -282,7 +284,7 @@ Functions</h2></td></tr>
 <p>As per the Micron and ISSI spec, before issuing the command to enter into 4 byte addr mode, a write enable command is issued. For Macronix and Winbond flash parts write enable is not required.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">QspiPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
     <tr><td class="paramname">Enable</td><td>is a either 1 or 0 if 1 then enters 4 byte if 0 exits.</td></tr>
   </table>
   </dd>
@@ -334,10 +336,10 @@ Functions</h2></td></tr>
 <p>This function erases the sectors in the serial Flash connected to the QSPIPSU interface. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">QspiPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address of the first sector which needs to be erased. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the total size to be erased. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer (which is to be transmitted)</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is pointer to the write buffer (which is to be transmitted)</td></tr>
   </table>
   </dd>
 </dl>
@@ -398,12 +400,12 @@ Functions</h2></td></tr>
 <p>DMA is the default setting.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">QspiPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address of the first sector which needs to be erased. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the total size to be erased. </td></tr>
     <tr><td class="paramname">Command</td><td>is the command used to read data from the flash. Supports normal, fast, dual and quad read commands. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer which contains data to be transmitted </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the read buffer to which valid received data should be written</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is pointer to the write buffer which contains data to be transmitted </td></tr>
+    <tr><td class="paramname">ReadBfrPtr</td><td>is pointer to the read buffer to which valid received data should be written</td></tr>
   </table>
   </dd>
 </dl>
@@ -429,7 +431,7 @@ Functions</h2></td></tr>
 <p>Reads the flash ID and identifies the flash in FCT table. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use.</td></tr>
   </table>
   </dd>
 </dl>
@@ -480,8 +482,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>is the number of bytes to write. </td></tr>
     <tr><td class="paramname">Command</td><td>is specific register write command. </td></tr>
-    <tr><td class="paramname">WriteBfrPtr</td><td>is the pointer to value to be written. </td></tr>
-    <tr><td class="paramname">WrEn</td><td>is a flag to mention if WREN has to be sent before write.</td></tr>
+    <tr><td class="paramname">ReadBfrPtr</td><td>is the pointer to value to be written.</td></tr>
   </table>
   </dd>
 </dl>
@@ -598,7 +599,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">Address</td><td>contains the address to write data to in the Flash. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the number of bytes to write. </td></tr>
     <tr><td class="paramname">Command</td><td>is the command used to write data to the flash. QSPIPSU device supports only Page Program command to write data to the flash. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer (which is to be transmitted)</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is pointer to the write buffer (which is to be transmitted)</td></tr>
   </table>
   </dd>
 </dl>
@@ -660,12 +661,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the QSPIPSU Flash Polled example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
@@ -724,12 +719,12 @@ Functions</h2></td></tr>
 <p>This functions performs a read operation for multi die flash devices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">QspiPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
+    <tr><td class="paramname">QspiPsuPtr</td><td>is a pointer to the QSPIPSU driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address of the first sector which needs to be erased. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the total size to be erased. </td></tr>
     <tr><td class="paramname">Command</td><td>is the command used to read data from the flash. Supports normal, fast, dual and quad read commands. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer which contains data to be transmitted </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the read buffer to which valid received data should be written.</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is pointer to the write buffer which contains data to be transmitted </td></tr>
+    <tr><td class="paramname">ReadBfrPtr</td><td>is pointer to the read buffer to which valid received data should be written.</td></tr>
   </table>
   </dd>
 </dl>
@@ -766,7 +761,8 @@ Functions</h2></td></tr>
 <p>This function reads data in DMA mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">QspiPsuInstancePtr</td><td>is a pointer to the instance of the QspiPsu device. </td></tr>
+    <tr><td class="paramname">QspiPsuDeviceId</td><td>is the Device ID of the Qspi Device and is the XPAR_&lt;QSPI_instance&gt;_DEVICE_ID value from xparameters.h.</td></tr>
   </table>
   </dd>
 </dl>

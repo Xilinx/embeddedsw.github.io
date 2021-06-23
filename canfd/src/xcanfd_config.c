@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcanfd_config.c
-* @addtogroup canfd_v2_4
+* @addtogroup canfd_v2_5
 * @{
 *
 * Functions in this file are CAN Configuration Register access related.
@@ -76,14 +76,14 @@ int XCanFd_SetBaudRatePrescaler(XCanFd *InstancePtr, u8 Prescaler)
 	 * Return error code if the device currently is NOT in Configuration
 	 * Mode
 	 */
-	if (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_CONFIG) {
-		return XST_FAILURE;
+	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
+		return (s32)XST_FAILURE;
 	}
 
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress, XCANFD_BRPR_OFFSET,
 			   (u32) Prescaler);
 
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -151,15 +151,15 @@ int XCanFd_SetBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	if (SyncJumpWidth > XCANFD_MAX_SJW_VALUE ||
-	    TimeSegment2 > XCANFD_MAX_TS2_VALUE ||
-	    TimeSegment1 > XCANFD_MAX_TS1_VALUE) {
-		return XST_INVALID_PARAM;
+	if ((SyncJumpWidth > (u8)XCANFD_MAX_SJW_VALUE) ||
+	    (TimeSegment2 > (u8)XCANFD_MAX_TS2_VALUE) ||
+	    (TimeSegment1 > (u16)XCANFD_MAX_TS1_VALUE)) {
+		return (s32)XST_INVALID_PARAM;
 	}
 
 	/* Return error code if the device is NOT in Configuration Mode */
-	if (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_CONFIG) {
-		return XST_FAILURE;
+	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
+		return (s32)XST_FAILURE;
 	}
 
 	Value = ((u32) TimeSegment1) & XCANFD_BTR_TS1_MASK;
@@ -171,7 +171,7 @@ int XCanFd_SetBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_BTR_OFFSET, Value);
 
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -246,8 +246,8 @@ int XCanFd_SetFBaudRatePrescaler(XCanFd *InstancePtr, u8 Prescaler)
 	 * Return error code if the device currently is NOT in Configuration
 	 * Mode
 	 */
-	if (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_CONFIG) {
-		return XST_FAILURE;
+	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
+		return (s32)XST_FAILURE;
 	}
 	RegValue = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_F_BRPR_OFFSET);
@@ -256,7 +256,7 @@ int XCanFd_SetFBaudRatePrescaler(XCanFd *InstancePtr, u8 Prescaler)
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 		XCANFD_F_BRPR_OFFSET,RegValue);
 
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -285,7 +285,7 @@ u8 XCanFd_GetFBaudRatePrescaler(XCanFd *InstancePtr)
 	Result = (u8) XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_F_BRPR_OFFSET);
 
-	return (Result&XCANFD_BRPR_BRP_MASK);
+	return (u8)(Result & XCANFD_BRPR_BRP_MASK);
 }
 
 /*****************************************************************************/
@@ -323,15 +323,15 @@ int XCanFd_SetFBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	if (SyncJumpWidth > XCANFD_MAX_F_SJW_VALUE ||
-	    TimeSegment2 > XCANFD_MAX_F_TS2_VALUE ||
-	    TimeSegment1 > XCANFD_MAX_F_TS1_VALUE) {
-		return XST_INVALID_PARAM;
+	if ((SyncJumpWidth > (u8)XCANFD_MAX_F_SJW_VALUE) ||
+	    (TimeSegment2 > (u8)XCANFD_MAX_F_TS2_VALUE) ||
+	    (TimeSegment1 > (u8)XCANFD_MAX_F_TS1_VALUE)) {
+		return (s32)XST_INVALID_PARAM;
 	}
 
 	/* Return error code if the device is NOT in Configuration Mode */
-	if (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_CONFIG) {
-		return XST_FAILURE;
+	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
+		return (s32)XST_FAILURE;
 	}
 
 	Value = ((u32) TimeSegment1) & XCANFD_F_BTR_TS1_MASK;
@@ -343,7 +343,7 @@ int XCanFd_SetFBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_F_BTR_OFFSET,Value);
 
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -411,7 +411,7 @@ void XCanFd_SetBitRateSwitch_EnableNominal(XCanFd *InstancePtr)
 
 	Result = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_MSR_OFFSET);
-	if (!(Result & XCANFD_SRR_CEN_MASK)) {
+	if ((Result & XCANFD_SRR_CEN_MASK) == (u32)0) {
 		Result = Result | XCANFD_MSR_BRSD_MASK;
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_MSR_OFFSET,Result);
@@ -445,7 +445,7 @@ void XCanFd_SetBitRateSwitch_DisableNominal(XCanFd *InstancePtr)
 
 	Result = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 			XCANFD_MSR_OFFSET);
-	if (!(Result & XCANFD_SRR_CEN_MASK)) {
+	if ((Result & XCANFD_SRR_CEN_MASK) == (u32)0) {
 		Result = Result & (~XCANFD_MSR_BRSD_MASK);
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_MSR_OFFSET,Result);
@@ -472,25 +472,25 @@ void XCanFd_SetBitRateSwitch_DisableNominal(XCanFd *InstancePtr)
 u32 XCanFd_SetRxIntrWatermark(XCanFd *InstancePtr, s8 Threshold)
 {
 
-	s32 Status;
+	u32 Status;
 	u32 Value;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid((Threshold >= 0) && (Threshold <= XCANFD_WM_FIFO0_THRESHOLD));
+	Xil_AssertNonvoid((Threshold >= (s8)0) && (Threshold <= (s8)XCANFD_WM_FIFO0_THRESHOLD));
 
 	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
-		Status = XST_FAILURE;
+		Status = (u32)XST_FAILURE;
 	}
 	else {
 		Value = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 					XCANFD_WIR_OFFSET);
 		Value &= (~XCANFD_WIR_MASK);
-		Value |= (( Threshold ) &
-				XCANFD_WIR_MASK);
+		Value |= (((u32)Threshold) &
+				(u32)XCANFD_WIR_MASK);
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_WIR_OFFSET,Value);
-		Status = XST_SUCCESS;
+		Status = (u32)XST_SUCCESS;
 	}
 	return Status;
 
@@ -517,25 +517,25 @@ u32 XCanFd_SetRxIntrWatermark(XCanFd *InstancePtr, s8 Threshold)
 u32 XCanFd_SetRxIntrWatermarkFifo1(XCanFd *InstancePtr, s8 Threshold)
 {
 
-	s32 Status;
+	u32 Status;
 	u32 Value;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid((Threshold >= 0) && (Threshold <= (u8)63));
+	Xil_AssertNonvoid((Threshold >=(s8)0) && (Threshold <= (s8)63));
 
 	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
-		Status = XST_FAILURE;
+		Status = (u32)XST_FAILURE;
 	}
 	else {
 		Value = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_WIR_OFFSET);
 		Value &= (~XCANFD_WMR_RXFWM_1_MASK);
-		Value |= (( Threshold << XCANFD_WMR_RXFWM_1_SHIFT ) &
+		Value |= (((u32)Threshold << (u32)XCANFD_WMR_RXFWM_1_SHIFT) &
 		                XCANFD_WMR_RXFWM_1_MASK);
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_WIR_OFFSET,Value);
-		Status = XST_SUCCESS;
+		Status = (u32)XST_SUCCESS;
 	}
 	return Status;
 }
@@ -562,21 +562,21 @@ u32 XCanFd_SetRxIntrWatermarkFifo1(XCanFd *InstancePtr, s8 Threshold)
 u32 XCanFd_SetTxEventIntrWatermark(XCanFd *InstancePtr, u8 Threshold)
 {
 
-	s32 Status;
+	u32 Status;
 	u32 Value;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid((Threshold > 0) || (Threshold <= (u8)31));
+	Xil_AssertNonvoid((Threshold > (u8)0) || (Threshold <= (u8)31));
 
 	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
-		Status = XST_FAILURE;
+		Status = (u32)XST_FAILURE;
 	}
 	else {
 		Value = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_TXEVENT_WIR_OFFSET);
 		Value &= (~XCANFD_TXEVENT_WIR_MASK);
-		Value |= ( Threshold  & XCANFD_TXEVENT_WIR_MASK);
+		Value |= ((u32)Threshold  & XCANFD_TXEVENT_WIR_MASK);
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_TXEVENT_WIR_OFFSET,Value);
 		Status = XST_SUCCESS;
@@ -605,27 +605,27 @@ u32 XCanFd_SetTxEventIntrWatermark(XCanFd *InstancePtr, u8 Threshold)
 u32 XCanFd_SetRxFilterPartition(XCanFd *InstancePtr, u8 FilterPartition)
 {
 
-	s32 Status;
+	u32 Status;
 	u32 Value;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid((FilterPartition > 0) || (FilterPartition <= (u8)31));
+	Xil_AssertNonvoid((FilterPartition > (u8)0) || (FilterPartition <= (u8)31));
 
 	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
-		Status = XST_FAILURE;
+		Status = (u32)XST_FAILURE;
 	}
 	else {
 
         Value = XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 				      XCANFD_WIR_OFFSET);
 		Value &= (~XCANFD_WMR_RXFP_MASK);
-		Value |= (( FilterPartition << XCANFD_WMR_RXFP_SHIFT) &
+		Value |= (((u32)FilterPartition << XCANFD_WMR_RXFP_SHIFT) &
 		                XCANFD_WMR_RXFP_MASK );
 		XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress,
 				   XCANFD_WIR_OFFSET,Value);
 
-	    Status = XST_SUCCESS;
+	    Status = (u32)XST_SUCCESS;
 	}
 	return Status;
 }

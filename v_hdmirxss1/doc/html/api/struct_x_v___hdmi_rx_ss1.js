@@ -16,6 +16,9 @@ var struct_x_v___hdmi_rx_ss1 =
     [ "ConnectRef", "struct_x_v___hdmi_rx_ss1.html#af114ee0b6df2477a8d4da35d7d9cfff6", null ],
     [ "DdcCallback", "struct_x_v___hdmi_rx_ss1.html#a90061efd501cb114f31f979c549675a6", null ],
     [ "DdcRef", "struct_x_v___hdmi_rx_ss1.html#abe4288be1f3e937cf4a6b252f823a790", null ],
+    [ "DrmInfoframe", "struct_x_v___hdmi_rx_ss1.html#a31a75552c26688952600614450f577fe", null ],
+    [ "DynHdrCallback", "struct_x_v___hdmi_rx_ss1.html#a29df015ce0a1a79059fcf85d56d132b4", null ],
+    [ "DynHdrRef", "struct_x_v___hdmi_rx_ss1.html#a0f5bf99add73132ef672eb54ab5ecc30", null ],
     [ "EdidLength", "struct_x_v___hdmi_rx_ss1.html#ac84dbbbfa102d974d1489765b8dd3d04", null ],
     [ "EdidPtr", "struct_x_v___hdmi_rx_ss1.html#aa79a686eb11f948daa2a85bd87266557", null ],
     [ "EnableHDCPLogging", "struct_x_v___hdmi_rx_ss1.html#a0b53d035f6c5376776e541443bfe26f2", null ],
@@ -65,7 +68,11 @@ var struct_x_v___hdmi_rx_ss1 =
     [ "TmdsConfigRef", "struct_x_v___hdmi_rx_ss1.html#acd7b5a4741af92eee50cafa7e55f86d3", null ],
     [ "UserTimerPtr", "struct_x_v___hdmi_rx_ss1.html#a6f341788d0657d756bdecd5027e3f8c4", null ],
     [ "UserTimerWaitUs", "struct_x_v___hdmi_rx_ss1.html#a2ad88e297148d18a9d0891dc5d5ed7e8", null ],
+    [ "VfpChangeCallback", "struct_x_v___hdmi_rx_ss1.html#a7000655d167b841b77a154892a0c5937", null ],
+    [ "VfpChangeRef", "struct_x_v___hdmi_rx_ss1.html#a137ba893eadea91c170e53d54dc22836", null ],
     [ "VicErrorCallback", "struct_x_v___hdmi_rx_ss1.html#a3b53815611e7605f41e11525320d9d34", null ],
     [ "VicErrorRef", "struct_x_v___hdmi_rx_ss1.html#a17e009b7f1aa0ae4351b9f9a9172fb59", null ],
+    [ "VrrRdyCallback", "struct_x_v___hdmi_rx_ss1.html#aece2d287174e682153394bf9ce75c099", null ],
+    [ "VrrRdyRef", "struct_x_v___hdmi_rx_ss1.html#a08cc14ea5820c736057cef68252836e2", null ],
     [ "VSIF", "struct_x_v___hdmi_rx_ss1.html#a9ed735b9800f35607d32cba82e0dab1b", null ]
 ];

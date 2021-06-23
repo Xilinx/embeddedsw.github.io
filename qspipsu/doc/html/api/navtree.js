@@ -21,7 +21,9 @@ var NAVTREE =
       [ "xqspipsu_generic_flash_lqspi_example.c", "example.html#ex2", null ],
       [ "xqspipsu_generic_flash_polled_example.c", "example.html#ex3", null ],
       [ "xqspipsu_polldata_polltimeout_interrupt_example.c", "example.html#ex4", null ],
-      [ "xqspipsu_generic_flash_non_blocking_read_example.c", "example.html#ex5", null ]
+      [ "xqspipsu_generic_flash_non_blocking_read_example.c", "example.html#ex5", null ],
+      [ "xqspipsu_generic_nand flash_interrupt_example.c", "example.html#ex6", null ],
+      [ "xqspipsu_generic_nand flash_polled_example.c", "example.html#ex7", null ]
     ] ]
   ] ]
 ];
@@ -29,7 +31,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xqspipsu__options_8c.html#ga54cce449d0bda6133fe2c254a164e08e"
+"xqspipsu__hw_8h.html#ga0eecbc04289c520b605393012c8715ff"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

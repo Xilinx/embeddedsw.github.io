@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_card.c
-* @addtogroup sdps_v3_11
+* @addtogroup sdps_v3_12
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -24,6 +24,8 @@
 *                       XSdPs_Write APIs
 *       mn     10/15/20 Modify power cycle API to poll for SD bus lines to go
 *                       low for versal platform
+* 3.12  sk     01/28/21 Added support for non-blocking write.
+*       sk     02/12/21 Fix the issue in reading CID and CSD.
 *
 * </pre>
 *
@@ -117,6 +119,60 @@ s32 XSdPs_Write(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, const u8 *Buff)
 		}
 	}
 
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This function is used to check for the transfer complete.
+*
+* @param	InstancePtr is a pointer to the instance to be worked on.
+*
+* @return
+* 		- XST_SUCCESS if transfer was successful
+* 		- XST_FAILURE if failure
+* 		- XST_DEVICE_BUSY - if the transfer is still in progress
+*
+******************************************************************************/
+s32 XSdPs_CheckTransferComplete(XSdPs *InstancePtr)
+{
+	u16 StatusReg;
+	s32 Status;
+
+	if (InstancePtr->IsBusy == FALSE) {
+		Status = XST_FAILURE;
+		goto RETURN_PATH;
+	}
+
+	/*
+	 * Check for transfer complete
+	 */
+	StatusReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+				XSDPS_NORM_INTR_STS_OFFSET);
+	if ((StatusReg & XSDPS_INTR_ERR_MASK) != 0U) {
+		/* Write to clear error bits */
+		XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
+				XSDPS_ERR_INTR_STS_OFFSET,
+				XSDPS_ERROR_INTR_ALL_MASK);
+		Status = XST_FAILURE;
+		goto RETURN_PATH;
+	}
+
+	if ((StatusReg & XSDPS_INTR_TC_MASK) == 0U) {
+		Status = XST_DEVICE_BUSY;
+		goto RETURN_PATH;
+	}
+
+	/* Write to clear bit */
+	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
+			XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_TC_MASK);
+
+	InstancePtr->IsBusy = FALSE;
+
+	Status = XST_SUCCESS;
+
+RETURN_PATH:
 	return Status;
 }
 
@@ -291,6 +347,10 @@ s32 XSdPs_MmcCardInitialize(XSdPs *InstancePtr)
 			Status = XST_FAILURE;
 			goto RETURN_PATH;
 		}
+	} else {
+		XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
+				XSDPS_BLK_SIZE_OFFSET, XSDPS_BLK_SIZE_512_MASK);
+		InstancePtr->BlkSize = XSDPS_BLK_SIZE_512_MASK;
 	}
 
 	Status = XST_SUCCESS;
@@ -502,16 +562,16 @@ s32 XSdPs_GetCardId(XSdPs *InstancePtr)
 	}
 
 	InstancePtr->CardID[0] =
-			XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+			XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 			XSDPS_RESP0_OFFSET);
 	InstancePtr->CardID[1] =
-			XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+			XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 			XSDPS_RESP1_OFFSET);
 	InstancePtr->CardID[2] =
-			XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+			XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 			XSDPS_RESP2_OFFSET);
 	InstancePtr->CardID[3] =
-			XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+			XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 			XSDPS_RESP3_OFFSET);
 
 	if(InstancePtr->CardType == XSDPS_CARD_SD) {
@@ -582,6 +642,11 @@ s32 XSdPs_GetCsd(XSdPs *InstancePtr)
 			XSDPS_RESP2_OFFSET);
 	CSD[3] = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 			XSDPS_RESP3_OFFSET);
+
+	InstancePtr->CardSpecData[0] = CSD[0];
+	InstancePtr->CardSpecData[1] = CSD[1];
+	InstancePtr->CardSpecData[2] = CSD[2];
+	InstancePtr->CardSpecData[3] = CSD[3];
 
 	if (InstancePtr->CardType != XSDPS_CARD_SD) {
 		InstancePtr->Card_Version = (u8)((u32)(CSD[3] & CSD_SPEC_VER_MASK) >>18U);
@@ -1274,7 +1339,7 @@ void XSdPs_IdentifyEmmcMode(XSdPs *InstancePtr, const u8 *ExtCsd)
 				(EXT_CSD_DEVICE_TYPE_DDR_1V8_HIGH_SPEED |
 				EXT_CSD_DEVICE_TYPE_DDR_1V2_HIGH_SPEED)) != 0U) {
 			InstancePtr->Mode = XSDPS_DDR52_MODE;
-			InstancePtr->OTapDelay = SD_ITAPDLYSEL_EMMC_DDR50;
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_EMMC_DDR50;
 			InstancePtr->ITapDelay = SD_ITAPDLYSEL_EMMC_DDR50;
 		} else if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
 				EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0U) {

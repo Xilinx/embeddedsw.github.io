@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv.h
-* @addtogroup ospipsv_v1_3
+* @addtogroup ospipsv_v1_4
 * @{
 * @details
 *
@@ -39,12 +39,16 @@
 *       sk   05/27/20 Added support for reading C_OSPI_MODE param.
 *       sk  08/19/20 Reduced the usleep delay while checking transfer done.
 *       sk   10/06/20 Clear the ISR for polled mode transfers.
+* 1.4   sk   02/18/21 Added support for Dual byte opcode.
+*       sk   02/18/21 Updated RX Tuning algorithm for Master DLL mode.
+*       sk   04/08/21 Fixed doxygen warnings in all source files.
+*       sk   05/07/21 Fixed MISRAC violations.
 *
 * </pre>
 *
 ******************************************************************************/
-#ifndef XOSPIPSV_H_		/* prevent circular inclusions */
-#define XOSPIPSV_H_		/* by using protection macros */
+#ifndef XOSPIPSV_H_		/**< prevent circular inclusions */
+#define XOSPIPSV_H_		/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -95,6 +99,7 @@ typedef struct {
 	u8 IsDDROpCode;	/**< 1 if opcode is DDR command, 0 otherwise */
 	u64 RxAddr64bit; /**< Provide 64-bit read address for 32-bit platform */
 	u8 Xfer64bit; /**< Set to 1 when reading from 64-bit addr otherwise 0 */
+	u8 ExtendedOpcode; /**< Extended opcode in dual-byte opcode mode */
 } XOspiPsv_Msg;
 
 /**
@@ -123,20 +128,22 @@ typedef struct {
 	u32 IsBusy;		 /**< A transfer is in progress (state) */
 	u32 OpMode;		 /**< Operating Mode DAC or INDAC */
 	u32 SdrDdrMode;	/**< Edge mode can be SDR or DDR */
-	u8 ChipSelect;
-	XOspiPsv_Msg *Msg;
-	XOspiPsv_StatusHandler StatusHandler;
+	u8 ChipSelect;	/**< Chip select information */
+	XOspiPsv_Msg *Msg;	/**< Pointer to the Flash Message structure */
+	XOspiPsv_StatusHandler StatusHandler;	/**< Status/Callback handler */
 	void *StatusRef;  	 /**< Callback reference for status handler */
-	u8 IsUnaligned;		/* Flag used to indicate bytecnt is aligned or not */
-	u32 DeviceIdData;	/* Contains Device Id Data information */
-	u8 Extra_DummyCycle;
-	u8 DllMode;
+	u8 IsUnaligned;		/**< Flag used to indicate bytecnt is aligned or not */
+	u32 DeviceIdData;	/**< Contains Device Id Data information */
+	u8 Extra_DummyCycle;	/**< Contains extra dummy cycle data */
+	u8 DllMode;		/**< DLL mode */
+	u8 DualByteOpcodeEn;	/**< Flag to indicate Dual Byte Opcode */
 #ifdef __ICCARM__
 #pragma pack(push, 8)
 	u8 UnalignReadBuffer[4];	/**< Buffer used to read the unaligned bytes in DMA */
 #pragma pack(pop)
 #else
-	u8 UnalignReadBuffer[4] __attribute__ ((aligned(64)));
+	/**< Buffer used to read the unaligned bytes in DMA */
+	u8 UnalignReadBuffer[4] __attribute__ ((aligned(64))); /**< Read Buffer */
 #endif
 } XOspiPsv;
 
@@ -144,6 +151,13 @@ typedef struct {
 extern XOspiPsv_Config XOspiPsv_ConfigTable[];
 
 /***************** Macros (Inline Functions) Definitions *********************/
+/**
+ * @name Configuration options
+ * @{
+ */
+/**
+ * User configuration options.
+ */
 #define XOSPIPSV_DAC_EN_OPTION	0x1U
 #define XOSPIPSV_IDAC_EN_OPTION	0x2U
 #define XOSPIPSV_STIG_EN_OPTION	0x4U
@@ -154,18 +168,49 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
 #define XOSPIPSV_DTR_EN_OPTION	0x80U
 #define XOSPIPSV_CRC_EN_OPTION	0x100U
 #define XOSPIPSV_DB_OP_EN_OPTION	0x200U
+/** @} */
 
-
+/**
+ * @name Low-level memory read/write
+ * @{
+ */
+/**
+ * Low level macros to read/write memory.
+ */
 #define XOspiPsv_ReadReg(BaseAddress, RegOffset) Xil_In32((BaseAddress) + (u32)(RegOffset))
 #define XOspiPsv_WriteReg(BaseAddress, RegOffset, RegisterValue) \
 		Xil_Out32((BaseAddress) + (u32)(RegOffset), (u32)(RegisterValue))
+/** @} */
 
+/**
+ * @name Modes of operation selection
+ * @{
+ */
+/**
+ * Macros to select INDAC and DAC modes.
+ */
 #define XOSPIPSV_IDAC_MODE		0x0U
 #define XOSPIPSV_DAC_MODE		0x1U
+/** @} */
 
+/**
+ * @name Transfer type selection
+ * @{
+ */
+/**
+ * Macros to select RX and TX transfer flags.
+ */
 #define XOSPIPSV_MSG_FLAG_RX	0x2U
 #define XOSPIPSV_MSG_FLAG_TX	0x4U
+/** @} */
 
+/**
+ * @name Prototype(Bus width: Cmd_Addr_Data) selection
+ * @{
+ */
+/**
+ * Macros to select Read and Write prototype.
+ */
 #define XOSPIPSV_READ_1_1_1	0U
 #define XOSPIPSV_READ_1_1_8	3U
 #define XOSPIPSV_READ_1_8_8	4U
@@ -178,10 +223,26 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
 #define XOSPIPSV_WRITE_8_8_8	5U
 #define XOSPIPSV_WRITE_8_0_0	6U
 #define XOSPIPSV_WRITE_8_8_0	7U
+/** @} */
 
+/**
+ * @name Chip Select selection
+ * @{
+ */
+/**
+ * Macros to select CS0 and CS1.
+ */
 #define XOSPIPSV_SELECT_FLASH_CS0	0
 #define XOSPIPSV_SELECT_FLASH_CS1	1
+/** @} */
 
+/**
+ * @name Prescaler selection
+ * @{
+ */
+/**
+ * Macros to select different baud rate divisors.
+ */
 #define XOSPIPSV_CLK_PRESCALE_2		0U
 #define XOSPIPSV_CLK_PRESCALE_4		1U
 #define XOSPIPSV_CLK_PRESCALE_6		2U
@@ -199,12 +260,15 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
 #define XOSPIPSV_CLK_PRESCALE_30	14U
 #define XOSPIPSV_CLK_PRESCALE_32	15U
 #define XOSPIPSV_CR_PRESC_MAXIMUM	15U
+/** @} */
 
-#define XOSPIPSV_IOMODE_BYTECNT	8U
-
-/* Temporary macro for fsbl and can be removed after fsbl update */
-#define XOSPIPSV_CLK_PRESCALE_15	XOSPIPSV_CLK_PRESCALE_32
-
+/**
+ * @name Default configuration selection
+ * @{
+ */
+/**
+ * Macros to select default OSPI configuration.
+ */
 #define XOSPIPSV_NO_SLAVE_SELCT_VALUE	0xFU
 #define XOSPIPSV_DISABLE_DAC_VALUE		0x0U
 #define XOSPIPSV_SPI_DISABLE_VALUE		0x0U
@@ -219,31 +283,83 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
 #define XOSPIPSV_POLL_CNT_FLD_NON_PHY	0x1U
 #define XOSPIPSV_MIN_PHY_FREQ	50000000
 #define XOSPIPSV_DDR_STATS_REG_DUMMY	0x8U
+#define XOSPIPSV_REMAP_ADDR_VAL		0x40000000U
+#define XOSPIPSV_NON_PHY_RD_DLY		0x1U
+/** @} */
 
+/**
+ * @name Edge mode selection
+ * @{
+ */
+/**
+ * Macros to select different edge modes like
+ * SDR+NON-PHY, SDR+PHY and DDR+PHY.
+ */
 #define XOSPIPSV_EDGE_MODE_SDR_PHY			0x0U
 #define XOSPIPSV_EDGE_MODE_SDR_NON_PHY		0x1U
 #define XOSPIPSV_EDGE_MODE_DDR_PHY			0x2U
+/** @} */
 
-#define XOSPIPSV_REMAP_ADDR_VAL		0x40000000U
+/**
+ * @name DLL delay selection
+ * @{
+ */
+/**
+ * Macros to select TX DLL delays.
+ */
 #define XOSPIPSV_SDR_TX_VAL			0x5U
 #define XOSPIPSV_DDR_TX_VAL			0x0U
-#define XOSPIPSV_DDR_TX_VAL_MASTER		0x19U
-#define XOSPIPSV_SDR_TX_VAL_MASTER		0x39U
+#define XOSPIPSV_DDR_TX_VAL_MASTER		0x1EU
+#define XOSPIPSV_SDR_TX_VAL_MASTER		0x3CU
+#define XOSPIPSV_DLL_MAX_TAPS			0x80U
+/** @} */
 
+/**
+ * @name OSPI Device reset selection
+ * @{
+ */
+/**
+ * Macros to select HWPIN and INBAND resets.
+ */
 #define XOSPIPSV_HWPIN_RESET	0x0U
 #define XOSPIPSV_INBAND_RESET	0x1U
+/** @} */
 
-#define XOSPIPSV_NON_PHY_RD_DLY		0x1U
-
-#define XOSPIPSV_DLL_MAX_TAPS		0x80U
-
+/**
+ * @name DLL mode selection
+ * @{
+ */
+/**
+ * Macros to select DLL BYPASS and MASTER modes.
+ */
 #define XOSPIPSV_DLL_BYPASS_MODE	0x0U
 #define XOSPIPSV_DLL_MASTER_MODE	0x1U
+/** @} */
 
+/**
+ * @name Connection mode selection
+ * @{
+ */
+/**
+ * Macros to select SINGLE and STACKED connection modes.
+ */
 #define XOSPIPSV_CONNECTION_MODE_SINGLE		0x0U
 #define XOSPIPSV_CONNECTION_MODE_STACKED	0x1U
+/** @} */
 
-#define XOSPIPSV_RXADDR_OVER_32BIT		0x100000000U
+/**
+ * @name Dual Byte opcode selection
+ * @{
+ */
+/**
+ * Macros to enable/disable Dual Byte opcode.
+ */
+#define XOSPIPSV_DUAL_BYTE_OP_DISABLE	0x0U
+#define XOSPIPSV_DUAL_BYTE_OP_ENABLE	0x1U
+/** @} */
+
+/**< Macro used for more than 32-bit address */
+#define XOSPIPSV_RXADDR_OVER_32BIT	0x100000000U
 
 /* Initialization and reset */
 XOspiPsv_Config *XOspiPsv_LookupConfig(u16 DeviceId);
@@ -266,6 +382,7 @@ u32 XOspiPsv_DeviceReset(u8 Type);
 u32 XOspiPsv_StartDmaTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);
 u32 XOspiPsv_CheckDmaDone(XOspiPsv *InstancePtr);
 u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr);
+u32 XOspiPsv_ConfigDualByteOpcode(XOspiPsv *InstancePtr, u8 Enable);
 #ifdef __cplusplus
 }
 #endif

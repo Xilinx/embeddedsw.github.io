@@ -1,12 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"xcsiss__sinit_8c.html":[2,18],
-"xcsiss__sinit_8c.html#gaff8115edc1de28ca0524d489e736480c":[2,18,0],
-"xhdcp_8c.html":[2,19],
-"xhdcp_8h.html":[2,20],
-"xhdcp_8h.html#a9e17e5c2544c08ef9b2c61a9ce460c1e":[2,20,0],
-"xhdmi__edid_8c.html":[2,21],
-"xhdmi__edid_8h.html":[2,22],
 "xhdmi__edid_8h.html#a89011d5a06daa5f37bfee23cce604b1e":[2,22,0],
 "xhdmi__example_8c.html":[2,23],
 "xhdmi__example_8c.html#a00804c9887066c8b73a180344f5c4dbc":[2,23,2],

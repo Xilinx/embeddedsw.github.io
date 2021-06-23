@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"xnandps__hw_8h.html#ga64695bd0d2752a225bcf02660dbba330":[2,7,177],
+"xnandps__hw_8h.html#ga6731d845acda751402ee26f71588253e":[2,7,87],
 "xnandps__hw_8h.html#ga6a41616bcbac0f34890a4f46bb83b674":[2,7,94],
 "xnandps__hw_8h.html#ga6b66a736fe774f3b6d91390ed1e5da66":[2,7,116],
 "xnandps__hw_8h.html#ga6c962a9097a503fed1c61d2e8339fbaf":[2,7,86],

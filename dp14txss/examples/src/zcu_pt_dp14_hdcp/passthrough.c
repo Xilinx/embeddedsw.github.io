@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020-2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -34,12 +34,28 @@
 
 #endif
 
-u8 UpdateBuffer[sizeof(u8) + 16];
-u8 WriteBuffer[sizeof(u8) + 16];
-u8 ReadBuffer[16];
+//u8 UpdateBuffer[sizeof(u8) + 16];
+//u8 WriteBuffer[sizeof(u8) + 16];
+//u8 ReadBuffer[16];
 u16 tx_count_delay = 0;
 int tx_aud_started = 0;
 int i2s_started = 0;
+XScuGic IntcInst;
+extern XilAudioInfoFrame_rx AudioinfoFrame;
+extern XVphy VPhyInst; 			/* The DPRX Subsystem instance.*/
+extern XTmrCtr TmrCtr; 			/* Timer instance.*/
+extern XV_FrmbufRd_l2     frmbufrd;
+extern XV_FrmbufWr_l2     frmbufwr;
+extern XDpRxSs DpRxSsInst;    /* The DPRX Subsystem instance.*/
+extern Video_CRC_Config VidFrameCRC_rx; /* Video Frame CRC instance */
+extern int tx_started;
+extern volatile int tx_is_reconnected;
+extern volatile u8 hpd_pulse_con_event;
+
+#if ENABLE_AUDIO
+extern XGpio   aud_gpio;
+extern XGpio_Config  *aud_gpio_ConfigPtr;
+#endif
 
 #if ENABLE_HDCP_IN_DESIGN
 u8 hdcp_capable_org = 0;
@@ -109,6 +125,8 @@ XVidC_VideoMode VmId;
 extern u8 rx_unplugged;
 volatile u8 rx_trained = 0;
 u8 rx_aud_start = 0;
+extern XDpTxSs DpTxSsInst; 		/* The DPTX Subsystem instance.*/
+extern Video_CRC_Config VidFrameCRC_tx;
 
 extern lane_link_rate_struct lane_link_table[];
 extern u32 StreamOffset[4];
@@ -167,11 +185,8 @@ void DpPt_Main(void){
 
 	/*Check if Sink supports Colorimetry through VSC*/
 	if(XDpTxSs_CheckVscColorimetrySupport(&DpTxSsInst) == XST_SUCCESS){
-		u32 result=0;
-		result=XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,VSC_CAP_APB_REG_OFFSET);
-		result=result | RX_VSC_CAP_ENABLE; 			//setting APB register bit[2] for DPCD 0X2210 address
-		XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,VSC_CAP_APB_REG_OFFSET,result);
-		XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,	XDP_RX_AUDIO_CONTROL, 0x1); //enabling vsc
+		//Enable Rx for VSC capability
+		XDp_RxVSCEn(DpRxSsInst.DpPtr);
 	}
 
 	// disabling this when compliance is enabled
@@ -303,7 +318,7 @@ void DpPt_Main(void){
 
 
 #if (ENABLE_HDCP1x_IN_RX | ENABLE_HDCP1x_IN_TX)
-	KEYMGMT_Init();
+
 	XHdcp1xExample_Init();
 
 #if ENABLE_HDCP1x_IN_TX
@@ -1224,11 +1239,17 @@ void DpPt_Main(void){
 			}
 				if(TxAuthAttempts == 100)
 				{
+#ifdef XPAR_DP_TX_HIER_0_AV_PAT_GEN_0_BASEADDR
 					xil_printf(">>>> HDCPTX Authentication "
 							"failed , stopping passthrough video and starting ColorBar on TX \r\n");
-#ifdef XPAR_DP_TX_HIER_0_AV_PAT_GEN_0_BASEADDR
+
 					Vpg_VidgenSetUserPattern(DpTxSsInst.DpPtr,
 									 0x11);
+#else
+					xil_printf("\r\n>>>> HDCPTX Authentication "
+							"failed , stopping passthrough video on TX \r\n");
+					// disabling Tx
+					XDpTxSs_Stop(&DpTxSsInst);
 #endif
 					TxAuthAttempts = 0;
 					break;
@@ -1318,15 +1339,15 @@ void start_tx_after_rx (void) {
 	/*Check component Format*/
 	if(Msa[0].ComponentFormat ==
 			XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422){
-		user_config.user_format = XVIDC_CSF_YCRCB_422 + 1;
+		user_config.user_format = XVIDC_CSF_YCRCB_422;
 	}else if(Msa[0].ComponentFormat ==
 			XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444){
-		user_config.user_format = XVIDC_CSF_YCRCB_444 + 1;
+		user_config.user_format = XVIDC_CSF_YCRCB_444;
 	}else if(Msa[0].ComponentFormat ==
 			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420){
-		user_config.user_format = XVIDC_CSF_YCRCB_420 + 1;
+		user_config.user_format = XVIDC_CSF_YCRCB_420;
 	} else {
-		user_config.user_format = XVIDC_CSF_RGB + 1;
+		user_config.user_format = XVIDC_CSF_RGB;
 	}
 
 	// This block is to use with 4K30 monitor.

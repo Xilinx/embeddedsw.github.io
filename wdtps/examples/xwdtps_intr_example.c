@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -93,7 +93,6 @@ volatile u32 HandlerCalled;	/* flag is set when timeout interrupt occurs */
 /**
 * Main function to call the Wdt interrupt example.
 *
-* @param	None.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -68,7 +68,6 @@ XWdtTb WatchdogTimebase; /* Instance of WatchDog Timer Base */
 /**
 * Main function to call the Wdttb driver example.
 *
-* @param	None.
 *
 * @return
 *		- XST_SUCCESS if example ran successfully.

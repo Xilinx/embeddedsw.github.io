@@ -48,6 +48,7 @@
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
+      <li><a href="functions.html"><span>Data&#160;Fields</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -66,16 +67,97 @@ $(document).ready(function(){initNavTree('struct_x_gpio___config.html','');});
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">XGpio_Config Struct Reference<div class="ingroups"><a class="el" href="group__gpio__v4__7.html">Gpio_v4_7</a></div></div>  </div>
+<div class="title">XGpio_Config Struct Reference<div class="ingroups"><a class="el" href="group__gpio__v4__8.html">Gpio_v4_8</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>This typedef contains configuration information for the device.  
  <a href="struct_x_gpio___config.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a2b9e1973d8cdb247e358cfbaff5e8aaf"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_gpio___config.html#a2b9e1973d8cdb247e358cfbaff5e8aaf">DeviceId</a></td></tr>
+<tr class="memdesc:a2b9e1973d8cdb247e358cfbaff5e8aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique ID of device.  <a href="#a2b9e1973d8cdb247e358cfbaff5e8aaf">More...</a><br/></td></tr>
+<tr class="separator:a2b9e1973d8cdb247e358cfbaff5e8aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1012177ae3dec7c2961d5f756596ddf6"><td class="memItemLeft" align="right" valign="top">UINTPTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_gpio___config.html#a1012177ae3dec7c2961d5f756596ddf6">BaseAddress</a></td></tr>
+<tr class="memdesc:a1012177ae3dec7c2961d5f756596ddf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device base address.  <a href="#a1012177ae3dec7c2961d5f756596ddf6">More...</a><br/></td></tr>
+<tr class="separator:a1012177ae3dec7c2961d5f756596ddf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_gpio___config.html#a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0">InterruptPresent</a></td></tr>
+<tr class="memdesc:a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Are interrupts supported in h/w.  <a href="#a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0">More...</a><br/></td></tr>
+<tr class="separator:a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac733fc2e0f1df9cb827be23a0ef9a1ba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_gpio___config.html#ac733fc2e0f1df9cb827be23a0ef9a1ba">IsDual</a></td></tr>
+<tr class="memdesc:ac733fc2e0f1df9cb827be23a0ef9a1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Are 2 channels supported in h/w.  <a href="#ac733fc2e0f1df9cb827be23a0ef9a1ba">More...</a><br/></td></tr>
+<tr class="separator:ac733fc2e0f1df9cb827be23a0ef9a1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This typedef contains configuration information for the device. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="a1012177ae3dec7c2961d5f756596ddf6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">UINTPTR XGpio_Config::BaseAddress</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Device base address. </p>
+
+<p>Referenced by <a class="el" href="group__gpio__v4__8.html#ga080482882d1f60cbd84b8e4ea856560c">XGpio_Initialize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2b9e1973d8cdb247e358cfbaff5e8aaf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u16 XGpio_Config::DeviceId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unique ID of device. </p>
+
+</div>
+</div>
+<a class="anchor" id="a4bfad8c3bd5b9a07f83dd2d0c2b5c1f0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XGpio_Config::InterruptPresent</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Are interrupts supported in h/w. </p>
+
+<p>Referenced by <a class="el" href="group__gpio__v4__8.html#gaf76e70c9ddd0dc3966123c09646d880c">XGpio_CfgInitialize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac733fc2e0f1df9cb827be23a0ef9a1ba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XGpio_Config::IsDual</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Are 2 channels supported in h/w. </p>
+
+<p>Referenced by <a class="el" href="group__gpio__v4__8.html#gaf76e70c9ddd0dc3966123c09646d880c">XGpio_CfgInitialize()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

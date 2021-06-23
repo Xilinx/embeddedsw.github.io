@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -187,7 +187,6 @@ u8 WriteBuffer[PAGE_SIZE + DATA_OFFSET];
 *
 * Main function to call the QSPI Flash example.
 *
-* @param	None
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
@@ -218,7 +217,9 @@ int main(void)
 * device driver in polled mode. This function writes and reads data
 * from a serial FLASH.
 *
-* @param	None.
+* @param	QspiInstancePtr is a pointer to the QSPIPS driver to use.
+* @param	QspiDeviceId is the XPAR_<QSPIPS_instance>_DEVICE_ID value
+*		from xparameters.h.
 *
 * @return	XST_SUCCESS if successful, else XST_FAILURE.
 *
@@ -747,7 +748,6 @@ void FlashErase(XQspiPs *QspiPtr, u32 Address, u32 ByteCount)
 *
 * This function reads serial FLASH ID connected to the SPI interface.
 *
-* @param	None.
 *
 * @return	XST_SUCCESS if read id, otherwise XST_FAILURE.
 *

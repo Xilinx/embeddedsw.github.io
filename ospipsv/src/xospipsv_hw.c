@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv_hw.c
-* @addtogroup ospipsv_v1_3
+* @addtogroup ospipsv_v1_4
 * @{
 *
 * This file implements the hardware functions used by the functions in
@@ -21,6 +21,7 @@
 * 1.2   sk  02/20/20 First release
 * 1.3   sk   04/09/20 Added support for 64-bit address read from 32-bit proc.
 *       sk  08/19/20 Reduced the usleep delay while checking transfer done.
+* 1.4   sk   02/18/21 Added support for Dual byte opcode.
 *
 * </pre>
 *
@@ -31,9 +32,9 @@
 #include "sleep.h"
 
 /************************** Constant Definitions *****************************/
-#define MAX_STIG_DELAY_CNT		50000U
-#define MAX_DMA_DELAY_CNT		10000000U
-#define LOCK_MAX_DELAY_CNT	10000000U
+#define MAX_STIG_DELAY_CNT	50000U	/**< Max STIG delay count */
+#define MAX_DMA_DELAY_CNT	10000000U	/**< Max DMA delay count */
+#define LOCK_MAX_DELAY_CNT	10000000U	/**< Max LOCK delay count */
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -304,6 +305,16 @@ void XOspiPsv_Setup_Dev_Write_Instr_Reg(const XOspiPsv *InstancePtr,
 		& XOSPIPSV_DEV_INSTR_RD_CONFIG_REG_INSTR_TYPE_FLD_MASK);
 	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_DEV_INSTR_RD_CONFIG_REG, Regval);
+
+	if (InstancePtr->DualByteOpcodeEn != 0U) {
+		Regval = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+					XOSPIPSV_OPCODE_EXT_LOWER_REG);
+		Regval &= ~(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_WRITE_OPCODE_FLD_MASK;
+		Regval |= ((u32)Msg->ExtendedOpcode <<
+				(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_WRITE_OPCODE_FLD_SHIFT);
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_OPCODE_EXT_LOWER_REG, Regval);
+	}
 }
 
 /*****************************************************************************/
@@ -397,7 +408,15 @@ void XOspiPsv_Setup_Dev_Read_Instr_Reg(const XOspiPsv *InstancePtr,
 	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_RD_DATA_CAPTURE_REG, Regval);
 
-
+	if (InstancePtr->DualByteOpcodeEn != 0U) {
+		Regval = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+					XOSPIPSV_OPCODE_EXT_LOWER_REG);
+		Regval &= ~(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_READ_OPCODE_FLD_MASK;
+		Regval |= ((u32)Msg->ExtendedOpcode <<
+				(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_READ_OPCODE_FLD_SHIFT);
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_OPCODE_EXT_LOWER_REG, Regval);
+	}
 }
 
 /*****************************************************************************/
@@ -514,7 +533,7 @@ void XOspiPsv_Config_Dma(const XOspiPsv *InstancePtr, const XOspiPsv_Msg *Msg)
 				XOSPIPSV_OSPIDMA_DST_ADDR_ADDR_MASK);
 
 		if (InstancePtr->Config.IsCacheCoherent == 0U) {
-			Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+			Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 		}
 		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 			XOSPIPSV_OSPIDMA_DST_ADDR, (u32)AddrTemp);

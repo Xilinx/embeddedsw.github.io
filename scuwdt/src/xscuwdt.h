@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xscuwdt.h
-* @addtogroup scuwdt_v2_3
+* @addtogroup scuwdt_v2_4
 * @{
 * @details
 *
@@ -105,11 +105,12 @@
 *                    incremental builds. It would help to reduce compilaton
 *                    time.
 * 2.3	sne 09/16/20 Fixed MISRA-C violations.
+* 2.4	sne 02/04/21 Fixed Doxygen warnings.
 * </pre>
 *
 ******************************************************************************/
-#ifndef XSCUWDT_H		/* prevent circular inclusions */
-#define XSCUWDT_H		/* by using protection macros */
+#ifndef XSCUWDT_H		/**< prevent circular inclusions */
+#define XSCUWDT_H		/**< by using protection macros */
 
 /***************************** Include Files *********************************/
 

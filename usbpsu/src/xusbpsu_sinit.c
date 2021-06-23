@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xusbpsu_sinit.c
-* @addtogroup usbpsu_v1_8
+* @addtogroup usbpsu_v1_9
 * @{
 *
 *
@@ -17,6 +17,7 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.0   sg   06/06/16 First release
+* 1.9   pm   03/15/21 Fixed doxygen warnings
 *
 * </pre>
 *
@@ -40,8 +41,6 @@
 
 
 /************************** Variable Definitions *****************************/
-
-extern XUsbPsu_Config XUsbPsu_ConfigTable[];
 
 
 /*****************************************************************************/

@@ -87,6 +87,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 1.5   adk    09/05/19 Added volatile keyword for DstDone variable to disable
                 optimizations.
 1.6   hk     11/18/19 Correct Versal INTR definition.
+1.9     sk     12/23/20 Add the documentation for <a class="el" href="xcsudma__intr__example_8c.html#ae07b94c3ade7479c4ec8dfec3bb4d643" title="This function performs data transfer in loop back mode in interrupt mode and verify the data...">XCsuDma_IntrExample()</a> function
+                        parameters to fix the doxygen warning.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -342,7 +344,10 @@ Variables</h2></td></tr>
 <p>This function performs data transfer in loop back mode in interrupt mode and verify the data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">DeviceId</td><td>is the XPAR_&lt;CSUDMA Instance&gt;_DEVICE_ID value from xparameters.h.</td></tr>
+    <tr><td class="paramname">IntcInstancePtr</td><td>is a pointer to the instance of the INTC. </td></tr>
+    <tr><td class="paramname">CsuDmaInstance</td><td>contains a pointer to the CSU DMA instance which is going to be connected to the interrupt controller. </td></tr>
+    <tr><td class="paramname">DeviceId</td><td>is the XPAR_&lt;CSUDMA Instance&gt;_DEVICE_ID macro value. </td></tr>
+    <tr><td class="paramname">IntrId</td><td>is the interrupt Id and is typically XPAR_&lt;CSUDMA_instance&gt;_INTR macro value.</td></tr>
   </table>
   </dd>
 </dl>

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xiic_slave.c
-* @addtogroup iic_v3_7
+* @addtogroup iic_v3_8
 * @{
 *
 * Contains slave functions for the XIic component. This file is necessary when
@@ -82,14 +82,13 @@ static void SendSlaveData(XIic *InstancePtr);
 * to the Cfg_Initialize() function and must be called before any functions in
 * this file are called.
 *
-* @param	None.
 *
 * @return 	None.
 *
 * @note		None.
 *
 ******************************************************************************/
-void XIic_SlaveInclude()
+void XIic_SlaveInclude(void)
 {
 	XIic_AddrAsSlaveFuncPtr = AddrAsSlaveHandler;
 	XIic_NotAddrAsSlaveFuncPtr = NotAddrAsSlaveHandler;

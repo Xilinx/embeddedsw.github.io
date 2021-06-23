@@ -1,6 +1,7 @@
 var xuartlite_8c =
 [
     [ "XUartLite_CfgInitialize", "xuartlite_8c.html#gaaf61ea88e001e95175590cb5b221a18d", null ],
+    [ "XUartLite_GetSR", "xuartlite_8c.html#ga52107358628671b9c39beb81183b7365", null ],
     [ "XUartLite_IsSending", "xuartlite_8c.html#ga40bc490d296a7a929f1cc5d07bb29b3c", null ],
     [ "XUartLite_ReceiveBuffer", "xuartlite_8c.html#ga74efaecba1b6b1406c8c82abbb628cc8", null ],
     [ "XUartLite_Recv", "xuartlite_8c.html#gaa30ed8bfedba1acdc67dc94e77d5a41d", null ],

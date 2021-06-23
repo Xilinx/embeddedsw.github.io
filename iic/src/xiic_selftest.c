@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2012 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xiic_selftest.c
-* @addtogroup iic_v3_7
+* @addtogroup iic_v3_8
 * @{
 *
 * Contains selftest functions for the XIic component.

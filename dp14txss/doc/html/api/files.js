@@ -1,16 +1,22 @@
 var files =
 [
+    [ "aes.c", "aes_8c.html", "aes_8c" ],
+    [ "bigdigits.h", "bigdigits_8h.html", "bigdigits_8h" ],
     [ "dp141.c", "dp141_8c.html", null ],
     [ "dppt.h", "dppt_8h.html", "dppt_8h" ],
     [ "dppt_vdma.c", "dppt__vdma_8c.html", null ],
     [ "dppt_vdma.h", "dppt__vdma_8h.html", null ],
     [ "dppt_vid_phy_config.c", "dppt__vid__phy__config_8c.html", "dppt__vid__phy__config_8c" ],
     [ "dppt_vid_phy_config.h", "dppt__vid__phy__config_8h.html", "dppt__vid__phy__config_8h" ],
+    [ "hmac.c", "hmac_8c.html", "hmac_8c" ],
     [ "LMK04906.h", "_l_m_k04906_8h.html", null ],
     [ "PLL_Conf.h", "_p_l_l___conf_8h.html", null ],
+    [ "sha2.c", "sha2_8c.html", "sha2_8c" ],
     [ "si_5344.c", "si__5344_8c.html", "si__5344_8c" ],
     [ "si_5344.h", "si__5344_8h.html", "si__5344_8h" ],
     [ "xclk_wiz.c", "xclk__wiz_8c.html", "xclk__wiz_8c" ],
+    [ "xdp_hdcp_keys.c", "xdp__hdcp__keys_8c.html", "xdp__hdcp__keys_8c" ],
+    [ "xdp_hdcp_keys.h", "xdp__hdcp__keys_8h.html", "xdp__hdcp__keys_8h" ],
     [ "xdptxss.c", "xdptxss_8c.html", "xdptxss_8c" ],
     [ "xdptxss.h", "xdptxss_8h.html", "xdptxss_8h" ],
     [ "xdptxss_dbg.c", "xdptxss__dbg_8c.html", "xdptxss__dbg_8c" ],
@@ -35,6 +41,7 @@ var files =
     [ "xdptxss_vtc.h", "xdptxss__vtc_8h.html", "xdptxss__vtc_8h" ],
     [ "xdptxss_zcu102_tx.h", "xdptxss__zcu102__tx_8h.html", "xdptxss__zcu102__tx_8h" ],
     [ "xedid_print_example.c", "xedid__print__example_8c.html", "xedid__print__example_8c" ],
+    [ "xhdcp22_common.h", "xhdcp22__common_8h.html", "xhdcp22__common_8h" ],
     [ "xlib_string.c", "xlib__string_8c.html", "xlib__string_8c" ],
     [ "xvid_pat_gen.h", "xvid__pat__gen_8h.html", "xvid__pat__gen_8h" ]
 ];

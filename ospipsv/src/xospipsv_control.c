@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv_control.c
-* @addtogroup ospipsv_v1_3
+* @addtogroup ospipsv_v1_4
 * @{
 *
 * This file implements the low level functions used by the functions in
@@ -20,6 +20,8 @@
 * ----- --- -------- -----------------------------------------------
 * 1.2   sk  02/20/20 First release
 * 1.3   sk   04/09/20 Added support for 64-bit address read from 32-bit proc.
+* 1.4   sk   02/18/21 Added support for Dual byte opcode.
+*       sk   02/18/21 Updated RX Tuning algorithm for Master DLL mode.
 *
 * </pre>
 *
@@ -30,8 +32,9 @@
 #include "sleep.h"
 
 /************************** Constant Definitions *****************************/
+/**< Maximum delay count */
 #define MAX_DELAY_CNT	10000U
-#define TERA_MACRO	1000000000000U
+#define TERA_MACRO	1000000000000U	/**<Macro for 10^12 */
 
 /**************************** Type Definitions *******************************/
 
@@ -60,6 +63,7 @@ u32 XOspiPsv_Stig_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 {
 	u32 Reqaddr;
 	u32 Status;
+	u32 RegVal;
 
 	if (InstancePtr->RxBytes <= 0U) {
 		Status = (u32)XST_FAILURE;
@@ -77,6 +81,16 @@ u32 XOspiPsv_Stig_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 	XOspiPsv_Setup_Stig_Ctrl(InstancePtr, (u32)Msg->Opcode,
 		1, (u32)InstancePtr->RxBytes - (u32)1, Reqaddr, 0, (u32)Msg->Addrsize - (u32)1,
 		0, 0, (u32)Msg->Dummy, 0);
+
+	if (InstancePtr->DualByteOpcodeEn != 0U) {
+		RegVal = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+					XOSPIPSV_OPCODE_EXT_LOWER_REG);
+		RegVal &= ~(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_STIG_OPCODE_FLD_MASK;
+		RegVal |= ((u32)Msg->ExtendedOpcode <<
+				(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_STIG_OPCODE_FLD_SHIFT);
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_OPCODE_EXT_LOWER_REG, RegVal);
+	}
 
 	/* Execute command */
 	Status = XOspiPsv_Exec_Flash_Cmd(InstancePtr);
@@ -111,6 +125,7 @@ u32 XOspiPsv_Stig_Write(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 	u32 Reqwridataen;
 	u32 ByteCount;
 	u32 Status;
+	u32 RegVal;
 
 	if (Msg->Addrvalid != 0U) {
 		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
@@ -130,6 +145,16 @@ u32 XOspiPsv_Stig_Write(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 	XOspiPsv_Setup_Stig_Ctrl(InstancePtr, (u32)Msg->Opcode,
 		0, 0, Reqaddr, 0, (u32)Msg->Addrsize - (u32)1,
 		Reqwridataen, (u32)ByteCount - (u32)1, 0, 0);
+
+	if (InstancePtr->DualByteOpcodeEn != 0U) {
+		RegVal = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+					XOSPIPSV_OPCODE_EXT_LOWER_REG);
+		RegVal &= ~(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_STIG_OPCODE_FLD_MASK;
+		RegVal |= ((u32)Msg->ExtendedOpcode <<
+				(u32)XOSPIPSV_OPCODE_EXT_LOWER_REG_EXT_STIG_OPCODE_FLD_SHIFT);
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+				XOSPIPSV_OPCODE_EXT_LOWER_REG, RegVal);
+	}
 
 	/* Exec cmd */
 	Status = XOspiPsv_Exec_Flash_Cmd(InstancePtr);
@@ -168,7 +193,7 @@ u32 XOspiPsv_Dma_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 		}
 		if (Msg->Xfer64bit != (u8)1U) {
 			if (InstancePtr->Config.IsCacheCoherent == 0U) {
-				Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+				Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 			}
 		}
 		if (InstancePtr->IsUnaligned != 0U) {
@@ -188,7 +213,7 @@ u32 XOspiPsv_Dma_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 			goto ERROR_PATH;
 		}
 		if (InstancePtr->Config.IsCacheCoherent == 0U) {
-			Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+			Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 		}
 		Xil_MemCpy(InstancePtr->RecvBufferPtr, InstancePtr->UnalignReadBuffer,
 				InstancePtr->RxBytes);
@@ -294,6 +319,8 @@ u32 XOspiPsv_ExecuteRxTuning(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
 	u8 Dummy_Incr;
 	u8 Dummy_Flag = 0;
 	u8 Count;
+	u8 Dummy = FlashMsg->Dummy;
+	u8 MaxIndex = 0, MinIndex = 0;
 
 	MaxTap = (u8)((u32)(TERA_MACRO/InstancePtr->Config.InputClockHz) / (u32)160);
 	if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
@@ -301,11 +328,7 @@ u32 XOspiPsv_ExecuteRxTuning(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
 	}
 	for (Dummy_Incr = 0U; Dummy_Incr <= 1U; Dummy_Incr++) {
 		if (Dummy_Incr != 0U) {
-			if (InstancePtr->SdrDdrMode == XOSPIPSV_EDGE_MODE_DDR_PHY) {
-				FlashMsg->Dummy = 9U;
-			} else {
-				FlashMsg->Dummy = 1U;
-			}
+				FlashMsg->Dummy = Dummy + 1U;
 		}
 		for (Index = 0U; Index <= MaxTap; Index++) {
 			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
@@ -334,11 +357,27 @@ u32 XOspiPsv_ExecuteRxTuning(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
 			} while((InstancePtr->DeviceIdData == *DeviceIdInfo) && (Count <= (u8)10U));
 			if (InstancePtr->DeviceIdData == *DeviceIdInfo) {
 				if (RXTapFound == 0U) {
-					RXMin_Tap = Index;
-					RXMax_Tap = Index;
+					if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
+						RXMin_Tap = (u8)XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+							XOSPIPSV_DLL_OBSERVABLE_UPPER_REG) &
+							XOSPIPSV_DLL_OBSERVABLE_UPPER_RX_DECODER_OUTPUT_FLD_MASK;
+						RXMax_Tap = RXMin_Tap;
+						MaxIndex = Index;
+						MinIndex = Index;
+					} else {
+						RXMin_Tap = Index;
+						RXMax_Tap = Index;
+					}
 					RXTapFound = 1;
 				} else {
-					RXMax_Tap = Index;
+					if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
+						RXMax_Tap = (u8)XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+							XOSPIPSV_DLL_OBSERVABLE_UPPER_REG) &
+							XOSPIPSV_DLL_OBSERVABLE_UPPER_RX_DECODER_OUTPUT_FLD_MASK;
+						MaxIndex = Index;
+					} else {
+						RXMax_Tap = Index;
+					}
 				}
 			}
 			if ((InstancePtr->DeviceIdData != *DeviceIdInfo) || (Index == MaxTap)) {
@@ -347,10 +386,16 @@ u32 XOspiPsv_ExecuteRxTuning(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
 					if (WindowSize > Max_WindowSize) {
 						Dummy_Flag = Dummy_Incr;
 						Max_WindowSize = WindowSize;
-						Avg_RXTap = (RXMin_Tap + RXMax_Tap) / 2U;
+						if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
+							Avg_RXTap = (MaxIndex + MinIndex) / 2U;
+						} else {
+							Avg_RXTap = (RXMin_Tap + RXMax_Tap) / 2U;
+						}
 					}
 					RXTapFound = 0U;
-					break;
+					if (WindowSize >= 3U) {
+						break;
+					}
 				}
 			}
 		}

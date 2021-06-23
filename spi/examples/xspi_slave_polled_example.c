@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2008 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2008 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -104,7 +104,6 @@ int Test;
 *
 * Main function to call the Spi Slave example in polled mode.
 *
-* @param	None
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *

@@ -1,5 +1,6 @@
 var xuartpsv_8h =
 [
+    [ "XUARTPSV_DFT_BAUDRATE", "xuartpsv_8h.html#gad4202f2666ae178cd380f2232bb96486", null ],
     [ "XUartPsv_DisableUart", "xuartpsv_8h.html#ga2a6ad86de9f65f8f859ab32a3286c919", null ],
     [ "XUartPsv_EnableUart", "xuartpsv_8h.html#gaf2e92c20719d5f1930c3e8d3ad98e06b", null ],
     [ "XUARTPSV_EVENT_MODEM", "xuartpsv_8h.html#ga76a511ea3a1140df5f5c682b19d8b0ce", null ],
@@ -26,7 +27,10 @@ var xuartpsv_8h =
     [ "XUARTPSV_FORMAT_PARITY_MASK", "xuartpsv_8h.html#gadc59badd95ef3062eab24b8b1bbed46e", null ],
     [ "XUartPsv_GetChannelStatus", "xuartpsv_8h.html#gaf9269e5132e023fb82ccbb97dc9b955a", null ],
     [ "XUartPsv_GetModeControl", "xuartpsv_8h.html#gae536abc24f8139cc11c7136ea0010019", null ],
+    [ "XUARTPSV_H", "xuartpsv_8h.html#ga1995466148aa5c669d92e37642452c55", null ],
     [ "XUartPsv_IsTransmitEmpty", "xuartpsv_8h.html#ga05a61d255ef608f38a4a03dce92cda75", null ],
+    [ "XUARTPSV_MAX_RATE", "xuartpsv_8h.html#ga1028700cf5e97e64b72165616914a84a", null ],
+    [ "XUARTPSV_MIN_RATE", "xuartpsv_8h.html#gaa2e96fa49febeff396414ae7c25eff69", null ],
     [ "XUARTPSV_OPER_MODE_LOCAL_LOOP", "xuartpsv_8h.html#ga1697d029413b91344628690b465814e9", null ],
     [ "XUARTPSV_OPER_MODE_NORMAL", "xuartpsv_8h.html#ga85a2c3e9c12a5e5df66a3be084243937", null ],
     [ "XUARTPSV_OPTION_ASSERT_DTR", "xuartpsv_8h.html#gac9f5621a398a83523bdb393f6ca78314", null ],
@@ -61,5 +65,6 @@ var xuartpsv_8h =
     [ "XUartPsv_SetOperMode", "xuartpsv_8h.html#ga0ea310ea61d052f2c4f5cce2dfadfc46", null ],
     [ "XUartPsv_SetOptions", "xuartpsv_8h.html#gada7b7128f09873d46fc19d0d9cf91751", null ],
     [ "XUartPsv_SetRxFifoThreshold", "xuartpsv_8h.html#ga8bc7523050515544bb2823a9254ac8f5", null ],
-    [ "XUartPsv_SetTxFifoThreshold", "xuartpsv_8h.html#ga43c4fde1105e2505e10c684622be1d13", null ]
+    [ "XUartPsv_SetTxFifoThreshold", "xuartpsv_8h.html#ga43c4fde1105e2505e10c684622be1d13", null ],
+    [ "XUartPsv_ConfigTable", "xuartpsv_8h.html#gaed365c02539b1452e590d0123f858c30", null ]
 ];

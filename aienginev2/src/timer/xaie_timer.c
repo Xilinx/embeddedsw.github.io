@@ -26,6 +26,8 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include <stdlib.h>
+
 #include "xaie_events.h"
 #include "xaie_helper.h"
 #include "xaie_timer.h"
@@ -100,14 +102,15 @@ AieRC XAie_SetTimerTrigEventVal(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* Set up Timer low event value */
 	RegAddr = _XAie_GetTileAddr(DevInst, Loc.Row ,Loc.Col) +
 		TimerMod->TrigEventLowValOff;
-	XAie_Write32(DevInst, RegAddr, LowEventValue);
+	RC = XAie_Write32(DevInst, RegAddr, LowEventValue);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	/* Set up Timer high event value */
 	RegAddr = _XAie_GetTileAddr(DevInst, Loc.Row ,Loc.Col) +
 		TimerMod->TrigEventHighValOff;
-	XAie_Write32(DevInst, RegAddr, HighEventValue);
-
-	return XAIE_OK;
+	return XAie_Write32(DevInst, RegAddr, HighEventValue);
 }
 
 /*****************************************************************************/
@@ -167,9 +170,8 @@ AieRC XAie_ResetTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 		TimerMod->CtrlOff;
 	Mask = TimerMod->CtrlReset.Mask;
 	RegVal = XAie_SetField(XAIE_RESETENABLE, TimerMod->CtrlReset.Lsb, Mask);
-	XAie_MaskWrite32(DevInst, RegAddr, Mask, RegVal);
 
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, RegAddr, Mask, RegVal);
 }
 
 /*****************************************************************************/
@@ -264,9 +266,8 @@ AieRC XAie_SetTimerResetEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RegAddr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		TimerMod->CtrlOff;
-	XAie_Write32(DevInst, RegAddr, RegVal);
 
-	return XAIE_OK;
+	return XAie_Write32(DevInst, RegAddr, RegVal);
 }
 
 /*****************************************************************************/
@@ -291,8 +292,9 @@ AieRC XAie_SetTimerResetEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 AieRC XAie_ReadTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 		XAie_ModuleType Module, u64 *TimerVal)
 {
+	AieRC RC;
 	u32 CurValHigh, CurValLow;
-	u8 TileType, RC;
+	u8 TileType;
 	const XAie_TimerMod *TimerMod;
 
 	if((DevInst == XAIE_NULL) || (TimerVal == XAIE_NULL) ||
@@ -323,12 +325,17 @@ AieRC XAie_ReadTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 	}
 
 	/* Read the timer high and low values before wait */
-	CurValLow = XAie_Read32(DevInst,
-			_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-			TimerMod->LowOff);
-	CurValHigh = XAie_Read32(DevInst,
-			_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-			TimerMod->HighOff);
+	RC = XAie_Read32(DevInst, _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+			TimerMod->LowOff, &CurValLow);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
+
+	RC = XAie_Read32(DevInst, _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+			TimerMod->HighOff, &CurValHigh);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	*TimerVal = ((u64)CurValHigh << XAIE_TIMER_32BIT_SHIFT) | CurValLow;
 
@@ -396,26 +403,350 @@ AieRC XAie_WaitCycles(XAie_DevInst *DevInst, XAie_LocType Loc,
 	}
 
 	/* Read the timer high and low values before wait */
-	CurLow = XAie_Read32(DevInst,
-			_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-			TimerMod->LowOff);
-	CurHigh = XAie_Read32(DevInst,
-			_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-			TimerMod->HighOff);
+	RC = XAie_Read32(DevInst, _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+			TimerMod->LowOff, &CurLow);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
+
+	RC = XAie_Read32(DevInst, _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+			TimerMod->HighOff, &CurHigh);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	StartVal = ((u64)CurHigh << XAIE_TIMER_32BIT_SHIFT) | CurLow;
 	EndVal = StartVal + CycleCnt;
 
 	while(CurVal < EndVal) {
 		/* Read the timer high and low values */
-		CurLow = XAie_Read32(DevInst,
+		RC = XAie_Read32(DevInst,
 				_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-				TimerMod->LowOff);
-		CurHigh = XAie_Read32(DevInst,
+				TimerMod->LowOff, &CurLow);
+		if(RC != XAIE_OK) {
+			return RC;
+		}
+
+		RC = XAie_Read32(DevInst,
 				_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
-				TimerMod->HighOff);
+				TimerMod->HighOff, &CurHigh);
+		if(RC != XAIE_OK) {
+			return RC;
+		}
+
 		CurVal = ((u64)CurHigh << XAIE_TIMER_32BIT_SHIFT) | CurLow;
 	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* This API returns the broadcast event enum given a resource id from the
+* event map.
+*
+* @param        DevInst: Device Instance
+* @param        Loc: Location of Tile
+* @param        Mod: Module type
+* @param        RscId: Specific resource to be requested
+*
+* @return       Event enum on success.
+*
+* @note         Internal only.
+*
+*******************************************************************************/
+static XAie_Events _XAie_GetBroadcastEventfromRscId(XAie_DevInst *DevInst,
+		XAie_LocType Loc, XAie_ModuleType Mod, u8 RscId)
+{
+	u8 TileType;
+	const XAie_EvntMod *EvntMod;
+
+	TileType =  _XAie_GetTileTypefromLoc(DevInst, Loc);
+
+	if(Mod == XAIE_PL_MOD)
+		EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[0U];
+	else
+		EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[Mod];
+
+	return EvntMod->BroadcastEventMap->Event + RscId;
+}
+
+/*****************************************************************************/
+/**
+* This API clears broadcast configuration for shim tiles till the mentioned
+* column.
+*
+*
+* @param        DevInst: Device Instance
+* @param        StartCol: Start column from where broadcast conf needs to be
+* 			  cleared
+* @param        EndCol: End column till where broadcast conf needs to be cleared
+* @param        BcastChannelId: ID of broadcast channel
+*
+* @return       None
+*
+* @note         Internal only.
+*
+*******************************************************************************/
+static void _XAie_ClearShimBroadcast(XAie_DevInst *DevInst, u8 StartCol,
+		u8 EndCol, u32 BcastChannelId)
+{
+	for(u32 i = StartCol; i < EndCol; i++) {
+		XAie_LocType Loc = XAie_TileLoc(i, 0);
+		XAie_EventBroadcast(DevInst, Loc, XAIE_PL_MOD,
+			BcastChannelId, XAIE_EVENT_NONE_PL);
+	}
+}
+
+/*****************************************************************************/
+/**
+* This API clears timer configuration for all the locations in Rscs list from
+* start till the index mentioned.
+*
+* @param        DevInst: Device Instance
+* @param        Index: End index till where timer conf needs to be cleared
+* @param        RscBC: list of resource
+*
+* @return       None
+*
+* @note         Internal only.
+*
+*******************************************************************************/
+static void _XAie_ClearTimerConfig(XAie_DevInst *DevInst, u32 Index,
+		XAie_UserRsc *RscsBC)
+{
+	const XAie_EvntMod *EvntMod;
+	u8 TileType;
+
+	for(u32 k = 0; k < Index; k++) {
+
+		TileType = _XAie_GetTileTypefromLoc(DevInst, RscsBC[k].Loc);
+		if(RscsBC[k].Mod == XAIE_PL_MOD)
+			EvntMod = &DevInst->DevProp.DevMod[TileType].
+				EvntMod[0U];
+		else
+			EvntMod = &DevInst->DevProp.DevMod[TileType].
+				EvntMod[RscsBC[k].Mod];
+
+		XAie_SetTimerResetEvent(DevInst, RscsBC[k].Loc,
+			RscsBC[k].Mod, EvntMod->EventMin, XAIE_RESETDISABLE);
+	}
+}
+
+/*****************************************************************************/
+/**
+* This API synchronizes timer for all tiles for all modules in the partition.
+*
+* @param	DevInst - Device Instance.
+*
+* @return       XAIE_OK on success
+*               XAIE_INVALID_ARGS if any argument is invalid
+*               XAIE_INVALID_TILE if tile type from Loc is invalid
+*
+* @note		None
+*
+******************************************************************************/
+AieRC XAie_SyncTimer(XAie_DevInst *DevInst)
+{
+	AieRC RC;
+	u32 UserRscNum = 0, UserRscNumShim;
+	u32 BcastChannelId, BcastChannelIdShim;
+	XAie_Events BcastEvent, ShimBcastEvent;
+	XAie_UserRsc *RscsBC, *RscsBCShim;
+
+	for(u8 i = 0; i < XAIEGBL_TILE_TYPE_MAX; i++) {
+		if(i == XAIEGBL_TILE_TYPE_SHIMNOC)
+			continue;
+		UserRscNum += (DevInst->DevProp.DevMod[i].NumModules) *
+			_XAie_GetNumRows(DevInst, i) * DevInst->NumCols;
+	}
+
+	RscsBC = (XAie_UserRsc *)malloc(UserRscNum * sizeof(XAie_UserRsc));
+	if(RscsBC == NULL) {
+		XAIE_ERROR("Unable to allocate memory for resource\n");
+		return XAIE_ERR;
+	}
+
+	UserRscNumShim = DevInst->NumCols;
+	RscsBCShim = (XAie_UserRsc *)malloc(DevInst->NumCols *
+			sizeof(XAie_UserRsc));
+	if(RscsBCShim == NULL) {
+		XAIE_ERROR("Unable to allocate memory for resource\n");
+		free(RscsBC);
+		return XAIE_ERR;
+	}
+	/* Reserve a free BC across partition */
+	RC = XAie_RequestBroadcastChannel(DevInst, &UserRscNum, RscsBC, 1U);
+	if(RC != XAIE_OK) {
+		free(RscsBC);
+		free(RscsBCShim);
+		return RC;
+	}
+	BcastChannelId = RscsBC[0].RscId;
+
+	/* Reserve a free BC across partition */
+	for(u32 i = 0; i < UserRscNumShim; i++) {
+		RscsBCShim[i].Loc = XAie_TileLoc(i, 0);
+		RscsBCShim[i].Mod = XAIE_PL_MOD;
+		RscsBCShim[i].RscType = XAIE_BCAST_CHANNEL_RSC;
+	}
+	RC = XAie_RequestBroadcastChannel(DevInst, &UserRscNumShim,
+			RscsBCShim, 0U);
+	if(RC != XAIE_OK) {
+		free(RscsBC);
+		free(RscsBCShim);
+		return RC;
+	}
+	BcastChannelIdShim = RscsBCShim[0].RscId;
+
+	ShimBcastEvent = _XAie_GetBroadcastEventfromRscId(DevInst,
+		XAie_TileLoc(0, 0), XAIE_PL_MOD, BcastChannelIdShim);
+
+	for(u32 j = 0; j < UserRscNum; j++) {
+		u8 TileType = _XAie_GetTileTypefromLoc(DevInst, RscsBC[j].Loc);
+		AieRC lRC = XAIE_OK;
+
+		/* Blocking unncessary broadcasting */
+		if(TileType == XAIEGBL_TILE_TYPE_AIETILE) {
+			if(DevInst->DevProp.DevGen == XAIE_DEV_GEN_AIE) {
+				/* Checker board structure */
+				if((RscsBC[j].Loc.Row % 2) == 0) {
+					if(RscsBC[j].Mod == XAIE_MEM_MOD) {
+						lRC |= XAie_EventBroadcastBlockDir(
+							DevInst, RscsBC[j].Loc,
+							RscsBC[j].Mod,
+							XAIE_EVENT_SWITCH_A,
+							BcastChannelId,
+							XAIE_EVENT_BROADCAST_WEST);
+					} else {
+						lRC |= XAie_EventBroadcastBlockDir(
+							DevInst, RscsBC[j].Loc,
+							RscsBC[j].Mod,
+							XAIE_EVENT_SWITCH_A,
+							BcastChannelId,
+							XAIE_EVENT_BROADCAST_EAST);
+					}
+				} else {
+					if(RscsBC[j].Mod == XAIE_MEM_MOD) {
+						lRC |= XAie_EventBroadcastBlockDir(
+							DevInst, RscsBC[j].Loc,
+							RscsBC[j].Mod,
+							XAIE_EVENT_SWITCH_A,
+							BcastChannelId,
+							XAIE_EVENT_BROADCAST_EAST);
+					} else {
+						lRC |= XAie_EventBroadcastBlockDir(
+							DevInst, RscsBC[j].Loc,
+							RscsBC[j].Mod,
+							XAIE_EVENT_SWITCH_A,
+							BcastChannelId,
+							XAIE_EVENT_BROADCAST_WEST);
+					}
+				}
+			} else {
+				if(RscsBC[j].Mod == XAIE_MEM_MOD) {
+					lRC |= XAie_EventBroadcastBlockDir(
+						DevInst, RscsBC[j].Loc,
+						RscsBC[j].Mod,
+						XAIE_EVENT_SWITCH_A,
+						BcastChannelId,
+						XAIE_EVENT_BROADCAST_EAST);
+				} else {
+					lRC |= XAie_EventBroadcastBlockDir(
+						DevInst, RscsBC[j].Loc,
+						RscsBC[j].Mod,
+						XAIE_EVENT_SWITCH_A,
+						BcastChannelId,
+						XAIE_EVENT_BROADCAST_WEST);
+				}
+			}
+		} else if(RscsBC[j].Loc.Row != 0) {
+			lRC |= XAie_EventBroadcastBlockDir(
+				DevInst, RscsBC[j].Loc,
+				RscsBC[j].Mod,
+				XAIE_EVENT_SWITCH_A,
+				BcastChannelId,
+				XAIE_EVENT_BROADCAST_WEST |
+				XAIE_EVENT_BROADCAST_EAST);
+		}
+		if (lRC != XAIE_OK) {
+			XAIE_ERROR("Unable to setup broadcast for timer sync.\n");
+			free(RscsBC);
+			free(RscsBCShim);
+			return RC;
+		}
+	}
+
+	for(u32 i = 0; i < DevInst->NumCols; i++) {
+		XAie_LocType Loc = XAie_TileLoc(i, 0);
+
+		RC = XAie_EventBroadcast(DevInst, Loc, XAIE_PL_MOD,
+				BcastChannelId, ShimBcastEvent);
+		if(i == 0) {
+			RC = XAie_EventBroadcast(DevInst, Loc, XAIE_PL_MOD,
+				BcastChannelIdShim, ShimBcastEvent);
+		}
+		if(RC != XAIE_OK) {
+			XAIE_ERROR("Unable to configure broadcast event for timer sync\n");
+			free(RscsBC);
+			free(RscsBCShim);
+			return RC;
+		}
+	}
+
+	/* Configure the timer control with the trigger event */
+	for(u32 j = 0; j < UserRscNum; j++) {
+		BcastEvent = _XAie_GetBroadcastEventfromRscId(DevInst,
+				RscsBC[j].Loc, RscsBC[j].Mod, BcastChannelId);
+		RC = XAie_SetTimerResetEvent(DevInst, RscsBC[j].Loc,
+			RscsBC[j].Mod, BcastEvent, XAIE_RESETDISABLE);
+		if(RC != XAIE_OK) {
+			XAIE_ERROR("Unable to set timer control\n");
+			free(RscsBC);
+			free(RscsBCShim);
+			return RC;
+		}
+	}
+
+	/* Trigger Event */
+	RC = XAie_EventGenerate(DevInst, XAie_TileLoc(0, 0), XAIE_PL_MOD,
+			ShimBcastEvent);
+	if(RC != XAIE_OK) {
+		XAIE_ERROR("Unable to trigger event\n");
+		free(RscsBC);
+		free(RscsBCShim);
+		return RC;
+	}
+
+	/* Clear timer reset event register */
+	_XAie_ClearTimerConfig(DevInst, UserRscNum, RscsBC);
+
+	/* Clear broadcast setting */
+	for(u32 j = 0; j < UserRscNum; j++) {
+		if(RscsBC[j].Loc.Row == 0) {
+			/* If it is SHIM tile, skip */
+			continue;
+		}
+		RC = XAie_EventBroadcastUnblockDir(DevInst,
+			RscsBC[j].Loc, RscsBC[j].Mod,
+			XAIE_EVENT_SWITCH_A, BcastChannelId,
+			XAIE_EVENT_BROADCAST_WEST | XAIE_EVENT_BROADCAST_EAST);
+		if(RC != XAIE_OK) {
+			XAIE_ERROR("Failed to clear broadcast setting for timer sync.\n");
+			/* Will continue clearning even if it failes */
+		}
+	}
+
+	/* Clear shim broadcast configuration */
+	_XAie_ClearShimBroadcast(DevInst, 0, DevInst->NumCols, BcastChannelId);
+	XAie_EventBroadcast(DevInst, XAie_TileLoc(0, 0), XAIE_PL_MOD,
+		BcastChannelIdShim, XAIE_EVENT_NONE_PL);
+
+	/* Release broadcast channel across partition */
+	XAie_ReleaseBroadcastChannel(DevInst, UserRscNum, RscsBC);
+	XAie_ReleaseBroadcastChannel(DevInst, UserRscNumShim, RscsBCShim);
+	free(RscsBC);
+	free(RscsBCShim);
 
 	return XAIE_OK;
 }

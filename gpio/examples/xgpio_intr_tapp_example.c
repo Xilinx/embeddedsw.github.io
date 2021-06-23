@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -148,7 +148,6 @@ static volatile u32 IntrFlag; /* Interrupt Handler Flag */
 * for initializing the GPIO device, setting up interrupts and providing a
 * foreground loop such that interrupt can occur in the background.
 *
-* @param	None.
 *
 * @return
 *		- XST_SUCCESS to indicate success.

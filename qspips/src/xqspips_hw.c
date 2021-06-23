@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspips_hw.c
-* @addtogroup qspips_v3_8
+* @addtogroup qspips_v3_9
 * @{
 *
 * Contains low level functions, primarily reset related.
@@ -56,7 +56,7 @@
 * Resets QSPI by disabling the device and bringing it to reset state through
 * register writes.
 *
-* @param	None
+* @param	BaseAddress
 *
 * @return	None.
 *
@@ -133,7 +133,7 @@ void XQspiPs_ResetHw(u32 BaseAddress)
 *
 * Initializes QSPI to Linear mode with default QSPI boot settings.
 *
-* @param	None
+* @param	BaseAddress
 *
 * @return	None.
 *

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -109,7 +109,6 @@ static XCanPs Can;
 *
 * This function is the main function of the Can polled example.
 *
-* @param	None
 *
 * @return
 *		- XST_SUCCESS if the example has completed successfully.
@@ -119,7 +118,7 @@ static XCanPs Can;
 *
 *****************************************************************************/
 #ifndef TESTAPP_GEN
-int main()
+int main(void)
 {
 	int Status;
 

@@ -326,6 +326,7 @@ AieRC _XAie_ShimDmaWriteBd(XAie_DevInst *DevInst , XAie_DmaDesc *DmaDesc,
 AieRC _XAie_TileDmaWriteBd(XAie_DevInst *DevInst , XAie_DmaDesc *DmaDesc,
 		XAie_LocType Loc, u8 BdNum)
 {
+	AieRC RC;
 	u64 Addr;
 	u64 BdBaseAddr;
 	u32 BdWord[XAIE_TILEDMA_NUM_BD_WORDS];
@@ -453,7 +454,10 @@ AieRC _XAie_TileDmaWriteBd(XAie_DevInst *DevInst , XAie_DmaDesc *DmaDesc,
 	Addr = BdBaseAddr + _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
 
 	for(u8 i = 0U; i < XAIE_TILEDMA_NUM_BD_WORDS; i++) {
-		XAie_Write32(DevInst, Addr + i * 4U, BdWord[i]);
+		RC = XAie_Write32(DevInst, Addr + i * 4U, BdWord[i]);
+		if(RC != XAIE_OK) {
+			return RC;
+		}
 	}
 
 	return XAIE_OK;
@@ -480,13 +484,17 @@ AieRC _XAie_DmaGetPendingBdCount(XAie_DevInst *DevInst, XAie_LocType Loc,
 		const XAie_DmaMod *DmaMod, u8 ChNum, XAie_DmaDirection Dir,
 		u8 *PendingBd)
 {
+	AieRC RC;
 	u64 Addr;
 	u32 StatusReg, StartQSize, Stalled, Status;
 
 	Addr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		DmaMod->ChStatusBase + Dir * DmaMod->ChStatusOffset;
 
-	StatusReg = XAie_Read32(DevInst, Addr);
+	RC = XAie_Read32(DevInst, Addr, &StatusReg);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	StartQSize = XAie_GetField(StatusReg,
 			DmaMod->ChProp->DmaChStatus[ChNum].AieDmaChStatus.StartQSize.Lsb,
@@ -549,7 +557,7 @@ AieRC _XAie_DmaWaitForDone(XAie_DevInst *DevInst, XAie_LocType Loc,
 		DmaMod->ChProp->DmaChStatus[ChNum].AieDmaChStatus.Status.Lsb;
 
 	if(XAie_MaskPoll(DevInst, Addr, Mask, Value, TimeOutUs) !=
-			XAIE_SUCCESS) {
+			XAIE_OK) {
 		XAIE_DBG("Wait for done timed out\n");
 		return XAIE_ERR;
 	}

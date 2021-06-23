@@ -67,13 +67,31 @@ $(document).ready(function(){initNavTree('struct_x_usb_psu___event___gevt.html',
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">XUsbPsu_Event_Gevt Struct Reference<div class="ingroups"><a class="el" href="group__usbpsu__v1__8.html">Usbpsu_v1_8</a></div></div>  </div>
+<div class="title">XUsbPsu_Event_Gevt Struct Reference<div class="ingroups"><a class="el" href="group__usbpsu__v1__9.html">Usbpsu_v1_9</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>struct XUsbPsu_event_gevt - Other Core Events  
  <a href="struct_x_usb_psu___event___gevt.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:af2231114772a63d3c03223881f60f78c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_usb_psu___event___gevt.html#af2231114772a63d3c03223881f60f78c">Is_GlobalEvt</a>:1</td></tr>
+<tr class="memdesc:af2231114772a63d3c03223881f60f78c"><td class="mdescLeft">&#160;</td><td class="mdescRight">non-endpoint event (not used)  <a href="#af2231114772a63d3c03223881f60f78c">More...</a><br/></td></tr>
+<tr class="separator:af2231114772a63d3c03223881f60f78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc63e59b720815ef3a56b3a574faacc3"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_usb_psu___event___gevt.html#adc63e59b720815ef3a56b3a574faacc3">Device_Event</a>:7</td></tr>
+<tr class="memdesc:adc63e59b720815ef3a56b3a574faacc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">it's (0x03) Carkit or (0x04) I2C event  <a href="#adc63e59b720815ef3a56b3a574faacc3">More...</a><br/></td></tr>
+<tr class="separator:adc63e59b720815ef3a56b3a574faacc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37284fd5ee1df56d3066108a94233904"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_usb_psu___event___gevt.html#a37284fd5ee1df56d3066108a94233904">Phy_Port_Number</a>:4</td></tr>
+<tr class="memdesc:a37284fd5ee1df56d3066108a94233904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Phy_Port_Number:4.  <a href="#a37284fd5ee1df56d3066108a94233904">More...</a><br/></td></tr>
+<tr class="separator:a37284fd5ee1df56d3066108a94233904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e340e9863f50ebf4202955da2405e8"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_usb_psu___event___gevt.html#a80e340e9863f50ebf4202955da2405e8">Reserved31_12</a>:20</td></tr>
+<tr class="memdesc:a80e340e9863f50ebf4202955da2405e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved31_12  <a href="#a80e340e9863f50ebf4202955da2405e8">More...</a><br/></td></tr>
+<tr class="separator:a80e340e9863f50ebf4202955da2405e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>struct XUsbPsu_event_gevt - Other Core Events </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -85,7 +103,64 @@ $(document).ready(function(){initNavTree('struct_x_usb_psu___event___gevt.html',
   </table>
   </dd>
 </dl>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="adc63e59b720815ef3a56b3a574faacc3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUsbPsu_Event_Gevt::Device_Event</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>it's (0x03) Carkit or (0x04) I2C event </p>
+
+</div>
+</div>
+<a class="anchor" id="af2231114772a63d3c03223881f60f78c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUsbPsu_Event_Gevt::Is_GlobalEvt</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>non-endpoint event (not used) </p>
+
+</div>
+</div>
+<a class="anchor" id="a37284fd5ee1df56d3066108a94233904"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUsbPsu_Event_Gevt::Phy_Port_Number</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Phy_Port_Number:4. </p>
+
+</div>
+</div>
+<a class="anchor" id="a80e340e9863f50ebf4202955da2405e8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUsbPsu_Event_Gevt::Reserved31_12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>reserved31_12 </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

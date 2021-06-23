@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xqspipsu_control.c
- * @addtogroup qspipsu_v1_12
+ * @addtogroup qspipsu_v1_13
  * @{
  *
  * This file contains intermediate control functions used by functions
@@ -20,6 +20,7 @@
  * Ver   Who Date     Changes
  * ----- --- -------- -----------------------------------------------
  * 1.11   akm  03/09/20 First release
+ * 1.13   akm  01/04/21 Fix MISRA-C violations.
  * </pre>
  *
  ******************************************************************************/
@@ -47,7 +48,6 @@
  *
  * @param	InstancePtr is a pointer to the XQspiPsu instance.
  * @param	Msg is a pointer to the structure containing transfer data.
- * @param	Index of the current message to be handled.
  *
  * @return
  *		- XST_SUCCESS if successful.
@@ -70,19 +70,19 @@ void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
 
 	GenFifoEntry = 0x0U;
 	/* Bus width */
-	GenFifoEntry &= (u32)(~XQSPIPSU_GENFIFO_MODE_MASK);
+	GenFifoEntry &= ~(u32)XQSPIPSU_GENFIFO_MODE_MASK;
 	GenFifoEntry |= XQspiPsu_SelectSpiMode((u8)Msg->BusWidth);
 
 	GenFifoEntry |= InstancePtr->GenFifoCS;
-	GenFifoEntry &= (u32)(~XQSPIPSU_GENFIFO_BUS_MASK);
+	GenFifoEntry &= ~(u32)XQSPIPSU_GENFIFO_BUS_MASK;
 	GenFifoEntry |= InstancePtr->GenFifoBus;
 
 	/* Data */
-	if (((Msg->Flags) & XQSPIPSU_MSG_FLAG_STRIPE) != FALSE)
+	if (((Msg->Flags) & XQSPIPSU_MSG_FLAG_STRIPE) != (u32)FALSE) {
 		GenFifoEntry |= XQSPIPSU_GENFIFO_STRIPE;
-	else
+	} else {
 		GenFifoEntry &= ~XQSPIPSU_GENFIFO_STRIPE;
-
+	}
 	/* If Byte Count is less than 8 bytes do the transfer in IO mode */
 	if ((Msg->ByteCount < 8U) &&
 		(InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA)) {
@@ -99,7 +99,7 @@ void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
 
 	/* One dummy GenFifo entry in case of IO mode */
 	if ((InstancePtr->ReadMode == XQSPIPSU_READMODE_IO) &&
-			((Msg->Flags & XQSPIPSU_MSG_FLAG_RX) != FALSE)) {
+			((Msg->Flags & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE)) {
 		GenFifoEntry = 0x0U;
 #ifdef DEBUG
 		xil_printf("\nDummy FifoEntry=%08x\r\n", GenFifoEntry);
@@ -115,7 +115,6 @@ void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
  *
  * @param	InstancePtr is a pointer to the XQspiPsu instance.
  *
- * @param	Statuscommand is the status command which send by controller.
  *
  * @param	FlashMsg is a pointer to the structure containing transfer data
  *
@@ -161,10 +160,11 @@ void XQspiPsu_PollDataConfig(XQspiPsu *InstancePtr, XQspiPsu_Msg *FlashMsg)
 	GenFifoEntry |= InstancePtr->GenFifoBus;
 	GenFifoEntry |= InstancePtr->GenFifoCS;
 	GenFifoEntry |= (u32)XQSPIPSU_GENFIFO_MODE_SPI;
-	if (((FlashMsg->Flags) & XQSPIPSU_MSG_FLAG_STRIPE) != FALSE)
+	if (((FlashMsg->Flags) & XQSPIPSU_MSG_FLAG_STRIPE) != (u32)FALSE) {
 		GenFifoEntry |= XQSPIPSU_GENFIFO_STRIPE;
-	else
+	} else {
 		GenFifoEntry &= ~XQSPIPSU_GENFIFO_STRIPE;
+	}
 	XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_GEN_FIFO_OFFSET,
 			GenFifoEntry);
 
@@ -229,12 +229,12 @@ s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler)
 	 * Do not allow the slave select to change while a transfer is in
 	 * progress. Not thread-safe.
 	 */
-	if (InstancePtr->IsBusy == TRUE) {
+	if (InstancePtr->IsBusy == (u32)TRUE) {
 		Status = (s32)XST_DEVICE_BUSY;
 		goto END;
 	} else {
 
-		Divider = (1U << (Prescaler+1U));
+		Divider = (u32)1U << (Prescaler+1U);
 
 		FreqDiv = (InstancePtr->Config.InputClockHz)/Divider;
 
@@ -250,12 +250,12 @@ s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler)
 					 IOU_TAPDLY_BYPASS_LQSPI_RX_SHIFT);
 			LBkModeReg |= (USE_DLY_LPBK << XQSPIPSU_LPBK_DLY_ADJ_USE_LPBK_SHIFT);
 #if defined (versal)
-			delayReg |= USE_DATA_DLY_ADJ  <<
+			delayReg |= (u32)USE_DATA_DLY_ADJ  <<
 					XQSPIPSU_DATA_DLY_ADJ_USE_DATA_DLY_SHIFT;
 #else
-			delayReg |= (USE_DATA_DLY_ADJ  <<
+			delayReg |= ((u32)USE_DATA_DLY_ADJ  <<
 					XQSPIPSU_DATA_DLY_ADJ_USE_DATA_DLY_SHIFT) |
-							(DATA_DLY_ADJ_DLY  << XQSPIPSU_DATA_DLY_ADJ_DLY_SHIFT);
+							((u32)DATA_DLY_ADJ_DLY  << XQSPIPSU_DATA_DLY_ADJ_DLY_SHIFT);
 #endif
 		} else if (FreqDiv <= XQSPIPSU_FREQ_150MHZ) {
 #if defined (versal)
@@ -265,7 +265,7 @@ s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler)
 			LBkModeReg |= USE_DLY_LPBK  << XQSPIPSU_LPBK_DLY_ADJ_USE_LPBK_SHIFT;
 #endif
 		} else {
-			Status = XST_FAILURE;
+			Status = (s32)XST_FAILURE;
 			goto END;
 		}
 
@@ -276,3 +276,4 @@ s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler)
 	}
 }
 #endif
+/** @} */

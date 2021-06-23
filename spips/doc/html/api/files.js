@@ -13,5 +13,6 @@ var files =
     [ "xspips_selftest.c", "xspips__selftest_8c.html", "xspips__selftest_8c" ],
     [ "xspips_selftest_example.c", "xspips__selftest__example_8c.html", "xspips__selftest__example_8c" ],
     [ "xspips_sinit.c", "xspips__sinit_8c.html", "xspips__sinit_8c" ],
-    [ "xspips_slave_polled_example.c", "xspips__slave__polled__example_8c.html", "xspips__slave__polled__example_8c" ]
+    [ "xspips_slave_polled_example.c", "xspips__slave__polled__example_8c.html", "xspips__slave__polled__example_8c" ],
+    [ "xspips_tpm_polled_example.c", "xspips__tpm__polled__example_8c.html", "xspips__tpm__polled__example_8c" ]
 ];

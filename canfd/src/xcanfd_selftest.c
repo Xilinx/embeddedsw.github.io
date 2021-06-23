@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcanfd_selftest.c
-* @addtogroup canfd_v2_4
+* @addtogroup canfd_v2_5
 * @{
 *
 * This file contains a diagnostic self-test function for the XCanFd driver.
@@ -38,7 +38,7 @@
 
 /************************** Constant Definitions ****************************/
 
-#define XCANFD_MAX_FRAME_SIZE_IN_BYTES 72
+#define XCANFD_MAX_FRAME_SIZE_IN_BYTES 72 /**< Maximum Frame size */
 
 /**************************** Type Definitions ******************************/
 
@@ -47,31 +47,31 @@
 /************************** Variable Definitions ****************************/
 
 /* Buffers to hold frames to send and receive. */
-static u32 TxFrame[XCANFD_MAX_FRAME_SIZE_IN_BYTES];
-static u32 RxFrame[XCANFD_MAX_FRAME_SIZE_IN_BYTES];
+static u32 TxFrame[XCANFD_MAX_FRAME_SIZE_IN_BYTES]; /**< TxFrame Buffer */
+static u32 RxFrame[XCANFD_MAX_FRAME_SIZE_IN_BYTES]; /**< RxFrame Buffer */
 
 /************************** Function Prototypes *****************************/
 
 /* Message Id Constant. */
-#define TEST_MESSAGE_ID	1024
+#define TEST_MESSAGE_ID	1024	/**< Message id */
 
 /* CAN Dlc Value */
-#define TEST_CANFD_DLC	8
+#define TEST_CANFD_DLC	8	/**< DLC Value */
 
 /* CAN FD FilterIndex Value */
-#define TEST_MAIL_BOX_MASK 0xFFFFFFFF
+#define TEST_MAIL_BOX_MASK 0xFFFFFFFFU	/**< Mailbox Fileter Index Value */
 
-#define TEST_BRPR_BAUD_PRESCALAR	29
+#define TEST_BRPR_BAUD_PRESCALAR	29 /**< Baud Rate Prescalar */
 
-#define TEST_BTR_SYNCJUMPWIDTH		3
-#define TEST_BTR_SECOND_TIMESEGMENT	2
-#define TEST_BTR_FIRST_TIMESEGMENT	15
+#define TEST_BTR_SYNCJUMPWIDTH		3  /**< Synchronization Jump Width */
+#define TEST_BTR_SECOND_TIMESEGMENT	2  /**< Time Segment 2 */
+#define TEST_BTR_FIRST_TIMESEGMENT	15 /**< Time Segment 1 */
 
-#define TEST_FBRPR_BAUD_PRESCALAR	29
+#define TEST_FBRPR_BAUD_PRESCALAR	29 /**< Baud Rate Prescalar for canfd */
 
-#define TEST_FBTR_SYNCJUMPWIDTH		3
-#define TEST_FBTR_SECOND_TIMESEGMENT	2
-#define TEST_FBTR_FIRST_TIMESEGMENT	15
+#define TEST_FBTR_SYNCJUMPWIDTH		3  /**< Synchronization Jump Width for Canfd */
+#define TEST_FBTR_SECOND_TIMESEGMENT	2  /**< Time Segment 2 for Canfd */
+#define TEST_FBTR_FIRST_TIMESEGMENT	15 /**< Time Segment 1 for Canfd */
 
 /**
 *
@@ -108,6 +108,7 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 
 	u32 IdValue;
 	u32 BuffNr;
+	u32 Value;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -120,8 +121,8 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	 * it is not Configuration Mode.
 	 */
 
-	if (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_CONFIG) {
-		return XST_FAILURE;
+	if (XCanFd_GetMode(InstancePtr) != (u8)XCANFD_MODE_CONFIG) {
+		return (s32)XST_FAILURE;
 	}
 
 	/*
@@ -134,50 +135,69 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	 * Configure the Baud Rate Prescalar in
 	 * Arbitration Phase
 	 */
-	XCanFd_SetBaudRatePrescaler(InstancePtr, TEST_BRPR_BAUD_PRESCALAR);
+	Status = (u32)XCanFd_SetBaudRatePrescaler(InstancePtr, TEST_BRPR_BAUD_PRESCALAR);
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
+	}
 
 	/*
 	 * Configure the Bit Timing Values in
 	 * Arbitration Phase.
 	 */
-	XCanFd_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH,
+	Status = (u32)XCanFd_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH,
 		TEST_BTR_SECOND_TIMESEGMENT,TEST_BTR_FIRST_TIMESEGMENT);
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
+	}
 
 	 /* Configure the Baud Rate Prescalar in Data Phase */
-	XCanFd_SetFBaudRatePrescaler(InstancePtr, TEST_FBRPR_BAUD_PRESCALAR);
+	Status = (u32)XCanFd_SetFBaudRatePrescaler(InstancePtr, TEST_FBRPR_BAUD_PRESCALAR);
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
+	}
 
 	/* Configure the Bit Timing Values in Data Phase */
-	XCanFd_SetFBitTiming(InstancePtr,TEST_FBTR_SYNCJUMPWIDTH,
+	Status = (u32)XCanFd_SetFBitTiming(InstancePtr,TEST_FBTR_SYNCJUMPWIDTH,
 		TEST_FBTR_SECOND_TIMESEGMENT,TEST_FBTR_FIRST_TIMESEGMENT);
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
+	}
 
 	XCanFd_EnterMode(InstancePtr, XCANFD_MODE_LOOPBACK);
-	while (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_LOOPBACK);
+	Status = XCanFd_GetMode(InstancePtr);
+	while (Status != (u32)XCANFD_MODE_LOOPBACK) {
+		Status = XCanFd_GetMode(InstancePtr);
+	}
 
 	/*
 	 * Create a frame to send with known values so we can verify them
 	 * on receive.
 	 */
-	TxFrame[0] = XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0);
-	TxFrame[1] = XCanFd_Create_CanFD_Dlc_BrsValue(TEST_CANFD_DLC);
+	TxFrame[0] = XCanFd_CreateIdValue((u32)TEST_MESSAGE_ID, (u32)0, (u32)0, (u32)0, (u32)0);
+	TxFrame[1] = XCanFd_Create_CanFD_Dlc_BrsValue((u32)TEST_CANFD_DLC);
 
-	Dlc = XCanFd_GetDlc2len(TxFrame[1] & XCANFD_DLCR_DLC_MASK,
+	Dlc = (u32)XCanFd_GetDlc2len(TxFrame[1] & XCANFD_DLCR_DLC_MASK,
 		EDL_CANFD);
 	FramePtr = (u8 *) (&TxFrame[2]);
 
 	for (Index = 0; Index < Dlc; Index++) {
-		*FramePtr++ = (u8) Index;
+		*FramePtr = (u8) Index;
+		FramePtr = FramePtr +(u8)1;
 	}
 
 	/*Check the design, if it is in MailBox Mode */
-	if (XCANFD_GET_RX_MODE(InstancePtr) == 1) {
-		IdValue = XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0);
+	if (XCANFD_GET_RX_MODE(InstancePtr) == (u32)1) {
+		IdValue = XCanFd_CreateIdValue((u32)TEST_MESSAGE_ID, (u32)0, (u32)0, (u32)0, (u32)0);
 		for (BuffNr= 0;BuffNr < InstancePtr->CanFdConfig.NumofRxMbBuf;
 				BuffNr++)
 		{
-			XCanFd_RxBuff_MailBox_DeActive(InstancePtr,BuffNr);
-			XCanFd_Set_MailBox_IdMask(InstancePtr,BuffNr,
+			(void)XCanFd_RxBuff_MailBox_DeActive(InstancePtr,BuffNr);
+			(void)XCanFd_Set_MailBox_IdMask(InstancePtr,BuffNr,
 				TEST_MAIL_BOX_MASK,IdValue);
-			XCanFd_RxBuff_MailBox_Active(InstancePtr,BuffNr);
+			Status = XCanFd_RxBuff_MailBox_Active(InstancePtr,BuffNr);
+			if (Status != (u32)XST_SUCCESS) {
+				return (s32)Status;
+			}
 		}
 	}
 	else {
@@ -187,44 +207,47 @@ int XCanFd_SelfTest(XCanFd *InstancePtr)
 	}
 
 	/* Send the frame. */
-	Status = XCanFd_Send(InstancePtr,TxFrame,&TxBuffer);
-	if (Status != XST_SUCCESS) {
-		return Status;
+	Status = (u32)XCanFd_Send(InstancePtr,TxFrame,&TxBuffer);
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
 	}
 
 	/* Wait until buffer is transmitted. */
-	while (XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer) == FALSE);
+	Value = (u32)XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer);
+	while ( Value == (u32)FALSE) {
+		Value = (u32)XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer);
+	}
 
-	if (XCANFD_GET_RX_MODE(InstancePtr) == 1) {
+	if (XCANFD_GET_RX_MODE(InstancePtr) == (u32)1) {
 		Status = XCanFd_Recv_Mailbox(InstancePtr, RxFrame);
 	}
 	else{
 		Status = XCanFd_Recv_Sequential(InstancePtr, RxFrame);
 	}
-	if (Status != XST_SUCCESS) {
-		return Status;
+	if (Status != (u32)XST_SUCCESS) {
+		return (s32)Status;
 	}
-	Dlc = XCanFd_GetDlc2len(RxFrame[1] & XCANFD_DLCR_DLC_MASK,
+	Dlc = (u32)XCanFd_GetDlc2len(RxFrame[1] & XCANFD_DLCR_DLC_MASK,
 		EDL_CANFD);
 
 	/* Verify Identifier and Data Length Code. */
-	if (RxFrame[0] != XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0)) {
-		return XST_FAILURE;
+	if (RxFrame[0] != XCanFd_CreateIdValue((u32)TEST_MESSAGE_ID, (u32)0, (u32)0, (u32)0, (u32)0)) {
+		return (s32)XST_FAILURE;
 	}
-	if (TEST_CANFD_DLC != XCanFd_GetLen2Dlc(Dlc)) {
-		return XST_FAILURE;
+	if ((u8)TEST_CANFD_DLC != (u8)XCanFd_GetLen2Dlc((s32)Dlc)) {
+		return (s32)XST_FAILURE;
 	}
 
 	/* Verify Data field contents. */
 	FramePtr = (u8 *)(&RxFrame[2]);
 	for (Index = 0; Index < Dlc; Index++) {
 		if (*FramePtr++ != (u8)Index) {
-			return XST_FAILURE;
+			return (s32)XST_FAILURE;
 		}
 	}
 
 	XCanFd_Reset(InstancePtr);
 
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }
 /** @} */

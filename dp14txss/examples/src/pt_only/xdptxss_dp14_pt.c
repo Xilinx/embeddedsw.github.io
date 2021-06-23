@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -37,7 +37,18 @@
 * 							New Interrupt added for Vsync On TX
 * 							This application does not support Y420
 * 							Added support for Fabric 8b10b for Versal
-*
+* 1.08 KU 11/19/20 2021.1 - Updated the CRC IP register programming
+* 							for VSC based resolution.
+* 1.09 ND 02/22/21 2021.1 - Updated changes to reset Test_crc counter in DP dpcd
+* 							space to avoid Race condition. Updated changes
+* 							related to CRC being written to DPCD for 422 format.
+* 1.10 ND 04/01/21 2021.1 - Moved all global variables declaration from .h to .c
+* 							files due to gcc compiler compilation error.
+* 1.11 KU 04/12/21 2021.1 -	Updates to Versal GT programming to get /20 clock
+* 1.12 ND 04/15/21 2021.1 - Change in Interrupt Event name of Adaptive sync
+* 							interrupt event. Added stream parameter XDP_TX_STREAM_ID1
+* 							in XDpRxSs_GetVblank().
+* 							CTS related updates
 * </pre>
 *
 ******************************************************************************/
@@ -54,6 +65,19 @@
 //
 XIicPs Ps_Iic1;
 //
+#define ENABLE_AUDIO XPAR_DP_RX_HIER_0_V_DP_RXSS1_0_AUDIO_ENABLE
+#define 			XINTC XScuGic
+
+#if ENABLE_AUDIO
+XGpio_Config  *aud_gpio_ConfigPtr;
+XGpio   aud_gpio;
+XAxis_Switch axis_switch_rx;
+XAxis_Switch axis_switch_tx;
+XI2srx_Config *Config_rx;
+XI2stx_Config *Config;
+XI2s_Rx I2s_rx;
+XI2s_Tx I2s_tx;
+#endif
 
 #ifdef versal
 XClk_Wiz_Config *CfgPtr_Dynamic;
@@ -96,6 +120,23 @@ u32 vblank_init = 0;
 u8 vblank_captured = 0;
 u16 fb_wr_count = 0;
 u16 fb_rd_count = 0;
+u64 XVFRMBUFRD_BUFFER_BASEADDR_Y;
+u64 XVFRMBUFRD_BUFFER_BASEADDR;
+u64 XVFRMBUFWR_BUFFER_BASEADDR;
+u64 XVFRMBUFWR_BUFFER_BASEADDR_Y;
+XINTC IntcInst; 	/* The interrupt controller instance. */
+XIicPs_Config *XIic1Ps_ConfigPtr;
+Video_CRC_Config VidFrameCRC_rx; /* Video Frame CRC instance */
+Video_CRC_Config VidFrameCRC_tx;
+u8 use_vsc;
+XTmrCtr TmrCtr; 		/* Timer instance.*/
+XIic IicInstance; 	/* I2C bus for MC6000 and IDT */
+
+#ifndef versal
+XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
+#else
+void* VPhyInst;
+#endif
 
 typedef struct {
 	XVidC_ColorFormat MemFormat;
@@ -123,11 +164,27 @@ VideoFormats ColorFormats[NUM_TEST_FORMATS] =
 	{XVIDC_CSF_MEM_BGRX8,      XVIDC_CSF_RGB,       8},
 	{XVIDC_CSF_MEM_UYVY8,      XVIDC_CSF_YCRCB_422, 8}
 };
+#ifndef versal
+XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
+#endif
 
-
+XDpRxSs DpRxSsInst;    /* The DPRX Subsystem instance.*/
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
+XV_FrmbufRd_l2     frmbufrd;
+#endif
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
+XV_FrmbufWr_l2     frmbufwr;
+#endif
 extern u32 StreamOffset[4];
 extern u8 supports_adaptive;
+extern XDpTxSs DpTxSsInst; 		/* The DPTX Subsystem instance.*/
 
+#ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
+XV_axi4s_remap_Config   *rx_remap_Config;
+XV_axi4s_remap          rx_remap;
+XV_axi4s_remap_Config   *tx_remap_Config;
+XV_axi4s_remap          tx_remap;
+#endif
 /*****************************************************************************/
 /**
 *
@@ -526,11 +583,10 @@ u32 DpSs_Main(void)
          * can be programmed. This will generate a /20 clk
          */
 	XDp_WriteReg(GT_QUAD_BASE,0xC,0xF9E8D7C6);
-	retval=XDp_ReadReg(GT_QUAD_BASE,CH1CLKDIV_REG);
+	retval = XDp_ReadReg(GT_QUAD_BASE, CH1CLKDIV_REG);
 	retval &= ~DIV_MASK;
 	retval |= DIV;
-	XDp_WriteReg(GT_QUAD_BASE,CH1CLKDIV_REG,retval);
-//	retval=XDp_ReadReg(GT_QUAD_BASE,CH1CLKDIV_REG);
+	XDp_WriteReg(GT_QUAD_BASE, CH1CLKDIV_REG, retval);
 #endif
 #endif
 
@@ -609,6 +665,7 @@ u32 DpSs_Main(void)
 
 #endif
 
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	/* FrameBuffer initialization. */
 	Status = XVFrmbufRd_Initialize(&frmbufrd, FRMBUF_RD_DEVICE_ID);
 	if (Status != XST_SUCCESS) {
@@ -616,13 +673,16 @@ u32 DpSs_Main(void)
 			   "initialization failed\r\n");
 		return (XST_FAILURE);
 	}
+#endif
 
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 	Status = XVFrmbufWr_Initialize(&frmbufwr, FRMBUF_WR_DEVICE_ID);
 	if(Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Write "
 			   "initialization failed\r\n");
 		return (XST_FAILURE);
 	}
+#endif
 
 	resetIp_rd();
 	resetIp_wr();
@@ -886,6 +946,7 @@ void CalculateCRC(void)
 {
 
     u32 RegVal;
+    u8 color_mode = 0;
  /* Reset CRC Test Counter in DP DPCD Space. */
     /* Read Config Register */
     RegVal = XVidFrameCrc_ReadReg(VidFrameCRC_rx.Base_Addr,
@@ -911,9 +972,18 @@ void CalculateCRC(void)
       width programming
      */
 
-    VidFrameCRC_rx.Mode_422 =
-                    (XVidFrameCrc_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-                                          XDP_RX_MSA_MISC0) >> 1) & 0x3;
+//    VidFrameCRC_rx.Mode_422 =
+//                    (XVidFrameCrc_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+//                                          XDP_RX_MSA_MISC0) >> 1) & 0x3;
+
+	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID1);
+
+	if(color_mode == 2){
+		VidFrameCRC_rx.Mode_422 = 0x1;
+	} else {
+		VidFrameCRC_rx.Mode_422 = 0x0;
+	}
+
 
     if (VidFrameCRC_rx.Mode_422 != 0x1) {
 	XVidFrameCrc_WriteReg(VidFrameCRC_rx.Base_Addr,
@@ -943,10 +1013,9 @@ void CalculateCRC(void)
     /* Write CRC values to DPCD TEST CRC space. */
     XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
                  XDP_RX_CRC_COMP0,
-                 (VidFrameCRC_rx.Mode_422 == 0x1) ? 0 : VidFrameCRC_rx.Pixel_r);
+				 VidFrameCRC_rx.Pixel_r);
     XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
                  XDP_RX_CRC_COMP1,
-                 (VidFrameCRC_rx.Mode_422==0x1) ? VidFrameCRC_rx.Pixel_b :
                                                   VidFrameCRC_rx.Pixel_g);
     /* Check for 422 format and move CR/CB
      * calculated CRC to G component.
@@ -954,17 +1023,18 @@ void CalculateCRC(void)
      * */
     XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
                  XDP_RX_CRC_COMP2,
-                 (VidFrameCRC_rx.Mode_422 == 0x1) ? VidFrameCRC_rx.Pixel_r :
                                                     VidFrameCRC_rx.Pixel_b);
-
+    if(DpRxSsInst.no_video_trigger == 0){
     VidFrameCRC_rx.TEST_CRC_CNT = 1;
     XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_CRC_CONFIG,
                  (VidFrameCRC_rx.TEST_CRC_SUPPORTED << 5 |
                   VidFrameCRC_rx.TEST_CRC_CNT));
-
+    }
+#if !PHY_COMP
     xil_printf("[Video CRC] R/Cr: 0x%x, G/Y: 0x%x, B/Cb: 0x%x\r\n\n",
                VidFrameCRC_rx.Pixel_r, VidFrameCRC_rx.Pixel_g,
                VidFrameCRC_rx.Pixel_b);
+#endif
 
 #endif
 
@@ -1204,7 +1274,6 @@ u32 DpSs_PlatformInit(void)
 	}
 
 	XIic_Reset(&IicInstance);
-
 
 	/*Initializing vck190 onboard IDT8T49N24X for audio*/
 #ifdef versal
@@ -1456,13 +1525,15 @@ u32 DpSs_SetupIntrSystem(void)
 	DpRxSs_SetupIntrSystem();
 #endif
 
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 	XVFrmbufWr_SetCallback(&frmbufwr, XVFRMBUFWR_HANDLER_DONE,
 								&bufferWr_callback, &frmbufwr);
+#endif
 
-
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	XVFrmbufRd_SetCallback(&frmbufrd, XVFRMBUFRD_HANDLER_DONE,
 								&bufferRd_callback, &frmbufrd);
-
+#endif
 
 	/* The configuration parameters of the interrupt controller */
 	XScuGic_Config *IntcConfig;
@@ -1495,6 +1566,7 @@ u32 DpSs_SetupIntrSystem(void)
 	/* Enable the interrupt for the DP device */
 	XScuGic_Enable(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID);
 
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 	Status = XScuGic_Connect(IntcInstPtr,
 				 XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID,
 				 (Xil_InterruptHandler)XVFrmbufWr_InterruptHandler,
@@ -1505,6 +1577,7 @@ u32 DpSs_SetupIntrSystem(void)
 	}
 	/* Enable the interrupt vector at the interrupt controller */
 	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID);
+#endif
 
 #endif
 	/* Connect the device driver handler that will be called when an
@@ -1523,7 +1596,7 @@ u32 DpSs_SetupIntrSystem(void)
 	/* Enable the interrupt */
 	XScuGic_Enable(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID);
 
-
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	Status = XScuGic_Connect(IntcInstPtr,
 				 XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID,
 				 (Xil_InterruptHandler)XVFrmbufRd_InterruptHandler,
@@ -1535,7 +1608,7 @@ u32 DpSs_SetupIntrSystem(void)
 
 	/* Disable the interrupt vector at the interrupt controller */
 	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID);
-
+#endif
 
 #endif
 
@@ -1754,6 +1827,7 @@ u32 DpSs_PhyInit(u16 DeviceId)
 int ConfigFrmbuf_wr(u32 StrideInBytes,
 						XVidC_ColorFormat Cfmt,
 						XVidC_VideoStream *StreamPtr){
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 	int Status;
 
 	/* Stop Frame Buffers */
@@ -1785,6 +1859,7 @@ int ConfigFrmbuf_wr(u32 StrideInBytes,
 
 	//xil_printf("INFO: FRMBUFwr configured\r\n");
 	return(Status);
+#endif
 }
 
 u8 stopped = 1;
@@ -1803,7 +1878,7 @@ int ConfigFrmbuf_rd(u32 StrideInBytes,
 						XVidC_ColorFormat Cfmt,
 						XVidC_VideoStream *StreamPtr)
 	{
-
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	int Status;
 
 	XVFRMBUFRD_BUFFER_BASEADDR = frame_array[frame_pointer];
@@ -1840,6 +1915,7 @@ int ConfigFrmbuf_rd(u32 StrideInBytes,
 	}
 	//xil_printf("INFO: FRMBUFrd configured\r\n");
 	return(Status);
+#endif
 }
 
 
@@ -1854,6 +1930,7 @@ u32 offset_rd = 0;
 
 int ConfigFrmbuf_rd_trunc(u32 offset){
 
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	int Status;
 
 	/* Stop Frame Buffers */
@@ -1896,6 +1973,7 @@ int ConfigFrmbuf_rd_trunc(u32 offset){
 
 //	xil_printf("INFO: FRMBUFrd configured\r\n");
 	return(Status);
+#endif
 }
 
 
@@ -1910,6 +1988,7 @@ void frameBuffer_stop() {
 
 void frameBuffer_stop_rd() {
 //    xil_printf ("FB stop start..\r\n");
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	u32 Status;
 	fb_rd_start = 0;
 	Status = XVFrmbufRd_Stop(&frmbufrd);
@@ -1922,10 +2001,12 @@ void frameBuffer_stop_rd() {
 		xil_printf ("Frame Buffer is not Idle\r\n");
 	}
 	usleep(1000);
+#endif
 }
 
 
 void frameBuffer_stop_wr() {
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 	u32 Status;
 	Status = XVFrmbufWr_Stop(&frmbufwr);
 	if (Status != XST_SUCCESS) {
@@ -1937,11 +2018,11 @@ void frameBuffer_stop_wr() {
 		xil_printf ("Frame Buffer is not Idle\r\n");
 	}
 	usleep (1000);
-
+#endif
 }
 
 void frameBuffer_start_wr(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K) {
-
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 
 	XVidC_ColorFormat Cfmt;
 	XVidC_VideoStream VidStream;
@@ -1994,10 +2075,11 @@ void frameBuffer_start_wr(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K) {
 	ConfigFrmbuf_wr(stride, Cfmt, &VidStream);
 	stopped = 1;
 	fb_wr_count = 0;
+#endif
 }
 
 void frameBuffer_start_rd(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K) {
-
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 	XVidC_ColorFormat Cfmt;
 	XVidC_VideoTiming const *TimingPtr;
 	XVidC_VideoStream VidStream;
@@ -2060,7 +2142,7 @@ void frameBuffer_start_rd(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K) {
 	ConfigFrmbuf_rd(stride, Cfmt, &VidStream);
 	fb_rd_start = 1;
 	fb_rd_count = 0;
-
+#endif
 }
 
 
@@ -2190,6 +2272,7 @@ void remap_start_rd(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K)
 
 #endif
 
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 void bufferWr_callback(void *InstancePtr){
 	u32 Status;
 
@@ -2259,8 +2342,9 @@ void bufferWr_callback(void *InstancePtr){
 	}
 	fb_wr_count++;
 }
+#endif
 
-
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 void bufferRd_callback(void *InstancePtr){
 	stopped = 1;
 	if (start_rdfb) {
@@ -2270,6 +2354,7 @@ void bufferRd_callback(void *InstancePtr){
 	}
 	fb_rd_count++;
 }
+#endif
 
 
 /*****************************************************************************/
@@ -2323,6 +2408,7 @@ u8 lock = 0;
 volatile u32 appx_fs_dup = 0;
 u32 maud_dup = 0;
 u32 naud_dup = 0;
+extern XilAudioInfoFrame_rx AudioinfoFrame;
 
 void Dppt_DetectAudio (void) {
 
@@ -2561,17 +2647,21 @@ int Dppt_DetectResolution(void *InstancePtr,
 	XDp_RxSetUserPixelWidth(DpRxSsInst.DpPtr, (int)DpRxSsInst.UsrOpt.LaneCount);
 
 	if (DpRxSsInst.link_up_trigger == 1) {
+#if !PHY_COMP
 		xil_printf(
 			"*** Resolution: "
 				"%lu x %lu @ %luHz, BPC = %lu, PPC = %d, Color = %s (%d) ***\r\n",
 			DpHres, DpVres,recv_frame_clk_int,bpc,(int)DpRxSsInst.UsrOpt.LaneCount,
 				color, use_vsc
 		);
+#endif
 	}
 
 	if (DpRxSsInst.link_up_trigger == 1) {
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 		frameBuffer_start_wr(Msa, 0);
 		XDp_RxDtgEn(DpRxSsInst.DpPtr);
+#endif
 	}
 
 	CalculateCRC();

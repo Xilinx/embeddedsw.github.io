@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xspips.h
-* @addtogroup spips_v3_5
+* @addtogroup spips_v3_6
 * @{
 * @details
 *
@@ -234,6 +234,7 @@
 *                       sync with standalone BSP
 * 3.3   akm    08/06/19 Initialized DeviceID in XSpiPs_CfgInitialize function.
 * 3.5	akm    09/02/20 Updated the Makefile to support parallel make execution.
+* 3.6   sg     02/05/21 Added polled mode example for TPM device.
 *
 * </pre>
 *

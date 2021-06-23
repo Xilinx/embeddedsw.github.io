@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -87,7 +87,6 @@ u16 Buffer[BUFFER_SIZE];
 /**
 * This function is the main function of the SPI Low Level example.
 *
-* @param	None
 *
 * @return	XST_SUCCESS to indicate success, else XST_FAILURE to indicate
 *		Failure.

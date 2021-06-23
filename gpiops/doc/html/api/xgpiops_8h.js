@@ -7,6 +7,7 @@ var xgpiops_8h =
     [ "XGPIOPS_BANK_MAX_PINS", "xgpiops_8h.html#ga1e440e05bbea534ebf6939e88eb1455f", null ],
     [ "XGPIOPS_DEVICE_MAX_PIN_NUM", "xgpiops_8h.html#ga6d70822b76e1dd3fda458ed693a082af", null ],
     [ "XGPIOPS_DEVICE_MAX_PIN_NUM_ZYNQMP", "xgpiops_8h.html#ga8f80173cb28cbac5bab53c4fc7c7dd96", null ],
+    [ "XGPIOPS_H", "xgpiops_8h.html#ga5e68d2ebc1ac8f1b759c0945ad6ef78b", null ],
     [ "XGPIOPS_IRQ_TYPE_EDGE_BOTH", "xgpiops_8h.html#gaaa0415781a99043db06849daa027d5c5", null ],
     [ "XGPIOPS_IRQ_TYPE_EDGE_FALLING", "xgpiops_8h.html#gae8082ec62bd44c68e3334b77c87fca96", null ],
     [ "XGPIOPS_IRQ_TYPE_EDGE_RISING", "xgpiops_8h.html#ga25b306607f3b370ea355229c21e7db02", null ],
@@ -15,6 +16,8 @@ var xgpiops_8h =
     [ "XGPIOPS_MAX_BANKS", "xgpiops_8h.html#ga27b466ba78cf142027ca998d0d67d2e0", null ],
     [ "XGPIOPS_MAX_BANKS_ZYNQMP", "xgpiops_8h.html#gab8661a0444fd67d2b87a14b3c196e571", null ],
     [ "XGpioPs_Handler", "xgpiops_8h.html#ga2349a384fe8a39f89168780f84940efc", null ],
+    [ "XGpioPs_CfgInitialize", "xgpiops_8h.html#gaf25c8d3ce00f3c6904a8286a997c8960", null ],
+    [ "XGpioPs_GetBankPin", "xgpiops_8h.html#gaefc766e08002c191864802d6e3a3434e", null ],
     [ "XGpioPs_GetDirection", "xgpiops_8h.html#ga7eb1bb1c621ea32f0b14c9ee47c23319", null ],
     [ "XGpioPs_GetDirectionPin", "xgpiops_8h.html#gaa3bacad17006e4b01ff91f6f14e5d3f7", null ],
     [ "XGpioPs_GetIntrType", "xgpiops_8h.html#gaed18cb81aceda214dba440cf6ff3d0ec", null ],
@@ -44,5 +47,6 @@ var xgpiops_8h =
     [ "XGpioPs_SetOutputEnable", "xgpiops_8h.html#ga7c1ae54b29cedd921fbe9f6ef503ceef", null ],
     [ "XGpioPs_SetOutputEnablePin", "xgpiops_8h.html#ga841cc1098a21bdedec893545f15b025a", null ],
     [ "XGpioPs_Write", "xgpiops_8h.html#ga0f55b3804d13293880455a79d4f45e37", null ],
-    [ "XGpioPs_WritePin", "xgpiops_8h.html#gab9ff633d57fb32cac3424571ba690332", null ]
+    [ "XGpioPs_WritePin", "xgpiops_8h.html#gab9ff633d57fb32cac3424571ba690332", null ],
+    [ "XGpioPs_ConfigTable", "xgpiops_8h.html#gaa25c29c5d57afe2c714f78a54a182403", null ]
 ];

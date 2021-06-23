@@ -12,5 +12,7 @@ var annotated =
     [ "XHdmiC_SPD_InfoFrame", "struct_x_hdmi_c___s_p_d___info_frame.html", null ],
     [ "XHdmiC_TMDS_N_Table", "struct_x_hdmi_c___t_m_d_s___n___table.html", null ],
     [ "XHdmiC_VicTable", "struct_x_hdmi_c___vic_table.html", "struct_x_hdmi_c___vic_table" ],
-    [ "XHdmiC_VSIF", "struct_x_hdmi_c___v_s_i_f.html", "struct_x_hdmi_c___v_s_i_f" ]
+    [ "XHdmiC_VSIF", "struct_x_hdmi_c___v_s_i_f.html", "struct_x_hdmi_c___v_s_i_f" ],
+    [ "XV_HdmiC_SrcProdDescIF", "union_x_v___hdmi_c___src_prod_desc_i_f.html", null ],
+    [ "XV_HdmiC_VideoTimingExtMeta", "struct_x_v___hdmi_c___video_timing_ext_meta.html", null ]
 ];

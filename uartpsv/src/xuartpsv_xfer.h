@@ -7,7 +7,7 @@
 /**
 *
 * @file xuartpsv_xfer.h
-* @addtogroup uartpsv_v1_4
+* @addtogroup uartpsv_v1_5
 * @{
 *
 * This header file contains the prototypes of objects used internally.
@@ -22,7 +22,7 @@
 *
 ******************************************************************************/
 #ifndef XUARTPSV_XFER_H		/* prevent circular inclusions */
-#define XUARTPSV_XFER_H		/* by using protection macros */
+#define XUARTPSV_XFER_H		/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {

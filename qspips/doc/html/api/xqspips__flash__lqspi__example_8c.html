@@ -206,12 +206,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function reads serial FLASH ID connected to the SPI interface. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if read id, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -297,7 +291,8 @@ Functions</h2></td></tr>
 <p>This function writes data to the serial FLASH in QSPI mode and reads data in Linear QSPI mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">QspiInstancePtr</td><td>is a pointer to the QSPIPS driver to use. </td></tr>
+    <tr><td class="paramname">QspiDeviceId</td><td>is the XPAR_&lt;QSPIPS_instance&gt;_DEVICE_ID value from xparameters.h.</td></tr>
   </table>
   </dd>
 </dl>
@@ -321,12 +316,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the QSPI Flash example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 

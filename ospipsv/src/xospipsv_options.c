@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv_options.c
-* @addtogroup ospipsv_v1_3
+* @addtogroup ospipsv_v1_4
 * @{
 *
 * This file implements functions to configure the OSPIPSV component,
@@ -44,14 +44,14 @@
 
 /************************** Variable Definitions *****************************/
 
-/*
+/**
  * Create the table of options which are processed to get/set the device
  * options. These options are table driven to allow easy maintenance and
  * expansion of the options.
  */
 typedef struct {
-	u32 Option;
-	u32 Mask;
+	u32 Option;	/**< Device configuration option */
+	u32 Mask;	/**< Mask value for the corresponding Device option */
 } OptionsMap;
 
 static OptionsMap OptionsTable[] = {
@@ -64,6 +64,9 @@ static OptionsMap OptionsTable[] = {
 	{XOSPIPSV_DB_OP_EN_OPTION, (XOSPIPSV_CONFIG_REG_DUAL_BYTE_OPCODE_EN_FLD_MASK)},
 };
 
+/**
+ * Total number of configuration options.
+ */
 #define XOSPIPSV_NUM_OPTIONS	(sizeof(OptionsTable) / sizeof(OptionsMap))
 
 /*****************************************************************************/

@@ -1,11 +1,11 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
- * @file xiicps_intr_multimaster_example.c
+ * @file xiicps_intr_multi_master_example.c
  *
  * Design example is to demonstrate multi-master support in interrupt mode.
  * In case of arbitration lost interrupt there will be retry in example.
@@ -92,7 +92,6 @@ volatile u32 ArbitrationLost;
 *
 * Main function to call the example.
 *
-* @param	None.
 *
 * @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful.
 *

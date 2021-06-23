@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_sinit.c
-* @addtogroup sdps_v3_11
+* @addtogroup sdps_v3_12
 * @{
 *
 * The implementation of the XSdPs component's static initialization
@@ -39,6 +39,9 @@
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
+/**
+ * XSdPs Configuration Table
+ */
 extern XSdPs_Config XSdPs_ConfigTable[XPAR_XSDPS_NUM_INSTANCES];
 
 /*****************************************************************************/

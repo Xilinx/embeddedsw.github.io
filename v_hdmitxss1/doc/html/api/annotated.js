@@ -7,6 +7,7 @@ var annotated =
     [ "XHdmi_MenuConfig", "struct_x_hdmi___menu_config.html", "struct_x_hdmi___menu_config" ],
     [ "XV_HdmiTxSs1", "struct_x_v___hdmi_tx_ss1.html", "struct_x_v___hdmi_tx_ss1" ],
     [ "XV_HdmiTxSs1_Config", "struct_x_v___hdmi_tx_ss1___config.html", "struct_x_v___hdmi_tx_ss1___config" ],
+    [ "XV_HdmiTxSs1_DynHdr_Config", "struct_x_v___hdmi_tx_ss1___dyn_hdr___config.html", "struct_x_v___hdmi_tx_ss1___dyn_hdr___config" ],
     [ "XV_HdmiTxSs1_Log", "struct_x_v___hdmi_tx_ss1___log.html", "struct_x_v___hdmi_tx_ss1___log" ],
     [ "XV_HdmiTxSs1_SubCore", "struct_x_v___hdmi_tx_ss1___sub_core.html", "struct_x_v___hdmi_tx_ss1___sub_core" ],
     [ "XVfmc", "struct_x_vfmc.html", "struct_x_vfmc" ]

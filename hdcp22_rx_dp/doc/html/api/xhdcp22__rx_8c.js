@@ -1,6 +1,7 @@
 var xhdcp22__rx_8c =
 [
     [ "XHdcp22_RxSetLaneCount", "xhdcp22__rx_8c.html#gae830d4217037a71ee510ce2a92dc75c2", null ],
+    [ "XHdcp22_RxSetReauthReq", "xhdcp22__rx_8c.html#gac1980b0cd97701e36058b7d4106ae542", null ],
     [ "XHdcp22_RxSetRxCaps", "xhdcp22__rx_8c.html#ga6424255a6111174e64e1b440c080d5ee", null ],
     [ "XHdcp22_RxSetStreamType", "xhdcp22__rx_8c.html#ga18f25ca97d7070bac85bf0cbc38d96de", null ],
     [ "XHdcp22_timer_attach", "xhdcp22__rx_8c.html#ga6c05e345b539e8ab4cb3341f2db798c8", null ],

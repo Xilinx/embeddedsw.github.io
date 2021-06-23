@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xnandpsu_sinit.c
-* @addtogroup nandpsu_v1_7
+* @addtogroup nandpsu_v1_8
 * @{
 *
 * The implementation of the XNandPsu driver's static initialization
@@ -45,7 +45,7 @@ extern XNandPsu_Config XNandPsu_ConfigTable[];
 * Looks up the controller configuration based on the unique controller ID. A
 * table contains the configuration info for each controller in the system.
 *
-* @param	DeviceID is the ID of the controller to look up the
+* @param	DevID is the ID of the controller to look up the
 *		configuration for.
 *
 * @return

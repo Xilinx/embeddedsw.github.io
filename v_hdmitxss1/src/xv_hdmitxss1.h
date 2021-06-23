@@ -266,9 +266,10 @@ typedef enum {
                                                             HDCP downstream
                                                             topology available
                                                             event */
-    XV_HDMITXSS1_HANDLER_HDCP_UNAUTHENTICATED               /**< Handler for
+    XV_HDMITXSS1_HANDLER_HDCP_UNAUTHENTICATED,              /**< Handler for
                                                             HDCP unauthenticated
                                                             event */
+    XV_HDMITXSS1_HANDLER_DYNHDR_MWT,		/**< Handler for MTW Event */
 } XV_HdmiTxSs1_HandlerType;
 /*@}*/
 
@@ -303,6 +304,7 @@ typedef struct
 	u8 LowResolutionSupp;
 	u8 YUV420Supp;
 	u32 MaxFrlRate;                   /** < Maximum FRL Rate Supporte */
+	u32 DynHdr;			/**< Supports Dynamic HDR */
     u32 AxiLiteClkFreq;               /**< AXI Lite Clock Frequency in Hz */
     XV_HdmiTxSs1_SubCore HdcpTimer;    /**< Sub-core instance configuration */
     XV_HdmiTxSs1_SubCore Hdcp14;       /**< Sub-core instance configuration */
@@ -338,6 +340,24 @@ typedef void (*XV_HdmiTxSs1_Callback)(void *CallbackRef);
 *
 */
 typedef u64 (*XV_HdmiTxSs1_LogCallback)(void *CallbackRef);
+
+
+/**
+ * Dynamic HDR configuration structure.
+ * This contains
+ * 1 - buffer address which contains the Dynamic HDR packet,
+ * 2 - the packet type and length,
+ * 3 - Graphics Overlay Flag value
+ * 4 - FAPA Location
+ */
+typedef struct
+{
+	u64 Address; /**< Dynamic HDR packet buffer address */
+	u16 PktType; /**< 16 bit Packet Type */
+	u16 PktLength; /**< 16 bit Packet Length */
+	u8 GOF;	/**< GOF Value 0 or 1 only */
+	u8 FAPA; /**<FAPA Location 0 or 1 only */
+} XV_HdmiTxSs1_DynHdr_Config;
 
 /**
 * The XVprocss driver instance data. The user is required to allocate a variable
@@ -426,6 +446,11 @@ typedef struct
     XV_HdmiTxSs1_Callback CedUpdateCallback; /**< Callback for FRL LTS:P */
     void *CedUpdatePRef;  /**< To be passed to FRL LTS:P callback */
 
+    XV_HdmiTxSs1_Callback DynHdrMtwCallback;	/**< Callback for Dynamic HDR
+						 *  MTW Start */
+    void *DynHdrMtwRef;			/**< To be passed to the
+					 *  Dynamic HDR callback */
+
     /**< Scratch pad */
     u8 SamplingRate;              /**< HDMI TX Sampling rate */
     u8 IsStreamConnected;         /**< HDMI TX Stream Connected */
@@ -441,6 +466,12 @@ typedef struct
 	XHdmiC_AVI_InfoFrame AVIInfoframe;		/**< AVI InfoFrame */
 	XHdmiC_AudioInfoFrame AudioInfoframe;	/**< Audio InfoFrame */
 	XHdmiC_VSIF VSIF;						/**< Vendor Specific InfoFrame */
+	XHdmiC_DRMInfoFrame DrmInfoframe;	/**< DRM Infoframe */
+
+    u8 VrrEnabled;	/* VRR set by user */
+    u8 FvaFactor;	/* FVA factor set by user */
+    u8 CnmvrrEnabled;	/* Cnmvrr enabled by user */
+    u8 VrrMode;
 
     XV_HdmiTxSs1_HdcpProtocol    HdcpProtocol;    /**< HDCP protocol selected */
 #ifdef USE_HDCP_TX
@@ -515,6 +546,7 @@ XHdmiC_Aux *XV_HdmiTxSs1_GetAuxiliary(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_AVI_InfoFrame *XV_HdmiTxSs1_GetAviInfoframe(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_AudioInfoFrame *XV_HdmiTxSs1_GetAudioInfoframe(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_VSIF *XV_HdmiTxSs1_GetVSIF(XV_HdmiTxSs1 *InstancePtr);
+XHdmiC_DRMInfoFrame *XV_HdmiTxSs1_GetDrmInfoframe(XV_HdmiTxSs1 *InstancePtr);
 u64 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 		XVidC_VideoTiming VideoTiming,
 		XVidC_FrameRate FrameRate,
@@ -548,6 +580,24 @@ u8 XV_HdmiTxSs1_IsSinkHdcp22Capable(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetDefaultPpc(XV_HdmiTxSs1 *InstancePtr, u8 Id);
 void XV_HdmiTxSs1_SetPpc(XV_HdmiTxSs1 *InstancePtr, u8 Id, u8 Ppc);
 XVidC_PixelsPerClock XV_HdmiTxSS1_GetCorePpc(XV_HdmiTxSs1 *InstancePtr);
+void XV_HdmiTxSs1_VrrControl(XV_HdmiTxSs1 *InstancePtr, u8 Enable);
+void XV_HdmiTxSs1_FSyncControl(XV_HdmiTxSs1 *InstancePtr, u8 Enable);
+
+void XV_HdmiTxSS1_SetVrrMode(XV_HdmiTxSs1 *InstancePtr,
+			u8 mode, u8 VrrEn, u8 FvaFactor, u8 CnmvrrEn);
+void XV_HdmiTxSS1_SetVrrVfpStretch(XV_HdmiTxSs1 *InstancePtr,
+					u16 StretchValue);
+void XV_HdmiTxSS1_DisableVrr(XV_HdmiTxSs1 *InstancePtr);
+void XV_HdmiTxSs1_SetVrrIf(XV_HdmiTxSs1 *InstancePtr,
+			XV_HdmiC_VrrInfoFrame *VrrIF);
+
+/* Dynamic HDR related APIs */
+void XV_HdmiTxSs1_DynHdr_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag);
+void XV_HdmiTxSs1_DynHdr_GOF_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag);
+void XV_HdmiTxSs1_DynHdr_Cfg(XV_HdmiTxSs1 *InstancePtr,
+			     XV_HdmiTxSs1_DynHdr_Config *Cfg);
+void XV_HdmiTxSs1_DynHdr_DM_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag);
+u32 XV_HdmiTxSs1_DynHdr_GetErr(XV_HdmiTxSs1 *InstancePtr);
 
 #ifdef XV_HDMITXSS1_LOG_ENABLE
 void XV_HdmiTxSs1_LogReset(XV_HdmiTxSs1 *InstancePtr);
@@ -558,6 +608,7 @@ void XV_HdmiTxSs1_LogDisplay(XV_HdmiTxSs1 *InstancePtr);
 
 void XV_HdmiTxSs1_ReportCoreInfo(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_ReportTiming(XV_HdmiTxSs1 *InstancePtr);
+void XV_HdmiTxSs1_ReportDRMInfo(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_ReportAudio(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_ReportSubcoreVersion(XV_HdmiTxSs1 *InstancePtr);
 

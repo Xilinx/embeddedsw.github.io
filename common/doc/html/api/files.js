@@ -8,7 +8,7 @@ var files =
     [ "xenv_standalone.h", "xenv__standalone_8h.html", "xenv__standalone_8h" ],
     [ "xenv_vxworks.h", "xenv__vxworks_8h.html", "xenv__vxworks_8h" ],
     [ "xparameters.h", "xparameters_8h.html", null ],
-    [ "xstatus.h", "xstatus_8h.html", null ],
+    [ "xstatus.h", "xstatus_8h.html", "xstatus_8h" ],
     [ "xutil.h", "xutil_8h.html", "xutil_8h" ],
     [ "xutil_memtest.c", "xutil__memtest_8c.html", "xutil__memtest_8c" ],
     [ "xversion.c", "xversion_8c.html", "xversion_8c" ],

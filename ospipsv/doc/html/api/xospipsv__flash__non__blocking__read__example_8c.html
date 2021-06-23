@@ -79,7 +79,8 @@ $(document).ready(function(){initNavTree('xospipsv__flash__non__blocking__read__
 <hr/>
 <p>
  1.0   sk  02/03/20 First release
- 1.3   sk  05/27/20 Added Stacked mode support.</pre><pre></pre> </div><table class="memberdecls">
+ 1.3   sk  05/27/20 Added Stacked mode support.
+ 1.4   sk  02/18/21 Added support for Macronix flash and DualByte commands.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:add3e41c7ec3ce5d1ae9f84b65b180829"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xospipsv__flash__non__blocking__read__example_8c.html#add3e41c7ec3ce5d1ae9f84b65b180829">OspiPsvFlashNonBlockingReadExample</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *OspiPsvInstancePtr, u16 OspiPsvDeviceId)</td></tr>
@@ -152,7 +153,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
-    <tr><td class="paramname">WritBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
   </table>
   </dd>
 </dl>
@@ -190,7 +191,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
-    <tr><td class="paramname">WritBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is the pointer to command+address to be sent</td></tr>
   </table>
   </dd>
 </dl>
@@ -227,7 +228,7 @@ Functions</h2></td></tr>
 <p>As per the Micron spec, before issuing the command to enter into 4 byte addr mode, a write enable command is issued.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">OspiPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
+    <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Enable</td><td>is a either 1 or 0 if 1 then enters 4 byte if 0 exits.</td></tr>
   </table>
   </dd>
@@ -281,7 +282,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address of the first sector which needs to be erased. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the total size to be erased. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer (which is to be transmitted)</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is Pointer to the write buffer (which is to be transmitted)</td></tr>
   </table>
   </dd>
 </dl>
@@ -333,7 +334,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address to write data to in the Flash. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the number of bytes to write. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer (which is to be transmitted)</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>Pointer to the write buffer (which is to be transmitted)</td></tr>
   </table>
   </dd>
 </dl>
@@ -385,7 +386,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address to write data to in the Flash. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the number of bytes to write. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer (which is to be transmitted)</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is Pointer to the write buffer (which is to be transmitted)</td></tr>
   </table>
   </dd>
 </dl>
@@ -443,8 +444,8 @@ Functions</h2></td></tr>
     <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Address</td><td>contains the address of the first sector which needs to be erased. </td></tr>
     <tr><td class="paramname">ByteCount</td><td>contains the total size to be erased. </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the write buffer which contains data to be transmitted </td></tr>
-    <tr><td class="paramname">Pointer</td><td>to the read buffer to which valid received data should be written</td></tr>
+    <tr><td class="paramname">WriteBfrPtr</td><td>is Pointer to the write buffer which contains data to be transmitted </td></tr>
+    <tr><td class="paramname">ReadBfrPtr</td><td>is Pointer to the read buffer to which valid received data should be written</td></tr>
   </table>
   </dd>
 </dl>
@@ -470,7 +471,7 @@ Functions</h2></td></tr>
 <p>Reads the flash ID and identifies the flash in FCT table. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use.</td></tr>
   </table>
   </dd>
 </dl>
@@ -506,8 +507,8 @@ Functions</h2></td></tr>
 <p>This API enters the flash device into Octal DDR mode or exit from octal DDR mode (switches to Extended SPI mode). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">OspiPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
-    <tr><td class="paramname">Enable</td><td>is either 1 or 0 if 1 then enter octal DDR mode if 0 exits.</td></tr>
+    <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
+    <tr><td class="paramname">Mode</td><td>is either 1 or 0 if 1 then enter octal DDR mode if 0 exits.</td></tr>
   </table>
   </dd>
 </dl>
@@ -571,12 +572,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the OSPIPSV Flash Polled example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
@@ -612,14 +607,15 @@ Functions</h2></td></tr>
 <p>This function reads data in either DMA or DAC mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">OspiPsvInstancePtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
+    <tr><td class="paramname">OspiPsvDeviceId</td><td>is the Device ID of the OSpi Device and is the XPAR_&lt;OSPI_instance&gt;_DEVICE_ID value from xparameters.h. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___config.html#a5ca4fb3ed8b0107599596c5cbf8e8591">XOspiPsv_Config::ConnectionMode</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a929e1c114b2752e00136aa5ebb3cbeda">FlashEnterExit4BAddMode()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a6d28e30d23e136e4af00a436d43c9923">FlashErase()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a8337d4d551570e7ecaa44321605280a7">FlashIoWrite()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a6fff73aa13d90cd15521ab1f7de503dc">FlashLinearWrite()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a1355d0e2c6bb04d1f65ca815d71d5996">FlashRead()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a19dbfab221d6a11c3fa45674c1304f2e">FlashReadID()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a92ee697864550c95e476b41c43c0764f">FlashSetSDRDDRMode()</a>, <a class="el" href="group__ospipsv__v1__3.html#gae5a31f79cc2df46027e4b9f26cad97ad">XOspiPsv_CfgInitialize()</a>, <a class="el" href="group__ospipsv__v1__3.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv__v1__3.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv__v1__3.html#gaf44a1c9ce528880318fbfd61c256b0d3">XOspiPsv_LookupConfig()</a>, <a class="el" href="group__ospipsv__v1__3.html#ga2d17525a71d9df7268fcc4269f19270c">XOspiPsv_SelectFlash()</a>, <a class="el" href="group__ospipsv__v1__3.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv__v1__3.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, and <a class="el" href="group__ospipsv__v1__3.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___config.html#a5ca4fb3ed8b0107599596c5cbf8e8591">XOspiPsv_Config::ConnectionMode</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a929e1c114b2752e00136aa5ebb3cbeda">FlashEnterExit4BAddMode()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a6d28e30d23e136e4af00a436d43c9923">FlashErase()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a8337d4d551570e7ecaa44321605280a7">FlashIoWrite()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a6fff73aa13d90cd15521ab1f7de503dc">FlashLinearWrite()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a1355d0e2c6bb04d1f65ca815d71d5996">FlashRead()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a19dbfab221d6a11c3fa45674c1304f2e">FlashReadID()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a92ee697864550c95e476b41c43c0764f">FlashSetSDRDDRMode()</a>, <a class="el" href="group__ospipsv__v1__4.html#gae5a31f79cc2df46027e4b9f26cad97ad">XOspiPsv_CfgInitialize()</a>, <a class="el" href="group__ospipsv__v1__4.html#ga15c0973b6b32cee5484231f4b0964024">XOSPIPSV_DAC_EN_OPTION</a>, <a class="el" href="group__ospipsv__v1__4.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv__v1__4.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv__v1__4.html#ga1354e2d970f4721642687811112360d1">XOSPIPSV_HWPIN_RESET</a>, <a class="el" href="group__ospipsv__v1__4.html#gaf44a1c9ce528880318fbfd61c256b0d3">XOspiPsv_LookupConfig()</a>, <a class="el" href="group__ospipsv__v1__4.html#ga40bc60d265ec996c0327b2ae56f22e93">XOSPIPSV_SELECT_FLASH_CS0</a>, <a class="el" href="group__ospipsv__v1__4.html#ga2d17525a71d9df7268fcc4269f19270c">XOspiPsv_SelectFlash()</a>, <a class="el" href="group__ospipsv__v1__4.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv__v1__4.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, and <a class="el" href="group__ospipsv__v1__4.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>.</p>
 
 <p>Referenced by <a class="el" href="xospipsv__flash__non__blocking__read__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -652,7 +648,7 @@ Functions</h2></td></tr>
 <p>The purpose of this function is to determine the number of lines used for command, address and data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">OspiPsvPtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
+    <tr><td class="paramname">OspiPsvInstancePtr</td><td>is a pointer to the OSPIPSV driver component to use. </td></tr>
     <tr><td class="paramname">Read</td><td>is to tell whether a read or write</td></tr>
   </table>
   </dd>
@@ -660,7 +656,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>returns value to program the lines for command, address and data.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="group__ospipsv__v1__4.html#gad90cde53aa1c59a7a9a8450c8b109782">XOSPIPSV_IDAC_MODE</a>, and <a class="el" href="group__ospipsv__v1__4.html#ga2cadd5891ddc5aaa4344c4c5f04df53f">XOSPIPSV_READ_1_1_1</a>.</p>
 
 </div>
 </div>

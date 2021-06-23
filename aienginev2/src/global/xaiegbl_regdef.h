@@ -111,7 +111,9 @@ typedef struct {
 typedef struct {
 	u32 EnableEventOff;
 	XAie_RegFldAttr DisableEventOccurred;
+	XAie_RegFldAttr EnableEventOccurred;
 	XAie_RegFldAttr DisableEvent;
+	XAie_RegFldAttr EnableEvent;
 } XAie_RegCoreEvents;
 
 /*
@@ -308,7 +310,7 @@ typedef struct {
  * The typedef captures all the buffer descriptor properties for AIE DMAs
  */
 typedef struct {
-	u64 AddrMask;
+	u64 AddrMax;
 	u8 AddrAlignMask;
 	u8 AddrAlignShift;
 	u8 LenActualOffset;
@@ -495,6 +497,12 @@ typedef struct XAie_EventGroup {
 	u32 ResetValue;
 } XAie_EventGroup;
 
+/* structure to capture RscId to Events mapping */
+typedef struct {
+	u8 RscId;
+	XAie_Events Event;
+} XAie_EventMap;
+
 /* This typedef contains attributes of Events module */
 typedef struct XAie_EvntMod {
 	const u8 *XAie_EventNumber;	/* Array of event numbers with true event val */
@@ -531,6 +539,11 @@ typedef struct XAie_EvntMod {
 	u8 NumPCEvents;
 	XAie_RegFldAttr PCAddr;
 	XAie_RegFldAttr PCValid;
+	u32 BaseStatusRegOff;
+	u8 NumUserEvents;
+	const XAie_EventMap *UserEventMap;
+	const XAie_EventMap *PCEventMap;
+	const XAie_EventMap *BroadcastEventMap;
 } XAie_EvntMod;
 
 /* This typedef contains attributes of timer module */
@@ -600,9 +613,17 @@ typedef struct XAie_L2IntrMod {
 } XAie_L2IntrMod;
 
 /*
+ * This structure captures all attributes related to resource manager.
+ */
+typedef struct XAie_ResourceManager {
+	u32 **Bitmaps;
+} XAie_ResourceManager;
+
+/*
  * This typedef contains all the modules for a Tile type
  */
 typedef struct XAie_TileMod {
+	 const u8 NumModules;
 	const XAie_CoreMod *CoreMod;
 	const XAie_StrmMod *StrmSw;
 	const XAie_DmaMod  *DmaMod;

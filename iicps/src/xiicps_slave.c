@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
 * @file xiicps_slave.c
-* @addtogroup iicps_v3_12
+* @addtogroup iicps_v3_13
 * @{
 *
 * Handles slave transfers
@@ -446,8 +446,6 @@ s32 XIicPs_SlaveRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount)
 * Completion events and errors are signaled to upper layer for proper
 * handling.
 *
-* <pre>
-*
 * The interrupts that are handled are:
 * - DATA
 *	If the instance is sending, it means that the master wants to read more
@@ -471,7 +469,6 @@ s32 XIicPs_SlaveRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount)
 * - Other interrupts
 *	These interrupts are marked as error.
 *
-* </pre>
 *
 * @param	InstancePtr is a pointer to the XIicPs instance.
 *

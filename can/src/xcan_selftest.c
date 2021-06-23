@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcan_selftest.c
-* @addtogroup can_v3_5
+* @addtogroup can_v3_6
 * @{
 *
 * This file contains a diagnostic self-test function for the XCan driver.
@@ -36,6 +36,7 @@
 /************************** Constant Definitions ****************************/
 
 #define XCAN_MAX_FRAME_SIZE_IN_WORDS (XCAN_MAX_FRAME_SIZE / sizeof(u32))
+				/**< Max Frame Size */
 
 /**************************** Type Definitions ******************************/
 
@@ -44,16 +45,16 @@
 /************************** Variable Definitions ****************************/
 
 /* Buffers to hold frames to send and receive. */
-static u32 TxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS];
-static u32 RxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS];
+static u32 TxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< TxFrame Buffer */
+static u32 RxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< RxFrame Buffer */
 
 /************************** Function Prototypes *****************************/
 
 /* Message Id Constant. */
-#define TEST_MESSAGE_ID	1024
+#define TEST_MESSAGE_ID	1024  /**< Mesage ID */
 
 /* CAN Dlc Value */
-#define TEST_CAN_DLC	8
+#define TEST_CAN_DLC	8     /**< DLC length */
 
 /*****************************************************************************/
 /**

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -99,7 +99,6 @@ u8 ReadBuffer[MAX_DATA];
 *
 * Main function to call the SPI Slave Example.
 *
-* @param	None
 *
 * @return
 *		- XST_SUCCESS if successful

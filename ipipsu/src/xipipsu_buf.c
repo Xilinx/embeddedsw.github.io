@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xipipsu_buf.c
-* @addtogroup ipipsu_v2_8
+* @addtogroup ipipsu_v2_9
 * @{
 *
 * This file contains the implementation of the buffer access functions for XIpiPsu
@@ -41,7 +41,7 @@
  * 			XIPIPSU_MAX_BUFF_INDEX+1 if not valid
  *
  */
-u32 XIpiPsu_GetBufferIndex(const XIpiPsu *InstancePtr, u32 CpuMask)
+static u32 XIpiPsu_GetBufferIndex(const XIpiPsu *InstancePtr, u32 CpuMask)
 {
 	u32 BufferIndex;
 	u32 Index;

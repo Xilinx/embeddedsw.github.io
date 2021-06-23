@@ -1,5 +1,6 @@
 var xospipsv__hw_8h =
 [
+    [ "DQ0", "xospipsv__hw_8h.html#ga3e88dac3b5307c1a61019652661b19f1", null ],
     [ "XOSPIPSV_CONFIG_REG", "xospipsv__hw_8h.html#ga9c99065c7fc6263398815f5ad38c036b", null ],
     [ "XOSPIPSV_DEV_DELAY_REG", "xospipsv__hw_8h.html#gacb2e5eb9980cb8a699b455079785ba26", null ],
     [ "XOSPIPSV_DEV_INSTR_RD_CONFIG_REG", "xospipsv__hw_8h.html#ga0466ff50900fa461773b2c91f1b19e98", null ],
@@ -16,7 +17,9 @@ var xospipsv__hw_8h =
     [ "XOSPIPSV_FLASH_RD_DATA_UPPER_REG", "xospipsv__hw_8h.html#ga17185810f99dd1c95c9f802d4bf540d8", null ],
     [ "XOSPIPSV_FLASH_WR_DATA_LOWER_REG", "xospipsv__hw_8h.html#gae25b78d6934e42cf102b83af95b40d8d", null ],
     [ "XOSPIPSV_FLASH_WR_DATA_UPPER_REG", "xospipsv__hw_8h.html#ga66c3b989960351b68eb16784a84a1155", null ],
+    [ "XOSPIPSV_HW_H_", "xospipsv__hw_8h.html#ga1193fa12de3c92dee044f7519fd1749c", null ],
     [ "XOSPIPSV_IND_AHB_ADDR_TRIGGER_REG", "xospipsv__hw_8h.html#gaf1cae63e58cdbc37536e6785cec67caa", null ],
+    [ "XOSPIPSV_IND_TRIGGAHB_BASE", "xospipsv__hw_8h.html#gaf95445a44b6c272e18d9a41e77d49eef", null ],
     [ "XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG", "xospipsv__hw_8h.html#ga7553dba3a8d479ff75bae1768a1665c5", null ],
     [ "XOSPIPSV_INDIRECT_READ_XFER_NUM_BYTES_REG", "xospipsv__hw_8h.html#ga757e054f148e74fc4e5ed2188a6a8e51", null ],
     [ "XOSPIPSV_INDIRECT_READ_XFER_START_REG", "xospipsv__hw_8h.html#gad06217927a5db7955566d9d62c017950", null ],
@@ -67,5 +70,6 @@ var xospipsv__hw_8h =
     [ "XOSPIPSV_TX_THRESH_REG", "xospipsv__hw_8h.html#gadb52b710808146452600dd87d092d4e1", null ],
     [ "XOSPIPSV_UPPER_WR_PROT_REG", "xospipsv__hw_8h.html#gaed1a13a0c2899e6c67d5a8a1f415c48a", null ],
     [ "XOSPIPSV_WR_PROT_CTRL_REG", "xospipsv__hw_8h.html#ga8d56c0970054e9417618aab011b77e6a", null ],
-    [ "XOSPIPSV_WRITE_COMPLETION_CTRL_REG", "xospipsv__hw_8h.html#gaf694937850bc2196d75c5c971c4c8409", null ]
+    [ "XOSPIPSV_WRITE_COMPLETION_CTRL_REG", "xospipsv__hw_8h.html#gaf694937850bc2196d75c5c971c4c8409", null ],
+    [ "XPMC_IOU_SLCR_BASEADDR", "xospipsv__hw_8h.html#gae0342dbd8f85628c9d70814bb10a04e6", null ]
 ];

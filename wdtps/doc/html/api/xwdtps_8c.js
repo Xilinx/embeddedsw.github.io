@@ -1,6 +1,6 @@
 var xwdtps_8c =
 [
-    [ "XWdtPs_CfgInitialize", "xwdtps_8c.html#ga36af055c73aa8f1b484a44c395044b4e", null ],
+    [ "XWdtPs_CfgInitialize", "xwdtps_8c.html#gaf5315b5d46aba7c4d02b988740d44c66", null ],
     [ "XWdtPs_DisableOutput", "xwdtps_8c.html#ga0d6091a8ee48e49031cf0c8c92a87658", null ],
     [ "XWdtPs_EnableOutput", "xwdtps_8c.html#ga8f98775051f9ea2cb0a47da8a75f555a", null ],
     [ "XWdtPs_GetControlValue", "xwdtps_8c.html#ga007b92a62641b7db61edd11f8e4bc7dc", null ],

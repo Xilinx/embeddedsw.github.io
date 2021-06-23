@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xnandpsu_onfi.c
-* @addtogroup nandpsu_v1_7
+* @addtogroup nandpsu_v1_8
 * @{
 *
 * This file contains the implementation of ONFI specific functions.
@@ -41,7 +41,7 @@
 *
 * This function calculates ONFI parameter page CRC.
 *
-* @param	Parambuf is a pointer to the ONFI parameter page buffer.
+* @param	ParamBuf is a pointer to the ONFI parameter page buffer.
 * @param	StartOff is the starting offset in buffer to calculate CRC.
 * @param	Length is the number of bytes for which CRC is calculated.
 *

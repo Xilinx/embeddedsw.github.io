@@ -1,5 +1,6 @@
 var xwdttb_8h =
 [
+    [ "XWDTTB_H", "xwdttb_8h.html#gaa6893b6ff733519d217debc3a198903f", null ],
     [ "XWdtTb_Event", "xwdttb_8h.html#ga6ce266ea00535f8b8c9594d2e1f0e630", [
       [ "XWDTTB_NO_BAD_EVENT", "xwdttb_8h.html#gga6ce266ea00535f8b8c9594d2e1f0e630a46d6c3798d61cc4e49a0d5a117c2c44c", null ],
       [ "XWDTTB_RS_KICK_EVENT", "xwdttb_8h.html#gga6ce266ea00535f8b8c9594d2e1f0e630a6597551da73e180aee12bade6494796f", null ],
@@ -33,5 +34,6 @@ var xwdttb_8h =
     [ "XWdtTb_SetGenericWdtWindow", "xwdttb_8h.html#ga160723502d4b5b8797e358f96cc902c1", null ],
     [ "XWdtTb_SetWindowCount", "xwdttb_8h.html#ga924185ce28862e06ea62fa4f51bfed8d", null ],
     [ "XWdtTb_Start", "xwdttb_8h.html#gaab195e280eca1e2985509d954c2e4e52", null ],
-    [ "XWdtTb_Stop", "xwdttb_8h.html#gacd5617bce061deaa57743ea46008daf8", null ]
+    [ "XWdtTb_Stop", "xwdttb_8h.html#gacd5617bce061deaa57743ea46008daf8", null ],
+    [ "XWdtTb_ConfigTable", "xwdttb_8h.html#ga063bf798221700733fe7126926daa3b1", null ]
 ];

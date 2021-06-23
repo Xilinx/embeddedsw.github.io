@@ -7,7 +7,7 @@
 /**
 *
 * @file xhdcp1x.h
-* @addtogroup hdcp1x_v4_5
+* @addtogroup hdcp1x_v4_6
 * @{
 * @details
 *
@@ -1163,6 +1163,7 @@ XHdcp1x_Config *XHdcp1x_LookupConfig(u16 DeviceId);
 
 int XHdcp1x_CfgInitialize(XHdcp1x *InstancePtr, const XHdcp1x_Config *CfgPtr,
 		void *PhyIfPtr, UINTPTR EffectiveAddr);
+void XHdcp1x_LateInit(XHdcp1x *InstancePtr);
 
 int XHdcp1x_SelfTest(XHdcp1x *InstancePtr);
 

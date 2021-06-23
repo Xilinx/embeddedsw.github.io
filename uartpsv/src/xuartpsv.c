@@ -7,7 +7,7 @@
 /**
 *
 * @file xuartpsv.c
-* @addtogroup uartpsv_v1_4
+* @addtogroup uartpsv_v1_5
 * @{
 *
 * This file contains the implementation of the interface functions for
@@ -22,6 +22,8 @@
 * 1.0  sg   09/18/17  First Release
 * 1.2  rna  01/20/20  Add function to Program control register following
 *		      the sequence mentioned in TRM
+* 1.4  rna  03/12/21  Add read,write of LCR in 'XUartPsv_SetBaudRate' from TRM
+*           03/15/21  Improve the accuracy of FBRD value
 * </pre>
 *
 ******************************************************************************/
@@ -41,7 +43,7 @@
  * baud rate that will be generated using the specified clock and the
  * desired baud rate.
  */
-#define XUARTPSV_MAX_BAUD_ERROR_RATE	3U	/* max % error allowed */
+#define XUARTPSV_MAX_BAUD_ERROR_RATE	3U	/**< max % error allowed */
 
 /**************************** Type Definitions *******************************/
 
@@ -454,6 +456,7 @@ s32 XUartPsv_SetBaudRate(XUartPsv *InstancePtr, u32 BaudRate)
 	u32 Best_Error = 0xFFFFFFFFU;
 	u32 PercentError;
 	u32 InputClk;
+	u32 Temp;
 
 	/* Asserts validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -516,9 +519,10 @@ s32 XUartPsv_SetBaudRate(XUartPsv *InstancePtr, u32 BaudRate)
 
 			/*
 			 * Find the calculated baud rate closest to requested
-			 *  baud rate.
+			 * baud rate. For the same 'Best_Error', take the maximum
+			 * 'BAUDFDIV_Value'.
 			 */
-			if (Best_Error > BaudError) {
+			if (Best_Error >= BaudError) {
 				Best_BAUDIDIV = BAUDIDIV_Value;
 				Best_BAUDFDIV = BAUDFDIV_Value;
 				Best_Error = BaudError;
@@ -546,6 +550,11 @@ s32 XUartPsv_SetBaudRate(XUartPsv *InstancePtr, u32 BaudRate)
 	XUartPsv_WriteReg(InstancePtr->Config.BaseAddress,
 			XUARTPSV_UARTFBRD_OFFSET, Best_BAUDFDIV);
 
+	/* As per TRM, do write of LCR after writing to baud rate registers */
+	Temp = XUartPsv_ReadReg(InstancePtr->Config.BaseAddress, XUARTPSV_UARTLCR_OFFSET);
+	XUartPsv_WriteReg(InstancePtr->Config.BaseAddress,
+			XUARTPSV_UARTLCR_OFFSET, Temp);
+
 	/* Enable TX and RX */
 
 	/* Enable the UART */
@@ -569,7 +578,7 @@ s32 XUartPsv_SetBaudRate(XUartPsv *InstancePtr, u32 BaudRate)
  * 	5. Enable the Uart
  *
  * @param	InstancePtr is a pointer to the XUartPsv instance
- * @param	Control Register value to be written
+ * @param	CtrlRegister value to be written
  *
  * @return	None.
  *

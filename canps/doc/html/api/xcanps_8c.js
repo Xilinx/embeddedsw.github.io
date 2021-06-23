@@ -5,6 +5,7 @@ var xcanps_8c =
     [ "XCanPs_AcceptFilterGet", "xcanps_8c.html#gaf2ac50558c7d926fed54329667d4aaca", null ],
     [ "XCanPs_AcceptFilterGetEnabled", "xcanps_8c.html#ga52a76621e921b66e70e1bed7a58b72f7", null ],
     [ "XCanPs_AcceptFilterSet", "xcanps_8c.html#ga4de284fb96ea457b047c41fbd73ada44", null ],
+    [ "XCanPs_CfgInitialize", "xcanps_8c.html#ga458b97ea8e4dbb67edb27687a41ebd87", null ],
     [ "XCanPs_ClearBusErrorStatus", "xcanps_8c.html#ga616ac01563ef3d8f9ae57bf308bad534", null ],
     [ "XCanPs_EnterMode", "xcanps_8c.html#ga5a32b11e15d347ecae566778bb1c5e33", null ],
     [ "XCanPs_GetBaudRatePrescaler", "xcanps_8c.html#gae452283471584ad19f0c854a782640ab", null ],

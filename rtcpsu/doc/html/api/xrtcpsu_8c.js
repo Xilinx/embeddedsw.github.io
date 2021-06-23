@@ -1,6 +1,7 @@
 var xrtcpsu_8c =
 [
     [ "XRtcPsu_CalculateCalibration", "xrtcpsu_8c.html#ga33633f27f8155128cc6815d883f9e22c", null ],
+    [ "XRtcPsu_CfgInitialize", "xrtcpsu_8c.html#ga04fcc0a1ae6b27f2a3e0f1ba723c48e3", null ],
     [ "XRtcPsu_DateTimeToSec", "xrtcpsu_8c.html#ga15d97f88e65f27121f56f06480717824", null ],
     [ "XRtcPsu_GetCurrentTime", "xrtcpsu_8c.html#gad47ac1cadbbe8dd0e67588d1fc658cc2", null ],
     [ "XRtcPsu_IsAlarmEventGenerated", "xrtcpsu_8c.html#ga75de01e02970e25ccbbeb1af33d0e808", null ],

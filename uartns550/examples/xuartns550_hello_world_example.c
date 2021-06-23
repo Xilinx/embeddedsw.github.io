@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -62,7 +62,6 @@ XUartNs550 UartNs550;		/* The instance of the UART Driver */
 /**
 * Main function to call the example.
 *
-* @param	None.
 *
 * @return
 *		- XST_FAILURE if the Test Failed.

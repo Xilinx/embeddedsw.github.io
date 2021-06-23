@@ -7,7 +7,7 @@
 /**
 *
 * @file xv_hdmirxss1_coreinit.c
-* @addtogroup v_hdmirxss1_v2_0
+* @addtogroup v_hdmirxss1_v2_1
 * @{
 * @details
 
@@ -257,6 +257,8 @@ int XV_HdmiRxSs1_SubcoreInitHdcp14(XV_HdmiRxSs1 *HdmiRxSs1Ptr)
 
       /* Clear the event queue */
       XV_HdmiRxSs1_HdcpClearEvents(HdmiRxSs1Ptr);
+
+      XHdcp1x_LateInit(HdmiRxSs1Ptr->Hdcp14Ptr);
     }
   }
   return(XST_SUCCESS);
@@ -385,6 +387,9 @@ int XV_HdmiRxSs1_SubcoreInitHdcp22(XV_HdmiRxSs1 *HdmiRxSs1Ptr)
 
       /* Clear the event queue */
       XV_HdmiRxSs1_HdcpClearEvents(HdmiRxSs1Ptr);
+
+      /* Default enable broadcasting */
+      XHdcp22Rx_SetBroadcast(HdmiRxSs1Ptr->Hdcp22Ptr, TRUE);
     }
   }
 

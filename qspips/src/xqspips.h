@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspips.h
-* @addtogroup qspips_v3_8
+* @addtogroup qspips_v3_9
 * @{
 * @details
 *
@@ -225,7 +225,7 @@
 *            byte count 3 (spansion), instruction size and TXD register
 *			 changed accordingly. CR# 712502 and 703869.
 *            Added prefix to constant definitions for ConnectionMode
-*            Added (#ifdef linear base address) in the Linear read function.
+*            Added (\#ifdef linear base address) in the Linear read function.
 *            Changed  XPAR_XQSPIPS_0_LINEAR_BASEADDR to
 *            XPAR_PS7_QSPI_LINEAR_0_S_AXI_BASEADDR in
 *            XQspiPs_LqspiRead function. Fix for CR#718141.

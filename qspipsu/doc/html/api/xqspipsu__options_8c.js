@@ -1,5 +1,6 @@
 var xqspipsu__options_8c =
 [
+    [ "XQSPIPSU_NUM_OPTIONS", "xqspipsu__options_8c.html#ga7270573aac2e897d40123dcb0a181aac", null ],
     [ "XQspiPsu_ClearOptions", "xqspipsu__options_8c.html#ga0948cd1e33a60561c808e681306bcc65", null ],
     [ "XQspiPsu_GetOptions", "xqspipsu__options_8c.html#gab0d4072d9dfe0949c8e099342c2270f6", null ],
     [ "XQspiPsu_SelectFlash", "xqspipsu__options_8c.html#ga28338ae42ed4f7d2685ab18de2d21128", null ],

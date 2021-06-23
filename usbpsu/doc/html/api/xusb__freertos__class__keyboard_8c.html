@@ -77,7 +77,7 @@ $(document).ready(function(){initNavTree('xusb__freertos__class__keyboard_8c.htm
   1.0   rb   22/03/18 First release</pre><pre>*</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6b4c6d0f1989a268becf04033c4537df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__keyboard_8c.html#a6b4c6d0f1989a268becf04033c4537df">Usb_ClassReq_Keyboard</a> (struct Usb_DevData *InstancePtr, SetupPacket *SetupData)</td></tr>
+<tr class="memitem:a6b4c6d0f1989a268becf04033c4537df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__keyboard_8c.html#a6b4c6d0f1989a268becf04033c4537df">Usb_ClassReq_Keyboard</a> (struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *InstancePtr, SetupPacket *SetupData)</td></tr>
 <tr class="memdesc:a6b4c6d0f1989a268becf04033c4537df"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is class handler for HID and is called when Setup packet received is for Class request(not a Standard Device request)  <a href="#a6b4c6d0f1989a268becf04033c4537df">More...</a><br/></td></tr>
 <tr class="separator:a6b4c6d0f1989a268becf04033c4537df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba8a3fdb3b4fc01587c30bbbdba21246"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__keyboard_8c.html#aba8a3fdb3b4fc01587c30bbbdba21246">prvKeyboardTask</a> (void *pvParameters)</td></tr>
@@ -109,6 +109,8 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
+<p>References <a class="el" href="struct_usb___dev_data.html#a35624c7f1dbe7a05bd61f4abf44d5cd8">Usb_DevData::PrivateData</a>, and <a class="el" href="struct_usb___dev_data.html#ab54eee2cc1c6a5d178c976f187a2ea47">Usb_DevData::Speed</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a6b4c6d0f1989a268becf04033c4537df"></a>
@@ -118,7 +120,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void Usb_ClassReq_Keyboard </td>
           <td>(</td>
-          <td class="paramtype">struct Usb_DevData *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -138,7 +140,7 @@ Functions</h2></td></tr>
 <p>This function is class handler for HID and is called when Setup packet received is for Class request(not a Standard Device request) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is pointer to Usb_DevData instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is pointer to <a class="el" href="struct_usb___dev_data.html" title="struct Usb_DevData - Application device data Application Data ">Usb_DevData</a> instance. </td></tr>
     <tr><td class="paramname">SetupData</td><td>is pointer to SetupPacket received.</td></tr>
   </table>
   </dd>
@@ -146,7 +148,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xusb__ch9_8h.html#acd9c941e7cfb86f5b0daf5c8eaee257a">USB_CMD_CLASSREQ</a>.</p>
+<p>References <a class="el" href="struct_usb___dev_data.html#a35624c7f1dbe7a05bd61f4abf44d5cd8">Usb_DevData::PrivateData</a>, and <a class="el" href="xusb__ch9_8h.html#acd9c941e7cfb86f5b0daf5c8eaee257a">USB_CMD_CLASSREQ</a>.</p>
 
 </div>
 </div>

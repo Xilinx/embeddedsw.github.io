@@ -45,10 +45,10 @@
 *
 *******************************************************************************/
 void XPciePsu_EP_CfgInitialize(XPciePsu *PciePsuPtr,
-		XPciePsu_Config *ConfigPtr){
+		const XPciePsu_Config *ConfigPtr){
 	Xil_AssertVoid(ConfigPtr != NULL);
-	memset(PciePsuPtr, 0, sizeof(XPciePsu));
-	memcpy(&(PciePsuPtr->Config), ConfigPtr, sizeof(XPciePsu_Config));
+	(void)memset(PciePsuPtr, 0, sizeof(XPciePsu));
+	(void)memcpy(&(PciePsuPtr->Config), ConfigPtr, sizeof(XPciePsu_Config));
 }
 /******************************************************************************/
 /**
@@ -63,15 +63,24 @@ void XPciePsu_EP_BridgeInitialize(XPciePsu *PciePsuPtr)
 	Xil_AssertVoid(PciePsuPtr != NULL);
 
 	/* Bridge Configurations */
-	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg, XPCIEPSU_E_BREG_BASE_LO,
+#if defined(__aarch64__) || defined(__arch64__)
+	XPciePsu_WriteReg64(PciePsuPtr->Config.BrigReg,
+			XPCIEPSU_E_BREG_BASE_LO,
+			PciePsuPtr->Config.BrigReg);
+	XPciePsu_WriteReg64(PciePsuPtr->Config.BrigReg,
+			XPCIEPSU_E_BREG_BASE_HI, 0U);
+#else
+	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
+			XPCIEPSU_E_BREG_BASE_LO,
 			PciePsuPtr->Config.BrigReg);
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			XPCIEPSU_E_BREG_BASE_HI, 0U);
+#endif
 
 	Val = XPciePsu_ReadReg(PciePsuPtr->Config.BrigReg,
 			XPCIEPSU_E_BREG_CONTROL);
 	Val &= ~(BREG_SIZE_MASK | BREG_ENABLE_FORCE);
-	Val |= (BREG_SIZE << BREG_SIZE_SHIFT);
+	Val |= ((u32)BREG_SIZE) << BREG_SIZE_SHIFT;
 	Val |= BREG_ENABLE;
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			XPCIEPSU_E_BREG_CONTROL, Val);
@@ -114,11 +123,11 @@ void XPciePsu_EP_BridgeInitialize(XPciePsu *PciePsuPtr)
 void XPciePsu_EP_WaitForLinkup(XPciePsu *PciePsuPtr)
 {
 	Xil_AssertVoid(PciePsuPtr != NULL);
-	int Val;
+	u32 Val;
 	do {
 		Val = XPciePsu_ReadReg(PciePsuPtr->Config.PciReg,
 				XPCIEPSU_PS_LINKUP_OFFSET);
-	} while (!(Val & PCIE_LINK_UP));
+	} while ((Val & PCIE_LINK_UP) == 0U);
 }
 /******************************************************************************/
 /**
@@ -132,12 +141,12 @@ void XPciePsu_EP_WaitForLinkup(XPciePsu *PciePsuPtr)
 void XPciePsu_EP_WaitForEnumeration(XPciePsu *PciePsuPtr)
 {
 	Xil_AssertVoid(PciePsuPtr != NULL);
-	int Val;
+	u32 Val;
 	do {
 			Val = XPciePsu_ReadReg(PciePsuPtr->Config.NpMemBaseAddr,
 					COMMAND_REG);
 			usleep(ENUMERATION_WAIT_TIME);
-	} while (!(Val & PCIE_ENUMERATED_STATUS));
+	} while ((Val & PCIE_ENUMERATED_STATUS) == 0U);
 }
 /******************************************************************************/
 /**
@@ -149,13 +158,14 @@ void XPciePsu_EP_WaitForEnumeration(XPciePsu *PciePsuPtr)
 * @param	BarHi
 *
 *******************************************************************************/
-void XPciePSU_ReadBar(XPciePsu *PciePsuPtr, u32 BarNum, u32 *BarLo,
+static void XPciePSU_ReadBar(XPciePsu *PciePsuPtr, u32 BarNum, u32 *BarLo,
 		u32 *BarHi)
 {
 	Xil_AssertVoid(PciePsuPtr != NULL);
-	u32 Offset =  (BAR0_OFFSET_LO + (BarNum * 0x4));
+	u32 Offset =  (BAR0_OFFSET_LO + (BarNum * 0x4U));
+
 	*BarLo = XPciePsu_ReadReg(PciePsuPtr->Config.NpMemBaseAddr, Offset);
-	Offset = (BAR0_OFFSET_HI + (BarNum * 0x4));
+	Offset = (BAR0_OFFSET_HI + (BarNum * 0x4U));
 	*BarHi = XPciePsu_ReadReg(PciePsuPtr->Config.NpMemBaseAddr, Offset);
 
 	XPciePsu_Dbg("BAR%d LO configured by host 0x%08X\r\n", BarNum, *BarLo);
@@ -182,8 +192,8 @@ int XPciePsu_EP_SetupIngress(XPciePsu *PciePsuPtr, u32 IngressNum, u32 BarNum,
 	u32 Val;
 	u32 DestLo;
 	u32 DestHi;
-	if (IngressNum > 7) {
-		return XST_FAILURE;
+	if (IngressNum > 7U) {
+		return (s32)XST_FAILURE;
 	}
 
 	XPciePSU_ReadBar(PciePsuPtr, BarNum, &SrcLo, &SrcHi);
@@ -192,17 +202,19 @@ int XPciePsu_EP_SetupIngress(XPciePsu *PciePsuPtr, u32 IngressNum, u32 BarNum,
 	 * Using Ingress Address Translation 0 to setup translation
 	 * to PS DDR
 	 */
+
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			(INGRESS0_SRC_BASE_LO + (IngressNum * INGRESS_SIZE)),
-			SrcLo & ~0xf);
+			SrcLo & ~0xfU);
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			(INGRESS0_SRC_BASE_HI +
 			(IngressNum * INGRESS_SIZE)), SrcHi);
 
 	XPciePsu_Dbg("Done writing the Ingress Src registers\r\n");
 
-	DestLo = XPCIEPSU_LOWER32BITS(Dst);
-	DestHi = XPCIEPSU_UPPER32BITS(Dst);
+	DestLo = LOWER_32_BITS(Dst);
+	DestHi = UPPER_32_BITS(Dst);
+
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			(INGRESS0_DST_BASE_LO +
 			(IngressNum * INGRESS_SIZE)), DestLo);
@@ -220,9 +232,10 @@ int XPciePsu_EP_SetupIngress(XPciePsu *PciePsuPtr, u32 IngressNum, u32 BarNum,
 	Val |= (((u32)INGRESS_SIZE_ENCODING << INGRESS_SIZE_SHIFT) |
 		(u32)INGRESS_ENABLE | (u32)INGRESS_SECURITY_ENABLE);
 	Val |= INGRESS_RD_WR_ATTR;
+
 	XPciePsu_WriteReg(PciePsuPtr->Config.BrigReg,
 			(INGRESS0_CONTROL + (IngressNum * INGRESS_SIZE)), Val);
 
 	XPciePsu_Dbg("Done setting up the ingress trasnslation registers\r\n");
-	return XST_SUCCESS;
+	return (s32)XST_SUCCESS;
 }

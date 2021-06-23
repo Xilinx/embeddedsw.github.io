@@ -1,5 +1,6 @@
 var xiicps__options_8c =
 [
+    [ "XIICPS_NUM_OPTIONS", "xiicps__options_8c.html#ga7835042cdace3ed1433a81d373d92da7", null ],
     [ "XIicPs_ClearOptions", "xiicps__options_8c.html#ga87cbf2622a9c6ad66b18d4c3f9575a76", null ],
     [ "XIicPs_GetOptions", "xiicps__options_8c.html#ga20964e35a74f4e16f90e78510c9b4337", null ],
     [ "XIicPs_GetSClk", "xiicps__options_8c.html#ga9f2d2d3d11c2c9125a5bc8a0d95593cb", null ],

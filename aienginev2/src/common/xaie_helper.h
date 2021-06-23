@@ -42,6 +42,9 @@
 #define XAIE_ERROR(...) \
 	do { XAie_Log(stderr, "[AIE ERROR]: \t", __VA_ARGS__); } while(0)
 
+#define XAIE_WARN(...) \
+	do { XAie_Log(stderr, "[AIE WARNING]: \t", __VA_ARGS__); } while(0)
+
 #ifdef XAIE_DEBUG
 
 #define XAIE_DBG(...) \
@@ -52,6 +55,29 @@
 #define XAIE_DBG(DevInst, ...) {}
 
 #endif /* XAIE_DEBUG */
+
+/* Compute offset of field within a structure */
+#define XAIE_OFFSET_OF(structure, member) \
+	((uintptr_t)&(((structure *)0)->member))
+
+/* Compute a pointer to a structure given a pointer to one of its fields */
+#define XAIE_CONTAINER_OF(ptr, structure, member) \
+	(void*)((uintptr_t)(ptr) - XAIE_OFFSET_OF(structure, member))
+/**************************** Type Definitions *******************************/
+typedef enum {
+	XAIE_IO_WRITE,
+	XAIE_IO_BLOCKWRITE,
+	XAIE_IO_BLOCKSET,
+} XAie_TxnOpcode;
+
+typedef struct XAie_TxnCmd {
+	XAie_TxnOpcode Opcode;
+	u32 Mask;
+	u64 RegOff;
+	u32 Value;
+	u64 DataPtr;
+	u32 Size;
+} XAie_TxnCmd;
 
 /************************** Function Definitions *****************************/
 /*****************************************************************************/
@@ -72,72 +98,6 @@ static inline u64 _XAie_GetTileAddr(XAie_DevInst *DevInst, int R, int C)
 	return (R << DevInst->DevProp.RowShift) | (C << DevInst->DevProp.ColShift);
 }
 
-static inline void XAie_Write32(XAie_DevInst *DevInst, u64 RegOff, u32 Value)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	Backend->Ops.Write32((void*)(DevInst->IOInst), RegOff, Value);
-}
-
-static inline u32 XAie_Read32(XAie_DevInst *DevInst, u64 RegOff)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	return Backend->Ops.Read32((void*)(DevInst->IOInst), RegOff);
-}
-
-static inline void XAie_MaskWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 Mask,
-		u32 Value)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	Backend->Ops.MaskWrite32((void *)(DevInst->IOInst), RegOff, Mask,
-			Value);
-}
-
-static inline u32 XAie_MaskPoll(XAie_DevInst *DevInst, u64 RegOff, u32 Mask,
-		u32 Value, u32 TimeOutUs)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	return Backend->Ops.MaskPoll((void*)(DevInst->IOInst), RegOff, Mask,
-			Value, TimeOutUs);
-}
-
-static inline void XAie_BlockWrite32(XAie_DevInst *DevInst, u64 RegOff,
-		u32 *Data, u32 Size)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	Backend->Ops.BlockWrite32((void *)(DevInst->IOInst), RegOff, Data,
-			Size);
-}
-
-static inline void XAie_BlockSet32(XAie_DevInst *DevInst, u64 RegOff, u32 Data,
-		u32 Size)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	Backend->Ops.BlockSet32((void *)(DevInst->IOInst), RegOff, Data, Size);
-}
-
-static inline void XAie_CmdWrite(XAie_DevInst *DevInst, u8 Col, u8 Row,
-		u8 Command, u32 CmdWd0, u32 CmdWd1, const char *CmdStr)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	Backend->Ops.CmdWrite((void *)(DevInst->IOInst), Col, Row, Command,
-			CmdWd0, CmdWd1, CmdStr);
-}
-
-static inline AieRC XAie_RunOp(XAie_DevInst *DevInst, XAie_BackendOpCode Op,
-		void *Arg)
-{
-	const XAie_Backend *Backend = DevInst->Backend;
-
-	return Backend->Ops.RunOp(DevInst->IOInst, DevInst, Op, Arg);
-}
-
 void XAie_Log(FILE *Fd, const char* prefix, const char *Format, ...);
 u8 _XAie_GetTileTypefromLoc(XAie_DevInst *DevInst, XAie_LocType Loc);
 AieRC _XAie_CheckModule(XAie_DevInst *DevInst, XAie_LocType Loc,
@@ -150,5 +110,24 @@ u32 _XAie_GetFatalGroupErrors(XAie_DevInst *DevInst, XAie_LocType Loc,
 		XAie_ModuleType Module);
 u32 _XAie_GetTileBitPosFromLoc(XAie_DevInst *DevInst, XAie_LocType Loc);
 void _XAie_SetBitInBitmap(u32 *Bitmap, u32 StartSetBit, u32 NumSetBit);
+void _XAie_ClrBitInBitmap(u32 *Bitmap, u32 StartBit, u32 NumBit);
+AieRC XAie_Write32(XAie_DevInst *DevInst, u64 RegOff, u32 Value);
+AieRC XAie_Read32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data);
+AieRC XAie_MaskWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value);
+AieRC XAie_MaskPoll(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value,
+		u32 TimeOutUs);
+AieRC XAie_BlockWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data, u32 Size);
+AieRC XAie_BlockSet32(XAie_DevInst *DevInst, u64 RegOff, u32 Data, u32 Size);
+AieRC XAie_CmdWrite(XAie_DevInst *DevInst, u8 Col, u8 Row, u8 Command,
+		u32 CmdWd0, u32 CmdWd1, const char *CmdStr);
+AieRC XAie_RunOp(XAie_DevInst *DevInst, XAie_BackendOpCode Op, void *Arg);
+AieRC _XAie_Txn_Start(XAie_DevInst *DevInst, u32 Flags);
+AieRC _XAie_Txn_Submit(XAie_DevInst *DevInst, XAie_TxnInst *TxnInst);
+XAie_TxnInst* _XAie_TxnExport(XAie_DevInst *DevInst);
+AieRC _XAie_TxnFree(XAie_TxnInst *Inst);
+void _XAie_TxnResourceCleanup(XAie_DevInst *DevInst);
+u32 _XAie_GetNumRows(XAie_DevInst *DevInst, u8 TileType);
+u32 _XAie_GetStartRow(XAie_DevInst *DevInst, u8 TileType);
+
 #endif		/* end of protection macro */
 /** @} */

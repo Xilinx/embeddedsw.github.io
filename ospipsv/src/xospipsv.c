@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv.c
-* @addtogroup ospipsv_v1_3
+* @addtogroup ospipsv_v1_4
 * @{
 *
 * This file implements the functions required to use the OSPIPSV hardware to
@@ -35,6 +35,8 @@
 *       sk   02/20/20 Make XOspiPsv_SetDllDelay() API as user API.
 *       sk   02/20/20 Added support for DLL Master mode.
 * 1.3   sk   10/06/20 Clear the ISR for polled mode transfers.
+* 1.4   sk   02/18/21 Added support for Dual byte opcode.
+*       sk   05/07/21 Fixed MISRAC violations.
 *
 * </pre>
 *
@@ -48,9 +50,14 @@
 #include "xplatform_info.h"
 
 /************************** Constant Definitions *****************************/
-#define SILICON_VERSION_1	0x10U
+
+#define SILICON_VERSION_1	0x10U	/**< Silicon version */
+
+/**
+ * Minimum frequency for Tap grain selection.
+ */
 #define XOSPIPSV_TAP_GRAN_SEL_MIN_FREQ	120000000U
-#define READ_ID		0x9FU
+#define READ_ID		0x9FU	/**< Read Id opcode */
 
 /**************************** Type Definitions *******************************/
 
@@ -117,6 +124,7 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->DeviceIdData = 0U;
 		InstancePtr->Extra_DummyCycle = 0U;
 		InstancePtr->DllMode = XOSPIPSV_DLL_BYPASS_MODE;
+		InstancePtr->DualByteOpcodeEn = 0U;
 
 		if (XGetPSVersion_Info() != SILICON_VERSION_1) {
 			InstancePtr->DllMode = XOSPIPSV_DLL_MASTER_MODE;
@@ -233,11 +241,11 @@ u32 XOspiPsv_DeviceReset(u8 Type)
 		usleep(1);
 		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
 				((u32)XPMC_MIO12_DATA_MASK_LSW << XPMC_MIO12_DATA_MASK_LSW_SHIFT));
-		usleep(1);
+		usleep(10);
 		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
 			((u32)XPMC_MIO12_DATA_MASK_LSW << XPMC_MIO12_DATA_MASK_LSW_SHIFT) |
 			(u32)XPMC_MIO12_MASK);
-		usleep(1);
+		usleep(35);
 	} else {
 		/* TODO In-band reset */
 		Status = (u32)XST_FAILURE;
@@ -681,7 +689,7 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 				(XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG_IND_OPS_DONE_STATUS_FLD_MASK));
 			if (Msg->Xfer64bit != (u8)1U) {
 				if (InstancePtr->Config.IsCacheCoherent == 0U) {
-					Xil_DCacheInvalidateRange((UINTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+					Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 				}
 			}
 			/* Clear the ISR */
@@ -839,12 +847,13 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 			TXTap = (u32)XOSPIPSV_SDR_TX_VAL_MASTER;
 		}
 	}
+
 	TXTap = TXTap <<
 			XOSPIPSV_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD_SHIFT;
 	FlashMsg.Opcode = READ_ID;
 	FlashMsg.Addrsize = 0U;
 	FlashMsg.Addrvalid = 0U;
-	FlashMsg.TxBfrPtr = ReadBfrPtr;
+	FlashMsg.TxBfrPtr = NULL;
 	FlashMsg.RxBfrPtr = ReadBfrPtr;
 	FlashMsg.ByteCount = ByteCnt;
 	FlashMsg.Flags = XOSPIPSV_MSG_FLAG_RX;
@@ -855,6 +864,14 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 	if (InstancePtr->SdrDdrMode == XOSPIPSV_EDGE_MODE_DDR_PHY) {
 		FlashMsg.Dummy = 8U;
 		FlashMsg.Proto = XOSPIPSV_READ_8_0_8;
+	}
+
+	if (InstancePtr->DualByteOpcodeEn != 0U) {
+		FlashMsg.ExtendedOpcode = (u8)(~FlashMsg.Opcode);
+		FlashMsg.Addrsize = 4U;
+		FlashMsg.Addrvalid = 1U;
+		FlashMsg.Dummy = 4;
+		FlashMsg.Proto = XOSPIPSV_READ_8_8_8;
 	}
 
 	if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
@@ -882,6 +899,44 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 	Status = XOspiPsv_ExecuteRxTuning(InstancePtr, &FlashMsg, TXTap);
 
 RETURN_PATH:
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This function configures the dual-byte opcode mode.
+*
+* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	Enable is 1 to enable dual-byte opcode, 0 to disable.
+*
+* @return	None.
+*
+******************************************************************************/
+u32 XOspiPsv_ConfigDualByteOpcode(XOspiPsv *InstancePtr, u8 Enable)
+{
+	u32 Status;
+	u32 ConfigReg;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	if (Enable > (u8)XOSPIPSV_DUAL_BYTE_OP_ENABLE) {
+		Status = (u32)XST_FAILURE;
+		goto ERROR_PATH;
+	}
+
+	ConfigReg = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+			XOSPIPSV_CONFIG_REG);
+	ConfigReg &= ~XOSPIPSV_CONFIG_REG_DUAL_BYTE_OPCODE_EN_FLD_MASK;
+	ConfigReg |= ((u32)Enable << (u32)XOSPIPSV_CONFIG_REG_DUAL_BYTE_OPCODE_EN_FLD_SHIFT);
+	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
+			XOSPIPSV_CONFIG_REG, ConfigReg);
+	InstancePtr->DualByteOpcodeEn = Enable;
+
+	Status = (u32)XST_SUCCESS;
+
+ERROR_PATH:
 	return Status;
 }
 
@@ -931,8 +986,6 @@ void XOspiPsv_SetStatusHandler(XOspiPsv *InstancePtr, void *CallBackRef,
  *
  * @param	CallBackRef is a pointer to the upper layer callback reference
  * @param	StatusEvent is the event that just occurred.
- * @param	ByteCount is the number of bytes transferred up until the event
- *		occurred.
  *
  * @return	None.
  *

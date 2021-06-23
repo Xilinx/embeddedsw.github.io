@@ -61,7 +61,8 @@ $(document).ready(function(){initNavTree('xdptxss__selftest__example_8c.html',''
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">xdptxss_selftest_example.c File Reference</div>  </div>
 </div><!--header-->
@@ -89,6 +90,11 @@ Functions</h2></td></tr>
 <tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdptxss__selftest__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
 <tr class="memdesc:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the main function for <a class="el" href="struct_x_dp_tx_ss.html" title="The DisplayPort TX Subsystem driver instance data. ">XDpTxSs</a> self test example.  <a href="#ae66f6b31b5ad750f1fe042a706a4e3d4">More...</a><br/></td></tr>
 <tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a362bbd25e0f7e6fd42da96f398eac7ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_dp_tx_ss.html">XDpTxSs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdptxss__selftest__example_8c.html#a362bbd25e0f7e6fd42da96f398eac7ff">DpTxSsInst</a></td></tr>
+<tr class="separator:a362bbd25e0f7e6fd42da96f398eac7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="adc0da41ea69de74b4a2f24eb6d2580b7"></a>
@@ -120,7 +126,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_dp_tx_ss___config.html#aee6c9866e032c7e70e399bc0dac84aa6">XDpTxSs_Config::BaseAddress</a>, <a class="el" href="group__dptxss__v6__4.html#gafb7b3b467a12177fb0c8053f4b7d70a1">XDpTxSs_CfgInitialize()</a>, <a class="el" href="group__dptxss__v6__4.html#ga08363492b9842c06051fc2d5e8809f86">XDpTxSs_LookupConfig()</a>, and <a class="el" href="group__dptxss__v6__4.html#gadba9a0b5fa0a01037963ebc444d37407">XDpTxSs_SelfTest()</a>.</p>
+<p>References <a class="el" href="struct_x_dp_tx_ss___config.html#aee6c9866e032c7e70e399bc0dac84aa6">XDpTxSs_Config::BaseAddress</a>, <a class="el" href="group__dptxss__v6__5.html#gafb7b3b467a12177fb0c8053f4b7d70a1">XDpTxSs_CfgInitialize()</a>, <a class="el" href="group__dptxss__v6__5.html#ga08363492b9842c06051fc2d5e8809f86">XDpTxSs_LookupConfig()</a>, and <a class="el" href="group__dptxss__v6__5.html#gadba9a0b5fa0a01037963ebc444d37407">XDpTxSs_SelfTest()</a>.</p>
 
 <p>Referenced by <a class="el" href="xdptxss__selftest__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
@@ -156,6 +162,27 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xdptxss__selftest__example_8c.html#adc0da41ea69de74b4a2f24eb6d2580b7">DpTxSs_SelfTestExample()</a>.</p>
 
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="a362bbd25e0f7e6fd42da96f398eac7ff"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_x_dp_tx_ss.html">XDpTxSs</a> DpTxSsInst</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre>
+MODIFICATION HISTORY:</pre><pre>Ver  Who     Date      Changes
+</p>
+<hr/>
+<p>
+1.00 Nishant 19/12/20 Added support for vck190.Added ReadModifyWrite()
+                                                for writing to vck190 register space.set_vphy() renamed
+                                                to config_phy() and has two parameters for linerate and
+                                                lanecount.</pre><pre></pre> 
 </div>
 </div>
 </div><!-- contents -->

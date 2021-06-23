@@ -84,13 +84,13 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 1.8   pm   15/09/20 Fixed C++ Compilation error.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adabccc59f14f73295d6d3e8ab2a84ed3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#adabccc59f14f73295d6d3e8ab2a84ed3">ClassReq</a> (struct Usb_DevData *InstancePtr, SetupPacket *SetupData)</td></tr>
+<tr class="memitem:adabccc59f14f73295d6d3e8ab2a84ed3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#adabccc59f14f73295d6d3e8ab2a84ed3">ClassReq</a> (struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *InstancePtr, SetupPacket *SetupData)</td></tr>
 <tr class="memdesc:adabccc59f14f73295d6d3e8ab2a84ed3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is class handler for Mass storage and is called when Setup packet received is for Class request(not Standard Device request)  <a href="#adabccc59f14f73295d6d3e8ab2a84ed3">More...</a><br/></td></tr>
 <tr class="separator:adabccc59f14f73295d6d3e8ab2a84ed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bc2f904e6d177db430b985b347855ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#a0bc2f904e6d177db430b985b347855ef">ParseCBW</a> (struct Usb_DevData *InstancePtr)</td></tr>
+<tr class="memitem:a0bc2f904e6d177db430b985b347855ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#a0bc2f904e6d177db430b985b347855ef">ParseCBW</a> (struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a0bc2f904e6d177db430b985b347855ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function handles Reduced Block Command (RBC) requests from the host.  <a href="#a0bc2f904e6d177db430b985b347855ef">More...</a><br/></td></tr>
 <tr class="separator:a0bc2f904e6d177db430b985b347855ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6b3731e43cb34b4079813eb05fdff26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#af6b3731e43cb34b4079813eb05fdff26">SendCSW</a> (struct Usb_DevData *InstancePtr, u32 Length)</td></tr>
+<tr class="memitem:af6b3731e43cb34b4079813eb05fdff26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__class__storage_8c.html#af6b3731e43cb34b4079813eb05fdff26">SendCSW</a> (struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *InstancePtr, u32 Length)</td></tr>
 <tr class="memdesc:af6b3731e43cb34b4079813eb05fdff26"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is used to send SCSI Command Status Wrapper to Host.  <a href="#af6b3731e43cb34b4079813eb05fdff26">More...</a><br/></td></tr>
 <tr class="separator:af6b3731e43cb34b4079813eb05fdff26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -102,7 +102,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void ClassReq </td>
           <td>(</td>
-          <td class="paramtype">struct Usb_DevData *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -122,7 +122,7 @@ Functions</h2></td></tr>
 <p>This function is class handler for Mass storage and is called when Setup packet received is for Class request(not Standard Device request) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is pointer to Usb_DevData instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is pointer to <a class="el" href="struct_usb___dev_data.html" title="struct Usb_DevData - Application device data Application Data ">Usb_DevData</a> instance. </td></tr>
     <tr><td class="paramname">SetupData</td><td>is pointer to SetupPacket received.</td></tr>
   </table>
   </dd>
@@ -139,7 +139,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void ParseCBW </td>
           <td>(</td>
-          <td class="paramtype">struct Usb_DevData *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em></td><td>)</td>
           <td></td>
         </tr>
@@ -149,14 +149,14 @@ Functions</h2></td></tr>
 <p>This function handles Reduced Block Command (RBC) requests from the host. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to Usb_DevData instance of the controller.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to <a class="el" href="struct_usb___dev_data.html" title="struct Usb_DevData - Application device data Application Data ">Usb_DevData</a> instance of the controller.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xusb__wrapper_8c.html#a02e8ef492f6fb18133f23f90205cc573">IsSuperSpeed()</a>, and <a class="el" href="xusb__class__composite_8c.html#a3b339129f8d97ba9e8fd4cde9bc8e756">SendCSW()</a>.</p>
+<p>References <a class="el" href="xusb__wrapper_8c.html#a02e8ef492f6fb18133f23f90205cc573">IsSuperSpeed()</a>, <a class="el" href="struct_usb___dev_data.html#a35624c7f1dbe7a05bd61f4abf44d5cd8">Usb_DevData::PrivateData</a>, <a class="el" href="xusb__class__composite_8c.html#a3b339129f8d97ba9e8fd4cde9bc8e756">SendCSW()</a>, and <a class="el" href="xusbpsu_8h.html#a49b4750a0007cdf47d99b02c39d4ee3f">Status</a>.</p>
 
 </div>
 </div>
@@ -167,7 +167,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void SendCSW </td>
           <td>(</td>
-          <td class="paramtype">struct Usb_DevData *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -187,13 +187,15 @@ Functions</h2></td></tr>
 <p>This function is used to send SCSI Command Status Wrapper to Host. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is pointer to Usb_DevData instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is pointer to <a class="el" href="struct_usb___dev_data.html" title="struct Usb_DevData - Application device data Application Data ">Usb_DevData</a> instance. </td></tr>
     <tr><td class="paramname">Length</td><td>is the data residue.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
+
+<p>References <a class="el" href="struct_usb___dev_data.html#a35624c7f1dbe7a05bd61f4abf44d5cd8">Usb_DevData::PrivateData</a>.</p>
 
 </div>
 </div>

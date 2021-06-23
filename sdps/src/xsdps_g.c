@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_g.c
-* @addtogroup sdps_v3_11
+* @addtogroup sdps_v3_12
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -31,9 +31,9 @@
 #include "xparameters.h"
 #include "xsdps.h"
 
-/*
-* The configuration table for devices
-*/
+/**
+ * The configuration table for devices
+ */
 
 XSdPs_Config XSdPs_ConfigTable[] =
 {

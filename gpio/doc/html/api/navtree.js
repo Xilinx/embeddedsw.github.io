@@ -2,7 +2,11 @@ var NAVTREE =
 [
   [ "gpio", "index.html", [
     [ "Data Structures", null, [
-      [ "Data Structures", "annotated.html", "annotated" ]
+      [ "Data Structures", "annotated.html", "annotated" ],
+      [ "Data Fields", "functions.html", [
+        [ "All", "functions.html", null ],
+        [ "Variables", "functions_vars.html", null ]
+      ] ]
     ] ],
     [ "APIs", "globals.html", [
       [ "All", "globals.html", null ],

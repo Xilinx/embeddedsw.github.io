@@ -1,10 +1,8 @@
 var xiomodule_8h =
 [
-    [ "XIN_SVC_SGL_ISR_OPTION", "xiomodule_8h.html#gaf4bce8e2035f391b702686e49c66c839", null ],
-    [ "XTC_INT_MODE_OPTION", "xiomodule_8h.html#gaad72f141ec429ad4b782868c33b32c1b", null ],
-    [ "XTC_PRESCALER_NONE", "xiomodule_8h.html#gaf20fd1c0a59c98120a71fca59e4ebaee", null ],
     [ "XIOModule_Handler", "xiomodule_8h.html#ga40a7295554b9483f28c0f004b0c53302", null ],
     [ "XIOModule_Timer_Handler", "xiomodule_8h.html#ga3a95e8a205259686d85802168e10cdb3", null ],
+    [ "XIOModel_Timer_GetOptions", "xiomodule_8h.html#gae50d24ec7a10fc2b3167d5f3a6070107", null ],
     [ "XIOModule_Acknowledge", "xiomodule_8h.html#ga036018140fd9f14af05eec37b3cb2e93", null ],
     [ "XIOModule_CfgInitialize", "xiomodule_8h.html#ga99ce16ec0f081059b1971bce386b6f50", null ],
     [ "XIOModule_ClearStats", "xiomodule_8h.html#ga61a582e9785291f7c6e0b91c19c46bd8", null ],
@@ -35,7 +33,9 @@ var xiomodule_8h =
     [ "XIOModule_Recv", "xiomodule_8h.html#gae9e27102d95385e1557fd488da7b2936", null ],
     [ "XIOModule_Reset", "xiomodule_8h.html#gae5d1cb85ee2100003b7e2dcc160c47c0", null ],
     [ "XIOModule_ResetFifos", "xiomodule_8h.html#gadabb5f2e09817afb284173f31f3d7265", null ],
+    [ "XIOModule_SelfTest", "xiomodule_8h.html#ga208ab3e1ba68b1fdf48654104ac82b2f", null ],
     [ "XIOModule_Send", "xiomodule_8h.html#ga6db3efbd9634e6f58b9fb6a67f82b8c2", null ],
+    [ "XIOModule_SetBaudRate", "xiomodule_8h.html#ga5f9f252854955d1f41a3412077c1bc93", null ],
     [ "XIOModule_SetHandler", "xiomodule_8h.html#gab2e5ac3f9e5a286fd376120cb27f545d", null ],
     [ "XIOModule_SetNormalIntrMode", "xiomodule_8h.html#gab4ddcaf38d655ca70d916c1d5ba96240", null ],
     [ "XIOModule_SetOptions", "xiomodule_8h.html#ga1c71be14079487aef1623f8427ba39bb", null ],

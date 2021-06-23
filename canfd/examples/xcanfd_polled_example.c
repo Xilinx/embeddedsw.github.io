@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /****************************************************************************/
 /**
 *
-* @file XCanFd_polled_example.c
+* @file xcanfd_polled_example.c
 *
 * Contains an example of how to use the XCan driver directly. The example here
 * shows using the driver/device in polled mode.
@@ -116,7 +116,6 @@ static XCanFd CanFd;
 * Main function to call the example. This function is not included if the
 * example is generated from the TestAppGen test tool.
 *
-* @param	None
 *
 * @return
 *		- XST_SUCCESS if the example has completed successfully.

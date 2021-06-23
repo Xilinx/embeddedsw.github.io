@@ -23,13 +23,6 @@ var NAVTREEINDEX0 =
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
-"example.html#ex3":[3,2],
-"example.html#ex4":[3,3],
-"example.html#ex5":[3,4],
-"example.html#ex6":[3,5],
-"example.html#ex7":[3,6],
-"example.html#ex8":[3,7],
-"example.html#ex9":[3,8],
 "files.html":[2],
 "function__prototype_8c.html":[2,2],
 "function__prototype_8c.html#a0e803ea72f41466ba56bd78511996d8a":[2,2,14],
@@ -249,5 +242,12 @@ var NAVTREEINDEX0 =
 "xcsiss__selftest_8c.html#ga138571d7c16631b9c6166a297e2b06d4":[2,16,0],
 "xcsiss__selftest__example_8c.html":[2,17],
 "xcsiss__selftest__example_8c.html#a670a4c28d6e2f3b6341f0f261a7a1835":[2,17,0],
-"xcsiss__selftest__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,17,1]
+"xcsiss__selftest__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,17,1],
+"xcsiss__sinit_8c.html":[2,18],
+"xcsiss__sinit_8c.html#gaff8115edc1de28ca0524d489e736480c":[2,18,0],
+"xhdcp_8c.html":[2,19],
+"xhdcp_8h.html":[2,20],
+"xhdcp_8h.html#a9e17e5c2544c08ef9b2c61a9ce460c1e":[2,20,0],
+"xhdmi__edid_8c.html":[2,21],
+"xhdmi__edid_8h.html":[2,22]
 };

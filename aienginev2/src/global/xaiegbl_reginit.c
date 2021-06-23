@@ -117,8 +117,12 @@ static const XAie_RegCoreEvents AieCoreEventReg =
 	.EnableEventOff = XAIEGBL_CORE_ENAEVE,
 	.DisableEventOccurred.Lsb = XAIEGBL_CORE_ENAEVE_DISEVTOCC_LSB,
 	.DisableEventOccurred.Mask = XAIEGBL_CORE_ENAEVE_DISEVTOCC_MASK,
+	.EnableEventOccurred.Lsb = XAIEGBL_CORE_ENAEVE_ENAEVTOCC_LSB,
+	.EnableEventOccurred.Mask = XAIEGBL_CORE_ENAEVE_ENAEVTOCC_MASK,
 	.DisableEvent.Lsb =  XAIEGBL_CORE_ENAEVE_DISEVT_LSB,
 	.DisableEvent.Mask =  XAIEGBL_CORE_ENAEVE_DISEVT_MASK,
+	.EnableEvent.Lsb = XAIEGBL_CORE_ENAEVE_ENAEVT_LSB,
+	.EnableEvent.Mask = XAIEGBL_CORE_ENAEVE_ENAEVT_MASK,
 };
 
 /*
@@ -1309,7 +1313,7 @@ static const XAie_DmaBdProp AieTileDmaProp =
 {
 	.AddrAlignMask = 0x3,
 	.AddrAlignShift = 0x2,
-	.AddrMask = (1U << 16U) - 1U,
+	.AddrMax = 0x10000,
 	.LenActualOffset = 1U,
 	.Buffer = &AieTileDmaBufferProp,
 	.DoubleBuffer = &AieTileDmaDoubleBufferProp,
@@ -1483,7 +1487,7 @@ static const XAie_DmaBdProp AieShimDmaProp =
 {
 	.AddrAlignMask = 0xF,
 	.AddrAlignShift = 0x0,
-	.AddrMask = (1UL << 48U) - 1U,
+	.AddrMax = 0x1000000000000,
 	.LenActualOffset = 0U,
 	.Buffer = &AieShimDmaBufferProp,
 	.DoubleBuffer = NULL,
@@ -2435,6 +2439,54 @@ static const XAie_EventGroup AiePlGroupEvent[] =
 	},
 };
 
+/* mapping of user events for core module */
+static const XAie_EventMap AieTileCoreModUserEventMap =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_USER_EVENT_0_CORE,
+};
+
+/* mapping of user events for memory module */
+static const XAie_EventMap AieTileMemModUserEventStart =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_USER_EVENT_0_MEM,
+};
+
+/* mapping of user events for memory module */
+static const XAie_EventMap ShimTilePlModUserEventStart =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_USER_EVENT_0_PL,
+};
+
+/* mapping of broadcast events for core module */
+static const XAie_EventMap AieTileCoreModBroadcastEventMap =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_BROADCAST_0_CORE,
+};
+
+/* mapping of broadcast events for memory module */
+static const XAie_EventMap AieTileMemModBroadcastEventStart =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_BROADCAST_0_MEM,
+};
+
+/* mapping of broadcast events for Pl module */
+static const XAie_EventMap ShimTilePlModBroadcastEventStart =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_BROADCAST_A_0_PL,
+};
+
+static const XAie_EventMap AieTileCoreModPCEventMap =
+{
+	.RscId = 0U,
+	.Event = XAIE_EVENT_PC_0_CORE,
+};
+
 /*
  * Data structure to capture core and memory module events properties
  * For memory module default error group mask enables,
@@ -2501,6 +2553,11 @@ static const XAie_EvntMod AieTileEvntMod[] =
 		.NumPCEvents = XAIE_FEATURE_UNAVAILABLE,
 		.PCAddr = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
 		.PCValid = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
+		.BaseStatusRegOff = XAIEGBL_MEM_EVTSTA0,
+		.NumUserEvents = 4U,
+		.UserEventMap = &AieTileMemModUserEventStart,
+		.PCEventMap = NULL,
+		.BroadcastEventMap = &AieTileMemModBroadcastEventStart,
 	},
 	{
 		.XAie_EventNumber = AieTileCoreModEventMapping,
@@ -2537,6 +2594,11 @@ static const XAie_EvntMod AieTileEvntMod[] =
 		.NumPCEvents = 4U,
 		.PCAddr = {XAIEGBL_CORE_PCEVT0_PCADD_LSB, XAIEGBL_CORE_PCEVT0_PCADD_MASK},
 		.PCValid = {XAIEGBL_CORE_PCEVT0_VAL_LSB, XAIEGBL_CORE_PCEVT0_VAL_MASK},
+		.BaseStatusRegOff = XAIEGBL_CORE_EVTSTA0,
+		.NumUserEvents = 4U,
+		.UserEventMap = &AieTileCoreModUserEventMap,
+		.PCEventMap = &AieTileCoreModPCEventMap,
+		.BroadcastEventMap = &AieTileCoreModBroadcastEventMap,
 	},
 };
 
@@ -2590,6 +2652,11 @@ static const XAie_EvntMod AieNocEvntMod =
 	.NumPCEvents = XAIE_FEATURE_UNAVAILABLE,
 	.PCAddr = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
 	.PCValid = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
+	.BaseStatusRegOff = XAIEGBL_PL_EVTSTA0,
+	.NumUserEvents = 4U,
+	.UserEventMap = &ShimTilePlModUserEventStart,
+	.BroadcastEventMap = &ShimTilePlModBroadcastEventStart,
+	.PCEventMap = NULL,
 };
 
 /* Data structure to capture PL module events properties.
@@ -2642,6 +2709,10 @@ static const XAie_EvntMod AiePlEvntMod =
 	.NumPCEvents = XAIE_FEATURE_UNAVAILABLE,
 	.PCAddr = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
 	.PCValid = {XAIE_FEATURE_UNAVAILABLE, XAIE_FEATURE_UNAVAILABLE},
+	.BaseStatusRegOff = XAIEGBL_PL_EVTSTA0,
+	.NumUserEvents = 4U,
+	.UserEventMap = &ShimTilePlModUserEventStart,
+	.BroadcastEventMap = &ShimTilePlModBroadcastEventStart,
 };
 
 /* Data structure to capture core and mem module timer properties */
@@ -2848,6 +2919,7 @@ XAie_TileMod AieMod[] =
 		/*
 		 * AIE Tile Module indexed using XAIEGBL_TILE_TYPE_AIETILE
 		 */
+		.NumModules = 2U,
 		.CoreMod = &AieCoreMod,
 		.StrmSw  = &AieTileStrmSw,
 		.DmaMod  = &AieTileDmaMod,
@@ -2866,6 +2938,7 @@ XAie_TileMod AieMod[] =
 		/*
 		 * AIE Shim Noc Module indexed using XAIEGBL_TILE_TYPE_SHIMNOC
 		 */
+		.NumModules = 1U,
 		.CoreMod = NULL,
 		.StrmSw  = &AieShimStrmSw,
 		.DmaMod  = &AieShimDmaMod,
@@ -2884,6 +2957,7 @@ XAie_TileMod AieMod[] =
 		/*
 		 * AIE Shim PL Module indexed using XAIEGBL_TILE_TYPE_SHIMPL
 		 */
+		.NumModules = 1U,
 		.CoreMod = NULL,
 		.StrmSw  = &AieShimStrmSw,
 		.DmaMod  = NULL,
@@ -2902,6 +2976,7 @@ XAie_TileMod AieMod[] =
 		/*
 		 * AIE Reserved Module indexed using XAIEGBL_TILE_TYPE_RESERVED
 		 */
+		.NumModules = 0U,
 		.CoreMod = NULL,
 		.StrmSw  = NULL,
 		.DmaMod  = NULL,

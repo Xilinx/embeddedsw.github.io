@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_mts.c
-* @addtogroup rfdc_v8_1
+* @addtogroup rfdc_v10_0
 * @{
 *
 * Contains the multi tile sync functions of the XRFdc driver.
@@ -40,20 +40,59 @@
 *       cog    02/20/20 Apply applicable clock gated offets to marker counter.
 *       cog    02/20/20 Double sysref frequency if in IQ mode.
 * 8.1   cog    06/24/20 Upversion.
+* 9.0   cog    11/25/20 Upversion.
+* 10.0  cog    11/26/20 Refactor and split files.
+*       cog    12/04/20 PLL DTC Scan was not being done in cases where the
+*                       output divider works out to 1.
+*       cog    12/04/20 Reduce scope of non user interface macros.
+*       cog    03/08/21 MTS now scans reference tile first. This has required a
+*                       change to the prototype of XRFdc_MultiConverter_Init.
+*       cog    05/06/21 Minimum gap between edges in DTC scan for T1 should be
+*                       reduced for Gen 3 devices.
 *
 * </pre>
 *
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
-#include "xrfdc_mts.h"
+#include "xrfdc.h"
 
 /************************** Constant Definitions *****************************/
 
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
+#define XRFDC_MTS_NUM_DTC 128U
+#define XRFDC_MTS_REF_TARGET 64U
+#define XRFDC_MTS_MAX_CODE 16U
+#define XRFDC_MTS_MIN_GAP_T1 10U
+#define XRFDC_MTS_MIN_GAP_GEN3 5U
+#define XRFDC_MTS_MIN_GAP_PLL 5U
+#define XRFDC_MTS_SR_TIMEOUT 4096U
+#define XRFDC_MTS_DTC_COUNT 10U
+#define XRFDC_MTS_MARKER_COUNT 4U
+#define XRFDC_MTS_SRCOUNT_TIMEOUT 1000U
+#define XRFDC_MTS_DELAY_MAX 31U
+#define XRFDC_MTS_CHECK_ALL_FIFOS 0U
 
+#define XRFDC_MTS_SRCAP_T1_EN 0x4000U
+#define XRFDC_MTS_SRCAP_T1_RST 0x0800U
+#define XRFDC_MTS_SRFLAG_T1 0x4U
+#define XRFDC_MTS_SRFLAG_PLL 0x2U
+#define XRFDC_MTS_FIFO_DEFAULT 0x0000U
+#define XRFDC_MTS_FIFO_ENABLE 0x0003U
+#define XRFDC_MTS_FIFO_DISABLE 0x0002U
+#define XRFDC_MTS_AMARK_LOC_S 0x10U
+#define XRFDC_MTS_AMARK_DONE_S 0x14U
+#define XRFDC_MTS_DLY_ALIGNER0 0x28U
+#define XRFDC_MTS_DLY_ALIGNER1 0x2CU
+#define XRFDC_MTS_DLY_ALIGNER2 0x30U
+#define XRFDC_MTS_DLY_ALIGNER3 0x34U
+#define XRFDC_MTS_DIR_FIFO_PTR 0x40U
+
+#define XRFDC_MTS_DAC_MARKER_LOC_MASK(X) ((X < XRFDC_GEN3) ? 0x7U : 0xFU)
+#define XRFDC_MTS_RMW(read, mask, data) (((read) & ~(mask)) | ((data) & (mask)))
+#define XRFDC_MTS_FIELD(data, mask, shift) (((data) & (mask)) >> (shift))
 /************************** Function Prototypes ******************************/
 
 static void XRFdc_MTS_Sysref_TRx(XRFdc *InstancePtr, u32 Enable);
@@ -64,7 +103,8 @@ static u32 XRFdc_MTS_Sysref_Count(XRFdc *InstancePtr, u32 Type, u32 Count_Val);
 static u32 XRFdc_MTS_Dtc_Scan(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *SettingsPtr);
 static u32 XRFdc_MTS_Dtc_Code(XRFdc *InstancePtr, u32 Type, u32 BaseAddr, u32 SRCtrlAddr, u32 DTCAddr, u16 SRctl,
 			      u16 SRclr_m, u32 Code);
-static u32 XRFdc_MTS_Dtc_Calc(u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *SettingsPtr, u8 *FlagsPtr);
+static u32 XRFdc_MTS_Dtc_Calc(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *SettingsPtr,
+			      u8 *FlagsPtr);
 static void XRFdc_MTS_Dtc_Flag_Debug(u8 *FlagsPtr, u32 Type, u32 Tile_Id, u32 Target, u32 Picked);
 static void XRFdc_MTS_FIFOCtrl(XRFdc *InstancePtr, u32 Type, u32 FIFO_Mode, u32 Tiles_To_Clear);
 static u32 XRFdc_MTS_GetMarker(XRFdc *InstancePtr, u32 Type, u32 Tiles, XRFdc_MTS_Marker *MarkersPtr, int Marker_Delay);
@@ -301,6 +341,7 @@ static void XRFdc_MTS_Dtc_Flag_Debug(u8 *FlagsPtr, u32 Type, u32 Tile_Id, u32 Ta
 * This API Calculate the best DTC code to use
 *
 *
+* @param    InstancePtr is a pointer to the XRfdc instance.
 * @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
 * @param    Tile_Id Valid values are 0-3.
 * @param    SettingsPtr dtc settings structure.
@@ -313,7 +354,8 @@ static void XRFdc_MTS_Dtc_Flag_Debug(u8 *FlagsPtr, u32 Type, u32 Tile_Id, u32 Ta
 * @note     None.
 *
 ******************************************************************************/
-static u32 XRFdc_MTS_Dtc_Calc(u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *SettingsPtr, u8 *FlagsPtr)
+static u32 XRFdc_MTS_Dtc_Calc(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *SettingsPtr,
+			      u8 *FlagsPtr)
 {
 	u32 Index, Status, Num_Found;
 	int Last, Current_Gap, Max_Overlap, Overlap_Cnt;
@@ -321,7 +363,11 @@ static u32 XRFdc_MTS_Dtc_Calc(u32 Type, u32 Tile_Id, XRFdc_MTS_DTC_Settings *Set
 	u8 Min_Gap_Allowed;
 	int Codes[XRFDC_MTS_MAX_CODE] = { 0 };
 
-	Min_Gap_Allowed = (SettingsPtr->IsPLL != 0U) ? XRFDC_MTS_MIN_GAP_PLL : XRFDC_MTS_MIN_GAP_T1;
+	if (InstancePtr->RFdc_Config.IPType < XRFDC_GEN3) {
+		Min_Gap_Allowed = (SettingsPtr->IsPLL != 0U) ? XRFDC_MTS_MIN_GAP_PLL : XRFDC_MTS_MIN_GAP_T1;
+	} else {
+		Min_Gap_Allowed = XRFDC_MTS_MIN_GAP_GEN3;
+	}
 	Status = XRFDC_MTS_OK;
 
 	/* Scan the flags and find candidate DTC codes */
@@ -553,7 +599,7 @@ static u32 XRFdc_MTS_Dtc_Scan(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_M
 	}
 
 	/* Calculate the best DTC code */
-	(void)XRFdc_MTS_Dtc_Calc(Type, Tile_Id, SettingsPtr, Flags);
+	(void)XRFdc_MTS_Dtc_Calc(InstancePtr, Type, Tile_Id, SettingsPtr, Flags);
 
 	/* Program the calculated code */
 	if (SettingsPtr->DTC_Code[Tile_Id] == -1) {
@@ -573,6 +619,63 @@ static u32 XRFdc_MTS_Dtc_Scan(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_M
 		XRFdc_MTS_Sysref_Ctrl(InstancePtr, Type, Tile_Id, 0, 1, 1);
 		Status |= XRFdc_MTS_Sysref_Count(InstancePtr, Type, XRFDC_MTS_DTC_COUNT);
 		XRFdc_MTS_Sysref_Ctrl(InstancePtr, Type, Tile_Id, 0, 1, 0);
+	}
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+*
+* This API Scans the DTC codes and determine the optimal capture code for
+* PLL cases
+*
+*
+* @param    InstancePtr is a pointer to the XRfdc instance.
+* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
+* @param    Tile_Id Valid values are 0-3.
+* @param    SettingsPtr dtc settings structure.
+*
+* @return
+*         - XRFDC_MTS_OK if successful.
+*         - XRFDC_MTS_TIMEOUT if timeout occurs.
+*
+* @note     None.
+*
+******************************************************************************/
+static u32 XRFdc_MTS_Dtc_Scan_PLL(XRFdc *InstancePtr, u32 Type, u32 Tile_Id,
+				  XRFdc_MultiConverter_Sync_Config *ConfigPtr)
+{
+	u32 Status;
+	u32 BaseAddr;
+	u32 NetCtrlReg;
+	u32 DistCtrlReg;
+
+	Status = XRFDC_MTS_OK;
+	BaseAddr = XRFDC_DRP_BASE(Type, Tile_Id) + XRFDC_HSCOM_ADDR;
+	if (InstancePtr->RFdc_Config.IPType < XRFDC_GEN3) {
+		NetCtrlReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_MTS_CLKSTAT);
+		if ((NetCtrlReg & XRFDC_MTS_PLLEN_M) != XRFDC_DISABLED) {
+			/* DTC Scan PLL */
+			if (Tile_Id == ConfigPtr->RefTile) {
+				metal_log(METAL_LOG_INFO, "\nDTC Scan PLL\n");
+			}
+			ConfigPtr->DTC_Set_PLL.RefTile = ConfigPtr->RefTile;
+			Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, Tile_Id, &ConfigPtr->DTC_Set_PLL);
+		}
+	} else {
+		NetCtrlReg = XRFdc_RDReg(InstancePtr, BaseAddr, XRFDC_CLK_NETWORK_CTRL1,
+					 (XRFDC_NET_CTRL_CLK_T1_SRC_LOCAL | XRFDC_NET_CTRL_CLK_T1_SRC_DIST));
+		DistCtrlReg =
+			XRFdc_RDReg(InstancePtr, BaseAddr, XRFDC_HSCOM_CLK_DSTR_OFFSET, XRFDC_DIST_CTRL_DIST_SRC_PLL);
+
+		if ((NetCtrlReg == XRFDC_DISABLED) || (DistCtrlReg != XRFDC_DISABLED)) {
+			/* DTC Scan PLL */
+			if (Tile_Id == ConfigPtr->RefTile) {
+				metal_log(METAL_LOG_INFO, "\nDTC Scan PLL\n");
+			}
+			ConfigPtr->DTC_Set_PLL.RefTile = ConfigPtr->RefTile;
+			Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, Tile_Id, &ConfigPtr->DTC_Set_PLL);
+		}
 	}
 
 	return Status;
@@ -1088,19 +1191,29 @@ u32 XRFdc_MTS_Sysref_Config(XRFdc *InstancePtr, XRFdc_MultiConverter_Sync_Config
 * @param    ConfigPtr pointer to Multi-tile sync config structure.
 * @param    PLL_CodesPtr pointer to PLL analog sysref capture.
 * @param    T1_CodesPtr pointer to T1 analog sysref capture.
+* @param    RefTile the tile ID of the reference tile.
 *
-* @note     None.
+* @return
+*       - XRFDC_MTS_OK if successful.
+*       - XRFDC_MTS_BAD_REF_TILE if bad reference tile value is supplied.
 *
 * @note     None.
 *
 ******************************************************************************/
-void XRFdc_MultiConverter_Init(XRFdc_MultiConverter_Sync_Config *ConfigPtr, int *PLL_CodesPtr, int *T1_CodesPtr)
+u32 XRFdc_MultiConverter_Init(XRFdc_MultiConverter_Sync_Config *ConfigPtr, int *PLL_CodesPtr, int *T1_CodesPtr,
+			      u32 RefTile)
 {
+	u32 Status;
 	u32 Index;
 
-	Xil_AssertVoid(ConfigPtr != NULL);
+	Xil_AssertNonvoid(ConfigPtr != NULL);
 
-	ConfigPtr->RefTile = 0U;
+	if (RefTile > XRFDC_TILE_ID_MAX) {
+		Status = XRFDC_MTS_BAD_REF_TILE;
+		metal_log(METAL_LOG_ERROR, "Bad reference tile selection (%u) in%s\n", RefTile, __func__);
+		goto RETURN_PATH;
+	}
+	ConfigPtr->RefTile = RefTile;
 	ConfigPtr->DTC_Set_PLL.Scan_Mode = (PLL_CodesPtr == NULL) ? XRFDC_MTS_SCAN_INIT : XRFDC_MTS_SCAN_RELOAD;
 	ConfigPtr->DTC_Set_T1.Scan_Mode = (T1_CodesPtr == NULL) ? XRFDC_MTS_SCAN_INIT : XRFDC_MTS_SCAN_RELOAD;
 	ConfigPtr->DTC_Set_PLL.IsPLL = 1U;
@@ -1125,6 +1238,9 @@ void XRFdc_MultiConverter_Init(XRFdc_MultiConverter_Sync_Config *ConfigPtr, int 
 		ConfigPtr->DTC_Set_PLL.DTC_Code[Index] = -1;
 		ConfigPtr->DTC_Set_T1.DTC_Code[Index] = -1;
 	}
+	Status = XRFDC_MTS_OK;
+RETURN_PATH:
+	return Status;
 }
 
 /*****************************************************************************/
@@ -1206,42 +1322,26 @@ u32 XRFdc_MultiConverter_Sync(XRFdc *InstancePtr, u32 Type, XRFdc_MultiConverter
 	/* Update distribution */
 	Status |= XRFdc_MTS_Sysref_Dist(InstancePtr, -1);
 
-	/* Scan DTCs for each tile */
+	/* Scan DTCs for each tile starting with the reference tile */
+	Status |= XRFdc_MTS_Dtc_Scan_PLL(InstancePtr, Type, ConfigPtr->RefTile, ConfigPtr);
 	for (Index = XRFDC_TILE_ID0; Index < XRFDC_TILE_ID4; Index++) {
+		if (Index == ConfigPtr->RefTile) {
+			continue;
+		}
 		if ((ConfigPtr->Tiles & (1U << Index)) != 0U) {
-			/* Run DTC Scan for T1/PLL */
-			BaseAddr = XRFDC_DRP_BASE(Type, Index) + XRFDC_HSCOM_ADDR;
-			if (InstancePtr->RFdc_Config.IPType < XRFDC_GEN3) {
-				RegData = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_MTS_CLKSTAT);
-				if ((RegData & XRFDC_MTS_PLLEN_M) != XRFDC_DISABLED) {
-					/* DTC Scan PLL */
-					if (Index == XRFDC_BLK_ID0) {
-						metal_log(METAL_LOG_INFO, "\nDTC Scan PLL\n");
-					}
-					ConfigPtr->DTC_Set_PLL.RefTile = ConfigPtr->RefTile;
-					Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, Index, &ConfigPtr->DTC_Set_PLL);
-				}
-			} else {
-				RegData = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_PLL_DIVIDER0);
-				if ((((RegData & XRFDC_PLL_DIVIDER0_BYP_PLL_MASK) == XRFDC_DISABLED) ||
-				     ((RegData & XRFDC_PLL_DIVIDER0_BYP_OPDIV_MASK) == XRFDC_DISABLED)) &&
-				    ((RegData & XRFDC_PLL_DIVIDER0_MODE_MASK) != XRFDC_DISABLED)) {
-					/* DTC Scan PLL */
-					if (Index == XRFDC_BLK_ID0) {
-						metal_log(METAL_LOG_INFO, "\nDTC Scan PLL\n");
-					}
-					ConfigPtr->DTC_Set_PLL.RefTile = ConfigPtr->RefTile;
-					Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, Index, &ConfigPtr->DTC_Set_PLL);
-				}
-			}
+			/* Run DTC Scan for PLL */
+			Status |= XRFdc_MTS_Dtc_Scan_PLL(InstancePtr, Type, Index, ConfigPtr);
 		}
 	}
-
-	/* Scan DTCs for each tile T1 */
-	metal_log(METAL_LOG_INFO, "\nDTC Scan T1\n", 0);
+	/* Scan DTCs for each tile T1 starting with the reference tile */
+	metal_log(METAL_LOG_INFO, "\nDTC Scan T1\n");
+	ConfigPtr->DTC_Set_T1.RefTile = ConfigPtr->RefTile;
+	Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, ConfigPtr->RefTile, &ConfigPtr->DTC_Set_T1);
 	for (Index = XRFDC_TILE_ID0; Index < XRFDC_TILE_ID4; Index++) {
 		if ((ConfigPtr->Tiles & (1U << Index)) != 0U) {
-			ConfigPtr->DTC_Set_T1.RefTile = ConfigPtr->RefTile;
+			if (Index == ConfigPtr->RefTile) {
+				continue;
+			}
 			Status |= XRFdc_MTS_Dtc_Scan(InstancePtr, Type, Index, &ConfigPtr->DTC_Set_T1);
 		}
 	}
@@ -1251,10 +1351,8 @@ u32 XRFdc_MultiConverter_Sync(XRFdc *InstancePtr, u32 Type, XRFdc_MultiConverter
 
 	/* Measure latency */
 	Status |= XRFdc_MTS_GetMarker(InstancePtr, Type, ConfigPtr->Tiles, &Markers, ConfigPtr->Marker_Delay);
-
 	/* Calculate latency difference and adjust for it */
 	Status |= XRFdc_MTS_Latency(InstancePtr, Type, ConfigPtr, &Markers);
-
 	return Status;
 }
 
@@ -1304,4 +1402,55 @@ u32 XRFdc_GetMTSEnable(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 *EnablePtr
 RETURN_PATH:
 	return Status;
 }
+
+/*****************************************************************************/
+/**
+*
+* Get Master Tile for ADC/DAC tiles.
+*
+* @param    InstancePtr is a pointer to the XRfdc instance.
+* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
+*
+* @return
+*           - Return Master Tile for ADC/DAC tiles
+*
+******************************************************************************/
+u32 XRFdc_GetMasterTile(XRFdc *InstancePtr, u32 Type)
+{
+	u32 MasterTile;
+
+	if (Type == XRFDC_ADC_TILE) {
+		MasterTile = InstancePtr->RFdc_Config.MasterADCTile;
+	} else {
+		MasterTile = InstancePtr->RFdc_Config.MasterDACTile;
+	}
+
+	return MasterTile;
+}
+
+/*****************************************************************************/
+/**
+*
+* Get Sysref source for ADC/DAC tile.
+*
+* @param    InstancePtr is a pointer to the XRfdc instance.
+* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
+*
+* @return
+*           - Return Sysref source for ADC/DAC tile
+*
+******************************************************************************/
+u32 XRFdc_GetSysRefSource(XRFdc *InstancePtr, u32 Type)
+{
+	u32 SysRefSource;
+
+	if (Type == XRFDC_ADC_TILE) {
+		SysRefSource = InstancePtr->RFdc_Config.ADCSysRefSource;
+	} else {
+		SysRefSource = InstancePtr->RFdc_Config.DACSysRefSource;
+	}
+
+	return SysRefSource;
+}
+
 /** @} */

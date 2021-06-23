@@ -62,7 +62,7 @@
 * to build and link only those parts of the driver that are necessary.
 *
 * @file xcsudma.h
-* @addtogroup csudma_v1_8
+* @addtogroup csudma_v1_9
 * @{
 * @details
 *
@@ -99,6 +99,8 @@
 *			 processors and cache functionality.
 * 1.7	sk	08/26/20 Fix MISRA-C violations.
 * 1.8   nsk     12/14/20 Updated the tcl to not to use the instance names.
+* 1.9	sk	02/11/21 Add description for the dmatype macros.
+* 1.9	sk	02/11/21 Remove the prototype of undefined functions.
 * </pre>
 *
 ******************************************************************************/
@@ -149,9 +151,9 @@ typedef enum {
  */
 #define XCSUDMA_SIZE_MAX 0x07FFFFFFU	/**< Maximum allowed no of words */
 
-#define XCSUDMA_DMATYPEIS_CSUDMA 	0U
-#define XCSUDMA_DMATYPEIS_PMCDMA0	1U
-#define XCSUDMA_DMATYPEIS_PMCDMA1	2U
+#define XCSUDMA_DMATYPEIS_CSUDMA 	0U	/**< DMA is CSUDMA  */
+#define XCSUDMA_DMATYPEIS_PMCDMA0	1U	/**< DMA is PMCDMA0 */
+#define XCSUDMA_DMATYPEIS_PMCDMA1	2U	/**< DMA is PMCDMA1 */
 
 /*@}*/
 
@@ -409,8 +411,6 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					u64 Addr, u32 Size, u8 EnDataLast);
 void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			   u32 AddrLow, u32 AddrHigh, u32 Size, u8 EnDataLast);
-void XCsuDma_LoopBackTransfer(XCsuDma *InstancePtr, u64 SrcAddr, u64 DstAddr,
-						u32 Size);
 u64 XCsuDma_GetAddr(XCsuDma *InstancePtr, XCsuDma_Channel Channel);
 u32 XCsuDma_GetSize(XCsuDma *InstancePtr, XCsuDma_Channel Channel);
 
@@ -428,10 +428,7 @@ void XCsuDma_SetConfig(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					XCsuDma_Configure *ConfigurValues);
 void XCsuDma_GetConfig(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					XCsuDma_Configure *ConfigurValues);
-void XCsuDma_ClearDoneCount(XCsuDma *InstancePtr, XCsuDma_Channel Channel);
 
-void XCsuDma_SetSafetyCheck(XCsuDma *InstancePtr, u32 Value);
-u32 XCsuDma_GetSafetyCheck(XCsuDma *InstancePtr);
 u32 XCsuDma_WaitForDoneTimeout(XCsuDma *InstancePtr, XCsuDma_Channel Channel);
 
 /* Interrupt related APIs */

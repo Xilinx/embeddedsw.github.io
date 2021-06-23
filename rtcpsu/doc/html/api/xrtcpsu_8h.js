@@ -1,5 +1,8 @@
 var xrtcpsu_8h =
 [
+    [ "XRTC_CALIBRATION_VALUE", "xrtcpsu_8h.html#gad7a184022ff2ba6eab442bb895f7df30", null ],
+    [ "XRTC_H_", "xrtcpsu_8h.html#ga0dc72bac661426e1056f45a0e3791086", null ],
+    [ "XRTC_TYPICAL_OSC_FREQ", "xrtcpsu_8h.html#ga7e8bad01d40368b034d49dfcb4401486", null ],
     [ "XRTCPSU_CRYSTAL_OSC_EN", "xrtcpsu_8h.html#gae7da0eb25a60f80358a637f7a2429216", null ],
     [ "XRTCPSU_EVENT_ALARM_GEN", "xrtcpsu_8h.html#gad594fbf58a112754966cb4ed07a93fa2", null ],
     [ "XRTCPSU_EVENT_SECS_GEN", "xrtcpsu_8h.html#gaf214f251bc04f17da88cda3e7f91bd99", null ],
@@ -14,6 +17,7 @@ var xrtcpsu_8h =
     [ "XRtcPsu_WriteSetTime", "xrtcpsu_8h.html#ga2d6afae471b9ad6df9d1ca0ae7c7d16c", null ],
     [ "XRtcPsu_Handler", "xrtcpsu_8h.html#ga275e074ddd4db57dfbcfb362c41c9af0", null ],
     [ "XRtcPsu_CalculateCalibration", "xrtcpsu_8h.html#ga33633f27f8155128cc6815d883f9e22c", null ],
+    [ "XRtcPsu_CfgInitialize", "xrtcpsu_8h.html#ga04fcc0a1ae6b27f2a3e0f1ba723c48e3", null ],
     [ "XRtcPsu_ClearInterruptMask", "xrtcpsu_8h.html#gaefced00316539320411829b4d701fe3c", null ],
     [ "XRtcPsu_DateTimeToSec", "xrtcpsu_8h.html#ga15d97f88e65f27121f56f06480717824", null ],
     [ "XRtcPsu_GetCurrentTime", "xrtcpsu_8h.html#gad47ac1cadbbe8dd0e67588d1fc658cc2", null ],

@@ -150,12 +150,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the RTC Alarm interrupt example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, XST_FAILURE if unsuccessful</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
@@ -215,7 +209,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>In this function if interrupts are not working it may never return. </p>
 
-<p>References <a class="el" href="struct_x_rtc_psu___config.html#a0bc4fef50a1edc589aaa4f9fed0a50c2">XRtcPsu_Config::BaseAddr</a>, <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="group__rtcpsu__v1__10.html#gaefced00316539320411829b4d701fe3c">XRtcPsu_ClearInterruptMask()</a>, <a class="el" href="group__rtcpsu__v1__10.html#gad47ac1cadbbe8dd0e67588d1fc658cc2">XRtcPsu_GetCurrentTime()</a>, <a class="el" href="group__rtcpsu__v1__10.html#ga665fbe64a08c5b13b838ab7b69188e3e">XRtcPsu_LookupConfig()</a>, <a class="el" href="group__rtcpsu__v1__10.html#gaf491d4fa3c779586da882c0c3e75c80e">XRtcPsu_ResetAlarm</a>, <a class="el" href="group__rtcpsu__v1__10.html#gaac3d95ea1a75533a1fd3cd95d62a9914">XRtcPsu_SecToDateTime()</a>, <a class="el" href="group__rtcpsu__v1__10.html#ga1c969c089715ea9a86cec887c09f9b92">XRtcPsu_SelfTest()</a>, <a class="el" href="group__rtcpsu__v1__10.html#ga201537801ac896c73018a8719e8637d8">XRtcPsu_SetAlarm()</a>, <a class="el" href="group__rtcpsu__v1__10.html#ga40b45bedf590e3e65eb525f1827768e4">XRtcPsu_SetHandler()</a>, and <a class="el" href="group__rtcpsu__v1__10.html#ga645920d3519722e8dc815d07db527367">XRtcPsu_SetInterruptMask()</a>.</p>
+<p>References <a class="el" href="struct_x_rtc_psu___config.html#a0bc4fef50a1edc589aaa4f9fed0a50c2">XRtcPsu_Config::BaseAddr</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a0d91fe193b2ace3bec1c253d9d4651b0">XRtcPsu_DT::Day</a>, <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a5217abcfa19b6ee79441c80593233410">XRtcPsu_DT::Hour</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a985ad2e22c16c13787bad0bc5a6252d3">XRtcPsu_DT::Min</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a17e3941ee44e1c60d8702e5ea9a6b658">XRtcPsu_DT::Month</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a2a4a6d1fc2f482c69610be4c46681ee0">XRtcPsu_DT::Sec</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a768d292f62468b17e36dce098f8c7d49">XRtcPsu_DT::WeekDay</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga04fcc0a1ae6b27f2a3e0f1ba723c48e3">XRtcPsu_CfgInitialize()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gaefced00316539320411829b4d701fe3c">XRtcPsu_ClearInterruptMask()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gad47ac1cadbbe8dd0e67588d1fc658cc2">XRtcPsu_GetCurrentTime()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga665fbe64a08c5b13b838ab7b69188e3e">XRtcPsu_LookupConfig()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gaf491d4fa3c779586da882c0c3e75c80e">XRtcPsu_ResetAlarm</a>, <a class="el" href="group__rtcpsu__v1__11.html#gaac3d95ea1a75533a1fd3cd95d62a9914">XRtcPsu_SecToDateTime()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga1c969c089715ea9a86cec887c09f9b92">XRtcPsu_SelfTest()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga201537801ac896c73018a8719e8637d8">XRtcPsu_SetAlarm()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga40b45bedf590e3e65eb525f1827768e4">XRtcPsu_SetHandler()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga645920d3519722e8dc815d07db527367">XRtcPsu_SetInterruptMask()</a>, and <a class="el" href="struct_x_rtc_psu___d_t.html#a422474627fadc62823e8ff87e0bf1863">XRtcPsu_DT::Year</a>.</p>
 
 <p>Referenced by <a class="el" href="xrtcpsu__periodic__alarm__interrupt__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

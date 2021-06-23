@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -34,6 +34,8 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.11   akm  02/19/20 First release
+* 1.13   akm  11/30/20 Removed unwanted header files.
+* 1.13   akm  12/10/20 Set Read command as per the qspi bus width.
 *
 *</pre>
 *
@@ -43,7 +45,6 @@
 
 #include "xqspipsu_flash_config.h"
 #include "xil_printf.h"
-#include "xil_cache.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -157,7 +158,6 @@ u32 MaxData = PAGE_COUNT*256;
  *
  * Main function to call the QSPIPSU Flash Polled example.
  *
- * @param	None
  *
  * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
  *
@@ -191,7 +191,10 @@ int main(void)
  * flash devices greater than or equal to 128Mb.
  * This function reads data in DMA mode.
  *
- * @param	None.
+ * @param       QspiPsuInstancePtr is a pointer to the instance of the QspiPsu
+ *              device.
+ * @param        QspiPsuDeviceId is the Device ID of the Qspi Device and is the
+ *               XPAR_<QSPI_instance>_DEVICE_ID value from xparameters.h.
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -279,7 +282,13 @@ int QspiPsuFlashNonBlockingReadExample(XQspiPsu *QspiPsuInstancePtr, u16 QspiPsu
 	 * Address size and read command selection
 	 * Micron flash on REMUS doesn't support this 4B write/erase cmd
 	 */
-	ReadCmd = QUAD_READ_CMD;
+	if(QspiPsuInstancePtr->Config.BusWidth == BUSWIDTH_SINGLE)
+		ReadCmd = FAST_READ_CMD;
+	else if(QspiPsuInstancePtr->Config.BusWidth == BUSWIDTH_DOUBLE)
+		ReadCmd = DUAL_READ_CMD;
+	else
+		ReadCmd = QUAD_READ_CMD;
+
 	WriteCmd = WRITE_CMD;
 	SectorEraseCmd = SEC_ERASE_CMD;
 
@@ -359,7 +368,8 @@ int QspiPsuFlashNonBlockingReadExample(XQspiPsu *QspiPsuInstancePtr, u16 QspiPsu
  *
  * Reads the flash ID and identifies the flash in FCT table.
  *
- * @param	None.
+ * @param       QspiPsuPtr is a pointer to the instance of the QspiPsu
+ *              device.
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -427,7 +437,7 @@ int FlashReadID(XQspiPsu *QspiPsuPtr)
  * @param	Command is the command used to write data to the flash. QSPIPSU
  *		device supports only Page Program command to write data to the
  *		flash.
- * @param	Pointer to the write buffer (which is to be transmitted)
+ * @param	WriteBfrPtr is Pointer to the write buffer (which is to be transmitted)
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -568,11 +578,11 @@ int FlashWrite(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
  * This function erases the sectors in the  serial Flash connected to the
  * QSPIPSU interface.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address of the first sector which needs to
  *		be erased.
  * @param	ByteCount contains the total size to be erased.
- * @param	Pointer to the write buffer (which is to be transmitted)
+ * @param	WriteBfrPtr is pointer to the write buffer (which is to be transmitted)
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -799,16 +809,16 @@ int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount,
  *
  * This function performs read. DMA is the default setting.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address of the first sector which needs to
  *			be erased.
  * @param	ByteCount contains the total size to be erased.
  * @param	Command is the command used to read data from the flash.
  *		Supports normal, fast, dual and quad read commands.
- * @param	Pointer to the write buffer which contains data to be
- *		transmitted
- * @param	Pointer to the read buffer to which valid received data
- *		should be written
+ * @param	WriteBfrPtr is Pointer to the write buffer which contains data
+ *		to be transmitted
+ * @param	ReadBfrPtr is Pointer to the read buffer to which valid received
+ *		data should be written
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -942,15 +952,15 @@ int FlashRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
  *
  * This functions performs a read operation for multi die flash devices.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address of the first sector which needs to
  *			be erased.
  * @param	ByteCount contains the total size to be erased.
  * @param	Command is the command used to read data from the flash.
  *			Supports normal, fast, dual and quad read commands.
- * @param	Pointer to the write buffer which contains data to be
+ * @param	WriteBfrPtr is pointer to the write buffer which contains data to be
  *			transmitted
- * @param	Pointer to the read buffer to which valid received data
+ * @param	ReadBfrPtr is pointer to the read buffer to which valid received data
  *			should be written.
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
@@ -1226,8 +1236,8 @@ int FlashRegisterWrite(XQspiPsu *QspiPsuPtr, u32 ByteCount, u8 Command,
  * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	ByteCount is the number of bytes to write.
  * @param	Command is specific register write command.
- * @param	WriteBfrPtr is the pointer to value to be written.
- * @param	WrEn is a flag to mention if WREN has to be sent before write.
+ * @param	ReadBfrPtr is Pointer to the read buffer to which valid received
+ *		data should be written
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -1270,7 +1280,7 @@ int FlashRegisterRead(XQspiPsu *QspiPsuPtr, u32 ByteCount,
  * flash device has a single die. Works for both Spansion and Micron
  *
  * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
- * @param	WritBfrPtr is the pointer to command+address to be sent
+ * @param	WriteBfrPtr is the pointer to command+address to be sent
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -1371,7 +1381,7 @@ int BulkErase(XQspiPsu *QspiPsuPtr, u8 *WriteBfrPtr)
  * Micron 512Mbit and 1Gbit
  *
  * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
- * @param	WritBfrPtr is the pointer to command+address to be sent
+ * @param	WriteBfrPtr is the pointer to command+address to be sent
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -1590,7 +1600,7 @@ u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address)
  * For Macronix and Winbond flash parts write
  * enable is not required.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Enable is a either 1 or 0 if 1 then enters 4 byte if 0 exits.
  *
  * @return
@@ -1773,7 +1783,7 @@ int FlashEnterExit4BAddMode(XQspiPsu *QspiPsuPtr, unsigned int Enable)
  * For S25FL-L series flash parts this is required as the default configuration
  * is x1/x2 mode.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  *
  * @return
  *		- XST_SUCCESS if successful.

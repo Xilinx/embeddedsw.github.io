@@ -1,5 +1,6 @@
 var xospipsv__control_8h =
 [
+    [ "XOSPIPSV_LOWLEVEL_H_", "xospipsv__control_8h.html#gad5d4884f3757c314991e0d72bf344c59", null ],
     [ "XOspiPsv_CheckOspiIdle", "xospipsv__control_8h.html#ga289baf1466add8dfa4a70a3952354cd7", null ],
     [ "XOspiPsv_Config_Dma", "xospipsv__control_8h.html#ga7dd7305678eaea4774657b38046cc5e4", null ],
     [ "XOspiPsv_Config_IndirectAhb", "xospipsv__control_8h.html#gae199f0006d6d3282aad2a18c4e87d479", null ],

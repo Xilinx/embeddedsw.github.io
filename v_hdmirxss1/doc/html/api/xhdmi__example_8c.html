@@ -84,7 +84,11 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
                       Menu option updated for EDID and Training based on
                       MaxRate configuration
                       Added support for 16 BPC
-</pre> </div><table class="memberdecls">
+1.02  KU     30/11/20 AVI InfoFrame Version set to 3 for resolutions
+                        VIC &gt; 127
+                        Onsemi redriver tweaked for TMDS mode in TX
+1.03  ssh    03/17/21 Added EdidHdmi20_t, PsIic0 and PsIic1 declarations
+1.04  ssh    04/20/21 Added support for Dynamic HDR and Versal</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a13f636ef2d93d7ee10e421e5f604a510"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk</a> (u32 InFreq, u32 OutFreq)</td></tr>
@@ -132,6 +136,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a5bae37b9c9158ce7cb120a28559cfedc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#a5bae37b9c9158ce7cb120a28559cfedc">Exdes_UpdateAuxFifo</a> ()</td></tr>
 <tr class="memdesc:a5bae37b9c9158ce7cb120a28559cfedc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function updates the global array for AUX fifo with the AUX data from the hdmi receiver.  <a href="#a5bae37b9c9158ce7cb120a28559cfedc">More...</a><br/></td></tr>
 <tr class="separator:a5bae37b9c9158ce7cb120a28559cfedc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc2a7193151393ea8b3fbe195a69ae7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#a3fc2a7193151393ea8b3fbe195a69ae7">Exdes_ReadVRRTimingChange</a> ()</td></tr>
+<tr class="memdesc:a3fc2a7193151393ea8b3fbe195a69ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function updates the Reads the VRR Video Timing Values from HDMI RX Receiver.  <a href="#a3fc2a7193151393ea8b3fbe195a69ae7">More...</a><br/></td></tr>
+<tr class="separator:a3fc2a7193151393ea8b3fbe195a69ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ed4452541674f60a59010ff76834183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#a7ed4452541674f60a59010ff76834183">Exdes_ProcessVRRTimingChange</a> ()</td></tr>
+<tr class="memdesc:a7ed4452541674f60a59010ff76834183"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function updates the Reads the VRR Video Timing Values from HDMI RX Receiver and updates to HDMI TX when VRR Manual Mode is enabled.  <a href="#a7ed4452541674f60a59010ff76834183">More...</a><br/></td></tr>
+<tr class="separator:a7ed4452541674f60a59010ff76834183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a268e0f9857913c259741c0bbd1b86329"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#a268e0f9857913c259741c0bbd1b86329">Exdes_ReadVTEMPacket</a> ()</td></tr>
+<tr class="memdesc:a268e0f9857913c259741c0bbd1b86329"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function updates the Reads the VRR VTEM Packet from HDMI RX Receiver.  <a href="#a268e0f9857913c259741c0bbd1b86329">More...</a><br/></td></tr>
+<tr class="separator:a268e0f9857913c259741c0bbd1b86329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd5c0e2ac70e11184a457b7d5a4b488"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#aabd5c0e2ac70e11184a457b7d5a4b488">Exdes_ProcessVTEMPacket</a> ()</td></tr>
+<tr class="memdesc:aabd5c0e2ac70e11184a457b7d5a4b488"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function updates the R Reads the VRR VTEM Packet from HDMI RX Receiver and updates to HDMI TX.  <a href="#aabd5c0e2ac70e11184a457b7d5a4b488">More...</a><br/></td></tr>
+<tr class="separator:aabd5c0e2ac70e11184a457b7d5a4b488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd642332518889b8d0869e9f0ecec307"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8c.html#acd642332518889b8d0869e9f0ecec307">Exdes_CheckforResChange</a> ()</td></tr>
 <tr class="memdesc:acd642332518889b8d0869e9f0ecec307"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks if there has been a change in resolution on the incoming rx stream.  <a href="#acd642332518889b8d0869e9f0ecec307">More...</a><br/></td></tr>
 <tr class="separator:acd642332518889b8d0869e9f0ecec307"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,6 +250,114 @@ Functions</h2></td></tr>
 <p>References <a class="el" href="xhdmi__example_8c.html#ad75e9a1ce78113cef70aa82f3ffe79a6">Exdes_SetAuxFifoDebugPrintf()</a>, <a class="el" href="xhdmi__example_8c.html#ad0589d4f779ed2fc3e57c7c20c3716e2">Exdes_SetDebugPrintf()</a>, <a class="el" href="xhdmi__example_8c.html#a7ffcc103618c1f81ca24d098541512ff">Exdes_SetHdcpDebugPrintf()</a>, <a class="el" href="struct_x_hdmi___exdes.html#a81adb98bd3dc8068bdc274e190212f8c">XHdmi_Exdes::IsRxPresent</a>, <a class="el" href="struct_x_hdmi___exdes.html#a36b215857be51d20dc17ed649d2e7e2a">XHdmi_Exdes::IsTxPresent</a>, <a class="el" href="struct_x_hdmi___exdes.html#a99759cfe3592a22b91afcf9535b76c14">XHdmi_Exdes::SystemEvent</a>, and <a class="el" href="struct_x_hdmi___exdes.html#adb6a6b5c0e1261022b42c62f78c38318">XHdmi_Exdes::TxStartTransmit</a>.</p>
 
 <p>Referenced by <a class="el" href="xhdmi__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7ed4452541674f60a59010ff76834183"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Exdes_ProcessVRRTimingChange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function updates the Reads the VRR Video Timing Values from HDMI RX Receiver and updates to HDMI TX when VRR Manual Mode is enabled. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None.</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+
+<p>References <a class="el" href="xv__hdmirxss1_8c.html#ae1602e2606cfc7d343dbdd547fec91d4">XV_HdmiRxSs1_GetVideoStream()</a>.</p>
+
+<p>Referenced by <a class="el" href="xhdmi__example_8c.html#aabd5c0e2ac70e11184a457b7d5a4b488">Exdes_ProcessVTEMPacket()</a>, and <a class="el" href="xhdmi__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aabd5c0e2ac70e11184a457b7d5a4b488"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Exdes_ProcessVTEMPacket </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function updates the R Reads the VRR VTEM Packet from HDMI RX Receiver and updates to HDMI TX. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None.</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+
+<p>References <a class="el" href="xhdmi__example_8c.html#a7ed4452541674f60a59010ff76834183">Exdes_ProcessVRRTimingChange()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#ad255644b4621f85786c183cac9f5d129">XV_HdmiRxSs1_GetVrrIf()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3fc2a7193151393ea8b3fbe195a69ae7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Exdes_ReadVRRTimingChange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function updates the Reads the VRR Video Timing Values from HDMI RX Receiver. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None.</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a268e0f9857913c259741c0bbd1b86329"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Exdes_ReadVTEMPacket </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function updates the Reads the VRR VTEM Packet from HDMI RX Receiver. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None.</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+
+<p>References <a class="el" href="xv__hdmirxss1_8c.html#ad255644b4621f85786c183cac9f5d129">XV_HdmiRxSs1_GetVrrIf()</a>.</p>
 
 </div>
 </div>
@@ -754,7 +878,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a0b53d035f6c5376776e541443bfe26f2">XV_HdmiRxSs1::EnableHDCPLogging</a>, <a class="el" href="xv__hdmirxss1_8c.html#a59fe7994fe271ece2db726f2ba3ce146">XV_HdmiRxSs1_ReportAudio()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ac69293c91dde2e6c870efd3519a5e045">XV_HdmiRxSs1_ReportLinkQuality()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#af817b5a4f80a2fc4e5ac1b0e1cebf9da">XV_HdmiRxSs1_ReportTiming()</a>.</p>
+<p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a0b53d035f6c5376776e541443bfe26f2">XV_HdmiRxSs1::EnableHDCPLogging</a>, <a class="el" href="xv__hdmirxss1_8c.html#a59fe7994fe271ece2db726f2ba3ce146">XV_HdmiRxSs1_ReportAudio()</a>, <a class="el" href="xv__hdmirxss1_8c.html#a0d75cf52d65565585e301d7b61dba3dd">XV_HdmiRxSs1_ReportDRMInfo()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ac69293c91dde2e6c870efd3519a5e045">XV_HdmiRxSs1_ReportLinkQuality()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#af817b5a4f80a2fc4e5ac1b0e1cebf9da">XV_HdmiRxSs1_ReportTiming()</a>.</p>
 
 </div>
 </div>
@@ -794,7 +918,7 @@ Functions</h2></td></tr>
 <p>Initialize the controller for the example design mode.</p>
 <p>Initialize the TPG and associated GPIO to reset the TPG.</p>
 
-<p>References <a class="el" href="xhdmi__example_8c.html#a51323d81024622285f0112cc70bad72a">Exdes_InitController()</a>, <a class="el" href="xhdmi__example_8c.html#a34f9e975538c969562e4d93ddf5a5f63">Exdes_SetupClkSrc()</a>, <a class="el" href="xhdmi__example_8c.html#aa6b596b261b156c7b1735ba0e6bec5a0">Exdes_StartSysTmr()</a>, <a class="el" href="xhdmi__example_8c.html#a7dea4b8299b6f9642a852bfe9f36512c">Exdes_SysTmrInitialize()</a>, <a class="el" href="struct_x_hdmi___exdes.html#af57a8d66a84be2be093f78cc9203db6d">XHdmi_Exdes::ForceIndependent</a>, <a class="el" href="xhdmi__example_8c.html#a49f86eb6133d393764f7512a55c8b918">Hdmiphy1ErrorCallback()</a>, <a class="el" href="xhdmi__example_8c.html#a00804c9887066c8b73a180344f5c4dbc">Hdmiphy1ProcessError()</a>, <a class="el" href="xhdmi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk()</a>, <a class="el" href="struct_x_vfmc.html#a2e542a34afc33792f5d9c0b7cea10728">XVfmc::IicPtr</a>, <a class="el" href="struct_x_hdmi___exdes.html#a81adb98bd3dc8068bdc274e190212f8c">XHdmi_Exdes::IsRxPresent</a>, <a class="el" href="struct_x_hdmi___exdes.html#a36b215857be51d20dc17ed649d2e7e2a">XHdmi_Exdes::IsTxPresent</a>, <a class="el" href="struct_x_vfmc.html#a353d96b482245f6bf2b3f28bac16747d">XVfmc::Loc</a>, <a class="el" href="xhdmi__example_8c.html#ab458f6ff7df970c30ccf4a575995bc7e">SetupInterruptSystem()</a>, <a class="el" href="struct_x_hdmi___exdes.html#a99759cfe3592a22b91afcf9535b76c14">XHdmi_Exdes::SystemEvent</a>, <a class="el" href="struct_x_hdmi___exdes.html#add4251825a6a4d52f92bbdc87d005b26">XHdmi_Exdes::TxBusy</a>, <a class="el" href="struct_x_hdmi___exdes.html#adb6a6b5c0e1261022b42c62f78c38318">XHdmi_Exdes::TxStartTransmit</a>, <a class="el" href="xhdmi__menu_8c.html#a886549f4c5a89353a3dd7e563758d439">XHdmi_MenuInitialize()</a>, <a class="el" href="xhdmi__menu_8c.html#aef0c77222dd933d65ac89908b7791f34">XHdmi_MenuProcess()</a>, <a class="el" href="xhdmi__example_8c.html#a4dce91041c96d24627182e29908c4b77">Xil_AssertCallbackRoutine()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#aa385d7305e57a116d118fd8a94f2da7a">XV_HdmiRxSs1_Start()</a>.</p>
+<p>References <a class="el" href="xhdmi__example_8c.html#a51323d81024622285f0112cc70bad72a">Exdes_InitController()</a>, <a class="el" href="xhdmi__example_8c.html#a7ed4452541674f60a59010ff76834183">Exdes_ProcessVRRTimingChange()</a>, <a class="el" href="xhdmi__example_8c.html#a34f9e975538c969562e4d93ddf5a5f63">Exdes_SetupClkSrc()</a>, <a class="el" href="xhdmi__example_8c.html#aa6b596b261b156c7b1735ba0e6bec5a0">Exdes_StartSysTmr()</a>, <a class="el" href="xhdmi__example_8c.html#a7dea4b8299b6f9642a852bfe9f36512c">Exdes_SysTmrInitialize()</a>, <a class="el" href="struct_x_hdmi___exdes.html#af57a8d66a84be2be093f78cc9203db6d">XHdmi_Exdes::ForceIndependent</a>, <a class="el" href="xhdmi__example_8c.html#a49f86eb6133d393764f7512a55c8b918">Hdmiphy1ErrorCallback()</a>, <a class="el" href="xhdmi__example_8c.html#a00804c9887066c8b73a180344f5c4dbc">Hdmiphy1ProcessError()</a>, <a class="el" href="xhdmi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk()</a>, <a class="el" href="struct_x_vfmc.html#a2e542a34afc33792f5d9c0b7cea10728">XVfmc::IicPtr</a>, <a class="el" href="struct_x_hdmi___exdes.html#a81adb98bd3dc8068bdc274e190212f8c">XHdmi_Exdes::IsRxPresent</a>, <a class="el" href="struct_x_hdmi___exdes.html#a36b215857be51d20dc17ed649d2e7e2a">XHdmi_Exdes::IsTxPresent</a>, <a class="el" href="struct_x_vfmc.html#a353d96b482245f6bf2b3f28bac16747d">XVfmc::Loc</a>, <a class="el" href="xhdmi__example_8c.html#ab458f6ff7df970c30ccf4a575995bc7e">SetupInterruptSystem()</a>, <a class="el" href="struct_x_hdmi___exdes.html#a99759cfe3592a22b91afcf9535b76c14">XHdmi_Exdes::SystemEvent</a>, <a class="el" href="struct_x_hdmi___exdes.html#add4251825a6a4d52f92bbdc87d005b26">XHdmi_Exdes::TxBusy</a>, <a class="el" href="struct_x_hdmi___exdes.html#adb6a6b5c0e1261022b42c62f78c38318">XHdmi_Exdes::TxStartTransmit</a>, <a class="el" href="xhdmi__menu_8c.html#a886549f4c5a89353a3dd7e563758d439">XHdmi_MenuInitialize()</a>, <a class="el" href="xhdmi__menu_8c.html#aef0c77222dd933d65ac89908b7791f34">XHdmi_MenuProcess()</a>, <a class="el" href="xhdmi__example_8c.html#a4dce91041c96d24627182e29908c4b77">Xil_AssertCallbackRoutine()</a>, <a class="el" href="xv__hdmirxss1_8c.html#aa3c4292a7e63691e8d096746c61c79e5">XV_HdmiRxSs1_DynHDR_SetAddr()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ae1602e2606cfc7d343dbdd547fec91d4">XV_HdmiRxSs1_GetVideoStream()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ad255644b4621f85786c183cac9f5d129">XV_HdmiRxSs1_GetVrrIf()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#aa385d7305e57a116d118fd8a94f2da7a">XV_HdmiRxSs1_Start()</a>.</p>
 
 </div>
 </div>

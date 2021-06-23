@@ -1,7 +1,7 @@
 var xqspipsu_8c =
 [
     [ "XQspiPsu_Abort", "xqspipsu_8c.html#gaaa69ec6da90deb760954ea3dcfd55d7f", null ],
-    [ "XQspiPsu_CfgInitialize", "xqspipsu_8c.html#ga4d7926dd1a10abf0cd0ad78b0fbb809e", null ],
+    [ "XQspiPsu_CfgInitialize", "xqspipsu_8c.html#ga803eccd67d1dfde416b54488865c1e9d", null ],
     [ "XQspiPsu_CheckDmaDone", "xqspipsu_8c.html#ga6be41fd692a96516b0ce22591510c73d", null ],
     [ "XQspiPsu_Idle", "xqspipsu_8c.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5", null ],
     [ "XQspiPsu_InterruptHandler", "xqspipsu_8c.html#gaa345ea3ab3694a94a60e6217cb8d5e59", null ],

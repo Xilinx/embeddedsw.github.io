@@ -10,6 +10,7 @@ var xscuwdt__hw_8h =
     [ "XSCUWDT_DISABLE_OFFSET", "xscuwdt__hw_8h.html#ga8322daafd0ea0ea44c59f69523b19f66", null ],
     [ "XSCUWDT_DISABLE_VALUE1", "xscuwdt__hw_8h.html#gaafdd114ae5e1835ff15037e617464de2", null ],
     [ "XSCUWDT_DISABLE_VALUE2", "xscuwdt__hw_8h.html#ga3637e7d6bc621bbe36942a1bc9543f2f", null ],
+    [ "XSCUWDT_HW_H", "xscuwdt__hw_8h.html#ga483f73470c465c0ce9317a14c4546130", null ],
     [ "XSCUWDT_ISR_EVENT_FLAG_MASK", "xscuwdt__hw_8h.html#ga48a52ba61af3b86522de83206703b0cf", null ],
     [ "XSCUWDT_ISR_OFFSET", "xscuwdt__hw_8h.html#ga51a62e1dedd6b0f5f45cd19305f09440", null ],
     [ "XSCUWDT_LOAD_OFFSET", "xscuwdt__hw_8h.html#ga0ed3512c06a5468c1a1e156485c89b05", null ],

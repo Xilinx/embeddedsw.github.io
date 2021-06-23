@@ -22,12 +22,15 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#ifdef __linux__
+#include <pthread.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "xaie_debug.h"
 #include "xaie_helper.h"
 #include "xaie_io.h"
+#include "xaie_io_common.h"
 #include "xaie_npi.h"
 
 /****************************** Type Definitions *****************************/
@@ -35,28 +38,6 @@ typedef struct {
 	u64 BaseAddr;
 	u64 NpiBaseAddr;
 } XAie_DebugIO;
-
-/************************** Variable Definitions *****************************/
-const XAie_Backend DebugBackend =
-{
-	.Type = XAIE_IO_BACKEND_DEBUG,
-	.Ops.Init = XAie_DebugIO_Init,
-	.Ops.Finish = XAie_DebugIO_Finish,
-	.Ops.Write32 = XAie_DebugIO_Write32,
-	.Ops.Read32 = XAie_DebugIO_Read32,
-	.Ops.MaskWrite32 = XAie_DebugIO_MaskWrite32,
-	.Ops.MaskPoll = XAie_DebugIO_MaskPoll,
-	.Ops.BlockWrite32 = XAie_DebugIO_BlockWrite32,
-	.Ops.BlockSet32 = XAie_DebugIO_BlockSet32,
-	.Ops.CmdWrite = XAie_DebugIO_CmdWrite,
-	.Ops.RunOp = XAie_DebugIO_RunOp,
-	.Ops.MemAllocate = XAie_DebugMemAllocate,
-	.Ops.MemFree = XAie_DebugMemFree,
-	.Ops.MemSyncForCPU = XAie_DebugMemSyncForCPU,
-	.Ops.MemSyncForDev = XAie_DebugMemSyncForDev,
-	.Ops.MemAttach = XAie_DebugMemAttach,
-	.Ops.MemDetach = XAie_DebugMemDetach,
-};
 
 /************************** Function Definitions *****************************/
 /*****************************************************************************/
@@ -72,7 +53,7 @@ const XAie_Backend DebugBackend =
 * the reference count reaches a zero.
 *
 *******************************************************************************/
-AieRC XAie_DebugIO_Finish(void *IOInst)
+static AieRC XAie_DebugIO_Finish(void *IOInst)
 {
 	free(IOInst);
 	return XAIE_OK;
@@ -90,7 +71,7 @@ AieRC XAie_DebugIO_Finish(void *IOInst)
 * @note		None.
 *
 *******************************************************************************/
-AieRC XAie_DebugIO_Init(XAie_DevInst *DevInst)
+static AieRC XAie_DebugIO_Init(XAie_DevInst *DevInst)
 {
 	XAie_DebugIO *IOInst;
 
@@ -121,11 +102,13 @@ AieRC XAie_DebugIO_Init(XAie_DevInst *DevInst)
 * @note		None.
 *
 *******************************************************************************/
-void XAie_DebugIO_Write32(void *IOInst, u64 RegOff, u32 Value)
+static AieRC XAie_DebugIO_Write32(void *IOInst, u64 RegOff, u32 Value)
 {
 	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
 
 	printf("W: 0x%lx, 0x%x\n", DebugIOInst->BaseAddr + RegOff, Value);
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -135,19 +118,21 @@ void XAie_DebugIO_Write32(void *IOInst, u64 RegOff, u32 Value)
 *
 * @param	IOInst: IO instance pointer
 * @param	RegOff: Register offset to read from.
+* @param	Data: Pointer to store the 32 bit value
 *
-* @return	32-bit read value.
+* @return	XAIE_OK on success.
 *
 * @note		None.
 *
 *******************************************************************************/
-u32 XAie_DebugIO_Read32(void *IOInst, u64 RegOff)
+static AieRC XAie_DebugIO_Read32(void *IOInst, u64 RegOff, u32 *Data)
 {
 	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
 
+	*Data = 0U;
 	printf("R: 0x%lx, 0x%x\n", DebugIOInst->BaseAddr + RegOff, 0);
 
-	return 0;
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -166,12 +151,15 @@ u32 XAie_DebugIO_Read32(void *IOInst, u64 RegOff)
 * @note		None.
 *
 *******************************************************************************/
-void XAie_DebugIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Value)
+static AieRC XAie_DebugIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask,
+		u32 Value)
 {
 	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
 
 	printf("MW: 0x%lx, 0x%x, 0x%x\n", DebugIOInst->BaseAddr + RegOff, Mask,
 			Value);
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -185,12 +173,12 @@ void XAie_DebugIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Value)
 * @param	Value: 32-bit value to poll for
 * @param	TimeOutUs: Timeout in micro seconds.
 *
-* @return	XAIE_SUCCESS or XAIE_FAILURE.
+* @return	XAIE_ERR.
 *
 * @note		None.
 *
 *******************************************************************************/
-u32 XAie_DebugIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
+static AieRC XAie_DebugIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 		u32 TimeOutUs)
 {
 	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
@@ -198,7 +186,7 @@ u32 XAie_DebugIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 	printf("MP: 0x%lx, 0x%x, 0x%x, 0x%d\n", DebugIOInst->BaseAddr + RegOff,
 			Mask, Value, TimeOutUs);
 
-	return XAIE_FAILURE;
+	return XAIE_ERR;
 }
 
 /*****************************************************************************/
@@ -216,12 +204,15 @@ u32 XAie_DebugIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 * @note		None.
 *
 *******************************************************************************/
-void XAie_DebugIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
+static AieRC XAie_DebugIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data,
+		u32 Size)
 {
 	for(u32 i = 0U; i < Size; i ++) {
 		XAie_DebugIO_Write32(IOInst, RegOff + i * 4U, *Data);
 		Data++;
 	}
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -240,14 +231,17 @@ void XAie_DebugIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
 * @note		None.
 *
 *******************************************************************************/
-void XAie_DebugIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data, u32 Size)
+static AieRC XAie_DebugIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data,
+		u32 Size)
 {
 	for(u32 i = 0U; i < Size; i++)
 		XAie_DebugIO_Write32(IOInst, RegOff+ i * 4U, Data);
+
+	return XAIE_OK;
 }
 
-void XAie_DebugIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
-		u32 CmdWd1, const char *CmdStr)
+static AieRC XAie_DebugIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command,
+		u32 CmdWd0, u32 CmdWd1, const char *CmdStr)
 {
 	/* no-op */
 	(void)IOInst;
@@ -257,6 +251,8 @@ void XAie_DebugIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
 	(void)CmdWd0;
 	(void)CmdWd1;
 	(void)CmdStr;
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -273,7 +269,8 @@ void XAie_DebugIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
 * @note		None.
 *
 *******************************************************************************/
-static void _XAie_DebugIO_NpiWrite32(void *IOInst, u32 RegOff, u32 RegVal)
+static void _XAie_DebugIO_NpiWrite32(void *IOInst, u32 RegOff,
+		u32 RegVal)
 {
 	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
 	u64 RegAddr;
@@ -297,7 +294,7 @@ static void _XAie_DebugIO_NpiWrite32(void *IOInst, u32 RegOff, u32 RegVal)
 * @note		None.
 *
 *******************************************************************************/
-AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
+static AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		     XAie_BackendOpCode Op, void *Arg)
 {
 	AieRC RC = XAIE_OK;
@@ -339,6 +336,14 @@ AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 			XAIE_DBG("Backend doesn't support Op %u.\n", Op);
 			return XAIE_FEATURE_NOT_SUPPORTED;
 		}
+		case XAIE_BACKEND_OP_REQUEST_RESOURCE:
+			return _XAie_RequestRscCommon(DevInst, Arg);
+		case XAIE_BACKEND_OP_RELEASE_RESOURCE:
+			return _XAie_ReleaseRscCommon(Arg);
+		case XAIE_BACKEND_OP_FREE_RESOURCE:
+			return _XAie_FreeRscCommon(Arg);
+		case XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE:
+			return _XAie_RequestAllocatedRscCommon(DevInst, Arg);
 		default:
 			XAIE_ERROR("Backend doesn't support Op %u.\n", Op);
 			RC = XAIE_FEATURE_NOT_SUPPORTED;
@@ -362,7 +367,7 @@ AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 * @note		Internal only.
 *
 *******************************************************************************/
-XAie_MemInst* XAie_DebugMemAllocate(XAie_DevInst *DevInst, u64 Size,
+static XAie_MemInst* XAie_DebugMemAllocate(XAie_DevInst *DevInst, u64 Size,
 		XAie_MemCacheProp Cache)
 {
 	XAie_MemInst *MemInst;
@@ -401,7 +406,7 @@ XAie_MemInst* XAie_DebugMemAllocate(XAie_DevInst *DevInst, u64 Size,
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_DebugMemFree(XAie_MemInst *MemInst)
+static AieRC XAie_DebugMemFree(XAie_MemInst *MemInst)
 {
 	free(MemInst->VAddr);
 	free(MemInst);
@@ -421,7 +426,7 @@ AieRC XAie_DebugMemFree(XAie_MemInst *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_DebugMemSyncForCPU(XAie_MemInst *MemInst)
+static AieRC XAie_DebugMemSyncForCPU(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	XAIE_DBG("Sync for CPU is no-op in debug mode\n");
@@ -441,7 +446,7 @@ AieRC XAie_DebugMemSyncForCPU(XAie_MemInst *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_DebugMemSyncForDev(XAie_MemInst *MemInst)
+static AieRC XAie_DebugMemSyncForDev(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	XAIE_DBG("Sync for Dev is no-op in debug mode\n");
@@ -449,7 +454,7 @@ AieRC XAie_DebugMemSyncForDev(XAie_MemInst *MemInst)
 	return XAIE_OK;
 }
 
-AieRC XAie_DebugMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
+static AieRC XAie_DebugMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
 {
 	(void)MemInst;
 	(void)MemHandle;
@@ -458,12 +463,44 @@ AieRC XAie_DebugMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
 	return XAIE_OK;
 }
 
-AieRC XAie_DebugMemDetach(XAie_MemInst *MemInst)
+static AieRC XAie_DebugMemDetach(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	XAIE_DBG("Mem detach is no-op in debug mode\n");
 
 	return XAIE_OK;
 }
+
+static u64 XAie_DebugGetTid(void)
+{
+#ifdef __linux__
+	return (u64)pthread_self();
+#else
+	return 0;
+#endif
+}
+
+const XAie_Backend DebugBackend =
+{
+	.Type = XAIE_IO_BACKEND_DEBUG,
+	.Ops.Init = XAie_DebugIO_Init,
+	.Ops.Finish = XAie_DebugIO_Finish,
+	.Ops.Write32 = XAie_DebugIO_Write32,
+	.Ops.Read32 = XAie_DebugIO_Read32,
+	.Ops.MaskWrite32 = XAie_DebugIO_MaskWrite32,
+	.Ops.MaskPoll = XAie_DebugIO_MaskPoll,
+	.Ops.BlockWrite32 = XAie_DebugIO_BlockWrite32,
+	.Ops.BlockSet32 = XAie_DebugIO_BlockSet32,
+	.Ops.CmdWrite = XAie_DebugIO_CmdWrite,
+	.Ops.RunOp = XAie_DebugIO_RunOp,
+	.Ops.MemAllocate = XAie_DebugMemAllocate,
+	.Ops.MemFree = XAie_DebugMemFree,
+	.Ops.MemSyncForCPU = XAie_DebugMemSyncForCPU,
+	.Ops.MemSyncForDev = XAie_DebugMemSyncForDev,
+	.Ops.MemAttach = XAie_DebugMemAttach,
+	.Ops.MemDetach = XAie_DebugMemDetach,
+	.Ops.GetTid = XAie_DebugGetTid,
+	.Ops.SubmitTxn = NULL,
+};
 
 /** @} */

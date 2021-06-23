@@ -10,7 +10,7 @@
 # Ver      Who    Date     Changes
 # -------- ------ -------- ----------------------------------------------------
 # 1.2      adk    11/22/17 Added peripheral test app support.
-# 1.8	   sk	  02/04/21 Update interrupt id and ip name to support CIPS3.0
+# 1.9	   sk	  02/05/21 Update interrupt id and ip name to support CIPS3.0
 # 			   designs.
 ##############################################################################
 
@@ -127,7 +127,7 @@ proc gen_testfunc_call {swproj mhsinst} {
       Status = XCsuDma_IntrExample(&${intcvar}, &${ipname}, \\
                                  ${deviceid}, \\
                                  ${intr_id});
-   }"
+   }
 
    }
 } else {

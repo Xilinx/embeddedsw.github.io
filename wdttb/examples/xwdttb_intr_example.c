@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2006 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2006 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -121,7 +121,6 @@ static volatile int WdtExpired;
 /**
 * Main function to call the WdtTb interrupt example.
 *
-* @param	None.
 *
 * @return
 *		- XST_SUCCESS if successful

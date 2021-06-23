@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcanfd_intr.c
-* @addtogroup canfd_v2_4
+* @addtogroup canfd_v2_5
 * @{
 *
 * This file contains functions related to CAN interrupt handling.
@@ -228,7 +228,7 @@ void XCanFd_InterruptEnable_RxBuffFull(XCanFd *InstancePtr,
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	if ((RxBuffNumber == 0)) {
+	if ((RxBuffNumber == (u32)0)) {
 		IntrValue = XCanFd_ReadReg(
 				InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_RXBFLL1_OFFSET);
@@ -275,7 +275,7 @@ void XCanFd_InterruptDisable_RxBuffFull(XCanFd *InstancePtr,
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	if ((RxBuffNumber == 0)) {
+	if ((RxBuffNumber == (u32)0)) {
 		IntrValue =
 			XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,
 				XCANFD_RXBFLL1_OFFSET);
@@ -392,7 +392,7 @@ void XCanFd_IntrHandler(void *InstancePtr)
 	PendingIntr &= XCanFd_InterruptGetEnabled(CanPtr);
 
 	/* An error interrupt is occurring */
-	if ((PendingIntr & XCANFD_IXR_ERROR_MASK)) {
+	if ((PendingIntr & XCANFD_IXR_ERROR_MASK) != (u32)0) {
 		ErrorStatus = XCanFd_GetBusErrorStatus(CanPtr);
 		CanPtr->ErrorHandler(CanPtr->ErrorRef, ErrorStatus);
 
@@ -429,7 +429,7 @@ void XCanFd_IntrHandler(void *InstancePtr)
 			XCANFD_IXR_PEE_MASK | XCANFD_IXR_TSCNT_OFLW_MASK |
 			XCANFD_IXR_BSRD_MASK |
 			XCANFD_IXR_TXEOFLW_MASK);
-	if (EventIntr) {
+	if (EventIntr != (u32)0) {
 
 		CanPtr->EventHandler(CanPtr->EventRef, EventIntr);
 	}
@@ -447,13 +447,13 @@ void XCanFd_IntrHandler(void *InstancePtr)
 	 * when a message is received and becomes FULL.
 	 */
 	if ((PendingIntr & (XCANFD_IXR_RXFWMFLL_MASK | XCANFD_IXR_RXOK_MASK \
-			| XCANFD_IXR_RXRBF_MASK | XCANFD_IXR_RXFWMFLL_1_MASK ))) {
+			| XCANFD_IXR_RXRBF_MASK | XCANFD_IXR_RXFWMFLL_1_MASK)) !=(u32)0) {
 
 		CanPtr->RecvHandler(CanPtr->RecvRef);
 	}
 
 	/* A frame was transmitted successfully */
-	if ((PendingIntr & ( XCANFD_IXR_TXOK_MASK | XCANFD_IXR_TXEWMFLL_MASK))) {
+	if ((PendingIntr & (XCANFD_IXR_TXOK_MASK | XCANFD_IXR_TXEWMFLL_MASK)) != (u32)0) {
 		CanPtr->SendHandler(CanPtr->SendRef);
 	}
 
@@ -504,6 +504,8 @@ void XCanFd_IntrHandler(void *InstancePtr)
 int XCanFd_SetHandler(XCanFd *InstancePtr, u32 HandlerType,
 		    void *CallBackFunc, void *CallBackRef)
 {
+	u32 Status;
+
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
@@ -511,27 +513,32 @@ int XCanFd_SetHandler(XCanFd *InstancePtr, u32 HandlerType,
 	case XCANFD_HANDLER_SEND:
 		InstancePtr->SendHandler = (XCanFd_SendRecvHandler) CallBackFunc;
 		InstancePtr->SendRef = CallBackRef;
+		Status = XST_SUCCESS;
 		break;
 
 	case XCANFD_HANDLER_RECV:
 		InstancePtr->RecvHandler = (XCanFd_SendRecvHandler) CallBackFunc;
 		InstancePtr->RecvRef = CallBackRef;
+		Status = XST_SUCCESS;
 		break;
 
 	case XCANFD_HANDLER_ERROR:
 		InstancePtr->ErrorHandler = (XCanFd_ErrorHandler) CallBackFunc;
 		InstancePtr->ErrorRef = CallBackRef;
+		Status = XST_SUCCESS;
 		break;
 
 	case XCANFD_HANDLER_EVENT:
 		InstancePtr->EventHandler = (XCanFd_EventHandler) CallBackFunc;
 		InstancePtr->EventRef = CallBackRef;
+		Status = XST_SUCCESS;
 		break;
 
 	default:
-		return (XST_INVALID_PARAM);
+		Status = XST_INVALID_PARAM;
+		break;
 
 	}
-	return (XST_SUCCESS);
+	return (s32)Status;
 }
 /** @} */

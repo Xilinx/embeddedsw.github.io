@@ -22,7 +22,8 @@ var NAVTREE =
       [ "xspips_eeprom_polled_example.c", "example.html#ex3", null ],
       [ "xspips_flash_intr_example.c", "example.html#ex4", null ],
       [ "xspips_flash_polled_example.c", "example.html#ex5", null ],
-      [ "xspips_slave_polled_example.c", "example.html#ex6", null ]
+      [ "xspips_slave_polled_example.c", "example.html#ex6", null ],
+      [ "xspips_tpm_polled_example.c", "example.html#ex7", null ]
     ] ]
   ] ]
 ];

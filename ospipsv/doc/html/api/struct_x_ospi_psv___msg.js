@@ -5,6 +5,7 @@ var struct_x_ospi_psv___msg =
     [ "Addrvalid", "struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601", null ],
     [ "ByteCount", "struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4", null ],
     [ "Dummy", "struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8", null ],
+    [ "ExtendedOpcode", "struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc", null ],
     [ "Flags", "struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0", null ],
     [ "IsDDROpCode", "struct_x_ospi_psv___msg.html#a5a9c4b0b141795207120a3d62c6d5144", null ],
     [ "Opcode", "struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2", null ],

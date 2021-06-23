@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -16,6 +16,7 @@
  * Ver	 Who Date    	Changes
  * ----- --- -------- 	-----------------------------------------------
  * 1.00a sdm 05/30/11 	First release
+ * 3.13  rna 02/05/21   Changed XIicPs global variable name
  *
  * </pre>
  *
@@ -44,14 +45,13 @@ int IicPsSelfTestExample(u16 DeviceId);
 
 /************************** Variable Definitions ******************************/
 
-XIicPs Iic;			/* Instance of the IIC Device */
+XIicPs IicPsInstance;			/* Instance of the IIC Device */
 
 /******************************************************************************/
 /**
 *
 * Main function to call the Self Test example.
 *
-* @param	None.
 *
 * @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful.
 *
@@ -111,7 +111,7 @@ int IicPsSelfTestExample(u16 DeviceId)
 		return XST_FAILURE;
 	}
 
-	Status = XIicPs_CfgInitialize(&Iic, Config, Config->BaseAddress);
+	Status = XIicPs_CfgInitialize(&IicPsInstance, Config, Config->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -119,7 +119,7 @@ int IicPsSelfTestExample(u16 DeviceId)
 	/*
 	 * Perform a self-test.
 	 */
-	Status = XIicPs_SelfTest(&Iic);
+	Status = XIicPs_SelfTest(&IicPsInstance);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}

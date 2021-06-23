@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss.h
-* @addtogroup dptxss_v6_4
+* @addtogroup dptxss_v6_5
 * @{
 * @details
 *
@@ -168,6 +168,8 @@ typedef enum {
 	XDPTXSS_HANDLER_HDCP22_UNAUTHENTICATED, /**< Handler for
 						 * HDCP22 unauthenticated
 						 * event */
+	XDPTXSS_HANDLER_HDCP22_UPDATE_DOWNSTREAM_TOPOLOGY, /**< Handler for
+						 * HDCP22 downstream topology available */
 #endif
 	XDPTXSS_HANDLER_DP_SET_MSA,		/**< Set MSA immediate change
 						  *  change interrupt type for

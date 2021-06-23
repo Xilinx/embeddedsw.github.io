@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xiic_multi_master.c
-* @addtogroup iic_v3_7
+* @addtogroup iic_v3_8
 * @{
 *
 * Contains multi-master functions for the XIic component. This file is
@@ -63,14 +63,13 @@ static void ArbitrationLostHandler(XIic *InstancePtr);
 * to allowing any multi-master events to occur, such as after the driver is
 * initialized.
 *
-* @param	None.
 *
 * @return 	None.
 *
 * @note		None.
 *
 ******************************************************************************/
-void XIic_MultiMasterInclude()
+void XIic_MultiMasterInclude(void)
 {
 	XIic_ArbLostFuncPtr = ArbitrationLostHandler;
 	XIic_BusNotBusyFuncPtr = BusNotBusyHandler;

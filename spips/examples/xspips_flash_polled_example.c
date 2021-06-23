@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -161,7 +161,6 @@ u8 WriteBuffer[MAX_DATA + DATA_OFFSET];
 *
 * Main function to call the SPI Flash Polled Example.
 *
-* @param	None
 *
 * @return
 *		- XST_SUCCESS if successful
@@ -198,7 +197,7 @@ int main(void)
 * device driver in polled mode. This function writes and reads data
 * from a serial flash.
 *
-* @param	SpiPtr is a pointer to the SPI driver instance to use.
+* @param	SpiInstancePtr is a pointer to the SPI driver instance to use.
 *
 * @param	SpiDeviceId is the Instance Id of SPI in the system.
 *

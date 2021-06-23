@@ -6,7 +6,7 @@
 /*****************************************************************************/
 /**
 * @file xsysmonpsv.h
-* @addtogroup sysmonpsv_v2_1
+* @addtogroup sysmonpsv_v2_2
 *
 * The XSysMon driver supports the Xilinx System Monitor device on Versal
 *
@@ -104,7 +104,9 @@
 *                       Added new interrupt handling structure.
 *       aad    10/12/20 Fixed MISRAC violations
 * 2.1	aad    02/24/21 Added additional documentation to support production
-*			silicon.
+*                       silicon.
+* 2.2	aad    03/29/21 Added an array that contains the supply names in
+*                       strings.
 *
 * </pre>
 *
@@ -174,6 +176,14 @@ typedef enum {
 	XSYSMONPSV_TH_LOWER,
 	XSYSMONPSV_TH_UPPER,
 } XSysMonPsv_Threshold;
+
+/*@}*/
+
+/**
+ * @name This array contains the names of the supplies
+ * @ {
+ */
+extern const char *  XSysMonPsv_Supply_Arr[];
 
 /*@}*/
 

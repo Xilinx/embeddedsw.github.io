@@ -7,7 +7,7 @@
 /**
 *
 * @file xdprxss.c
-* @addtogroup dprxss_v6_1
+* @addtogroup dprxss_v7_0
 * @{
 *
 * This is the main file for Xilinx DisplayPort Receiver Subsystem driver.
@@ -397,6 +397,8 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 
 		/* Set key selection value for RX */
 		XHdcp1x_SetKeySelect(InstancePtr->Hdcp1xPtr, 0x1);
+
+		XHdcp1x_LateInit(InstancePtr->Hdcp1xPtr);
 	}
 #endif
 
@@ -1868,6 +1870,10 @@ static void StubTp1Callback(void *InstancePtr)
 		DpRxSsPtr->ltState = 1;
 		DpRxSsPtr->ceItrCounter = 0;
 	}
+
+	if (MCDP6000_IC_Rev == 0x3200) {
+		XDpRxSs_MCDP6000_ResetCrPath (DpRxSsPtr, XDPRXSS_MCDP6000_IIC_SLAVE);
+	}
  
 	/* Read link rate */
 	DpRxSsPtr->UsrOpt.LinkRate =
@@ -2270,7 +2276,7 @@ void XDpRxSs_MaskAdaptiveIntr(XDpRxSs *InstancePtr, u32 Mask)
 	Xil_AssertVoid(InstancePtr);
 	RegVal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
 				 XDP_RX_INTERRUPT_MASK_2);
-	RegVal |= (Mask & XDP_RX_ADAPTIVESYNC_SDP_VBLANK_INTERRUPT_MASK);
+	RegVal |= (Mask & XDP_RX_ADAPTIVESYNC_SDP_VBLANK_INTERRUPT_STREAMX_MASK);
 	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
 			 XDP_RX_INTERRUPT_MASK_2, RegVal);
 }
@@ -2307,6 +2313,7 @@ void XDpRxSs_UnMaskAdaptiveIntr(XDpRxSs *InstancePtr, u32 Mask)
 * the incoming video stream.
 *
 * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+* @Stream	Stream is the stream number to get the vblank.
 *
 * @return
 *		- The current vblank value
@@ -2316,16 +2323,25 @@ void XDpRxSs_UnMaskAdaptiveIntr(XDpRxSs *InstancePtr, u32 Mask)
 		register
 *
 ******************************************************************************/
-int XDpRxSs_GetVblank(XDpRxSs *InstancePtr)
+int XDpRxSs_GetVblank(XDpRxSs *InstancePtr, u8 Stream)
 {
 	u32 VBlank;
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+			(Stream == XDP_TX_STREAM_ID2) ||
+			(Stream == XDP_TX_STREAM_ID3) ||
+			(Stream == XDP_TX_STREAM_ID4));
+
+	u32 StreamOffset[4] = {XDP_RX_STREAM1_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM2_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM3_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM4_ADAPTIVE_VBLANK_VTOTAL};
 
 	/* Get the current vblank value */
 	VBlank = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
-				 XDP_RX_ADAPTIVE_VBLANK_VTOTAL);
+				 StreamOffset[Stream - XDP_TX_STREAM_ID1]);
 	VBlank &= XDP_RX_ADAPTIVE_VBLANK_MASK;
 
 	return VBlank;
@@ -2338,6 +2354,7 @@ int XDpRxSs_GetVblank(XDpRxSs *InstancePtr)
 * the incoming video stream.
 *
 * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+* @Stream	Stream is the stream number to get the vtotal.
 *
 * Note: This function has to be called after
 * assertion Bit-30 of XDP_RX_INTERRUPT_CAUSE_2 register
@@ -2350,16 +2367,25 @@ int XDpRxSs_GetVblank(XDpRxSs *InstancePtr)
 		register
 *
 ******************************************************************************/
-int XDpRxSs_GetVtotal(XDpRxSs *InstancePtr)
+int XDpRxSs_GetVtotal(XDpRxSs *InstancePtr, u8 Stream)
 {
 	u32 VTotal;
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+			(Stream == XDP_TX_STREAM_ID2) ||
+			(Stream == XDP_TX_STREAM_ID3) ||
+			(Stream == XDP_TX_STREAM_ID4));
+
+	u32 StreamOffset[4] = {XDP_RX_STREAM1_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM2_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM3_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM4_ADAPTIVE_VBLANK_VTOTAL};
 
 	/* Get stream map of the stream(s) */
 	VTotal = XDpRxSs_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
-				 XDP_RX_ADAPTIVE_VBLANK_VTOTAL);
+				 StreamOffset[Stream - XDP_TX_STREAM_ID1]);
 	VTotal = VTotal >> XDP_RX_ADAPTIVE_VTOTAL_SHIFT;
 
 	return VTotal;

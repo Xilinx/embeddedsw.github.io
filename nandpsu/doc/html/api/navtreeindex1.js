@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"xnandpsu__hw_8h.html#gaa6af724c38008c62af9e04e835f674de":[2,6,26],
+"xnandpsu__hw_8h.html#gaa789076d269cb48b93e89cf3c7f82719":[2,6,104],
 "xnandpsu__hw_8h.html#gaadf5933321faab54c9b4a9745b2c0288":[2,6,94],
 "xnandpsu__hw_8h.html#gab1218c07eb4ca421ebebe66ad437e70f":[2,6,97],
 "xnandpsu__hw_8h.html#gab5f11ea56bdac764873705a28405205f":[2,6,44],

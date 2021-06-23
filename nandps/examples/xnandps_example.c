@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -72,7 +72,6 @@ u8 WriteBuffer[NAND_TEST_BLOCK_SIZE];	/**< Block sized write buffer */
 *
 * Main function to execute the Nand Flash read write example.
 *
-* @param	None.
 *
 * @return
 *		- XST_SUCCESS if the example has completed successfully.

@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
  * @file xipipsu.h
-* @addtogroup ipipsu_v2_8
+* @addtogroup ipipsu_v2_9
 * @{
 * @details
  *
@@ -72,6 +72,10 @@
  * 2.7  sdd 09/03/20  Makefile update for parallel execution.
  * 2.8  nsk 12/14/20  Modified the driver tcl to not to use the instance names.
  * 2.8  nsk 01/19/21  Updated the driver tcl to use IP_NAME for IPIs mapped.
+ * 2.9  ma  02/12/21  Added IPI CRC functionality
+ *	sdd 02/17/21 Fixed doxygen warnings.
+ *	sdd 03/10/21 Fixed misrac warnings.
+ *		     Fixed doxygen warnings.
  * </pre>
  *
  *****************************************************************************/
@@ -89,9 +93,21 @@ extern "C" {
 #include "xipipsu_hw.h"
 
 /************************** Constant Definitions *****************************/
-#define XIPIPSU_BUF_TYPE_MSG	(0x001U)
-#define XIPIPSU_BUF_TYPE_RESP	(0x002U)
-#define XIPIPSU_MAX_MSG_LEN		XIPIPSU_MSG_BUF_SIZE
+#define XIPIPSU_BUF_TYPE_MSG	(0x001U) /**< Message type buffer */
+#define XIPIPSU_BUF_TYPE_RESP	(0x002U) /**< Response buffer */
+#define XIPIPSU_MAX_MSG_LEN		XIPIPSU_MSG_BUF_SIZE /**< Maximum message length */
+#define XIPIPSU_CRC_INDEX		(0x7U) /**< Index where the CRC is stored */
+#define XIPIPSU_W0_TO_W6_SIZE	(28U)	       /**< Size of the word 0 to word 6 */
+
+/* CRC Mismatch error code */
+#define XIPIPSU_CRC_ERROR		(0xFL) /**< CRC error occurred */
+
+/* Enable CRC check for IPI messages */
+#define ENABLE_IPI_CRC_VAL	(0x0U) /**< Enable CRC */
+
+#if ENABLE_IPI_CRC_VAL
+#define ENABLE_IPI_CRC
+#endif
 /**************************** Type Definitions *******************************/
 /**
  * Data structure used to refer IPI Targets
@@ -106,12 +122,12 @@ typedef struct {
  */
 typedef struct {
 	u32 DeviceId; /**< Unique ID  of device */
-	u32 BaseAddress; /**< Base address of the device */
+	UINTPTR BaseAddress; /**< Base address of the device */
 	u32 BitMask; /**< BitMask to be used to identify this CPU */
 	u32 BufferIndex; /**< Index of the IPI Message Buffer */
 	u32 IntId; /**< Interrupt ID on GIC **/
 	u32 TargetCount; /**< Number of available IPI Targets */
-	XIpiPsu_Target TargetList[XIPIPSU_MAX_TARGETS] ; /** < List of IPI Targets */
+	XIpiPsu_Target TargetList[XIPIPSU_MAX_TARGETS] ; /**< List of IPI Targets */
 } XIpiPsu_Config;
 
 /**
@@ -254,6 +270,13 @@ typedef struct {
 	XIpiPsu_ReadReg((InstancePtr)->Config.BaseAddress, \
 		XIPIPSU_OBS_OFFSET)
 /****************************************************************************/
+/************************** Variable Definitions *****************************/
+/**
+ * The IPIPSU configuration table, sized by the number of instances
+ * defined in xparameters.h.
+ */
+extern XIpiPsu_Config XIpiPsu_ConfigTable[XPAR_XIPIPSU_NUM_INSTANCES];
+
 /************************** Function Prototypes *****************************/
 
 /* Static lookup function implemented in xipipsu_sinit.c */
@@ -269,7 +292,7 @@ void XIpiPsu_Reset(XIpiPsu *InstancePtr);
 
 XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask);
 
-XStatus XIpiPsu_PollForAck(XIpiPsu *InstancePtr, u32 DestCpuMask,
+XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
 		u32 TimeOutCount);
 
 XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
@@ -277,10 +300,7 @@ XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 
 XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask, u32 *MsgPtr,
 		u32 MsgLength, u8 BufferType);
-u32* XIpiPsu_GetBufferAddress(XIpiPsu *InstancePtr, u32 SrcCpuMask,
-		u32 DestCpuMask, u32 BufferType);
 
-u32 XIpiPsu_GetBufferIndex(const XIpiPsu *InstancePtr, u32 CpuMask);
 void XIpiPsu_SetConfigTable(u32 DeviceId, XIpiPsu_Config *ConfigTblPtr);
 
 #ifdef __cplusplus

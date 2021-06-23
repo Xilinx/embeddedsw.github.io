@@ -4,7 +4,6 @@ var xcanfd_8h =
     [ "XCANFD_AFIDR_OFFSET", "xcanfd_8h.html#gacb43574b7697657408b81e4040a07eb4", null ],
     [ "XCANFD_AFMR_OFFSET", "xcanfd_8h.html#gacaf0a29c45fca7a9333a9ff15cd53b0e", null ],
     [ "XCanFD_Check_TrrVal_Set_Bit", "xcanfd_8h.html#gab8dbb7081f93bf56d1d352f8884f1d8b", null ],
-    [ "XCanFD_Check_TrrVal_Set_Bit", "xcanfd_8h.html#gab8dbb7081f93bf56d1d352f8884f1d8b", null ],
     [ "XCanFd_ClearBusErrorStatus", "xcanfd_8h.html#ga730042e3d1e801f2686edd9872b5d0c2", null ],
     [ "XCanFd_ClearTImeStamp_Count", "xcanfd_8h.html#gaa1c66a346442536ac35a1c7d6a81eb68", null ],
     [ "XCanFd_Create_CanFD_Dlc_BrsValue", "xcanfd_8h.html#ga13f53735422dfa045400cc5157ccef23", null ],
@@ -22,6 +21,7 @@ var xcanfd_8h =
     [ "XCanFd_GetRxIntrWatermark", "xcanfd_8h.html#gaf28eec968865024be2030639a62f1854", null ],
     [ "XCanFd_GetStatus", "xcanfd_8h.html#ga10c03f02c1a921925c45bbac2035a6d2", null ],
     [ "XCanFd_GetTImeStamp_Count", "xcanfd_8h.html#gab96c04fa6ab9670c0939fc7e1af8a54b", null ],
+    [ "XCANFD_H", "xcanfd_8h.html#ga8b94e6e278cd276ef5bae7be5e7b2ae3", null ],
     [ "XCANFD_HANDLER_ERROR", "xcanfd_8h.html#gacfd326f78688ca074cbc83a27124a660", null ],
     [ "XCANFD_HANDLER_EVENT", "xcanfd_8h.html#ga056a2ba1200bfaa95d7b77e22b07a6b0", null ],
     [ "XCANFD_HANDLER_RECV", "xcanfd_8h.html#ga41349b5a26ef723c5f262bdd4a4df76e", null ],
@@ -32,6 +32,12 @@ var xcanfd_8h =
     [ "XCanFd_IsTxDone", "xcanfd_8h.html#ga8097ea5244abb720617a9aa8c3cfa0ad", null ],
     [ "XCANFD_MAILBOX_ID_OFFSET", "xcanfd_8h.html#ga54a37e86e546e471aafdcd99f57c6fd9", null ],
     [ "XCANFD_MAILBOX_MASK_OFFSET", "xcanfd_8h.html#gafd59df352e8fa9272cf9d74d3b85e274", null ],
+    [ "XCANFD_MAX_F_SJW_VALUE", "xcanfd_8h.html#ga0cb019518fc7abe0c5eabbd33677dbb8", null ],
+    [ "XCANFD_MAX_F_TS1_VALUE", "xcanfd_8h.html#gabfdfb75c9db697291cec684cbdf4060c", null ],
+    [ "XCANFD_MAX_F_TS2_VALUE", "xcanfd_8h.html#ga911d86ca7cd1afe941662f887772e222", null ],
+    [ "XCANFD_MAX_SJW_VALUE", "xcanfd_8h.html#ga7ce21e6269e135eb65f4bd43976b5df5", null ],
+    [ "XCANFD_MAX_TS1_VALUE", "xcanfd_8h.html#gaee1da48a54c75174c59c880b60dfae3a", null ],
+    [ "XCANFD_MAX_TS2_VALUE", "xcanfd_8h.html#ga5c578312154336c6a14a68307e84dae5", null ],
     [ "XCANFD_MODE_ABR", "xcanfd_8h.html#ga9a806f3ab8bea022a9dd1ae3b8881698", null ],
     [ "XCANFD_MODE_BR", "xcanfd_8h.html#ga4d87202215a61d0d7470d13b3d4df5ec", null ],
     [ "XCANFD_MODE_CONFIG", "xcanfd_8h.html#ga6197f9c8450e02a85e4c3bf046d43895", null ],
@@ -113,5 +119,6 @@ var xcanfd_8h =
     [ "XCanFd_SetRxIntrWatermark", "xcanfd_8h.html#ga30a1745f0967ac96948b137a8adaf15c", null ],
     [ "XCanFd_SetRxIntrWatermarkFifo1", "xcanfd_8h.html#gaa0f9930ac4d2eadeead51c66825c78e7", null ],
     [ "XCanFd_SetTxEventIntrWatermark", "xcanfd_8h.html#gada4f8e428b96e82d87ed30cf397cfb5e", null ],
-    [ "XCanFd_TxBuffer_Cancel_Request", "xcanfd_8h.html#ga1fe72efb3ab8437545ac8df29dff89f5", null ]
+    [ "XCanFd_TxBuffer_Cancel_Request", "xcanfd_8h.html#ga1fe72efb3ab8437545ac8df29dff89f5", null ],
+    [ "XCanFd_ConfigTable", "xcanfd_8h.html#ga79b0b11bcc2c742ec2a76df69245c07b", null ]
 ];

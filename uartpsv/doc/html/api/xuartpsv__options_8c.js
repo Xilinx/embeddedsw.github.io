@@ -1,5 +1,6 @@
 var xuartpsv__options_8c =
 [
+    [ "XUARTPSV_NUM_OPTIONS", "xuartpsv__options_8c.html#ga085455aa637fa6865bfdf3f6765336fc", null ],
     [ "XUartPsv_GetDataFormat", "xuartpsv__options_8c.html#gad9a82725de555ca0e6414d95afb4fb2a", null ],
     [ "XUartPsv_GetFifoThreshold", "xuartpsv__options_8c.html#gaaf3802ebc7d644ab9f80bb20060394e0", null ],
     [ "XUartPsv_GetModemStatus", "xuartpsv__options_8c.html#ga9563569d26dcdc486b2fc9d2d18ec918", null ],

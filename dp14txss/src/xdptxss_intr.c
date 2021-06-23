@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss_intr.c
-* @addtogroup dptxss_v6_4
+* @addtogroup dptxss_v6_5
 * @{
 *
 * This file contains interrupt related functions of Xilinx DisplayPort TX
@@ -514,6 +514,14 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 				XHDCP22_TX_HANDLER_UNAUTHENTICATED,
 				(void *)(XHdcp22_Tx_Callback)CallbackFunc,
 				(void *)CallbackRef);
+			Status = XST_SUCCESS;
+			break;
+		case XDPTXSS_HANDLER_HDCP22_UPDATE_DOWNSTREAM_TOPOLOGY:
+			/** Register HDCP 2.2 callbacks */
+			XHdcp22Tx_SetCallback(InstancePtr->Hdcp22Ptr,
+					XHDCP22_TX_HANDLER_DOWNSTREAM_TOPOLOGY_AVAILABLE,
+					(void *)(XHdcp22_Tx_Callback)CallbackFunc,
+					(void *)CallbackRef);
 			Status = XST_SUCCESS;
 			break;
 #endif

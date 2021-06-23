@@ -69,7 +69,7 @@ $(document).ready(function(){initNavTree('xiic__tenbitaddr__example_8c.html','')
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>This file consists of a Interrupt mode design example which uses the Xilinx IIC device and <a class="el" href="struct_x_iic.html" title="The XIic driver instance data. ">XIic</a> driver to exercise the 10-bit Address functionality of the IIC device. </p>
-<p>The <a class="el" href="group__iic__v3__7.html#ga977382e8a20bd5e690229f82af2e7603" title="This function sends data as a master on the IIC bus. ">XIic_MasterSend()</a> API is used to transmit the data and <a class="el" href="group__iic__v3__7.html#ga337bf0d322d4a7d9b4f8baa30e00ab45" title="This function receives data as a master from a slave device on the IIC bus. ">XIic_MasterRecv()</a> API is used to receive the data.</p>
+<p>The <a class="el" href="group__iic__v3__8.html#ga977382e8a20bd5e690229f82af2e7603" title="This function sends data as a master on the IIC bus. ">XIic_MasterSend()</a> API is used to transmit the data and <a class="el" href="group__iic__v3__8.html#ga337bf0d322d4a7d9b4f8baa30e00ab45" title="This function receives data as a master from a slave device on the IIC bus. ">XIic_MasterRecv()</a> API is used to receive the data.</p>
 <p>The example is tested on ML300/ML310/ML403/ML501 Xilinx boards.</p>
 <p>The IIC devices that are present on the Xilinx boards donot support the 10-bit functionality. This example has been tested with an off board external IIC Master device and the IIC device configured as a Slave.</p>
 <p>This code assumes that no Operating System is being used.</p>
@@ -92,9 +92,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date  Changes
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abe20f8c05734f71f96d66debda905fcd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiic__tenbitaddr__example_8c.html#abe20f8c05734f71f96d66debda905fcd">IicTenBitAddrExample</a> ()</td></tr>
-<tr class="memdesc:abe20f8c05734f71f96d66debda905fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes and reads the data as a slave.  <a href="#abe20f8c05734f71f96d66debda905fcd">More...</a><br/></td></tr>
-<tr class="separator:abe20f8c05734f71f96d66debda905fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4e612135486e268a4db49b75f625f52"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiic__tenbitaddr__example_8c.html#ab4e612135486e268a4db49b75f625f52">IicTenBitAddrExample</a> (void)</td></tr>
+<tr class="memdesc:ab4e612135486e268a4db49b75f625f52"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes and reads the data as a slave.  <a href="#ab4e612135486e268a4db49b75f625f52">More...</a><br/></td></tr>
+<tr class="separator:ab4e612135486e268a4db49b75f625f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e451cd59da6f2b702a42a4fcb21a362"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiic__tenbitaddr__example_8c.html#a2e451cd59da6f2b702a42a4fcb21a362">TenBitAddrWriteData</a> (u16 ByteCount)</td></tr>
 <tr class="memdesc:a2e451cd59da6f2b702a42a4fcb21a362"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes a buffer of bytes to the IIC bus when the IIC master initiates a read operation.  <a href="#a2e451cd59da6f2b702a42a4fcb21a362">More...</a><br/></td></tr>
 <tr class="separator:a2e451cd59da6f2b702a42a4fcb21a362"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,13 +106,14 @@ Functions</h2></td></tr>
 <tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="abe20f8c05734f71f96d66debda905fcd"></a>
+<a class="anchor" id="ab4e612135486e268a4db49b75f625f52"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">int IicTenBitAddrExample </td>
           <td>(</td>
+          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -121,16 +122,10 @@ Functions</h2></td></tr>
 
 <p>This function writes and reads the data as a slave. </p>
 <p>The IIC master on the bus initiates the transfers.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_iic___config.html#ae783f76b6713be6d9b77060d77328102">XIic_Config::BaseAddress</a>, <a class="el" href="xiic__tenbitaddr__example_8c.html#adc9d7e63c6a7961710a9ae7df6b824d7">TenBitAddrReadData()</a>, <a class="el" href="xiic__tenbitaddr__example_8c.html#a2e451cd59da6f2b702a42a4fcb21a362">TenBitAddrWriteData()</a>, <a class="el" href="group__iic__v3__7.html#gab3f6ec08afcad8f35f9ee2c9e2531366">XII_ADDR_TO_RESPOND_TYPE</a>, <a class="el" href="group__iic__v3__7.html#ga301f08e1fa6e74bf4c2885702bf0ff70">XIic_CfgInitialize()</a>, <a class="el" href="group__iic__v3__7.html#ga1dcc65dd7cb7863bf6769aed5d785304">XIic_LookupConfig()</a>, <a class="el" href="group__iic__v3__7.html#gad944f42c3d9972fc2c986a7eed726297">XIic_SetAddress()</a>, <a class="el" href="group__iic__v3__7.html#ga900a7ab49c2e13b0562ab629c088cf3a">XIic_SetOptions()</a>, <a class="el" href="group__iic__v3__7.html#ga86b4b2b307df26df2ecac39337c78bed">XIic_SetRecvHandler()</a>, <a class="el" href="group__iic__v3__7.html#gad33428830e9016ef50c1deae59d1e604">XIic_SetSendHandler()</a>, <a class="el" href="group__iic__v3__7.html#gaa74a6884f6dfc826a10768d7d0333991">XIic_SetStatusHandler()</a>, and <a class="el" href="group__iic__v3__7.html#gab7349458691aa658d69fa3ee2875daea">XIic_SlaveInclude()</a>.</p>
+<p>References <a class="el" href="struct_x_iic___config.html#ae783f76b6713be6d9b77060d77328102">XIic_Config::BaseAddress</a>, <a class="el" href="xiic__tenbitaddr__example_8c.html#adc9d7e63c6a7961710a9ae7df6b824d7">TenBitAddrReadData()</a>, <a class="el" href="xiic__tenbitaddr__example_8c.html#a2e451cd59da6f2b702a42a4fcb21a362">TenBitAddrWriteData()</a>, <a class="el" href="group__iic__v3__8.html#gab3f6ec08afcad8f35f9ee2c9e2531366">XII_ADDR_TO_RESPOND_TYPE</a>, <a class="el" href="group__iic__v3__8.html#ga301f08e1fa6e74bf4c2885702bf0ff70">XIic_CfgInitialize()</a>, <a class="el" href="group__iic__v3__8.html#ga1dcc65dd7cb7863bf6769aed5d785304">XIic_LookupConfig()</a>, <a class="el" href="group__iic__v3__8.html#gad944f42c3d9972fc2c986a7eed726297">XIic_SetAddress()</a>, <a class="el" href="group__iic__v3__8.html#ga900a7ab49c2e13b0562ab629c088cf3a">XIic_SetOptions()</a>, <a class="el" href="group__iic__v3__8.html#ga86b4b2b307df26df2ecac39337c78bed">XIic_SetRecvHandler()</a>, <a class="el" href="group__iic__v3__8.html#gad33428830e9016ef50c1deae59d1e604">XIic_SetSendHandler()</a>, <a class="el" href="group__iic__v3__8.html#gaa74a6884f6dfc826a10768d7d0333991">XIic_SetStatusHandler()</a>, and <a class="el" href="group__iic__v3__8.html#ga543dde34d5a2f34269641ec3ab1bfdfe">XIic_SlaveInclude()</a>.</p>
 
 <p>Referenced by <a class="el" href="xiic__tenbitaddr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -151,16 +146,10 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the IIC Slave example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xiic__tenbitaddr__example_8c.html#abe20f8c05734f71f96d66debda905fcd">IicTenBitAddrExample()</a>.</p>
+<p>References <a class="el" href="xiic__tenbitaddr__example_8c.html#ab4e612135486e268a4db49b75f625f52">IicTenBitAddrExample()</a>.</p>
 
 </div>
 </div>
@@ -199,9 +188,9 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_iic.html#a389e4b8500329c37d7835098408b5ed3">XIic::BaseAddress</a>, <a class="el" href="group__iic__v3__7.html#ga17d0df7020d5264d20bbc36d276e276e">XIic_IntrGlobalDisable</a>, <a class="el" href="group__iic__v3__7.html#ga7071fcf4cf60d65fd862653fa34faa21">XIic_IntrGlobalEnable</a>, <a class="el" href="group__iic__v3__7.html#ga25dc714d97f71049154461e1ff16bcad">XIic_SlaveRecv()</a>, <a class="el" href="group__iic__v3__7.html#ga5f4e497710a9c3719f27d40faa74a10f">XIic_Start()</a>, and <a class="el" href="group__iic__v3__7.html#gaaa989e0128057bf11803825d774d496f">XIic_Stop()</a>.</p>
+<p>References <a class="el" href="struct_x_iic.html#a389e4b8500329c37d7835098408b5ed3">XIic::BaseAddress</a>, <a class="el" href="group__iic__v3__8.html#ga17d0df7020d5264d20bbc36d276e276e">XIic_IntrGlobalDisable</a>, <a class="el" href="group__iic__v3__8.html#ga7071fcf4cf60d65fd862653fa34faa21">XIic_IntrGlobalEnable</a>, <a class="el" href="group__iic__v3__8.html#ga25dc714d97f71049154461e1ff16bcad">XIic_SlaveRecv()</a>, <a class="el" href="group__iic__v3__8.html#ga5f4e497710a9c3719f27d40faa74a10f">XIic_Start()</a>, and <a class="el" href="group__iic__v3__8.html#gaaa989e0128057bf11803825d774d496f">XIic_Stop()</a>.</p>
 
-<p>Referenced by <a class="el" href="xiic__tenbitaddr__example_8c.html#abe20f8c05734f71f96d66debda905fcd">IicTenBitAddrExample()</a>.</p>
+<p>Referenced by <a class="el" href="xiic__tenbitaddr__example_8c.html#ab4e612135486e268a4db49b75f625f52">IicTenBitAddrExample()</a>.</p>
 
 </div>
 </div>
@@ -229,9 +218,9 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_iic.html#a389e4b8500329c37d7835098408b5ed3">XIic::BaseAddress</a>, <a class="el" href="group__iic__v3__7.html#ga17d0df7020d5264d20bbc36d276e276e">XIic_IntrGlobalDisable</a>, <a class="el" href="group__iic__v3__7.html#ga7071fcf4cf60d65fd862653fa34faa21">XIic_IntrGlobalEnable</a>, <a class="el" href="group__iic__v3__7.html#ga24873473751e355c82bb074a0d42ddbc">XIic_SlaveSend()</a>, <a class="el" href="group__iic__v3__7.html#ga5f4e497710a9c3719f27d40faa74a10f">XIic_Start()</a>, and <a class="el" href="group__iic__v3__7.html#gaaa989e0128057bf11803825d774d496f">XIic_Stop()</a>.</p>
+<p>References <a class="el" href="struct_x_iic.html#a389e4b8500329c37d7835098408b5ed3">XIic::BaseAddress</a>, <a class="el" href="group__iic__v3__8.html#ga17d0df7020d5264d20bbc36d276e276e">XIic_IntrGlobalDisable</a>, <a class="el" href="group__iic__v3__8.html#ga7071fcf4cf60d65fd862653fa34faa21">XIic_IntrGlobalEnable</a>, <a class="el" href="group__iic__v3__8.html#ga24873473751e355c82bb074a0d42ddbc">XIic_SlaveSend()</a>, <a class="el" href="group__iic__v3__8.html#ga5f4e497710a9c3719f27d40faa74a10f">XIic_Start()</a>, and <a class="el" href="group__iic__v3__8.html#gaaa989e0128057bf11803825d774d496f">XIic_Stop()</a>.</p>
 
-<p>Referenced by <a class="el" href="xiic__tenbitaddr__example_8c.html#abe20f8c05734f71f96d66debda905fcd">IicTenBitAddrExample()</a>.</p>
+<p>Referenced by <a class="el" href="xiic__tenbitaddr__example_8c.html#ab4e612135486e268a4db49b75f625f52">IicTenBitAddrExample()</a>.</p>
 
 </div>
 </div>

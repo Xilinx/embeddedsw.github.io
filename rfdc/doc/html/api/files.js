@@ -2,8 +2,10 @@ var files =
 [
     [ "xrfdc.c", "xrfdc_8c.html", "xrfdc_8c" ],
     [ "xrfdc.h", "xrfdc_8h.html", "xrfdc_8h" ],
+    [ "xrfdc_ap.c", "xrfdc__ap_8c.html", "xrfdc__ap_8c" ],
     [ "xrfdc_clk.c", "xrfdc__clk_8c.html", null ],
     [ "xrfdc_clock.c", "xrfdc__clock_8c.html", "xrfdc__clock_8c" ],
+    [ "xrfdc_dp.c", "xrfdc__dp_8c.html", "xrfdc__dp_8c" ],
     [ "xrfdc_g.c", "xrfdc__g_8c.html", null ],
     [ "xrfdc_gen2_or_below_clocked_example.c", "xrfdc__gen2__or__below__clocked__example_8c.html", "xrfdc__gen2__or__below__clocked__example_8c" ],
     [ "xrfdc_gen3_clocked_example.c", "xrfdc__gen3__clocked__example_8c.html", "xrfdc__gen3__clocked__example_8c" ],

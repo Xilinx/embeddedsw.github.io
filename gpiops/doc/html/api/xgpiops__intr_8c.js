@@ -1,6 +1,5 @@
 var xgpiops__intr_8c =
 [
-    [ "StubHandler", "xgpiops__intr_8c.html#ga2d754ba2ed6c25f49a456041e109ddc1", null ],
     [ "XGpioPs_GetIntrType", "xgpiops__intr_8c.html#gaed18cb81aceda214dba440cf6ff3d0ec", null ],
     [ "XGpioPs_GetIntrTypePin", "xgpiops__intr_8c.html#ga848274dc058043932e802a3caa39db3e", null ],
     [ "XGpioPs_IntrClear", "xgpiops__intr_8c.html#gace8ee040fe190af86afe59ec1bc3201c", null ],

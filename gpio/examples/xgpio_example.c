@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -109,7 +109,6 @@ XGpio Gpio; /* The Instance of the GPIO Driver */
 * The purpose of this function is to illustrate how to use the GPIO
 * driver to turn on and off an LED.
 *
-* @param	None
 *
 * @return	XST_FAILURE to indicate that the GPIO Initialization had
 *		failed.

@@ -6,6 +6,6 @@ var struct_x_dma_pcie___config =
     [ "IncludeRootComplex", "struct_x_dma_pcie___config.html#ab67ad06680c60071c889da0a04852a96", null ],
     [ "NpMemBaseAddr", "struct_x_dma_pcie___config.html#a154ea2174bdb4f7e8b9ef9e11f857c4e", null ],
     [ "NpMemMaxAddr", "struct_x_dma_pcie___config.html#aaaff93f64f134d510ad5c5e5a326be9b", null ],
-    [ "PMemBaseAddr", "struct_x_dma_pcie___config.html#a650a11a48e2f0cb8cb5b4b7a258d7bd3", null ],
-    [ "PMemMaxAddr", "struct_x_dma_pcie___config.html#a22d5c228c7cf3895651024e470317eab", null ]
+    [ "PMemBaseAddr", "struct_x_dma_pcie___config.html#a5781aaf07667bddab376b4db8ad9e288", null ],
+    [ "PMemMaxAddr", "struct_x_dma_pcie___config.html#a5983add63299dc987bc7e3014c418f97", null ]
 ];

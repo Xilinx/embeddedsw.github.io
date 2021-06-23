@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -16,25 +16,25 @@
 #			   example.
 ##############################################################################
 
-## @BEGIN_CHANGELOG EDK_Im_SP2
+## BEGIN_CHANGELOG EDK_Im_SP2
 ##
 ##  - Added Interrupt support 
 ##
-## @END_CHANGELOG
+## END_CHANGELOG
 
-## @BEGIN_CHANGELOG EDK_I
+## BEGIN_CHANGELOG EDK_I
 ##
 ##  - include header files
 ##
-## @END_CHANGELOG
+## END_CHANGELOG
 
-## @BEGIN_CHANGELOG EDK_H
+## BEGIN_CHANGELOG EDK_H
 ##
 ##  - Added support for generation of multiple applications.
 ##    All TCL procedures are now required to have a software
 ##    project type as its first argument
 ##    
-## @END_CHANGELOG
+## END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
 

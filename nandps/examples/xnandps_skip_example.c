@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -79,7 +79,6 @@ u8 WriteBuffer[NAND_TEST_LENGTH];
 *
 * Main function to execute the Skip Block based Nand read/write example.
 *
-* @param	None.
 *
 * @return
 *		- XST_SUCCESS if the example has completed successfully.

@@ -222,8 +222,8 @@ AieRC XAie_DmaSetDoubleBuffer(XAie_DmaDesc *DmaDesc, u64 Addr, XAie_Lock Acq,
 	}
 
 	if(((Addr & DmaMod->BdProp->AddrAlignMask) != 0U) ||
-			((Addr + DmaDesc->AddrDesc.Length) &
-			 ~DmaMod->BdProp->AddrMask)) {
+			((Addr + DmaDesc->AddrDesc.Length) >
+			 DmaMod->BdProp->AddrMax)) {
 		XAIE_ERROR("Invalid Address\n");
 		return XAIE_INVALID_ADDRESS;
 	}
@@ -286,7 +286,7 @@ AieRC XAie_DmaSetAddrLen(XAie_DmaDesc *DmaDesc, u64 Addr, u32 Len)
 
 	DmaMod = DmaDesc->DmaMod;
 	if(((Addr & DmaMod->BdProp->AddrAlignMask) != 0U) ||
-			((Addr + Len) & ~DmaMod->BdProp->AddrMask)) {
+			((Addr + Len) > DmaMod->BdProp->AddrMax)) {
 		XAIE_ERROR("Invalid Address\n");
 		return XAIE_INVALID_ADDRESS;
 	}
@@ -347,7 +347,7 @@ AieRC XAie_DmaSetAddrOffsetLen(XAie_DmaDesc *DmaDesc, XAie_MemInst *MemInst,
 	Addr = Offset + MemInst->DevAddr;
 	DmaMod = DmaDesc->DmaMod;
 	if(((Addr & DmaMod->BdProp->AddrAlignMask) != 0U) ||
-			((Offset + Len) & ~DmaMod->BdProp->AddrMask)) {
+			((Offset + Len) > DmaMod->BdProp->AddrMax)) {
 		XAIE_ERROR("DMA Set Address Offset failed, Invalid Address Offset\n");
 		return XAIE_INVALID_ADDRESS;
 	}
@@ -390,7 +390,7 @@ AieRC XAie_DmaSetMultiDimAddr(XAie_DmaDesc *DmaDesc, XAie_DmaTensor *Tensor,
 
 	DmaMod = DmaDesc->DmaMod;
 	if(((Addr & DmaMod->BdProp->AddrAlignMask) != 0U) ||
-			((Addr + Len) & ~DmaMod->BdProp->AddrMask)) {
+			((Addr + Len) > DmaMod->BdProp->AddrMax)) {
 		XAIE_ERROR("Invalid Address\n");
 		return XAIE_INVALID_ADDRESS;
 	}
@@ -724,9 +724,7 @@ AieRC XAie_DmaChannelReset(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 	Val = XAie_SetField(Reset, DmaMod->ChProp->Reset.Lsb,
 			DmaMod->ChProp->Reset.Mask);
 
-	XAie_MaskWrite32(DevInst, Addr, Val, DmaMod->ChProp->Reset.Mask);
-
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, Addr, Val, DmaMod->ChProp->Reset.Mask);
 }
 
 /*****************************************************************************/
@@ -843,10 +841,8 @@ AieRC XAie_DmaChannelPauseStream(XAie_DevInst *DevInst, XAie_LocType Loc,
 		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
 		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
 
-	XAie_MaskWrite32(DevInst, Addr, DmaMod->ChProp->PauseStream.Mask,
+	return XAie_MaskWrite32(DevInst, Addr, DmaMod->ChProp->PauseStream.Mask,
 			Value);
-
-	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -907,9 +903,8 @@ AieRC XAie_DmaChannelPauseMem(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
 		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
 
-	XAie_MaskWrite32(DevInst, Addr, DmaMod->ChProp->PauseMem.Mask, Value);
-
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, Addr, DmaMod->ChProp->PauseMem.Mask,
+			Value);
 }
 
 /*****************************************************************************/
@@ -969,9 +964,8 @@ AieRC XAie_DmaChannelPushBdToQueue(XAie_DevInst *DevInst, XAie_LocType Loc,
 		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
 		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
 
-	XAie_Write32(DevInst, Addr + (DmaMod->ChProp->StartBd.Idx * 4U), BdNum);
-
-	return XAIE_OK;
+	return XAie_Write32(DevInst, Addr + (DmaMod->ChProp->StartBd.Idx * 4U),
+			BdNum);
 }
 
 /*****************************************************************************/
@@ -1024,10 +1018,9 @@ static AieRC _XAie_DmaChannelControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
 		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
 
-	XAie_MaskWrite32(DevInst, Addr + (DmaMod->ChProp->Enable.Idx * 4U),
+	return XAie_MaskWrite32(DevInst,
+			Addr + (DmaMod->ChProp->Enable.Idx * 4U),
 			DmaMod->ChProp->Enable.Mask, Enable);
-
-	return XAIE_OK;
 }
 
 /*****************************************************************************/

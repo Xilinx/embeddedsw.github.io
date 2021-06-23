@@ -640,9 +640,17 @@ xil_printf("%X ", DdcBuf[ln]);
 					XV_HdmiTx1_SetFrlLtp(InstancePtr, 2,
 						XV_HDMITX1_LTP_NYQUIST_CLOCK);
 				} else {
-					XV_HdmiTx1_SetFrlLtp(InstancePtr,
-							     ln,
-							     DdcBuf[ln]);
+					/*
+					 * When FLT no timeout is cleared/False
+					 * and LTP request is 3 then don't
+					 * update the new LTP and continue with
+					 * previous. Refer Table 6-32 LTP3 row.
+					 */
+					if (DdcBuf[ln] != 3 ||
+					    InstancePtr->Stream.Frl.FltNoTimeout)
+						XV_HdmiTx1_SetFrlLtp(InstancePtr,
+								     ln,
+								     DdcBuf[ln]);
 				}
 			}
 			/* 0xE means FFE of the specific lane needs to be adjusted.
@@ -1031,6 +1039,8 @@ int XV_HdmiTx1_FrlStreamStart(XV_HdmiTx1 *InstancePtr)
 	/* Set stream status to up */
 	InstancePtr->Stream.State = XV_HDMITX1_STATE_STREAM_UP;
 
+	XV_HdmiTx1_DynHdr_DM_Enable(InstancePtr);
+
 	/* Jump to steam up call back */
 	if (InstancePtr->StreamUpCallback) {
 		InstancePtr->StreamUpCallback(InstancePtr->StreamUpRef);
@@ -1078,6 +1088,8 @@ int XV_HdmiTx1_FrlStreamStop(XV_HdmiTx1 *InstancePtr)
 
 	/* Set stream status to up */
 	InstancePtr->Stream.State = XV_HDMITX1_STATE_STREAM_DOWN;
+
+	XV_HdmiTx1_DynHdr_DM_Disable(InstancePtr);
 
 	/* Jump to steam up call back */
 	if (InstancePtr->StreamDownCallback) {

@@ -80,73 +80,11 @@ Functions</h2></td></tr>
 <tr class="memitem:a1cf81ffb26c43a972d2b92278b20cf7c"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__caps_8c.html#a1cf81ffb26c43a972d2b92278b20cf7c">XPciePsu_HasCapability</a> (XPciePsu *InstancePtr, u8 Bus, u8 Device, u8 Function, u8 CapId)</td></tr>
 <tr class="memdesc:a1cf81ffb26c43a972d2b92278b20cf7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns whether capability Id is available or not for the particular Function.  <a href="#a1cf81ffb26c43a972d2b92278b20cf7c">More...</a><br/></td></tr>
 <tr class="separator:a1cf81ffb26c43a972d2b92278b20cf7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f1c408c503c3a1ad58faac9bc8cb42"><td class="memItemLeft" align="right" valign="top">u64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__caps_8c.html#a61f1c408c503c3a1ad58faac9bc8cb42">XPciePsu_GetCapability</a> (XPciePsu *InstancePtr, u8 Bus, u8 Device, u8 Function, u8 CapId)</td></tr>
-<tr class="memdesc:a61f1c408c503c3a1ad58faac9bc8cb42"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns offset to the matching capability ID from the Function's Linked list of the capability registers.  <a href="#a61f1c408c503c3a1ad58faac9bc8cb42">More...</a><br/></td></tr>
-<tr class="separator:a61f1c408c503c3a1ad58faac9bc8cb42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95b11e3f3a7fc1ae339795b380fde121"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__caps_8c.html#a95b11e3f3a7fc1ae339795b380fde121">XPciePsu_PrintAllCapabilites</a> (XPciePsu *InstancePtr, u8 Bus, u8 Device, u8 Function)</td></tr>
 <tr class="memdesc:a95b11e3f3a7fc1ae339795b380fde121"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints all the available capabilities in the Function.  <a href="#a95b11e3f3a7fc1ae339795b380fde121">More...</a><br/></td></tr>
 <tr class="separator:a95b11e3f3a7fc1ae339795b380fde121"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a61f1c408c503c3a1ad58faac9bc8cb42"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u64 XPciePsu_GetCapability </td>
-          <td>(</td>
-          <td class="paramtype">XPciePsu *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u8&#160;</td>
-          <td class="paramname"><em>Bus</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u8&#160;</td>
-          <td class="paramname"><em>Device</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u8&#160;</td>
-          <td class="paramname"><em>Function</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u8&#160;</td>
-          <td class="paramname"><em>CapId</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This function returns offset to the matching capability ID from the Function's Linked list of the capability registers. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>pointer to XPciePsu Instance Pointer </td></tr>
-    <tr><td class="paramname">Bus</td><td>is the number of the Bus </td></tr>
-    <tr><td class="paramname">Device</td><td>is the number of the Device </td></tr>
-    <tr><td class="paramname">Function</td><td>is number of the Function </td></tr>
-    <tr><td class="paramname">cap</td><td>id to get capability pointer offset</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>u64 capability pointer if available 0 if not available. </dd></dl>
-
-<p>References <a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress()</a>, and <a class="el" href="xpciepsu_8c.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a1cf81ffb26c43a972d2b92278b20cf7c"></a>
 <div class="memitem">
 <div class="memproto">

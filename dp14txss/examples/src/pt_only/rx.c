@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -20,13 +20,16 @@
 #include "main.h"
 #include "rx.h"
 
+XilAudioInfoFrame_rx AudioinfoFrame;
+extern XDpRxSs DpRxSsInst;    /* The DPRX Subsystem instance.*/
+extern XDpTxSs DpTxSsInst; 		/* The DPTX Subsystem instance.*/
+extern XDp_TxVscExtPacket ExtFrame_tx_vsc;
 volatile u8 rx_unplugged = 0;
 volatile u16 DrpVal=0;
 volatile u16 DrpVal_lower_lane0=0;
 volatile u16 DrpVal_lower_lane1=0;
 volatile u16 DrpVal_lower_lane2=0;
 volatile u16 DrpVal_lower_lane3=0;
-extern XDpTxSs DpTxSsInst;
 extern u32 vblank_init;
 extern u8 vblank_captured;
 extern u32 appx_fs_dup;
@@ -37,6 +40,18 @@ extern u8 rx_aud;
 extern u8 tx_after_rx;
 extern u8 tx_done;
 extern void mask_intr (void);
+extern Video_CRC_Config VidFrameCRC_rx; /* Video Frame CRC instance */
+extern XTmrCtr TmrCtr; 		/* Timer instance.*/
+u8 type_vsc;
+DP_Rx_Training_Algo_Config RxTrainConfig;
+XilAudioExtFrame  SdpExtFrame;
+XilAudioExtFrame  SdpExtFrame_q;
+
+#ifndef versal
+extern XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
+#else
+extern void* VPhyInst;
+#endif
 
 #ifdef versal
 #if (VERSAL_FABRIC_8B10B == 1)
@@ -163,6 +178,13 @@ u32 DpRxSs_Setup(u8 freesync, u8 vsc)
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_CRC_CONFIG,
 			VidFrameCRC_rx.TEST_CRC_SUPPORTED<<5);
 #if PHY_COMP
+	//Setting all Audio related DPCD registers to 0
+	//Ensure that only Video tests are run
+	ReadVal = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+			0x464);
+	ReadVal &= 0xFFFFFEFF;
+	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+					0x464, ReadVal);
 	/*Set to 0 when Audio is NOT supported*/
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 					XDP_RX_LOCAL_EDID_VIDEO, 0x0);
@@ -263,9 +285,9 @@ u32 DpRxSs_SetupIntrSystem(void)
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_EVENT,
 			&DpRxSs_ExtPacketHandler, &DpRxSsInst);
 #if ADAPTIVE
-	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_EVENT,
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_1_EVENT,
 			&DpRxSs_AdaptiveVblankHandler, &DpRxSsInst);
-	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_EVENT,
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_1_EVENT,
 			&DpRxSs_AdaptiveSDPHandler, &DpRxSsInst);
 
 #endif
@@ -312,7 +334,7 @@ void DpRxSs_AdaptiveVblankHandler(void *InstancePtr)
 {
 	u32 vblank;
 	u32 delta;
-	vblank = XDpRxSs_GetVblank(&DpRxSsInst);
+	vblank = XDpRxSs_GetVblank(&DpRxSsInst,XDP_TX_STREAM_ID1);
 
 	/* Calculate delta of Vtotal */
 	if (vblank_captured) {
@@ -438,6 +460,14 @@ void DpRxSs_VerticalBlankHandler(void *InstancePtr)
 
 void DpRxSs_TrainingLostHandler(void *InstancePtr)
 {
+	/* Reset CRC Test Counter in DP DPCD Space */
+	XVidFrameCrc_Reset(&VidFrameCRC_rx);
+	VidFrameCRC_rx.TEST_CRC_CNT = 0;
+	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+			 XDP_RX_CRC_CONFIG,
+			 (VidFrameCRC_rx.TEST_CRC_SUPPORTED << 5 |
+					 VidFrameCRC_rx.TEST_CRC_CNT));
+
 	XDp_RxGenerateHpdInterrupt(DpRxSsInst.DpPtr, 750);
 	XDpRxSs_AudioDisable(&DpRxSsInst);
 	XDp_RxDtgDis(DpRxSsInst.DpPtr);
@@ -457,7 +487,9 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
     AudioinfoFrame.frame_count = 0;
     AudioinfoFrame.all_count = 0;
 	if (rx_trained == 1) {
+#if !PHY_COMP
 		xil_printf ("Training Lost !!\r\n");
+#endif
 	}
 	rx_trained = 0;
 	vblank_captured = 0;
@@ -804,7 +836,10 @@ void DpRxSs_PllResetHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_BWChangeHandler(void *InstancePtr)
 {
-//    MCDP6000_ResetDpPath(XPAR_IIC_0_BASEADDR, I2C_MCDP6000_ADDR);
+
+	//reset MCDP
+	XDpRxSs_MCDP6000_ResetCrPath (&DpRxSsInst, I2C_MCDP6000_ADDR);
+
 }
 
 /*****************************************************************************/
@@ -1116,7 +1151,8 @@ void LoadEDID(void)
 
 #if(EDID_1_ENABLED)
 	unsigned char edid[256] = {
-			// This is good for compliance test
+			// This is good for compliance test but
+			// UCD detects Audio support
             0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00,
 			0x61, 0x2c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x17, 0x01, 0x04, 0xb5, 0x3c, 0x22, 0x78,
@@ -1152,6 +1188,7 @@ void LoadEDID(void)
 	};
 #else
 	// 8K30, 8K24, 5K, 4K120, 4K100 + Audio
+	// UCD does not detect Audio
 	unsigned char edid[256] = {
 			0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
 			0x61, 0x98, 0x23, 0x01, 0x00, 0x00, 0x00, 0x00,

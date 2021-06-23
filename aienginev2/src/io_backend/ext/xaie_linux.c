@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <linux/dma-buf.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -43,7 +44,7 @@
 
 #include "xaie_helper.h"
 #include "xaie_io.h"
-#include "xaie_linux.h"
+#include "xaie_io_common.h"
 #include "xaie_npi.h"
 
 /***************************** Macro Definitions *****************************/
@@ -82,28 +83,6 @@ typedef struct XAie_LinuxMem {
 
 #endif /* __AIELINUX__ */
 
-/************************** Variable Definitions *****************************/
-const XAie_Backend LinuxBackend =
-{
-	.Type = XAIE_IO_BACKEND_LINUX,
-	.Ops.Init = XAie_LinuxIO_Init,
-	.Ops.Finish = XAie_LinuxIO_Finish,
-	.Ops.Write32 = XAie_LinuxIO_Write32,
-	.Ops.Read32 = XAie_LinuxIO_Read32,
-	.Ops.MaskWrite32 = XAie_LinuxIO_MaskWrite32,
-	.Ops.MaskPoll = XAie_LinuxIO_MaskPoll,
-	.Ops.BlockWrite32 = XAie_LinuxIO_BlockWrite32,
-	.Ops.BlockSet32 = XAie_LinuxIO_BlockSet32,
-	.Ops.CmdWrite = XAie_LinuxIO_CmdWrite,
-	.Ops.RunOp = XAie_LinuxIO_RunOp,
-	.Ops.MemAllocate = XAie_LinuxMemAllocate,
-	.Ops.MemFree = XAie_LinuxMemFree,
-	.Ops.MemSyncForCPU = XAie_LinuxMemSyncForCPU,
-	.Ops.MemSyncForDev = XAie_LinuxMemSyncForDev,
-	.Ops.MemAttach = XAie_LinuxMemAttach,
-	.Ops.MemDetach = XAie_LinuxMemDetach,
-};
-
 /************************** Function Definitions *****************************/
 #ifdef __AIELINUX__
 
@@ -120,7 +99,7 @@ const XAie_Backend LinuxBackend =
 * the reference count reaches a zero. Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxIO_Finish(void *IOInst)
+static AieRC XAie_LinuxIO_Finish(void *IOInst)
 {
 	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
 
@@ -349,7 +328,7 @@ static AieRC _XAie_LinuxIO_MapMemory(XAie_DevInst *DevInst,
 * to initialize just increments the reference count. Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
+static AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
 {
 	AieRC RC;
 	XAie_LinuxIO *IOInst;
@@ -412,7 +391,7 @@ AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-void XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Value)
+static AieRC XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Value)
 {
 	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
 	int Ret;
@@ -430,7 +409,10 @@ void XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Value)
 	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_REG_IOCTL, &Args);
 	if(Ret < 0) {
 		XAIE_ERROR("Register write failed for offset 0x%lx.\n", RegOff);
+		return XAIE_ERR;
 	}
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -440,17 +422,20 @@ void XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Value)
 *
 * @param	IOInst: IO instance pointer
 * @param	RegOff: Register offset to read from.
+* @param	Data: Pointer to store the 32 bit value
 *
-* @return	32-bit read value.
+* @return	XAIE_OK on success.
 *
 * @note		Internal only.
 *
 *******************************************************************************/
-u32 XAie_LinuxIO_Read32(void *IOInst, u64 RegOff)
+static AieRC XAie_LinuxIO_Read32(void *IOInst, u64 RegOff, u32 *Data)
 {
 	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
 
-	return *((u32 *)(LinuxIOInst->RegMap.VAddr + RegOff));
+	*Data = *((u32 *)(LinuxIOInst->RegMap.VAddr + RegOff));
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -469,7 +454,8 @@ u32 XAie_LinuxIO_Read32(void *IOInst, u64 RegOff)
 * @note		Internal only.
 *
 *******************************************************************************/
-void XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Value)
+static AieRC XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask,
+		u32 Value)
 {
 	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
 	int Ret;
@@ -487,7 +473,10 @@ void XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Value)
 	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_REG_IOCTL, &Args);
 	if(Ret < 0) {
 		XAIE_ERROR("Register write failed for offset 0x%lx.\n", RegOff);
+		return XAIE_ERR;
 	}
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -501,16 +490,16 @@ void XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Value)
 * @param	Value: 32-bit value to poll for
 * @param	TimeOutUs: Timeout in micro seconds.
 *
-* @return	XAIE_SUCCESS or XAIE_FAILURE.
+* @return	XAIE_OK or XAIE_ERR.
 *
 * @note		Internal only.
 *
 *******************************************************************************/
-u32 XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
+static AieRC XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 		u32 TimeOutUs)
 {
-	u32 Ret = XAIE_FAILURE;
-	u32 Count, MinTimeOutUs;
+	AieRC Ret = XAIE_ERR;
+	u32 Count, MinTimeOutUs, RegVal;
 
 	/*
 	 * Any value less than 200 us becomes noticable overhead. This is based
@@ -520,8 +509,9 @@ u32 XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 	Count = ((u64)TimeOutUs + MinTimeOutUs - 1) / MinTimeOutUs;
 
 	while (Count > 0U) {
-		if((XAie_LinuxIO_Read32(IOInst, RegOff) & Mask) == Value) {
-			Ret = XAIE_SUCCESS;
+		XAie_LinuxIO_Read32(IOInst, RegOff, &RegVal);
+		if((RegVal & Mask) == Value) {
+			Ret = XAIE_OK;
 			break;
 		}
 		usleep(MinTimeOutUs);
@@ -529,10 +519,10 @@ u32 XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 	}
 
 	/* Check for the break from timed-out loop */
-	if((Ret == XAIE_FAILURE) &&
-			((XAie_LinuxIO_Read32(IOInst, RegOff) & Mask) ==
+	XAie_LinuxIO_Read32(IOInst, RegOff, &RegVal);
+	if((Ret == XAIE_ERR) && ((RegVal & Mask) ==
 			 Value)) {
-		Ret = XAIE_SUCCESS;
+		Ret = XAIE_OK;
 	}
 
 	return Ret;
@@ -745,7 +735,8 @@ static u32* _XAie_GetVirtAddrFromOffset(XAie_LinuxIO *IOInst, u64 RegOff,
 * @note		Internal only.
 *
 *******************************************************************************/
-void XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
+static AieRC XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data,
+		u32 Size)
 {
 	XAie_LinuxIO *Inst = (XAie_LinuxIO *)IOInst;
 	u32 *VirtAddr;
@@ -754,7 +745,7 @@ void XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
 	VirtAddr =  _XAie_GetVirtAddrFromOffset(Inst, RegOff, Size);
 	if(VirtAddr != NULL) {
 		_XAie_CopyDataToMem(VirtAddr, Data, Size);
-		return;
+		return XAIE_OK;
 	}
 
 	/* Handle other registers */
@@ -762,6 +753,8 @@ void XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
 		XAie_LinuxIO_Write32(IOInst, RegOff + i * 4U, *Data);
 		Data++;
 	}
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -780,7 +773,8 @@ void XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
 * @note		Internal only.
 *
 *******************************************************************************/
-void XAie_LinuxIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data, u32 Size)
+static AieRC XAie_LinuxIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data,
+		u32 Size)
 {
 	XAie_LinuxIO *Inst = (XAie_LinuxIO *)IOInst;
 	u32 *VirtAddr;
@@ -791,13 +785,15 @@ void XAie_LinuxIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data, u32 Size)
 		for(u32 i = 0; i < Size; i++) {
 			*VirtAddr++ = Data;
 		}
-		return;
+		return XAIE_OK;
 	}
 
 	/* Handle other registers */
 	for(u32 i = 0; i < Size; i++) {
 		XAie_LinuxIO_Write32(IOInst, RegOff + i * 4U, Data);
 	}
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -841,7 +837,7 @@ static AieRC _XAie_LinuxMemAttach(XAie_LinuxIO *IOInst, XAie_LinuxMem *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-XAie_MemInst* XAie_LinuxMemAllocate(XAie_DevInst *DevInst, u64 Size,
+static XAie_MemInst* XAie_LinuxMemAllocate(XAie_DevInst *DevInst, u64 Size,
 		XAie_MemCacheProp Cache)
 {
 	AieRC RC;
@@ -998,7 +994,7 @@ static AieRC _XAie_LinuxMemDetach(XAie_LinuxIO *IOInst, XAie_LinuxMem *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxMemFree(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemFree(XAie_MemInst *MemInst)
 {
 	AieRC RC;
 	XAie_LinuxMem *LinuxMemInst =
@@ -1030,7 +1026,7 @@ AieRC XAie_LinuxMemFree(XAie_MemInst *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxMemSyncForCPU(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemSyncForCPU(XAie_MemInst *MemInst)
 {
 	struct dma_buf_sync Sync;
 	int Ret;
@@ -1060,7 +1056,7 @@ AieRC XAie_LinuxMemSyncForCPU(XAie_MemInst *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxMemSyncForDev(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemSyncForDev(XAie_MemInst *MemInst)
 {
 	struct dma_buf_sync Sync;
 	int Ret;
@@ -1091,7 +1087,7 @@ AieRC XAie_LinuxMemSyncForDev(XAie_MemInst *MemInst)
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
+static AieRC XAie_LinuxMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
 {
 	XAie_DevInst *DevInst = MemInst->DevInst;
 	XAie_LinuxMem *LinuxMemInst;
@@ -1129,7 +1125,7 @@ AieRC XAie_LinuxMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
 * @note		None.
 *
 *******************************************************************************/
-AieRC XAie_LinuxMemDetach(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemDetach(XAie_MemInst *MemInst)
 {
 	XAie_DevInst *DevInst = MemInst->DevInst;
 	XAie_LinuxMem *LinuxMemInst =
@@ -1309,7 +1305,215 @@ static AieRC _XAie_LinuxIO_ReleaseTiles(void *IOInst,
 
 /*****************************************************************************/
 /**
+* The API grants broadcast resource based on availibility and marks that
+* resource status in relevant bitmap.
 *
+*
+* @param	IOInst: IO instance pointer
+* @param	Args: Contains arguments for backend operation
+* @param	IsAnyBc: 1 to indicate it requests for any broadcast channel,
+*			 0 to indicate it requests for a specific broadcast
+*			 channel.
+*
+* @return	XAIE_OK on success
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_LinuxIO_RequestBcRsc(void *IOInst,
+		XAie_BackendTilesRsc *Args, u8 IsAnyBc)
+{
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	int Ret;
+	struct aie_rsc_bc_req RscReq = {
+		.rscs = (__u64)(uintptr_t)Args->Rscs,
+		.num_rscs = Args->UserRscNumInput,
+		.flag = 0,
+		.id = Args->RscId,
+	};
+
+	if(Args->Flags != 0) {
+		/* Broadcast to whole partition */
+		RscReq.flag = XAIE_BROADCAST_ALL;
+	}
+	if(IsAnyBc != 0) {
+		RscReq.id = XAIE_BROADCAST_ID_ANY;
+	}
+
+	Ret = ioctl(LinuxIOInst->PartitionFd,
+			AIE_RSC_GET_COMMON_BROADCAST_IOCTL, &RscReq);
+	if(Ret != 0) {
+		XAIE_ERROR("Failed to request broadcast channel.\n");
+		return XAIE_ERR;
+	}
+
+	XAie_UserRsc *Rscs = Args->Rscs;
+	*(Args->UserRscNum) = RscReq.num_rscs;
+	for(u32 i = 0; i < RscReq.num_rscs; i++) {
+		Rscs[i].RscType = XAIE_BCAST_CHANNEL_RSC;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* The API grants resource based on availibility and marks that
+* resource status in relevant bitmap.
+*
+*
+* @param	IOInst: IO instance pointer
+* @param	Args: Contains arguments for backend operation
+*
+* @return	XAIE_OK on success
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_LinuxIO_RequestRsc(void *IOInst, XAie_BackendTilesRsc *Args)
+{
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	struct aie_rsc_req_rsp RscReq;
+	int Ret;
+
+	if(Args->RscType == XAIE_BCAST_CHANNEL_RSC) {
+		return _XAie_LinuxIO_RequestBcRsc(IOInst, Args, 1);
+	}
+
+	RscReq.req.loc.col = Args->Loc.Col;
+	RscReq.req.loc.row = Args->Loc.Row;
+	RscReq.req.mod = (uint32_t)Args->Mod;
+	RscReq.req.type = (uint32_t)Args->RscType;
+	RscReq.req.num_rscs = Args->NumRscPerTile;
+	RscReq.req.flag = Args->Flags;
+	RscReq.rscs = (__u64)(uintptr_t)Args->Rscs;
+
+	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_RSC_REQ_IOCTL, &RscReq);
+	if(Ret != 0) {
+		XAIE_ERROR("Failed to request resource %u\n",
+				Args->RscType);
+		return XAIE_ERR;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* The API releases resouce statically and dynamically.
+*
+*
+* @param	IOInst: IO instance pointer
+* @param	Args: Contains arguments for backend operation
+*
+* @return	XAIE_OK on success
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_LinuxIO_ReleaseRsc(void *IOInst, XAie_BackendTilesRsc *Args)
+{
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	int Ret;
+	struct aie_rsc Rsc = {
+		.loc = {
+			.col = Args->Loc.Col,
+			.row = Args->Loc.Row,
+		},
+		.mod = Args->Mod,
+		.type = Args->RscType,
+		.id = Args->RscId,
+	};
+
+	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_RSC_RELEASE_IOCTL, &Rsc);
+	if(Ret != 0) {
+		XAIE_ERROR("Failed to release resource %u.\n", Args->RscType);
+		return XAIE_ERR;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* The API releases resouce dynamically.
+*
+*
+* @param	IOInst: IO instance pointer
+* @param	Args: Contains arguments for backend operation
+*
+* @return	XAIE_OK on success
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_LinuxIO_FreeRsc(void *IOInst, XAie_BackendTilesRsc *Args)
+{
+
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	int Ret;
+	struct aie_rsc Rsc = {
+		.loc = {
+			.col = Args->Loc.Col,
+			.row = Args->Loc.Row,
+		},
+		.mod = Args->Mod,
+		.type = Args->RscType,
+		.id = Args->RscId,
+	};
+
+	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_RSC_FREE_IOCTL, &Rsc);
+	if(Ret != 0) {
+		XAIE_ERROR("Failed to free resource %u.\n", Args->RscType);
+		return XAIE_ERR;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* The API requests statically allocated resource.
+*
+*
+* @param	IOInst: IO instance pointer
+* @param	Args: Contains arguments for backend operation
+*
+* @return	XAIE_OK on success
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+AieRC _XAie_LinuxIO_RequestAllocatedRsc(void *IOInst,
+		XAie_BackendTilesRsc *Args)
+{
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	struct aie_rsc Rsc;
+	int Ret;
+
+	if(Args->RscType == XAIE_BCAST_CHANNEL_RSC) {
+		return _XAie_LinuxIO_RequestBcRsc(IOInst, Args, 0);
+	}
+
+	Rsc.loc.col = Args->Loc.Col;
+	Rsc.loc.row = Args->Loc.Row;
+	Rsc.mod = Args->Mod;
+	Rsc.type = Args->RscType;
+	Rsc.id = Args->RscId;
+
+	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_RSC_REQ_SPECIFIC_IOCTL, &Rsc);
+	if(Ret != 0) {
+		XAIE_ERROR("Failed to request specific resource %u\n",
+				Args->RscType);
+		return XAIE_ERR;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+
 * This is the function to run backend operations
 *
 * @param	IOInst: IO instance pointer
@@ -1322,7 +1526,7 @@ static AieRC _XAie_LinuxIO_ReleaseTiles(void *IOInst,
 * @note		Internal only.
 *
 *******************************************************************************/
-AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
+static AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		XAie_BackendOpCode Op, void *Arg)
 {
 	(void)DevInst;
@@ -1333,22 +1537,68 @@ AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		return _XAie_LinuxIO_RequestTiles(IOInst, Arg);
 	case XAIE_BACKEND_OP_RELEASE_TILES:
 		return _XAie_LinuxIO_ReleaseTiles(IOInst, Arg);
+	case XAIE_BACKEND_OP_REQUEST_RESOURCE:
+		return _XAie_LinuxIO_RequestRsc(IOInst, Arg);
+	case XAIE_BACKEND_OP_RELEASE_RESOURCE:
+		return _XAie_LinuxIO_ReleaseRsc(IOInst, Arg);
+	case XAIE_BACKEND_OP_FREE_RESOURCE:
+		return _XAie_LinuxIO_FreeRsc(IOInst, Arg);
+	case XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE:
+		return _XAie_LinuxIO_RequestAllocatedRsc(IOInst, Arg);
 	default:
 		XAIE_ERROR("Linux backend does not support operation %d\n", Op);
 		return XAIE_FEATURE_NOT_SUPPORTED;
 	}
 }
 
+static u64 XAie_LinuxGetTid(void)
+{
+		return (u64)pthread_self();
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the IO function to submit a transaction to the kernel driver for
+* execution.
+*
+* @param	IOInst: IO instance pointer
+* @param	TxnInst: Pointer to the transaction instance.
+*
+* @return	XAIE_OK for success and error code for failure.
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC XAie_LinuxSubmitTxn(void *IOInst, XAie_TxnInst *TxnInst)
+{
+	XAie_LinuxIO *LinuxIOInst = (XAie_LinuxIO *)IOInst;
+	int Ret;
+	struct aie_txn_inst Args;
+
+	Args.num_cmds = TxnInst->NumCmds;
+	Args.cmdsptr = (u64)TxnInst->CmdBuf;
+
+	Ret = ioctl(LinuxIOInst->PartitionFd, AIE_TRANSACTION_IOCTL, &Args);
+	if(Ret < 0) {
+		XAIE_ERROR("Submitting transaction to device failed with "
+				"error code: %d\n", Ret);
+		return XAIE_ERR;
+	}
+
+	return XAIE_OK;
+}
+
 #else
 
-AieRC XAie_LinuxIO_Finish(void *IOInst)
+static AieRC XAie_LinuxIO_Finish(void *IOInst)
 {
 	/* no-op */
 	(void)IOInst;
 	return XAIE_OK;
 }
 
-AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
+static AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
 {
 	/* no-op */
 	(void)DevInst;
@@ -1357,32 +1607,38 @@ AieRC XAie_LinuxIO_Init(XAie_DevInst *DevInst)
 	return XAIE_INVALID_BACKEND;
 }
 
-u32 XAie_LinuxIO_Read32(void *IOInst, u64 RegOff)
-{
-	/* no-op */
-	(void)IOInst;
-	(void)RegOff;
-	return 0;
-}
-
-void XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Data)
+static AieRC XAie_LinuxIO_Read32(void *IOInst, u64 RegOff, u32 *Data)
 {
 	/* no-op */
 	(void)IOInst;
 	(void)RegOff;
 	(void)Data;
+	return 0;
 }
 
-void XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask, u32 Data)
+static AieRC XAie_LinuxIO_Write32(void *IOInst, u64 RegOff, u32 Data)
+{
+	/* no-op */
+	(void)IOInst;
+	(void)RegOff;
+	(void)Data;
+
+	return XAIE_ERR;
+}
+
+static AieRC XAie_LinuxIO_MaskWrite32(void *IOInst, u64 RegOff, u32 Mask,
+		u32 Data)
 {
 	/* no-op */
 	(void)IOInst;
 	(void)RegOff;
 	(void)Mask;
 	(void)Data;
+
+	return XAIE_ERR;
 }
 
-u32 XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
+static AieRC XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 		u32 TimeOutUs)
 {
 	/* no-op */
@@ -1391,28 +1647,34 @@ u32 XAie_LinuxIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 	(void)Mask;
 	(void)Value;
 	(void)TimeOutUs;
-	return XAIE_FAILURE;
+	return XAIE_ERR;
 }
 
-void XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data, u32 Size)
+static AieRC XAie_LinuxIO_BlockWrite32(void *IOInst, u64 RegOff, u32 *Data,
+		u32 Size)
 {
 	/* no-op */
 	(void)IOInst;
 	(void)RegOff;
 	(void)Data;
 	(void)Size;
+
+	return XAIE_ERR;
 }
 
-void XAie_LinuxIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data, u32 Size)
+static AieRC XAie_LinuxIO_BlockSet32(void *IOInst, u64 RegOff, u32 Data,
+		u32 Size)
 {
 	/* no-op */
 	(void)IOInst;
 	(void)RegOff;
 	(void)Data;
 	(void)Size;
+
+	return XAIE_ERR;
 }
 
-XAie_MemInst* XAie_LinuxMemAllocate(XAie_DevInst *DevInst, u64 Size,
+static XAie_MemInst* XAie_LinuxMemAllocate(XAie_DevInst *DevInst, u64 Size,
 		XAie_MemCacheProp Cache)
 {
 	(void)DevInst;
@@ -1421,25 +1683,25 @@ XAie_MemInst* XAie_LinuxMemAllocate(XAie_DevInst *DevInst, u64 Size,
 	return NULL;
 }
 
-AieRC XAie_LinuxMemFree(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemFree(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	return XAIE_ERR;
 }
 
-AieRC XAie_LinuxMemSyncForCPU(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemSyncForCPU(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	return XAIE_ERR;
 }
 
-AieRC XAie_LinuxMemSyncForDev(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemSyncForDev(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	return XAIE_ERR;
 }
 
-AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
+static AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		XAie_BackendOpCode Op, void *Arg)
 {
 	(void)IOInst;
@@ -1449,23 +1711,35 @@ AieRC XAie_LinuxIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 	return XAIE_FEATURE_NOT_SUPPORTED;
 }
 
-AieRC XAie_LinuxMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
+static AieRC XAie_LinuxMemAttach(XAie_MemInst *MemInst, u64 MemHandle)
 {
 	(void)MemInst;
 	(void)MemHandle;
 	return XAIE_ERR;
 }
 
-AieRC XAie_LinuxMemDetach(XAie_MemInst *MemInst)
+static AieRC XAie_LinuxMemDetach(XAie_MemInst *MemInst)
 {
 	(void)MemInst;
 	return XAIE_ERR;
 }
 
+static u64 XAie_LinuxGetTid(void)
+{
+		return 0;
+}
+
+static AieRC XAie_LinuxSubmitTxn(void *IOInst, XAie_TxnInst *TxnInst)
+{
+	(void)IOInst;
+	(void)TxnInst;
+	return XAIE_ERR;
+}
+
 #endif /* __AIELINUX__ */
 
-void XAie_LinuxIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
-		u32 CmdWd1, const char *CmdStr)
+static AieRC XAie_LinuxIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command,
+		u32 CmdWd0, u32 CmdWd1, const char *CmdStr)
 {
 	/* no-op */
 	(void)IOInst;
@@ -1475,6 +1749,31 @@ void XAie_LinuxIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
 	(void)CmdWd0;
 	(void)CmdWd1;
 	(void)CmdStr;
+
+	return XAIE_ERR;
 }
+
+const XAie_Backend LinuxBackend =
+{
+	.Type = XAIE_IO_BACKEND_LINUX,
+	.Ops.Init = XAie_LinuxIO_Init,
+	.Ops.Finish = XAie_LinuxIO_Finish,
+	.Ops.Write32 = XAie_LinuxIO_Write32,
+	.Ops.Read32 = XAie_LinuxIO_Read32,
+	.Ops.MaskWrite32 = XAie_LinuxIO_MaskWrite32,
+	.Ops.MaskPoll = XAie_LinuxIO_MaskPoll,
+	.Ops.BlockWrite32 = XAie_LinuxIO_BlockWrite32,
+	.Ops.BlockSet32 = XAie_LinuxIO_BlockSet32,
+	.Ops.CmdWrite = XAie_LinuxIO_CmdWrite,
+	.Ops.RunOp = XAie_LinuxIO_RunOp,
+	.Ops.MemAllocate = XAie_LinuxMemAllocate,
+	.Ops.MemFree = XAie_LinuxMemFree,
+	.Ops.MemSyncForCPU = XAie_LinuxMemSyncForCPU,
+	.Ops.MemSyncForDev = XAie_LinuxMemSyncForDev,
+	.Ops.MemAttach = XAie_LinuxMemAttach,
+	.Ops.MemDetach = XAie_LinuxMemDetach,
+	.Ops.GetTid = XAie_LinuxGetTid,
+	.Ops.SubmitTxn = XAie_LinuxSubmitTxn,
+};
 
 /** @} */

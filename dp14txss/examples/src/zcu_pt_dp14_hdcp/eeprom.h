@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020-2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -73,7 +73,7 @@ typedef u8 AddressType;
  * Please refer the User Guide's of the respective boards for further
  * information about the IIC slave address of IIC EEPROM's.
  */
-#define EEPROM_ADDRESS 		0x54	/* 0xA0 as an 8 bit number. */
+#define EEPROM_ADDRESS 		0x57
 
 
 /*

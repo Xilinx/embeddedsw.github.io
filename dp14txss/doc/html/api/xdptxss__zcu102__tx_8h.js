@@ -18,6 +18,5 @@ var xdptxss__zcu102__tx_8h =
     [ "Vpg_Audio_start", "xdptxss__zcu102__tx_8h.html#a306e207aa67909d2660b4d99c74d6518", null ],
     [ "Vpg_Audio_stop", "xdptxss__zcu102__tx_8h.html#a7a23d7ce2380ce84a5b92fbeb9c1c565", null ],
     [ "Vpg_VidgenSetUserPattern", "xdptxss__zcu102__tx_8h.html#aae950e5381749a4972645f73cfa8c478", null ],
-    [ "xil_getc", "xdptxss__zcu102__tx_8h.html#ad673f235f7cfedfa92f5e7b76e1dc6c8", null ],
-    [ "hpd_pulse_con_event", "xdptxss__zcu102__tx_8h.html#a957770bf97085325697a6b292757c4b5", null ]
+    [ "xil_getc", "xdptxss__zcu102__tx_8h.html#ad673f235f7cfedfa92f5e7b76e1dc6c8", null ]
 ];

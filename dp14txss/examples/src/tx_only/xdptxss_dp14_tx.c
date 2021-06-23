@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,17 +20,36 @@
 * 			  				and VCK190 TX Only design
 * 1.01 KU		22/10/20	Added support for fabric 8b10b implementation of
 * 			  				of DP1.4
-*
+* 1.02 ND		01/12/21	Added support for VSC in application menu.
+* 							Changed options for Format menu.
+* 1.03 ND		04/01/21	Moved all global variables declaration from .h to .c
+* 							files due to gcc compiler compilation error.
+* 							Setting tx_is_reconnected=0 and setting
+* 							max_cap_new=XDP_TX_LINK_BW_SET_810GBPS in hpd_con
+* 							for TX CTS test case.
+* 1.04 KU       04/12/21    Updated Versal GT programming to get /20 clk
+* 1.05 ND       05/07/21    Setting bit[12] of Reg 0x1A4 to 1 for VSC
+* 							Colorimetry support
 *
 * </pre>
 *
 ******************************************************************************/
-
 #include "xdptxss_dp14_tx.h"
 #include "xvidframe_crc.h"
+#include "xil_cache.h"
 
+XTmrCtr TmrCtr; /* Timer instance.*/
+
+#ifndef versal
+XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
+XVphy VPhyInst;	/* The DPRX Subsystem instance.*/
+XIic IicInstance;	/* I2C bus for Si570 */
+#else
+void* VPhyInst;
+#endif
 extern volatile u8 hpd_pulse_con_event;
-volatile u8 prev_line_rate;
+volatile u8 prev_line_rate; /*This previous line rate to keep previous info to compare
+						with new line rate request*/
 #ifndef PLATFORM_MB
 XScuGic IntcInst;
 #else
@@ -41,6 +60,8 @@ XIntc IntcInst;
 extern XDpTxSs DpTxSsInst;	/* The DPTX Subsystem instance.*/
 extern XTmrCtr TmrCtr; /* Timer instance.*/
 
+XDp_TxVscExtPacket VscPkt;	/* VSC Packet to populate the vsc data to be sent by
+								tx */
 
 #ifdef PLATFORM_MB
 XIic  IicPtr;
@@ -77,6 +98,8 @@ void DpPt_HpdEventHandler(void *InstancePtr);
 void DpPt_HpdPulseHandler(void *InstancePtr);
 void DpPt_LinkrateChgHandler (void *InstancePtr);
 void DpPt_pe_vs_adjustHandler(void *InstancePtr);
+void DpPt_ExtPkt_Handler(void *InstancePtr);
+void DpPt_Vblank_Handler(void *InstancePtr);
 
 u32 DpTxSs_SetupIntrSystem(void);
 u32 DpTxSs_PhyInit(u16 DeviceId);
@@ -158,6 +181,33 @@ static XVphy_User_Config PHY_User_Config_Table[] =
 
 };
 #endif
+
+void enable_caches()
+{
+#ifdef __PPC__
+    Xil_ICacheEnableRegion(CACHEABLE_REGION_MASK);
+    Xil_DCacheEnableRegion(CACHEABLE_REGION_MASK);
+#elif __MICROBLAZE__
+#ifdef XPAR_MICROBLAZE_USE_ICACHE
+    Xil_ICacheEnable();
+#endif
+#ifdef XPAR_MICROBLAZE_USE_DCACHE
+    Xil_DCacheEnable();
+#endif
+#endif
+}
+
+void disable_caches()
+{
+#ifdef __MICROBLAZE__
+#ifdef XPAR_MICROBLAZE_USE_DCACHE
+    Xil_DCacheDisable();
+#endif
+#ifdef XPAR_MICROBLAZE_USE_ICACHE
+    Xil_ICacheDisable();
+#endif
+#endif
+}
 /************************** Function Definitions *****************************/
 
 /*****************************************************************************/
@@ -182,9 +232,11 @@ int main()
 {
 	u32 Status;
 
+        enable_caches();
+
 	xil_printf("------------------------------------------\r\n");
 	xil_printf("DisplayPort TX Subsystem Example Design\r\n");
-	xil_printf("(c) 2019 by Xilinx\r\n");
+	xil_printf("(c) 2021 by Xilinx\r\n");
 	xil_printf("-------------------------------------------\r\n\r\n");
 
 	Status = DpTxSs_Main(XDPTXSS_DEVICE_ID);
@@ -195,6 +247,8 @@ int main()
 
 	xil_printf(
 			"Successfully ran DisplayPort TX Subsystem interrupt example\r\n");
+
+	disable_caches();
 
 	return XST_SUCCESS;
 }
@@ -421,14 +475,12 @@ u32 DpTxSs_Main(u16 DeviceId)
 
 #ifdef versal
 #if (VERSAL_FABRIC_8B10B == 1)
-	// unlocking NPI space
-	//Prgramming ch1outclk div to generate /20 clock
+	//Unlocking NPI space to modify GT parameters
 	XDp_WriteReg(GT_QUAD_BASE, 0xC, 0xF9E8D7C6);
-	retval= XDp_ReadReg(GT_QUAD_BASE, TXCLKDIV_REG);
-	retval &= ~DIV_MASK;
-	retval |= DIV;
-	XDp_WriteReg(GT_QUAD_BASE, TXCLKDIV_REG, retval);
-//	retval=XDp_ReadReg(GT_QUAD_BASE, TXCLKDIV_REG);
+	ReadVal = XDp_ReadReg(GT_QUAD_BASE, TXCLKDIV_REG);
+	ReadVal &= ~DIV_MASK;
+	ReadVal |= DIV;
+	XDp_WriteReg(GT_QUAD_BASE, TXCLKDIV_REG, ReadVal);
 #endif
 #endif
 
@@ -609,6 +661,10 @@ u32 DpTxSs_SetupIntrSystem(void)
 			(void *)DpPt_LinkrateChgHandler, &DpTxSsInst);
 	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_PE_VS_ADJUST),
 			(void *)DpPt_pe_vs_adjustHandler, &DpTxSsInst);
+	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_EXT_PKT_EVENT),
+			(void *)DpPt_ExtPkt_Handler, &DpTxSsInst);
+	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_VSYNC),
+			(void *)DpPt_Vblank_Handler, &DpTxSsInst);
 
 
 	/* Set custom timer wait */
@@ -964,8 +1020,6 @@ void DpPt_LinkrateChgHandler(void *InstancePtr)
 	prev_line_rate = rate;
 }
 
-
-
 void DpPt_pe_vs_adjustHandler(void *InstancePtr){
 	u32 vswing;
 	u32 postcursor, value;
@@ -1077,6 +1131,17 @@ void DpPt_pe_vs_adjustHandler(void *InstancePtr){
 	}
 }
 
+void DpPt_ExtPkt_Handler(void *InstancePtr) {
+/* Empty
+ *
+ */
+}
+
+void DpPt_Vblank_Handler(void *InstancePtr) {
+/*Empty
+ *
+ */
+}
 
 void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds)
 {
@@ -1177,7 +1242,7 @@ void DpPt_HpdPulseHandler(void *InstancePtr)
 
 void hpd_pulse_con(XDpTxSs *InstancePtr)
 {
-
+	u32 Readval;
 
 	u8 lane0_sts = InstancePtr->UsrHpdPulseData.Lane0Sts;
 	u8 lane2_sts = InstancePtr->UsrHpdPulseData.Lane2Sts;
@@ -1259,6 +1324,14 @@ void hpd_pulse_con(XDpTxSs *InstancePtr)
 		XDpTxSs_SetLinkRate(&DpTxSsInst, bw_set);
 		XDpTxSs_SetLaneCount(&DpTxSsInst, lane_set);
 		XDpTxSs_Start(&DpTxSsInst);
+
+		if(DpTxSsInst.DpPtr->TxInstance.ColorimetryThroughVsc){
+			Readval=XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr,
+					XDP_TX_MAIN_STREAM_MISC0);
+			Readval=(Readval|(1<<12));
+			XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
+					XDP_TX_MAIN_STREAM_MISC0,Readval);
+		}
 	}
 
      XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,XDP_TX_INTERRUPT_MASK, 0x0);
@@ -1494,12 +1567,13 @@ u32 start_tx(u8 line_rate, u8 lane_count,user_config_struct user_config){
 	XVidC_VideoMode res_table = user_config.VideoMode_local;
 	u8 bpc = user_config.user_bpc;
 	u8 pat = user_config.user_pattern;
-	u8 format = user_config.user_format-1;
+	u8 format = user_config.user_format;
 	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
 												0x15, 0x16, 0x17}; //Duplicate
 
 
 	u32 Status;
+	u32 Readval;
 	// Stop the Patgen
 	XDp_WriteReg(XPAR_TX_SUBSYSTEM_AV_PAT_GEN_0_BASEADDR,
 			0x0, 0x0);
@@ -1523,6 +1597,25 @@ u32 start_tx(u8 line_rate, u8 lane_count,user_config_struct user_config){
     xil_printf (".");
     XDpTxSs_SetLaneCount(&DpTxSsInst, lane_count);
     xil_printf (".");
+    //Populate Color format and BPC to vsc packet
+    if(DpTxSsInst.DpPtr->TxInstance.ColorimetryThroughVsc){
+			u32 data=0;
+			data|=((user_config.user_format)<<COLOR_FORMAT_SHIFT);
+			if(user_config.user_bpc==6)
+				data|=(0<<BPC_SHIFT);
+			else if(user_config.user_bpc==8)
+				data|=(1<<BPC_SHIFT);
+			else if(user_config.user_bpc==10)
+				data|=(2<<BPC_SHIFT);
+			else if(user_config.user_bpc==12)
+				data|=(3<<BPC_SHIFT);
+			else if(user_config.user_bpc==16)
+				data|=(4<<BPC_SHIFT);
+			data|=(1<<DYNAMIC_RANGE_SHIFT);
+			VscPkt.Payload[4]=data;
+			XDpTxSs_SetVscExtendedPacket(&DpTxSsInst, VscPkt);
+    }
+
     if (res_table !=0) {
 		Status = XDpTxSs_SetVidMode(&DpTxSsInst, res_table);
 		if (Status != XST_SUCCESS) {
@@ -1545,10 +1638,22 @@ u32 start_tx(u8 line_rate, u8 lane_count,user_config_struct user_config){
 	XDp_TxCfgSetColorEncode(DpTxSsInst.DpPtr, XDP_TX_STREAM_ID1, \
 			format, XVIDC_BT_601, XDP_DR_CEA);
 
-	// VTC requires linkup(video clk) before setting values.
-	// This is why we need to linkup once to get proper CLK on VTC.
 	if (set_phy == 0) {
-	Status = DpTxSubsystem_Start(&DpTxSsInst, 0);
+		Status = DpTxSubsystem_Start(&DpTxSsInst, 0);
+
+		/* When sending colorimetry info through VSC
+		 * Setting bit[12] of Reg 0x1A4 to 1
+		 * This ensures that VSC pkt is sent every frame
+		 */
+
+		if(DpTxSsInst.DpPtr->TxInstance.ColorimetryThroughVsc){
+			Readval = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr,
+				XDP_TX_MAIN_STREAM_MISC0);
+			Readval = (Readval|(1<<12));
+			XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
+				XDP_TX_MAIN_STREAM_MISC0,Readval);
+		}
+
 	if (Status != XST_SUCCESS) {
 #if !PHY_COMP
 		//Compliance tests do some crazy things.
@@ -1688,7 +1793,7 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 
 	memcpy(Edid_org, InstancePtr->UsrHpdEventData.EdidOrg, 128);
 
-	tx_is_reconnected--;
+	tx_is_reconnected=0;
 
 	if (XVidC_EdidIsHeaderValid(Edid_org)) {
 		good_edid_hpd = 1;
@@ -1730,6 +1835,13 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 														&max_cap_new);
 	}
 
+	if (max_cap_new != XDP_TX_LINK_BW_SET_810GBPS
+			&& max_cap_new != XDP_TX_LINK_BW_SET_540GBPS
+				&& max_cap_new != XDP_TX_LINK_BW_SET_270GBPS
+				&& max_cap_new != XDP_TX_LINK_BW_SET_162GBPS) {
+
+		max_cap_new = XDP_TX_LINK_BW_SET_810GBPS;
+	}
 	/**********************************************************/
 	/* Since the CTS suite is for 5.4G, we cannot go for 8.1
 	 * hence setting max_cap_new to 5.4G, when DPCD read is 8.1
@@ -1751,6 +1863,8 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 		VmId_ptm_hpd = GetPreferredVm(Edid_org, max_cap_new ,
 														max_cap_lanes_new&0x1F);
 		bpc_hpd = XVidC_EdidGetColorDepth(Edid_org);
+		if(bpc_hpd > XPAR_TX_SUBSYSTEM_V_DP_TXSS1_0_DP_MAX_BITS_PER_COLOR)
+			bpc_hpd=XPAR_TX_SUBSYSTEM_V_DP_TXSS1_0_DP_MAX_BITS_PER_COLOR;
 //		xil_printf ("BPC from EDID is %d\r\n",bpc_hpd);
 		if (VmId_ptm_hpd == XVIDC_VM_NOT_SUPPORTED) { //Fail Safe mode
 			VmId_ptm_hpd = XVIDC_VM_640x480_60_P;
@@ -2167,7 +2281,6 @@ u32 config_phy(int LineRate_init_tx){
 
 
 #ifdef versal
-//	ReadModifyWrite(0x70,(LaneCount_init_tx << 4));
 	ReadModifyWrite(0xE,(linerate << 1));
     u8 retry=0;
     while ((dptx_sts != ALL_LANE) && retry < 255) {
@@ -2175,12 +2288,12 @@ u32 config_phy(int LineRate_init_tx){
          dptx_sts &= ALL_LANE;
          DpPt_CustomWaitUs(DpTxSsInst.DpPtr, 100);
          retry++;
-    //        xil_printf ("tmp is %d\r\n", tmp);
       }
     if(retry==255)
     {
 	Status = XST_FAILURE;
     }
+
 #endif
 
 	if (Status != XST_SUCCESS) {

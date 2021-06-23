@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -144,9 +144,10 @@
 #define NUM_CLOCK_REGS                  6
 
 #ifdef versal
-#define GT_QUAD_BASE  					XPAR_GT_QUAD_HIER_0_GT_QUAD_BASE_BASEADDR
-#define TXCLKDIV_REG					0x3694
-#define	DIV 						0x00000278
+#define GT_QUAD_BASE  				XPAR_GT_QUAD_HIER_0_GT_QUAD_BASE_BASEADDR
+#define TXCLKDIV_REG				0x3694
+#define	DIV3 						0x00000278
+#define	DIV 						0x00000260
 #define DIV_MASK 					0x000003FF
 
 #define XINTC_DEVICE_ID			        XPAR_SCUGIC_0_DEVICE_ID
@@ -235,6 +236,10 @@
 /* This switch is used to enable PHY compliance mode. */
 // Compliance mode only supported for ZCU102
 #define PHY_COMP 0
+
+#define COLOR_FORMAT_SHIFT 4
+#define BPC_SHIFT 8
+#define DYNAMIC_RANGE_SHIFT 15
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
@@ -249,8 +254,8 @@ typedef struct
         u8 Payload[32];
 } XilAudioExtFrame;
 
-XilAudioExtFrame  SdpExtFrame;
-XilAudioExtFrame  SdpExtFrame_q;
+//XilAudioExtFrame  SdpExtFrame;
+//XilAudioExtFrame  SdpExtFrame_q;
 
 
 typedef struct
@@ -298,12 +303,8 @@ int IDT_8T49N24x_Init(u32 I2CBaseAddress, u8 I2CSlaveAddress);
 int TI_LMK03318_PowerDown(u32 I2CBaseAddress, u8 I2CSlaveAddress);
 
 /************************** Variable Definitions *****************************/
-XDpTxSs DpTxSsInst;	/* The DPTX Subsystem instance.*/
-
 #ifndef versal
-XIic IicInstance;	/* I2C bus for Si570 */
-XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
-XVphy VPhyInst;	/* The DPRX Subsystem instance.*/
+//XVphy VPhyInst;	/* The DPRX Subsystem instance.*/
 typedef enum {
         ONBOARD_REF_CLK = 1,
         DP159_FORWARDED_CLK = 3,
@@ -326,19 +327,12 @@ u32 PHY_Configuration_Tx(XVphy *InstancePtr,
 							XVphy_User_Config PHY_User_Config_Table);
 
 #else
-void* VPhyInst;
 void ReadModifyWrite(u32 MaskValue, u32 data);
 #endif
-Video_CRC_Config VidFrameCRC;
 
-XTmrCtr TmrCtr; /* Timer instance.*/
+//XTmrCtr TmrCtr; /* Timer instance.*/
 
 
 //int tx_is_reconnected; /*This variable to keep track of the status of Tx link*/
-volatile u8 prev_line_rate; /*This previous line rate to keep previous info to compare
-						with new line rate request*/
-volatile u8 hpd_pulse_con_event; /*This variable triggers hpd_pulse_con*/
-
-
 
 #endif /* SRC_XDPTXSS_ZCU102_TX_H_ */

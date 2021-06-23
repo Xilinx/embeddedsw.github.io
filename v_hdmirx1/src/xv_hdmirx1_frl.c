@@ -553,6 +553,10 @@ xil_printf(ANSI_COLOR_MAGENTA "RX: LTS:3 (%d)\r\n" ANSI_COLOR_RESET,
 #endif
 	int Status = XST_FAILURE;
 
+	XV_HdmiRx1_FrlDdcWriteField(InstancePtr,
+				    XV_HDMIRX1_SCDCFIELD_FRL_START,
+				    0);
+
 	Status = XV_HdmiRx1_ConfigFrlLtpDetection(InstancePtr);
 
 	if (Status == XST_SUCCESS) {
@@ -1380,6 +1384,7 @@ u32 XV_HdmiRx1_FrlDdcReadField(XV_HdmiRx1 *InstancePtr,
 * @return
 *       - XST_SUCCESS
 *       - XST_FAILURE
+*       - XST_DEVICE_BUSY
 *
 * @note     None.
 *
@@ -1388,8 +1393,7 @@ int XV_HdmiRx1_FrlDdcWriteField(XV_HdmiRx1 *InstancePtr,
 				XV_HdmiRx1_FrlScdcFieldType Field,
 				u8 Value)
 {
-	u32 Data = 0;
-	u32 Status = XST_FAILURE;
+	u32 Data = 0, Retrycount;
 
 	/* Verify argument. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1400,17 +1404,21 @@ int XV_HdmiRx1_FrlDdcWriteField(XV_HdmiRx1 *InstancePtr,
 	}
 
 	if (Data == 0xFFFFFFFF) {
-		return Status;
+		return XST_FAILURE;
 	}
+
+	/* 256 byte FIFO but doubling to 512 tries for safety */
+	Retrycount = 512;
+	do {
+		Data = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
+					  XV_HDMIRX1_FRL_SCDC_OFFSET);
+	}
+	while (!(Data & XV_HDMIRX1_FRL_SCDC_RDY_MASK) && Retrycount--);
 
 	/* Check if SCDC access is busy or not */
-	Data = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
-				  XV_HDMIRX1_FRL_SCDC_OFFSET);
-
-	if ((Data & XV_HDMIRX1_FRL_SCDC_RDY_MASK) == 0) {
+	if (!Retrycount)
 		/* SCDC access is busy*/
-		return Status;
-	}
+		return XST_DEVICE_BUSY;
 
 	if (FrlScdcField[Field].Mask != 0xFF) {
 		Data &= ~((FrlScdcField[Field].Mask <<
@@ -1432,7 +1440,7 @@ int XV_HdmiRx1_FrlDdcWriteField(XV_HdmiRx1 *InstancePtr,
 	XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
 			    XV_HDMIRX1_FRL_SCDC_OFFSET, Data);
 
-	return Status;
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/

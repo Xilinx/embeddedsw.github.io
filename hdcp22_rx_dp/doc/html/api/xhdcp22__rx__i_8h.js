@@ -13,7 +13,9 @@ var xhdcp22__rx__i_8h =
       [ "XHDCP22_RX_DPCD_FLAG_LC_INIT_RCVD", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6faec30dc71313ab68563ffd84b0d9f807d", null ],
       [ "XHDCP22_RX_DPCD_FLAG_SKE_SEND_EKS_RCVD", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6fab9ebe2f34b5953feaf1fd64792654abe", null ],
       [ "XHDCP22_RX_DPCD_FLAG_HPRIME_READ_DONE", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6faab515cd80e93f6caa4dd680b841c5f55", null ],
-      [ "XHDCP22_RX_DPCD_FLAG_PAIRING_INFO_READ_DONE", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6fadcb0b6bbe5f254a5ad0093eef2a726c1", null ]
+      [ "XHDCP22_RX_DPCD_FLAG_PAIRING_INFO_READ_DONE", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6fadcb0b6bbe5f254a5ad0093eef2a726c1", null ],
+      [ "XHDCP22_RX_DPCD_FLAG_RPTR_RCVID_LST_ACK_READ_DONE", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6fa2184d0cbd88296842f1f2edcc3505322", null ],
+      [ "XHDCP22_RX_DPCD_FLAG_RPTR_STREAM_MANAGE_READ_DONE", "xhdcp22__rx__i_8h.html#gga9fc4d0b76b32db367dcff7dc070f6f6fa7e056b3598914ddb855a86ea27ff2afe", null ]
     ] ],
     [ "XHdcp22_Rx_ErrorFlag", "xhdcp22__rx__i_8h.html#gadb0975887f2f021d7b188c894212b8ee", [
       [ "XHDCP22_RX_ERROR_FLAG_NONE", "xhdcp22__rx__i_8h.html#ggadb0975887f2f021d7b188c894212b8eea6b8f0770aa6243310e3b134c4c30f994", null ],

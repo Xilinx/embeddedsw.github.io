@@ -29,9 +29,6 @@
 
 /**************************** Variable Definitions ****************************/
 
-extern XPciePsu_Config XPciePsu_ConfigTable[];
-extern size_t XPciePsu_ConfigTableSize;
-
 /***************************** Function Prototypes ****************************/
 
 /******************************************************************************/
@@ -49,24 +46,24 @@ extern size_t XPciePsu_ConfigTableSize;
 XPciePsu_Config *XPciePsu_LookupConfig(u16 DeviceId)
 {
 	XPciePsu_Config *CfgPtr = NULL;
-	unsigned int Index;
+	u32 Index;
 
 	for (Index = 0; Index < XPciePsu_ConfigTableSize; Index++) {
 		if (XPciePsu_ConfigTable[Index].DeviceId == DeviceId) {
-			if(XPciePsu_ConfigTable[Index].BrigReg == 0xff ||
-					XPciePsu_ConfigTable[Index].Ecam == 0xff ||
-					XPciePsu_ConfigTable[Index].NpMemBaseAddr == 0xff ||
-					XPciePsu_ConfigTable[Index].NpMemMaxAddr == 0xff ||
-					XPciePsu_ConfigTable[Index].PMemBaseAddr == 0xff ||
-					XPciePsu_ConfigTable[Index].PMemMaxAddr == 0xff ||
-					XPciePsu_ConfigTable[Index].PciReg == 0xff){
+			if((XPciePsu_ConfigTable[Index].BrigReg == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].Ecam == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].NpMemBaseAddr == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].NpMemMaxAddr == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].PMemBaseAddr == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].PMemMaxAddr == 0xffU) ||
+					(XPciePsu_ConfigTable[Index].PciReg == 0xffU)){
 				CfgPtr = NULL;
-				goto End;
+				break;
 			}
 			CfgPtr = &XPciePsu_ConfigTable[Index];
 			break;
 		}
 	}
-End:
+
 	return CfgPtr;
 }

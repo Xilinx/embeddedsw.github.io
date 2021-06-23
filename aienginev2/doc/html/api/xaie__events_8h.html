@@ -134,6 +134,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 <tr class="memitem:af6c0993ca56a2b3894dfed558b7f4d64"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__events_8h.html#af6c0993ca56a2b3894dfed558b7f4d64">XAie_EventLogicalToPhysicalConv</a> (XAie_DevInst *DevInst, XAie_LocType Loc, XAie_ModuleType Module, XAie_Events Event, u8 *HwEvent)</td></tr>
 <tr class="memdesc:af6c0993ca56a2b3894dfed558b7f4d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API is used to convert XAie_Events enum to hardware event id.  <a href="#af6c0993ca56a2b3894dfed558b7f4d64">More...</a><br/></td></tr>
 <tr class="separator:af6c0993ca56a2b3894dfed558b7f4d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f15e578ccf18d89b612e2ab777f0253"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__events_8h.html#a7f15e578ccf18d89b612e2ab777f0253">XAie_EventReadStatus</a> (XAie_DevInst *DevInst, XAie_LocType Loc, XAie_ModuleType Module, XAie_Events Events, u8 *Status)</td></tr>
+<tr class="memdesc:a7f15e578ccf18d89b612e2ab777f0253"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API returns the status of event.  <a href="#a7f15e578ccf18d89b612e2ab777f0253">More...</a><br/></td></tr>
+<tr class="separator:a7f15e578ccf18d89b612e2ab777f0253"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a1af61155b61b0a9610285e33e9fa64ea"></a>
@@ -194,7 +197,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 
 <p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
-<p>Referenced by <a class="el" href="xaie__ecc_8h.html#af44df2acfc01fc6e04331046afd0ff61">_XAie_EccOnDM()</a>.</p>
+<p>Referenced by <a class="el" href="xaie__ecc_8h.html#af44df2acfc01fc6e04331046afd0ff61">_XAie_EccOnDM()</a>, and <a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer()</a>.</p>
 
 </div>
 </div>
@@ -262,7 +265,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
-<p>Referenced by <a class="el" href="xaie__ecc_8h.html#af44df2acfc01fc6e04331046afd0ff61">_XAie_EccOnDM()</a>, and <a class="el" href="xaie__interrupt_8h.html#a39225d25ca2b0d17ee742edae4b62fc2">XAie_ErrorHandlingInit()</a>.</p>
+<p>Referenced by <a class="el" href="xaie__ecc_8h.html#af44df2acfc01fc6e04331046afd0ff61">_XAie_EccOnDM()</a>, <a class="el" href="xaie__interrupt_8h.html#a39225d25ca2b0d17ee742edae4b62fc2">XAie_ErrorHandlingInit()</a>, and <a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer()</a>.</p>
 
 </div>
 </div>
@@ -449,6 +452,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
+<p>Referenced by <a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a5213d10888326da74f1bd3d163ded11d"></a>
@@ -629,6 +634,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
+<p>Referenced by <a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a201955b985a8e5de6460544b24bbba20"></a>
@@ -801,6 +808,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
+
+<p>Referenced by <a class="el" href="xaie__events_8h.html#a7f15e578ccf18d89b612e2ab777f0253">XAie_EventReadStatus()</a>.</p>
 
 </div>
 </div>
@@ -1007,6 +1016,66 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who      Date     Changes
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7f15e578ccf18d89b612e2ab777f0253"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AieRC XAie_EventReadStatus </td>
+          <td>(</td>
+          <td class="paramtype">XAie_DevInst *&#160;</td>
+          <td class="paramname"><em>DevInst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XAie_LocType&#160;</td>
+          <td class="paramname"><em>Loc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XAie_ModuleType&#160;</td>
+          <td class="paramname"><em>Module</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XAie_Events&#160;</td>
+          <td class="paramname"><em>Events</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>Status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This API returns the status of event. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevInst,:</td><td>Device Instance </td></tr>
+    <tr><td class="paramname">Loc,:</td><td>Location of AIE Tile </td></tr>
+    <tr><td class="paramname">Module,:</td><td>Module of tile. for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD, for Shim tile - XAIE_PL_MOD. </td></tr>
+    <tr><td class="paramname">Events,:</td><td>List of XAie_Events. </td></tr>
+    <tr><td class="paramname">Status,:</td><td>Buffer to return status of event.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>, and <a class="el" href="xaie__events_8c.html#af6c0993ca56a2b3894dfed558b7f4d64">XAie_EventLogicalToPhysicalConv()</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc.h
-* @addtogroup rfdc_v8_1
+* @addtogroup rfdc_v10_0
 * @{
 * @details
 *
@@ -259,6 +259,23 @@
 *       cog    10/05/20 Change shutdown end state for Gen 3 Quad ADCs to reduce power
 *                       consumption.
 *       cog    10/14/20 Get I and Q data now supports warm bitstream swap.
+* 9.0   cog    11/25/20 Upversion.
+* 10.0  cog    11/26/20 Refactor and split files.
+*       cog    11/27/20 Added functionality for 6xdr devices.
+*       cog    12/02/20 Supplied FS was being saved rather than actual FS when
+*                       setting PLL.
+*       cog    12/04/20 Reduce scope of non user interface macros.
+*       cog    01/05/21 Signal detector on/off counters needed to be flipped.
+*       cog    01/05/21 Second signal detector removed.
+*       cog    01/06/21 Added DAC data scaler APIs.
+*       cog    01/11/21 Tuning for autocalibration.
+*       cog    02/10/21 Added custom startup API.
+*       cog    03/08/21 MTS now scans reference tile first. This has required a
+*                       change to the prototype of XRFdc_MultiConverter_Init.
+*       cog    03/12/21 Tweaks for improved calibration performance.
+*       cog    05/05/21 Fixed issue where driver was attempting to start ADC 3
+*                       for DFE variants.
+*       cog    05/05/21 Rename the MAX/MIN macros to avoid potential conflicts.
 *
 * </pre>
 *
@@ -292,6 +309,9 @@ extern "C" {
 
 /**************************** Type Definitions *******************************/
 #define XRFdc_IsADC4GSPS(InstPtr) XRFdc_IsHighSpeedADC(InstPtr, 0)
+
+#define XRFDC_MTS_RMW(read, mask, data) (((read) & ~(mask)) | ((data) & (mask)))
+#define XRFDC_MTS_FIELD(data, mask, shift) (((data) & (mask)) >> (shift))
 
 #ifndef __BAREMETAL__
 typedef __u32 u32;
@@ -372,6 +392,44 @@ typedef struct {
 #endif
 
 /**
+ * MTS DTC Settings.
+ */
+typedef struct {
+	u32 RefTile;
+	u32 IsPLL;
+	int Target[4];
+	int Scan_Mode;
+	int DTC_Code[4];
+	int Num_Windows[4];
+	int Max_Gap[4];
+	int Min_Gap[4];
+	int Max_Overlap[4];
+} XRFdc_MTS_DTC_Settings;
+
+/**
+ * MTS Sync Settings.
+ */
+typedef struct {
+	u32 RefTile;
+	u32 Tiles;
+	int Target_Latency;
+	int Offset[4];
+	int Latency[4];
+	int Marker_Delay;
+	int SysRef_Enable;
+	XRFdc_MTS_DTC_Settings DTC_Set_PLL;
+	XRFdc_MTS_DTC_Settings DTC_Set_T1;
+} XRFdc_MultiConverter_Sync_Config;
+
+/**
+ * MTS Marker Struct.
+ */
+typedef struct {
+	u32 Count[4];
+	u32 Loc[4];
+} XRFdc_MTS_Marker;
+
+/**
  * ADC Signal Detect Settings.
  */
 typedef struct {
@@ -379,12 +437,9 @@ typedef struct {
 	u8 TimeConstant;
 	u8 Flush;
 	u8 EnableIntegrator;
-	u16 HighThreshold;
-	u16 LowThreshold;
-	u16 HighThreshOnTriggerCnt; /* the number of times value must exceed HighThreshold before turning on*/
-	u16 HighThreshOffTriggerCnt; /* the number of times value must be less than HighThreshold before turning off*/
-	u16 LowThreshOnTriggerCnt; /* the number of times value must exceed LowThreshold before turning on*/
-	u16 LowThreshOffTriggerCnt; /* the number of times value must be less than LowThreshold before turning off*/
+	u16 Threshold;
+	u16 ThreshOnTriggerCnt; /* the number of times value must exceed Threshold before turning on*/
+	u16 ThreshOffTriggerCnt; /* the number of times value must be less than Threshold before turning off*/
 	u8 HysteresisEnable;
 } XRFdc_Signal_Detector_Settings;
 /**
@@ -731,8 +786,8 @@ typedef struct {
 	}
 #endif
 
-#define MAX(x, y) (x > y) ? x : y
-#define MIN(x, y) (x < y) ? x : y
+#define XRFDC_MAX(x, y) (x > y) ? x : y
+#define XRFDC_MIN(x, y) (x < y) ? x : y
 #define XRFDC_SUCCESS 0U
 #define XRFDC_FAILURE 1U
 #define XRFDC_GEN3 2
@@ -883,8 +938,10 @@ typedef struct {
 #define XRFDC_FAB_CLK_DIV8 0x4U
 #define XRFDC_FAB_CLK_DIV16 0x5U
 
+#define XRFDC_CALIB_MODE_AUTO 0x0U
 #define XRFDC_CALIB_MODE1 0x1U
 #define XRFDC_CALIB_MODE2 0x2U
+#define XRFDC_CALIB_MODE_MIXED 0x0U
 #define XRFDC_CALIB_MODE_ABS_DIFF 0x1U
 #define XRFDC_CALIB_MODE_NEG_ABS_SUM 0x2U
 #define XRFDC_TI_DCB_MODE1_4GSPS 0x00007800U
@@ -949,6 +1006,7 @@ typedef struct {
 #define XRFDC_MB_MODE_2X_BLK01_BLK23_ALT 0x5U
 
 #define XRFDC_MILLI 1000U
+#define XRFDC_MICRO 1000000U
 #define XRFDC_DAC_SAMPLING_MIN 500
 #define XRFDC_DAC_SAMPLING_MAX 6554
 #define XRFDC_ADC_4G_SAMPLING_MIN 1000
@@ -993,6 +1051,13 @@ typedef struct {
 #define XRFDC_SM_STATE1 0x1U
 #define XRFDC_SM_STATE3 0x3U
 #define XRFDC_SM_STATE15 0xFU
+
+#define XRFDC_STATE_OFF 0x0U
+#define XRFDC_STATE_SHUTDOWN 0x1U
+#define XRFDC_STATE_PWRUP 0x3U
+#define XRFDC_STATE_CLK_DET 0x6U
+#define XRFDC_STATE_CAL 0xBU
+#define XRFDC_STATE_FULL 0xFU
 
 #define XRFDC_DECIM_4G_DATA_TYPE 0x3U
 #define XRFDC_DECIM_2G_IQ_DATA_TYPE 0x2U
@@ -1129,6 +1194,9 @@ typedef struct {
 #define XRFDC_CAL_BLOCK_GCB 2
 #define XRFDC_CAL_BLOCK_TSCB 3
 
+#define XRFDC_TSCB_TUNE_AUTOCAL 0x0550U
+#define XRFDC_TSCB_TUNE_NOT_AUTOCAL 0x0440U
+
 #define XRFDC_INV_SYNC_MODE_MAX 2
 
 #define XRFDC_INV_SYNC_EN_MAX 1
@@ -1186,6 +1254,11 @@ typedef struct {
 #define XRFDC_DAC_VOP_BLDR_LOW_BITS_MASK 0xFU
 
 #define XRFDC_PLL_LOCK_DLY_CNT 1000U
+#define XRFDC_RESTART_CLR_DLY_CNT 1000U
+#define XRFDC_WAIT_ATTEMPTS_CNT 10000U
+#define XRFDC_STATE_WAIT 100U
+#define XRFDC_RESTART_CLR_WAIT 1000U
+#define XRFDC_PLL_LOCK_WAIT 1000U
 
 #define XRFDC_CLK_DIV_DP_FIRST_MODE 0x10U
 #define XRFDC_CLK_DIV_DP_OTHER_MODES 0x20U
@@ -1225,822 +1298,34 @@ typedef struct {
 #define XRFDC_DUAL_TILE 2U
 #define XRFDC_QUAD_TILE 4U
 
-/*****************************************************************************/
-/**
-*
-* Execute Read modify Write
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    BaseAddr is address of a block.
-* @param    RegAddr is register offset value.
-* @param    Mask contains bit mask value.
-* @param    Data contains value to be written to register.
-*
-* @return
-*           - None
-*
-******************************************************************************/
-static inline void XRFdc_ClrSetReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask, u16 Data)
-{
-	u16 ReadReg;
+#define XRFDC_4ADC_4DAC_TILES 0U
+#define XRFDC_3ADC_2DAC_TILES 1U
 
-	ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, RegAddr);
-	ReadReg = (ReadReg & ~Mask) | (Data & Mask);
-	XRFdc_WriteReg16(InstancePtr, BaseAddr, RegAddr, ReadReg);
-}
+#define XRFDC_MTS_SYSREF_DISABLE 0U
+#define XRFDC_MTS_SYSREF_ENABLE 1U
 
-/*****************************************************************************/
-/**
-*
-* Execute Read and clear
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    BaseAddr is address of a block.
-* @param    RegAddr is register offset value.
-* @param    Mask contains bit mask value.
-*
-* @return
-*           - None
-*
-******************************************************************************/
-static inline void XRFdc_ClrReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask)
-{
-	u16 ReadReg;
+#define XRFDC_MTS_SCAN_INIT 0U
+#define XRFDC_MTS_SCAN_RELOAD 1U
 
-	ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, RegAddr);
-	ReadReg &= ~Mask;
-	XRFdc_WriteReg16(InstancePtr, BaseAddr, RegAddr, ReadReg);
-}
+/* MTS Error Codes */
+#define XRFDC_MTS_OK 0U
+#define XRFDC_MTS_NOT_SUPPORTED 1U
+#define XRFDC_MTS_TIMEOUT 2U
+#define XRFDC_MTS_MARKER_RUN 4U
+#define XRFDC_MTS_MARKER_MISM 8U
+#define XRFDC_MTS_DELAY_OVER 16U
+#define XRFDC_MTS_TARGET_LOW 32U
+#define XRFDC_MTS_IP_NOT_READY 64U
+#define XRFDC_MTS_DTC_INVALID 128U
+#define XRFDC_MTS_NOT_ENABLED 512U
+#define XRFDC_MTS_SYSREF_GATE_ERROR 2048U
+#define XRFDC_MTS_SYSREF_FREQ_NDONE 4096U
+#define XRFDC_MTS_BAD_REF_TILE 8192U
+
+#define XRFDC_CAL_AXICLK_MULT 12.17085774
+#define XRFDC_CAL_DIV_CUTOFF_FREQ(X) (X ? 5.0 : 2.5)
 
 /*****************************************************************************/
-/**
-*
-* Execute Read and mask with the value
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    BaseAddr is address of a block.
-* @param    RegAddr is register offset value.
-* @param    Mask contains bit mask value.
-*
-* @return
-*           - None
-*
-******************************************************************************/
-static inline u16 XRFdc_RDReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask)
-{
-	u16 ReadReg;
-
-	ReadReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, RegAddr);
-	ReadReg &= Mask;
-
-	return ReadReg;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get ADC type is High Speed or Medium Speed.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-*
-* @return
-*           - Return 1 if ADC type is 4GSPS, otherwise 0.
-*
-******************************************************************************/
-
-static inline u32 XRFdc_IsHighSpeedADC(XRFdc *InstancePtr, int Tile)
-{
-	if (InstancePtr->RFdc_Config.ADCTile_Config[Tile].NumSlices == 0) {
-		return InstancePtr->ADC4GSPS;
-	} else {
-		return (InstancePtr->RFdc_Config.ADCTile_Config[Tile].NumSlices != XRFDC_NUM_SLICES_LSADC);
-	}
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether DAC block is available or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return 1 if DAC block is available, otherwise 0.
-*
-******************************************************************************/
-static inline u32 XRFdc_IsDACBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsBlockAvail;
-	u32 BlockShift;
-	u32 BlockEnableReg;
-
-	BlockShift = Block_Id + (XRFDC_PATH_ENABLED_TILE_SHIFT * Tile_Id);
-	BlockEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_DAC_PATHS_ENABLED_OFFSET);
-	BlockEnableReg &= (XRFDC_ENABLED << BlockShift);
-	IsBlockAvail = BlockEnableReg >> BlockShift;
-	return IsBlockAvail;
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether ADC block is available or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3 in DAC/ADC-2GSPS and 0-1 in ADC-4GSPS.
-*
-* @return
-*           - Return 1 if ADC block is available, otherwise 0.
-*
-******************************************************************************/
-static inline u32 XRFdc_IsADCBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsBlockAvail;
-	u32 BlockShift;
-	u32 BlockEnableReg;
-
-	if (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_ENABLED) {
-		if ((Block_Id == 2U) || (Block_Id == 3U)) {
-			IsBlockAvail = 0;
-			goto RETURN_PATH;
-		}
-		if (Block_Id == 1U) {
-			Block_Id = 2U;
-		}
-	}
-
-	BlockShift = Block_Id + (XRFDC_PATH_ENABLED_TILE_SHIFT * Tile_Id);
-	BlockEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_ADC_PATHS_ENABLED_OFFSET);
-	BlockEnableReg &= (XRFDC_ENABLED << BlockShift);
-	IsBlockAvail = BlockEnableReg >> BlockShift;
-
-RETURN_PATH:
-	return IsBlockAvail;
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether DAC Digital path is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return 1 if DAC digital path is enabled, otherwise 0.
-*
-******************************************************************************/
-static inline u32 XRFdc_IsDACDigitalPathEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsDigitalPathAvail;
-	u32 DigitalPathShift;
-	u32 DigitalPathEnableReg;
-
-	DigitalPathShift = Block_Id + XRFDC_DIGITAL_PATH_ENABLED_SHIFT + (XRFDC_PATH_ENABLED_TILE_SHIFT * Tile_Id);
-	DigitalPathEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_DAC_PATHS_ENABLED_OFFSET);
-	DigitalPathEnableReg &= (XRFDC_ENABLED << DigitalPathShift);
-	IsDigitalPathAvail = DigitalPathEnableReg >> DigitalPathShift;
-	return IsDigitalPathAvail;
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether ADC digital path is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3 in DAC/ADC-2GSPS and 0-1 in ADC-4GSPS.
-*
-* @return
-*           - Return 1 if ADC digital path is enabled, otherwise 0.
-*
-******************************************************************************/
-static inline u32 XRFdc_IsADCDigitalPathEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsDigitalPathAvail;
-	u32 DigitalPathShift;
-	u32 DigitalPathEnableReg;
-
-	if (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_ENABLED) {
-		if ((Block_Id == 2U) || (Block_Id == 3U)) {
-			IsDigitalPathAvail = 0;
-			goto RETURN_PATH;
-		}
-		if (Block_Id == 1U) {
-			Block_Id = 2U;
-		}
-	}
-
-	DigitalPathShift = Block_Id + XRFDC_DIGITAL_PATH_ENABLED_SHIFT + (XRFDC_PATH_ENABLED_TILE_SHIFT * Tile_Id);
-	DigitalPathEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_ADC_PATHS_ENABLED_OFFSET);
-	DigitalPathEnableReg &= (XRFDC_ENABLED << DigitalPathShift);
-	IsDigitalPathAvail = DigitalPathEnableReg >> DigitalPathShift;
-
-RETURN_PATH:
-	return IsDigitalPathAvail;
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether ADC/DAC Digital path is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - XRFDC_SUCCESS if Digital path is enabled.
-*           - XRFDC_FAILURE if Digital path is not enabled.
-*
-******************************************************************************/
-static inline u32 XRFdc_CheckDigitalPathEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsBlockAvail;
-	u32 Status;
-
-	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if ((Tile_Id > XRFDC_TILE_ID_MAX) || (Block_Id > XRFDC_BLOCK_ID_MAX)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Type == XRFDC_ADC_TILE) {
-		IsBlockAvail = XRFdc_IsADCDigitalPathEnabled(InstancePtr, Tile_Id, Block_Id);
-	} else {
-		IsBlockAvail = XRFdc_IsDACDigitalPathEnabled(InstancePtr, Tile_Id, Block_Id);
-	}
-	if (IsBlockAvail == 0U) {
-		Status = XRFDC_FAILURE;
-	} else {
-		Status = XRFDC_SUCCESS;
-	}
-RETURN_PATH:
-	return Status;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get IP BaseAddress.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-*
-* @return
-*           - Return IP BaseAddress.
-*
-******************************************************************************/
-static inline u32 XRFdc_Get_IPBaseAddr(XRFdc *InstancePtr)
-{
-	return (u32)InstancePtr->BaseAddr;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Tile BaseAddress
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - Return Tile BaseAddress.
-*
-******************************************************************************/
-static inline u32 XRFdc_Get_TileBaseAddr(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
-{
-	u32 BaseAddr;
-
-	if (Type == XRFDC_ADC_TILE) {
-		BaseAddr = InstancePtr->BaseAddr + XRFDC_ADC_TILE_DRP_ADDR(Tile_Id);
-	} else {
-		BaseAddr = InstancePtr->BaseAddr + XRFDC_DAC_TILE_DRP_ADDR(Tile_Id);
-	}
-
-	return BaseAddr;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Block BaseAddress
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3 in DAC/ADC-2GSPS and 0-1 in ADC-4GSPS.
-*
-* @return
-*           - Return Block BaseAddress.
-*
-******************************************************************************/
-static inline u32 XRFdc_Get_BlockBaseAddr(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 BaseAddr;
-
-	if (Type == XRFDC_ADC_TILE) {
-		if (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_ENABLED) {
-			if (Block_Id == 1U) {
-				Block_Id = 2U;
-			}
-		}
-		BaseAddr = InstancePtr->BaseAddr + XRFDC_ADC_TILE_DRP_ADDR(Tile_Id) + XRFDC_BLOCK_ADDR_OFFSET(Block_Id);
-	} else {
-		BaseAddr = InstancePtr->BaseAddr + XRFDC_DAC_TILE_DRP_ADDR(Tile_Id) + XRFDC_BLOCK_ADDR_OFFSET(Block_Id);
-	}
-
-	return BaseAddr;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Number of DAC Blocks enabled.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - Return number of DAC blocks enabled.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetNoOfDACBlock(XRFdc *InstancePtr, u32 Tile_Id)
-{
-	return InstancePtr->DAC_Tile[Tile_Id].NumOfDACBlocks;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Number of ADC Blocks enabled.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - Return number of ADC blocks enabled.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetNoOfADCBlocks(XRFdc *InstancePtr, u32 Tile_Id)
-{
-	return InstancePtr->ADC_Tile[Tile_Id].NumOfADCBlocks;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Mixer Input Data Type for ADC/DAC block.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return MixerInputDataType of ADC/DAC block.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetDataType(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 MixerInputDataType;
-
-	if (Type == XRFDC_ADC_TILE) {
-		MixerInputDataType = InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id]
-					     .ADCBlock_Digital_Config[Block_Id]
-					     .MixerInputDataType;
-	} else {
-		MixerInputDataType = InstancePtr->RFdc_Config.DACTile_Config[Tile_Id]
-					     .DACBlock_Digital_Config[Block_Id]
-					     .MixerInputDataType;
-	}
-
-	return MixerInputDataType;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Data Width for ADC/DAC block.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return DataWidth of ADC/DAC block.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetDataWidth(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 DataWidth;
-
-	if (Type == XRFDC_ADC_TILE) {
-		DataWidth =
-			InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].ADCBlock_Digital_Config[Block_Id].DataWidth;
-	} else {
-		DataWidth =
-			InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].DACBlock_Digital_Config[Block_Id].DataWidth;
-	}
-
-	return DataWidth;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Inversesync filter for DAC block.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return Inversesync filter for DAC block
-*
-******************************************************************************/
-static inline u32 XRFdc_GetInverseSincFilter(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	return InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].DACBlock_Analog_Config[Block_Id].InvSyncEnable;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Mixed mode for DAC block.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return mixed mode for DAC block
-*
-******************************************************************************/
-static inline u32 XRFdc_GetMixedMode(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
-{
-	return InstancePtr->DAC_Tile[Tile_Id].DACBlock_Analog_Datapath[Block_Id].MixedMode;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Master Tile for ADC/DAC tiles.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-*
-* @return
-*           - Return Master Tile for ADC/DAC tiles
-*
-******************************************************************************/
-static inline u32 XRFdc_GetMasterTile(XRFdc *InstancePtr, u32 Type)
-{
-	u32 MasterTile;
-
-	if (Type == XRFDC_ADC_TILE) {
-		MasterTile = InstancePtr->RFdc_Config.MasterADCTile;
-	} else {
-		MasterTile = InstancePtr->RFdc_Config.MasterDACTile;
-	}
-
-	return MasterTile;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Sysref source for ADC/DAC tile.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-*
-* @return
-*           - Return Sysref source for ADC/DAC tile
-*
-******************************************************************************/
-static inline u32 XRFdc_GetSysRefSource(XRFdc *InstancePtr, u32 Type)
-{
-	u32 SysRefSource;
-
-	if (Type == XRFDC_ADC_TILE) {
-		SysRefSource = InstancePtr->RFdc_Config.ADCSysRefSource;
-	} else {
-		SysRefSource = InstancePtr->RFdc_Config.DACSysRefSource;
-	}
-
-	return SysRefSource;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Fabric Clock frequency.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - Return Fabric Clock frequency for ADC/DAC tile
-*
-******************************************************************************/
-static inline double XRFdc_GetFabClkFreq(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
-{
-	double FabClkFreq;
-
-	if (Type == XRFDC_ADC_TILE) {
-		FabClkFreq = InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].FabClkFreq;
-	} else {
-		FabClkFreq = InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].FabClkFreq;
-	}
-
-	return FabClkFreq;
-}
-
-/*****************************************************************************/
-/**
-*
-* Get whether FIFO is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - Return 1 if FIFO is enabled, otherwise 0.
-*
-******************************************************************************/
-static inline u32 XRFdc_IsFifoEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 FifoEnable;
-
-	if (Type == XRFDC_ADC_TILE) {
-		FifoEnable =
-			InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].ADCBlock_Digital_Config[Block_Id].FifoEnable;
-	} else {
-		FifoEnable =
-			InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].DACBlock_Digital_Config[Block_Id].FifoEnable;
-	}
-
-	return FifoEnable;
-}
-
-/*****************************************************************************/
-/**
-*
-* Set Data Converter connected for digital data path I and Q
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is Digital Data Path number.
-* @param    ConnectedIData is Converter Id to which DigitalPathI connected.
-* @param    ConnectedQData is Converter Id to which DigitalPathQ connected.
-*
-* @return
-*           - None.
-*
-******************************************************************************/
-static inline void XRFdc_SetConnectedIQData(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id, int ConnectedIData,
-					    int ConnectedQData)
-{
-	if (Type == XRFDC_ADC_TILE) {
-		InstancePtr->ADC_Tile[Tile_Id].ADCBlock_Digital_Datapath[Block_Id].ConnectedIData = ConnectedIData;
-		InstancePtr->ADC_Tile[Tile_Id].ADCBlock_Digital_Datapath[Block_Id].ConnectedQData = ConnectedQData;
-	} else {
-		InstancePtr->DAC_Tile[Tile_Id].DACBlock_Digital_Datapath[Block_Id].ConnectedIData = ConnectedIData;
-		InstancePtr->DAC_Tile[Tile_Id].DACBlock_Digital_Datapath[Block_Id].ConnectedQData = ConnectedQData;
-	}
-}
-
-/*****************************************************************************/
-/**
-*
-* Get Multiband Config data
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - Return Multiband Configuration.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetMultibandConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
-{
-	return XRFdc_ReadReg(InstancePtr, XRFDC_CTRL_STS_BASE(Type, Tile_Id), XRFDC_MB_CONFIG_OFFSET);
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether ADC/DAC block is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC.
-* @param    Tile_Id Valid values are 0-3.
-* @param    Block_Id is ADC/DAC block number inside the tile. Valid values
-*           are 0-3.
-*
-* @return
-*           - XRFDC_SUCCESS if block enabled.
-*           - XRFDC_FAILURE if block not enabled.
-*
-******************************************************************************/
-static inline u32 XRFdc_CheckBlockEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
-{
-	u32 IsBlockAvail;
-	u32 Status;
-
-	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if ((Tile_Id > XRFDC_TILE_ID_MAX) || (Block_Id > XRFDC_BLOCK_ID_MAX)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Type == XRFDC_ADC_TILE) {
-		IsBlockAvail = XRFdc_IsADCBlockEnabled(InstancePtr, Tile_Id, Block_Id);
-	} else {
-		IsBlockAvail = XRFdc_IsDACBlockEnabled(InstancePtr, Tile_Id, Block_Id);
-	}
-	if (IsBlockAvail == 0U) {
-		Status = XRFDC_FAILURE;
-	} else {
-		Status = XRFDC_SUCCESS;
-	}
-RETURN_PATH:
-	return Status;
-}
-
-/*****************************************************************************/
-/**
-*
-* Checks whether ADC/DAC tile is enabled or not.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC.
-* @param    Tile_Id Valid values are 0-3.
-*
-* @return
-*           - XRFDC_SUCCESS if tile enabled.
-*           - XRFDC_FAILURE if tile not enabled.
-*
-******************************************************************************/
-static inline u32 XRFdc_CheckTileEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
-{
-	u32 Status;
-	u32 TileMask;
-	u32 TileEnableReg;
-
-	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Tile_Id > XRFDC_TILE_ID_MAX) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-
-	TileEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_TILES_ENABLED_OFFSET);
-
-	TileMask = XRFDC_ENABLED << Tile_Id;
-	if (Type == XRFDC_DAC_TILE) {
-		TileMask <<= XRFDC_DAC_TILES_ENABLED_SHIFT;
-	}
-
-	if ((TileEnableReg & TileMask) == 0U) {
-		Status = XRFDC_FAILURE;
-	} else {
-		Status = XRFDC_SUCCESS;
-	}
-RETURN_PATH:
-	return Status;
-}
-
-/*****************************************************************************/
-/**
-*
-* Gets ADC/DAC tile maximum sampling rate.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC.
-* @param    Tile_Id Valid values are 0-3.
-* @param    MaxSampleRatePtr pointer for maximum sample rate.
-*
-* @return
-*           - XRFDC_SUCCESS if found sampling rate.
-*           - XRFDC_FAILURE if could not find sampling rate.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetMaxSampleRate(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, double *MaxSampleRatePtr)
-{
-	u32 Status;
-
-	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Tile_Id > XRFDC_TILE_ID_MAX) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Type == XRFDC_ADC_TILE) {
-		*MaxSampleRatePtr = InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].MaxSampleRate * 1000;
-		if (*MaxSampleRatePtr == 0) {
-			*MaxSampleRatePtr = XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) ? XRFDC_ADC_4G_SAMPLING_MAX :
-											 XRFDC_ADC_2G_SAMPLING_MAX;
-		}
-	} else {
-		*MaxSampleRatePtr = InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].MaxSampleRate * 1000;
-		if (*MaxSampleRatePtr == 0) {
-			*MaxSampleRatePtr = XRFDC_DAC_SAMPLING_MAX;
-		}
-	}
-	Status = XRFDC_SUCCESS;
-RETURN_PATH:
-	return Status;
-}
-
-/*****************************************************************************/
-/**
-*
-* Gets ADC/DAC tile minimum sampling rate.
-*
-* @param    InstancePtr is a pointer to the XRfdc instance.
-* @param    Type is ADC or DAC. 0 for ADC and 1 for DAC.
-* @param    Tile_Id Valid values are 0-3.
-* @param    MinSampleRatePtr pointer for minimum sample rate.
-*
-* @return
-*           - XRFDC_SUCCESS if found sampling rate.
-*           - XRFDC_FAILURE if could not find sampling rate.
-*
-******************************************************************************/
-static inline u32 XRFdc_GetMinSampleRate(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, double *MinSampleRatePtr)
-{
-	u32 Status;
-
-	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Tile_Id > XRFDC_TILE_ID_MAX) {
-		Status = XRFDC_FAILURE;
-		goto RETURN_PATH;
-	}
-	if (Type == XRFDC_ADC_TILE) {
-		*MinSampleRatePtr = XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) ? XRFDC_ADC_4G_SAMPLING_MIN :
-										 XRFDC_ADC_2G_SAMPLING_MIN;
-	} else {
-		*MinSampleRatePtr = XRFDC_DAC_SAMPLING_MIN;
-	}
-	Status = XRFDC_SUCCESS;
-RETURN_PATH:
-	return Status;
-}
-
-/*****************************************************************************/
-/**
-*
-* This API is used to get the driver version.
-*
-* @param    None
-*
-* @return
-*           Driver version number
-*
-* @note     None.
-*
-******************************************************************************/
-static inline double XRFdc_GetDriverVersion(void)
-{
-	return 8.1;
-}
-
 /************************** Function Prototypes ******************************/
 
 XRFdc_Config *XRFdc_LookupConfig(u16 DeviceId);
@@ -2049,6 +1334,8 @@ u32 XRFdc_CfgInitialize(XRFdc *InstancePtr, XRFdc_Config *ConfigPtr);
 u32 XRFdc_StartUp(XRFdc *InstancePtr, u32 Type, int Tile_Id);
 u32 XRFdc_Shutdown(XRFdc *InstancePtr, u32 Type, int Tile_Id);
 u32 XRFdc_Reset(XRFdc *InstancePtr, u32 Type, int Tile_Id);
+u32 XRFdc_CustomStartUp(XRFdc *InstancePtr, u32 Type, int Tile_Id, u32 StartState, u32 EndState);
+u32 XRFdc_WaitForState(XRFdc *InstancePtr, u32 Type, u32 Tile, u32 State);
 u32 XRFdc_GetIPStatus(XRFdc *InstancePtr, XRFdc_IPStatus *IPStatusPtr);
 u32 XRFdc_GetBlockStatus(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id, XRFdc_BlockStatus *BlockStatusPtr);
 u32 XRFdc_SetMixerSettings(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id,
@@ -2144,6 +1431,45 @@ u32 XRFdc_SetPwrMode(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id, XR
 u32 XRFdc_GetPwrMode(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id, XRFdc_Pwr_Mode_Settings *SettingsPtr);
 u32 XRFdc_ResetInternalFIFOWidth(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
 u32 XRFdc_ResetInternalFIFOWidthObs(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+void XRFdc_ClrSetReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask, u16 Data);
+void XRFdc_ClrReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask);
+u16 XRFdc_RDReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask);
+u32 XRFdc_IsHighSpeedADC(XRFdc *InstancePtr, int Tile);
+u32 XRFdc_IsDACBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_IsADCBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_IsDACDigitalPathEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_IsADCDigitalPathEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_CheckDigitalPathEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_Get_IPBaseAddr(XRFdc *InstancePtr);
+u32 XRFdc_Get_TileBaseAddr(XRFdc *InstancePtr, u32 Type, u32 Tile_Id);
+u32 XRFdc_Get_BlockBaseAddr(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_GetNoOfDACBlock(XRFdc *InstancePtr, u32 Tile_Id);
+u32 XRFdc_GetNoOfADCBlocks(XRFdc *InstancePtr, u32 Tile_Id);
+u32 XRFdc_GetDataType(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_GetDataWidth(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_GetInverseSincFilter(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_GetMixedMode(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_GetMasterTile(XRFdc *InstancePtr, u32 Type);
+u32 XRFdc_GetSysRefSource(XRFdc *InstancePtr, u32 Type);
+double XRFdc_GetFabClkFreq(XRFdc *InstancePtr, u32 Type, u32 Tile_Id);
+u32 XRFdc_IsFifoEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+void XRFdc_SetConnectedIQData(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id, int ConnectedIData,
+			      int ConnectedQData);
+u32 XRFdc_GetMultibandConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id);
+u32 XRFdc_CheckBlockEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id);
+u32 XRFdc_CheckTileEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id);
+u32 XRFdc_GetMaxSampleRate(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, double *MaxSampleRatePtr);
+u32 XRFdc_GetMinSampleRate(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, double *MinSampleRatePtr);
+double XRFdc_GetDriverVersion(void);
+u32 XRFdc_MultiConverter_Sync(XRFdc *InstancePtr, u32 Type, XRFdc_MultiConverter_Sync_Config *ConfigPtr);
+u32 XRFdc_MultiConverter_Init(XRFdc_MultiConverter_Sync_Config *ConfigPtr, int *PLL_CodesPtr, int *T1_CodesPtr,
+			      u32 RefTile);
+u32 XRFdc_MTS_Sysref_Config(XRFdc *InstancePtr, XRFdc_MultiConverter_Sync_Config *DACSyncConfigPtr,
+			    XRFdc_MultiConverter_Sync_Config *ADCSyncConfigPtr, u32 SysRefEnable);
+u32 XRFdc_GetMTSEnable(XRFdc *InstancePtr, u32 Type, u32 Tile, u32 *EnablePtr);
+u32 XRFdc_SetDACDataScaler(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 Enable);
+u32 XRFdc_GetDACDataScaler(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 *EnablePtr);
+u8 XRFdc_GetTileLayout(XRFdc *InstancePtr);
 #ifndef __BAREMETAL__
 s32 XRFdc_GetDeviceNameByDeviceId(char *DevNamePtr, u16 DevId);
 #endif

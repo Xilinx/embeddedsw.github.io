@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xipipsu.c
-* @addtogroup ipipsu_v2_8
+* @addtogroup ipipsu_v2_9
 * @{
 *
 * This file contains the implementation of the interface functions for XIpiPsu
@@ -25,6 +25,13 @@
 * 2.2	kvn	02/17/17	Add support for updating ConfigTable at run time
 * 2.4	sd	07/11/18	Fix a doxygen reported warning
 * 2.6	sd	04/02/20	Restructured the code for more readability and modularity
+* 2.9   ma  02/12/21    Added IPI CRC functionality
+* 	    sdd	02/17/21	Doxygen fixes
+*       ma  03/04/21    Initialize BufferIndex during IPI config init
+*	sdd 03/10/21	Fixed misrac warnings.
+*		     	Fixed doxygen warnings.
+*	ag	03/31/21	Fixed IPI poll for ack condition check.
+*	sd  06/02/21	Update the crc code remove the check for max length.
 * </pre>
 *
 *****************************************************************************/
@@ -32,9 +39,14 @@
 /***************************** Include Files ********************************/
 #include "xipipsu.h"
 #include "xipipsu_hw.h"
+#include "xipipsu_buf.h"
 
-/************************** Variable Definitions *****************************/
-extern XIpiPsu_Config XIpiPsu_ConfigTable[XPAR_XIPIPSU_NUM_INSTANCES];
+/************************** Constant Definitions *****************************/
+#define POLYNOM					0x8005U /**< Polynomial */
+#define INITIAL_CRC_VAL			0x4F4EU		/**< Initial crc value */
+#define CRC16_MASK				0xFFFFU /**< CRC mask */
+#define CRC16_HIGH_BIT_MASK		0x8000U		/**< CRC high bit mask */
+#define NUM_BITS_IN_BYTE		0x8U		/**< 8 bits in a byte */
 
 /****************************************************************************/
 /**
@@ -63,6 +75,7 @@ XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config * CfgPtr,
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
 	InstancePtr->Config.BitMask = CfgPtr->BitMask;
 	InstancePtr->Config.IntId = CfgPtr->IntId;
+	InstancePtr->Config.BufferIndex = CfgPtr->BufferIndex;
 
 	InstancePtr->Config.TargetCount = CfgPtr->TargetCount;
 
@@ -75,7 +88,7 @@ XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config * CfgPtr,
 
 	/* Mark the component as Ready */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
-	return (XST_SUCCESS);
+	return (XStatus) XST_SUCCESS;
 }
 
 /**
@@ -124,7 +137,7 @@ XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask)
 	/* Trigger an IPI to the Target */
 	XIpiPsu_WriteReg(InstancePtr->Config.BaseAddress, XIPIPSU_TRIG_OFFSET,
 			DestCpuMask);
-	return XST_SUCCESS;
+	return (XStatus) XST_SUCCESS;
 
 }
 
@@ -139,7 +152,7 @@ XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask)
  * 			XST_FAILURE if a timeout occurred
  */
 
-XStatus XIpiPsu_PollForAck(XIpiPsu *InstancePtr, u32 DestCpuMask,
+XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
 		u32 TimeOutCount)
 {
 	u32 Flag, PollCount;
@@ -157,14 +170,54 @@ XStatus XIpiPsu_PollForAck(XIpiPsu *InstancePtr, u32 DestCpuMask,
 		/* Check if the IPI was Acknowledged by the Target or we Timed Out*/
 	} while ((0x00000000U != Flag) && (PollCount < TimeOutCount));
 
-	if (PollCount >= TimeOutCount) {
-		Status = XST_FAILURE;
+	if (0x00000000U != Flag) {
+		Status = (XStatus)XST_FAILURE;
 	} else {
-		Status = XST_SUCCESS;
+		Status = (XStatus)XST_SUCCESS;
 	}
 
 	return Status;
 }
+
+#ifdef ENABLE_IPI_CRC
+/**
+ * @brief Calculate CRC for IPI buffer data
+ *
+ * @param	BufAddr - buffer on which CRC is calculated
+ * @param	BufSize - size of the buffer in bytes
+ *
+ * @return	Checksum - 16 bit CRC value
+ */
+static u32 XIpiPsu_CalculateCRC(u32 BufAddr, u32 BufSize)
+{
+	u32 Crc16 = INITIAL_CRC_VAL;
+	u32 DataIn;
+	u32 Idx = 0;
+	u32 Bits = 0;
+	volatile u32 Temp1Crc;
+	volatile u32 Temp2Crc;
+
+	for (Idx = 0U; Idx < BufSize; Idx++) {
+		/* Move byte into MSB of 16bit CRC */
+		DataIn = (u32)Xil_In8(BufAddr + Idx);
+		Crc16 ^= (DataIn << NUM_BITS_IN_BYTE);
+
+		/* Process each bit of 8 bit value */
+		for (Bits = 0; Bits < NUM_BITS_IN_BYTE; Bits++) {
+			Temp1Crc = ((Crc16 << 1U) ^ POLYNOM);
+			Temp2Crc = Crc16 << 1U;
+
+			if ((Crc16 & CRC16_HIGH_BIT_MASK) != 0) {
+				Crc16 = Temp1Crc;
+			} else {
+				Crc16 = Temp2Crc;
+			}
+		}
+		Crc16 &= CRC16_MASK;
+	}
+	return Crc16;
+}
+#endif
 
 /**
  * @brief	Read an Incoming Message from a Source
@@ -182,9 +235,12 @@ XStatus XIpiPsu_PollForAck(XIpiPsu *InstancePtr, u32 DestCpuMask,
 XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 		u32 MsgLength, u8 BufferType)
 {
+	XStatus Status = (XStatus) XST_FAILURE;
 	u32 *BufferPtr;
 	u32 Index;
-	XStatus Status;
+	u32 Crc;
+
+	(void)Crc;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -194,15 +250,23 @@ XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 	BufferPtr = XIpiPsu_GetBufferAddress(InstancePtr, SrcCpuMask,
 			InstancePtr->Config.BitMask, BufferType);
 	if (BufferPtr != NULL) {
+#ifdef ENABLE_IPI_CRC
+		Crc = XIpiPsu_CalculateCRC((u32)BufferPtr, XIPIPSU_W0_TO_W6_SIZE);
+
+		/* Word 8 in IPI is reserved for storing CRC */
+		if (BufferPtr[XIPIPSU_CRC_INDEX] != Crc) {
+			Status = (XStatus)XIPIPSU_CRC_ERROR;
+			goto END;
+		}
+#endif
 		/* Copy the IPI Buffer contents into Users's Buffer*/
 		for (Index = 0U; Index < MsgLength; Index++) {
 			MsgPtr[Index] = BufferPtr[Index];
 		}
-		Status = XST_SUCCESS;
-	} else {
-		Status = XST_FAILURE;
+		Status = (XStatus)XST_SUCCESS;
 	}
 
+END:
 	return Status;
 }
 
@@ -223,9 +287,9 @@ XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask, u32 *MsgPtr,
 		u32 MsgLength, u8 BufferType)
 {
+	XStatus Status = (XStatus)XST_FAILURE;
 	u32 *BufferPtr;
 	u32 Index;
-	XStatus Status;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -239,9 +303,12 @@ XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask, u32 *MsgPtr,
 		for (Index = 0U; Index < MsgLength; Index++) {
 			BufferPtr[Index] = MsgPtr[Index];
 		}
-		Status = XST_SUCCESS;
-	} else {
-		Status = XST_FAILURE;
+#ifdef ENABLE_IPI_CRC
+		/* Word 8 in IPI is reserved for storing CRC */
+		BufferPtr[XIPIPSU_CRC_INDEX] =
+				XIpiPsu_CalculateCRC((u32)BufferPtr, XIPIPSU_W0_TO_W6_SIZE);
+#endif
+		Status = (XStatus)XST_SUCCESS;
 	}
 
 	return Status;

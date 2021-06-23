@@ -15,6 +15,7 @@ var xaie__events_8c =
     [ "XAie_EventPCEnable", "xaie__events_8c.html#a15de2b3c95a21748080f42f103488778", null ],
     [ "XAie_EventPCReset", "xaie__events_8c.html#a5537a9cd2c27572bf25a24b0cab2cb8a", null ],
     [ "XAie_EventPhysicalToLogicalConv", "xaie__events_8c.html#ada5dba8c7b50b5c340945bb133e28aa2", null ],
+    [ "XAie_EventReadStatus", "xaie__events_8c.html#a7f15e578ccf18d89b612e2ab777f0253", null ],
     [ "XAie_EventSelectStrmPort", "xaie__events_8c.html#ab3f5b646a08a6f0821995c180365c1e1", null ],
     [ "XAie_EventSelectStrmPortReset", "xaie__events_8c.html#afdbc27194baa66d08fc2e52af5a571f6", null ]
 ];

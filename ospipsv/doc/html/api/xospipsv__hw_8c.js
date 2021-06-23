@@ -1,5 +1,8 @@
 var xospipsv__hw_8c =
 [
+    [ "LOCK_MAX_DELAY_CNT", "xospipsv__hw_8c.html#gacc22319a6b88d36c8eb490a567b618cb", null ],
+    [ "MAX_DMA_DELAY_CNT", "xospipsv__hw_8c.html#ga8cfa7018351ffa45663961a534fe50b4", null ],
+    [ "MAX_STIG_DELAY_CNT", "xospipsv__hw_8c.html#ga0107e147ea67ea49c4a858a8df7812e5", null ],
     [ "XOspiPsv_Config_Dma", "xospipsv__hw_8c.html#ga7dd7305678eaea4774657b38046cc5e4", null ],
     [ "XOspiPsv_Config_IndirectAhb", "xospipsv__hw_8c.html#gae199f0006d6d3282aad2a18c4e87d479", null ],
     [ "XOspiPsv_Exec_Dma", "xospipsv__hw_8c.html#gaa2f584dfcca76360b59188e58c60b770", null ],

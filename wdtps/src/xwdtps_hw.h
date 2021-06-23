@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdtps_hw.h
-* @addtogroup wdtps_v3_4
+* @addtogroup wdtps_v3_5
 * @{
 *
 * This file contains the hardware interface to the System Watch Dog Timer (WDT).
@@ -25,7 +25,7 @@
 *
 ******************************************************************************/
 #ifndef XWDTPS_HW_H		/* prevent circular inclusions */
-#define XWDTPS_HW_H		/* by using protection macros */
+#define XWDTPS_HW_H		/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,7 +48,7 @@ extern "C" {
 #define XWDTPS_CCR_OFFSET	0x00000004U /**< Counter Control Register */
 #define XWDTPS_RESTART_OFFSET	0x00000008U /**< Restart Register */
 #define XWDTPS_SR_OFFSET	0x0000000CU /**< Status Register */
-/* @} */
+/** @} */
 
 
 /** @name Zero Mode Register
@@ -69,7 +69,7 @@ extern "C" {
 #define XWDTPS_ZMR_ZKEY_MASK	0x00FFF000U /**< mask for writing access key */
 #define XWDTPS_ZMR_ZKEY_VAL		0x00ABC000U /**< access key, 0xABC << 12 */
 
-/* @} */
+/** @} */
 
 /** @name  Counter Control register
  * This register controls how fast the timer runs and the reset value
@@ -103,7 +103,7 @@ extern "C" {
 
 #define XWDTPS_RESTART_KEY_VAL	0x00001999U /**< valid key */
 
-/*@}*/
+/** @}*/
 
 /** @name Status register
  * This register indicates timer reached zero count.
@@ -111,7 +111,7 @@ extern "C" {
  */
 #define XWDTPS_SR_WDZ_MASK	0x00000001U /**< time out occurred */
 
-/*@}*/
+/** @}*/
 
 /**************************** Type Definitions *******************************/
 
@@ -129,7 +129,7 @@ extern "C" {
 * @return	The 32-bit value of the register
 *
 * @note		C-style signature:
-*		u32 XWdtPs_ReadReg(u32 BaseAddress, u32 RegOffset)
+*		u32 XWdtPs_ReadReg(UINTPTR BaseAddress, u32 RegOffset)
 *
 *****************************************************************************/
 #define XWdtPs_ReadReg(BaseAddress, RegOffset) \
@@ -147,7 +147,7 @@ extern "C" {
 * @return	None.
 *
 * @note		C-style signature:
-*		void XWdtPs_WriteReg(u32 BaseAddress, u32 RegOffset, u32 Data)
+*		void XWdtPs_WriteReg(UINTPTR BaseAddress, u32 RegOffset, u32 Data)
 *
 *****************************************************************************/
 #define XWdtPs_WriteReg(BaseAddress, RegOffset, Data) \

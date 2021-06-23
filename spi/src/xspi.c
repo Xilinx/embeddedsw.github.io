@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2001 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2001 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xspi.c
-* @addtogroup spi_v4_7
+* @addtogroup spi_v4_8
 * @{
 *
 * Contains required functions of the XSpi driver component.  See xspi.h for
@@ -78,6 +78,8 @@
 *		      in between multiple transfers.
 * 4.7	akm  10/22/20 Removed dependency of Tx_Full flag while writing DTR
 *		      in between multiple transfers.
+* 4.8   akm  01/19/21 Fix multiple byte transfer hang issue, when FIFOs are
+*                     disabled.
 * </pre>
 *
 ******************************************************************************/
@@ -458,6 +460,7 @@ void XSpi_Reset(XSpi *InstancePtr)
 * unwanted memory writes. This implies that the byte count passed in as an
 * argument must be the smaller of the two buffers if they differ in size.
 * Here are some sample usages:
+*
 * <pre>
 *	XSpi_Transfer(InstancePtr, SendBuf, RecvBuf, ByteCount)
 *	The caller wishes to send and receive, and provides two different
@@ -479,6 +482,7 @@ void XSpi_Reset(XSpi *InstancePtr)
 *	what it sends. The device must send N bytes of data if it wishes to
 *	receive N bytes of data.
 * </pre>
+*
 * In interrupt mode, though this function takes a buffer as an argument, the
 * driver can only transfer a limited number of bytes at time. It transfers only
 * one byte at a time if there are no FIFOs, or it can transfer the number of
@@ -512,7 +516,7 @@ void XSpi_Reset(XSpi *InstancePtr)
 *		- XST_SPI_NO_SLAVE indicates the device is configured as a
 *		master and a slave has not yet been selected.
 *
-* @notes
+* @note
 *
 * This function is not thread-safe.  The higher layer software must ensure that
 * no two threads are transferring data on the SPI bus at the same time.
@@ -760,8 +764,12 @@ int XSpi_Transfer(XSpi *InstancePtr, u8 *SendBufPtr,
 				 * The downside is that the status must be read
 				 * each loop iteration.
 				 */
-				DataLen = (InstancePtr->RemainingBytes > InstancePtr->FifosDepth) ?
-						InstancePtr->FifosDepth : InstancePtr->RemainingBytes;
+				if ((InstancePtr->RemainingBytes > InstancePtr->FifosDepth) &&
+				    (InstancePtr->FifosDepth != 0)) {
+					DataLen = InstancePtr->FifosDepth;
+				} else {
+					DataLen =InstancePtr->RemainingBytes;
+				}
 
 				for(Index = 0; Index < DataLen; Index += (DataWidth / 8)) {
 					if (DataWidth == XSP_DATAWIDTH_BYTE) {
@@ -943,14 +951,14 @@ u32 XSpi_GetSlaveSelect(XSpi *InstancePtr)
 * the amount of processing performed such as transferring data to a thread
 * context. One of the following status events is passed to the status handler.
 * <pre>
-*   - XST_SPI_MODE_FAULT	A mode fault error occurred, meaning another
+*   XST_SPI_MODE_FAULT		A mode fault error occurred, meaning another
 *				master tried to select this device as a slave
 *				when this device was configured to be a master.
 *				Any transfer in progress is aborted.
 *
-*   - XST_SPI_TRANSFER_DONE	The requested data transfer is done
+*   XST_SPI_TRANSFER_DONE	The requested data transfer is done
 *
-*   - XST_SPI_TRANSMIT_UNDERRUN	As a slave device, the master clocked
+*   XST_SPI_TRANSMIT_UNDERRUN	As a slave device, the master clocked
 *				data but there were none available in the
 *				transmit register/FIFO. This typically means the
 *				slave application did not issue a transfer
@@ -958,17 +966,18 @@ u32 XSpi_GetSlaveSelect(XSpi *InstancePtr)
 *				could not fill the transmit register/FIFO fast
 *				enough.
 *
-*   - XST_SPI_RECEIVE_OVERRUN	The SPI device lost data. Data was received
+*   XST_SPI_RECEIVE_OVERRUN	The SPI device lost data. Data was received
 *				but the receive data register/FIFO was full.
 *				This indicates that the device is receiving data
 *				faster than the processor/driver can consume it.
 *
-*   - XST_SPI_SLAVE_MODE_FAULT	A slave SPI device was selected as a slave while
+*   XST_SPI_SLAVE_MODE_FAULT	A slave SPI device was selected as a slave while
 *				it was disabled.  This indicates the master is
 *				already transferring data (which is being
 *				dropped until the slave application issues a
 *				transfer).
 * </pre>
+*
 * @param	InstancePtr is a pointer to the XSpi instance to be worked on.
 * @param	CallBackRef is the upper layer callback reference passed back
 *		when the callback function is invoked.
@@ -1181,8 +1190,12 @@ void XSpi_InterruptHandler(void *InstancePtr)
 			 * The downside is that the status must be read each
 			 * loop iteration.
 			 */
-			DataLen = (SpiPtr->RemainingBytes > SpiPtr->FifosDepth) ?
-					SpiPtr->FifosDepth : SpiPtr->RemainingBytes;
+			if ((SpiPtr->RemainingBytes > SpiPtr->FifosDepth) &&
+			    (SpiPtr->FifosDepth != 0)) {
+				DataLen = SpiPtr->FifosDepth;
+			} else {
+				DataLen =SpiPtr->RemainingBytes;
+			}
 			for(Index = 0; Index < DataLen; Index += (DataWidth / 8)) {
 				if (DataWidth == XSP_DATAWIDTH_BYTE) {
 					/*

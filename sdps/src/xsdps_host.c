@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_host.c
-* @addtogroup sdps_v3_11
+* @addtogroup sdps_v3_12
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -22,7 +22,9 @@
 *       mn     03/16/20 Add code to get card ID for MMC/eMMC
 * 3.10  mn     07/09/20 Modified code to prevent removing pull up on D3 line
 *       mn     07/30/20 Read 16Bit value for Block Size Register
-* 3.11  sk     12/17/20 Removed checking platform specific SD macros and used
+* 3.11  sk     12/01/20 Tap programming sequence updates like disable OTAPEN
+*                       always, write zero to tap register for zero tap value.
+*       sk     12/17/20 Removed checking platform specific SD macros and used
 *                       Baseaddress instead.
 *
 * </pre>
@@ -424,6 +426,14 @@ s32 XSdPs_EmmcModeInit(XSdPs *InstancePtr)
 		if (Status != XST_SUCCESS) {
 			Status = XST_FAILURE;
 			goto RETURN_PATH;
+		}
+
+		if (InstancePtr->Mode == XSDPS_DDR52_MODE) {
+			Status = XSdPs_Change_BusWidth(InstancePtr);
+			if (Status != XST_SUCCESS) {
+				Status = XST_FAILURE;
+				goto RETURN_PATH;
+			}
 		}
 	}
 
@@ -1098,46 +1108,16 @@ u32 XSdPs_CalcClock(XSdPs *InstancePtr, u32 SelFreq)
 *
 * @return	None
 *
-* @note		None.
+* @note		This API is specific to ZynqMP platform.
 *
 ******************************************************************************/
 void XSdPs_DllRstCtrl(XSdPs *InstancePtr, u8 EnRst)
 {
+#ifndef versal
 	u32 BaseAddress;
 	u32 DllCtrl;
 
 	BaseAddress = InstancePtr->Config.BaseAddress;
-#ifdef versal
-	if (BaseAddress == XSDPS_VERSAL_SD0_BASE) {
-#if EL1_NONSECURE && defined (__aarch64__)
-		(void)DllCtrl;
-
-		XSdps_Smc(InstancePtr, SD0_DLL_CTRL, SD_DLL_RST, (EnRst == 1U) ? SD0_DLL_RST : 0U);
-#else /* EL1_NONSECURE && defined (__aarch64__) */
-		DllCtrl = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD0_DLL_CTRL);
-		if (EnRst == 1U) {
-			DllCtrl |= SD_DLL_RST;
-		} else {
-			DllCtrl &= ~SD_DLL_RST;
-		}
-		XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD0_DLL_CTRL, DllCtrl);
-#endif /* EL1_NONSECURE && defined (__aarch64__) */
-	} else {
-#if EL1_NONSECURE && defined (__aarch64__)
-		(void)DllCtrl;
-
-		XSdps_Smc(InstancePtr, SD1_DLL_CTRL, SD_DLL_RST, (EnRst == 1U) ? SD_DLL_RST : 0U);
-#else
-		DllCtrl = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD1_DLL_CTRL);
-		if (EnRst == 1U) {
-			DllCtrl |= SD_DLL_RST;
-		} else {
-			DllCtrl &= ~SD_DLL_RST;
-		}
-		XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD1_DLL_CTRL, DllCtrl);
-#endif
-	}
-#else /* versal */
 	if (BaseAddress == XSDPS_ZYNQMP_SD0_BASE) {
 #if EL1_NONSECURE && defined (__aarch64__)
 		(void)DllCtrl;
@@ -1167,6 +1147,9 @@ void XSdPs_DllRstCtrl(XSdPs *InstancePtr, u8 EnRst)
 		XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_DLL_CTRL, DllCtrl);
 #endif
 	}
+#else
+	(void)InstancePtr;
+	(void)EnRst;
 #endif
 }
 
@@ -1208,13 +1191,15 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_ITAPDLY, TapDelay);
 		TapDelay &= ~SD_ITAPCHGWIN;
 		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_ITAPDLY, TapDelay);
+	} else {
+		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_ITAPDLY, 0x0);
 	}
+
+	/* Program the OTAPDLY */
 	if (OTapDelay) {
-		/* Program the OTAPDLY */
-		TapDelay = SD_OTAPDLYENA;
-		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, TapDelay);
-		TapDelay |= OTapDelay;
-		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, TapDelay);
+		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, OTapDelay);
+	} else {
+		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, 0x0);
 	}
 #else
 	if (BaseAddress == XSDPS_ZYNQMP_SD0_BASE) {
@@ -1225,9 +1210,14 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPDLYENA, SD0_ITAPDLYENA);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPDLY_SEL_MASK, ITapDelay);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPCHGWIN, 0U);
+		} else {
+			XSdps_Smc(InstancePtr, SD_ITAPDLY, (SD0_ITAPDLY_SEL_MASK |
+					SD0_ITAPCHGWIN | SD0_ITAPDLYENA), 0x0);
 		}
 		if (OTapDelay) {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD0_OTAPDLY_SEL_MASK, OTapDelay);
+		} else {
+			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD0_OTAPDLY_SEL_MASK, 0x0);
 		}
 #else
 		if (ITapDelay) {
@@ -1237,9 +1227,14 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			/* Program the ITAPDLY */
 			TapDelay |= SD0_ITAPDLYENA;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
+			TapDelay &= ~SD0_ITAPDLY_SEL_MASK;
 			TapDelay |= ITapDelay;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 			TapDelay &= ~SD0_ITAPCHGWIN;
+			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
+		} else {
+			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY);
+			TapDelay &= ~(u32)(SD0_ITAPDLY_SEL_MASK | SD0_ITAPCHGWIN | SD0_ITAPDLYENA);
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 		}
 		if (OTapDelay) {
@@ -1247,6 +1242,10 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
 			TapDelay &= ~SD0_OTAPDLY_SEL_MASK;
 			TapDelay |= OTapDelay;
+			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY, TapDelay);
+		} else {
+			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
+			TapDelay &= ~SD0_OTAPDLY_SEL_MASK;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY, TapDelay);
 		}
 #endif
@@ -1260,9 +1259,14 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPDLYENA, SD1_ITAPDLYENA);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPDLY_SEL_MASK, ITapDelay);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPCHGWIN, 0U);
+		} else {
+			XSdps_Smc(InstancePtr, SD_ITAPDLY, (SD1_ITAPDLY_SEL_MASK |
+					SD1_ITAPCHGWIN | SD1_ITAPDLYENA), 0x0);
 		}
 		if (OTapDelay) {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD1_OTAPDLY_SEL_MASK, OTapDelay);
+		} else {
+			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD1_OTAPDLY_SEL_MASK, 0x0);
 		}
 #else
 		if (ITapDelay) {
@@ -1272,9 +1276,14 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			/* Program the ITAPDLY */
 			TapDelay |= SD1_ITAPDLYENA;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
+			TapDelay &= ~SD1_ITAPDLY_SEL_MASK;
 			TapDelay |= ITapDelay;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 			TapDelay &= ~SD1_ITAPCHGWIN;
+			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
+		} else {
+			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY);
+			TapDelay &= ~(u32)(SD1_ITAPDLY_SEL_MASK | SD1_ITAPCHGWIN | SD1_ITAPDLYENA);
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 		}
 		if (OTapDelay) {
@@ -1282,6 +1291,10 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
 			TapDelay &= ~SD1_OTAPDLY_SEL_MASK;
 			TapDelay |= OTapDelay;
+			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY, TapDelay);
+		} else {
+			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
+			TapDelay &= ~SD1_OTAPDLY_SEL_MASK;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY, TapDelay);
 		}
 #endif

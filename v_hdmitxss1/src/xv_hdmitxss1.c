@@ -94,6 +94,7 @@ static void XV_HdmiTxSs1_FrlLts3Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLts4Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLtsPCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_CedUpdateCallback(void *CallbackRef);
+static void XV_HdmiTxSs1_DynHdrMtwCallback(void *CallbackRef);
 
 static u32 XV_HdmiTxSS1_GetVidMaskColorValue(XV_HdmiTxSs1 *InstancePtr,
 											u16 Value);
@@ -360,6 +361,11 @@ static int XV_HdmiTxSs1_RegisterSubsysCallbacks(XV_HdmiTxSs1 *InstancePtr)
     					  XV_HDMITX1_HANDLER_CED_UPDATE,
     					  (void *)XV_HdmiTxSs1_CedUpdateCallback,
     					  (void *)InstancePtr);
+
+    XV_HdmiTx1_SetCallback(HdmiTxSs1Ptr->HdmiTx1Ptr,
+			   XV_HDMITX1_HANDLER_DYNHDR_MWT,
+			   (void *)XV_HdmiTxSs1_DynHdrMtwCallback,
+			   (void *)InstancePtr);
   }
 
   return(XST_SUCCESS);
@@ -435,6 +441,10 @@ int XV_HdmiTxSs1_CfgInitialize(XV_HdmiTxSs1 *InstancePtr,
   (void)memset((void *)&(HdmiTxSs1Ptr->AVIInfoframe), 0, sizeof(XHdmiC_AVI_InfoFrame));
   (void)memset((void *)&(HdmiTxSs1Ptr->VSIF), 0, sizeof(XHdmiC_VSIF));
   (void)memset((void *)&(HdmiTxSs1Ptr->AudioInfoframe), 0, sizeof(XHdmiC_AudioInfoFrame));
+
+  memset((void *)&HdmiTxSs1Ptr->DrmInfoframe, 0, sizeof(XHdmiC_DRMInfoFrame));
+  HdmiTxSs1Ptr->DrmInfoframe.Static_Metadata_Descriptor_ID = 0xff;
+  HdmiTxSs1Ptr->DrmInfoframe.EOTF = 0xff;
 
   /* Determine sub-cores included in the provided instance of subsystem */
   XV_HdmiTxSs1_GetIncludedSubcores(HdmiTxSs1Ptr, CfgPtr->DeviceId);
@@ -776,7 +786,7 @@ static int XV_HdmiTxSs1_VtcSetup(XV_HdmiTxSs1 *HdmiTxSs1Ptr)
   XVtc_Timing VideoTiming;
   u32 HdmiTx1_Hblank;
   u32 Vtc_Hblank;
-
+  u16  Vfpfva ;
   /* Disable Generator */
   XVtc_Reset(HdmiTxSs1Ptr->VtcPtr);
   XVtc_DisableGenerator(HdmiTxSs1Ptr->VtcPtr);
@@ -941,6 +951,24 @@ static int XV_HdmiTxSs1_VtcSetup(XV_HdmiTxSs1 *HdmiTxSs1Ptr)
   XVtc_Enable(HdmiTxSs1Ptr->VtcPtr);
   XVtc_EnableGenerator(HdmiTxSs1Ptr->VtcPtr);
   XVtc_RegUpdateEnable(HdmiTxSs1Ptr->VtcPtr);
+
+  /*update VRR Control Register */
+  if (HdmiTxSs1Ptr->VrrEnabled)
+    XVtc_SetAdaptiveSyncMode(HdmiTxSs1Ptr->VtcPtr, HdmiTxSs1Ptr->VrrMode);
+  else
+    XVtc_DisableAdaptiveSync(HdmiTxSs1Ptr->VtcPtr);
+
+  /*
+   * update VTC Stretch Register Only in Manual Mode and
+   * FVA > 1 , VRR Enabled and CNMVRR Enabled
+   */
+
+  /* Enable Adaptive-sync and set mode */
+  if ( (HdmiTxSs1Ptr->FvaFactor > 1) && (HdmiTxSs1Ptr->VrrEnabled) &&
+		(HdmiTxSs1Ptr->CnmvrrEnabled) && (!HdmiTxSs1Ptr->VrrMode)) {
+    Vfpfva = (VideoTiming.VActiveVideo * (HdmiTxSs1Ptr->FvaFactor - 1));
+    XVtc_SetVfpStretchLimit(HdmiTxSs1Ptr->VtcPtr, Vfpfva);
+  }
 
   return (XST_SUCCESS);
 }
@@ -1271,6 +1299,8 @@ static void XV_HdmiTxSs1_StreamUpCallback(void *CallbackRef)
 ******************************************************************************/
 static void XV_HdmiTxSs1_StreamDownCallback(void *CallbackRef)
 {
+  XV_HdmiC_VideoTimingExtMeta *ExtMetaPtr;
+  XV_HdmiC_SrcProdDescIF *SpdIfPtr;
   XV_HdmiTxSs1 *HdmiTxSs1Ptr = (XV_HdmiTxSs1 *)CallbackRef;
   /* Assert HDMI TXCore link reset */
   XV_HdmiTxSs1_TXCore_LRST(HdmiTxSs1Ptr, TRUE);
@@ -1285,6 +1315,17 @@ static void XV_HdmiTxSs1_StreamDownCallback(void *CallbackRef)
 
   /* Set stream up flag */
   HdmiTxSs1Ptr->IsStreamUp = (FALSE);
+
+  HdmiTxSs1Ptr->DrmInfoframe.Static_Metadata_Descriptor_ID = 0xff;
+  HdmiTxSs1Ptr->DrmInfoframe.EOTF = 0xff;
+
+  ExtMetaPtr = XV_HdmiTx1_GetVidTimingExtMeta(HdmiTxSs1Ptr->HdmiTx1Ptr);
+  memset((void *)ExtMetaPtr, 0, sizeof(XV_HdmiC_VideoTimingExtMeta));
+
+  SpdIfPtr = XV_HdmiTx1_GetSrcProdDescIF(HdmiTxSs1Ptr->HdmiTx1Ptr);
+  memset((void *)SpdIfPtr, 0, sizeof(XV_HdmiC_SrcProdDescIF));
+
+
 #ifdef XV_HDMITXSS1_LOG_ENABLE
   XV_HdmiTxSs1_LogWrite(HdmiTxSs1Ptr, XV_HDMITXSS1_LOG_EVT_STREAMDOWN, 0);
 #endif
@@ -1318,6 +1359,26 @@ static void XV_HdmiTxSs1_ErrorCallback(void *CallbackRef)
 	if (HdmiTxSs1Ptr->ErrorCallback != NULL) {
 		HdmiTxSs1Ptr->ErrorCallback(HdmiTxSs1Ptr->ErrorRef);
 	}
+}
+
+/*****************************************************************************/
+/**
+* This function is called whenever user needs to be informed of an MTW End
+* condition.
+*
+* @param  None.
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+static void XV_HdmiTxSs1_DynHdrMtwCallback(void *CallbackRef)
+{
+	XV_HdmiTxSs1 *HdmiTxSs1Ptr = (XV_HdmiTxSs1 *)CallbackRef;
+
+	if (HdmiTxSs1Ptr->DynHdrMtwCallback)
+		HdmiTxSs1Ptr->DynHdrMtwCallback(HdmiTxSs1Ptr->DynHdrMtwRef);
 }
 
 /*****************************************************************************/
@@ -1544,7 +1605,14 @@ int XV_HdmiTxSs1_SetCallback(XV_HdmiTxSs1 *InstancePtr,
             Status = (XST_SUCCESS);
           break;
 
-        default:
+	  /* Dynamic HDR MTW Event*/
+	case (XV_HDMITXSS1_HANDLER_DYNHDR_MWT):
+	  InstancePtr->DynHdrMtwCallback = (XV_HdmiTxSs1_Callback)CallbackFunc;
+	  InstancePtr->DynHdrMtwRef = CallbackRef;
+	  Status = (XST_SUCCESS);
+	  break;
+
+	default:
             Status = (XST_INVALID_PARAM);
             break;
     }
@@ -2218,6 +2286,24 @@ XHdmiC_VSIF *XV_HdmiTxSs1_GetVSIF(XV_HdmiTxSs1 *InstancePtr)
 /*****************************************************************************/
 /**
 *
+* This function returns the pointer to HDMI 2.1 TX SS DRM InfoFrame
+* structure
+*
+* @param  InstancePtr pointer to XV_HdmiTxSs1 instance
+*
+* @return XHdmiC_DRMInfoFrame pointer
+*
+* @note   None.
+*
+******************************************************************************/
+XHdmiC_DRMInfoFrame *XV_HdmiTxSs1_GetDrmInfoframe(XV_HdmiTxSs1 *InstancePtr)
+{
+    return &InstancePtr->DrmInfoframe;
+}
+
+/*****************************************************************************/
+/**
+*
 * This function set HDMI TX susbsystem stream parameters
 *
 * @param  None.
@@ -2235,13 +2321,48 @@ u64 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 		XVidC_3DInfo *Info3D)
 {
 	u64 TmdsClock = 0;
+	u32 PixelRate = 0;
+	u64 LnkClock;
+	u64 VidClock;
+
 	TmdsClock = XV_HdmiTx1_SetStream(InstancePtr->HdmiTx1Ptr,
 			VideoTiming, FrameRate, ColorFormat, Bpc,
-			InstancePtr->Config.Ppc, Info3D);
+			InstancePtr->Config.Ppc, Info3D,
+			InstancePtr->FvaFactor,InstancePtr->VrrEnabled,InstancePtr->CnmvrrEnabled);
+
 
 #ifdef XV_HDMITXSS1_LOG_ENABLE
 	XV_HdmiTxSs1_LogWrite(InstancePtr, XV_HDMITXSS1_LOG_EVT_SETSTREAM, 0);
 #endif
+
+	/* Calculate Link and Video Clocks */
+    if (InstancePtr->HdmiTx1Ptr->Stream.IsFrl == TRUE)  {
+
+		if (ColorFormat == XVIDC_CSF_YCRCB_422) {
+			PixelRate = TmdsClock;
+			PixelRate = PixelRate / 1000 ;
+			VidClock = PixelRate/InstancePtr->HdmiTx1Ptr->Stream.CorePixPerClk;
+			LnkClock = VidClock;
+		} else {
+			PixelRate = (TmdsClock * 8 )/ Bpc;
+			PixelRate = PixelRate / 1000 ;
+			VidClock = PixelRate/InstancePtr->HdmiTx1Ptr->Stream.CorePixPerClk;
+			LnkClock = (VidClock * (Bpc)) / 8;
+		}
+		/* Configure HDMI TX FRL Link and Video Clock registers */
+		XV_HdmiTx1_SetFrlLinkClock(InstancePtr->HdmiTx1Ptr,
+					(u32)LnkClock);
+
+		XV_HdmiTx1_SetFrlVidClock(InstancePtr->HdmiTx1Ptr,
+				(u32)VidClock)
+
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+				"\r\nXV_Tx_VideoSetupAndStart - TX CFG %d %d "
+				"LCLK %d VCLK %d\r\n",
+				(u32)LnkClock, (u32)VidClock);
+	}
+
+
 	if (TmdsClock == 0) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,
 				"\r\nWarning: Sink does not support HDMI 2.0"
@@ -2545,6 +2666,54 @@ void XV_HdmiTxSs1_ReportTiming(XV_HdmiTxSs1 *InstancePtr)
 /*****************************************************************************/
 /**
 *
+* This function prints the HDMI 2.1 TX SS DRM If information
+*
+* @param  Pointer to HDMI 2.1 Tx SS Instance.
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_ReportDRMInfo(XV_HdmiTxSs1 *InstancePtr)
+{
+	XHdmiC_DRMInfoFrame *DrmInfoFramePtr;
+
+	Xil_AssertVoid(InstancePtr);
+
+	DrmInfoFramePtr = XV_HdmiTxSs1_GetDrmInfoframe(InstancePtr);
+	if (DrmInfoFramePtr->EOTF != 0xff)
+		xil_printf("eotf: %d\r\n", DrmInfoFramePtr->EOTF);
+
+	if (DrmInfoFramePtr->Static_Metadata_Descriptor_ID == 0xFF) {
+		xil_printf("No DRM info\r\n");
+		return;
+	}
+
+	xil_printf("DRM IF info:\r\n");
+	xil_printf("desc id: %d\r\n",
+		   DrmInfoFramePtr->Static_Metadata_Descriptor_ID);
+	xil_printf("display primaries x0, y0, x1, y1, x2, y2: %d %d %d %d %d %d\r\n",
+		   DrmInfoFramePtr->disp_primaries[0].x,
+		   DrmInfoFramePtr->disp_primaries[0].y,
+		   DrmInfoFramePtr->disp_primaries[1].x,
+		   DrmInfoFramePtr->disp_primaries[1].y,
+		   DrmInfoFramePtr->disp_primaries[2].x,
+		   DrmInfoFramePtr->disp_primaries[2].y);
+	xil_printf("white point x, y: %d %d\r\n",
+		   DrmInfoFramePtr->white_point.x,
+		   DrmInfoFramePtr->white_point.y);
+	xil_printf("min/max display mastering luminance: %d %d\r\n",
+		   DrmInfoFramePtr->Min_Disp_Mastering_Luminance,
+		   DrmInfoFramePtr->Max_Disp_Mastering_Luminance);
+	xil_printf("Max_CLL: %d\r\n", DrmInfoFramePtr->Max_Content_Light_Level);
+	xil_printf("max_fall: %d\r\n",
+		   DrmInfoFramePtr->Max_Frame_Average_Light_Level);
+}
+
+/*****************************************************************************/
+/**
+*
 * This function prints the HDMI TX SS audio information
 *
 * @param  None.
@@ -2668,6 +2837,9 @@ void XV_HdmiTxSs1_ReportInfo(XV_HdmiTxSs1 *InstancePtr)
     xil_printf("Audio\r\n");
     xil_printf("---------\r\n");
     XV_HdmiTxSs1_ReportAudio(InstancePtr);
+    xil_printf("Static HDR DRM Infoframe\r\n");
+    xil_printf("---------\r\n");
+    XV_HdmiTxSs1_ReportDRMInfo(InstancePtr);
 }
 
 /******************************************************************************/
@@ -3130,6 +3302,156 @@ XVidC_PixelsPerClock XV_HdmiTxSS1_GetCorePpc(XV_HdmiTxSs1 *InstancePtr)
 
 /*****************************************************************************/
 /**
+*
+* This function allows enabling/disabling of VRR in HDMI Tx
+*
+* @param  Enable 0: disable VRR 1: enable VRR
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_VrrControl(XV_HdmiTxSs1 *InstancePtr, u8 Enable)
+{
+	XV_HdmiTx1_VrrControl(InstancePtr->HdmiTx1Ptr, Enable);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function allows enabling/disabling of FSync in HDMI Tx
+*
+* @param  Enable 0: disable FSync 1: enable FSync
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_FSyncControl(XV_HdmiTxSs1 *InstancePtr, u8 Enable)
+{
+	XV_HdmiTx1_FSyncControl(InstancePtr->HdmiTx1Ptr, Enable);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function configures Video Timing Controller with Adaptive-Sync mode.
+*
+* @param	InstancePtr is a pointer to the XV_HdmiTxSs1 instance.
+* @param	mode is vtc mode. 0: Fixed stretch, 1: Auto
+* @param	VrrEn is to enable/disable VRR
+* @param	FvaFactor is to set FVA factor value
+* @param	CnmvrrEn is to enable/disable Cnmvrr
+*
+* @return	None.
+*
+* @note		Should be called before XV_HdmiTxSs1_SetStream atleast once for
+*		VRR use case.
+*
+******************************************************************************/
+void XV_HdmiTxSS1_SetVrrMode(XV_HdmiTxSs1 *InstancePtr,
+			u8 mode, u8 VrrEn, u8 FvaFactor, u8 CnmvrrEn)
+{
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->VtcPtr != NULL);
+
+	InstancePtr->VrrEnabled = VrrEn;
+	InstancePtr->CnmvrrEnabled = CnmvrrEn;
+	InstancePtr->FvaFactor = FvaFactor;
+	InstancePtr->VrrMode = mode;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function configures vertical front porch stretch limit in Video
+* Timing Controller.
+*
+* @param	InstancePtr is a pointer to the XV_HdmiTxSs1 instance.
+* @param	StretchValue is vertical front porch stretch value.
+*
+* @return	None.
+*
+* @note		Call after XV_HdmiTxSs1_SetStream and VRR mode is already set
+* 		through XV_HdmiTxSS1_SetVrrMode.
+*
+******************************************************************************/
+void XV_HdmiTxSS1_SetVrrVfpStretch(XV_HdmiTxSs1 *InstancePtr,
+					u16 StretchValue)
+{
+	XVidC_VideoStream *HdmiTxSs1VidStreamPtr;
+	XVidC_VideoTiming *TimingPtr;
+	u16 StretchLimit;
+
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->VtcPtr != NULL);
+
+	HdmiTxSs1VidStreamPtr = XV_HdmiTxSs1_GetVideoStream(InstancePtr);
+	TimingPtr = &HdmiTxSs1VidStreamPtr->Timing;
+
+	if (!InstancePtr->VrrMode)
+		StretchLimit = StretchValue - TimingPtr->F0PVFrontPorch;
+	else
+		StretchLimit = StretchValue;
+
+	XVtc_SetVfpStretchLimit(InstancePtr->VtcPtr, StretchLimit);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function disables Adaptive-Sync feature in Video Timing Controller.
+*
+* @param	InstancePtr is a pointer to the XV_HdmiTxSs1 instance.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_HdmiTxSS1_DisableVrr(XV_HdmiTxSs1 *InstancePtr)
+{
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->VtcPtr != NULL);
+
+	/* Disable Adaptive-sync */
+	XVtc_DisableAdaptiveSync(InstancePtr->VtcPtr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function allows setting VRR meta in core
+*
+* @param	InstancePtr is a pointer to the XV_HdmiTxSs1 instance.
+* @param	VrrIF is a pointer to the XV_HdmiC_VrrInfoFrame structure
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_SetVrrIf(XV_HdmiTxSs1 *InstancePtr,
+			XV_HdmiC_VrrInfoFrame *VrrIF)
+{
+	if (VrrIF->VrrIfType == XV_HDMIC_VRRINFO_TYPE_VTEM) {
+		XV_HdmiTx1_GenerateVideoTimingExtMetaIF(
+			InstancePtr->HdmiTx1Ptr, &VrrIF->VidTimingExtMeta);
+	} else if (VrrIF->VrrIfType == XV_HDMIC_VRRINFO_TYPE_SPDIF) {
+		XV_HdmiTx1_GenerateSrcProdDescInfoframe(
+				InstancePtr->HdmiTx1Ptr, &VrrIF->SrcProdDescIF);
+	} else {
+		xil_printf("No valid VRR infoframe type\n");
+	}
+}
+
+/*****************************************************************************/
+/**
 * This function will Stop the FRL stream
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
@@ -3249,6 +3571,140 @@ void XV_HdmiTxSS1_StartFRLStream(XV_HdmiTxSs1 *InstancePtr)
 #endif
 
 	}
+}
+
+/*****************************************************************************/
+/**
+* This function will enable/disable Dynamic HDR
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+* @param    Flag set to TRUE/FALSE.
+* @return   void.
+*
+* @note     None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_DynHdr_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag)
+{
+	Xil_AssertVoid(InstancePtr);
+
+	if (!InstancePtr->Config.DynHdr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiTxSs1 Dynamic HDR disabled!\r\n");
+		return;
+	}
+
+	XV_HdmiTx1_DynHdr_Control(InstancePtr->HdmiTx1Ptr, Flag);
+}
+
+/*****************************************************************************/
+/**
+* This function will enable/disable GOF for Dynamic HDR
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+* @param    Flag set to TRUE/FALSE.
+* @return   void.
+*
+* @note     None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_DynHdr_GOF_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag)
+{
+	Xil_AssertVoid(InstancePtr);
+	if (!InstancePtr->Config.DynHdr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiTxSs1 Dynamic HDR disabled!\r\n");
+		return;
+	}
+
+	XV_HdmiTx1_DynHdr_GOF_Control(InstancePtr->HdmiTx1Ptr, Flag);
+}
+
+/*****************************************************************************/
+/**
+* This function will configure the HDMI Tx for Dynamic HDR.
+* The configuration should be updated and called by application in
+* Dynamic HDR MTW callback.
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+* @param    CfgPtr is a pointer to XV_HdmiTxSs1_DynHdr_Config instance
+*
+* @return   void.
+*
+* @note     None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_DynHdr_Cfg(XV_HdmiTxSs1 *InstancePtr,
+			     XV_HdmiTxSs1_DynHdr_Config *CfgPtr)
+{
+	Xil_AssertVoid(InstancePtr);
+	Xil_AssertVoid(CfgPtr);
+	Xil_AssertVoid(CfgPtr->Address);
+	/* 64 bit aligned address */
+	Xil_AssertVoid(!(CfgPtr->Address & 0x3F));
+
+	if (!InstancePtr->Config.DynHdr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiTxSs1 Dynamic HDR disabled!\r\n");
+		return;
+	}
+	XV_HdmiTx1_DynHdr_GOFVal_Control(InstancePtr, CfgPtr->GOF);
+	XV_HdmiTx1_DynHdr_FAPA_Control(InstancePtr, CfgPtr->FAPA);
+	XV_HdmiTx1_DynHdr_SetPacket(InstancePtr, CfgPtr->PktLength, CfgPtr->PktType);
+	XV_HdmiTx1_DynHdr_SetAddr(InstancePtr, CfgPtr->Address);
+}
+
+/*****************************************************************************/
+/**
+* This function will enable or disable the Data Mover in Dynamic HDR
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+* @param    Flag 0 to disable and 1 to enable the Data Mover
+*
+* @return   void.
+*
+* @note     None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_DynHdr_DM_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag)
+{
+	Xil_AssertVoid(InstancePtr);
+
+	if (!InstancePtr->Config.DynHdr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiTxSs1 Dynamic HDR disabled!\r\n");
+		return;
+	}
+
+	if (Flag) {
+		XV_HdmiTx1_DynHdr_DM_Enable(InstancePtr->HdmiTx1Ptr);
+	} else {
+		XV_HdmiTx1_DynHdr_DM_Disable(InstancePtr->HdmiTx1Ptr);
+	}
+}
+
+/*****************************************************************************/
+/**
+* This function will read the error status of the Data Mover for Dynamic HDR
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+*
+* @return   0 - if no error else 1
+*
+* @note     None.
+*
+******************************************************************************/
+u32 XV_HdmiTxSs1_DynHdr_GetErr(XV_HdmiTxSs1 *InstancePtr)
+{
+	Xil_AssertNonvoid(InstancePtr);
+
+	if (!InstancePtr->Config.DynHdr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiTxSs1 Dynamic HDR disabled!\r\n");
+		return 0;
+	}
+
+	return XV_HdmiTx1_DynHdr_GetReadStatus(InstancePtr);
 }
 
 static void XV_HdmiTxSs1_FrlLtsLCallback(void *CallbackRef)

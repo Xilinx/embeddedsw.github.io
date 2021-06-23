@@ -51,15 +51,15 @@ AieRC _XAie_CoreConfigureDone(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u32 Value, Mask;
 	u64 RegAddr;
 
-	Mask = CoreMod->CoreEvent->DisableEvent.Mask;
+	Mask = CoreMod->CoreEvent->DisableEvent.Mask |
+		CoreMod->CoreEvent->DisableEventOccurred.Mask |
+		CoreMod->CoreEvent->EnableEventOccurred.Mask;
 	Value = XAIE_EVENTS_CORE_INSTR_EVENT_2 <<
 		CoreMod->CoreEvent->DisableEvent.Lsb;
 	RegAddr = CoreMod->CoreEvent->EnableEventOff +
 		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
 
-	XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
-
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
 }
 
 /*****************************************************************************/
@@ -81,16 +81,21 @@ AieRC _XAie_CoreConfigureDone(XAie_DevInst *DevInst, XAie_LocType Loc,
 AieRC _XAie_CoreEnable(XAie_DevInst *DevInst, XAie_LocType Loc,
 		const struct XAie_CoreMod *CoreMod)
 {
+	AieRC RC;
 	u32 Mask, Value;
 	u64 RegAddr;
 
 	/* Clear the disable event occurred bit */
-	Mask = CoreMod->CoreEvent->DisableEventOccurred.Mask;
+	Mask = CoreMod->CoreEvent->DisableEventOccurred.Mask |
+		CoreMod->CoreEvent->EnableEventOccurred.Mask;
 	Value = 1U << CoreMod->CoreEvent->DisableEventOccurred.Lsb;
 	RegAddr = CoreMod->CoreEvent->EnableEventOff +
 		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
 
-	XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
+	RC = XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	/* Enable the core */
 	Mask = CoreMod->CoreCtrl->CtrlEn.Mask;
@@ -98,9 +103,7 @@ AieRC _XAie_CoreEnable(XAie_DevInst *DevInst, XAie_LocType Loc,
 	RegAddr = CoreMod->CoreCtrl->RegOff +
 		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
 
-	XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
-
-	return XAIE_OK;
+	return XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
 }
 
 /*****************************************************************************/
@@ -124,43 +127,21 @@ AieRC _XAie_CoreEnable(XAie_DevInst *DevInst, XAie_LocType Loc,
 AieRC _XAie_CoreWaitForDone(XAie_DevInst *DevInst, XAie_LocType Loc,
 		u32 TimeOut, const struct XAie_CoreMod *CoreMod)
 {
-	AieRC RC = XAIE_CORE_STATUS_TIMEOUT;
-	u32 Count, MinTimeOut, StatusReg, DisEventReg;
-	u64 StatusRegAddr, EventRegAddr;
+	u32 Mask, Value;
+	u64 EventRegAddr;
 
-	StatusRegAddr = CoreMod->CoreSts->RegOff +
-		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+	Mask = CoreMod->CoreEvent->DisableEventOccurred.Mask;
+	Value = 1U << CoreMod->CoreEvent->DisableEventOccurred.Lsb;
 	EventRegAddr = CoreMod->CoreEvent->EnableEventOff +
 		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
 
-	MinTimeOut = 200;
-	Count = ((u64)TimeOut + MinTimeOut - 1) / MinTimeOut;
-
-	while (Count > 0U) {
-		StatusReg = XAie_Read32(DevInst, StatusRegAddr);
-		StatusReg = XAie_GetField(StatusReg, CoreMod->CoreSts->Done.Lsb,
-				CoreMod->CoreSts->Done.Mask);
-
-		if(StatusReg == 1U) {
-			RC = XAIE_OK;
-			break;
-		}
-
-		DisEventReg = XAie_Read32(DevInst, EventRegAddr);
-		DisEventReg = XAie_GetField(DisEventReg,
-				CoreMod->CoreEvent->DisableEventOccurred.Lsb,
-				CoreMod->CoreEvent->DisableEventOccurred.Mask);
-
-		if(DisEventReg == 1U) {
-			RC = XAIE_OK;
-			break;
-		}
-
-		usleep(MinTimeOut);
-		Count--;
+	if(XAie_MaskPoll(DevInst, EventRegAddr, Mask, Value, TimeOut) !=
+			XAIE_OK) {
+		XAIE_DBG("Status poll time out\n");
+		return XAIE_CORE_STATUS_TIMEOUT;
 	}
 
-	return RC;
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -182,25 +163,17 @@ AieRC _XAie_CoreWaitForDone(XAie_DevInst *DevInst, XAie_LocType Loc,
 AieRC _XAie_CoreReadDoneBit(XAie_DevInst *DevInst, XAie_LocType Loc,
 		u8 *DoneBit, const struct XAie_CoreMod *CoreMod)
 {
+	AieRC RC;
 	u64 RegAddr;
-	u32 StatusReg, EventReg;
-
-	/* Read core status register */
-	RegAddr = CoreMod->CoreSts->RegOff +
-		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
-
-	StatusReg = XAie_Read32(DevInst, RegAddr);
-	StatusReg = XAie_GetField(StatusReg, CoreMod->CoreSts->Done.Lsb,
-			CoreMod->CoreSts->Done.Mask);
-	if(StatusReg == 1U) {
-		*DoneBit = 1U;
-		return XAIE_OK;
-	}
+	u32 EventReg;
 
 	/* Read enable events register */
 	RegAddr = CoreMod->CoreEvent->EnableEventOff +
 		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
-	EventReg = XAie_Read32(DevInst, RegAddr);
+	RC = XAie_Read32(DevInst, RegAddr, &EventReg);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	EventReg = XAie_GetField(EventReg,
 			CoreMod->CoreEvent->DisableEventOccurred.Lsb,

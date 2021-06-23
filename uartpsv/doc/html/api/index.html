@@ -98,10 +98,10 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Receive FIFO is empty</li>
 <li>Data in the receive FIFO equal to the receive threshold</li>
 </ul>
-<p>The application can control which interrupts are enabled using the <a class="el" href="group__uartpsv__v1__4.html#ga09b94a490c696d7ff7b1c6bbec42b226" title="This function sets the interrupt mask. ">XUartPsv_SetInterruptMask()</a> function.</p>
-<p>In order to use interrupts, it is necessary for the user to connect the driver interrupt handler, <a class="el" href="group__uartpsv__v1__4.html#ga869ac0531d2e16457706d013d7f0a0cc" title="This function is the interrupt handler for the driver. ">XUartPsv_InterruptHandler()</a>, to the interrupt system of the application. A separate handler should be provided by the application to communicate with the interrupt system, and conduct application specific interrupt handling. An application registers its own handler through the <a class="el" href="group__uartpsv__v1__4.html#gafc24dc61fc253a957ba631fb53b5dfc8" title="This function sets the handler that will be called when an event (interrupt) occurs that needs applic...">XUartPsv_SetHandler()</a> function.</p>
+<p>The application can control which interrupts are enabled using the <a class="el" href="group__uartpsv__v1__5.html#ga09b94a490c696d7ff7b1c6bbec42b226" title="This function sets the interrupt mask. ">XUartPsv_SetInterruptMask()</a> function.</p>
+<p>In order to use interrupts, it is necessary for the user to connect the driver interrupt handler, <a class="el" href="group__uartpsv__v1__5.html#ga869ac0531d2e16457706d013d7f0a0cc" title="This function is the interrupt handler for the driver. ">XUartPsv_InterruptHandler()</a>, to the interrupt system of the application. A separate handler should be provided by the application to communicate with the interrupt system, and conduct application specific interrupt handling. An application registers its own handler through the <a class="el" href="group__uartpsv__v1__5.html#gafc24dc61fc253a957ba631fb53b5dfc8" title="This function sets the handler that will be called when an event (interrupt) occurs that needs applic...">XUartPsv_SetHandler()</a> function.</p>
 <p><b>Data Transfer</b></p>
-<p>The functions, <a class="el" href="group__uartpsv__v1__4.html#ga71a962de4963e15f1c38e7831e825f7c" title="This functions sends the specified buffer using the device in either polled or interrupt driven mode...">XUartPsv_Send()</a> and <a class="el" href="group__uartpsv__v1__4.html#ga4d4d20bbcedb1de2adbe2644b821d12d" title="This function attempts to receive a specified number of bytes of data from the device and store it in...">XUartPsv_Recv()</a>, are provided in the driver to allow data to be sent and received. They can be used in either polled or interrupt mode.</p>
+<p>The functions, <a class="el" href="group__uartpsv__v1__5.html#ga71a962de4963e15f1c38e7831e825f7c" title="This functions sends the specified buffer using the device in either polled or interrupt driven mode...">XUartPsv_Send()</a> and <a class="el" href="group__uartpsv__v1__5.html#ga4d4d20bbcedb1de2adbe2644b821d12d" title="This function attempts to receive a specified number of bytes of data from the device and store it in...">XUartPsv_Recv()</a>, are provided in the driver to allow data to be sent and received. They can be used in either polled or interrupt mode.</p>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>The default configuration for the UART after initialization is:</p>
 <ul>
@@ -124,7 +124,10 @@ MODIFICATION HISTORY:</pre><pre>Ver  Who  Date      Changes
               Add XUartPsv_SetRxFifoThreshold function
 1.3  rna  04/05/20  Change input format for XUartPsv_SetDataFormat function
               to reflect the Linecontrol register
-1.4  sne  02/03/21  Updated uartpsv_tapp.tcl to support CIPS3.0 hier designs.</pre><pre></pre> </div></div><!-- contents -->
+1.4  sne  02/03/21  Updated uartpsv_tapp.tcl to support CIPS3.0 hier designs.
+     rna  03/15/21  Updated 'XUartPsv_SetBaudRate' function
+1.5  rna  03/31/21  Fixed doxygen warnings
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

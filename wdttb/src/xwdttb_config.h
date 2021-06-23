@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdttb_config.h
-* @addtogroup wdttb_v5_1
+* @addtogroup wdttb_v5_2
 * @{
 *
 * Contains the required functions of the XWdtTb driver. See xwdttb.h for a
@@ -24,8 +24,8 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
-#ifndef XWDTTB_CONFIG_H                /* prevent circular inclusions */
-#define XWDTTB_CONFIG_H                /* by using protection macros */
+#ifndef XWDTTB_CONFIG_H                /**< prevent circular inclusions */
+#define XWDTTB_CONFIG_H                /**< by using protection macros */
 
 #include "xwdttb.h"
 

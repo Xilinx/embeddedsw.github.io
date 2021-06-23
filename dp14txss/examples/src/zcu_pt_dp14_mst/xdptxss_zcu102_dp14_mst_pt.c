@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,6 +17,15 @@
 * 1.02 ND  02/14/19 mcdp related function call now need dprxss instance address
 *                   instead of base address  as first parameter
 * 1.03 ND  09/11/20 Added support for New AV pattern generator
+* 1.04 ND  02/12/21 Added case 'z' to display menu in PT mode.
+* 					Added support to set the MSA values for the tx according to
+* 					the selected stream to be displayed front the menu.
+* 					Added the enabling of vblank interrupts for all streams in
+* 					Dprx_InterruptHandlerActRx() handler.
+* 1.05 ND  04/03/21 Moved all global variables declaration from .h to .c
+* 				    files due to gcc compiler compilation error.
+* 1.06 ND  04/15/21 Added support for stream 2,3 and 4 handler interrupts
+*
 * </pre>
 *
 ******************************************************************************/
@@ -28,6 +37,17 @@
 #define Si570_device_address 0x5D
 #define audio_clk_Hz 24.576
 
+#ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
+#define REMAP_RX_BASEADDR  XPAR_DP_RX_HIER_0_REMAP_RX_S_AXI_CTRL_BASEADDR
+#define REMAP_TX_BASEADDR  XPAR_DP_TX_HIER_0_REMAP_TX_S_AXI_CTRL_BASEADDR
+#define REMAP_RX_DEVICE_ID  XPAR_DP_RX_HIER_0_REMAP_RX_DEVICE_ID
+#define REMAP_TX_DEVICE_ID  XPAR_DP_TX_HIER_0_REMAP_TX_DEVICE_ID
+
+XV_axi4s_remap_Config   *rx_remap_Config;
+XV_axi4s_remap          rx_remap;
+XV_axi4s_remap_Config   *tx_remap_Config;
+XV_axi4s_remap          tx_remap;
+#endif
 
 /************************** Function Prototypes ******************************/
 
@@ -35,9 +55,22 @@ u32 DpMST_Main(void);
 u32 DpMST_PlatformInit(void);
 char XUartPs_RecvByte_NonBlocking();
 
-
-
-
+void DpRxSs_VmChangeEventHandler(void *InstancePtr);
+void DpRxSs_VmChange2EventHandler(void *InstancePtr);
+void DpRxSs_VmChange3EventHandler(void *InstancePtr);
+void DpRxSs_VmChange4EventHandler(void *InstancePtr);
+void DpRxSs_Video2Handler(void *InstancePtr);
+void DpRxSs_Video3Handler(void *InstancePtr);
+void DpRxSs_Video4Handler(void *InstancePtr);
+void DpRxSs_InfoPacket2Handler(void *InstancePtr);
+void DpRxSs_InfoPacket3Handler(void *InstancePtr);
+void DpRxSs_InfoPacket4Handler(void *InstancePtr);
+void DpRxSs_ExtPacket2Handler(void *InstancePtr);
+void DpRxSs_ExtPacket3Handler(void *InstancePtr);
+void DpRxSs_ExtPacket4Handler(void *InstancePtr);
+void DpRxSs_NoVideo2Handler(void *InstancePtr);
+void DpRxSs_NoVideo3Handler(void *InstancePtr);
+void DpRxSs_NoVideo4Handler(void *InstancePtr);
 /************************** Variable Definitions *****************************/
 static XVphy_User_Config PHY_User_Config_Table[] =
 {
@@ -114,7 +147,32 @@ u32 rxMsamisc0;
 XDpTxSs_MainStreamAttributes Msa[4];
 u8 Bpc[] = {6, 8, 10, 12, 16};
 
+u32 XVFRMBUFRD_BUFFER_BASEADDR;
+u32 XVFRMBUFWR_BUFFER_BASEADDR;
 
+XilAudioInfoFrame_rx AudioinfoFrame;
+XilAudioExtFrame  SdpExtFrame;
+XilAudioExtFrame  SdpExtFrame_q;
+
+XV_FrmbufRd_l2     frmbufrd;
+XV_FrmbufWr_l2     frmbufwr;
+XAxis_Switch axis_switch;
+XAxis_Switch axis_switch_tx;
+XDpRxSs DpRxSsInst;	/* The DPTX Subsystem instance.*/
+XDpTxSs DpTxSsInst;	/* The DPTX Subsystem instance.*/
+XIic IicInstance;	/* I2C bus for Si570 */
+XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
+XVphy VPhyInst;	/* The DPRX Subsystem instance.*/
+XTmrCtr TmrCtr; /* Timer instance.*/
+int tx_is_reconnected; /*This variable to keep track of the status of Tx link*/
+u8 prev_line_rate; /*This previous line rate to keep previous info to compare
+						with new line rate request*/
+u8 hpd_pulse_con_event; /*This variable triggers hpd_pulse_con*/
+u8 num_sinks;
+XScuGic IntcInst;
+XDpTxSs_Config *ConfigPtr;
+XDpRxSs_Config *ConfigPtr_rx;
+DP_Rx_Training_Algo_Config RxTrainConfig;
 
 /************************** Function Definitions *****************************/
 
@@ -515,8 +573,22 @@ u32 Dp_SetupIntrSystem(void)
 	/* Declaration of RX Interrupt Handlers */
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_PWR_CHG_EVENT,
                         &DpRxSs_PowerChangeHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, (XDPRXSS_HANDLER_DP_VM_CHG_EVENT),
+						&DpRxSs_VmChangeEventHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, (XDPRXSS_HANDLER_DP_VM_CHG_STREAM_2_EVENT),
+						&DpRxSs_VmChange2EventHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, (XDPRXSS_HANDLER_DP_VM_CHG_STREAM_3_EVENT),
+						&DpRxSs_VmChange3EventHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, (XDPRXSS_HANDLER_DP_VM_CHG_STREAM_4_EVENT),
+						&DpRxSs_VmChange4EventHandler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_NO_VID_EVENT,
                         &DpRxSs_NoVideoHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_NO_VID_STREAM_2_EVENT,
+                        &DpRxSs_NoVideo2Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_NO_VID_STREAM_3_EVENT,
+                        &DpRxSs_NoVideo3Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_NO_VID_STREAM_4_EVENT,
+                        &DpRxSs_NoVideo4Handler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_VBLANK_EVENT,
                         &DpRxSs_VerticalBlankHandler, &DpRxSsInst);
 
@@ -533,6 +605,12 @@ u32 Dp_SetupIntrSystem(void)
                         &DpRxSs_TrainingLostHandler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_VID_EVENT,
                         &DpRxSs_VideoHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_VID_STREAM_2_EVENT,
+                        &DpRxSs_Video2Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_VID_STREAM_3_EVENT,
+                        &DpRxSs_Video3Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_VID_STREAM_4_EVENT,
+                        &DpRxSs_Video4Handler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_TDONE_EVENT,
                         &DpRxSs_TrainingDoneHandler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_UNPLUG_EVENT,
@@ -551,8 +629,20 @@ u32 Dp_SetupIntrSystem(void)
                         &DpRxSs_CRCTestEventHandler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_INFO_PKT_EVENT,
                         &DpRxSs_InfoPacketHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_2_EVENT,
+                        &DpRxSs_InfoPacket2Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_3_EVENT,
+                        &DpRxSs_InfoPacket3Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_4_EVENT,
+                        &DpRxSs_InfoPacket4Handler, &DpRxSsInst);
     XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_EVENT,
                     	&DpRxSs_ExtPacketHandler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_2_EVENT,
+			&DpRxSs_ExtPacket2Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_3_EVENT,
+			&DpRxSs_ExtPacket3Handler, &DpRxSsInst);
+    XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_4_EVENT,
+			&DpRxSs_ExtPacket4Handler, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_DWN_REQ_EVENT,
 			        	&Dprx_InterruptHandlerDownReq, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_DWN_REP_EVENT,
@@ -561,6 +651,25 @@ u32 Dp_SetupIntrSystem(void)
 			        	&Dprx_InterruptHandlerPayloadAlloc, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ACT_RX_EVENT,
 			        	&Dprx_InterruptHandlerActRx, &DpRxSsInst);
+#if ADAPTIVE
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_1_EVENT,
+			&DpRxSs_AdaptiveVblank1Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_2_EVENT,
+			&DpRxSs_AdaptiveVblank2Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_3_EVENT,
+			&DpRxSs_AdaptiveVblank3Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_4_EVENT,
+			&DpRxSs_AdaptiveVblank4Handler, &DpRxSsInst);
+
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_1_EVENT,
+			&DpRxSs_AdaptiveSDP1Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_2_EVENT,
+			&DpRxSs_AdaptiveSDP2Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_3_EVENT,
+			&DpRxSs_AdaptiveSDP3Handler, &DpRxSsInst);
+	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_4_EVENT,
+			&DpRxSs_AdaptiveSDP4Handler, &DpRxSsInst);
+#endif
 
 	XVFrmbufWr_SetCallback(&frmbufwr, XVFRMBUFWR_HANDLER_DONE,
 			            bufferWr_callback, &frmbufwr);
@@ -632,7 +741,73 @@ u32 Dp_SetupIntrSystem(void)
 	return (XST_SUCCESS);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when the Video mode change event
+*  interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_VmChangeEventHandler(void *InstancePtr)
+{
+}
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when the Video mode change event
+*  interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_VmChange2EventHandler(void *InstancePtr)
+{
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when the Video mode change event
+*  interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_VmChange3EventHandler(void *InstancePtr)
+{
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when the Video mode change event
+*  interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_VmChange4EventHandler(void *InstancePtr)
+{
+}
 /*****************************************************************************/
 /**
 *
@@ -666,7 +841,6 @@ void DpRxSs_PowerChangeHandler(void *InstancePtr)
 
 void DpRxSs_NoVideoHandler(void *InstancePtr)
 {
-
 #if USE_NO_VIDEO
 
         DpRxSsInst.VBlankCount = 0;
@@ -685,6 +859,56 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 #endif
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a no video interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+
+void DpRxSs_NoVideo2Handler(void *InstancePtr)
+{
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a no video interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+
+void DpRxSs_NoVideo3Handler(void *InstancePtr)
+{
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a no video interrupt occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+
+void DpRxSs_NoVideo4Handler(void *InstancePtr)
+{
+}
 
 /*****************************************************************************/
 /**
@@ -772,8 +996,62 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VideoHandler(void *InstancePtr)
 {
+
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a valid video interrupt
+* occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_Video2Handler(void *InstancePtr)
+{
+
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a valid video interrupt
+* occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_Video3Handler(void *InstancePtr)
+{
+
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for when a valid video interrupt
+* occurs.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_Video4Handler(void *InstancePtr)
+{
+
+}
 /*****************************************************************************/
 /**
 *
@@ -1088,7 +1366,55 @@ void DpRxSs_InfoPacketHandler(void *InstancePtr)
         }
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for Info Packet Handling.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_InfoPacket2Handler(void *InstancePtr)
+{
 
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for Info Packet Handling.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_InfoPacket3Handler(void *InstancePtr)
+{
+
+}
+
+/**
+*
+* This function is the callback function for Info Packet Handling.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_InfoPacket4Handler(void *InstancePtr)
+{
+
+}
 /*****************************************************************************/
 /**
 *
@@ -1130,6 +1456,101 @@ void DpRxSs_ExtPacketHandler(void *InstancePtr)
 
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for Generic Packet Handling of
+* 32-Bytes payload.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_ExtPacket2Handler(void *InstancePtr)
+{
+
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for Generic Packet Handling of
+* 32-Bytes payload.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_ExtPacket3Handler(void *InstancePtr)
+{
+
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is the callback function for Generic Packet Handling of
+* 32-Bytes payload.
+*
+* @param    InstancePtr is a pointer to the XDpRxSs instance.
+*
+* @return    None.
+*
+* @note        None.
+*
+******************************************************************************/
+void DpRxSs_ExtPacket4Handler(void *InstancePtr)
+{
+
+}
+
+#if ADAPTIVE
+void DpRxSs_AdaptiveVblank1Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveVblank2Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveVblank3Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveVblank4Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveSDP1Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveSDP2Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveSDP3Handler(void *InstancePtr)
+{
+
+}
+
+void DpRxSs_AdaptiveSDP4Handler(void *InstancePtr)
+{
+
+}
+#endif
 
 void Dprx_InterruptHandlerPayloadAlloc(void *InstancePtr)
 {
@@ -1151,6 +1572,10 @@ void Dprx_InterruptHandlerActRx(void *InstancePtr)
 	/* ACT Receive Interrupt Handler */
 //	ActCount++;
 //	xil_printf("ACT \r\n");
+    XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
+                    XDP_RX_INTERRUPT_MASK_VBLANK_MASK);
+    XDp_RxInterruptEnable1(DpRxSsInst.DpPtr,
+                    0x3FFFF);
 
 }
 
@@ -1817,8 +2242,10 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, u8 only_tx)
 		Vpg_StreamSrcConfigure(DpTxSsInst.DpPtr, 0, 1);
 		clk_wiz_locked();
 		num_sinks = DpTxSsInst.DpPtr->TxInstance.Topology.SinkTotal;
+#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 		Status = XDpTxSs_DsSetup(DpTxSsInst.DsPtr, 0,
 				&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0]);
+#endif
 
 		for (i=0;i<num_sinks;i++) {
 			if (DpTxSsInst.VtcPtr[i]) {
@@ -1839,8 +2266,10 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, u8 only_tx)
 		XDpTxSs_SetLaneCount(&DpTxSsInst, lane_set);
 		Status = DpTxSubsystem_Start(&DpTxSsInst, Msa);
 
+#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 		Status = XDpTxSs_DsSetup(DpTxSsInst.DsPtr, 0,
 				&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0]);
+#endif
 
 		Status |= XDpTxSs_VtcSetup(DpTxSsInst.VtcPtr[0],
 		&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0],
@@ -2129,8 +2558,10 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 	clk_wiz_locked();
 	xil_printf (".");
 	//Keeping the splitter in false mode
+#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 	Status = XDpTxSs_DsSetup(DpTxSsInst.DsPtr, 0,
 			&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0]);
+#endif
 
 	Status |= XDpTxSs_VtcSetup(DpTxSsInst.VtcPtr[0],
 	&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0],
@@ -2225,8 +2656,10 @@ u32 start_tx_only(u8 line_rate, u8 lane_count,user_config_struct user_config){
 
 	num_sinks = DpTxSsInst.DpPtr->TxInstance.Topology.SinkTotal;
 	// Keeping splitter in False mode
+#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 	Status = XDpTxSs_DsSetup(DpTxSsInst.DsPtr, 0,
 			&DpTxSsInst.DpPtr->TxInstance.MsaConfig[0]);
+#endif
 
 	for (i=0;i<num_sinks;i++) {
 		if (DpTxSsInst.VtcPtr[i]) {
@@ -2979,6 +3412,10 @@ u32 DpRxSs_Setup(void)
                         XDP_RX_INTERRUPT_MASK_ACCESS_LANE_SET_MASK|
                         XDP_RX_INTERRUPT_MASK_ACCESS_LINK_QUAL_MASK|
                         XDP_RX_INTERRUPT_MASK_ACCESS_ERROR_COUNTER_MASK);
+
+        XDp_RxInterruptEnable1(DpRxSsInst.DpPtr,
+                        0xF0003FFFF);
+
 
         /* Setting AUX Defer Count of Link Status Reads to 8 during Link
          * Training 8 Defer counts is chosen to handle worst case time

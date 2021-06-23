@@ -243,10 +243,10 @@ static AieRC _XAie_WriteProgramSection(XAie_DevInst *DevInst, XAie_LocType Loc,
 		 * memory out of Progsec will not result in a segmentation
 		 * fault.
 		 */
-		XAie_BlockWrite32(DevInst, Addr, (u32 *)ProgSec,
+		RC = XAie_BlockWrite32(DevInst, Addr, (u32 *)ProgSec,
 				(Phdr->p_memsz + 4U - 1U) / 4U);
 
-		return XAIE_OK;
+		return RC;
 	}
 
 	/* Check if section can access out of bound memory location on device */
@@ -447,12 +447,12 @@ AieRC XAie_LoadElfMem(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	MapPtr: Path to the Map file.
 * @param	StackSzPtr: Pointer to the stack range structure.
 *
-* @return	XAIE_SUCCESS on success, else XAIE_FAILURE.
+* @return	XAIE_OK on success, else XAIE_ERR.
 *
 * @note		None.
 *
 *******************************************************************************/
-static u32 XAieSim_GetStackRange(const char *MapPtr,
+static AieRC XAieSim_GetStackRange(const char *MapPtr,
 		XAieSim_StackSz *StackSzPtr)
 {
 	FILE *Fd;
@@ -468,7 +468,7 @@ static u32 XAieSim_GetStackRange(const char *MapPtr,
 	Fd = fopen(MapPtr, "r");
 	if(Fd == NULL) {
 		XAIE_ERROR("Invalid Map file\n");
-		return XAIE_FAILURE;
+		return XAIE_ERR;
 	}
 
 	while(fgets(buffer, 200U, Fd) != NULL) {
@@ -482,9 +482,9 @@ static u32 XAieSim_GetStackRange(const char *MapPtr,
 	fclose(Fd);
 
 	if(StackSzPtr->start == 0xFFFFFFFFU) {
-		return XAIE_FAILURE;
+		return XAIE_ERR;
 	} else {
-		return XAIE_SUCCESS;
+		return XAIE_OK;
 	}
 }
 #endif
@@ -540,7 +540,7 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 	 * profiling an simulation. This code is retained as is from v1 except
 	 * minor changes to priting error message.
 	 */
-	u32 Status;
+	AieRC Status;
 	char *MapPath;
 	const char *MapPathSuffix = ".map";
 	XAieSim_StackSz StackSz;
@@ -557,19 +557,26 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 	free(MapPath);
 	XAIE_DBG("Stack start:%08x, end:%08x\n", StackSz.start,
 			StackSz.end);
-	if(Status != XAIE_SUCCESS) {
+	if(Status != XAIE_OK) {
 		XAIE_ERROR("Stack range definition failed\n");
 		return Status;
 	}
 
 	/* Send the stack range set command */
-	XAie_CmdWrite(DevInst, Loc.Col, Loc.Row, XAIESIM_CMDIO_CMD_SETSTACK,
-			StackSz.start, StackSz.end, XAIE_NULL);
+	RC = XAie_CmdWrite(DevInst, Loc.Col, Loc.Row,
+			XAIESIM_CMDIO_CMD_SETSTACK, StackSz.start, StackSz.end,
+			XAIE_NULL);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
 
 	/* Load symbols if enabled */
 	if(LoadSym == XAIE_ENABLE) {
-		XAie_CmdWrite(DevInst, Loc.Col, Loc.Row,
+		RC = XAie_CmdWrite(DevInst, Loc.Col, Loc.Row,
 				XAIESIM_CMDIO_CMD_LOADSYM, 0, 0, ElfPtr);
+		if(RC != XAIE_OK) {
+			return RC;
+		}
 	}
 #endif
 	(void)LoadSym;
@@ -582,6 +589,7 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 	/* Get the file size of the elf */
 	Ret = fseek(Fd, 0L, SEEK_END);
 	if(Ret != 0U) {
+		fclose(Fd);
 		XAIE_ERROR("Failed to get end of file\n");
 		return XAIE_INVALID_ELF;
 	}
@@ -593,12 +601,15 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 	/* Read entire elf file into memory */
 	ElfMem = (unsigned char*) malloc(ElfSz);
 	if(ElfMem == NULL) {
+		fclose(Fd);
 		XAIE_ERROR("Memory allocation failed\n");
 		return XAIE_ERR;
 	}
 
 	Ret = fread((void*)ElfMem, ElfSz, 1U, Fd);
 	if(Ret == 0U) {
+		fclose(Fd);
+		free(ElfMem);
 		XAIE_ERROR("Failed to read Elf into memory\n");
 		return XAIE_ERR;
 	}

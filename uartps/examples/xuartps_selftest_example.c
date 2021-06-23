@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -60,7 +60,6 @@ XUartPs Uart_Ps;		/* Instance of the UART Device */
 *
 * Main function to call the example.
 *
-* @param    None
 *
 * @return   XST_SUCCESS if successful, otherwise XST_FAILURE
 *

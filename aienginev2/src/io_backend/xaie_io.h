@@ -26,8 +26,11 @@
 #define XAIE_IO_H
 
 /***************************** Include Files *********************************/
+#include "xaie_rsc.h"
 #include "xaiegbl.h"
 
+/***************************** Macro Definitions *****************************/
+#define XAIE_RSC_MGR_CONTIG_FLAG	0x1
 /****************************** Type Definitions *****************************/
 
 /*
@@ -41,6 +44,10 @@ typedef enum {
 	XAIE_BACKEND_OP_CONFIG_SHIMDMABD,
 	XAIE_BACKEND_OP_REQUEST_TILES,
 	XAIE_BACKEND_OP_RELEASE_TILES,
+	XAIE_BACKEND_OP_REQUEST_RESOURCE,
+	XAIE_BACKEND_OP_RELEASE_RESOURCE,
+	XAIE_BACKEND_OP_FREE_RESOURCE,
+	XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE,
 } XAie_BackendOpCode;
 
 /*
@@ -58,6 +65,27 @@ typedef struct XAie_BackendTilesArray {
 	XAie_LocType *Locs;
 	u32 NumTiles;
 } XAie_BackendTilesArray;
+
+/*
+ * Typedef for structure for tiles resource
+ */
+typedef struct XAie_BackendTilesRsc {
+	u32 *Bitmap;
+	u32 MaxRscVal;
+	u32 BitmapOffset;
+	u32 NumRscPerTile;
+	u32 RscId;
+	u32 StartBit;
+	u32 StaticBitmapOffset;
+	u32 *UserRscNum;
+	u32 UserRscNumInput;
+	u32 Flags;
+	u8 NumContigRscs;
+	XAie_RscType RscType;
+	XAie_LocType Loc;
+	XAie_ModuleType Mod;
+	XAie_UserRsc *Rscs;
+} XAie_BackendTilesRsc;
 
 /*
  * Typdef to capture all the backend IO operations
@@ -84,17 +112,19 @@ typedef struct XAie_BackendTilesArray {
  * MemSyncForDev: Backend operation to prepare memory for Device access.
  * MemAttach    : Backend operation to attach memory to AI engine device.
  * MemDetach    : Backend operation to detach memory from AI engine device
+ * GetTid	: Backend operation to get unique thread id.
+ * SubmitTxn	: Backend operation to submit transaction.
  */
 typedef struct XAie_BackendOps {
 	AieRC (*Init)(XAie_DevInst *DevInst);
 	AieRC (*Finish)(void *IOInst);
-	void (*Write32)(void *IOInst, u64 RegOff, u32 Value);
-	u32 (*Read32)(void *IOInst,  u64 RegOff);
-	void (*MaskWrite32)(void *IOInst, u64 RegOff, u32 Mask, u32 Value);
-	u32 (*MaskPoll)(void *IOInst, u64 RegOff, u32 Mask, u32 Value, u32 TimeOutUs);
-	void (*BlockWrite32)(void *IOInst, u64 RegOff, u32 *Data, u32 Size);
-	void (*BlockSet32)(void *IOInst, u64 RegOff, u32 Data, u32 Size);
-	void (*CmdWrite)(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
+	AieRC (*Write32)(void *IOInst, u64 RegOff, u32 Value);
+	AieRC (*Read32)(void *IOInst,  u64 RegOff, u32 *Data);
+	AieRC (*MaskWrite32)(void *IOInst, u64 RegOff, u32 Mask, u32 Value);
+	AieRC (*MaskPoll)(void *IOInst, u64 RegOff, u32 Mask, u32 Value, u32 TimeOutUs);
+	AieRC (*BlockWrite32)(void *IOInst, u64 RegOff, u32 *Data, u32 Size);
+	AieRC (*BlockSet32)(void *IOInst, u64 RegOff, u32 Data, u32 Size);
+	AieRC (*CmdWrite)(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
 			u32 CmdWd1, const char *CmdStr);
 	AieRC (*RunOp)(void *IOInst, XAie_DevInst *DevInst,
 		     XAie_BackendOpCode Op, void *Arg);
@@ -105,6 +135,8 @@ typedef struct XAie_BackendOps {
 	AieRC (*MemSyncForDev)(XAie_MemInst *MemInst);
 	AieRC (*MemAttach)(XAie_MemInst *MemInst, u64 MemHandle);
 	AieRC (*MemDetach)(XAie_MemInst *MemInst);
+	u64 (*GetTid)(void);
+	AieRC (*SubmitTxn)(void *IOInst, XAie_TxnInst *TxnInst);
 } XAie_BackendOps;
 
 /* Typedef to capture all backend information */

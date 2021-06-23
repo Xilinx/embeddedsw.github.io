@@ -18,15 +18,8 @@ var NAVTREE =
     ] ],
     [ "File List", "files.html", "files" ],
     [ "Examples", "example.html", [
-      [ "pipeline_program.c", "example.html#ex1", null ],
-      [ "pipeline_program.h", "example.html#ex2", null ],
-      [ "sensor_cfgs.c", "example.html#ex3", null ],
-      [ "sensor_cfgs.h", "example.html#ex4", null ],
-      [ "si5324drv.c", "example.html#ex5", null ],
-      [ "si5324drv.h", "example.html#ex6", null ],
-      [ "xmipi_example.c", "example.html#ex7", null ],
-      [ "xmipi_menu.c", "example.html#ex8", null ],
-      [ "xmipi_menu.h", "example.html#ex9", null ]
+      [ "xcsiss_intr_example.c", "example.html#ex1", null ],
+      [ "xcsiss_selftest_example.c", "example.html#ex2", null ]
     ] ]
   ] ]
 ];
@@ -34,7 +27,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xcsiss__sinit_8c.html"
+"xhdmi__edid_8h.html#a89011d5a06daa5f37bfee23cce604b1e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

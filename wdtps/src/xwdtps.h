@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdtps.h
-* @addtogroup wdtps_v3_4
+* @addtogroup wdtps_v3_5
 * @{
 * @details
 *
@@ -73,7 +73,7 @@
 *
 ******************************************************************************/
 #ifndef XWDTPS_H		/* prevent circular inclusions */
-#define XWDTPS_H		/* by using protection macros */
+#define XWDTPS_H		/**< by using protection macros */
 
 /***************************** Include Files *********************************/
 #include "xil_types.h"
@@ -108,7 +108,7 @@ extern "C" {
  */
 typedef struct {
 	u16 DeviceId;		/**< Unique ID of device */
-	u32 BaseAddress;	/**< Base address of the device */
+	UINTPTR BaseAddress;	/**< Base address of the device */
 } XWdtPs_Config;
 
 
@@ -123,6 +123,9 @@ typedef struct {
 	u32 IsReady;		/**< Device is initialized and ready */
 	u32 IsStarted;		/**< Device watchdog timer is running */
 } XWdtPs;
+
+/************************** Variable Definitions *****************************/
+extern XWdtPs_Config XWdtPs_ConfigTable[];      /**< Configuration table */
 
 /***************** Macros (Inline Functions) Definitions *********************/
 /****************************************************************************/
@@ -176,7 +179,7 @@ XWdtPs_Config *XWdtPs_LookupConfig(u16 DeviceId);
  * Interface functions in xwdtps.c
  */
 s32 XWdtPs_CfgInitialize(XWdtPs *InstancePtr,
-			XWdtPs_Config *ConfigPtr, u32 EffectiveAddress);
+			XWdtPs_Config *ConfigPtr, UINTPTR EffectiveAddress);
 
 void XWdtPs_Start(XWdtPs *InstancePtr);
 

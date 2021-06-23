@@ -6,7 +6,7 @@
 /*****************************************************************************/
 /**
 * @file xhdcp22_rx.c
-* @addtogroup hdcp22_rx_v3_0
+* @addtogroup hdcp22_rx_v3_1
 * @{
 * @details
 *
@@ -1660,12 +1660,6 @@ static void XHdcp22Rx_ResetDdc(XHdcp22_Rx *InstancePtr, u8 ClrWrBuffer,
 
 	/* Clear DDC error flags */
 	InstancePtr->Info.ErrorFlag &= ~XHDCP22_RX_ERROR_FLAG_DDC_BURST;
-
-	if(InstancePtr->Hdcp22Broadcast == TRUE) {
-		/* Set HDCP2Version register */
-		InstancePtr->Handles.DdcSetAddressCallback(InstancePtr->Handles.DdcSetAddressCallbackRef, XHDCP22_RX_DDC_VERSION_REG);
-		InstancePtr->Handles.DdcSetDataCallback(InstancePtr->Handles.DdcSetDataCallbackRef, 0x04);
-	}
 }
 
 /*****************************************************************************/

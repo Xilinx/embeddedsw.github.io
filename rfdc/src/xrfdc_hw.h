@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_hw.h
-* @addtogroup rfdc_v8_1
+* @addtogroup rfdc_v10_0
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -88,6 +88,17 @@
 *       cog    09/28/20 Added more DAC interrupts and fixed issue with
 *                       GetEnabledInterrupts.
 *       cog    10/14/20 Get I and Q data now supports warm bitstream swap.
+* 9.0   cog    11/25/20 Upversion.
+* 10.0  cog    11/26/20 Refactor and split files.
+*       cog    12/23/20 Fixed issue with IQ QMC on 48dr devices.
+*       cog    01/05/21 Signal detector on/off counters needed to be flipped.
+*       cog    01/05/21 Second signal detector removed.
+*       cog    01/06/21 Added DAC data scaler APIs.
+*       cog    01/11/21 Tuning for autocalibration.
+*       cog    02/10/21 Added custom startup API.
+*       cog    03/12/21 Allow ADC to divide and redistribute full rate clock.
+*       cog    03/12/21 Tweaks for improved calibration performance.
+*       cog    04/01/21 The threshold under/over value masks should be 14 bits.
 *
 *</pre>
 *
@@ -220,6 +231,7 @@ extern "C" {
 #define XRFDC_ADC_TI_TISK_DACP1_OFFSET 0x17CU /**< ADC Time skew DAC cal code of subadc ch1 Register */
 #define XRFDC_ADC_TI_TISK_DACP2_OFFSET 0x180U /**< ADC Time skew DAC cal code of subadc ch2 Register */
 #define XRFDC_ADC_TI_TISK_DACP3_OFFSET 0x184U /**< ADC Time skew DAC cal code of subadc ch3 Register */
+#define XRFDC_DATA_SCALER_OFFSET 0x190U /**< DAC Data Scaler Register */
 #define XRFDC_DAC_VOP_CTRL_OFFSET 0x198U /**< DAC variable output power control Register */
 #define XRFDC_ADC0_SUBDRP_ADDR_OFFSET 0x198U /**< subadc0, sub-drp address of target Register */
 #define XRFDC_ADC0_SUBDRP_DAT_OFFSET 0x19CU /**< subadc0, sub-drp data of target Register */
@@ -261,11 +273,8 @@ extern "C" {
 
 #define XRFDC_ADC_SIG_DETECT_CTRL_OFFSET 0x114 /**< ADC Signal Detector Control */
 #define XRFDC_ADC_SIG_DETECT_THRESHOLD0_LEVEL_OFFSET 0x118 /**< ADC Signal Detector Threshold 0 */
-#define XRFDC_ADC_SIG_DETECT_THRESHOLD0_CNT_ON_OFFSET 0x11C /**< ADC Signal Detector Threshold 0 on Counter */
-#define XRFDC_ADC_SIG_DETECT_THRESHOLD0_CNT_OFF_OFFSET 0x120 /**< ADC Signal Detector Threshold 0 off Counter */
-#define XRFDC_ADC_SIG_DETECT_THRESHOLD1_LEVEL_OFFSET 0x124 /**< ADC Signal Detector Threshold 1 */
-#define XRFDC_ADC_SIG_DETECT_THRESHOLD1_CNT_ON_OFFSET 0x128 /**< ADC Signal Detector Threshold 1 on Counter */
-#define XRFDC_ADC_SIG_DETECT_THRESHOLD1_CNT_OFF_OFFSET 0x12C /**< ADC Signal Detector Threshold 1 off Counter */
+#define XRFDC_ADC_SIG_DETECT_THRESHOLD0_CNT_OFF_OFFSET 0x11C /**< ADC Signal Detector Threshold 0 on Counter */
+#define XRFDC_ADC_SIG_DETECT_THRESHOLD0_CNT_ON_OFFSET 0x120 /**< ADC Signal Detector Threshold 0 off Counter */
 #define XRFDC_ADC_SIG_DETECT_MAGN_OFFSET 0x130 /**< ADC Signal Detector Magintude */
 
 #define XRFDC_HSCOM_CLK_DSTR_OFFSET 0x088U /**< Clock Distribution Register*/
@@ -306,6 +315,7 @@ extern "C" {
 #define XRFDC_CURRENT_STATE_OFFSET 0x0CU /**< Current state register */
 #define XRFDC_CLOCK_DETECT_OFFSET 0x80U /**< Clock detect register */
 #define XRFDC_STATUS_OFFSET 0x228U /**< Common status register */
+#define XRFDC_CAL_DIV_BYP_OFFSET 0x100U /**< Calibration divider bypass register */
 #define XRFDC_COMMON_INTR_STS 0x100U /**< Common Intr Status register */
 #define XRFDC_COMMON_INTR_ENABLE 0x104U /**< Common Intr enable register */
 #define XRFDC_INTR_STS 0x200U /**< Intr status register */
@@ -321,6 +331,8 @@ extern "C" {
 #define XRFDC_TDD_CTRL_SLICE_OFFSET(X) (0x260 + (X * 0x04U)) /**< TDD control registers */
 #define XRFDC_PLL_FREQ 0x300U /**< PLL output frequency (before divider) register */
 #define XRFDC_PLL_FS 0x304U /**< Sampling rate register */
+#define XRFDC_CAL_TMR_MULT_OFFSET 0x30CU /**< Calibration timer register */
+#define XRFDC_CAL_DLY_OFFSET 0x310U /**< Calibration delay register */
 #define XRFDC_FIFO_ENABLE 0x230U /**< FIFO Enable and Disable */
 #define XRFDC_PLL_SDM_CFG0 0x00U /**< PLL Configuration bits for sdm */
 #define XRFDC_PLL_SDM_SEED0 0x18U /**< PLL Bits for sdm LSB */
@@ -404,6 +416,16 @@ extern "C" {
 
 /* @} */
 
+/** @name Tile State - Tile state register
+ *
+ * This register contains bits for the current tile State.
+ * @{
+ */
+
+#define XRFDC_CURRENT_STATE_MASK 0x0000000FU /**< Current tile state mask*/
+
+/* @} */
+
 /** @name Calibration Mode - Calibration mode registers
  *
  * This register contains bits for calibration modes
@@ -411,7 +433,7 @@ extern "C" {
  * @{
  */
 
-#define XRFDC_CAL_MODES_MASK 0x0003 /**< Calibration modes for Gen 3 mask*/
+#define XRFDC_CAL_MODES_MASK 0x0003U /**< Calibration modes for Gen 3 mask*/
 
 /* @} */
 /** @name Calibration Coefficients - Calibration coefficients and disable registers
@@ -439,6 +461,8 @@ extern "C" {
 #define XRFDC_CAL_TSCB_EN_SHIFT 15U /**< time skew coeff shift*/
 #define XRFDC_CAL_GCB_FLSH_SHIFT 12U /**< GCB accumulator flush shift*/
 #define XRFDC_CAL_GCB_ACEN_SHIFT 11U /**< GCB accumulator enable shift*/
+
+#define XRFDC_CAL_TSCB_TUNE_MASK 0x0FF0U /**< time skew tuning mask*/
 
 #define XRFDC_CAL_SLICE_SHIFT 16U /**<Coefficient shift for HSADCs*/
 
@@ -935,6 +959,7 @@ extern "C" {
  */
 
 #define XRFDC_QMC_OFFST_CRCTN_MASK 0x00000FFFU /**< QMC offset correction factor */
+#define XRFDC_QMC_OFFST_CRCTN_SIGN_MASK 0x00000800 /**< QMC offset correction factor sign bit*/
 
 /* @} */
 
@@ -957,6 +982,7 @@ extern "C" {
  */
 
 #define XRFDC_QMC_PHASE_CRCTN_MASK 0x00000FFFU /**< QMC phase correction factor */
+#define XRFDC_QMC_PHASE_CRCTN_SIGN_MASK 0x00000800 /**< QMC phase correction factor sign bit*/
 
 /* @} */
 
@@ -1070,7 +1096,7 @@ extern "C" {
  * @{
  */
 
-#define XRFDC_TRSHD0_UNDER_MASK 0x00007FFFU /**< Threshold0 under Threshold[14:0] */
+#define XRFDC_TRSHD0_UNDER_MASK 0x00003FFFU /**< Threshold0 under Threshold[13:0] */
 
 /* @} */
 
@@ -1081,7 +1107,7 @@ extern "C" {
  * @{
  */
 
-#define XRFDC_TRSHD0_OVER_MASK 0x00007FFFU /**< Threshold0 under Threshold[14:0] */
+#define XRFDC_TRSHD0_OVER_MASK 0x00003FFFU /**< Threshold0 under Threshold[13:0] */
 
 /* @} */
 
@@ -1128,7 +1154,7 @@ extern "C" {
  * @{
  */
 
-#define XRFDC_TRSHD1_UNDER_MASK 0x00007FFFU /**< Threshold1 under Threshold[14:0] */
+#define XRFDC_TRSHD1_UNDER_MASK 0x00003FFFU /**< Threshold1 under Threshold[13:0] */
 
 /* @} */
 
@@ -1139,7 +1165,7 @@ extern "C" {
  * @{
  */
 
-#define XRFDC_TRSHD1_OVER_MASK 0x00007FFFU /**< Threshold1 under Threshold[14:0] */
+#define XRFDC_TRSHD1_OVER_MASK 0x00003FFFU /**< Threshold1 under Threshold[13:0] */
 
 /* @} */
 
@@ -1560,6 +1586,8 @@ extern "C" {
  */
 
 #define XRFDC_RX_PR_MC_CFG0_MASK 0x0000FFFFU /**< RX Pair MC Config0 */
+#define XRFDC_RX_PR_MC_CFG0_PSNK_MASK 0x00002000U /**< RX Pair MC Config0 */
+#define XRFDC_RX_PR_MC_CFG0_IDIV_MASK 0x00000010U /**< RX Pair MC Config0 */
 
 /* @} */
 
@@ -2081,6 +2109,26 @@ extern "C" {
 #define XRFDC_DAC_FIFO_DELAY_MASK 0x000000FFFU /**< DAC FIFO ReadPtr Delay */
 #define XRFDC_ADC_FIFO_DELAY_MASK 0x0000001C0U /**< ADC FIFO ReadPtr Delay */
 #define XRFDC_ADC_FIFO_DELAY_SHIFT 6U /**< ADC FIFO ReadPtr Shift */
+
+/* @} */
+
+/** @name Data Scaler register
+ *
+ * This register contains the data scaler ebable bit.
+ * @{
+ */
+
+#define XRFDC_DATA_SCALER_MASK 0x00000001U /**< Clock detect mask */
+
+/* @} */
+
+/** @name Calibration divider bypass register
+ *
+ * This register contains the calibration divider bypass enable bit.
+ * @{
+ */
+
+#define XRFDC_CAL_DIV_BYP_MASK 0x00000004U /**< Calibration divider bypass mask */
 
 /* @} */
 

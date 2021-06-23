@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -63,6 +63,15 @@ XDp_TxAudioInfoFrame *xilInfoFrame;
 
 u8 tx_is_up = 0;
 u8 aud_started = 0;
+extern XilAudioInfoFrame_rx AudioinfoFrame;
+extern XAxis_Switch axis_switch;
+extern XDpRxSs DpRxSsInst;	/* The DPTX Subsystem instance.*/
+extern XDpTxSs DpTxSsInst;	/* The DPTX Subsystem instance.*/
+extern XVphy VPhyInst;
+extern XTmrCtr TmrCtr;
+extern int tx_is_reconnected;
+extern u8 hpd_pulse_con_event;
+extern XScuGic IntcInst;
 
 void DpPt_LaneLinkRateHelpMenu(void)
 {
@@ -210,7 +219,7 @@ void sub_help_menu_pt(void)
 	  print(" c = Display RX MST stream 3\r\n");
 	  print(" d = Display RX MST stream 4\r\n");
  	  print(" z = Display this menu again\r\n");
-	  print(" x = Return to Main menu\r\n");
+//	  print(" x = Return to Main menu\r\n");
 	  print("\n\r");
 	  print("-----------------------------------------------------\n\r");}
 
@@ -1248,6 +1257,10 @@ void pt_loop(){
 			aud_started = 0;
 			break;
 
+		case 'z' :
+			sub_help_menu_pt ();
+			break;
+
 		default :
 			break;
 
@@ -1391,54 +1404,6 @@ void start_tx_after_rx(u8 stream_id, u8 only_tx) {
 	Status |= XDp_TxAuxRead(DpTxSsInst.DpPtr, 0x2, 1, &max_cap_lanes);
 	u8 rData = 0;
 
-	// check the EXTENDED_RECEIVER_CAPABILITY_FIELD_PRESENT bit
-	XDp_TxAuxRead(DpTxSsInst.DpPtr, XDP_DPCD_TRAIN_AUX_RD_INTERVAL,
-					1, &rData);
-
-	if (DpRxSsInst.UsrOpt.LinkRate == XDP_TX_LINK_BW_SET_810GBPS) {
-	// if EXTENDED_RECEIVER_CAPABILITY_FIELD is enabled
-	if(rData & 0x80){
-			// read maxLineRate
-			XDp_TxAuxRead(DpTxSsInst.DpPtr, 0x2201, 1, &rData);
-			if(rData == XDP_DPCD_LINK_BW_SET_810GBPS){
-					monitor_8K = 1;
-					max_cap_org = 0x1E;
-//					xil_printf ("Monitor is 8.1 capable\r\n");
-			} else {
-				    max_cap_org = 0x14;
-//					xil_printf ("Monitor is not 8.1 capable\r\n");
-			}
-	}
-	}
-
-
-// if monitor does not support 8.1G then calc MVID, NVID for 5.4
-	if (monitor_8K == 0) {
-		if(DpRxSsInst.UsrOpt.LinkRate == XDP_TX_LINK_BW_SET_810GBPS) {
-
-		mvid_rx = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,XDP_RX_MSA_MVID);
-		nvid_rx = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,XDP_RX_MSA_NVID);
-
-		// Get incoming pixel frequency at here
-		recv_clk_freq =
-			(((int)DpRxSsInst.UsrOpt.LinkRate*27)*mvid_rx)/nvid_rx;
-
-		// Re-calculating Mvid/Nvid based on 5.4Gbps
-		nvid_tx = (XDP_TX_LINK_BW_SET_540GBPS * 27);
-		mvid_tx = (recv_clk_freq * nvid_tx * 1000) / (XDP_TX_LINK_BW_SET_540GBPS*27);
-		nvid_tx *= 1000;
-
-		// Update MVID and NVID at here with bsed on 5.4Gbps
-		Msa[0].MVid = mvid_tx;
-		Msa[0].NVid = nvid_tx;
-
-		}
-	}
-
-	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-			XDP_TX_INTERRUPT_MASK, 0xFFF);
-	frameBuffer_stop_rd();
-
 	if (only_tx == 0) {
 		XAxisScr_MiPortDisableAll(&axis_switch);
 		frameBuffer_stop_wr();
@@ -1483,6 +1448,56 @@ void start_tx_after_rx(u8 stream_id, u8 only_tx) {
 		XAxisScr_MiPortEnable (&axis_switch, 0, stream_id-1);
 		XAxisScr_RegUpdateEnable (&axis_switch);
 	}
+
+	// check the EXTENDED_RECEIVER_CAPABILITY_FIELD_PRESENT bit
+	XDp_TxAuxRead(DpTxSsInst.DpPtr, XDP_DPCD_TRAIN_AUX_RD_INTERVAL,
+					1, &rData);
+
+	if (DpRxSsInst.UsrOpt.LinkRate == XDP_TX_LINK_BW_SET_810GBPS) {
+	// if EXTENDED_RECEIVER_CAPABILITY_FIELD is enabled
+	if(rData & 0x80){
+			// read maxLineRate
+			XDp_TxAuxRead(DpTxSsInst.DpPtr, 0x2201, 1, &rData);
+			if(rData == XDP_DPCD_LINK_BW_SET_810GBPS){
+					monitor_8K = 1;
+					max_cap_org = 0x1E;
+//					xil_printf ("Monitor is 8.1 capable\r\n");
+			} else {
+				    max_cap_org = 0x14;
+//					xil_printf ("Monitor is not 8.1 capable\r\n");
+			}
+	}
+	}
+
+
+// if monitor does not support 8.1G then calc MVID, NVID for 5.4
+	if (monitor_8K == 0) {
+		if(DpRxSsInst.UsrOpt.LinkRate == XDP_TX_LINK_BW_SET_810GBPS) {
+
+		mvid_rx = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,XDP_RX_MSA_MVID + (0x40*(stream_id-1)));
+		nvid_rx = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,XDP_RX_MSA_NVID + (0x40*(stream_id-1)));
+
+		// Get incoming pixel frequency at here
+		recv_clk_freq =
+			(((int)DpRxSsInst.UsrOpt.LinkRate*27)*mvid_rx)/nvid_rx;
+
+		// Re-calculating Mvid/Nvid based on 5.4Gbps
+		nvid_tx = (XDP_TX_LINK_BW_SET_540GBPS * 27);
+		mvid_tx = (recv_clk_freq * nvid_tx * 1000) / (XDP_TX_LINK_BW_SET_540GBPS*27);
+		nvid_tx *= 1000;
+
+		// Update MVID and NVID at here with bsed on 5.4Gbps
+		Msa[0].MVid = mvid_tx;
+		Msa[0].NVid = nvid_tx;
+
+		}
+	}
+
+	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
+			XDP_TX_INTERRUPT_MASK, 0xFFF);
+	frameBuffer_stop_rd();
+
+
 
 	//Selecting the Audio Stream
 #if (DEFAULT_STREAM == 0)

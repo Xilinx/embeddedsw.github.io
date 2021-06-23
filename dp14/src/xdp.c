@@ -7,7 +7,7 @@
 /**
  *
  * @file xdp.c
- * @addtogroup dp_v7_4
+ * @addtogroup dp_v7_5
  * @{
  *
  * Contains a minimal set of functions for the XDp driver that allow access to
@@ -2241,7 +2241,7 @@ static u32 XDp_RxInitialize(XDp *InstancePtr)
 	XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_RX_MIN_VOLTAGE_SWING,
 		1 | (XDP_RX_MIN_VOLTAGE_SWING_CR_OPT_VS_INC_4CNT <<
 			XDP_RX_MIN_VOLTAGE_SWING_CR_OPT_SHIFT) |
-		(4 << XDP_RX_MIN_VOLTAGE_SWING_VS_SWEEP_CNT_SHIFT) |
+		(2 << XDP_RX_MIN_VOLTAGE_SWING_VS_SWEEP_CNT_SHIFT) |
 		(1 << XDP_RX_MIN_VOLTAGE_SWING_SET_PE_SHIFT));
 
 	/* Set the AUX training interval. */
@@ -3455,8 +3455,8 @@ static u32 XDp_TxAuxRequest(XDp *InstancePtr, XDp_AuxTransaction *Request)
 			 * XST_SUCCESS indicates that the request was ACK'ed. */
 			return Status;
 		}
-
-		XDp_WaitUs(InstancePtr, 100);
+		/* Aux request waiting period as per the latest CTS */
+		XDp_WaitUs(InstancePtr, 3200);
 	}
 
 	/* The request was not successfully received by the RX device. */

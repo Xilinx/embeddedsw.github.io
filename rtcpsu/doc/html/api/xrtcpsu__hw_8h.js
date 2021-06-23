@@ -12,6 +12,7 @@ var xrtcpsu__hw_8h =
     [ "XRTC_CUR_TCK_OFFSET", "xrtcpsu__hw_8h.html#ga4fcad14886e97664d39d03c875332cfc", null ],
     [ "XRTC_CUR_TIME_OFFSET", "xrtcpsu__hw_8h.html#ga7fa52cd698601011816bcb3a78cabc6a", null ],
     [ "XRTC_ECO_OFFSET", "xrtcpsu__hw_8h.html#gae7215b93f23fe1ef6cff1004104a803b", null ],
+    [ "XRTC_HW_H_", "xrtcpsu__hw_8h.html#ga2d71a6d87565f9564133c522d8959ad0", null ],
     [ "XRTC_INT_DIS_OFFSET", "xrtcpsu__hw_8h.html#gac41e797cd2c6162d086c237426eafa9e", null ],
     [ "XRTC_INT_EN_OFFSET", "xrtcpsu__hw_8h.html#ga47db526c5faf75df46c2dc78b84dfb7b", null ],
     [ "XRTC_INT_MSK_OFFSET", "xrtcpsu__hw_8h.html#gac915150ede3fb8aab0d68c1ed072e4f8", null ],

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -67,8 +67,15 @@
 #include "videofmc_defs.h"
 #include "idt_8t49n24x.h"
 
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 #include "xv_frmbufrd_l2.h"
+#define FRMBUF_RD_DEVICE_ID  XPAR_XV_FRMBUFRD_0_DEVICE_ID
+#endif
+
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 #include "xv_frmbufwr_l2.h"
+#define FRMBUF_WR_DEVICE_ID  XPAR_XV_FRMBUFWR_0_DEVICE_ID
+#endif
 
 #ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
 #include "xv_axi4s_remap.h"
@@ -124,8 +131,6 @@
 #define IIC_BASE_ADDR 					XPAR_IIC_0_BASEADDR
 #endif
 
-#define FRMBUF_RD_DEVICE_ID  XPAR_XV_FRMBUFRD_0_DEVICE_ID
-#define FRMBUF_WR_DEVICE_ID  XPAR_XV_FRMBUFWR_0_DEVICE_ID
 #define VIDEO_FRAME_CRC_TX_BASEADDR \
 			XPAR_DP_TX_HIER_0_VIDEO_FRAME_CRC_TX_BASEADDR
 #define VIDEO_FRAME_CRC_RX_BASEADDR \
@@ -198,7 +203,8 @@
 #define XVPHY_DEVICE_ID					0
 #define GT_QUAD_BASE                    XPAR_GT_QUAD_GT_QUAD_BASE_BASEADDR
 #define CH1CLKDIV_REG					0x3694
-#define DIV 							0x00000278
+#define DIV 							0x00000260
+#define	DIV3 						    0x00000278
 #define DIV_MASK 						0x000003FF
 
 /* In Versal, GT, DP is implemented in RAW16 mode and requires
@@ -237,7 +243,7 @@
 /* This value determines the amount by which the Vertical Front Porch is
  * stretched. When Adaptive Mode is 0x1, this specifies the Max limit of
  * stretching.
- * In case of Mode 0, user shoukd manually program the amount of stretch
+ * In case of Mode 0, user should manually program the amount of stretch
  * in the VTC
  */
 #define DPTXSS_VFP_STRETCH 0xFFF
@@ -248,13 +254,13 @@
 // Set PHY_COMP to 1 when doing the PHY and LL compliance
 // For normal operation, this needs to be set to 0
 #define PHY_COMP 0
-#define EDID_1_ENABLED PHY_COMP
+#define EDID_1_ENABLED !PHY_COMP
 
 /*Max timeout tuned as per tester - AXI Clock=100 MHz
  *Some GPUs may need larger value, So user may tune if needed
  */
-#define DP_BS_IDLE_TIMEOUT      (0x047868C0*PHY_COMP)+(0x0091FFFF*!PHY_COMP)
-#define VBLANK_WAIT_COUNT       (20+(180*PHY_COMP))
+#define DP_BS_IDLE_TIMEOUT      (0x047868C0*!PHY_COMP)+(0x091FFFFF*PHY_COMP)
+#define VBLANK_WAIT_COUNT       50
 //Wait for Following number of infoframes before asserting info
 //frame captured
 #define AUD_INFO_COUNT          20
@@ -265,7 +271,7 @@
  * (Only for ZCU102-ARM R5 based Rx system).
   For Interop, set this to 6.
 */
-#define AUX_DEFER_COUNT         (6+(2*PHY_COMP))
+#define AUX_DEFER_COUNT         (6)//+(2*PHY_COMP))
 #define AUX_DEFER_COUNT_PHY     1
 #define PRBS_ERRCNTR_CLEAR_ON_READ 1
 /* DEFAULT VALUE=0. Enabled programming of
@@ -347,8 +353,6 @@ typedef struct
         unsigned char link_rate;
 } lane_link_rate_struct;
 
-XDp_TxVscExtPacket ExtFrame_tx_vsc;
-
 /************************** Function Prototypes ******************************/
 
 u32 DpSs_Main();
@@ -377,8 +381,12 @@ int i2c_write_dp141(u32 I2CBaseAddress, u8 I2CSlaveAddress,
 			u16 RegisterAddress, u8 Value);
 int VideoFMC_Init(void);
 u32 DpSs_SetupIntrSystem(void);
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 void bufferWr_callback(void *InstancePtr);
+#endif
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 void bufferRd_callback(void *InstancePtr);
+#endif
 int TI_LMK03318_PowerDown(u32 I2CBaseAddress, u8 I2CSlaveAddress);
 int TI_LMK03318_SetRegister(u32 I2CBaseAddress, u8 I2CSlaveAddress,
 			u8 RegisterAddress, u8 Value);
@@ -400,55 +408,7 @@ void frameBuffer_start_rd(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K);
 
 u32 xil_gethex(u8 num_chars);
 
-//void sendAudioInfoFrame(XDp_TxAudioInfoFrame *xilInfoFrame);
-/************************** Variable Definitions *****************************/
-
-//XDpRxSs DpRxSsInst; 	/* The DPRX Subsystem instance.*/
-XINTC IntcInst; 	/* The interrupt controller instance. */
-XTmrCtr TmrCtr; 	/* Timer instance.*/
-#ifndef versal
-XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
-XIic IicInstance; 	/* I2C bus for MC6000 and IDT */
-XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
-#else
-void* VPhyInst;
-#endif
-
 /************************** Function Definitions *****************************/
-
-XV_FrmbufRd_l2     frmbufrd;
-XV_FrmbufWr_l2     frmbufwr;
-u64 XVFRMBUFRD_BUFFER_BASEADDR;
-u64 XVFRMBUFWR_BUFFER_BASEADDR;
-
-u64 XVFRMBUFRD_BUFFER_BASEADDR_Y;
-u64 XVFRMBUFWR_BUFFER_BASEADDR_Y;
-
-
-#ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
-XV_axi4s_remap_Config   *rx_remap_Config;
-XV_axi4s_remap          rx_remap;
-XV_axi4s_remap_Config   *tx_remap_Config;
-XV_axi4s_remap          tx_remap;
-#endif
-
-XDp_TxAudioInfoFrame *xilInfoFrame;
-//XIicPs_Config *XIic0Ps_ConfigPtr;
-XIicPs_Config *XIic1Ps_ConfigPtr;
-
-#if ENABLE_AUDIO
-XI2s_Tx I2s_tx;
-XI2s_Rx I2s_rx;
-XGpio   aud_gpio;
-
-XI2stx_Config *Config;
-XI2srx_Config *Config_rx;
-XGpio_Config  *aud_gpio_ConfigPtr;
-XAxis_Switch axis_switch_rx;
-XAxis_Switch axis_switch_tx;
-
-#endif
-
 /* Defining constants for colors in printing */
 #define ANSI_COLOR_RED          "\x1b[31m"
 #define ANSI_COLOR_GREEN    "\x1b[32m"
@@ -458,6 +418,3 @@ XAxis_Switch axis_switch_tx;
 #define ANSI_COLOR_CYAN     "\x1b[36m"
 #define ANSI_COLOR_WHITE    "\x1b[37m"
 #define ANSI_COLOR_RESET    "\x1b[0m"
-
-u8 use_vsc;
-u8 type_vsc;

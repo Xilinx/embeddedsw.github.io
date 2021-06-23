@@ -43,7 +43,7 @@
 
 #define MIPICSI_BASEADDR XPAR_CSISS_0_BASEADDR
 #define XCSIRXSS_DEVICE_ID	XPAR_CSISS_0_DEVICE_ID
-#define GPIO_SENSOR		XPAR_MIPI_CSI_RX_SS_AXI_GPIO_0_SENSOR_BASEADDR
+#define GPIO_SENSOR		XPAR_GPIO_3_BASEADDR
 
 #define GPIO_IP_RESET	 XPAR_AXI_GPIO_0_BASEADDR
 
@@ -97,7 +97,7 @@ u8 ReadBuffer[PAGE_SIZE]; /* Read buffer for reading a page. */
 
 extern XScuGic     Intc;
 
-XPipeline_Cfg Pipeline_Cfg;
+extern XPipeline_Cfg Pipeline_Cfg;
 XCsiSs CsiRxSs;
 
 

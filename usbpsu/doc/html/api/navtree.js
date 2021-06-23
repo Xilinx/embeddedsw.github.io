@@ -5,15 +5,18 @@ var NAVTREE =
       [ "Data Structures", "annotated.html", "annotated" ],
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
     [ "APIs", "globals.html", [
       [ "All", "globals.html", "globals_dup" ],
       [ "Functions", "globals_func.html", "globals_func" ],
+      [ "Variables", "globals_vars.html", null ],
+      [ "Typedefs", "globals_type.html", null ],
       [ "Enumerations", "globals_enum.html", null ],
       [ "Enumerator", "globals_eval.html", null ],
-      [ "Macros", "globals_defs.html", null ]
+      [ "Macros", "globals_defs.html", "globals_defs" ]
     ] ],
     [ "File List", "files.html", "files" ],
     [ "Examples", "example.html", [
@@ -69,7 +72,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xusb__freertos__ch9__keyboard_8h.html#a5fcf44156be6999a0abbc2d4ace707c1"
+"xusb__freertos__ch9__composite_8c.html#a8eaa9363a2026b377cee0a09377f6420",
+"xusbpsu_8h.html#gad13cbcf5858fa37dcba606bed25ed338",
+"xusbpsu__hw_8h.html#ga527525c4f3835818e41e243da5b48509"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

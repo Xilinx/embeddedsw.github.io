@@ -14,5 +14,6 @@ var xdptxss__debug__example_8c =
     [ "DpTxSs_PrintEdid", "xdptxss__debug__example_8c.html#ad99c4af9b125f82935837c501c178069", null ],
     [ "DpTxSs_ReportEdidInfo", "xdptxss__debug__example_8c.html#a8adb803565fe556bb1bede03b006e922", null ],
     [ "DpTxSs_StreamSrc", "xdptxss__debug__example_8c.html#a44da0aaa5e8ac565866c10f164974558", null ],
-    [ "main", "xdptxss__debug__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4", null ]
+    [ "main", "xdptxss__debug__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4", null ],
+    [ "DpTxSsInst", "xdptxss__debug__example_8c.html#a362bbd25e0f7e6fd42da96f398eac7ff", null ]
 ];

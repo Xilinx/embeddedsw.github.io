@@ -1,11 +1,13 @@
 var xqspipsu__control_8h =
 [
+    [ "XQSPIPSU_CONTROL_H_", "xqspipsu__control_8h.html#gad9ca9203ee7bb59d3b1284802bba5ec6", null ],
     [ "XQspiPsu_CreatePollDataConfig", "xqspipsu__control_8h.html#ga6f3b7fc81ae5c50ee3ea373d80b4b542", null ],
     [ "XQspiPsu_FillTxFifo", "xqspipsu__control_8h.html#gaf5c0853d67052b9b05af03946e51c4c2", null ],
     [ "XQspiPsu_GenFifoEntryData", "xqspipsu__control_8h.html#ga08036c2fa8996e246d9d529fd2302af9", null ],
     [ "XQspiPsu_GenFifoEntryDataLen", "xqspipsu__control_8h.html#ga7fc4cdebc35bb7b5d3ca9128917c131c", null ],
     [ "XQspiPsu_IORead", "xqspipsu__control_8h.html#gae7900ea73e245de8f091d4d4c201fe76", null ],
     [ "XQspiPsu_PollDataConfig", "xqspipsu__control_8h.html#gae55fa60e803534f990c0493b67eb02f1", null ],
+    [ "XQspiPsu_PollDataHandler", "xqspipsu__control_8h.html#ga5f083afb4ec79c542a7c7098a519d771", null ],
     [ "XQspiPsu_ReadRxFifo", "xqspipsu__control_8h.html#gaa04d433c594d66417be2c4f83c092203", null ],
     [ "XQspiPsu_RXSetup", "xqspipsu__control_8h.html#gad77b041e10c03756bd0e3c197a63a2e3", null ],
     [ "XQspiPsu_SelectSpiMode", "xqspipsu__control_8h.html#gae7bfe0aff5a064a01b0f822f46b26deb", null ],

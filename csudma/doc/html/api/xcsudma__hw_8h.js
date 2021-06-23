@@ -36,6 +36,7 @@ var xcsudma__hw_8h =
     [ "XCSUDMA_CTRL_SSS_FIFOTHRESH_SHIFT", "xcsudma__hw_8h.html#gaba325b1173d26c916097badcff6ab3d5", null ],
     [ "XCSUDMA_CTRL_TIMEOUT_MASK", "xcsudma__hw_8h.html#ga8f46672097f2d6533df165bbc7bdf0e6", null ],
     [ "XCSUDMA_CTRL_TIMEOUT_SHIFT", "xcsudma__hw_8h.html#ga0084f3cdeacc4098f70521b50006025d", null ],
+    [ "XCSUDMA_DONE_TIMEOUT_VAL", "xcsudma__hw_8h.html#ga0bd0c9763013ce910920b46ad35d10ba", null ],
     [ "XCSUDMA_FUTURE_ECO_OFFSET", "xcsudma__hw_8h.html#ga37042539804e77b257be674adb88efa4", null ],
     [ "XCSUDMA_HW_H_", "xcsudma__hw_8h.html#gaf7ae40275005f5b2c827da41a0e3cc23", null ],
     [ "XCSUDMA_I_DIS_OFFSET", "xcsudma__hw_8h.html#ga302a6020f0d9a857d490320f4a20c873", null ],
@@ -73,5 +74,6 @@ var xcsudma__hw_8h =
     [ "XCSUDMA_STS_OFFSET", "xcsudma__hw_8h.html#gaa69407558163d5fc58ac9621b3e313a3", null ],
     [ "XCsuDma_WriteReg", "xcsudma__hw_8h.html#ga5a2390fe93e02061d01c3b9e057b3b2b", null ],
     [ "XCUSDMA_STS_OUTSTDG_MASK", "xcsudma__hw_8h.html#ga56a8b1f3c33817adbe8a131a227a4564", null ],
-    [ "XCUSDMA_STS_OUTSTDG_SHIFT", "xcsudma__hw_8h.html#gad6719cf8d08f8710300ce922f6e52e40", null ]
+    [ "XCUSDMA_STS_OUTSTDG_SHIFT", "xcsudma__hw_8h.html#gad6719cf8d08f8710300ce922f6e52e40", null ],
+    [ "XPS_CRP_BASEADDRESS", "xcsudma__hw_8h.html#ga8a12076ed59a5418da0d43e0406ed292", null ]
 ];

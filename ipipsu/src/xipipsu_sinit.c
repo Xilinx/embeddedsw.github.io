@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /**
 *
 * @file xipipsu_sinit.c
-* @addtogroup ipipsu_v2_8
+* @addtogroup ipipsu_v2_9
 * @{
 *
 * The implementation of the XIpiPsu component's static initialization
@@ -19,6 +19,7 @@
 * ----- --- -------- -----------------------------------------------
 * 1.0   mjr  03/15/15 First release
 * 2.1   kvn  05/05/16 Modified code for MISRA-C:2012 Compliance
+* 2.9   sdd  03/11/21 Moved declaration to header files
 * </pre>
 *
 ******************************************************************************/
@@ -27,9 +28,6 @@
 #include "xil_types.h"
 #include "xparameters.h"
 #include "xipipsu.h"
-
-/************************** Variable Definitions *****************************/
-extern XIpiPsu_Config XIpiPsu_ConfigTable[];
 
 /*****************************************************************************/
 

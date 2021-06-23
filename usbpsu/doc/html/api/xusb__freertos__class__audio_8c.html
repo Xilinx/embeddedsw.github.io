@@ -77,7 +77,7 @@ $(document).ready(function(){initNavTree('xusb__freertos__class__audio_8c.html',
   1.0   rb   26/03/18 First release</pre><pre>*</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a32b6f95139e55ff73c71303408094577"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__audio_8c.html#a32b6f95139e55ff73c71303408094577">Usb_ClassReq</a> (struct Usb_DevData *InstancePtr, SetupPacket *SetupData)</td></tr>
+<tr class="memitem:a32b6f95139e55ff73c71303408094577"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__audio_8c.html#a32b6f95139e55ff73c71303408094577">Usb_ClassReq</a> (struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *InstancePtr, SetupPacket *SetupData)</td></tr>
 <tr class="memdesc:a32b6f95139e55ff73c71303408094577"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called by Chapter9 handler when class request is received from Host.  <a href="#a32b6f95139e55ff73c71303408094577">More...</a><br/></td></tr>
 <tr class="separator:a32b6f95139e55ff73c71303408094577"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b7cf32bf38cd19d9b38c52b52ebd9c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xusb__freertos__class__audio_8c.html#a3b7cf32bf38cd19d9b38c52b52ebd9c4">prvRecordTask</a> (void *pvParameters)</td></tr>
@@ -145,7 +145,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void Usb_ClassReq </td>
           <td>(</td>
-          <td class="paramtype">struct Usb_DevData *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="struct_usb___dev_data.html">Usb_DevData</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -166,12 +166,14 @@ Functions</h2></td></tr>
 <p>This function is class request handler for composite device Setup packet received is for Class request(not a Standard Device request)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is pointer to Usb_DevData instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is pointer to <a class="el" href="struct_usb___dev_data.html" title="struct Usb_DevData - Application device data Application Data ">Usb_DevData</a> instance. </td></tr>
     <tr><td class="paramname">SetupData</td><td>is the setup packet received from Host.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__usbpsu__v1__9.html#ga958a9e1a8dc436299c935c1243201112">ALIGNMENT_CACHELINE</a>, and <a class="el" href="struct_usb___dev_data.html#a35624c7f1dbe7a05bd61f4abf44d5cd8">Usb_DevData::PrivateData</a>.</p>
 
 </div>
 </div>

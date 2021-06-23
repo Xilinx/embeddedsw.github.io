@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdtps_g.c
-* @addtogroup wdtps_v3_4
+* @addtogroup wdtps_v3_5
 * @{
 *
 * This file contains a table that specifies the configuration of the watchdog
@@ -52,9 +52,11 @@ XWdtPs_Config XWdtPs_ConfigTable[XPAR_XWDTPS_NUM_INSTANCES] = {
 		(u16)XPAR_XWDTPS_0_DEVICE_ID,
 		(u32)XPAR_XWDTPS_0_BASEADDR
 	},
+#ifdef XPAR_XWDTPS_1_DEVICE_ID
 	{
 		(u16)XPAR_XWDTPS_1_DEVICE_ID,
 		(u32)XPAR_XWDTPS_1_BASEADDR
 	}
+#endif
 };
 /** @} */

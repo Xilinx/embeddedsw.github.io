@@ -11,6 +11,7 @@ var xsdps__card_8c =
     [ "XSdPs_CheckCardDetect", "xsdps__card_8c.html#ga9c1007ef091d85466eb133a80b9f3213", null ],
     [ "XSdPs_CheckEmmcTiming", "xsdps__card_8c.html#gaa0025016d626fdafc3ed1dc856834f12", null ],
     [ "XSdPs_CheckResetDone", "xsdps__card_8c.html#gae561ac5fb9655a8c8523a7afd848f8cd", null ],
+    [ "XSdPs_CheckTransferComplete", "xsdps__card_8c.html#gafa28027fec9472b8b49c61ad1c9489f2", null ],
     [ "XSdPs_CheckVoltage18", "xsdps__card_8c.html#gafa42ece30f32bbc385f0533873461b2d", null ],
     [ "XSdPs_DllReset", "xsdps__card_8c.html#gad837da458a367f226a76d8eda9a09214", null ],
     [ "XSdPs_GetCardId", "xsdps__card_8c.html#ga9645b197623dae8c5183bb3d31c7b0eb", null ],

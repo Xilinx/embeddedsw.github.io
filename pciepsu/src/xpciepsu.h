@@ -60,17 +60,13 @@ extern "C" {
 /**************************** Constant Definitions ****************************/
 
 /******************** Macros (Inline Functions) Definitions *******************/
-#define XPciePsu_ReadReg(BaseAddr, RegOffset) Xil_In32((BaseAddr) + (RegOffset))
-
-#define XPciePsu_WriteReg(BaseAddr, RegOffset, Val)                            \
-	Xil_Out32((BaseAddr) + (RegOffset), (Val))
-
 #define ARRAY_SIZE(x)	sizeof(x) / sizeof(x[0])
 
 /****************************** Type Definitions ******************************/
 
 typedef struct {
 	u16 DeviceId; /**< Unique ID of PCIe IP */
+#if defined(__aarch64__) || defined(__arch64__)
 	u64 BrigReg;  /**< Bridge Register base address */
 	u64 PciReg;		/**< pcie Register base address */
 	u64 Ecam;		/**< Ecam space base address */
@@ -78,6 +74,15 @@ typedef struct {
 	u64	PMemBaseAddr;		/**< prefetchable memory base address */
 	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
 	u64	PMemMaxAddr;	/**< prefetchable memory max base address */
+#else
+	u32 BrigReg;  /**< Bridge Register base address */
+	u32 PciReg;		/**< pcie Register base address */
+	u32 Ecam;		/**< Ecam space base address */
+	u32	NpMemBaseAddr;		/**< non prefetchable memory base address */
+	u32	PMemBaseAddr;		/**< prefetchable memory base address */
+	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
+	u32	PMemMaxAddr;	/**< prefetchable memory max base address */
+#endif
     u32 DmaBaseAddr;	/**< DMA base address */
 	u8	PcieMode;		/**< pcie mode rc or endpoint */
 } XPciePsu_Config;
@@ -88,11 +93,15 @@ typedef struct {
 	u32 MaxSupportedBusNo;		/**< If this is RC IP, Max Number of  Buses */
 } XPciePsu;
 
+/***************************** Variable defintions ****************************/
+extern XPciePsu_Config XPciePsu_ConfigTable[];
+extern size_t XPciePsu_ConfigTableSize;
+
 /***************************** Function Prototypes ****************************/
 
 XPciePsu_Config *XPciePsu_LookupConfig(u16 DeviceId);
 
-u32 XPciePsu_CfgInitialize(XPciePsu *InstancePtr, XPciePsu_Config *CfgPtr,
+u32 XPciePsu_CfgInitialize(XPciePsu *InstancePtr, const XPciePsu_Config *CfgPtr,
 			   UINTPTR EffectiveBrgAddress);
 u8 XPciePsu_EnumerateBus(XPciePsu *InstancePtr);
 u8 XPciePsu_ReadConfigSpace(XPciePsu *InstancePtr, u8 Bus, u8 Device,
@@ -104,10 +113,18 @@ u32 XPciePsu_ComposeExternalConfigAddress(u8 Bus, u8 Device, u8 Function,
 
 u8 XPciePsu_HasCapability(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 		u8 Function, u8 CapId);
+#if defined(__aarch64__) || defined(__arch64__)
 u64 XPciePsu_GetCapability(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 		u8 Function, u8 CapId);
+#endif
 u8 XPciePsu_PrintAllCapabilites(XPciePsu *InstancePtr, u8 Bus, u8 Device,
 		u8 Function);
+
+u32 XPciePsu_ReadReg(UINTPTR BaseAddr, u32 RegOffset);
+void XPciePsu_WriteReg(UINTPTR BaseAddr, u32 RegOffset, u32 Val);
+#if defined(__aarch64__) || defined(__arch64__)
+void XPciePsu_WriteReg64(UINTPTR BaseAddr, u64 RegOffset, u64 Val);
+#endif
 
 #ifdef __cplusplus
 }

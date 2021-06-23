@@ -7,7 +7,7 @@
 /**
 *
 * @file mcdp6000.c
-* @addtogroup dprxss_v6_1
+* @addtogroup dprxss_v7_0
 * @{
 *
 * This is the header file contains macros, enum, structure and function
@@ -62,6 +62,7 @@ int XDpRxSs_MCDP6000_ModifyRegister(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress,
 int XDpRxSs_MCDP6000_DpInit(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
 int XDpRxSs_MCDP6000_IbertInit(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
 int XDpRxSs_MCDP6000_ResetDpPath(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
+int XDpRxSs_MCDP6000_ResetCrPath(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
 
 int XDpRxSs_MCDP6000_EnablePrbs7_Tx(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
 int XDpRxSs_MCDP6000_EnablePrbs7_Rx(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);

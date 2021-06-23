@@ -75,6 +75,9 @@ static void XV_HdmiRxSs1_FrlLts2Callback(void *CallbackRef);
 static void XV_HdmiRxSs1_FrlLts3Callback(void *CallbackRef);
 static void XV_HdmiRxSs1_FrlLts4Callback(void *CallbackRef);
 static void XV_HdmiRxSs1_FrlLtsPCallback(void *CallbackRef);
+static void XV_HdmiRxSs1_VfpChanged(void *CallbackRef);
+static void XV_HdmiRxSs1_VrrReady(void *CallbackRef);
+static void XV_HdmiRxSs1_DynHdrEvtCallback(void *CallbackRef);
 
 static void XV_HdmiRxSs1_ConfigBridgeMode(XV_HdmiRxSs1 *InstancePtr);
 
@@ -123,6 +126,9 @@ void XV_HdmiRxSs1_ReportInfo(XV_HdmiRxSs1 *InstancePtr)
     xil_printf("Audio\r\n");
     xil_printf("---------\r\n");
     XV_HdmiRxSs1_ReportAudio(InstancePtr);
+    xil_printf("Static HDR DRM Info frame\r\n");
+    xil_printf("---------\r\n");
+    XV_HdmiRxSs1_ReportDRMInfo(InstancePtr);
     xil_printf("InfoFrame\r\n");
     xil_printf("---------\r\n");
     XV_HdmiRxSs1_ReportInfoFrame(InstancePtr);
@@ -413,6 +419,20 @@ static int XV_HdmiRxSs1_RegisterSubsysCallbacks(XV_HdmiRxSs1 *InstancePtr)
 			  XV_HDMIRX1_HANDLER_FRL_LTSP,
 			  (void *)XV_HdmiRxSs1_FrlLtsPCallback,
 			  (void *)InstancePtr);
+
+    XV_HdmiRx1_SetCallback(HdmiRxSs1Ptr->HdmiRx1Ptr,
+			  XV_HDMIRX1_HANDLER_VFP_CHANGE,
+			  (void *)XV_HdmiRxSs1_VfpChanged,
+			  (void *)InstancePtr);
+
+    XV_HdmiRx1_SetCallback(HdmiRxSs1Ptr->HdmiRx1Ptr,
+			  XV_HDMIRX1_HANDLER_VRR_RDY,
+			  (void *)XV_HdmiRxSs1_VrrReady,
+			  (void *)InstancePtr);
+    XV_HdmiRx1_SetCallback(HdmiRxSs1Ptr->HdmiRx1Ptr,
+			   XV_HDMIRX1_HANDLER_DYN_HDR,
+			  (void *)XV_HdmiRxSs1_DynHdrEvtCallback,
+			  (void *)InstancePtr);
   }
 
   return(XST_SUCCESS);
@@ -470,6 +490,7 @@ int XV_HdmiRxSs1_CfgInitialize(XV_HdmiRxSs1 *InstancePtr,
     UINTPTR EffectiveAddr)
 {
   XV_HdmiRxSs1 *HdmiRxSs1Ptr = InstancePtr;
+  XHdmiC_DRMInfoFrame *DrmInfoFramePtr;
 
   /* Verify arguments */
   Xil_AssertNonvoid(HdmiRxSs1Ptr != NULL);
@@ -588,6 +609,11 @@ int XV_HdmiRxSs1_CfgInitialize(XV_HdmiRxSs1 *InstancePtr,
   HdmiRxSs1Ptr->EnableHDCPLogging = (FALSE);
   HdmiRxSs1Ptr->EnableHDMILogging = (FALSE);
 
+  /* Initialise the static HDR struct */
+  DrmInfoFramePtr = XV_HdmiRxSs1_GetDrmInfoframe(HdmiRxSs1Ptr);
+  DrmInfoFramePtr->Static_Metadata_Descriptor_ID = 0xFF;
+  DrmInfoFramePtr->EOTF = 0xFF;
+
   return(XST_SUCCESS);
 }
 
@@ -640,6 +666,8 @@ void XV_HdmiRxSs1_Stop(XV_HdmiRxSs1 *InstancePtr)
 #ifdef XV_HDMIRXSS1_LOG_ENABLE
   XV_HdmiRxSs1_LogWrite(InstancePtr, XV_HDMIRXSS1_LOG_EVT_STOP, 0);
 #endif
+
+  XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr->HdmiRx1Ptr);
 }
 
 /*****************************************************************************/
@@ -849,10 +877,13 @@ static void XV_HdmiRxSs1_AuxCallback(void *CallbackRef)
   XHdmiC_AVI_InfoFrame *AviInfoFramePtr;
   XHdmiC_GeneralControlPacket *GeneralControlPacketPtr;
   XHdmiC_AudioInfoFrame *AudioInfoFramePtr;
+  XHdmiC_DRMInfoFrame *DrmInfoFramePtr;
 
   AviInfoFramePtr = XV_HdmiRxSs1_GetAviInfoframe(HdmiRxSs1Ptr);
   GeneralControlPacketPtr = XV_HdmiRxSs1_GetGCP(HdmiRxSs1Ptr);
   AudioInfoFramePtr = XV_HdmiRxSs1_GetAudioInfoframe(HdmiRxSs1Ptr);
+  DrmInfoFramePtr = XV_HdmiRxSs1_GetDrmInfoframe(HdmiRxSs1Ptr);
+
   AuxPtr = XV_HdmiRxSs1_GetAuxiliary(HdmiRxSs1Ptr);
 
   if (AuxPtr->Header.Byte[0] == AUX_VSIF_TYPE){
@@ -864,7 +895,7 @@ static void XV_HdmiRxSs1_AuxCallback(void *CallbackRef)
 	  /* Parse Aux to retrieve Avi InfoFrame*/
 	  XV_HdmiC_ParseAVIInfoFrame(AuxPtr, AviInfoFramePtr);
 	  HdmiRxSs1Ptr->HdmiRx1Ptr->Stream.Video.ColorFormatId =
-	  			XV_HdmiRx1_GetAviColorSpace(HdmiRxSs1Ptr->HdmiRx1Ptr);
+				XV_HdmiRx1_GetAviColorSpace(HdmiRxSs1Ptr->HdmiRx1Ptr);
 	  HdmiRxSs1Ptr->HdmiRx1Ptr->Stream.Vic =
 				XV_HdmiRx1_GetAviVic(HdmiRxSs1Ptr->HdmiRx1Ptr);
 	  HdmiRxSs1Ptr->HdmiRx1Ptr->Stream.Video.AspectRatio =
@@ -880,6 +911,9 @@ static void XV_HdmiRxSs1_AuxCallback(void *CallbackRef)
 	  (void)memset((void *)AudioInfoFramePtr, 0, sizeof(XHdmiC_AudioInfoFrame));
 	  /* Parse Aux to retrieve Audio InfoFrame*/
 	  XV_HdmiC_ParseAudioInfoFrame(AuxPtr, AudioInfoFramePtr);
+  } else if (AuxPtr->Header.Byte[0] == AUX_DRM_INFOFRAME_TYPE) {
+	  (void)memset((void *)DrmInfoFramePtr, 0, sizeof(XHdmiC_DRMInfoFrame));
+	  XV_HdmiC_ParseDRMIF(AuxPtr, DrmInfoFramePtr);
   }
 
   /* Check if user callback has been registered*/
@@ -1258,12 +1292,17 @@ static void XV_HdmiRxSs1_StreamDownCallback(void *CallbackRef)
 {
   XV_HdmiRxSs1 *HdmiRxSs1Ptr = (XV_HdmiRxSs1 *)CallbackRef;
   XHdmiC_AVI_InfoFrame *AviInfoFramePtr;
+  XV_HdmiC_VideoTimingExtMeta *ExtMetaPtr;
+  XV_HdmiC_SrcProdDescIF *SpdIfPtr;
+  XVidC_VideoStream *VidCStream;
+  XHdmiC_DRMInfoFrame *DrmInfoFramePtr;
 
   if (HdmiRxSs1Ptr->HdmiRx1Ptr->Stream.IsFrl != TRUE) {
 	  /* Assert HDMI RX core resets */
 	  XV_HdmiRxSs1_RXCore_VRST(HdmiRxSs1Ptr, TRUE);
 	  XV_HdmiRxSs1_RXCore_LRST(HdmiRxSs1Ptr, TRUE);
   }
+  HdmiRxSs1Ptr->HdmiRx1Ptr->IsFirstVtemReceived = FALSE;
 
   /* Assert SYSCLK VID_IN bridge reset */
   XV_HdmiRxSs1_SYSRST(HdmiRxSs1Ptr, TRUE);
@@ -1273,6 +1312,21 @@ static void XV_HdmiRxSs1_StreamDownCallback(void *CallbackRef)
 
   AviInfoFramePtr = XV_HdmiRxSs1_GetAviInfoframe(HdmiRxSs1Ptr);
   memset((void *)AviInfoFramePtr, 0, sizeof(XHdmiC_AVI_InfoFrame));
+
+  DrmInfoFramePtr = XV_HdmiRxSs1_GetDrmInfoframe(HdmiRxSs1Ptr);
+  DrmInfoFramePtr->Static_Metadata_Descriptor_ID = 0xFF;
+  DrmInfoFramePtr->EOTF = 0xFF;
+
+  XV_HdmiRx1_SetVrrIfType(HdmiRxSs1Ptr->HdmiRx1Ptr,
+		  XV_HDMIC_VRRINFO_TYPE_NONE);
+  ExtMetaPtr = XV_HdmiRx1_GetVidTimingExtMeta(HdmiRxSs1Ptr->HdmiRx1Ptr);
+  memset((void *)ExtMetaPtr, 0, sizeof(XV_HdmiC_VideoTimingExtMeta));
+
+  SpdIfPtr = XV_HdmiRx1_GetSrcProdDescIF(HdmiRxSs1Ptr->HdmiRx1Ptr);
+  memset((void *)SpdIfPtr, 0, sizeof(XV_HdmiC_SrcProdDescIF));
+
+  VidCStream = XV_HdmiRxSs1_GetVideoStream(HdmiRxSs1Ptr);
+  memset(&(VidCStream->BaseTiming), 0, sizeof(XVidC_VideoTiming));
 
 #ifdef XV_HDMIRXSS1_LOG_ENABLE
   XV_HdmiRxSs1_LogWrite(HdmiRxSs1Ptr, XV_HDMIRXSS1_LOG_EVT_STREAMDOWN, 0);
@@ -1656,6 +1710,30 @@ int XV_HdmiRxSs1_SetCallback(XV_HdmiRxSs1 *InstancePtr,
             Status = (XST_SUCCESS);
             break;
 
+	/* Vfp Change */
+	case (XV_HDMIRXSS1_HANDLER_VFP_CH):
+            InstancePtr->VfpChangeCallback =
+			    (XV_HdmiRxSs1_Callback)CallbackFunc;
+            InstancePtr->VfpChangeRef = CallbackRef;
+            Status = (XST_SUCCESS);
+            break;
+
+	/* VRR ready */
+	case (XV_HDMIRXSS1_HANDLER_VRR_RDY):
+            InstancePtr->VrrRdyCallback =
+			    (XV_HdmiRxSs1_Callback)CallbackFunc;
+            InstancePtr->VrrRdyRef = CallbackRef;
+            Status = (XST_SUCCESS);
+            break;
+
+	/* Dynamic HDR  */
+	case (XV_HDMIRXSS1_HANDLER_DYN_HDR):
+	    InstancePtr->DynHdrCallback =
+	    (XV_HdmiRxSs1_Callback)CallbackFunc;
+	    InstancePtr->DynHdrRef = CallbackRef;
+	    Status = (XST_SUCCESS);
+	    break;
+
         default:
             Status = (XST_INVALID_PARAM);
             break;
@@ -1875,6 +1953,24 @@ XHdmiC_GeneralControlPacket *XV_HdmiRxSs1_GetGCP(XV_HdmiRxSs1 *InstancePtr)
 XHdmiC_AudioInfoFrame *XV_HdmiRxSs1_GetAudioInfoframe(XV_HdmiRxSs1 *InstancePtr)
 {
     return (&(InstancePtr->AudioInfoframe));
+}
+
+/*****************************************************************************/
+/**
+*
+* This function returns the pointer to HDMI 2.1 RX SS DRM InfoFrame
+* structure
+*
+* @param  InstancePtr pointer to XV_HdmiRxSs1 instance
+*
+* @return XHdmiC_DRMInfoFrame pointer
+*
+* @note   None.
+*
+******************************************************************************/
+XHdmiC_DRMInfoFrame *XV_HdmiRxSs1_GetDrmInfoframe(XV_HdmiRxSs1 *InstancePtr)
+{
+    return &InstancePtr->DrmInfoframe;
 }
 
 /*****************************************************************************/
@@ -2318,6 +2414,55 @@ void XV_HdmiRxSs1_ReportLinkQuality(XV_HdmiRxSs1 *InstancePtr)
 /*****************************************************************************/
 /**
 *
+* This function prints the HDMI 2.1 RX SS static HDR infoframe information
+*
+* @param  InstancePtr pointer to XV_HdmiRxSs1 instance
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_ReportDRMInfo(XV_HdmiRxSs1 *InstancePtr)
+{
+	XHdmiC_DRMInfoFrame *DrmInfoFramePtr;
+
+	Xil_AssertVoid(InstancePtr);
+
+	DrmInfoFramePtr = XV_HdmiRxSs1_GetDrmInfoframe(InstancePtr);
+	if (DrmInfoFramePtr->EOTF != 0xFF)
+		xil_printf("eotf: %d\r\n", DrmInfoFramePtr->EOTF);
+
+	if (DrmInfoFramePtr->Static_Metadata_Descriptor_ID == 0xFF) {
+		xil_printf("No DRM info\r\n");
+		return;
+	}
+
+	xil_printf("DRM IF info:\n");
+	xil_printf("desc id: %d\r\n",
+		   DrmInfoFramePtr->Static_Metadata_Descriptor_ID);
+	xil_printf("display primaries x0, y0, x1, y1, x2, y2: %d %d %d %d %d %d\r\n",
+		   DrmInfoFramePtr->disp_primaries[0].x,
+		   DrmInfoFramePtr->disp_primaries[0].y,
+		   DrmInfoFramePtr->disp_primaries[1].x,
+		   DrmInfoFramePtr->disp_primaries[1].y,
+		   DrmInfoFramePtr->disp_primaries[2].x,
+		   DrmInfoFramePtr->disp_primaries[2].y);
+	xil_printf("white point x, y: %d %d\r\n",
+		   DrmInfoFramePtr->white_point.x,
+		   DrmInfoFramePtr->white_point.y);
+	xil_printf("min/max display mastering luminance: %d %d\r\n",
+		   DrmInfoFramePtr->Min_Disp_Mastering_Luminance,
+		   DrmInfoFramePtr->Max_Disp_Mastering_Luminance);
+	xil_printf("Max_CLL: %d\r\n",
+		   DrmInfoFramePtr->Max_Content_Light_Level);
+	xil_printf("max_fall: %d\r\n",
+		   DrmInfoFramePtr->Max_Frame_Average_Light_Level);
+}
+
+/*****************************************************************************/
+/**
+*
 * This function prints the HDMI RX SS audio information
 *
 * @param  None.
@@ -2588,6 +2733,40 @@ void XV_HdmiRxSs1_AudioMute(XV_HdmiRxSs1 *InstancePtr, u8 Enable)
 /*****************************************************************************/
 /**
 *
+* This function controls HDMI RX VFP event enable/disable
+*
+* @param  Enable 0: disable VFP event 1: enable VFP event.
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_VfpControl(XV_HdmiRxSs1 *InstancePtr, u8 Enable)
+{
+	XV_HdmiRx1_VtdVfpEvent(InstancePtr->HdmiRx1Ptr, Enable);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function returns VRR infoframe type
+*
+* @param    InstancePtr is a pointer to the XV_HdmiRxSs1 instance.
+*
+* @return XV_HdmiRx1_VrrInfoframeType
+*
+* @note   None.
+*
+******************************************************************************/
+XV_HdmiC_VrrInfoFrame *XV_HdmiRxSs1_GetVrrIf(XV_HdmiRxSs1 *InstancePtr)
+{
+	return &(InstancePtr->HdmiRx1Ptr->VrrIF);
+}
+
+/*****************************************************************************/
+/**
+*
 * This function returns core ppc value
 *
 * @param  InstancePtr pointer to XV_HdmiRXSs instance
@@ -2600,6 +2779,115 @@ void XV_HdmiRxSs1_AudioMute(XV_HdmiRxSs1 *InstancePtr, u8 Enable)
 XVidC_PixelsPerClock XV_HdmiRxSs1_GetCorePpc(XV_HdmiRxSs1 *InstancePtr)
 {
 	return InstancePtr->HdmiRx1Ptr->Stream.CorePixPerClk;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function enables the Data mover in Dynamic HDR
+*
+* @param  InstancePtr pointer to XV_HdmiRXSs instance
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_DynHDR_DM_Enable(XV_HdmiRxSs1 *InstancePtr)
+{
+	Xil_AssertVoid(InstancePtr);
+
+	if (!InstancePtr->Config.DynamicHDR) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiRxSs1 Dynamic HDR disabled\r\n");
+		return;
+	}
+
+	XV_HdmiRx1_DynHDR_DM_Enable(InstancePtr->HdmiRx1Ptr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function disables the Data mover in Dynamic HDR
+*
+* @param  InstancePtr pointer to XV_HdmiRXSs instance
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_DynHDR_DM_Disable(XV_HdmiRxSs1 *InstancePtr)
+{
+	Xil_AssertVoid(InstancePtr);
+
+	if (!InstancePtr->Config.DynamicHDR) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiRxSs1 Dynamic HDR disabled\r\n");
+		return;
+	}
+
+	XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr->HdmiRx1Ptr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function sets the buffer address for Dyanamic HDR
+*
+* @param  InstancePtr pointer to XV_HdmiRXSs instance
+* @param  Addr 64 bit address
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_DynHDR_SetAddr(XV_HdmiRxSs1 *InstancePtr, u64 Addr)
+{
+	Xil_AssertVoid(InstancePtr);
+	Xil_AssertVoid(Addr);
+	/* 64 bit aligned address */
+	Xil_AssertVoid(!(Addr & 0x3F));
+
+	if (!InstancePtr->Config.DynamicHDR) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiRxSs1 Dynamic HDR disabled\r\n");
+		return;
+	}
+
+	XV_HdmiRx1_DynHDR_SetAddr(InstancePtr->HdmiRx1Ptr, Addr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function sets the buffer address for Dyanamic HDR
+*
+* @param  InstancePtr pointer to XV_HdmiRXSs instance
+* @param  RxDynHdrInfo pointer to dynamic hdr info structure. This is passed
+*	  by the application.
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_HdmiRxSs1_DynHDR_GetInfo(XV_HdmiRxSs1 *InstancePtr,
+				 XV_HdmiRxSs1_DynHDR_Info *RxDynHdrInfo)
+{
+	Xil_AssertVoid(InstancePtr);
+	Xil_AssertVoid(RxDynHdrInfo);
+
+	if (!InstancePtr->Config.DynamicHDR) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "\r\nWarning: HdmiRxSs1 Dynamic HDR disabled\r\n");
+		return;
+	}
+
+	XV_HdmiRx1_DynHDR_GetInfo(InstancePtr->HdmiRx1Ptr,
+				  (XV_HdmiRx1_DynHDR_Info *)RxDynHdrInfo);
 }
 
 static void XV_HdmiRxSs1_FrlLtsLCallback(void *CallbackRef)
@@ -2656,4 +2944,30 @@ static void XV_HdmiRxSs1_FrlLtsPCallback(void *CallbackRef)
 #ifdef XV_HDMIRXSS1_LOG_ENABLE
 	XV_HdmiRxSs1_LogWrite(HdmiRxSs1Ptr, XV_HDMIRXSS1_LOG_EVT_FRL_LTSP, 0);
 #endif
+}
+
+static void XV_HdmiRxSs1_VfpChanged(void *CallbackRef)
+{
+	XV_HdmiRxSs1 *HdmiRxSs1Ptr = (XV_HdmiRxSs1 *)CallbackRef;
+
+	if (HdmiRxSs1Ptr->VfpChangeCallback)
+		HdmiRxSs1Ptr->VfpChangeCallback(HdmiRxSs1Ptr->VfpChangeRef);
+}
+
+static void XV_HdmiRxSs1_VrrReady(void *CallbackRef)
+{
+	XV_HdmiRxSs1 *HdmiRxSs1Ptr = (XV_HdmiRxSs1 *)CallbackRef;
+#ifdef XV_HDMIRXSS1_LOG_ENABLE
+	XV_HdmiRxSs1_LogWrite(HdmiRxSs1Ptr, XV_HDMIRXSS1_LOG_EVT_VRR_RDY, 0);
+#endif
+	if (HdmiRxSs1Ptr->VrrRdyCallback)
+		HdmiRxSs1Ptr->VrrRdyCallback(HdmiRxSs1Ptr->VrrRdyRef);
+}
+
+static void XV_HdmiRxSs1_DynHdrEvtCallback(void *CallbackRef)
+{
+	XV_HdmiRxSs1 *HdmiRxSs1Ptr = (XV_HdmiRxSs1 *)CallbackRef;
+
+	if (HdmiRxSs1Ptr->DynHdrCallback)
+		HdmiRxSs1Ptr->DynHdrCallback(HdmiRxSs1Ptr->DynHdrRef);
 }

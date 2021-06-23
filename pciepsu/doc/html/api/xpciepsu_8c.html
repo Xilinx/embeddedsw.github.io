@@ -77,6 +77,12 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a0cfd7833187346f6f654d80a359951b0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg</a> (UINTPTR BaseAddr, u32 RegOffset)</td></tr>
+<tr class="memdesc:a0cfd7833187346f6f654d80a359951b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads a register value from specificied offset.  <a href="#a0cfd7833187346f6f654d80a359951b0">More...</a><br/></td></tr>
+<tr class="separator:a0cfd7833187346f6f654d80a359951b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a558622766b2c01af123a216c1d682376"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg</a> (UINTPTR BaseAddr, u32 RegOffset, u32 Val)</td></tr>
+<tr class="memdesc:a558622766b2c01af123a216c1d682376"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes a register value to specificied offset.  <a href="#a558622766b2c01af123a216c1d682376">More...</a><br/></td></tr>
+<tr class="separator:a558622766b2c01af123a216c1d682376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d7bc13d9f1da8d6e67b88a1c37ed24"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress</a> (u8 Bus, u8 Device, u8 Function, u16 Offset)</td></tr>
 <tr class="memdesc:ac2d7bc13d9f1da8d6e67b88a1c37ed24"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function Composes configuration space location.  <a href="#ac2d7bc13d9f1da8d6e67b88a1c37ed24">More...</a><br/></td></tr>
 <tr class="separator:ac2d7bc13d9f1da8d6e67b88a1c37ed24"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -89,12 +95,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a862b72cd0796d429f122b5b83603f1d3"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#a862b72cd0796d429f122b5b83603f1d3">XPciePsu_EnumerateBus</a> (XPciePsu *InstancePtr)</td></tr>
 <tr class="memdesc:a862b72cd0796d429f122b5b83603f1d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts PCIe enumeration.  <a href="#a862b72cd0796d429f122b5b83603f1d3">More...</a><br/></td></tr>
 <tr class="separator:a862b72cd0796d429f122b5b83603f1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67cfab665a3b4cb3898887f972c6296c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#a67cfab665a3b4cb3898887f972c6296c">XPciePsu_CfgInitialize</a> (XPciePsu *InstancePtr, XPciePsu_Config *CfgPtr, UINTPTR EffectiveBrgAddress)</td></tr>
-<tr class="memdesc:a67cfab665a3b4cb3898887f972c6296c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the config space and PCIe bridge.  <a href="#a67cfab665a3b4cb3898887f972c6296c">More...</a><br/></td></tr>
-<tr class="separator:a67cfab665a3b4cb3898887f972c6296c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d54a4fe188343ce59d689901c2b88c6"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8c.html#a3d54a4fe188343ce59d689901c2b88c6">XPciePsu_CfgInitialize</a> (XPciePsu *InstancePtr, const XPciePsu_Config *CfgPtr, UINTPTR EffectiveBrgAddress)</td></tr>
+<tr class="memdesc:a3d54a4fe188343ce59d689901c2b88c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the config space and PCIe bridge.  <a href="#a3d54a4fe188343ce59d689901c2b88c6">More...</a><br/></td></tr>
+<tr class="separator:a3d54a4fe188343ce59d689901c2b88c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a67cfab665a3b4cb3898887f972c6296c"></a>
+<a class="anchor" id="a3d54a4fe188343ce59d689901c2b88c6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -107,7 +113,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">XPciePsu_Config *&#160;</td>
+          <td class="paramtype">const XPciePsu_Config *&#160;</td>
           <td class="paramname"><em>CfgPtr</em>, </td>
         </tr>
         <tr>
@@ -189,7 +195,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xpciepsu__hw_8h.html#a20a45b167585637a9c235ff5b012ca09">XPCIEPSU_ECAM_BUS_MASK</a>, <a class="el" href="xpciepsu__hw_8h.html#a43e34c012ad52ea9f676bc0be12b7755">XPCIEPSU_ECAM_BUS_SHIFT</a>, <a class="el" href="xpciepsu__hw_8h.html#a025cd22e68482e510c64559acafb2b7a">XPCIEPSU_ECAM_DEV_MASK</a>, <a class="el" href="xpciepsu__hw_8h.html#a656b4b5d6c324bb37973ad122d06e764">XPCIEPSU_ECAM_DEV_SHIFT</a>, <a class="el" href="xpciepsu__hw_8h.html#ad49fa35e338b4835db5b768e05377a94">XPCIEPSU_ECAM_FUN_MASK</a>, <a class="el" href="xpciepsu__hw_8h.html#a70e8568f9b38b009d293beb175ad7dad">XPCIEPSU_ECAM_FUN_SHIFT</a>, <a class="el" href="xpciepsu__hw_8h.html#a1f631e0208927a2a67ceade471bba3bc">XPCIEPSU_ECAM_MASK</a>, <a class="el" href="xpciepsu__hw_8h.html#ad790db72820f81029d65b4d420e05742">XPCIEPSU_ECAM_REG_MASK</a>, and <a class="el" href="xpciepsu__hw_8h.html#a37c37016f94f30ed1a242bed0ce2ba2f">XPCIEPSU_ECAM_REG_SHIFT</a>.</p>
 
-<p>Referenced by <a class="el" href="xpciepsu__caps_8c.html#a61f1c408c503c3a1ad58faac9bc8cb42">XPciePsu_GetCapability()</a>, <a class="el" href="xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
 
 </div>
 </div>
@@ -282,9 +288,47 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS on success XST_FAILURE on failure. </dd></dl>
 
-<p>References <a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress()</a>.</p>
+<p>References <a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress()</a>, and <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>.</p>
 
-<p>Referenced by <a class="el" href="xpciepsu__caps_8c.html#a61f1c408c503c3a1ad58faac9bc8cb42">XPciePsu_GetCapability()</a>, <a class="el" href="xpciepsu__caps_8c.html#a1cf81ffb26c43a972d2b92278b20cf7c">XPciePsu_HasCapability()</a>, and <a class="el" href="xpciepsu__caps_8c.html#a95b11e3f3a7fc1ae339795b380fde121">XPciePsu_PrintAllCapabilites()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__caps_8c.html#a1cf81ffb26c43a972d2b92278b20cf7c">XPciePsu_HasCapability()</a>, and <a class="el" href="xpciepsu__caps_8c.html#a95b11e3f3a7fc1ae339795b380fde121">XPciePsu_PrintAllCapabilites()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0cfd7833187346f6f654d80a359951b0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XPciePsu_ReadReg </td>
+          <td>(</td>
+          <td class="paramtype">UINTPTR&#160;</td>
+          <td class="paramname"><em>BaseAddr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>RegOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function reads a register value from specificied offset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">BaseAddr</td><td>BaseAddr of the register </td></tr>
+    <tr><td class="paramname">RegOffset</td><td>Offset from the base address to be read</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Register value </dd></dl>
+
+<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, <a class="el" href="xpciepsu__ep_8h.html#a1d40296b15e59da3006fda5faa6a5d9c">XPciePsu_EP_WaitForEnumeration()</a>, <a class="el" href="xpciepsu__ep_8h.html#aca1b71a1574b91939ee539c11556ce88">XPciePsu_EP_WaitForLinkup()</a>, <a class="el" href="xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
 
 </div>
 </div>
@@ -350,7 +394,52 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS on success XST_FAILURE on failure. </dd></dl>
 
-<p>References <a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress()</a>.</p>
+<p>References <a class="el" href="xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24">XPciePsu_ComposeExternalConfigAddress()</a>, <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a558622766b2c01af123a216c1d682376"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XPciePsu_WriteReg </td>
+          <td>(</td>
+          <td class="paramtype">UINTPTR&#160;</td>
+          <td class="paramname"><em>BaseAddr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>RegOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>Val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function writes a register value to specificied offset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">BaseAddr</td><td>Base Address of the register </td></tr>
+    <tr><td class="paramname">RegOffset</td><td>Offset from the base address to be written </td></tr>
+    <tr><td class="paramname">Val</td><td>Value to be written</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
+
+<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
 
 </div>
 </div>

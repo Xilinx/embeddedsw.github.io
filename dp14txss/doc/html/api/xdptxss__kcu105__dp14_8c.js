@@ -26,6 +26,5 @@ var xdptxss__kcu105__dp14_8c =
     [ "update_edid", "xdptxss__kcu105__dp14_8c.html#acbbbb90b2f7ea876d4b492c7ca63712c", null ],
     [ "video_change_detect", "xdptxss__kcu105__dp14_8c.html#acd925d2fdf6aa67430a4a6f8dac3e646", null ],
     [ "VideoFMC_Init", "xdptxss__kcu105__dp14_8c.html#a83b1170da398be3c53b87955c0a5b6a3", null ],
-    [ "hpd_pulse_con_event", "xdptxss__kcu105__dp14_8c.html#abf837d981cd312ee75c7a534bccca419", null ],
     [ "lane_link_table", "xdptxss__kcu105__dp14_8c.html#ab0fb3d1ea8d00f1033f476917741a776", null ]
 ];

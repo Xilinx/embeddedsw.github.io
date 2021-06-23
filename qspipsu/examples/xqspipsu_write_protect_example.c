@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -44,6 +44,7 @@
 * 1.9	akm 02/27/19 Added support for IS25LP128, IS25WP128, IS25LP256,
 *  		     IS25WP256, IS25LP512, IS25WP512 Flash Devices
 * 1.9   akm 04/03/19 Fixed data alignment warnings on IAR compiler.
+* 1.13  akm 11/30/20 Removed unwanted header files.
 *
 *</pre>
 *
@@ -53,9 +54,7 @@
 
 #include "xqspipsu_flash_config.h"
 #include "xscugic.h"		/* Interrupt controller device driver */
-#include "xil_exception.h"
 #include "xil_printf.h"
-#include "xil_cache.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -188,7 +187,6 @@ u32 MaxData = PAGE_COUNT*256;
  *
  * Main function to call the QSPIPSU Flash example.
  *
- * @param	None
  *
  * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
  *
@@ -224,7 +222,12 @@ int main(void)
  * flash devices greater than or equal to 128Mb and drive the Write
  * Protect pin of the flash device using GQSPI GPIO.
  *
- * @param	None.
+ * @param	IntcInstancePtr is a pointer to the instance of the Intc device.
+ * @param	QspiPsuInstancePtr is a pointer to the instance of the QspiPsu
+ *		device.
+ * @param	QspiPsuDeviceId is the Device ID of the Qspi Device and is the
+ *		XPAR_<QSPI_instance>_DEVICE_ID value from xparameters.h.
+ * @param	QspiPsuIntrId is the interrupt Id for an QSPIPSU device.
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -419,7 +422,11 @@ int QspiPsuWriteProtectFlashExample(XScuGic *IntcInstancePtr,
  *
  * Callback handler.
  *
- * @param	None.
+ * @param	CallBackRef is the upper layer callback reference passed back
+ *		when the callback function is invoked.
+ * @param	StatusEvent is the event that just occurred.
+ * @param	ByteCount is the number of bytes transferred up until the event
+ *		occurred.
  *
  * @return	None
  *
@@ -447,7 +454,7 @@ void QspiPsuHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
  *
  * Reads the flash ID and identifies the flash in FCT table.
  *
- * @param	None.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -511,13 +518,13 @@ int FlashReadID(XQspiPsu *QspiPsuPtr)
  * All the data put into the buffer must be in the same page of the device with
  * page boundaries being on 256 byte boundaries.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address to write data to in the Flash.
  * @param	ByteCount contains the number of bytes to write.
  * @param	Command is the command used to write data to the flash. QSPIPSU
  *		device supports only Page Program command to write data to the
  *		flash.
- * @param	Pointer to the write buffer (which is to be transmitted)
+ * @param	WriteBfrPtr is pointer to the write buffer (which is to be transmitted)
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -667,11 +674,11 @@ int FlashWrite(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
  * This function erases the sectors in the  serial Flash connected to the
  * QSPIPSU interface.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address of the first sector which needs to
  *		be erased.
  * @param	ByteCount contains the total size to be erased.
- * @param	Pointer to the write buffer (which is to be transmitted)
+ * @param	WriteBfrPtr is pointer to the write buffer (which is to be transmitted)
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -903,14 +910,14 @@ int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount,
  *
  * This function performs a read. Default setting is in DMA mode.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address contains the address of the first sector which needs to
  *			be erased.
  * @param	ByteCount contains the total size to be erased.
  * @param	Command is the command used to read data from the flash. Supports
  * 			normal, fast, dual and quad read commands.
- * @param	Pointer to the write buffer which contains data to be transmitted
- * @param	Pointer to the read buffer to which valid received data should be
+ * @param	WriteBfrPtr is pointer to the write buffer which contains data to be transmitted
+ * @param	ReadBfrPtr is pointer to the read buffer to which valid received data should be
  * 			written
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
@@ -1036,8 +1043,8 @@ int FlashRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
  * This functions performs a bulk erase operation when the
  * flash device has a single die. Works for both Spansion and Micron
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
- * @param	WritBfrPtr is the pointer to command+address to be sent
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	WriteBfrPtr is the pointer to command+address to be sent
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -1143,8 +1150,8 @@ int BulkErase(XQspiPsu *QspiPsuPtr, u8 *WriteBfrPtr)
  * the flash device. This function uses the die erase command for
  * Micron 512Mbit and 1Gbit
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
- * @param	WritBfrPtr is the pointer to command+address to be sent
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	WriteBfrPtr is the pointer to command+address to be sent
  *
  * @return	XST_SUCCESS if successful, else XST_FAILURE.
  *
@@ -1259,7 +1266,7 @@ int DieErase(XQspiPsu *QspiPsuPtr, u8 *WriteBfrPtr)
  * This functions translates the address based on the type of interconnection.
  * In case of stacked, this function asserts the corresponding slave select.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Address which is to be accessed (for erase, write or read)
  *
  * @return	RealAddr is the translated address - for single it is unchanged;
@@ -1434,7 +1441,7 @@ static void QspiPsuDisableIntrSystem(XScuGic *IntcInstancePtr,
  * 4 byte addr mode, a write enable command is issued. For Macronix and
  * Winbond flash parts write enable is not required.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  * @param	Enable is a either 1 or 0 if 1 then enters 4 byte if 0 exits.
  *
  * @return
@@ -1625,7 +1632,7 @@ int FlashEnterExit4BAddMode(XQspiPsu *QspiPsuPtr,unsigned int Enable)
  * For S25FL-L series flash parts this is required as the default configuration
  * is x1/x2 mode.
  *
- * @param	QspiPtr is a pointer to the QSPIPSU driver component to use.
+ * @param	QspiPsuPtr is a pointer to the QSPIPSU driver component to use.
  *
  * @return
  *		- XST_SUCCESS if successful.

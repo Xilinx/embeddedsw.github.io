@@ -7,7 +7,7 @@
 /**
 *
 * @file xhdcp1x.c
-* @addtogroup hdcp1x_v4_5
+* @addtogroup hdcp1x_v4_6
 * @{
 *
 * This contains the implementation of the HDCP state machine module
@@ -232,6 +232,12 @@ int XHdcp1x_CfgInitialize(XHdcp1x *InstancePtr, const XHdcp1x_Config *CfgPtr,
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 
 	return (XST_SUCCESS);
+}
+
+void XHdcp1x_LateInit(XHdcp1x *InstancePtr)
+{
+	if (InstancePtr->Config.IsRx)
+		XHdcp1x_RxLoadBksvToBuf(InstancePtr);
 }
 
 /*****************************************************************************/

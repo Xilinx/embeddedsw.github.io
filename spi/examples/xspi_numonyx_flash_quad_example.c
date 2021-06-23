@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2012 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -214,7 +214,6 @@ static u8 TestByte = 0x20;
 *
 * Main function to run the quad flash example.
 *
-* @param	None
 *
 * @return	XST_SUCCESS if successful else XST_FAILURE.
 *

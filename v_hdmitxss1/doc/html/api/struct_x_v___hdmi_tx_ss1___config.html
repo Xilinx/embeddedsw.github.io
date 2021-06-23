@@ -94,8 +94,11 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a9e46735ff88bd2caa3708090e66a9737"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#a9e46735ff88bd2caa3708090e66a9737">MaxBitsPerPixel</a></td></tr>
 <tr class="memdesc:a9e46735ff88bd2caa3708090e66a9737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum Supported Color Depth.  <a href="#a9e46735ff88bd2caa3708090e66a9737">More...</a><br/></td></tr>
 <tr class="separator:a9e46735ff88bd2caa3708090e66a9737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d9c7f27b41ac6c3575679c8cff34227"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#a3d9c7f27b41ac6c3575679c8cff34227">DynHdr</a></td></tr>
+<tr class="memdesc:a3d9c7f27b41ac6c3575679c8cff34227"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum FRL Rate Supporte  <a href="#a3d9c7f27b41ac6c3575679c8cff34227">More...</a><br/></td></tr>
+<tr class="separator:a3d9c7f27b41ac6c3575679c8cff34227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8205c90494b16611fb959bb27b10304"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#aa8205c90494b16611fb959bb27b10304">AxiLiteClkFreq</a></td></tr>
-<tr class="memdesc:aa8205c90494b16611fb959bb27b10304"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum FRL Rate Supporte  <a href="#aa8205c90494b16611fb959bb27b10304">More...</a><br/></td></tr>
+<tr class="memdesc:aa8205c90494b16611fb959bb27b10304"><td class="mdescLeft">&#160;</td><td class="mdescRight">AXI Lite Clock Frequency in Hz.  <a href="#aa8205c90494b16611fb959bb27b10304">More...</a><br/></td></tr>
 <tr class="separator:aa8205c90494b16611fb959bb27b10304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7dff11e99b119ce7a8dd5286664bcd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_v___hdmi_tx_ss1___sub_core.html">XV_HdmiTxSs1_SubCore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#ad7dff11e99b119ce7a8dd5286664bcd0">HdcpTimer</a></td></tr>
 <tr class="memdesc:ad7dff11e99b119ce7a8dd5286664bcd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sub-core instance configuration.  <a href="#ad7dff11e99b119ce7a8dd5286664bcd0">More...</a><br/></td></tr>
@@ -127,10 +130,9 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>&lt; Maximum FRL Rate Supporte </p>
-<p>AXI Lite Clock Frequency in Hz </p>
+<p>AXI Lite Clock Frequency in Hz. </p>
 
-<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a33b732506d6578b5daf78406e2864af0">XV_HdmiTxSs1_CfgInitialize()</a>, and <a class="el" href="group__v__hdmitxss1__v2__0.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a33b732506d6578b5daf78406e2864af0">XV_HdmiTxSs1_CfgInitialize()</a>, and <a class="el" href="group__v__hdmitxss1__v2__1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
 
 </div>
 </div>
@@ -163,6 +165,23 @@ Data Fields</h2></td></tr>
 <p>DeviceId is the unique ID of the device. </p>
 
 <p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a33b732506d6578b5daf78406e2864af0">XV_HdmiTxSs1_CfgInitialize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3d9c7f27b41ac6c3575679c8cff34227"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XV_HdmiTxSs1_Config::DynHdr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>&lt; Maximum FRL Rate Supporte </p>
+<p>Supports Dynamic HDR </p>
+
+<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a175b839b0e0ec994f7e8771ce1c5753e">XV_HdmiTxSs1_DynHdr_Cfg()</a>, <a class="el" href="xv__hdmitxss1_8h.html#a7f6a8ade2c773f29e5b88e52838d6ba7">XV_HdmiTxSs1_DynHdr_Control()</a>, <a class="el" href="xv__hdmitxss1_8h.html#a49ba251f15947696114561c442cec65d">XV_HdmiTxSs1_DynHdr_DM_Control()</a>, <a class="el" href="xv__hdmitxss1_8h.html#a3ecc61ff3885370235c4af6beece925e">XV_HdmiTxSs1_DynHdr_GetErr()</a>, and <a class="el" href="xv__hdmitxss1_8h.html#ad98a7cc78ec71fed4cf3e53202f03863">XV_HdmiTxSs1_DynHdr_GOF_Control()</a>.</p>
 
 </div>
 </div>
@@ -220,7 +239,7 @@ Data Fields</h2></td></tr>
 
 <p>Sub-core instance configuration. </p>
 
-<p>Referenced by <a class="el" href="group__v__hdmitxss1__v2__0.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
+<p>Referenced by <a class="el" href="group__v__hdmitxss1__v2__1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
 
 </div>
 </div>
@@ -280,7 +299,7 @@ Data Fields</h2></td></tr>
 
 <p>Sub-core instance configuration. </p>
 
-<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a3f0a51a41b4b0a2f0a5f1d6df6adbf1e">XV_HdmiTxSs1_RegisterDebug()</a>, and <a class="el" href="group__v__hdmitxss1__v2__0.html#ga64a794defc59694de323c4b239088906">XV_HdmiTxSs1_SubcoreInitVtc()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#a3f0a51a41b4b0a2f0a5f1d6df6adbf1e">XV_HdmiTxSs1_RegisterDebug()</a>, and <a class="el" href="group__v__hdmitxss1__v2__1.html#ga64a794defc59694de323c4b239088906">XV_HdmiTxSs1_SubcoreInitVtc()</a>.</p>
 
 </div>
 </div>

@@ -7,7 +7,7 @@
 /**
 *
 * @file xdsitxss.c
-* @addtogroup dsitxss_v2_1
+* @addtogroup dsitxss_v2_2
 * @{
 *
 * This is main code of Xilinx MIPI DSI Tx Subsystem device driver.
@@ -63,7 +63,9 @@ XDsiTxSs_SubCores DsiTxSsSubCores[XPAR_XDSITXSS_NUM_INSTANCES]; /**< Define Driv
 
 static void XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr);
 static s32 XDsiTxSs_SubCoreInitDsi(XDsiTxSs *DsiTxSsPtr);
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr);
+#endif
 static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 					u32 Offset, UINTPTR *BaseAddr);
 
@@ -178,15 +180,18 @@ u32 XDsiTxSs_DefaultConfigure(XDsiTxSs *InstancePtr)
 int XDsiTxSs_Activate(XDsiTxSs *InstancePtr, XDsiSS_Subcore core, u8 Flag)
 {
 	/* Verify arguments */
-	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(Flag <= XDSITXSS_ENABLE);
-	Xil_AssertVoid(InstancePtr->DsiPtr != NULL);
-	Xil_AssertVoid(InstancePtr->DphyPtr != NULL);
-
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(Flag <= XDSITXSS_ENABLE);
+	Xil_AssertNonvoid(InstancePtr->DsiPtr != NULL);
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
+	Xil_AssertNonvoid(InstancePtr->DphyPtr != NULL);
+#endif
 	if (core == XDSITXSS_DSI)
 		XDsi_Activate(InstancePtr->DsiPtr, Flag);
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	else if (core == XDSITXSS_PHY)
 		XDphy_Activate(InstancePtr->DphyPtr, Flag);
+#endif
 	else
 		return XST_INVALID_PARAM;
 
@@ -525,7 +530,7 @@ static s32 XDsiTxSs_SubCoreInitDsi(XDsiTxSs *DsiTxSsPtr)
 	}
 
 	/* Get core configuration */
-	xdbg_printf(XDBG_DEBUG_INFO, ">Initializing DSI Tx Controller...\n\r");
+	xdbg_printf(XDBG_DEBUG_GENERAL, ">Initializing DSI Tx Controller...\n\r");
 	ConfigPtr = XDsi_LookupConfig(DsiTxSsPtr->Config.DsiInfo.DeviceId);
 	if (ConfigPtr == NULL) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DSI not found\n\r");
@@ -581,7 +586,7 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr)
 	}
 
 	/* Get core configuration */
-	xdbg_printf(XDBG_DEBUG_INFO, "->Initializing DPHY ...\n\r");
+	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing DPHY ...\n\r");
 	ConfigPtr = XDphy_LookupConfig(DsiTxSsPtr->Config.DphyInfo.DeviceId);
 	if (!ConfigPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DPHY not found \n\r");

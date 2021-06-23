@@ -1,5 +1,8 @@
 var xgpiops_8c =
 [
+    [ "StubHandler", "xgpiops_8c.html#ga33d678e910c69c63487773ca55abff47", null ],
+    [ "XGpioPs_CfgInitialize", "xgpiops_8c.html#gaf25c8d3ce00f3c6904a8286a997c8960", null ],
+    [ "XGpioPs_GetBankPin", "xgpiops_8c.html#gaefc766e08002c191864802d6e3a3434e", null ],
     [ "XGpioPs_GetDirection", "xgpiops_8c.html#ga7eb1bb1c621ea32f0b14c9ee47c23319", null ],
     [ "XGpioPs_GetDirectionPin", "xgpiops_8c.html#gaa3bacad17006e4b01ff91f6f14e5d3f7", null ],
     [ "XGpioPs_GetOutputEnable", "xgpiops_8c.html#ga7977b334cb165a1cc2859b1bc1ac43df", null ],

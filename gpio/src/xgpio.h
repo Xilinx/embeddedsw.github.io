@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
 * @file xgpio.h
-* @addtogroup gpio_v4_7
+* @addtogroup gpio_v4_8
 * @{
 * @details
 *
@@ -95,12 +95,13 @@
 * 4.5   sne  06/14/19 Fixed IAR compiler warnings on example files.
 * 4.6	sne  08/11/19 Fixed compilation error of armcc compiler.
 * 4.7   sne  08/28/20 Modify Makefile to support parallel make execution.
+* 4.8	sne  02/10/21 Fixed doxygen warnings.
 *
 * </pre>
 *****************************************************************************/
 
 #ifndef XGPIO_H			/* prevent circular inclusions */
-#define XGPIO_H			/* by using protection macros */
+#define XGPIO_H			/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -121,10 +122,10 @@ extern "C" {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
-	u16 DeviceId;		/* Unique ID  of device */
-	UINTPTR BaseAddress;	/* Device base address */
-	int InterruptPresent;	/* Are interrupts supported in h/w */
-	int IsDual;		/* Are 2 channels supported in h/w */
+	u16 DeviceId;		/**< Unique ID  of device */
+	UINTPTR BaseAddress;	/**< Device base address */
+	int InterruptPresent;	/**< Are interrupts supported in h/w */
+	int IsDual;		/**< Are 2 channels supported in h/w */
 } XGpio_Config;
 
 /**
@@ -133,10 +134,10 @@ typedef struct {
  * to a variable of this type is then passed to the driver API functions.
  */
 typedef struct {
-	UINTPTR BaseAddress;	/* Device base address */
-	u32 IsReady;		/* Device is initialized and ready */
-	int InterruptPresent;	/* Are interrupts supported in h/w */
-	int IsDual;		/* Are 2 channels supported in h/w */
+	UINTPTR BaseAddress;	/**< Device base address */
+	u32 IsReady;		/**< Device is initialized and ready */
+	int InterruptPresent;	/**< Are interrupts supported in h/w */
+	int IsDual;		/**< Are 2 channels supported in h/w */
 } XGpio;
 
 /***************** Macros (Inline Functions) Definitions ********************/

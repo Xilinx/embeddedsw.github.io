@@ -138,7 +138,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xiicps__repeated__start__example_8c.html#a40d92867ead2dc8efe06207b8b0f3494">EepromWriteData()</a>, <a class="el" href="group__iicps__v3__12.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, <a class="el" href="group__iicps__v3__12.html#ga87cbf2622a9c6ad66b18d4c3f9575a76">XIicPs_ClearOptions()</a>, <a class="el" href="group__iicps__v3__12.html#ga21bdb2f8a1f09e027aa8b0e9d6648d75">XIicPs_MasterRecvPolled()</a>, <a class="el" href="group__iicps__v3__12.html#ga820f2cd7e2c7b77b9b5966e87eae2c09">XIICPS_REP_START_OPTION</a>, and <a class="el" href="group__iicps__v3__12.html#gaec1dc5be2be8a7394263cfe56af976c5">XIicPs_SetOptions()</a>.</p>
+<p>References <a class="el" href="xiicps__repeated__start__example_8c.html#a40d92867ead2dc8efe06207b8b0f3494">EepromWriteData()</a>, <a class="el" href="group__iicps__v3__13.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, <a class="el" href="group__iicps__v3__13.html#ga87cbf2622a9c6ad66b18d4c3f9575a76">XIicPs_ClearOptions()</a>, <a class="el" href="group__iicps__v3__13.html#ga21bdb2f8a1f09e027aa8b0e9d6648d75">XIicPs_MasterRecvPolled()</a>, <a class="el" href="group__iicps__v3__13.html#ga820f2cd7e2c7b77b9b5966e87eae2c09">XIICPS_REP_START_OPTION</a>, and <a class="el" href="group__iicps__v3__13.html#gaec1dc5be2be8a7394263cfe56af976c5">XIicPs_SetOptions()</a>.</p>
 
 <p>Referenced by <a class="el" href="xiicps__repeated__start__example_8c.html#a03067e867debb67e8cc850dad9b4491b">IicPsRepeatedStartExample()</a>.</p>
 
@@ -168,9 +168,9 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The Byte count should not exceed the page size of the EEPROM as noted by the constant PAGE_SIZE. </dd></dl>
 
-<p>References <a class="el" href="group__iicps__v3__12.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, and <a class="el" href="group__iicps__v3__12.html#ga71584f1a7e675cde41cfd9d1bd4320b4">XIicPs_MasterSendPolled()</a>.</p>
+<p>References <a class="el" href="struct_x_iic_ps.html#adfabb9b5df439e3d18dde86763548e95">XIicPs::IsRepeatedStart</a>, <a class="el" href="group__iicps__v3__13.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, and <a class="el" href="group__iicps__v3__13.html#ga71584f1a7e675cde41cfd9d1bd4320b4">XIicPs_MasterSendPolled()</a>.</p>
 
-<p>Referenced by <a class="el" href="xiicps__repeated__start__example_8c.html#a2f790bd9169574f1a1a9739b827cd04f">EepromReadDataRepStart()</a>, <a class="el" href="xiicps__eeprom__intr__example_8c.html#ac2db0c7efb815a4073bb911c40f9ef18">IicPsEepromIntrExample()</a>, <a class="el" href="xiicps__eeprom__polled__example_8c.html#ab86bf688196749f6a8a95f6c8eaab3de">IicPsEepromPolledExample()</a>, and <a class="el" href="xiicps__repeated__start__example_8c.html#a03067e867debb67e8cc850dad9b4491b">IicPsRepeatedStartExample()</a>.</p>
+<p>Referenced by <a class="el" href="xiicps__repeated__start__example_8c.html#a2f790bd9169574f1a1a9739b827cd04f">EepromReadDataRepStart()</a>, <a class="el" href="xiicps__eeprom__intr__example_8c.html#abd1f1d9ea1182f160893ef537bfc6010">IicPsEepromIntrExample()</a>, <a class="el" href="xiicps__eeprom__polled__example_8c.html#a344b0fbb418b58fc6832b1200295a07e">IicPsEepromPolledExample()</a>, and <a class="el" href="xiicps__repeated__start__example_8c.html#a03067e867debb67e8cc850dad9b4491b">IicPsRepeatedStartExample()</a>.</p>
 
 </div>
 </div>
@@ -190,16 +190,10 @@ Functions</h2></td></tr>
 
 <p>This function writes, reads, and verifies the data to the IIC EEPROM. </p>
 <p>Page write is used. Buffered read with repeated start option is done.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__iicps__v3__12.html#ga6809c43387826c1f50e719163d4d9d27">XIicPs_Config::BaseAddress</a>, <a class="el" href="xiicps__repeated__start__example_8c.html#a2f790bd9169574f1a1a9739b827cd04f">EepromReadDataRepStart()</a>, <a class="el" href="xiicps__repeated__start__example_8c.html#a40d92867ead2dc8efe06207b8b0f3494">EepromWriteData()</a>, <a class="el" href="group__iicps__v3__12.html#gae97ad9c202953c7e49bfb56533c47079">XIicPs_CfgInitialize()</a>, <a class="el" href="group__iicps__v3__12.html#ga14c7ff4f51185d8aab0028c0eeb3c336">XIicPs_LookupConfig()</a>, and <a class="el" href="group__iicps__v3__12.html#gafb24cfdacf6cf28d80126862dc1cfbe5">XIicPs_SetSClk()</a>.</p>
+<p>References <a class="el" href="struct_x_iic_ps___config.html#a6809c43387826c1f50e719163d4d9d27">XIicPs_Config::BaseAddress</a>, <a class="el" href="xiicps__repeated__start__example_8c.html#a2f790bd9169574f1a1a9739b827cd04f">EepromReadDataRepStart()</a>, <a class="el" href="xiicps__repeated__start__example_8c.html#a40d92867ead2dc8efe06207b8b0f3494">EepromWriteData()</a>, <a class="el" href="group__iicps__v3__13.html#gae97ad9c202953c7e49bfb56533c47079">XIicPs_CfgInitialize()</a>, <a class="el" href="group__iicps__v3__13.html#ga14c7ff4f51185d8aab0028c0eeb3c336">XIicPs_LookupConfig()</a>, and <a class="el" href="group__iicps__v3__13.html#gafb24cfdacf6cf28d80126862dc1cfbe5">XIicPs_SetSClk()</a>.</p>
 
 <p>Referenced by <a class="el" href="xiicps__repeated__start__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -220,12 +214,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Main function to call the Iic repeated start example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 

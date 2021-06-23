@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,9 +8,8 @@
 /**
  *
  * @file xqspipsu_control.h
- * @addtogroup qspipsu_v1_12
+ * @addtogroup qspipsu_v1_13
  * @{
- * @details
  *
  * This is the header file for the implementation of QSPIPSU driver.
  * Generic QSPI interface allows for communication to any QSPI slave device.
@@ -26,13 +25,14 @@
  * Ver   Who Date     Changes
  * ----- --- -------- -----------------------------------------------.
  * 1.11   akm  03/09/20 First release
+ * 1.13   akm  01/04/21 Fix MISRA-C violations.
  *
  * </pre>
  *
  ******************************************************************************/
 
-#ifndef XQSPIPSU_CONTROL_H_		/* prevent circular inclusions */
-#define XQSPIPSU_CONTROL_H_		/* by using protection macros */
+#ifndef XQSPIPSU_CONTROL_H_		/**< prevent circular inclusions */
+#define XQSPIPSU_CONTROL_H_		/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,10 +74,9 @@ void XQspiPsu_GenFifoEntryDataLen(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
 		u32 *GenFifoEntry);
 u32 XQspiPsu_CreatePollDataConfig(const XQspiPsu *InstancePtr,
 		const XQspiPsu_Msg *FlashMsg);
+void XQspiPsu_PollDataHandler(XQspiPsu *InstancePtr, u32 StatusReg);
 u32 XQspiPsu_SelectSpiMode(u8 SpiMode);
 void XQspiPsu_SetDefaultConfig(XQspiPsu *InstancePtr);
-void StubStatusHandler(const void *CallBackRef, u32 StatusEvent,
-				u32 ByteCount);
 void XQspiPsu_FillTxFifo(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg, u32 Size);
 void XQspiPsu_ReadRxFifo(XQspiPsu *InstancePtr,	XQspiPsu_Msg *Msg, s32 Size);
 

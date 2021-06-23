@@ -1,0 +1,183 @@
+/******************************************************************************
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
+******************************************************************************/
+
+/*****************************************************************************/
+/**
+*
+* @file xdfeequ_reg.h
+* @addtogroup xdfeequ_v1_0
+* @{
+*
+* Contains the register definitions for dfeequ. This is
+* created to be used initially while waiting for IP.
+*
+* <pre>
+* MODIFICATION HISTORY:
+*
+* Ver   Who    Date     Changes
+* ----- ---    -------- -----------------------------------------------
+* 1.0   dc     09/03/20 Initial version
+*       dc     02/22/21 align driver to current specification
+*       dc     03/15/21 Add data latency api
+*       dc     04/20/21 Doxygen documentation update
+*       dc     05/08/21 Update to common trigger
+*
+* </pre>
+*
+******************************************************************************/
+#ifndef XDFEEQU_HW_H_
+#define XDFEEQU_HW_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**************************** Definitions *******************************/
+/* CONFIG */
+#define XDFEEQU_VERSION_OFFSET 0x00U /* Register offset */
+#define XDFEEQU_VERSION_PATCH_WIDTH 8U
+#define XDFEEQU_VERSION_PATCH_OFFSET 0U
+#define XDFEEQU_VERSION_REVISION_WIDTH 8U
+#define XDFEEQU_VERSION_REVISION_OFFSET 8U
+#define XDFEEQU_VERSION_MINOR_WIDTH 8U
+#define XDFEEQU_VERSION_MINOR_OFFSET 16U
+#define XDFEEQU_VERSION_MAJOR_WIDTH 8U
+#define XDFEEQU_VERSION_MAJOR_OFFSET 24U
+
+#define XDFEEQU_RESET_OFFSET 0x04U /* Register offset */
+#define XDFEEQU_RESET_OFF 0x00U
+#define XDFEEQU_RESET_ON 0x01U
+#define XDFEEQU_MODEL_PARAM_OFFSET 0x08U /**< Register offset */
+#define XDFEEQU_MODEL_PARAM_NUM_CHANNELS_WIDTH 4U
+#define XDFEEQU_MODEL_PARAM_NUM_CHANNELS_OFFSET 0U
+#define XDFEEQU_MODEL_PARAM_SAMPLE_WIDTH_WIDTH 5U
+#define XDFEEQU_MODEL_PARAM_SAMPLE_WIDTH_OFFSET 4U
+#define XDFEEQU_MODEL_PARAM_COMPLEX_MODE_WIDTH 1U
+#define XDFEEQU_MODEL_PARAM_COMPLEX_MODE_OFFSET 16U
+#define XDFEEQU_MODEL_PARAM_TUSER_WIDTH_WIDTH 7U
+#define XDFEEQU_MODEL_PARAM_TUSER_WIDTH_OFFSET 24U
+
+#define XDFEEQU_DELAY 0x0CU /**< Register offset */
+#define XDFEEQU_DELAY_WIDTH 6U
+#define XDFEEQU_DELAY_OFFSET 0U
+#define XDFEEQU_DATA_LATENCY 0x10U /**< Register offset */
+#define XDFEEQU_DATA_LATENCY_WIDTH 4U
+#define XDFEEQU_DATA_LATENCY_OFFSET 0U
+
+#define XDFEEQU_CURRENT_CONTROL_OFFSET 0x20U /* Register offset */
+#define XDFEEQU_NEXT_CONTROL_OFFSET 0x24U /* Register offset */
+#define XDFEEQU_FLUSH_BUFFERS_WIDTH 1U
+#define XDFEEQU_FLUSH_BUFFERS_OFFSET 1U
+#define XDFEEQU_COMPLEX_MODE_WIDTH 1U
+#define XDFEEQU_COMPLEX_MODE_OFFSET 2U
+#define XDFEEQU_REAL_MODE 0U
+#define XDFEEQU_COMPLEX_MODE 1U
+#define XDFEEQU_COEFF_SET_CONTROL_WIDTH 4U
+#define XDFEEQU_COEFF_SET_CONTROL_OFFSET 4U
+#define XDFEEQU_COEFF_SET_CONTROL_MASK 3U
+#define XDFEEQU_COEFF_SET_CONTROL_IM_OFFSET 2U
+
+/* Triggers */
+#define XDFEEQU_NEXT_CONTROL_TRIGGER_OFFSET                                    \
+	0x28U /* Register offset - the other Logicores use name CC_UPDATE */
+#define XDFEEQU_DYNAMIC_POWER_DOWN_MODE_TRIGGER_OFFSET                         \
+	0x34U /* Register offset - the other Logicores use name LOW_POWER */
+#define XDFEEQU_OPERATIONAL_MODE_TRIGGER_OFFSET                                \
+	0x3CU /* Register offset - the other Logicores use name ACTIVATE */
+/* Bit fields */
+#define XDFEEQU_TRIGGERS_TRIGGER_ENABLE_WIDTH 1U
+#define XDFEEQU_TRIGGERS_TRIGGER_ENABLE_OFFSET 0U
+#define XDFEEQU_TRIGGERS_TRIGGER_ENABLE_DISABLED 0U
+#define XDFEEQU_TRIGGERS_TRIGGER_ENABLE_ENABLED 1U
+#define XDFEEQU_TRIGGERS_MODE_WIDTH 2U
+#define XDFEEQU_TRIGGERS_MODE_OFFSET 4U
+#define XDFEEQU_TRIGGERS_MODE_IMMEDIATE 0U
+#define XDFEEQU_TRIGGERS_MODE_TUSER_SINGLE_SHOT 1U
+#define XDFEEQU_TRIGGERS_MODE_TUSER_CONTINUOUS 2U
+#define XDFEEQU_TRIGGERS_MODE_RESERVED 3U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH 2U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET 8U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_LOW 0U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_HIGH 1U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_FALING 2U
+#define XDFEEQU_TRIGGERS_TUSER_EDGE_LEVEL_RISING 3U
+#define XDFEEQU_TRIGGERS_STATE_OUTPUT_WIDTH 1U
+#define XDFEEQU_TRIGGERS_STATE_OUTPUT_OFFSET 12U
+#define XDFEEQU_TRIGGERS_STATE_OUTPUT_DISABLED 0U
+#define XDFEEQU_TRIGGERS_STATE_OUTPUT_ENABLED 1U
+#define XDFEEQU_TRIGGERS_TUSER_BIT_WIDTH 8U
+#define XDFEEQU_TRIGGERS_TUSER_BIT_OFFSET 16U
+
+#define XDFEEQU_CURRENT_DYNAMIC_POWERDOWN_MODE_OFFSET                          \
+	0x30U /* Register offset */
+#define XDFEEQU_CURRENT_MODE_POWERDOWN_WIDTH 1U
+#define XDFEEQU_CURRENT_MODE_POWERDOWN_OFFSET 0U
+#define XDFEEQU_CURRENT_MODE_POWERDOWN_ENABLED 0U
+#define XDFEEQU_CURRENT_MODE_POWERDOWN_DISABLED 1U
+
+#define XDFEEQU_CURRENT_OPERATIONAL_MODE_OFFSET 0x38U /* Register offset */
+#define XDFEEQU_CURRENT_MODE_OPERATIONAL_WIDTH 1U
+#define XDFEEQU_CURRENT_MODE_OPERATIONAL_OFFSET 0U
+#define XDFEEQU_CURRENT_MODE_OPERATIONAL_DISABLED 0U
+#define XDFEEQU_CURRENT_MODE_OPERATIONAL_ENABLED 1U
+
+/* Status */
+#define XDFEEQU_CHANNEL_0_STATUS_OFFSET 0x40U /* Register offset */
+#define XDFEEQU_CHANNEL_0_STATUS_MASK_OFFSET 0x44U /* Register offset */
+#define XDFEEQU_CHANNEL_1_STATUS_OFFSET 0x50U /* Register offset */
+#define XDFEEQU_CHANNEL_1_STATUS_MASK_OFFSET 0x54U /* Register offset */
+#define XDFEEQU_CHANNEL_2_STATUS_OFFSET 0x60U /* Register offset */
+#define XDFEEQU_CHANNEL_2_STATUS_MASK_OFFSET 0x64U /* Register offset */
+#define XDFEEQU_CHANNEL_3_STATUS_OFFSET 0x70U /* Register offset */
+#define XDFEEQU_CHANNEL_3_STATUS_MASK_OFFSET 0x74U /* Register offset */
+#define XDFEEQU_CHANNEL_4_STATUS_OFFSET 0x80U /* Register offset */
+#define XDFEEQU_CHANNEL_4_STATUS_MASK_OFFSET 0x84U /* Register offset */
+#define XDFEEQU_CHANNEL_5_STATUS_OFFSET 0x90U /* Register offset */
+#define XDFEEQU_CHANNEL_5_STATUS_MASK_OFFSET 0x94U /* Register offset */
+#define XDFEEQU_CHANNEL_6_STATUS_OFFSET 0xA0U /* Register offset */
+#define XDFEEQU_CHANNEL_6_STATUS_MASK_OFFSET 0xA4U /* Register offset */
+#define XDFEEQU_CHANNEL_7_STATUS_OFFSET 0xB0U /* Register offset */
+#define XDFEEQU_CHANNEL_7_STATUS_MASK_OFFSET 0xB4U /* Register offset */
+#define XDFEEQU_CHANNEL_STATUS_OFFSET 0x10U
+#define XDFEEQU_CHANNEL_STATUS_STATUS_WIDTH 2U
+#define XDFEEQU_CHANNEL_STATUS_STATUS_OFFSET 0U
+#define XDFEEQU_CHANNEL_I_STATUS_MASK 1U
+#define XDFEEQU_CHANNEL_Q_STATUS_MASK 2U
+#define XDFEEQU_CHANNEL_Q_STATUS_OFFSET 1U
+#define XDFEEQU_CHANNEL_STATUS_MASK_ENABLE_WIDTH 2U
+#define XDFEEQU_CHANNEL_STATUS_MASK_ENABLE_OFFSET 0U
+/* Coefficients */
+#define XDFEEQU_SET_TO_WRITE_OFFSET 0x0100U /* Register offset */
+#define XDFEEQU_SET_TO_WRITE_SET_WIDTH 2U
+#define XDFEEQU_SET_TO_WRITE_SET_OFFSET 0U
+#define XDFEEQU_NUMBER_OF_UNITS_OFFSET 0x0104U /* Register offset */
+#define XDFEEQU_NUMBER_OF_UNITS_SET_WIDTH 3U
+#define XDFEEQU_NUMBER_OF_UNITS_SET_OFFSET 0U
+#define XDFEEQU_SHIFT_VALUE_OFFSET 0x0108U /* Register offset */
+#define XDFEEQU_SHIFT_VALUE_SET_WIDTH 3U
+#define XDFEEQU_SHIFT_VALUE_SET_OFFSET 0U
+#define XDFEEQU_CHANNEL_FIELD_OFFSET 0x010CU /* Register offset */
+#define XDFEEQU_CHANNEL_FIELD_FIELD_WIDTH 8U
+#define XDFEEQU_CHANNEL_FIELD_FIELD_OFFSET 0U
+#define XDFEEQU_CHANNEL_FIELD_DONE_WIDTH 1U
+#define XDFEEQU_CHANNEL_FIELD_DONE_OFFSET 8U
+#define XDFEEQU_CHANNEL_FIELD_DONE_LOADING 0U
+#define XDFEEQU_CHANNEL_FIELD_DONE_LOADING_DONE 1U
+
+/* Coefficient sets */
+#define XDFEEQU_COEFFICIENT_SET 0x0200U /* Register offset */
+#define XDFEEQU_COEFFICIENT_SET_VALUE_WIDTH 16U
+#define XDFEEQU_COEFFICIENT_SET_VALUE_OFFSET 0U
+#define XDFEEQU_COEFFICIENT_SET_MAX 24U
+#define XDFEEQU_RE_COEFFICIENT_SET_OFFSET 0U
+#define XDFEEQU_IM_COEFFICIENT_SET_OFFSET 12U
+#define XDFEEQU_TAP_UNIT_SIZE 4U
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+/** @} */

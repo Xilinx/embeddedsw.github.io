@@ -91,6 +91,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a0bdd774195076075c01b0f8d72f7778e"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__timer_8h.html#a0bdd774195076075c01b0f8d72f7778e">XAie_WaitCycles</a> (XAie_DevInst *DevInst, XAie_LocType Loc, XAie_ModuleType Module, u64 CycleCnt)</td></tr>
 <tr class="memdesc:a0bdd774195076075c01b0f8d72f7778e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API implements a blocking wait function until the specified clock cyles are elapsed in the given module's 64-bit counter.  <a href="#a0bdd774195076075c01b0f8d72f7778e">More...</a><br/></td></tr>
 <tr class="separator:a0bdd774195076075c01b0f8d72f7778e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b6c83ac9a423a38dc454c61faa9d38"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer</a> (XAie_DevInst *DevInst)</td></tr>
+<tr class="memdesc:a15b6c83ac9a423a38dc454c61faa9d38"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API synchronizes timer for all tiles for all modules in the partition.  <a href="#a15b6c83ac9a423a38dc454c61faa9d38">More...</a><br/></td></tr>
+<tr class="separator:a15b6c83ac9a423a38dc454c61faa9d38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ad1b05fa0e0b1443e9fd47c226c731c43"></a>
@@ -251,6 +254,8 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
+<p>Referenced by <a class="el" href="xaie__timer_8h.html#a15b6c83ac9a423a38dc454c61faa9d38">XAie_SyncTimer()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="af211c7e29900bdeaf2484cc41947f6e2"></a>
@@ -311,6 +316,34 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 
 <p>References <a class="el" href="xaie__helper_8c.html#a4d4b37c9eaa3922754dcdba256df037b">_XAie_CheckModule()</a>, and <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a15b6c83ac9a423a38dc454c61faa9d38"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AieRC XAie_SyncTimer </td>
+          <td>(</td>
+          <td class="paramtype">XAie_DevInst *&#160;</td>
+          <td class="paramname"><em>DevInst</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This API synchronizes timer for all tiles for all modules in the partition. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevInst</td><td>- Device Instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success XAIE_INVALID_ARGS if any argument is invalid XAIE_INVALID_TILE if tile type from Loc is invalid</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="xaie__helper_8c.html#a5241c8cbd1d110b354fafacfacb3c2e1">_XAie_GetNumRows()</a>, <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>, <a class="el" href="xaie__events_8c.html#a1af61155b61b0a9610285e33e9fa64ea">XAie_EventBroadcast()</a>, <a class="el" href="xaie__events_8c.html#a998ae05693fe3a481c141927bed1bf2c">XAie_EventBroadcastBlockDir()</a>, <a class="el" href="xaie__events_8c.html#a27faae6e899bcef6001aa2a2097d8003">XAie_EventBroadcastUnblockDir()</a>, <a class="el" href="xaie__events_8c.html#a2f578b711df693c65a63419bb9cab57d">XAie_EventGenerate()</a>, <a class="el" href="xaie__rsc_8h.html#acee73e2ed68ca672e0dad93e6bee04e4">XAie_ReleaseBroadcastChannel()</a>, <a class="el" href="xaie__rsc_8h.html#a1d056656bd18cd32e23370398e5534db">XAie_RequestBroadcastChannel()</a>, and <a class="el" href="xaie__timer_8c.html#ace7264c191a26787511aa30c89527711">XAie_SetTimerResetEvent()</a>.</p>
 
 </div>
 </div>

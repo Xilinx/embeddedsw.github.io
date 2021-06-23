@@ -43,13 +43,13 @@ var files =
     [ "xusbpsu_controltransfers.c", "xusbpsu__controltransfers_8c.html", "xusbpsu__controltransfers_8c" ],
     [ "xusbpsu_device.c", "xusbpsu__device_8c.html", "xusbpsu__device_8c" ],
     [ "xusbpsu_endpoint.c", "xusbpsu__endpoint_8c.html", "xusbpsu__endpoint_8c" ],
-    [ "xusbpsu_endpoint.h", "xusbpsu__endpoint_8h.html", null ],
+    [ "xusbpsu_endpoint.h", "xusbpsu__endpoint_8h.html", "xusbpsu__endpoint_8h" ],
     [ "xusbpsu_ep0handler.c", "xusbpsu__ep0handler_8c.html", "xusbpsu__ep0handler_8c" ],
     [ "xusbpsu_ephandler.c", "xusbpsu__ephandler_8c.html", "xusbpsu__ephandler_8c" ],
     [ "xusbpsu_event.c", "xusbpsu__event_8c.html", "xusbpsu__event_8c" ],
     [ "xusbpsu_hibernation.c", "xusbpsu__hibernation_8c.html", null ],
     [ "xusbpsu_hw.h", "xusbpsu__hw_8h.html", "xusbpsu__hw_8h" ],
     [ "xusbpsu_intr.c", "xusbpsu__intr_8c.html", "xusbpsu__intr_8c" ],
-    [ "xusbpsu_local.h", "xusbpsu__local_8h.html", null ],
+    [ "xusbpsu_local.h", "xusbpsu__local_8h.html", "xusbpsu__local_8h" ],
     [ "xusbpsu_sinit.c", "xusbpsu__sinit_8c.html", "xusbpsu__sinit_8c" ]
 ];

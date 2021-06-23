@@ -86,9 +86,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af8aa7d4878295f728653a9dac181a310"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcanps__polled__example_8c.html#af8aa7d4878295f728653a9dac181a310">CanPsPolledExample</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:af8aa7d4878295f728653a9dac181a310"><td class="mdescLeft">&#160;</td><td class="mdescRight">The entry point for showing the <a class="el" href="struct_x_can_ps.html" title="The XCanPs driver instance data. ">XCanPs</a> driver in polled mode.  <a href="#af8aa7d4878295f728653a9dac181a310">More...</a><br/></td></tr>
 <tr class="separator:af8aa7d4878295f728653a9dac181a310"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcanps__polled__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
-<tr class="memdesc:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the main function of the Can polled example.  <a href="#ae66f6b31b5ad750f1fe042a706a4e3d4">More...</a><br/></td></tr>
-<tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcanps__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
+<tr class="memdesc:a840291bc02cba5474a4cb46a9b9566fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the main function of the Can polled example.  <a href="#a840291bc02cba5474a4cb46a9b9566fe">More...</a><br/></td></tr>
+<tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="af8aa7d4878295f728653a9dac181a310"></a>
@@ -117,19 +117,20 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>If the device is not working correctly, this function may enter an infinite loop and will never return to the caller. </p>
 
-<p>References <a class="el" href="struct_x_can_ps___config.html#aead9a19a4d9084512a482d1d5ae41bc9">XCanPs_Config::BaseAddr</a>, <a class="el" href="group__canps__v3__5.html#ga5a32b11e15d347ecae566778bb1c5e33">XCanPs_EnterMode()</a>, <a class="el" href="group__canps__v3__5.html#ga3644ad3aa2b02def735751ed45d207a4">XCanPs_GetMode()</a>, <a class="el" href="group__canps__v3__5.html#ga3d3245fb9be426b1f1cca0b20ea90905">XCanPs_LookupConfig()</a>, <a class="el" href="group__canps__v3__5.html#ga4e4f2c00506467b58276539cc1c2333e">XCANPS_MODE_CONFIG</a>, <a class="el" href="group__canps__v3__5.html#ga815748d9ef7547d7fd43f2b729c3108c">XCANPS_MODE_LOOPBACK</a>, <a class="el" href="group__canps__v3__5.html#ga84d18d801c4f8ab5cc8eeadeff33d8b5">XCanPs_SelfTest()</a>, <a class="el" href="group__canps__v3__5.html#ga0e266c7af58c3b5eaef6e4dcd2354cbe">XCanPs_SetBaudRatePrescaler()</a>, and <a class="el" href="group__canps__v3__5.html#gac42876be22acc7e24262120000c4c548">XCanPs_SetBitTiming()</a>.</p>
+<p>References <a class="el" href="struct_x_can_ps___config.html#aead9a19a4d9084512a482d1d5ae41bc9">XCanPs_Config::BaseAddr</a>, <a class="el" href="group__canps__v3__6.html#ga458b97ea8e4dbb67edb27687a41ebd87">XCanPs_CfgInitialize()</a>, <a class="el" href="group__canps__v3__6.html#ga5a32b11e15d347ecae566778bb1c5e33">XCanPs_EnterMode()</a>, <a class="el" href="group__canps__v3__6.html#ga3644ad3aa2b02def735751ed45d207a4">XCanPs_GetMode()</a>, <a class="el" href="group__canps__v3__6.html#ga3d3245fb9be426b1f1cca0b20ea90905">XCanPs_LookupConfig()</a>, <a class="el" href="group__canps__v3__6.html#ga4e4f2c00506467b58276539cc1c2333e">XCANPS_MODE_CONFIG</a>, <a class="el" href="group__canps__v3__6.html#ga815748d9ef7547d7fd43f2b729c3108c">XCANPS_MODE_LOOPBACK</a>, <a class="el" href="group__canps__v3__6.html#ga84d18d801c4f8ab5cc8eeadeff33d8b5">XCanPs_SelfTest()</a>, <a class="el" href="group__canps__v3__6.html#ga0e266c7af58c3b5eaef6e4dcd2354cbe">XCanPs_SetBaudRatePrescaler()</a>, and <a class="el" href="group__canps__v3__6.html#gac42876be22acc7e24262120000c4c548">XCanPs_SetBitTiming()</a>.</p>
 
-<p>Referenced by <a class="el" href="xcanps__polled__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
+<p>Referenced by <a class="el" href="xcanps__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae66f6b31b5ad750f1fe042a706a4e3d4"></a>
+<a class="anchor" id="a840291bc02cba5474a4cb46a9b9566fe"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">int main </td>
           <td>(</td>
+          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -137,12 +138,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function is the main function of the Can polled example. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">None</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd><ul>
 <li>XST_SUCCESS if the example has completed successfully.</li>
 <li>XST_FAILURE if the example has failed.</li>

@@ -77,9 +77,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0536cc104feae21be820db62297d59fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#a0536cc104feae21be820db62297d59fb">XPciePsu_EP_CfgInitialize</a> (XPciePsu *PciePsuPtr, XPciePsu_Config *ConfigPtr)</td></tr>
-<tr class="memdesc:a0536cc104feae21be820db62297d59fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the config space.  <a href="#a0536cc104feae21be820db62297d59fb">More...</a><br/></td></tr>
-<tr class="separator:a0536cc104feae21be820db62297d59fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a242ba36cd7d2aa4f33863bc5aa8075d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#a242ba36cd7d2aa4f33863bc5aa8075d8">XPciePsu_EP_CfgInitialize</a> (XPciePsu *PciePsuPtr, const XPciePsu_Config *ConfigPtr)</td></tr>
+<tr class="memdesc:a242ba36cd7d2aa4f33863bc5aa8075d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the config space.  <a href="#a242ba36cd7d2aa4f33863bc5aa8075d8">More...</a><br/></td></tr>
+<tr class="separator:a242ba36cd7d2aa4f33863bc5aa8075d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99474c575ca291a93548797b66df45b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize</a> (XPciePsu *PciePsuPtr)</td></tr>
 <tr class="memdesc:a99474c575ca291a93548797b66df45b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes PCIe bridge.  <a href="#a99474c575ca291a93548797b66df45b8">More...</a><br/></td></tr>
 <tr class="separator:a99474c575ca291a93548797b66df45b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -89,9 +89,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a1d40296b15e59da3006fda5faa6a5d9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#a1d40296b15e59da3006fda5faa6a5d9c">XPciePsu_EP_WaitForEnumeration</a> (XPciePsu *PciePsuPtr)</td></tr>
 <tr class="memdesc:a1d40296b15e59da3006fda5faa6a5d9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function waits for host to enumerate.  <a href="#a1d40296b15e59da3006fda5faa6a5d9c">More...</a><br/></td></tr>
 <tr class="separator:a1d40296b15e59da3006fda5faa6a5d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4eab9df1d6ebdae9b3f608d2bea640b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#ae4eab9df1d6ebdae9b3f608d2bea640b">XPciePSU_ReadBar</a> (XPciePsu *PciePsuPtr, u32 BarNum, u32 *BarLo, u32 *BarHi)</td></tr>
-<tr class="memdesc:ae4eab9df1d6ebdae9b3f608d2bea640b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function read bar address of specific bar number.  <a href="#ae4eab9df1d6ebdae9b3f608d2bea640b">More...</a><br/></td></tr>
-<tr class="separator:ae4eab9df1d6ebdae9b3f608d2bea640b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60670dca0dbddb37079e9917e41eae40"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8c.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress</a> (XPciePsu *PciePsuPtr, u32 IngressNum, u32 BarNum, u64 Dst)</td></tr>
 <tr class="memdesc:a60670dca0dbddb37079e9917e41eae40"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets up ingress translation.  <a href="#a60670dca0dbddb37079e9917e41eae40">More...</a><br/></td></tr>
 <tr class="separator:a60670dca0dbddb37079e9917e41eae40"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,11 +116,13 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
+
 <p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a0536cc104feae21be820db62297d59fb"></a>
+<a class="anchor" id="a242ba36cd7d2aa4f33863bc5aa8075d8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -136,7 +135,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">XPciePsu_Config *&#160;</td>
+          <td class="paramtype">const XPciePsu_Config *&#160;</td>
           <td class="paramname"><em>ConfigPtr</em>&#160;</td>
         </tr>
         <tr>
@@ -209,7 +208,7 @@ Functions</h2></td></tr>
 </dl>
 <p>XST_SUCCESS if setup is successful XST_FAILURE if setup is fail </p>
 
-<p>References <a class="el" href="xpciepsu__ep_8c.html#ae4eab9df1d6ebdae9b3f608d2bea640b">XPciePSU_ReadBar()</a>.</p>
+<p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
 
 <p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
@@ -238,6 +237,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>.</p>
+
 <p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
@@ -264,58 +265,9 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>.</p>
+
 <p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae4eab9df1d6ebdae9b3f608d2bea640b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void XPciePSU_ReadBar </td>
-          <td>(</td>
-          <td class="paramtype">XPciePsu *&#160;</td>
-          <td class="paramname"><em>PciePsuPtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>BarNum</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32 *&#160;</td>
-          <td class="paramname"><em>BarLo</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32 *&#160;</td>
-          <td class="paramname"><em>BarHi</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This function read bar address of specific bar number. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">PciePsuPtr</td><td>pointer to XPciePsu_Config Instance Pointer </td></tr>
-    <tr><td class="paramname">BarNum</td><td></td></tr>
-    <tr><td class="paramname">BarLo</td><td></td></tr>
-    <tr><td class="paramname">BarHi</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>.</p>
 
 </div>
 </div>

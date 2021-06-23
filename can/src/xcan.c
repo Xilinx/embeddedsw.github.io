@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcan.c
-* @addtogroup can_v3_5
+* @addtogroup can_v3_6
 * @{
 *
 * The XCan driver. Functions in this file are the minimum required functions
@@ -1031,7 +1031,7 @@ XCan_Config *XCan_GetConfig(unsigned int InstanceIndex)
 }
 
 /*****************************************************************************/
-/*
+/**
 *
 * This function initializes a XCan instance/driver.  This function is utilized
 * by XCan_Initialize() or XCan_VmInitialize(), depending on if Virtual Memory
@@ -1098,7 +1098,6 @@ static void Initialize(XCan *InstancePtr, XCan_Config * ConfigPtr)
 * handlers are set to this callback. It is considered an error for this handler
 * to be invoked.
 *
-* @param	None.
 *
 * @return	None.
 *

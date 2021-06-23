@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xcanps.c
-* @addtogroup canps_v3_5
+* @addtogroup canps_v3_6
 * @{
 *
 * Functions in this file are the minimum required functions for the XCanPs
@@ -50,7 +50,7 @@
 static void StubHandler(void);
 
 /*****************************************************************************/
-/*
+/**
 *
 * This function initializes a XCanPs instance/driver.
 *
@@ -1197,7 +1197,7 @@ u8 XCanPs_GetTxIntrWatermark(XCanPs *InstancePtr)
 
 
 /******************************************************************************/
-/*
+/**
  * This routine is a stub for the asynchronous callbacks. The stub is here in
  * case the upper layer forgot to set the handler(s). On initialization, all
  * handlers are set to this callback. It is considered an error for this handler

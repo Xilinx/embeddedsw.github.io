@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2018 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -22,6 +22,7 @@
 #include "tx.h"
 #include "rx.h"
 
+#define ENABLE_AUDIO XPAR_DP_RX_HIER_0_V_DP_RXSS1_0_AUDIO_ENABLE
 
 u8 UpdateBuffer[sizeof(u8) + 16];
 u8 WriteBuffer[sizeof(u8) + 16];
@@ -29,11 +30,39 @@ u8 ReadBuffer[16];
 u16 tx_count_delay = 0;
 int tx_aud_started = 0;
 volatile int i2s_started = 0;
+XDp_TxVscExtPacket ExtFrame_tx_vsc;
+volatile u8 hpd_pulse_con_event; 	/* This variable triggers hpd_pulse_con */
+extern XilAudioInfoFrame_rx AudioinfoFrame;
+extern XDpRxSs DpRxSsInst;    /* The DPRX Subsystem instance.*/
+extern XDpTxSs DpTxSsInst; 		/* The DPTX Subsystem instance.*/
+extern Video_CRC_Config VidFrameCRC_rx; /* Video Frame CRC instance */
+extern Video_CRC_Config VidFrameCRC_tx;
+extern volatile int tx_is_reconnected; 		/* This variable to keep track
+ * of the status of Tx link*/
 
+#ifndef versal
+extern XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
+#else
+extern void* VPhyInst;
+#endif
+
+#if ENABLE_AUDIO
+extern XAxis_Switch axis_switch_rx;
+extern XAxis_Switch axis_switch_tx;
+extern XGpio_Config  *aud_gpio_ConfigPtr;
+extern XGpio   aud_gpio;
+extern XI2s_Rx I2s_rx;
+extern XI2s_Tx I2s_tx;
+#endif
 extern u8 start_i2s_clk;
 extern u32 appx_fs_dup;
+extern XScuGic IntcInst;
+#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 XV_frmbufrd_Config frmbufrd_cfg;
+#endif
+#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 XV_frmbufwr_Config frmbufwr_cfg;
+#endif
 
 void unplug_proc (void);
 void i2s_stop_proc (void);
@@ -402,6 +431,10 @@ void DpPt_Main(void){
 				xil_printf("0x0B2C: %08x\n\r",
 						XDpRxSs_MCDP6000_GetRegister(&DpRxSsInst,
 								I2C_MCDP6000_ADDR, 0x0B2C));
+				xil_printf("0x024C: %08x\n\r",
+						XDpRxSs_MCDP6000_GetRegister(&DpRxSsInst,
+								I2C_MCDP6000_ADDR, 0x024C));
+
 
 				xil_printf (
 					"==========RX Debug Data===========\r\n");
@@ -1043,12 +1076,13 @@ void DpPt_Main(void){
 			xil_printf ("Cannot Start TX...\r\n");
 		    }
 		}
-
+#if !PHY_COMP
 		// This continuously tracks the Maud, Naud values by reading the
 		// registers
 		if (rx_trained && rx_aud && tx_done) {
 			Dppt_DetectAudio();
 		}
+#endif
 	}//end while(1)
 }
 
@@ -1236,10 +1270,12 @@ void start_tx_after_rx (void) {
 #else
 	XDpTxSs_VtcDisableAdaptiveSync(DpTxSsInst.VtcPtr[0]);
 #endif
+
+	//start the data
 	rx_and_tx_started = 1;
 
 }
-
+extern int tx_started;
 void unplug_proc (void) {
 	u32 vswing;
 	u32 postcursor, value;
@@ -1463,6 +1499,7 @@ void dprx_tracking (void) {
 	    audio_info_avail = 0;
 	    AudioinfoFrame.frame_count = 0;
 	    AudioinfoFrame.all_count = 0;
+#if !PHY_COMP
 		xil_printf(
 		"> Rx Training done !!! (BW: 0x%x, Lanes: 0x%x, Status: "
 		"0x%x;0x%x).\n\r",
@@ -1474,6 +1511,7 @@ void dprx_tracking (void) {
 				XDP_RX_DPCD_LANE01_STATUS),
 		XDpRxSs_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 				XDP_RX_DPCD_LANE23_STATUS));
+#endif
 #if !ADAPTIVE_TYPE
 		/* Enable the RX interrupt for Adaptive Sync
 		 *
@@ -1524,8 +1562,8 @@ void dprx_tracking (void) {
 
 #if !PHY_COMP
 		tx_after_rx = 1;
+                rx_aud = 1;
 #endif
-		rx_aud = 1;
 		track_msa = Dppt_DetectResolution(DpRxSsInst.DpPtr, Msa,
 				DpRxSsInst.link_up_trigger);
 	}
