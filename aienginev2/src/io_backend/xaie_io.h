@@ -38,6 +38,7 @@
  */
 typedef enum {
 	XAIE_BACKEND_OP_NPIWR32,
+	XAIE_BACKEND_OP_NPIMASKPOLL32,
 	XAIE_BACKEND_OP_RST_PART,
 	XAIE_BACKEND_OP_ASSERT_SHIMRST,
 	XAIE_BACKEND_OP_SET_PROTREG,
@@ -48,6 +49,9 @@ typedef enum {
 	XAIE_BACKEND_OP_RELEASE_RESOURCE,
 	XAIE_BACKEND_OP_FREE_RESOURCE,
 	XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE,
+	XAIE_BACKEND_OP_PARTITION_INITIALIZE,
+	XAIE_BACKEND_OP_PARTITION_TEARDOWN,
+	XAIE_BACKEND_OP_GET_RSC_STAT,
 } XAie_BackendOpCode;
 
 /*
@@ -57,6 +61,16 @@ typedef struct XAie_BackendNpiWrReq {
 	u32 NpiRegOff;
 	u32 Val;
 } XAie_BackendNpiWrReq;
+
+/*
+ * Typedef for structure for NPI Mask Poll structure
+ */
+typedef struct XAie_BackendNpiMaskPollReq {
+	u32 NpiRegOff;
+	u32 Mask;
+	u32 Val;
+	u32 TimeOutUs;
+} XAie_BackendNpiMaskPollReq;
 
 /*
  * Typedef for structure for tiles array
@@ -86,6 +100,23 @@ typedef struct XAie_BackendTilesRsc {
 	XAie_ModuleType Mod;
 	XAie_UserRsc *Rscs;
 } XAie_BackendTilesRsc;
+
+/*
+ * Typedef for enum of AIE resoure statistics type
+ */
+typedef enum {
+	XAIE_BACKEND_RSC_STAT_STATIC,
+	XAIE_BACKEND_RSC_STAT_AVAIL,
+} XAie_BackendRscStatType;
+
+/*
+ * Typedef for structure for resource statistics request
+ */
+typedef struct XAie_BackendRscStat {
+	u32 NumRscStats;
+	XAie_BackendRscStatType RscStatType;
+	XAie_UserRscStat *RscStats;
+} XAie_BackendRscStat;
 
 /*
  * Typdef to capture all the backend IO operations
@@ -121,7 +152,8 @@ typedef struct XAie_BackendOps {
 	AieRC (*Write32)(void *IOInst, u64 RegOff, u32 Value);
 	AieRC (*Read32)(void *IOInst,  u64 RegOff, u32 *Data);
 	AieRC (*MaskWrite32)(void *IOInst, u64 RegOff, u32 Mask, u32 Value);
-	AieRC (*MaskPoll)(void *IOInst, u64 RegOff, u32 Mask, u32 Value, u32 TimeOutUs);
+	AieRC (*MaskPoll)(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
+			u32 TimeOutUs);
 	AieRC (*BlockWrite32)(void *IOInst, u64 RegOff, u32 *Data, u32 Size);
 	AieRC (*BlockSet32)(void *IOInst, u64 RegOff, u32 Data, u32 Size);
 	AieRC (*CmdWrite)(void *IOInst, u8 Col, u8 Row, u8 Command, u32 CmdWd0,
@@ -182,6 +214,34 @@ _XAie_SetBackendNpiWrReq(u32 RegOff, u32 RegVal)
 
 	return Req;
 }
+
+/*****************************************************************************/
+/**
+*
+* Set the NPI mask poll request arguments
+*
+* @param	RegOff : NPI register offset
+* @param	Mask   : Mask Value
+* @param	RegVal : Register Value
+* @param	TimeOutUs : Time Out Value in us.
+* @return	NPI mask poll request
+*
+* @note		Internal API only.
+*
+******************************************************************************/
+static inline XAie_BackendNpiMaskPollReq
+_XAie_SetBackendNpiMaskPollReq(u32 RegOff, u32 Mask, u32 RegVal, u32 TimeOutUs)
+{
+	XAie_BackendNpiMaskPollReq Req;
+
+	Req.NpiRegOff = RegOff;
+	Req.Val = RegVal;
+	Req.Mask = Mask;
+	Req.TimeOutUs = TimeOutUs;
+
+	return Req;
+}
+
 #endif	/* End of protection macro */
 
 /** @} */

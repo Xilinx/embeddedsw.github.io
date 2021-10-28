@@ -1,5 +1,6 @@
 var files =
 [
+    [ "data.h", "data_8h.html", null ],
     [ "xusb.c", "xusb_8c.html", "xusb_8c" ],
     [ "xusb.h", "xusb_8h.html", "xusb_8h" ],
     [ "xusb_cp9.c", "xusb__cp9_8c.html", "xusb__cp9_8c" ],

@@ -58,7 +58,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -74,7 +74,7 @@ $(document).ready(function(){initNavTree('struct_x_v___hdmi_rx_ss1___config.html
 </div><!--header-->
 <div class="contents">
 
-<p>Video Processing Subsystem configuration structure.  
+<p>Video Processing Subsystem configuration structure.
  <a href="struct_x_v___hdmi_rx_ss1___config.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -102,6 +102,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:afce02f1610b14e6a599c142352055d59"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx_ss1___config.html#afce02f1610b14e6a599c142352055d59">AxiLiteClkFreq</a></td></tr>
 <tr class="memdesc:afce02f1610b14e6a599c142352055d59"><td class="mdescLeft">&#160;</td><td class="mdescRight">AXI Lite Clock Frequency in Hz.  <a href="#afce02f1610b14e6a599c142352055d59">More...</a><br/></td></tr>
 <tr class="separator:afce02f1610b14e6a599c142352055d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf1343cb7b7cef1889fab0eec80f221d"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx_ss1___config.html#acf1343cb7b7cef1889fab0eec80f221d">VideoInterface</a></td></tr>
+<tr class="memdesc:acf1343cb7b7cef1889fab0eec80f221d"><td class="mdescLeft">&#160;</td><td class="mdescRight">0 - AXI4S 1 - Native 2 - Native DE video interface  <a href="#acf1343cb7b7cef1889fab0eec80f221d">More...</a><br/></td></tr>
+<tr class="separator:acf1343cb7b7cef1889fab0eec80f221d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab720a83810afc9e162b9dda767642b9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_v___hdmi_rx_ss1___sub_core.html">XV_HdmiRxSs1_SubCore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx_ss1___config.html#ab720a83810afc9e162b9dda767642b9e">HdcpTimer</a></td></tr>
 <tr class="memdesc:ab720a83810afc9e162b9dda767642b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sub-core instance configuration.  <a href="#ab720a83810afc9e162b9dda767642b9e">More...</a><br/></td></tr>
 <tr class="separator:ab720a83810afc9e162b9dda767642b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,7 +134,7 @@ Data Fields</h2></td></tr>
 
 <p>AXI Lite Clock Frequency in Hz. </p>
 
-<p>Referenced by <a class="el" href="xv__hdmirxss1_8h.html#ae7df2cc91e752d61253d9a86462d95ab">XV_HdmiRxSs1_CfgInitialize()</a>, and <a class="el" href="group__v__hdmirxss1__v2__1.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmirxss1_8h.html#ae7df2cc91e752d61253d9a86462d95ab">XV_HdmiRxSs1_CfgInitialize()</a>, and <a class="el" href="group__v__hdmirxss1__v3__0.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
 
 </div>
 </div>
@@ -239,7 +242,7 @@ Data Fields</h2></td></tr>
 
 <p>Sub-core instance configuration. </p>
 
-<p>Referenced by <a class="el" href="group__v__hdmirxss1__v2__1.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
+<p>Referenced by <a class="el" href="group__v__hdmirxss1__v3__0.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
 
 </div>
 </div>
@@ -284,7 +287,23 @@ Data Fields</h2></td></tr>
 
 <p>Supported Pixel per Clock. </p>
 
-<p>Referenced by <a class="el" href="xv__hdmirxss1_8h.html#a4b1da9fb9e5b37bea30c629293a76772">XV_HdmiRxSs1_SetDefaultPpc()</a>, <a class="el" href="xv__hdmirxss1_8h.html#ac95834c8296864ddf9bd11cddee740da">XV_HdmiRxSs1_SetPpc()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a33f9facfc1978f57febcf29682fed6c7">XV_HdmiRxSs1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmirxss1_8h.html#a4b1da9fb9e5b37bea30c629293a76772">XV_HdmiRxSs1_SetDefaultPpc()</a>, <a class="el" href="xv__hdmirxss1_8h.html#ac95834c8296864ddf9bd11cddee740da">XV_HdmiRxSs1_SetPpc()</a>, <a class="el" href="xv__hdmirxss1_8h.html#a33f9facfc1978f57febcf29682fed6c7">XV_HdmiRxSs1_SetStream()</a>, and <a class="el" href="group__v__hdmirxss1__v3__0.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acf1343cb7b7cef1889fab0eec80f221d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XV_HdmiRxSs1_Config::VideoInterface</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>0 - AXI4S 1 - Native 2 - Native DE video interface </p>
+
+<p>Referenced by <a class="el" href="group__v__hdmirxss1__v3__0.html#ga68409ded8710da27184abfed11fdddbf">XV_HdmiRxSs1_SubcoreInitHdmiRx1()</a>.</p>
 
 </div>
 </div>

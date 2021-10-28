@@ -34,8 +34,11 @@
 ******************************************************************************/
 /***************************** Include Files *********************************/
 #include "xaie_events.h"
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaie_ss.h"
+
+#ifdef XAIE_FEATURE_SS_ENABLE
 
 /************************** Constant Definitions *****************************/
 #define XAIE_SS_MASTER_PORT_ARBITOR_LSB		0U
@@ -47,6 +50,8 @@
 #define XAIE_SS_MSEL_MAX			0x3
 #define XAIE_SS_MASK				0x1F
 #define XAIE_SS_MSELEN_MAX			0xF
+
+#define XAIE_SS_DETERMINISTIC_MERGE_MAX_PKT_CNT (64 - 1) /* 6 bits */
 
 /************************** Function Definitions *****************************/
 /*****************************************************************************/
@@ -202,7 +207,7 @@ static AieRC _XAie_StreamSwitchConfigureCct(XAie_DevInst *DevInst,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -210,6 +215,13 @@ static AieRC _XAie_StreamSwitchConfigureCct(XAie_DevInst *DevInst,
 
 	/* Get stream switch module pointer from device instance */
 	StrmMod = DevInst->DevProp.DevMod[TileType].StrmSw;
+
+	RC = StrmMod->PortVerify(Slave, SlvPortNum, Master, MstrPortNum);
+	if(RC != XAIE_OK) {
+		XAIE_ERROR("Slave port(Type: %d, Number: %d) can't connect to Master port(Type: %d, Number: %d) on the AIE tile.\n",
+				Slave, SlvPortNum, Master, MstrPortNum);
+                return RC;
+        }
 
 	RC = _XAie_GetSlaveIdx(StrmMod, Slave, SlvPortNum, &SlaveIdx);
 	if(RC != XAIE_OK) {
@@ -344,7 +356,7 @@ static AieRC _XAie_StrmSlavePortConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -474,7 +486,7 @@ static AieRC _XAie_StrmPktSwMstrPortConfig(XAie_DevInst *DevInst,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -607,7 +619,7 @@ static AieRC _XAie_StrmSlaveSlotConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -739,7 +751,7 @@ AieRC XAie_StrmSwLogicalToPhysicalPort(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		return XAIE_INVALID_TILE;
 	}
@@ -795,7 +807,7 @@ AieRC XAie_StrmSwPhysicalToLogicalPort(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		return XAIE_INVALID_TILE;
 	}
@@ -822,4 +834,198 @@ AieRC XAie_StrmSwPhysicalToLogicalPort(XAie_DevInst *DevInst, XAie_LocType Loc,
 	return XAIE_OK;
 }
 
+/*****************************************************************************/
+/**
+*
+* This API is used to configure the stream switch module for deterministic
+* merge of packets from its ports.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Loc of AIE Tiles
+* @param	Arbitor: Arbitor number.
+* @param	Slave: Slave port type.
+* @param	PortNum: Slave port number.
+* @param	PktCount: Number of packets to merge from Slave and PortNum.
+* @param	Position: Position of the packets arriving from Slave & PortNum.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None.
+*
+*******************************************************************************/
+AieRC XAie_StrmSwDeterministicMergeConfig(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 Arbitor, StrmSwPortType Slave, u8 PortNum,
+		u8 PktCount, u8 Position)
+{
+	AieRC RC;
+	u8 TileType, SlvIdx;
+	u32 RegVal, Mask;
+	u64 RegAddr;
+	const XAie_StrmMod *StrmMod;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	/* Get stream switch module pointer from device instance */
+	StrmMod = DevInst->DevProp.DevMod[TileType].StrmSw;
+	if(StrmMod->DetMergeFeature == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Deterministic merge feature is not available\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if((Slave >= SS_PORT_TYPE_MAX) ||
+			(PortNum >= StrmMod->SlvConfig[Slave].NumPorts)) {
+		XAIE_ERROR("Invalid stream port type and port number\n");
+		return XAIE_ERR_STREAM_PORT;
+	}
+
+	if((Arbitor >= StrmMod->DetMerge->NumArbitors) ||
+			(Position >= StrmMod->DetMerge->NumPositions) ||
+			(PktCount > XAIE_SS_DETERMINISTIC_MERGE_MAX_PKT_CNT)) {
+		XAIE_ERROR("Invalid Arbitor/Position or PktCount\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	RC = _XAie_GetSlaveIdx(StrmMod, Slave, PortNum, &SlvIdx);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
+
+	RegAddr = StrmMod->DetMerge->ConfigBase +
+		StrmMod->DetMerge->ArbConfigOffset * Arbitor +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+	if(Position > 1U) {
+		RegAddr += 0x4U;
+	}
+
+	if((Position % 2U) == 0U) {
+		RegVal = XAie_SetField(SlvIdx, StrmMod->DetMerge->SlvId0.Lsb,
+				StrmMod->DetMerge->SlvId0.Mask) |
+			XAie_SetField(PktCount, StrmMod->DetMerge->PktCount0.Lsb,
+					StrmMod->DetMerge->PktCount0.Mask);
+		Mask = StrmMod->DetMerge->SlvId0.Mask |
+			StrmMod->DetMerge->PktCount0.Mask;
+	} else {
+		RegVal = XAie_SetField(SlvIdx, StrmMod->DetMerge->SlvId1.Lsb,
+				StrmMod->DetMerge->SlvId1.Mask) |
+			XAie_SetField(PktCount, StrmMod->DetMerge->PktCount1.Lsb,
+					StrmMod->DetMerge->PktCount1.Mask);
+		Mask = StrmMod->DetMerge->SlvId1.Mask |
+			StrmMod->DetMerge->PktCount1.Mask;
+	}
+
+	return XAie_MaskWrite32(DevInst, RegAddr, Mask, RegVal);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API is used to enable/disable the deterministic merge feature of stream
+* switch modules.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Loc of AIE Tiles
+* @param	Arbitor: Arbitor number.
+* @param	Enable: XAIE_ENABLE to enable. XAIE_DISABLE to disable.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_StrmSwDeterministicMergeCtrl(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 Arbitor, u8 Enable)
+{
+	u8 TileType;
+	u32 RegVal;
+	u64 RegAddr;
+	const XAie_StrmMod *StrmMod;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	/* Get stream switch module pointer from device instance */
+	StrmMod = DevInst->DevProp.DevMod[TileType].StrmSw;
+	if(StrmMod->DetMergeFeature == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Deterministic merge feature is not available\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(Arbitor >= StrmMod->DetMerge->NumArbitors) {
+		XAIE_ERROR("Invalid Arbitor number\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	RegAddr = StrmMod->DetMerge->EnableBase +
+		StrmMod->DetMerge->ArbConfigOffset * Arbitor +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+	RegVal = XAie_SetField(Enable, StrmMod->DetMerge->Enable.Lsb,
+			StrmMod->DetMerge->Enable.Mask);
+
+	return XAie_Write32(DevInst, RegAddr, RegVal);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API is used to enable the deterministic merge feature of stream switch
+* modules.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Loc of AIE Tiles
+* @param	Arbitor: Arbitor number.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None.
+*
+*******************************************************************************/
+AieRC XAie_StrmSwDeterministicMergeEnable(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 Arbitor)
+{
+	return _XAie_StrmSwDeterministicMergeCtrl(DevInst, Loc, Arbitor,
+			XAIE_ENABLE);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API is used to disable the deterministic merge feature of stream switch
+* modules.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Loc of AIE Tiles
+* @param	Arbitor: Arbitor number.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None.
+*
+*******************************************************************************/
+AieRC XAie_StrmSwDeterministicMergeDisable(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 Arbitor)
+{
+	return _XAie_StrmSwDeterministicMergeCtrl(DevInst, Loc, Arbitor,
+			XAIE_DISABLE);
+}
+
+#endif /* XAIE_FEATURE_SS_ENABLE */
 /** @} */

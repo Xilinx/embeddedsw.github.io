@@ -8,10 +8,11 @@
  *
  * @file xaxivdma_example_intr.c
  *
- * This example demonstrates how to use the AXI Video DMA with other video IPs
- * to do video frame transfers. This example does not work by itself. It needs
- * two other Video IPs, one for writing video frames to the memory and one for
- * reading video frames from the memory.
+ * This example demonstrates how to use the AXI Video DMA in loopback mode
+ * to do video frame transfers. This example reads video frames from memory,
+ * using Memory Map to Stream (MM2S) interface, and then video frames are
+ * written to memory using  Stream to Memory Map (S2MM) AXI4 interface.
+ * At the end of transfer it does sanity check and report pass/fail status.
  *
  * To see the debug print, you need a Uart16550 or uartlite in your system,
  * and please set "-DDEBUG" in your compiler options. You need to rebuild your
@@ -50,6 +51,8 @@
  * 6.9	 sk   05/25/21 Modify the ReadSetup buffer initialization call and
  *		       CheckFrame to correct the example logic.
  * 6.9	 sk   05/25/21 Fix data comparison failure wtih optimization level 2.
+ * 6.10  rsp  09/09/21 Fix read/write done count check in while loop.
+ *                     Remove unused variable GCC warning in ReadSetup().
  * </pre>
  *
  * ***************************************************************************
@@ -197,8 +200,8 @@ static UINTPTR BlockVert;
 
 /* Frame-buffer count i.e Number of frames to work on
  */
-static u16 ReadCount;
-static u16 WriteCount;
+volatile static u16 ReadCount;
+volatile static u16 WriteCount;
 
 /* DMA channel setup
  */
@@ -445,8 +448,8 @@ int main(void)
 
 	/* Every set of frame buffer finish causes a completion interrupt
 	 */
-	while ((WriteDone < NUM_TEST_FRAME_SETS) && !ReadError &&
-	      (ReadDone < NUM_TEST_FRAME_SETS) && !WriteError) {
+	while (((ReadDone < NUM_TEST_FRAME_SETS) || (WriteDone < NUM_TEST_FRAME_SETS))
+	       && !ReadError && !WriteError) {
 		/* NOP */
 	}
 
@@ -504,7 +507,7 @@ Done:
 ******************************************************************************/
 static int ReadSetup(XAxiVdma *InstancePtr)
 {
-	int Index,Index1;
+	int Index;
 	UINTPTR Addr;
 	int Status;
 

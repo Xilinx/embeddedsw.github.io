@@ -18,7 +18,7 @@ var xrfdc_8h =
     [ "XRFdc_GetCalCoefficients", "xrfdc_8h.html#ga67047aa102b426a42f263b151fbed1a8", null ],
     [ "XRFdc_GetCalFreeze", "xrfdc_8h.html#gae6e2aadc0f82e6a454d06e5e324974e5", null ],
     [ "XRFdc_GetCalibrationMode", "xrfdc_8h.html#gaab11b20e3aadaf71a627350a447e6f98", null ],
-    [ "XRFdc_GetClkDistribution", "xrfdc_8h.html#ga378a2d5a17b1eeac656ccccdb20d0a0a", null ],
+    [ "XRFdc_GetClkDistribution", "xrfdc_8h.html#ga994a499ba329a43250468b6e5ed0ba36", null ],
     [ "XRFdc_GetClockSource", "xrfdc_8h.html#gadbda21c40278f6c95ce2a02f0d52c49c", null ],
     [ "XRFdc_GetCoarseDelaySettings", "xrfdc_8h.html#ga4d2d3b2f00ceb30d72b3ab1ece00be82", null ],
     [ "XRFdc_GetConnectedIData", "xrfdc_8h.html#ga889649376447bce7933939a22330b6a2", null ],

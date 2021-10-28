@@ -31,6 +31,7 @@
 #include "xaie_helper.h"
 #include "xaie_io.h"
 #include "xaie_io_common.h"
+#include "xaie_io_privilege.h"
 #include "xaie_npi.h"
 
 /****************************** Type Definitions *****************************/
@@ -282,6 +283,34 @@ static void _XAie_DebugIO_NpiWrite32(void *IOInst, u32 RegOff,
 /*****************************************************************************/
 /**
 *
+* This is the memory IO function to mask poll a NPI address for a value.
+*
+* @param	IOInst: IO instance pointer
+* @param	RegOff: Register offset to read from.
+* @param	Mask: Mask to be applied to Data.
+* @param	Value: 32-bit value to poll for
+* @param	TimeOutUs: Timeout in micro seconds.
+*
+* @return	XAIE_OK.
+*
+* @note		None.
+*
+*******************************************************************************/
+static AieRC _XAie_DebugIO_NpiMaskPoll(void *IOInst, u64 RegOff, u32 Mask,
+		u32 Value, u32 TimeOutUs)
+{
+	XAie_DebugIO *DebugIOInst = (XAie_DebugIO *)IOInst;
+
+	printf("MP: 0x%lx, 0x%x, 0x%x, 0x%d\n", DebugIOInst->NpiBaseAddr + RegOff,
+			Mask, Value, TimeOutUs);
+
+	return XAIE_OK;
+}
+
+
+/*****************************************************************************/
+/**
+*
 * This is the function to run backend operations
 *
 * @param	IOInst: IO instance pointer
@@ -309,6 +338,13 @@ static AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 					Req->Val);
 			break;
 		}
+		case XAIE_BACKEND_OP_NPIMASKPOLL32:
+		{
+			XAie_BackendNpiMaskPollReq *Req = Arg;
+
+			return _XAie_DebugIO_NpiMaskPoll(IOInst, Req->NpiRegOff,
+					Req->Mask, Req->Val, Req->TimeOutUs);
+		}
 		case XAIE_BACKEND_OP_ASSERT_SHIMRST:
 		{
 			u8 RstEnable = (u8)((uintptr_t)Arg & 0xFF);
@@ -332,10 +368,8 @@ static AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 			break;
 		}
 		case XAIE_BACKEND_OP_REQUEST_TILES:
-		{
-			XAIE_DBG("Backend doesn't support Op %u.\n", Op);
-			return XAIE_FEATURE_NOT_SUPPORTED;
-		}
+			return _XAie_PrivilegeRequestTiles(DevInst,
+					(XAie_BackendTilesArray *)Arg);
 		case XAIE_BACKEND_OP_REQUEST_RESOURCE:
 			return _XAie_RequestRscCommon(DevInst, Arg);
 		case XAIE_BACKEND_OP_RELEASE_RESOURCE:
@@ -344,6 +378,13 @@ static AieRC XAie_DebugIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 			return _XAie_FreeRscCommon(Arg);
 		case XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE:
 			return _XAie_RequestAllocatedRscCommon(DevInst, Arg);
+		case XAIE_BACKEND_OP_PARTITION_INITIALIZE:
+			return _XAie_PrivilegeInitPart(DevInst,
+					(XAie_PartInitOpts *)Arg);
+		case XAIE_BACKEND_OP_PARTITION_TEARDOWN:
+			return _XAie_PrivilegeTeardownPart(DevInst);
+		case XAIE_BACKEND_OP_GET_RSC_STAT:
+			return _XAie_GetRscStatCommon(DevInst, Arg);
 		default:
 			XAIE_ERROR("Backend doesn't support Op %u.\n", Op);
 			RC = XAIE_FEATURE_NOT_SUPPORTED;

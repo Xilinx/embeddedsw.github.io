@@ -25,9 +25,12 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include "xaie_feature_config.h"
 #include "xaie_plif.h"
 #include "xaiegbl_defs.h"
 #include "xaie_helper.h"
+
+#ifdef XAIE_FEATURE_PL_ENABLE
 
 /************************** Constant Definitions *****************************/
 #define XAIE_PLIF_WIDTH_64SHIFT 6U
@@ -74,7 +77,7 @@ static AieRC _XAie_PlIfBliBypassConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_SHIMNOC) &&
 			(TileType != XAIEGBL_TILE_TYPE_SHIMPL)) {
 		XAIE_ERROR("Invalid Tile Type\n");
@@ -139,7 +142,7 @@ static AieRC _XAie_PlIfDownSzrPortEnableReg(XAie_DevInst *DevInst,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_SHIMNOC) &&
 			(TileType != XAIEGBL_TILE_TYPE_SHIMPL)) {
 		XAIE_ERROR("Invalid Tile Type\n");
@@ -201,7 +204,7 @@ static AieRC _XAie_AieToPlIntfConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_SHIMNOC) &&
 			(TileType != XAIEGBL_TILE_TYPE_SHIMPL)) {
 		XAIE_ERROR("Invalid Tile Type\n");
@@ -300,7 +303,7 @@ static AieRC _XAie_PlToAieIntfConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_SHIMNOC) &&
 			(TileType != XAIEGBL_TILE_TYPE_SHIMPL)) {
 		XAIE_ERROR("Invalid Tile Type\n");
@@ -605,7 +608,7 @@ static AieRC _XAie_ConfigShimNocMux(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_SHIMNOC) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -671,7 +674,7 @@ static AieRC _XAie_ConfigShimNocDeMux(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_SHIMNOC) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -850,4 +853,5 @@ AieRC XAie_EnableAieToPlStrmPort(XAie_DevInst *DevInst, XAie_LocType Loc,
 			XAIE_MUX_DEMUX_CONFIG_TYPE_PL);
 }
 
+#endif /* XAIE_FEATURE_PL_ENABLE */
 /** @} */

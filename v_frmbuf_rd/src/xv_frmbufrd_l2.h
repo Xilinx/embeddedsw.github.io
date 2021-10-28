@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017-2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017-2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xv_frmbufrd_l2.h
-* @addtogroup v_frmbuf_rd_v4_4
+* @addtogroup v_frmbuf_rd_v4_5
 * @{
 * @details
 *
@@ -96,6 +96,7 @@
 *                        Add new memory format BGR8
 *                        Add interrupt handler for ap_ready
 * 4.10  vv    02/05/19   Added new pixel formats with 12 and 16 bpc.
+* 4.50  kp    13/07/21   Added new 3 planar video format Y_U_V8
 * </pre>
 *
 ******************************************************************************/
@@ -200,6 +201,21 @@ typedef struct {
 ******************************************************************************/
 #define XVFrmbufRd_IsYUVX8Enabled(InstancePtr) \
                                  ((InstancePtr)->FrmbufRd.Config.YUVX8En)
+
+/*****************************************************************************/
+/**
+*
+* This macro returns if Video Format Y_U_V8 is available
+*
+* @param    InstancePtr is a pointer to the core instance.
+*
+* @return   Enabled(1)/Disabled(0)
+*
+* @note     None.
+*
+******************************************************************************/
+#define XVFrmbufRd_IsY_U_V8Enabled(InstancePtr) \
+                                 ((InstancePtr)->FrmbufRd.Config.Y_U_V8En)
 
 /*****************************************************************************/
 /**
@@ -637,9 +653,17 @@ UINTPTR XVFrmbufRd_GetBufferAddr(XV_FrmbufRd_l2 *InstancePtr);
 int XVFrmbufRd_SetChromaBufferAddr(XV_FrmbufRd_l2 *InstancePtr,
                               UINTPTR Addr);
 UINTPTR XVFrmbufRd_GetChromaBufferAddr(XV_FrmbufRd_l2 *InstancePtr);
+int XVFrmbufRd_SetVChromaBufferAddr(XV_FrmbufRd_l2 *InstancePtr,
+                              UINTPTR Addr);
+UINTPTR XVFrmbufRd_GetVChromaBufferAddr(XV_FrmbufRd_l2 *InstancePtr);
 int XVFrmbufRd_SetFieldID(XV_FrmbufRd_l2 *InstancePtr,
                           u32 FieldID);
 u32 XVFrmbufRd_GetFieldID(XV_FrmbufRd_l2 *InstancePtr);
+int XVFrmbufRd_Set_FidOutMode(XV_FrmbufRd_l2 *InstancePtr, u32 fidmodeval);
+u32 XVFrmbufRd_Get_FidOutMode(XV_FrmbufRd_l2 *InstancePtr);
+u32 XVFrmbufRd_Get_FidErrorOut(XV_FrmbufRd_l2 *InstancePtr);
+u32 XVFrmbufRd_Get_FidErrorCount(XV_FrmbufRd_l2 *InstancePtr);
+u32 XVFrmbufRd_Get_FieldOut(XV_FrmbufRd_l2 *InstancePtr);
 void XVFrmbufRd_DbgReportStatus(XV_FrmbufRd_l2 *InstancePtr);
 
 /* Interrupt related function */

@@ -7,7 +7,7 @@
 /**
 *
 * @file xiomodule_i.h
-* @addtogroup iomodule_v2_11
+* @addtogroup iomodule_v2_12
 * @{
 *
 * This file contains data which is shared between files and internal to the
@@ -22,6 +22,7 @@
 * 1.02a sa   07/25/12 Added UART prototypes
 * 2.11  mus  05/07/21  Fixed warnings reported by doxygen tool. It fixes
 *                      CR#1088640.
+* 2.12  mus  07/19/21 Fixed compilation warnings CR#1105405.
 * </pre>
 *
 ******************************************************************************/
@@ -49,7 +50,7 @@ extern "C" {
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-/****************************************************************************
+/****************************************************************************/
 /**
 *
 * Update the statistics of the instance.

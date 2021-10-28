@@ -58,5 +58,5 @@ var xiicps__hw_8h =
     [ "XIICPS_TRANS_SIZE_MASK", "xiicps__hw_8h.html#ga15b4866837028af069caa628b3a855c2", null ],
     [ "XIICPS_TRANS_SIZE_OFFSET", "xiicps__hw_8h.html#ga2afdc061285f0155f3fbbf322beae54f", null ],
     [ "XIicPs_WriteReg", "xiicps__hw_8h.html#gaa0bde6894589023ea8248a9d9cdc73c5", null ],
-    [ "XIicPs_ResetHw", "xiicps__hw_8h.html#gabfedbe03a6ac7de3d4e0ac192b8ab288", null ]
+    [ "XIicPs_ResetHw", "xiicps__hw_8h.html#ga935187507d0449da043070029b9b7d25", null ]
 ];

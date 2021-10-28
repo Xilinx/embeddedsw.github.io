@@ -112,6 +112,21 @@ namespace xaiefal {
 
 			return XAIE_OK;
 		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_BCAST_CHANNEL_RSC);
+		}
+		XAieRscStat getRscStat(const std::string &GName) const {
+			XAieRscStat RscStat(GName);
+			(void) GName;
+
+			if (preferredId == XAIE_RSC_ID_ANY) {
+				return AieHd->getRscGroup(GName).getRscStat(vLocs,
+						getRscType());
+			} else {
+				return AieHd->getRscGroup(GName).getRscStat(vLocs,
+						getRscType(), preferredId);
+			}
+		}
 	private:
 		AieRC _reserve() {
 			AieRC RC = XAIE_INVALID_ARGS;
@@ -152,61 +167,22 @@ namespace xaiefal {
 		AieRC _start() {
 			AieRC RC = XAIE_OK;
 			int i = 0;
+			uint32_t TType;
+			u32 data;
+			u32 addr;
 
 			for(auto r = vRscs.begin(); r != vRscs.end();) {
 				uint8_t un_block = 0;
-				if ((*r).Loc.Row == 0) {
-					if (r != vRscs.begin()) {
-						if  ((*(r - 1)).Loc.Col < ((*r).Loc.Col ))  {
-							un_block = XAIE_EVENT_BROADCAST_WEST;
-						} else if  ((*(r - 1)).Loc.Col > ((*r).Loc.Col))  {
-							un_block = XAIE_EVENT_BROADCAST_EAST;
-						} else {
-							// Vertical
-							un_block |= XAIE_EVENT_BROADCAST_NORTH;
-						}
-					}
-					if ((r + 1) != vRscs.end()) {
-						if  ((*(r + 1)).Loc.Col < ((*r).Loc.Col ))  {
-							un_block = XAIE_EVENT_BROADCAST_WEST;
-						} else if  ((*(r + 1)).Loc.Col > ((*r).Loc.Col))  {
-							un_block = XAIE_EVENT_BROADCAST_EAST;
-						} else {
-							// Vertical
-							un_block |= XAIE_EVENT_BROADCAST_NORTH;
-						}
-					}
-					RC = XAie_EventBroadcastUnblockDir(dev(),
-						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
-						XAIE_EVENT_SWITCH_A,
-						(*r).RscId,
-						XAIE_EVENT_BROADCAST_ALL);
+				uint8_t un_block_n = 0;
 
-					RC = XAie_EventBroadcastUnblockDir(dev(),
-						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
-						XAIE_EVENT_SWITCH_B,
-						(*r).RscId,
-						XAIE_EVENT_BROADCAST_ALL);
-					RC = XAie_EventBroadcastBlockDir(dev(),
-						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
-						XAIE_EVENT_SWITCH_A,
-						(*r).RscId,
-						XAIE_EVENT_BROADCAST_ALL & (~(un_block | XAIE_EVENT_BROADCAST_EAST)));
-					RC = XAie_EventBroadcastBlockDir(dev(),
-						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
-						XAIE_EVENT_SWITCH_B,
-						(*r).RscId,
-						XAIE_EVENT_BROADCAST_ALL & (~(un_block | XAIE_EVENT_BROADCAST_WEST)));
-					r++;
-				} else { // non SHIM
-					uint8_t un_block_n;
+				TType = _XAie_GetTileTypefromLoc(dev(), (*r).Loc);
+				if (TType == XAIEGBL_TILE_TYPE_AIETILE) {
 					if (r != vRscs.begin()) {
 						if  ((*(r - 1)).Loc.Col < ((*r).Loc.Col ))  {
-							un_block = XAIE_EVENT_BROADCAST_WEST;
+							un_block |= XAIE_EVENT_BROADCAST_WEST;
 						} else if  ((*(r - 1)).Loc.Col > ((*r).Loc.Col))  {
-							un_block = XAIE_EVENT_BROADCAST_EAST;
+							un_block |= XAIE_EVENT_BROADCAST_EAST;
 						} else if ((*(r - 1)).Loc.Row > ((*r).Loc.Row))  {
-							// Vertical
 							un_block |= XAIE_EVENT_BROADCAST_NORTH;
 						} else {
 							un_block |= XAIE_EVENT_BROADCAST_SOUTH;
@@ -215,34 +191,33 @@ namespace xaiefal {
 
 					if ((r + 2) != vRscs.end()) {
 						if  ((*(r + 2)).Loc.Col < ((*r).Loc.Col ))  {
-							un_block = XAIE_EVENT_BROADCAST_WEST;
+							un_block |= XAIE_EVENT_BROADCAST_WEST;
 						} else if  ((*(r + 2)).Loc.Col > ((*r).Loc.Col))  {
-							un_block = XAIE_EVENT_BROADCAST_EAST;
+							un_block |= XAIE_EVENT_BROADCAST_EAST;
 						} else if ((*(r + 2)).Loc.Row > ((*r).Loc.Row))  {
-							// Vertical
 							un_block |= XAIE_EVENT_BROADCAST_NORTH;
 						} else {
 							un_block |= XAIE_EVENT_BROADCAST_SOUTH;
 						}
 					}
 					un_block_n = un_block;
-					if ((*r).Mod == static_cast<uint32_t>(XAIE_MEM_MOD)) {
+					u8 IsCheckerBoard;
+					XAie_IsDeviceCheckerboard(dev(), &IsCheckerBoard);
+					if (IsCheckerBoard) {
+						/* All broadcast core tiles begin with reserving core module first */
 						if ((*r).Loc.Row % 2) {
-							un_block |= XAIE_EVENT_BROADCAST_WEST;
-							un_block_n |= XAIE_EVENT_BROADCAST_EAST;
-						} else {
 							un_block |= XAIE_EVENT_BROADCAST_EAST;
 							un_block_n |= XAIE_EVENT_BROADCAST_WEST;
+						} else {
+							un_block |= XAIE_EVENT_BROADCAST_WEST;
+							un_block_n |= XAIE_EVENT_BROADCAST_EAST;
 						}
+
 					} else {
-						if ((*r).Loc.Row % 2) {
-							un_block |= XAIE_EVENT_BROADCAST_EAST;
-							un_block_n |= XAIE_EVENT_BROADCAST_WEST;
-						} else {
-							un_block |= XAIE_EVENT_BROADCAST_WEST;
-							un_block_n |= XAIE_EVENT_BROADCAST_EAST;
-						}
+						un_block |= XAIE_EVENT_BROADCAST_EAST;
+						un_block_n |= XAIE_EVENT_BROADCAST_WEST;
 					}
+
 					RC = XAie_EventBroadcastUnblockDir(dev(),
 									(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
 									XAIE_EVENT_SWITCH_A,
@@ -250,7 +225,7 @@ namespace xaiefal {
 									XAIE_EVENT_BROADCAST_ALL);
 					RC = XAie_EventBroadcastUnblockDir(dev(),
 									(*(r+1)).Loc, static_cast<XAie_ModuleType>((*(r + 1)).Mod),
-									XAIE_EVENT_SWITCH_B,
+									XAIE_EVENT_SWITCH_A,
 									(*(r + 1)).RscId,
 									XAIE_EVENT_BROADCAST_ALL);
 					RC = XAie_EventBroadcastBlockDir(dev(),
@@ -263,7 +238,50 @@ namespace xaiefal {
 									XAIE_EVENT_SWITCH_A,
 									(*(r + 1)).RscId,
 									XAIE_EVENT_BROADCAST_ALL & (~un_block_n));
+
 					r += 2;
+				} else {
+					if (r != vRscs.begin()) {
+						if  ((*(r - 1)).Loc.Col < ((*r).Loc.Col ))  {
+							un_block = XAIE_EVENT_BROADCAST_WEST;
+						} else if  ((*(r - 1)).Loc.Col > ((*r).Loc.Col))  {
+							un_block = XAIE_EVENT_BROADCAST_EAST;
+						} else {
+							un_block = XAIE_EVENT_BROADCAST_NORTH;
+						}
+					}
+					if ((r + 1) != vRscs.end()) {
+						if  ((*(r + 1)).Loc.Col < ((*r).Loc.Col ))  {
+							un_block |= XAIE_EVENT_BROADCAST_WEST;
+						} else if  ((*(r + 1)).Loc.Col > ((*r).Loc.Col))  {
+							un_block |= XAIE_EVENT_BROADCAST_EAST;
+						} else {
+							un_block |= XAIE_EVENT_BROADCAST_NORTH;
+						}
+					}
+					RC = XAie_EventBroadcastUnblockDir(dev(),
+						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
+						XAIE_EVENT_SWITCH_A,
+						(*r).RscId,
+						XAIE_EVENT_BROADCAST_ALL);
+					RC = XAie_EventBroadcastUnblockDir(dev(),
+						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
+						XAIE_EVENT_SWITCH_B,
+						(*r).RscId,
+						XAIE_EVENT_BROADCAST_ALL);
+					RC = XAie_EventBroadcastBlockDir(dev(),
+						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
+						XAIE_EVENT_SWITCH_A,
+						(*r).RscId,
+						XAIE_EVENT_BROADCAST_ALL & (~(un_block | XAIE_EVENT_BROADCAST_EAST)));
+
+					RC = XAie_EventBroadcastBlockDir(dev(),
+						(*r).Loc, static_cast<XAie_ModuleType>((*r).Mod),
+						XAIE_EVENT_SWITCH_B,
+						(*r).RscId,
+						XAIE_EVENT_BROADCAST_ALL & (~(un_block | XAIE_EVENT_BROADCAST_WEST)));
+
+					r++;
 				}
 				if (RC != XAIE_OK) {
 					break;
@@ -312,6 +330,10 @@ namespace xaiefal {
 			}
 			return RC;
 		}
+
+		void _getRscs(std::vector<XAie_UserRsc> &vRs) const {
+			vRs.insert(vRs.end(), vRscs.begin(), vRscs.end());
+		}
 	private:
 		XAie_ModuleType StartMod; /**< module type of the starting module on the channel */
 		XAie_ModuleType EndMod; /**< module type of the ending modile on the channel */
@@ -322,32 +344,10 @@ namespace xaiefal {
 		 * TODO: Following function will not be required.
 		 * Bitmap will be moved to device driver
 		 */
-		static void getAieBCTileBits(std::shared_ptr<XAieDevHandle> Dev,
-				XAie_LocType L, const XAie_ModuleType M, uint16_t &bits) {
-			uint32_t i;
-
-			if (L.Row == 0) {
-				i = L.Col;
-				bits = Dev->XAieBroadcastShimBits[i];
-			} else if (M == XAIE_MEM_MOD) {
-				i = L.Col * 8 + L.Row - 1;
-				bits = Dev->XAieBroadcastMemBits[i];
-			} else {
-				i = L.Col * 8 + L.Row - 1;
-				bits = Dev->XAieBroadcastCoreBits[i];
-			}
-		}
-
-		/**
-		 * TODO: Following function will not be required.
-		 * Bitmap will be moved to device driver
-		 */
 		static AieRC setRscs(std::shared_ptr<XAieDevHandle> Dev,
 				const std::vector<XAie_LocType> &vL,
 				XAie_ModuleType startM, XAie_ModuleType endM,
 				std::vector<XAie_UserRsc> &vR) {
-			uint16_t bits;
-			int bci = -1;
 
 			if ((vL[0].Row == 0 && startM != XAIE_PL_MOD) ||
 			    (vL.back().Row == 0 && endM != XAIE_PL_MOD) ||
@@ -357,7 +357,6 @@ namespace xaiefal {
 					"BC: invalid tiles and modules combination." << std::endl;
 				return XAIE_INVALID_ARGS;
 			}
-			bits = 0;
 
 			for (size_t i = 0; i < vL.size(); i++) {
 				XAie_UserRsc R;
@@ -378,14 +377,16 @@ namespace xaiefal {
 				R.Loc.Col = vL[i].Col;
 				R.Loc.Row = vL[i].Row;
 
-				//check if shim
-				if (R.Loc.Row == 0) {
-					R.Mod = XAIE_PL_MOD;
-					vR.push_back(R);
-				} else {
+				if (TType == XAIEGBL_TILE_TYPE_AIETILE) {
 					R.Mod = XAIE_CORE_MOD;
 					vR.push_back(R);
 					R.Mod = XAIE_MEM_MOD;
+					vR.push_back(R);
+				} else if (TType == XAIEGBL_TILE_TYPE_MEMTILE) {
+					R.Mod = XAIE_MEM_MOD;
+					vR.push_back(R);
+				} else {
+					R.Mod = XAIE_PL_MOD;
 					vR.push_back(R);
 				}
 
@@ -420,34 +421,6 @@ namespace xaiefal {
 						}
 					}
 				}
-			}
-			for (int i = 0; i < 16; i++) {
-				if ((bits & (1 << i)) == 0) {
-					bci = i;
-					break;
-				}
-			}
-			if (bci < 0) {
-				Logger::log(LogLevel::ERROR) << __func__ <<
-					"BC: no free BC." << std::endl;
-				return XAIE_INVALID_ARGS;
-			}
-			for (auto r = vR.begin(); r != vR.end(); r++) {
-				uint16_t *lbits_ptr;
-				uint32_t j;
-
-				if ((*r).Loc.Row == 0) {
-					j = (*r).Loc.Col;
-					lbits_ptr = &Dev->XAieBroadcastShimBits[j];
-				} else if ((*r).Mod == XAIE_MEM_MOD) {
-					j = (*r).Loc.Col * 8 + (*r).Loc.Row - 1;
-					lbits_ptr = &Dev->XAieBroadcastMemBits[j];
-				} else {
-					j = (*r).Loc.Col * 8 + (*r).Loc.Row - 1;
-					lbits_ptr = &Dev->XAieBroadcastCoreBits[j];
-				}
-				*lbits_ptr |= (1 << bci);
-				(*r).RscId = (uint32_t)bci;
 			}
 			return XAIE_OK;
 		}

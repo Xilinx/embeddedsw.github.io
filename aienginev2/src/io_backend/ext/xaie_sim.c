@@ -37,10 +37,12 @@
 #include "xaie_helper.h"
 #include "xaie_io.h"
 #include "xaie_io_common.h"
+#include "xaie_npi.h"
 
 /****************************** Type Definitions *****************************/
 typedef struct {
 	u64 BaseAddr;
+	u64 NpiBaseAddr;
 } XAie_SimIO;
 
 /************************** Function Definitions *****************************/
@@ -88,6 +90,7 @@ static AieRC XAie_SimIO_Init(XAie_DevInst *DevInst)
 	}
 
 	IOInst->BaseAddr = DevInst->BaseAddr;
+	IOInst->NpiBaseAddr = XAIE_NPI_BASEADDR;
 	DevInst->IOInst = IOInst;
 
 	return XAIE_OK;
@@ -192,7 +195,6 @@ static AieRC XAie_SimIO_MaskPoll(void *IOInst, u64 RegOff, u32 Mask, u32 Value,
 	AieRC Ret = XAIE_ERR;
 	u32 RegVal;
 
-
 	/* Increment Timeout value to 1 if user passed value is 1 */
 	if(TimeOutUs == 0U)
 		TimeOutUs++;
@@ -287,11 +289,115 @@ static AieRC XAie_SimIO_CmdWrite(void *IOInst, u8 Col, u8 Row, u8 Command,
 	return XAIE_OK;
 }
 
+/*****************************************************************************/
+/**
+*
+* This is the function to write 32 bit value to NPI register address.
+*
+* @param	IOInst: IO instance pointer
+* @param	RegOff: NPI register offset
+* @param	RegVal: Value to write to register
+*
+* @return	None.
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static void _XAie_SimIO_NpiWrite32(void *IOInst, u32 RegOff, u32 RegVal)
+{
+	XAie_SimIO *SimIOInst = (XAie_SimIO *)IOInst;
+	u64 RegAddr;
+
+	RegAddr = SimIOInst->NpiBaseAddr + RegOff;
+	ess_Write32(RegAddr, RegVal);
+	return;
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the memory IO function to read 32bit data from the specified NPI
+* address.
+*
+* @param	IOInst: IO instance pointer
+* @param	RegOff: Register offset to read from.
+* @param	Data: Pointer to store the 32 bit value
+*
+* @return	XAIE_OK on success.
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC XAie_SimIO_NpiRead32(void *IOInst, u64 RegOff, u32 *Data)
+{
+	/* TODO: workaround until read supported/verified */
+	(void)IOInst;
+	(void)RegOff;
+	*Data = 0U;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the memory IO function to mask poll a NPI address for a value.
+*
+* @param	IOInst: IO instance pointer
+* @param	RegOff: Register offset to read from.
+* @param	Mask: Mask to be applied to Data.
+* @param	Value: 32-bit value to poll for
+* @param	TimeOutUs: Timeout in micro seconds.
+*
+* @return	XAIE_OK or XAIE_ERR.
+*
+* @note		Internal only.
+*
+*******************************************************************************/
+static AieRC _XAie_SimIO_NpiMaskPoll(void *IOInst, u64 RegOff, u32 Mask,
+		u32 Value, u32 TimeOutUs)
+{
+	AieRC Ret = XAIE_ERR;
+	u32 RegVal;
+
+
+	/* Increment Timeout value to 1 if user passed value is 1 */
+	if(TimeOutUs == 0U)
+		TimeOutUs++;
+
+	while(TimeOutUs > 0U) {
+		XAie_SimIO_NpiRead32(IOInst, RegOff, &RegVal);
+		if((RegVal & Mask) == Value) {
+			Ret = XAIE_OK;
+			break;
+		}
+		usleep(1);
+		TimeOutUs--;
+	}
+
+	return Ret;
+}
+
 static AieRC XAie_SimIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		XAie_BackendOpCode Op, void *Arg)
 {
 	(void)DevInst;
 	switch(Op) {
+	case XAIE_BACKEND_OP_NPIWR32:
+	{
+		XAie_BackendNpiWrReq *Req = Arg;
+
+		_XAie_SimIO_NpiWrite32(IOInst, Req->NpiRegOff,
+				Req->Val);
+		break;
+	}
+	case XAIE_BACKEND_OP_NPIMASKPOLL32:
+	{
+		XAie_BackendNpiMaskPollReq *Req = Arg;
+
+		return _XAie_SimIO_NpiMaskPoll(IOInst, Req->NpiRegOff,
+				Req->Mask, Req->Val, Req->TimeOutUs);
+	}
 	case XAIE_BACKEND_OP_CONFIG_SHIMDMABD:
 	{
 		XAie_ShimDmaBdArgs *BdArgs = (XAie_ShimDmaBdArgs *)Arg;
@@ -302,10 +408,8 @@ static AieRC XAie_SimIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		break;
 	}
 	case XAIE_BACKEND_OP_REQUEST_TILES:
-	{
-		XAIE_DBG("Backend doesn't support Op %u.\n", Op);
-		return XAIE_FEATURE_NOT_SUPPORTED;
-	}
+		return _XAie_PrivilegeRequestTiles(DevInst,
+				(XAie_BackendTilesArray *)Arg);
 	case XAIE_BACKEND_OP_REQUEST_RESOURCE:
 		return _XAie_RequestRscCommon(DevInst, Arg);
 	case XAIE_BACKEND_OP_RELEASE_RESOURCE:
@@ -314,6 +418,13 @@ static AieRC XAie_SimIO_RunOp(void *IOInst, XAie_DevInst *DevInst,
 		return _XAie_FreeRscCommon(Arg);
 	case XAIE_BACKEND_OP_REQUEST_ALLOCATED_RESOURCE:
 		return _XAie_RequestAllocatedRscCommon(DevInst, Arg);
+	case XAIE_BACKEND_OP_PARTITION_INITIALIZE:
+		return _XAie_PrivilegeInitPart(DevInst,
+				(XAie_PartInitOpts *)Arg);
+	case XAIE_BACKEND_OP_PARTITION_TEARDOWN:
+		return _XAie_PrivilegeTeardownPart(DevInst);
+	case XAIE_BACKEND_OP_GET_RSC_STAT:
+		return _XAie_GetRscStatCommon(DevInst, Arg);
 	default:
 		XAIE_ERROR("Linux backend does not support operation %d\n", Op);
 		return XAIE_FEATURE_NOT_SUPPORTED;

@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic_hw.h
-* @addtogroup scugic_v4_5
+* @addtogroup scugic_v4_6
 * @{
 *
 * This header file contains identifiers and HW access functions (or
@@ -55,6 +55,8 @@
 *                     XScuGic_DisableIntr. These are now C functions. This
 *                     change was to fix CR-1024716.
 * 4.1   mus  06/12/19 Updated XSCUGIC_MAX_NUM_INTR_INPUTS for Versal.
+* 4.6	sk   06/07/21 Delete the commented macro code to fix the MISRA-C warning.
+* 4.6	sk   08/05/21 Fix Scugic Misrac violations.
 *
 * </pre>
 *
@@ -418,14 +420,6 @@ extern "C" {
 #define XSCUGIC_CNTR_EN_S_MASK		0x00000001U    /**< Secure enable, 0=Disabled, 1=Enabled */
 /* @} */
 
-/** @name Priority Mask Register
- * Priority Mask register definitions
- * The CPU interface does not send interrupt if the level of the interrupt is
- * lower than the level of the register.
- * @{
- */
-/*#define XSCUGIC_PRIORITY_MASK		0x000000FFU*/   /**< All interrupts */
-/* @} */
 
 /** @name Binary Point Register
  * Binary Point register definitions
@@ -479,7 +473,6 @@ extern "C" {
  * Identifies the interrupt priority of the highest priority pending interrupt
  */
 #define XSCUGIC_PEND_INTID_MASK		0x000003FFU /**< Pending Interrupt ID */
-/*#define XSCUGIC_CPUID_MASK		0x00000C00U */	 /**< CPU ID */
 /* @} */
 #if defined (GICv3)
 /** @name ReDistributor Interface Register Map
@@ -676,7 +669,7 @@ extern "C" {
 void XScuGic_DeviceInterruptHandler(void *DeviceId);
 s32  XScuGic_DeviceInitialize(u32 DeviceId);
 void XScuGic_RegisterHandler(u32 BaseAddress, s32 InterruptID,
-			     Xil_InterruptHandler Handler, void *CallBackRef);
+			     Xil_InterruptHandler IntrHandler, void *CallBackRef);
 void XScuGic_SetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,
                                         u8 Priority, u8 Trigger);
 void XScuGic_GetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,

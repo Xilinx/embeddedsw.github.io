@@ -55,7 +55,7 @@
 *
 * @param	DevInst: Device Instance
 * @param	Loc: Location of the AIE tile.
-* @return	TileType (AIETILE/RESERVED/SHIMPL/SHIMNOC on success and MAX on
+* @return	TileType (AIETILE/MEMTILE/SHIMPL/SHIMNOC on success and MAX on
 *		error)
 *
 * @note		Internal API only.
@@ -78,10 +78,10 @@ u8 _XAie_GetTileTypefromLoc(XAie_DevInst *DevInst, XAie_LocType Loc)
 
 		return XAIEGBL_TILE_TYPE_SHIMNOC;
 
-	} else if(Loc.Row >= DevInst->ReservedRowStart &&
-			(Loc.Row < (DevInst->ReservedRowStart +
-				     DevInst->ReservedNumRows))) {
-		return XAIEGBL_TILE_TYPE_RESERVED;
+	} else if(Loc.Row >= DevInst->MemTileRowStart &&
+			(Loc.Row < (DevInst->MemTileRowStart +
+				     DevInst->MemTileNumRows))) {
+		return XAIEGBL_TILE_TYPE_MEMTILE;
 	} else if (Loc.Row >= DevInst->AieTileRowStart &&
 			(Loc.Row < (DevInst->AieTileRowStart +
 				     DevInst->AieTileNumRows))) {
@@ -114,7 +114,7 @@ AieRC _XAie_CheckModule(XAie_DevInst *DevInst,
 {
 	u8 TileType;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_AIETILE && Module > XAIE_CORE_MOD) {
 		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
@@ -126,7 +126,7 @@ AieRC _XAie_CheckModule(XAie_DevInst *DevInst,
 		return XAIE_INVALID_ARGS;
 	}
 
-	if(TileType == XAIEGBL_TILE_TYPE_RESERVED &&
+	if(TileType == XAIEGBL_TILE_TYPE_MEMTILE &&
 		Module != XAIE_MEM_MOD) {
 		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
@@ -161,9 +161,8 @@ u32 _XAie_GetNumRows(XAie_DevInst *DevInst, u8 TileType)
 	{       NumRows = DevInst->AieTileNumRows;
 		break;
 	}
-	case XAIEGBL_TILE_TYPE_RESERVED:
-	{
-		NumRows = 0U;
+	case XAIEGBL_TILE_TYPE_MEMTILE:
+	{	NumRows = DevInst->MemTileNumRows;
 		break;
 	}
 	default:
@@ -200,6 +199,11 @@ u32 _XAie_GetStartRow(XAie_DevInst *DevInst, u8 TileType)
 	}
 	case XAIEGBL_TILE_TYPE_AIETILE:
 	{	StartRow = DevInst->AieTileRowStart;
+		break;
+	}
+	case XAIEGBL_TILE_TYPE_MEMTILE:
+	{
+		StartRow = DevInst->MemTileRowStart;
 		break;
 	}
 	default:
@@ -302,6 +306,7 @@ AieRC _XAie_GetMstrIdx(const XAie_StrmMod *StrmMod, StrmSwPortType Master,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 *
 * @return	Default value of group fatal errors.
 *
@@ -314,7 +319,7 @@ u32 _XAie_GetFatalGroupErrors(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u8 TileType;
 	const XAie_EvntMod *EvntMod;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(Module == XAIE_PL_MOD)
 		EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[0U];
 	else
@@ -893,7 +898,7 @@ AieRC XAie_Write32(XAie_DevInst *DevInst, u64 RegOff, u32 Value)
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Mask writing "
 					"to register\n");
-			goto write;
+			return Backend->Ops.Write32((void*)(DevInst->IOInst), RegOff, Value);
 		}
 
 		if(TxnInst->NumCmds + 1U == TxnInst->MaxCmds) {
@@ -909,8 +914,6 @@ AieRC XAie_Write32(XAie_DevInst *DevInst, u64 RegOff, u32 Value)
 
 		return XAIE_OK;
 	}
-
-write:
 	return Backend->Ops.Write32((void*)(DevInst->IOInst), RegOff, Value);
 }
 
@@ -928,7 +931,7 @@ AieRC XAie_Read32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data)
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Reading "
 					"from register\n");
-			goto read;
+			return Backend->Ops.Read32((void*)(DevInst->IOInst), RegOff, Data);
 		}
 
 		if((TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) &&
@@ -943,17 +946,15 @@ AieRC XAie_Read32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data)
 			}
 
 			TxnInst->NumCmds = 0;
-			goto read;
+			return Backend->Ops.Read32((void*)(DevInst->IOInst), RegOff, Data);
 		} else if(TxnInst->NumCmds == 0) {
-			goto read;
+			return Backend->Ops.Read32((void*)(DevInst->IOInst), RegOff, Data);
 		} else {
 			XAIE_ERROR("Read operation is not supported "
 					"when auto flush is disabled\n");
 			return XAIE_ERR;
 		}
 	}
-
-read:
 	return Backend->Ops.Read32((void*)(DevInst->IOInst), RegOff, Data);
 }
 
@@ -971,7 +972,8 @@ AieRC XAie_MaskWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value)
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Writing "
 					"to register\n");
-			goto maskwrite;
+			return Backend->Ops.MaskWrite32((void *)(DevInst->IOInst), RegOff, Mask,
+					Value);
 		}
 
 		if(TxnInst->NumCmds + 1U == TxnInst->MaxCmds) {
@@ -987,8 +989,6 @@ AieRC XAie_MaskWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value)
 
 		return XAIE_OK;
 	}
-
-maskwrite:
 	return Backend->Ops.MaskWrite32((void *)(DevInst->IOInst), RegOff, Mask,
 			Value);
 }
@@ -1008,7 +1008,8 @@ AieRC XAie_MaskPoll(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value,
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Polling "
 					"from register\n");
-			goto maskpoll;
+			return Backend->Ops.MaskPoll((void*)(DevInst->IOInst), RegOff, Mask,
+					Value, TimeOutUs);
 		}
 
 		if((TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) &&
@@ -1023,17 +1024,17 @@ AieRC XAie_MaskPoll(XAie_DevInst *DevInst, u64 RegOff, u32 Mask, u32 Value,
 			}
 
 			TxnInst->NumCmds = 0;
-			goto maskpoll;
+			return Backend->Ops.MaskPoll((void*)(DevInst->IOInst), RegOff, Mask,
+					Value, TimeOutUs);
 		} else if(TxnInst->NumCmds == 0) {
-			goto maskpoll;
+			return Backend->Ops.MaskPoll((void*)(DevInst->IOInst), RegOff, Mask,
+					Value, TimeOutUs);
 		} else {
 			XAIE_ERROR("MaskPoll operation is not supported "
 					"when auto flush is disabled\n");
 			return XAIE_ERR;
 		}
 	}
-
-maskpoll:
 	return Backend->Ops.MaskPoll((void*)(DevInst->IOInst), RegOff, Mask,
 			Value, TimeOutUs);
 }
@@ -1053,7 +1054,8 @@ AieRC XAie_BlockWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data, u32 Size)
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Block write "
 					"to register\n");
-			goto blockwrite;
+			return Backend->Ops.BlockWrite32((void *)(DevInst->IOInst), RegOff,
+					Data, Size);
 		}
 
 		if(TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) {
@@ -1069,7 +1071,8 @@ AieRC XAie_BlockWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data, u32 Size)
 			}
 
 			TxnInst->NumCmds = 0;
-			goto blockwrite;
+			return Backend->Ops.BlockWrite32((void *)(DevInst->IOInst), RegOff,
+					Data, Size);
 		}
 
 		if(TxnInst->NumCmds + 1U == TxnInst->MaxCmds) {
@@ -1093,8 +1096,6 @@ AieRC XAie_BlockWrite32(XAie_DevInst *DevInst, u64 RegOff, u32 *Data, u32 Size)
 
 		return XAIE_OK;
 	}
-
-blockwrite:
 	return Backend->Ops.BlockWrite32((void *)(DevInst->IOInst), RegOff,
 			Data, Size);
 }
@@ -1113,7 +1114,8 @@ AieRC XAie_BlockSet32(XAie_DevInst *DevInst, u64 RegOff, u32 Data, u32 Size)
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Block set "
 					"to register\n");
-			goto blockset;
+			return Backend->Ops.BlockSet32((void *)(DevInst->IOInst), RegOff, Data,
+					Size);
 		}
 
 		if(TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) {
@@ -1129,7 +1131,8 @@ AieRC XAie_BlockSet32(XAie_DevInst *DevInst, u64 RegOff, u32 Data, u32 Size)
 			}
 
 			TxnInst->NumCmds = 0;
-			goto blockset;
+			return Backend->Ops.BlockSet32((void *)(DevInst->IOInst), RegOff, Data,
+					Size);
 		}
 
 		if(TxnInst->NumCmds + 1U == TxnInst->MaxCmds) {
@@ -1146,8 +1149,6 @@ AieRC XAie_BlockSet32(XAie_DevInst *DevInst, u64 RegOff, u32 Data, u32 Size)
 
 		return XAIE_OK;
 	}
-
-blockset:
 	return Backend->Ops.BlockSet32((void *)(DevInst->IOInst), RegOff, Data,
 			Size);
 }
@@ -1167,7 +1168,8 @@ AieRC XAie_CmdWrite(XAie_DevInst *DevInst, u8 Col, u8 Row, u8 Command,
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Writing cmd "
 					"to register\n");
-			goto cmdwrite;
+			return Backend->Ops.CmdWrite((void *)(DevInst->IOInst), Col, Row,
+					Command, CmdWd0, CmdWd1, CmdStr);
 		}
 
 		if((TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) &&
@@ -1182,17 +1184,17 @@ AieRC XAie_CmdWrite(XAie_DevInst *DevInst, u8 Col, u8 Row, u8 Command,
 			}
 
 			TxnInst->NumCmds = 0;
-			goto cmdwrite;
+			return Backend->Ops.CmdWrite((void *)(DevInst->IOInst), Col, Row,
+					Command, CmdWd0, CmdWd1, CmdStr);
 		} else if(TxnInst->NumCmds == 0) {
-			goto cmdwrite;
+			return Backend->Ops.CmdWrite((void *)(DevInst->IOInst), Col, Row,
+					Command, CmdWd0, CmdWd1, CmdStr);
 		} else {
 			XAIE_ERROR("Cmd Write operation is not supported "
 					"when auto flush is disabled\n");
 			return XAIE_ERR;
 		}
 	}
-
-cmdwrite:
 	return Backend->Ops.CmdWrite((void *)(DevInst->IOInst), Col, Row,
 			Command, CmdWd0, CmdWd1, CmdStr);
 }
@@ -1210,7 +1212,7 @@ AieRC XAie_RunOp(XAie_DevInst *DevInst, XAie_BackendOpCode Op, void *Arg)
 		if(TxnInst == NULL) {
 			XAIE_DBG("Could not find transaction instance "
 					"associated with thread. Running Op.\n");
-			goto runop;
+			return Backend->Ops.RunOp(DevInst->IOInst, DevInst, Op, Arg);
 		}
 
 		if((TxnInst->Flags & XAIE_TXN_AUTO_FLUSH_MASK) &&
@@ -1223,17 +1225,15 @@ AieRC XAie_RunOp(XAie_DevInst *DevInst, XAie_BackendOpCode Op, void *Arg)
 			}
 
 			TxnInst->NumCmds = 0;
-			goto runop;
+			return Backend->Ops.RunOp(DevInst->IOInst, DevInst, Op, Arg);
 		} else if(TxnInst->NumCmds == 0) {
-			goto runop;
+			return Backend->Ops.RunOp(DevInst->IOInst, DevInst, Op, Arg);
 		} else {
 			XAIE_ERROR("Cmd Write operation is not supported "
 					"when auto flush is disabled\n");
 			return XAIE_ERR;
 		}
 	}
-
-runop:
 	return Backend->Ops.RunOp(DevInst->IOInst, DevInst, Op, Arg);
 }
 

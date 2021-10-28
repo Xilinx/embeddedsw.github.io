@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -340,9 +340,9 @@ u8&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GetVic</b> (
 <tr class="memitem:aba2f50da08ab46699dcee07db1d106c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba2f50da08ab46699dcee07db1d106c1"></a>
 XVidC_VideoMode&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GetVideoModeFromVic</b> (u8 Vic)</td></tr>
 <tr class="separator:aba2f50da08ab46699dcee07db1d106c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed848722438a88d2347405632fe4c4d0"><td class="memItemLeft" align="right" valign="top">u64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XVidC_VideoTiming VideoTiming, XVidC_FrameRate FrameRate, XVidC_ColorFormat ColorFormat, XVidC_ColorDepth Bpc, XVidC_PixelsPerClock Ppc, XVidC_3DInfo *Info3D, u8 FVaFactor, u8 VrrEnabled, u8 CnmvrrEnabled)</td></tr>
-<tr class="memdesc:aed848722438a88d2347405632fe4c4d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the HDMI TX stream parameters.  <a href="#aed848722438a88d2347405632fe4c4d0">More...</a><br/></td></tr>
-<tr class="separator:aed848722438a88d2347405632fe4c4d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a20221c997a381a61b4e7e98c5a4370"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XVidC_VideoTiming VideoTiming, XVidC_FrameRate FrameRate, XVidC_ColorFormat ColorFormat, XVidC_ColorDepth Bpc, XVidC_PixelsPerClock Ppc, XVidC_3DInfo *Info3D, u8 FVaFactor, u8 VrrEnabled, u8 CnmvrrEnabled, u64 *TmdsClk)</td></tr>
+<tr class="memdesc:a7a20221c997a381a61b4e7e98c5a4370"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the HDMI TX stream parameters.  <a href="#a7a20221c997a381a61b4e7e98c5a4370">More...</a><br/></td></tr>
+<tr class="separator:a7a20221c997a381a61b4e7e98c5a4370"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fdc16b8be464514b4d72ddfb947cee9"><td class="memItemLeft" align="right" valign="top">u64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8h.html#a2fdc16b8be464514b4d72ddfb947cee9">XV_HdmiTx1_GetTmdsClk</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a2fdc16b8be464514b4d72ddfb947cee9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets and return the TMDS Clock based on Video Parameter from the InstancePtr.  <a href="#a2fdc16b8be464514b4d72ddfb947cee9">More...</a><br/></td></tr>
 <tr class="separator:a2fdc16b8be464514b4d72ddfb947cee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2711,7 +2711,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GenerateSr
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a4cee4a4b0708d7e886ab923114753d75">XV_HdmiTx1_Stream::ScdcSupport</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#abd62e567ccef9f34c2614909fed625ce">XV_HdmiTx1_Stream::TMDSClockRatio</a>, <a class="el" href="xv__hdmitx1_8c.html#a8e431bf1d16450b478448424d81e72ea">XV_HdmiTx1_DdcRead()</a>, and <a class="el" href="xv__hdmitx1_8c.html#ab587002464f4dbfd8db9b39199bb4bdc">XV_HdmiTx1_DdcWrite()</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -3629,7 +3629,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GenerateSr
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a9516babecbb4fd2a295df625a12473d5">XV_HdmiTx1_Stream::PixelClk</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, and <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a294dfd0caf934682685fafc257d49e2b">XV_HdmiTx1_Stream::Video</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -3919,7 +3919,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GenerateSr
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a195ea9a4cc60940fab80604ebb6a2651">XV_HdmiTx1_Stream::IsScrambled</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a9947243bcf378409927347939617a886">XV_HdmiTx1_Stream::OverrideScrambler</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a4cee4a4b0708d7e886ab923114753d75">XV_HdmiTx1_Stream::ScdcSupport</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a07e8f7fff100be805de99a80219c2f8c">XV_HdmiTx1_Stream::TMDSClock</a>, <a class="el" href="xv__hdmitx1_8c.html#a8e431bf1d16450b478448424d81e72ea">XV_HdmiTx1_DdcRead()</a>, <a class="el" href="xv__hdmitx1_8c.html#ab587002464f4dbfd8db9b39199bb4bdc">XV_HdmiTx1_DdcWrite()</a>, and <a class="el" href="xv__hdmitx1_8h.html#a669f967b9baf869d60aa8dc35297ee3a">XV_HdmiTx1_SetScrambler</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -4166,7 +4166,7 @@ HandlerType              Callback Function Type
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a294dfd0caf934682685fafc257d49e2b">XV_HdmiTx1_Stream::Video</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a58610b772b050b3a4504d274bd53f09a">XV_HDMITX1_PIO_OUT_COLOR_DEPTH_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a9044e4c1c1a22e9f5540b3e28e164ebe">XV_HDMITX1_PIO_OUT_COLOR_DEPTH_SHIFT</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ae9de0ab9551b81695551dd340024f11a">XV_HDMITX1_PIO_OUT_MSK_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aef14faec6d7dec76359597de87c027e1">XV_HDMITX1_PIO_OUT_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -4196,7 +4196,7 @@ HandlerType              Callback Function Type
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a294dfd0caf934682685fafc257d49e2b">XV_HdmiTx1_Stream::Video</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac9a6bae49a6bba1d495a19e74aff47d8">XV_HDMITX1_PIO_OUT_COLOR_SPACE_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aef681ccbd7dad5067f84ef4b7ecdc685">XV_HDMITX1_PIO_OUT_COLOR_SPACE_SHIFT</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ae9de0ab9551b81695551dd340024f11a">XV_HDMITX1_PIO_OUT_MSK_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aef14faec6d7dec76359597de87c027e1">XV_HDMITX1_PIO_OUT_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -4710,7 +4710,7 @@ HandlerType              Callback Function Type
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a7fa66e3baa8894a6c59b3fbc96d18354">XV_HdmiTx1_Stream::CorePixPerClk</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ae9de0ab9551b81695551dd340024f11a">XV_HDMITX1_PIO_OUT_MSK_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aef14faec6d7dec76359597de87c027e1">XV_HDMITX1_PIO_OUT_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a493cc4bcc9456c6e4b5b7b6f4ef278c7">XV_HDMITX1_PIO_OUT_PIXEL_RATE_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a6fe7c0047c787b5b463931d65a9857aa">XV_HDMITX1_PIO_OUT_PIXEL_RATE_SHIFT</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#aed848722438a88d2347405632fe4c4d0">XV_HdmiTx1_SetStream()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
 
 </div>
 </div>
@@ -4758,12 +4758,12 @@ HandlerType              Callback Function Type
 
 </div>
 </div>
-<a class="anchor" id="aed848722438a88d2347405632fe4c4d0"></a>
+<a class="anchor" id="a7a20221c997a381a61b4e7e98c5a4370"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u64 XV_HdmiTx1_SetStream </td>
+          <td class="memname">u32 XV_HdmiTx1_SetStream </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
@@ -4820,7 +4820,13 @@ HandlerType              Callback Function Type
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">u8&#160;</td>
-          <td class="paramname"><em>CnmvrrEnabled</em>&#160;</td>
+          <td class="paramname"><em>CnmvrrEnabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64 *&#160;</td>
+          <td class="paramname"><em>TmdsClock</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -4852,13 +4858,18 @@ HandlerType              Callback Function Type
 </ul>
 </td></tr>
     <tr><td class="paramname">Ppc</td><td>specifies the pixel per clock.<ul>
-<li>4 = XVIDC_PPC_4</li>
+<li>4 = XVIDC_PPC_4 </li>
 </ul>
 </td></tr>
+    <tr><td class="paramname">Info3D</td><td>3D info </td></tr>
+    <tr><td class="paramname">FVaFactor</td><td>- Fast Video Active Factor </td></tr>
+    <tr><td class="paramname">VrrEnabled</td><td>- VRR is enabled or not </td></tr>
+    <tr><td class="paramname">CnmvrrEnabled</td><td>- Negative VRR supported flag </td></tr>
+    <tr><td class="paramname">TmdsClock,reference</td><td>clock calculated based on the input parameters.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>TmdsClock, reference clock calculated based on the input parameters.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS on success else XST_FAILURE</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 <p>In HDMI the colordepth in YUV422 is always 12 bits, although on the link itself it is being transmitted as 8-bits. Therefore if the colorspace is YUV422, then force the colordepth to 12 bits. </p>
 

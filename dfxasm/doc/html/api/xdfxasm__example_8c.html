@@ -52,7 +52,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -77,7 +77,11 @@ Ver      Who   Date           Changes
 </p>
 <hr/>
 <p>
-1.0   dp    07/14/2020     First Release</pre><pre></pre> </div><table class="memberdecls">
+1.0   dp    07/14/2020     First Release
+1.1   dp    08/10/2021     Typecast ShutdownMode to XDfxasm_State while
+                           invoking <a class="el" href="group__dfxasm__v1__1.html#ga9ce867d2441c25c264a7ef380c819ba1" title="This function is used to set shutdown manager in shutdown or pass through mode. ">XDfxasm_SetState()</a> in the routine
+                           <a class="el" href="xdfxasm__example_8c.html#a276f161582681a2b43e64e3da9ebe988" title="This function is used to test the SetState and GetState of Dfxasm driver. ">XDfxasm_TestState()</a> to avoid compilation issue
+                           with cpp compiler.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a735eef149a8f1815fa40c09631431995"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdfxasm__example_8c.html#a735eef149a8f1815fa40c09631431995">XDFX_ASM_DEVICE_ID</a>&#160;&#160;&#160;XPAR_DFX_ASM_0_DEVICE_ID</td></tr>
@@ -175,7 +179,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__dfxasm__v1__0.html#gadfe5b93b82691e4bb3318a18e9e46724">XDfxasm_CfgInitialize()</a>, <a class="el" href="group__dfx__asm__v1__0.html#gab49ddf272d8db2a95f7b4420261a6ca1">XDfxasm_LookupConfig()</a>, and <a class="el" href="xdfxasm__example_8c.html#a276f161582681a2b43e64e3da9ebe988">XDfxasm_TestState()</a>.</p>
+<p>References <a class="el" href="group__dfxasm__v1__1.html#gadfe5b93b82691e4bb3318a18e9e46724">XDfxasm_CfgInitialize()</a>, <a class="el" href="group__dfx__asm__v1__1.html#gab49ddf272d8db2a95f7b4420261a6ca1">XDfxasm_LookupConfig()</a>, and <a class="el" href="xdfxasm__example_8c.html#a276f161582681a2b43e64e3da9ebe988">XDfxasm_TestState()</a>.</p>
 
 <p>Referenced by <a class="el" href="xdfxasm__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -209,7 +213,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__dfxasm__v1__0.html#ga71614d1412d3974e2b21d089c16c4210">XDfxasm_GetState()</a>, and <a class="el" href="group__dfxasm__v1__0.html#ga9ce867d2441c25c264a7ef380c819ba1">XDfxasm_SetState()</a>.</p>
+<p>References <a class="el" href="group__dfxasm__v1__1.html#ga71614d1412d3974e2b21d089c16c4210">XDfxasm_GetState()</a>, and <a class="el" href="group__dfxasm__v1__1.html#ga9ce867d2441c25c264a7ef380c819ba1">XDfxasm_SetState()</a>.</p>
 
 <p>Referenced by <a class="el" href="xdfxasm__example_8c.html#a353111293a2de979e274ea0c77107c44">XDfxasm_Example()</a>.</p>
 

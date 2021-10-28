@@ -48,6 +48,22 @@
 
 /************************** Variable Definitions *****************************/
 extern XAie_TileMod AieMod[XAIEGBL_TILE_TYPE_MAX];
+extern XAie_TileMod AieMlMod[XAIEGBL_TILE_TYPE_MAX];
+
+extern XAie_DeviceOps AieDevOps;
+extern XAie_DeviceOps AieMlDevOps;
+
+#if XAIE_DEV_SINGLE_GEN == XAIE_DEV_GEN_AIEML
+#define XAIE_DEV_SINGLE_MOD AieMlMod
+#define XAIE_DEV_SINGLE_DEVOPS AieMlDevOps
+#elif XAIE_DEV_SINGLE_GEN == XAIE_DEV_GEN_AIE
+#define XAIE_DEV_SINGLE_MOD AieMod
+#define XAIE_DEV_SINGLE_DEVOPS AieDevOps
+#else
+#ifdef XAIE_DEV_SINGLE_GEN
+#error "Unsupported device defined."
+#endif
+#endif
 
 /************************** Function Definitions *****************************/
 /*****************************************************************************/
@@ -83,9 +99,21 @@ AieRC XAie_CfgInitialize(XAie_DevInst *InstPtr, XAie_Config *ConfigPtr)
 		return XAIE_OK;
 
 	/* Initialize device property according to Device Type */
-	if(ConfigPtr->AieGen == XAIE_DEV_GEN_AIE) {
+#ifdef XAIE_DEV_SINGLE_GEN
+	if (ConfigPtr->AieGen == XAIE_DEV_SINGLE_GEN) {
+		InstPtr->DevProp.DevMod = XAIE_DEV_SINGLE_MOD;
+		InstPtr->DevProp.DevGen = XAIE_DEV_SINGLE_GEN;
+		InstPtr->DevOps = &XAIE_DEV_SINGLE_DEVOPS;
+#else
+	if(ConfigPtr->AieGen == XAIE_DEV_GEN_AIEML) {
+		InstPtr->DevProp.DevMod = AieMlMod;
+		InstPtr->DevProp.DevGen = XAIE_DEV_GEN_AIEML;
+		InstPtr->DevOps = &AieMlDevOps;
+	} else if(ConfigPtr->AieGen == XAIE_DEV_GEN_AIE) {
 		InstPtr->DevProp.DevMod = AieMod;
 		InstPtr->DevProp.DevGen = XAIE_DEV_GEN_AIE;
+		InstPtr->DevOps = &AieDevOps;
+#endif
 	} else {
 		XAIE_ERROR("Invalid device\n",
 				XAIE_INVALID_DEVICE);
@@ -99,8 +127,8 @@ AieRC XAie_CfgInitialize(XAie_DevInst *InstPtr, XAie_Config *ConfigPtr)
 	InstPtr->NumRows = ConfigPtr->NumRows;
 	InstPtr->NumCols = ConfigPtr->NumCols;
 	InstPtr->ShimRow = ConfigPtr->ShimRowNum;
-	InstPtr->ReservedRowStart = ConfigPtr->ReservedRowStart;
-	InstPtr->ReservedNumRows = ConfigPtr->ReservedNumRows;
+	InstPtr->MemTileRowStart = ConfigPtr->MemTileRowStart;
+	InstPtr->MemTileNumRows = ConfigPtr->MemTileNumRows;
 	InstPtr->AieTileRowStart = ConfigPtr->AieTileRowStart;
 	InstPtr->AieTileNumRows = ConfigPtr->AieTileNumRows;
 	InstPtr->EccStatus = XAIE_ENABLE;
@@ -120,6 +148,114 @@ AieRC XAie_CfgInitialize(XAie_DevInst *InstPtr, XAie_Config *ConfigPtr)
 	}
 
 	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the api to initialize the AI engine partition. It will initialize the
+* AI engine partition hardware.
+*
+* @param	DevInst - Global AIE device instance pointer.
+* @param	Opts - AI engine partition initialization options.
+*			If @Opts is NULL, it will do the default options without
+*			clock gating. The default options will:
+*			* reset columns,
+*			* reset shims,
+*			* set to block NOC AXI MM decode and slave errors
+*			* setup isolation
+*			If @Opts is not NULL, it will follow the set bits of the
+*			InitOpts field, the available options are as follows:
+*			* XAIE_PART_INIT_OPT_DEFAULT
+*			* XAIE_PART_INIT_OPT_COLUMN_RST
+*			* XAIE_PART_INIT_OPT_SHIM_RST
+*			* XAIE_PART_INIT_OPT_BLOCK_NOCAXIMMERR
+*			* XAIE_PART_INIT_OPT_ISOLATE
+*			* XAIE_PART_INIT_OPT_ZEROIZEMEM (not on by default)
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		None.
+*
+******************************************************************************/
+AieRC XAie_PartitionInitialize(XAie_DevInst *DevInst, XAie_PartInitOpts *Opts)
+{
+	AieRC RC;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	RC = XAie_RunOp(DevInst, XAIE_BACKEND_OP_PARTITION_INITIALIZE,
+			(void *)Opts);
+	if (RC != XAIE_OK) {
+		XAIE_ERROR("Failed to initialize partition.\n");
+		return RC;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the api to teardown the AI engine partition. It will initialize
+* the AI engine partition hardware.
+*
+* @param	DevInst - Global AIE device instance pointer.
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		None.
+*
+******************************************************************************/
+AieRC XAie_PartitionTeardown(XAie_DevInst *DevInst)
+{
+	AieRC RC;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	RC = XAie_RunOp(DevInst, XAIE_BACKEND_OP_PARTITION_TEARDOWN,
+			NULL);
+	if (RC != XAIE_OK) {
+		XAIE_ERROR("Failed to teardown partition.\n");
+		return RC;
+	}
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the api to setup the AI engine partition intialization. It is
+* supposed to be called after the partition resets.
+*
+* @param	DevInst - Global AIE device instance pointer.
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		This is a temporary wrapper. Expect all users will migrate
+*		to use partition initialization function instead. And then
+*		this wrapper function can be removed in future.
+*
+******************************************************************************/
+AieRC _XAie_PartitionIsolationInitialize(XAie_DevInst *DevInst)
+{
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	return DevInst->DevOps->SetPartIsolationAfterRst(DevInst);
+
 }
 
 /*****************************************************************************/
@@ -190,7 +326,8 @@ AieRC XAie_SetIOBackend(XAie_DevInst *DevInst, XAie_BackendType Backend)
 		return XAIE_INVALID_ARGS;
 	}
 
-	if(Backend >= XAIE_IO_BACKEND_MAX) {
+	if(Backend >= XAIE_IO_BACKEND_MAX ||
+		_XAie_GetBackendPtr(Backend) == NULL) {
 		XAIE_ERROR("Invalid backend request \n");
 		return XAIE_INVALID_ARGS;
 	}
@@ -663,6 +800,33 @@ AieRC XAie_FreeTransactionInstance(XAie_TxnInst *TxnInst)
 	}
 
 	return _XAie_TxnFree(TxnInst);
+}
+
+/*****************************************************************************/
+/**
+*
+* This is the API to return if the device generation has checkboarded tiles for
+* broadcast ungating
+*
+* @param	DevInst - Global AIE device instance pointer.
+* @param	IsCheckerBoard - pointer to be set if tile is checkerboarded
+* @return	XAIE_OK on success
+*
+* @note		None.
+*
+******************************************************************************/
+AieRC XAie_IsDeviceCheckerboard(XAie_DevInst *DevInst, u8 *IsCheckerBoard)
+{
+	if((DevInst == XAIE_NULL) ||
+		(DevInst->IsReady != XAIE_COMPONENT_IS_READY) ||
+		(IsCheckerBoard == NULL)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	*IsCheckerBoard = DevInst->DevOps->IsCheckerBoard;
+
+	return XAIE_OK;
 }
 
 /** @} */

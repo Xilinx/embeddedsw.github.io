@@ -1,6 +1,6 @@
 /* vim: set et fde fdm=syntax ft=c.doxygen ts=4 sts=4 sw=4 : */
 /*
- * Copyright © 2010-2011 Saleem Abdulrasool <compnerd@compnerd.org>.
+ * Copyright © 2010-2021 Saleem Abdulrasool <compnerd@compnerd.org>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,9 @@
 #ifndef xvidc_cea861_h
 #define xvidc_cea861_h
 
-#define XVIDC_EDID_VERBOSITY                    0
+#ifndef XVIDC_EDID_VERBOSITY
+#define XVIDC_EDID_VERBOSITY 0
+#endif
 
 #define ARRAY_SIZE(arr)                         (sizeof(arr) / sizeof(arr[0]))
 

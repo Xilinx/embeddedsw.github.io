@@ -1,11 +1,5 @@
 var xdfeequ_8c =
 [
-    [ "XDFEEQU_COEFF_LOAD_TIMEOUT", "xdfeequ_8c.html#ga36b381934468361411d843842098aa90", null ],
-    [ "XDFEEQU_DELAY_MAX", "xdfeequ_8c.html#ga016fb220774a4da8737a3ea483f95a88", null ],
-    [ "XDFEEQU_NO_EMPTY_CCID_FLAG", "xdfeequ_8c.html#gad2d781e863613830fcad3d668e0c87ab", null ],
-    [ "XDFEEQU_SEQUENCE_ENTRY_NULL", "xdfeequ_8c.html#ga06f1fff6e34a15cac76bf2d05d258e4b", null ],
-    [ "XDFEEQU_TAP_MAX", "xdfeequ_8c.html#ga17ee416036c9dbea48b203ba2cf8f00f", null ],
-    [ "XDFEEQU_WAIT", "xdfeequ_8c.html#ga3566a06a7463dde58e52eedae3cbc0b6", null ],
     [ "XDfeEqu_Activate", "xdfeequ_8c.html#gac3eedb65f956253285490a558a751862", null ],
     [ "XDfeEqu_CfgInitialize", "xdfeequ_8c.html#ga3fb819e7f965099afe28c6a6630a003a", null ],
     [ "XDfeEqu_Configure", "xdfeequ_8c.html#ga8517b5d3c53f9694d03a3fe0868b3937", null ],
@@ -18,7 +12,7 @@ var xdfeequ_8c =
     [ "XDfeEqu_Initialize", "xdfeequ_8c.html#ga84403d8f6f2f4e9a45668d9dc7dc5b28", null ],
     [ "XDfeEqu_InstanceClose", "xdfeequ_8c.html#ga197062db05b1c51bc800b6a90e82838a", null ],
     [ "XDfeEqu_InstanceInit", "xdfeequ_8c.html#ga57eeb135c4ee22d243462e43795fcd45", null ],
-    [ "XDfeEqu_LoadCoefficients", "xdfeequ_8c.html#gacb69ed9880c250579086547eacbc64fc", null ],
+    [ "XDfeEqu_LoadCoefficients", "xdfeequ_8c.html#gab553aa1cfced879709804331bda8c876", null ],
     [ "XDfeEqu_LookupConfig", "xdfeequ_8c.html#ga3b297d907e25629633a22994b4543454", null ],
     [ "XDfeEqu_RdBitField", "xdfeequ_8c.html#ga029852815690f423b5362261b754f652", null ],
     [ "XDfeEqu_RdRegBitField", "xdfeequ_8c.html#gaf092cb442c8f0d2e638bce0bbb8933e0", null ],

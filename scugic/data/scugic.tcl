@@ -80,7 +80,13 @@
 # 4.5   mus  12/14/20 Updated get_psu_interrupt_id proc with additional checks
 #                     to fix BSP generation for specific designs. It fixes
 #                     CR#1084286.
-#
+# 4.6   mus  06/25/21 Used get_param_value instead of get_property to read
+#                     IP parameters. This has been done to support SSIT
+#                     devices.
+# 4.6   dp   08/04/21 Defined get_interrupt_sources and dependent procs to handle
+#                     Utility vector logic. Also defined get_interrupt_parent and
+#                     get_connected_intr_cntrl to handle utility vector logic and
+#                     return proper interrupt controller.
 ##############################################################################
 
 #uses "xillib.tcl"
@@ -160,11 +166,11 @@ proc xdefine_zynq_include_file {drv_handle file_name drv_string args} {
 
     lappend newargs
     foreach arg $args {
-	set value [common::get_property CONFIG.$arg $drv_handle]
-	if {[llength $value] == 0} {
+	set value [::hsi::utils::get_param_value $drv_handle $arg]
+	if {[llength $value] == 0 || [string compare -nocase "DEVICE_ID" $arg] == 0} {
 	    lappend newargs $arg
 	} else {
-	    puts $file_handle "#define [::hsi::utils::get_driver_param_name $drv_string $arg] [common::get_property CONFIG.$arg $drv_handle]$uSuffix"
+	    puts $file_handle "#define [::hsi::utils::get_driver_param_name $drv_string $arg] [::hsi::utils::get_param_value $drv_handle $arg]$uSuffix"
 	}
     }
     set args $newargs
@@ -184,7 +190,7 @@ proc xdefine_zynq_include_file {drv_handle file_name drv_string args} {
 			if {([string compare -nocase $proctype "psu_cortexr5"] == 0) || ([string compare -nocase $proctype "psv_cortexr5"] == 0)} {
 				set value 0xF9001000
 			} elseif {[string compare -nocase $proctype "ps7_cortexa9"] == 0} {
-				set value [common::get_property CONFIG.$arg $periph]
+				set value [::hsi::utils::get_param_value $periph $arg]
 			} elseif {([string compare -nocase $proctype "psu_cortexa72"] == 0) || ([string compare -nocase $proctype "psv_cortexa72"] == 0) } {
 			        set value 0xF9040000
 			} else {
@@ -198,7 +204,7 @@ proc xdefine_zynq_include_file {drv_handle file_name drv_string args} {
 			if {([string compare -nocase $proctype "psu_cortexr5"] == 0) || ([string compare -nocase $proctype "psv_cortexr5"] == 0) } {
 				set value 0xF9001FFF
 			} elseif {[string compare -nocase $proctype "ps7_cortexa9"] == 0} {
-				set value [common::get_property CONFIG.$arg $periph]
+				set value [::hsi::utils::get_param_value $periph $arg]
 			} elseif {([string compare -nocase $proctype "psu_cortexa72"] == 0) || ([string compare -nocase $proctype "psv_cortexa72"] == 0) } {
 			        set value 0xF9041000
 			} else {
@@ -223,7 +229,7 @@ proc xdefine_zynq_include_file {drv_handle file_name drv_string args} {
                                 }
 			}
 		} else {
-			set value [common::get_property CONFIG.$arg $periph]
+			set value [::hsi::utils::get_param_value $periph $arg]
 		}
 	    if {[llength $value] == 0} {
 		set value 0
@@ -329,7 +335,7 @@ proc xdefine_zynq_canonical_xpars {drv_handle file_name drv_string args} {
 			if {([string compare -nocase $proctype "psu_cortexr5"] == 0) || ([string compare -nocase $proctype "psv_cortexr5"] == 0)} {
 				set rvalue 0xF9001000
 			} elseif {[string compare -nocase $proctype "ps7_cortexa9"] == 0} {
-				set rvalue [common::get_property CONFIG.$arg $periph]
+				set rvalue [::hsi::utils::get_param_value $periph $arg]
 			} elseif {([string compare -nocase $proctype "psu_cortexa72"] == 0) || ([string compare -nocase $proctype "psv_cortexa72"] == 0) } {
 			        set rvalue 0xF9040000
 			} else {
@@ -343,7 +349,7 @@ proc xdefine_zynq_canonical_xpars {drv_handle file_name drv_string args} {
 			if {([string compare -nocase $proctype "psu_cortexr5"] == 0) || ([string compare -nocase $proctype "psv_cortexr5"] == 0)} {
 				set rvalue 0xF9001FFF
 			} elseif {[string compare -nocase $proctype "ps7_cortexa9"] == 0} {
-				set rvalue [common::get_property CONFIG.$arg $periph]
+				set rvalue [::hsi::utils::get_param_value $periph $arg]
 			} elseif {([string compare -nocase $proctype "psu_cortexa72"] == 0) || ([string compare -nocase $proctype "psv_cortexa72"] == 0)} {
 			        set rvalue 0xF9041000
 			} else {
@@ -368,9 +374,9 @@ proc xdefine_zynq_canonical_xpars {drv_handle file_name drv_string args} {
                                 }
 			}
 		} else {
-			set rvalue [common::get_property CONFIG.$arg $periph]
+			set rvalue [::hsi::utils::get_param_value $periph $arg]
 		}
-		if {[llength $rvalue] == 0} {
+		if {[llength $rvalue] == 0 || [string compare -nocase "DEVICE_ID" $arg] == 0} {
 			set rvalue 0
 		}
 		set rvalue [::hsi::utils::format_addr_string $rvalue $arg]
@@ -439,9 +445,9 @@ proc xdefine_zynq_config_file {drv_handle file_name drv_string args} {
        set comma ""
        foreach arg $args {
            # Check if this is a driver parameter or a peripheral parameter
-           set value [common::get_property CONFIG.$arg $drv_handle]
-           if {[llength $value] == 0} {
-            set local_value [common::get_property CONFIG.$arg $periph ]
+           set value [::hsi::utils::get_param_value $drv_handle $arg]
+           if {[llength $value] == 0 || [string compare -nocase "DEVICE_ID" $arg] == 0} {
+            set local_value [::hsi::utils::get_param_value $periph $arg]
             # If a parameter isn't found locally (in the current
             # peripheral), we will (for some obscure and ancient reason)
             # look in peripherals connected via point to point links
@@ -520,7 +526,7 @@ proc xdefine_gic_params {drvhandle} {
         set edk_periph_name [common::get_property NAME $periph]
 
         # Get ports that are driving the interrupt
-        set source_ports [::hsi::utils::get_interrupt_sources $periph]
+        set source_ports [get_interrupt_sources $periph]
         set i 0
         lappend source_list
         foreach source_port $source_ports {
@@ -917,7 +923,8 @@ proc get_psu_interrupt_id { ip_name port_name } {
     if { ($is_external_port == 1) || ([string compare -nocase "$port_name" "gpio_io_o"] == 0)} {
         set check_duplication 1
     }
-    set intc_periph [::hsi::utils::get_interrupt_parent $ip_name $port_name]
+    set intc_periph [get_interrupt_parent $ip_name $port_name]
+
     if {[llength $intc_periph] > 1} {
         foreach intr_cntr $intc_periph {
             if { [::hsi::utils::is_ip_interrupting_current_proc $intr_cntr] } {
@@ -968,7 +975,7 @@ proc get_psu_interrupt_id { ip_name port_name } {
         }
         set total_intr_irq1_count [expr $total_intr_irq1_count + $intr_width]
     }
-    set intc_src_ports [::hsi::utils::get_interrupt_sources $intc_periph]
+    set intc_src_ports [get_interrupt_sources $intc_periph]
 
     #Special Handling for cascading case of axi_intc Interrupt controller
     set cascade_id 0
@@ -1132,7 +1139,7 @@ proc get_psu_interrupt_id { ip_name port_name } {
 			}
 
 			if { ($traveresing_details == 0) && ($check_duplication == 1)} {
-				if { ([string compare -nocase $connected_ip "xlconcat"] == 0) || ([string compare -nocase $connected_ip "util_reduced_logic"] == 0) || ([string compare -nocase $connected_ip "xlslice"] == 0) } {
+				if { ([string compare -nocase $connected_ip "xlconcat"] == 0) || ([string compare -nocase $connected_ip "util_reduced_logic"] == 0) || ([string compare -nocase $connected_ip "xlslice"] == 0) || ([string compare -nocase $connected_ip "util_vector_logic"] == 0) } {
 					set traversed_port_name($traversed_ports_count) $port_name
 					set traversed_ip_name($traversed_ports_count) $sink_periph
 					set traveresing_details 1
@@ -1166,6 +1173,19 @@ proc get_psu_interrupt_id { ip_name port_name } {
 				set connected_ip_prev $connected_ip
 				set itr 0
 				continue
+			} elseif { [string compare -nocase "$connected_ip" "util_vector_logic"] == 0} {
+				set level_offset 0
+				set sink_pin_temp $sink_pin
+				set dout "Res"
+				set concat_block 0
+				set intr_pin [::hsi::get_pins -of_objects $sink_periph -filter "NAME==$dout"]
+				set is_or_gate 1
+
+				set sink_pins [::hsi::utils::get_sink_pins "$intr_pin"]
+				set connected_ip_prev $connected_ip
+				set itr 0
+				continue
+
 			} elseif { [string compare -nocase "$connected_ip" "xlslice"] == 0} {
 				set sink_pin_temp $sink_pin
 				set dout "Dout"
@@ -1323,4 +1343,181 @@ proc is_interrupt { IP_NAME } {
 		}
 		#puts "return $IP_NAME\n\r"
 		return false;
+}
+
+
+#
+# Get handles for all ports driving the interrupt pin of a peripheral
+#
+proc get_interrupt_sources {periph_handle } {
+   lappend interrupt_sources
+   lappend interrupt_pins
+   set interrupt_pins [::hsi::get_pins -of_objects $periph_handle -filter {TYPE==INTERRUPT && DIRECTION==I}]
+   foreach interrupt_pin $interrupt_pins {
+       set source_pins [get_intr_src_pins $interrupt_pin]
+       foreach source_pin $source_pins {
+           lappend interrupt_sources $source_pin
+       }
+   }
+   return $interrupt_sources
+}
+
+#
+# Get the interrupt source pins of a periph pin object
+#
+proc get_intr_src_pins {interrupt_pin} {
+    lappend interrupt_sources
+    set source_pins [::hsi::utils::get_source_pins $interrupt_pin]
+    foreach source_pin $source_pins {
+        set source_cell [::hsi::get_cells -of_objects $source_pin]
+        if { [llength $source_cell ] } {
+            #For concat IP, we need to bring pin source for other end
+            set ip_name [common::get_property IP_NAME $source_cell]
+            if { [string match -nocase $ip_name "xlconcat" ] } {
+                set interrupt_sources [list {*}$interrupt_sources {*}[get_concat_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "xlslice"] } {
+                set interrupt_sources [list {*}$interrupt_sources {*}[::hsi::__internal::get_slice_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "util_reduced_logic"] } {
+                set interrupt_sources [list {*}$interrupt_sources {*}[::hsi::__internal::get_util_reduced_logic_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "util_vector_logic"] } {
+                set interrupt_sources [list {*}$interrupt_sources {*}[get_util_vector_logic_interrupt_sources $source_cell]]
+            } else {
+                lappend interrupt_sources $source_pin
+            }
+        } else {
+            lappend interrupt_sources $source_pin
+        }
+    }
+    return $interrupt_sources
+}
+
+#It assume that XLCONCAT IP cell object is passed to this function
+proc get_concat_interrupt_sources { concat_ip_obj {lsb -1} {msb -1} } {
+    lappend source_pins
+    if {$lsb == -1 } {
+        set i 0
+        set num_ports [common::get_property CONFIG.NUM_PORTS $concat_ip_obj]
+    } else {
+        set i $lsb
+        set num_ports $msb
+    }
+    for { $i } { $i < $num_ports } { incr i } {
+        set in_pin [::hsi::get_pins -of_objects $concat_ip_obj "In$i"]
+        set pins [::hsi::utils::get_source_pins $in_pin]
+        foreach pin $pins {
+            set source_cell [::hsi::get_cells -of_objects $pin]
+            if { [llength $source_cell] } {
+                set ip_name [common::get_property IP_NAME $source_cell]
+                #Cascading case of concat IP
+                if { [string match -nocase $ip_name "xlconcat"] } {
+                    set source_pins [list {*}$source_pins {*}[get_concat_interrupt_sources $source_cell]]
+                } elseif { [string match -nocase $ip_name "xlslice"] } {
+                    set source_pins [list {*}$source_pins {*}[::hsi::__internal::get_slice_interrupt_sources $source_cell]]
+                } elseif { [string match -nocase $ip_name "util_reduced_logic"] } {
+                    set source_pins [list {*}$source_pins {*}[::hsi::__internal::get_util_reduced_logic_interrupt_sources $source_cell]]
+                } elseif { [string match -nocase $ip_name "util_vector_logic"] } {
+                    set source_pins [list {*}$source_pins {*}[get_util_vector_logic_interrupt_sources $source_cell]]
+                } else {
+                    lappend source_pins $pin
+                }
+
+            } else {
+                lappend source_pins $pin
+            }
+        }
+    }
+    return $source_pins
+}
+
+proc get_util_vector_logic_interrupt_sources { url_ip_obj } {
+    lappend source_pins
+    set in_pin [::hsi::get_pins -of_objects $url_ip_obj "Op1"]
+    set pins [::hsi::utils::get_source_pins $in_pin]
+    foreach pin $pins {
+        set source_cell [::hsi::get_cells -of_objects $pin]
+        if { [llength $source_cell] } {
+            set ip_name [common::get_property IP_NAME $source_cell]
+            if { [string match -nocase $ip_name "xlslice"] } {
+                set source_pins [list {*}$source_pins {*}[::hsi::__internal::get_slice_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "xlconcat"] } {
+                set source_pins [list {*}$source_pins {*}[::hsi::__internal::get_concat_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "util_reduced_logic"] } {
+		    #Cascading case of util_reduced_logic IP
+                    set source_pins [list {*}$source_pins {*}[::hsi::__internal::get_util_reduced_logic_interrupt_sources $source_cell]]
+            } elseif { [string match -nocase $ip_name "util_vector_logic"] } {
+		    #Cascading case of util_reduced_logic IP
+                    set source_pins [list {*}$source_pins {*}[get_util_vector_logic_interrupt_sources $source_cell]]
+            } else {
+                lappend source_pins $pin
+            }
+
+        } else {
+            lappend source_pins $pin
+        }
+    }
+    return $source_pins
+}
+
+#It gets connected interrupt controller
+proc get_interrupt_parent {  ip_name port_name } {
+    set intc [get_connected_intr_cntrl $ip_name $port_name]
+    return $intc
+}
+
+#
+# It needs IP name and interrupt port name and it will return the connected
+# interrupt controller
+# for External interrupt port, IP name should be empty
+#
+proc get_connected_intr_cntrl { periph_name intr_pin_name } {
+    lappend intr_cntrl
+    if { [llength $intr_pin_name] == 0 } {
+        return $intr_cntrl
+    }
+
+    if { [llength $periph_name] != 0 } {
+        #This is the case where IP pin is interrupting
+        set periph [::hsi::get_cells -hier -filter "NAME==$periph_name"]
+        if { [llength $periph] == 0 } {
+            return $intr_cntrl
+        }
+        set intr_pin [::hsi::get_pins -of_objects $periph -filter "NAME==$intr_pin_name"]
+        if { [llength $intr_pin] == 0 } {
+            return $intr_cntrl
+        }
+        set pin_dir [common::get_property DIRECTION $intr_pin]
+        if { [string match -nocase $pin_dir "I"] } {
+          return $intr_cntrl
+        }
+    } else {
+        #This is the case where External interrupt port is interrupting
+        set intr_pin [::hsi::get_ports $intr_pin_name]
+        if { [llength $intr_pin] == 0 } {
+            return $intr_cntrl
+        }
+        set pin_dir [common::get_property DIRECTION $intr_pin]
+        if { [string match -nocase $pin_dir "O"] } {
+          return $intr_cntrl
+        }
+    }
+    set intr_sink_pins [::hsi::utils::get_sink_pins $intr_pin]
+    foreach intr_sink $intr_sink_pins {
+        #changes made to fix CR 933826
+        set sink_periph [lindex [::hsi::get_cells -of_objects $intr_sink] 0]
+        if { [llength $sink_periph ] && [::hsi::utils::is_intr_cntrl $sink_periph] == 1 } {
+            lappend intr_cntrl $sink_periph
+        } elseif { [llength $sink_periph] && [string match -nocase [common::get_property IP_NAME $sink_periph] "xlconcat"] } {
+            #this the case where interrupt port is connected to XLConcat IP.
+            #changes made to fix CR 933826
+            set intr_cntrl [list {*}$intr_cntrl {*}[::hsi::utils::get_connected_intr_cntrl $sink_periph "dout"]]
+        } elseif { [llength $sink_periph] && [string match -nocase [common::get_property IP_NAME $sink_periph] "xlslice"] } {
+            set intr_cntrl [list {*}$intr_cntrl {*}[::hsi::utils::get_connected_intr_cntrl $sink_periph "Dout"]]
+        } elseif { [llength $sink_periph] && [string match -nocase [common::get_property IP_NAME $sink_periph] "util_reduced_logic"] } {
+            set intr_cntrl [list {*}$intr_cntrl {*}[::hsi::utils::get_connected_intr_cntrl $sink_periph "Res"]]
+        } elseif { [llength $sink_periph] && [string match -nocase [common::get_property IP_NAME $sink_periph] "util_vector_logic"] } {
+            set intr_cntrl [list {*}$intr_cntrl {*}[::hsi::utils::get_connected_intr_cntrl $sink_periph "Res"]]
+        }
+
+    }
+    return $intr_cntrl
 }

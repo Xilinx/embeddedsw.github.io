@@ -25,6 +25,8 @@
 #define XAIE_NPI_BASEADDR		0xF70A0000
 #endif
 
+#define XAIE_NPI_TIMEOUT_US		0x00000005U
+
 /*
  * Typedef for structure for NPI protected registers access
  */
@@ -59,7 +61,7 @@ typedef struct XAie_NpiMod {
 typedef void (*NpiWrite32Func)(void *IOInst, u32 RegOff, u32 RegVal);
 
 /************************** Function Prototypes  *****************************/
-void _XAie_NpiSetShimReset(XAie_DevInst *DevInst, u8 RstEnable);
+AieRC _XAie_NpiSetShimReset(XAie_DevInst *DevInst, u8 RstEnable);
 AieRC _XAie_NpiSetProtectedRegEnable(XAie_DevInst *DevInst,
 				    XAie_NpiProtRegReq *Req);
 AieRC _XAie_NpiIrqEnable(XAie_DevInst *DevInst, u8 NpiIrqID, u8 AieIrqID);

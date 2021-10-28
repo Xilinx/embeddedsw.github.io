@@ -25,10 +25,13 @@
 #include <stdlib.h>
 
 #include "xaie_clock.h"
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaie_io.h"
 #include "xaie_rsc.h"
 #include "xaie_rsc_internal.h"
+
+#ifdef XAIE_FEATURE_RSC_ENABLE
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
 /************************** Function Definitions *****************************/
@@ -68,8 +71,8 @@ static AieRC _XAie_GetUngatedTilesInPartition(XAie_DevInst *DevInst,
 					return XAIE_INVALID_ARGS;
 				}
 
-				TileType = _XAie_GetTileTypefromLoc(DevInst,
-					Loc);
+				TileType = DevInst->DevOps->GetTTypefromLoc(
+						DevInst, Loc);
 				if((TileType == XAIEGBL_TILE_TYPE_SHIMNOC) ||
 					(TileType == XAIEGBL_TILE_TYPE_SHIMPL)) {
 					Rscs[Index].Mod = XAIE_PL_MOD;
@@ -195,10 +198,17 @@ AieRC XAie_RequestSpecificBroadcastChannel(XAie_DevInst *DevInst, u32 BcId,
 	AieRC RC;
 	XAie_BackendTilesRsc TilesRsc = {};
 
-	if((DevInst == XAIE_NULL) || (Rscs == NULL) ||
-		(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
-		XAIE_ERROR("Invalid pointer\n");
+	if((UserRscNum == XAIE_NULL) || (DevInst == XAIE_NULL) ||
+			(Rscs == XAIE_NULL)) {
+		XAIE_ERROR("Invalid arguments\n");
 		return XAIE_INVALID_ARGS;
+	}
+
+	if(BroadcastAllFlag == 0U) {
+		RC = _XAie_RscMgrRscApi_CheckArgs(DevInst, *UserRscNum, Rscs,
+				XAIE_BCAST_CHANNEL_RSC);
+		if(RC != XAIE_OK)
+			return RC;
 	}
 
 	/*
@@ -260,5 +270,6 @@ AieRC XAie_ReleaseBroadcastChannel(XAie_DevInst *DevInst, u32 UserRscNum,
 	return _XAie_RscMgr_ReleaseRscs(DevInst, UserRscNum, Rscs,
 			XAIE_BCAST_CHANNEL_RSC);
 }
+#endif /* XAIE_FEATURE_RSC_ENABLE */
 
 /** @} */

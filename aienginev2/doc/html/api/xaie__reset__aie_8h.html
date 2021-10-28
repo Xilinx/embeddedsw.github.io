@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -67,66 +67,7 @@ $(document).ready(function(){initNavTree('xaie__reset__aie_8h.html','');});
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>This file contains routines for AIE reset controls. </p>
 <p>This header file is not exposed to the user. </p>
-</div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:adcc2972d7856b33be65fe8ea4482975a"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__reset__aie_8h.html#adcc2972d7856b33be65fe8ea4482975a">_XAie_RstShims</a> (XAie_DevInst *DevInst, u32 StartCol, u32 NumCols)</td></tr>
-<tr class="memdesc:adcc2972d7856b33be65fe8ea4482975a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API reset the SHIM for the specified columns.  <a href="#adcc2972d7856b33be65fe8ea4482975a">More...</a><br/></td></tr>
-<tr class="separator:adcc2972d7856b33be65fe8ea4482975a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="adcc2972d7856b33be65fe8ea4482975a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">AieRC _XAie_RstShims </td>
-          <td>(</td>
-          <td class="paramtype">XAie_DevInst *&#160;</td>
-          <td class="paramname"><em>DevInst</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>StartCol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>NumCols</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This API reset the SHIM for the specified columns. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">DevInst,:</td><td>Device Instance </td></tr>
-    <tr><td class="paramname">StartCol,:</td><td>Start column </td></tr>
-    <tr><td class="paramname">NumCols,:</td><td>Number of columns</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>XAIE_OK</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>It is not required to check the DevInst as the caller function should provide the correct value. Also it will not check the  nor the , the caller function should do the validation and provide the correct values. This function does the following steps:<ul>
-<li>Set reset bit for every SHIM</li>
-<li>Assert SHIM reset</li>
-<li>Deassert SHIM reset</li>
-<li>Unset reset bit for every SHIM </li>
-</ul>
-</dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

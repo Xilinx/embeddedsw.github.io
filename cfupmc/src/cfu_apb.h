@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -9,6 +9,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**@cond cfu_apb_internal
+ * @{
+ */
 
 /**
  * CFU_APB Base Address
@@ -50,6 +54,7 @@ extern "C" {
 #define CFU_APB_CFU_FGCR_GRESTORE_MASK	(0X00000020U)
 #define CFU_APB_CFU_FGCR_GLUTMASK_MASK    (0X00000008U)
 #define CFU_APB_CFU_FGCR_EN_GLOBS_B_MASK	(0X00000004U)
+#define CFU_APB_CFU_FGCR_EOS_MASK	(0X00000002U)
 #define CFU_APB_CFU_FGCR_INIT_COMPLETE_MASK	(0X00000001U)
 
 /**
@@ -86,6 +91,11 @@ extern "C" {
  */
 #define CFU_APB_CFU_QWORD_CNT    ((CFU_APB_BASEADDR) + 0x00000108U)
 #define CFU_APB_CFU_QWORD_CNT_NUM_MASK    (0xFFFFFFFFU)
+
+/**
+ * @}
+ * @endcond
+ */
 
 #ifdef __cplusplus
 }

@@ -28,8 +28,11 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaie_mem.h"
+
+#ifdef XAIE_FEATURE_DATAMEM_ENABLE
 
 /************************** Function Definitions *****************************/
 /*****************************************************************************/
@@ -61,9 +64,9 @@ AieRC XAie_DataMemWrWord(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_AIETILE) &&
-			(TileType != XAIEGBL_TILE_TYPE_RESERVED)){
+			(TileType != XAIEGBL_TILE_TYPE_MEMTILE)){
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
 	}
@@ -109,9 +112,9 @@ AieRC XAie_DataMemRdWord(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_AIETILE) &&
-			(TileType != XAIEGBL_TILE_TYPE_RESERVED)){
+			(TileType != XAIEGBL_TILE_TYPE_MEMTILE)){
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
 	}
@@ -166,9 +169,9 @@ AieRC XAie_DataMemBlockWrite(XAie_DevInst *DevInst, XAie_LocType Loc, u32 Addr,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_AIETILE) &&
-			(TileType != XAIEGBL_TILE_TYPE_RESERVED)) {
+			(TileType != XAIEGBL_TILE_TYPE_MEMTILE)) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
 	}
@@ -275,9 +278,9 @@ AieRC XAie_DataMemBlockRead(XAie_DevInst *DevInst, XAie_LocType Loc, u32 Addr,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType != XAIEGBL_TILE_TYPE_AIETILE) &&
-			(TileType != XAIEGBL_TILE_TYPE_RESERVED)) {
+			(TileType != XAIEGBL_TILE_TYPE_MEMTILE)) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
 	}
@@ -314,9 +317,13 @@ AieRC XAie_DataMemBlockRead(XAie_DevInst *DevInst, XAie_LocType Loc, u32 Addr,
 
 	/* Aligned bytes */
 	for(u32 AlignedWord = 0; AlignedWord < RemBytes / 4;
-		AlignedWord++, BytePtr += 4, DmAddrRoundUp += 4)
+		AlignedWord++, BytePtr += 4, DmAddrRoundUp += 4) {
 		RC = XAie_Read32(DevInst, DmAddrRoundUp,
 				(u32 *)(CharDst + BytePtr));
+		if(RC != XAIE_OK) {
+			return RC;
+		}
+	}
 
 	/* Remaining bytes */
 	if(RemBytes % XAIE_MEM_WORD_ALIGN_SIZE) {
@@ -335,4 +342,5 @@ AieRC XAie_DataMemBlockRead(XAie_DevInst *DevInst, XAie_LocType Loc, u32 Addr,
 	return XAIE_OK;
 }
 
+#endif /* XAIE_FEATURE_DATAMEM_ENABLE */
 /** @} */

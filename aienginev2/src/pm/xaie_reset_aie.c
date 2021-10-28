@@ -13,8 +13,11 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaiegbl.h"
+
+#ifdef XAIE_FEATURE_PRIVILEGED_ENABLE
 
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
@@ -44,7 +47,7 @@ static void _XAie_RstSetShimReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 	const XAie_PlIfMod *PlIfMod;
 	const XAie_ShimRstMod *ShimTileRst;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	PlIfMod = DevInst->DevProp.DevMod[TileType].PlIfMod;
 	ShimTileRst = PlIfMod->ShimTileRst;
 
@@ -101,4 +104,6 @@ AieRC _XAie_RstShims(XAie_DevInst *DevInst, u32 StartCol, u32 NumCols)
 
 	return XAIE_OK;
 }
+
+#endif /* XAIE_FEATURE_PRIVILEGED_ENABLE */
 /** @} */

@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_hw.h
-* @addtogroup rfdc_v10_0
+* @addtogroup rfdc_v11_0
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -99,6 +99,10 @@
 *       cog    03/12/21 Allow ADC to divide and redistribute full rate clock.
 *       cog    03/12/21 Tweaks for improved calibration performance.
 *       cog    04/01/21 The threshold under/over value masks should be 14 bits.
+* 11.0  cog    05/31/21 Upversion.
+*       cog    06/10/21 When setting the powermode, the IP now takes care of the
+*                       configuration registers.
+*       cog    07/12/21 Simplified clock distribution user interface.
 *
 *</pre>
 *
@@ -1189,18 +1193,6 @@ extern "C" {
 
 /* @} */
 
-/** @name TDD Configuration
- *
- * This register contains bits to manage the TDD Configuration
- * @{
- */
-
-#define XRFDC_TDD_ADC_CFG_MASK 0x00007CFFU /**< All ADC TDD config bits */
-#define XRFDC_TDD_DAC_CFG_MASK 0x00003FFFU /**< All DAC TDD config bits */
-#define XRFDC_TDD_CFG_MASK(X) ((X == 0) ? XRFDC_TDD_ADC_CFG_MASK : XRFDC_TDD_DAC_CFG_MASK) /**< All TDD config bits */
-
-/* @} */
-
 /** @name FrontEnd Data Control
  *
  * This register contains bits to select raw data and cal coefficient to
@@ -1905,6 +1897,7 @@ extern "C" {
 
 #define XRFDC_CLOCK_DETECT_MASK 0x0000FFFFU /**< Clock detect mask */
 #define XRFDC_CLOCK_DETECT_SRC_MASK 0x00005555U /**< Clock detect mask */
+#define XRFDC_CLOCK_DETECT_DST_SHIFT 1U /**< Clock detect mask */
 
 /* @} */
 

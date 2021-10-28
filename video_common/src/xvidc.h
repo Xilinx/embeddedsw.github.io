@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
  *
  * @file xvidc.h
- * @addtogroup video_common_v4_11
+ * @addtogroup video_common_v4_12
  * @{
  * @details
  *
@@ -52,6 +52,8 @@
  * 4.5   jsr  07/03/18 Added XVIDC_VM_720x486_60_I video format
  * 4.5   yas  03/08/19 Added support for frame rates 144HZ and 240HZ
  * 4.6   mmo  02/14/19 Added 5k, 8k, 10k and Low Resolution with 200Hz, 240Hz
+ * 4.12  kp   15/07/21 Added new 3planar video formats and video timing modes
+         kp   24/08/21 Added new video timing modes related to different VTotal
  * </pre>
  *
 *******************************************************************************/
@@ -91,6 +93,7 @@ typedef enum {
 	XVIDC_VM_1440x576_200_I,
 	XVIDC_VM_1920x1080_48_I,
 	XVIDC_VM_1920x1080_50_I,
+	XVIDC_VM_1920x1080_50_I_VT1250,
 	XVIDC_VM_1920x1080_60_I,
 	XVIDC_VM_1920x1080_96_I,
 	XVIDC_VM_1920x1080_100_I,
@@ -134,6 +137,7 @@ typedef enum {
 	XVIDC_VM_1280x720_24_P,
 	XVIDC_VM_1280x720_25_P,
 	XVIDC_VM_1280x720_30_P,
+	XVIDC_VM_1280x720_48_P,
 	XVIDC_VM_1280x720_50_P,
 	XVIDC_VM_1280x720_60_P,
 	XVIDC_VM_1280x720_100_P,
@@ -165,7 +169,10 @@ typedef enum {
 	XVIDC_VM_1400x1050_85_P,
 	XVIDC_VM_1400x1050_120_P_RB,
 	XVIDC_VM_1440x240_60_P,
+	XVIDC_VM_1440x240_60_P_VT263,
 	XVIDC_VM_1440x288_50_P,
+	XVIDC_VM_1440x288_50_P_VT314,
+	XVIDC_VM_1440x288_50_P_VT312,
 	XVIDC_VM_1440x480_60_P,
 	XVIDC_VM_1440x576_50_P,
 	XVIDC_VM_1440x900_60_P,
@@ -182,6 +189,7 @@ typedef enum {
 	XVIDC_VM_1680x720_24_P,
 	XVIDC_VM_1680x720_25_P,
 	XVIDC_VM_1680x720_30_P,
+	XVIDC_VM_1680x720_48_P,
 	XVIDC_VM_1680x720_50_P,
 	XVIDC_VM_1680x720_60_P,
 	XVIDC_VM_1680x720_100_P,
@@ -237,7 +245,10 @@ typedef enum {
 	XVIDC_VM_2560x1600_85_P,
 	XVIDC_VM_2560x1600_120_P_RB,
 	XVIDC_VM_2880x240_60_P,
+	XVIDC_VM_2880x240_60_P_VT263,
 	XVIDC_VM_2880x288_50_P,
+	XVIDC_VM_2880x288_50_P_VT314,
+	XVIDC_VM_2880x288_50_P_VT312,
 	XVIDC_VM_2880x480_60_P,
 	XVIDC_VM_2880x576_50_P,
 	XVIDC_VM_3840x2160_24_P,
@@ -436,6 +447,9 @@ typedef enum {
 	XVIDC_CSF_MEM_Y_UV16,       // [31:0] Y:Y 16:16, [31:0] V:U 16:16
 	XVIDC_CSF_MEM_Y_UV16_420,   // [31:0] Y:Y 16:16, [31:0] V:U 16:16
 	XVIDC_CSF_MEM_Y16,          // [47:0] Y2:Y1:Y0 16:16:16
+	XVIDC_CSF_MEM_R_G_B8,       // [7:0] R:8, [7:0] G:8, [7:0] B:8
+	XVIDC_CSF_MEM_Y_U_V8_420,   // [15:0] Y:Y 8:8, [7:0] U:8, [7:0] V:8
+	XVIDC_CSF_MEM_Y_U_V8,       // [7:0] Y:8, [7:0] U:8, [7:0] V:8
 	XVIDC_CSF_MEM_END,          // End of memory formats
 
 	/* Streaming formats with components re-ordered */

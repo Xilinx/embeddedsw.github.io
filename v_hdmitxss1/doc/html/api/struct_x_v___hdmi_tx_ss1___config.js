@@ -11,5 +11,6 @@ var struct_x_v___hdmi_tx_ss1___config =
     [ "HighAddress", "struct_x_v___hdmi_tx_ss1___config.html#a185924b641edacf1f3b4ec5abda27345", null ],
     [ "MaxBitsPerPixel", "struct_x_v___hdmi_tx_ss1___config.html#a9e46735ff88bd2caa3708090e66a9737", null ],
     [ "Ppc", "struct_x_v___hdmi_tx_ss1___config.html#ae6bd625f0db55f41892d4fd53daf4fe1", null ],
+    [ "VideoInterface", "struct_x_v___hdmi_tx_ss1___config.html#a55587fe4cdd478faa025c97a26a3191f", null ],
     [ "Vtc", "struct_x_v___hdmi_tx_ss1___config.html#a551d6a6fa1e71515aead4eba79f11a46", null ]
 ];

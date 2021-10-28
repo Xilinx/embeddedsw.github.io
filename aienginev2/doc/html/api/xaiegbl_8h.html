@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -88,15 +88,21 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 2.2   Tejus   06/10/2020  Add ess simulation backend.
 2.3   Tejus   06/10/2020  Add api to change backend at runtime.
 </pre> </div><table class="memberdecls">
-<tr class="memitem:aba1eef2a6ee15af8282628d382e0c535"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#aba1eef2a6ee15af8282628d382e0c535">XAie_SetupConfig</a>(Config, _AieGen, _BaseAddr, _ColShift, _RowShift, _NumCols, _NumRows, _ShimRowNum, _ReservedRowStart, _ReservedNumRows, _AieTileRowStart, _AieTileNumRows)</td></tr>
-<tr class="memdesc:aba1eef2a6ee15af8282628d382e0c535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to setup the configurate pointer data structure with hardware specific details.  <a href="#aba1eef2a6ee15af8282628d382e0c535">More...</a><br/></td></tr>
-<tr class="separator:aba1eef2a6ee15af8282628d382e0c535"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a93ed1deed2dbd4fb9128ec51b69be3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#a0a93ed1deed2dbd4fb9128ec51b69be3">XAie_SetupConfig</a>(Config, _AieGen, _BaseAddr, _ColShift, _RowShift, _NumCols, _NumRows, _ShimRowNum, _MemTileRowStart, _MemTileNumRows, _AieTileRowStart, _AieTileNumRows)</td></tr>
+<tr class="memdesc:a0a93ed1deed2dbd4fb9128ec51b69be3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to setup the configurate pointer data structure with hardware specific details.  <a href="#a0a93ed1deed2dbd4fb9128ec51b69be3">More...</a><br/></td></tr>
+<tr class="separator:a0a93ed1deed2dbd4fb9128ec51b69be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2b5a00f8f1091916239479b7269a04c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#ad2b5a00f8f1091916239479b7269a04c">XAie_InstDeclare</a>(Inst, ConfigPtr)&#160;&#160;&#160;XAie_DevInst Inst = { 0 }</td></tr>
 <tr class="memdesc:ad2b5a00f8f1091916239479b7269a04c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to declare device instance.  <a href="#ad2b5a00f8f1091916239479b7269a04c">More...</a><br/></td></tr>
 <tr class="separator:ad2b5a00f8f1091916239479b7269a04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5647c5b9feef5d98b3e1e2988ed96885"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#a5647c5b9feef5d98b3e1e2988ed96885">XAie_CfgInitialize</a> (XAie_DevInst *InstPtr, XAie_Config *ConfigPtr)</td></tr>
 <tr class="memdesc:a5647c5b9feef5d98b3e1e2988ed96885"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the global initialization function for all the tiles of the AIE array The function sets up the Device Instance pointer with the appropriate values from the ConfigPtr.  <a href="#a5647c5b9feef5d98b3e1e2988ed96885">More...</a><br/></td></tr>
 <tr class="separator:a5647c5b9feef5d98b3e1e2988ed96885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0640c858efdbd06fca5ece8b0bd395a7"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#a0640c858efdbd06fca5ece8b0bd395a7">XAie_PartitionInitialize</a> (XAie_DevInst *DevInst, XAie_PartInitOpts *Opts)</td></tr>
+<tr class="memdesc:a0640c858efdbd06fca5ece8b0bd395a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the api to initialize the AI engine partition.  <a href="#a0640c858efdbd06fca5ece8b0bd395a7">More...</a><br/></td></tr>
+<tr class="separator:a0640c858efdbd06fca5ece8b0bd395a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5547d5e2526366694cbfc80f2d6b7dac"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#a5547d5e2526366694cbfc80f2d6b7dac">XAie_PartitionTeardown</a> (XAie_DevInst *DevInst)</td></tr>
+<tr class="memdesc:a5547d5e2526366694cbfc80f2d6b7dac"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the api to teardown the AI engine partition.  <a href="#a5547d5e2526366694cbfc80f2d6b7dac">More...</a><br/></td></tr>
+<tr class="separator:a5547d5e2526366694cbfc80f2d6b7dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae37d61fe4f1d8924b314e13ff0157acb"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#ae37d61fe4f1d8924b314e13ff0157acb">XAie_Finish</a> (XAie_DevInst *DevInst)</td></tr>
 <tr class="memdesc:ae37d61fe4f1d8924b314e13ff0157acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the api to finish the AI enigne partition.  <a href="#ae37d61fe4f1d8924b314e13ff0157acb">More...</a><br/></td></tr>
 <tr class="separator:ae37d61fe4f1d8924b314e13ff0157acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,6 +145,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <tr class="memitem:ae5375eee3b02d55cbfa9161d8d62a27c"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#ae5375eee3b02d55cbfa9161d8d62a27c">XAie_FreeTransactionInstance</a> (XAie_TxnInst *TxnInst)</td></tr>
 <tr class="memdesc:ae5375eee3b02d55cbfa9161d8d62a27c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This api releases the memory resources used by exported transaction instance.  <a href="#ae5375eee3b02d55cbfa9161d8d62a27c">More...</a><br/></td></tr>
 <tr class="separator:ae5375eee3b02d55cbfa9161d8d62a27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109662f465d66eaf37bfc9cfaf1c5b14"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaiegbl_8h.html#a109662f465d66eaf37bfc9cfaf1c5b14">XAie_IsDeviceCheckerboard</a> (XAie_DevInst *DevInst, u8 *IsCheckerBoard)</td></tr>
+<tr class="memdesc:a109662f465d66eaf37bfc9cfaf1c5b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the API to return if the device generation has checkboarded tiles for broadcast ungating.  <a href="#a109662f465d66eaf37bfc9cfaf1c5b14">More...</a><br/></td></tr>
+<tr class="separator:a109662f465d66eaf37bfc9cfaf1c5b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="ad2b5a00f8f1091916239479b7269a04c"></a>
@@ -178,7 +187,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 
 </div>
 </div>
-<a class="anchor" id="aba1eef2a6ee15af8282628d382e0c535"></a>
+<a class="anchor" id="a0a93ed1deed2dbd4fb9128ec51b69be3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -234,13 +243,13 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">_ReservedRowStart, </td>
+          <td class="paramname">_MemTileRowStart, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">_ReservedNumRows, </td>
+          <td class="paramname">_MemTileNumRows, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -269,8 +278,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <div class="line">                        .NumRows = _NumRows,\</div>
 <div class="line">                        .NumCols = _NumCols,\</div>
 <div class="line">                        .ShimRowNum = _ShimRowNum,\</div>
-<div class="line">                        .ReservedRowStart = _ReservedRowStart,\</div>
-<div class="line">                        .ReservedNumRows = _ReservedNumRows,\</div>
+<div class="line">                        .MemTileRowStart = _MemTileRowStart,\</div>
+<div class="line">                        .MemTileNumRows = _MemTileNumRows,\</div>
 <div class="line">                        .AieTileRowStart = _AieTileRowStart,\</div>
 <div class="line">                        .AieTileNumRows = _AieTileNumRows,\</div>
 <div class="line">                        .PartProp = {0}, \</div>
@@ -287,10 +296,10 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
     <tr><td class="paramname">_NumCols,:</td><td>Number of cols in the hardware. </td></tr>
     <tr><td class="paramname">_NumRows,:</td><td>Number of rows in the hardware. </td></tr>
     <tr><td class="paramname">_ShimRowNum,:</td><td>Row number of the shimrow. </td></tr>
-    <tr><td class="paramname">_ReservedRowStart,:</td><td>Reserved </td></tr>
-    <tr><td class="paramname">_ReservedNumRows,:</td><td>Reserved </td></tr>
-    <tr><td class="paramname">_AieTileRowStart,:</td><td>Starting row number of the aie tile. </td></tr>
-    <tr><td class="paramname">_AieTileNumRows,:</td><td>Number of aie tile rows.</td></tr>
+    <tr><td class="paramname">_MemTileRowStart,:</td><td>Starting row number of the mem tile. </td></tr>
+    <tr><td class="paramname">_MemTileNumRows,:</td><td>Number of mem tile rows. </td></tr>
+    <tr><td class="paramname">_AieTileRowStart,:</td><td>Starting row number of the mem tile. </td></tr>
+    <tr><td class="paramname">_AieTileNumRows,:</td><td>Number of mem tile rows.</td></tr>
   </table>
   </dd>
 </dl>
@@ -333,9 +342,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success and error code on failure</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>This function needs to be called before calling any other AI engine functions. After this function, as all tiles are gated after system boots, <a class="el" href="xaie__clock_8c.html#a14a59e57df836b5f1bd3742616e07173" title="This API enables clock for all the tiles passed as argument to this API. ">XAie_PmRequestTiles()</a> needs to be called before calling other functions, otherwise, other functions may access gated tiles. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function needs to be called before calling any other AI engine functions. After this function, as all tiles are gated after system boots, XAie_PmRequestTiles() needs to be called before calling other functions, otherwise, other functions may access gated tiles. </dd></dl>
 
-<p>References <a class="el" href="xaie__rsc_8c.html#aecae652a541fd2368cf0ecab4ac414e7">_XAie_RscMgrInit()</a>, and <a class="el" href="xaie__io_8c.html#ab44098508aca2f4b7ef9758473bea00b">XAie_IOInit()</a>.</p>
+<p>References <a class="el" href="xaie__io_8c.html#ab44098508aca2f4b7ef9758473bea00b">XAie_IOInit()</a>.</p>
 
 </div>
 </div>
@@ -392,7 +401,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success and error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xaie__rsc_8c.html#a270e3b70c763f0ea4d336c41d2bfeef4">_XAie_RscMgrFinish()</a>, and <a class="el" href="xaie__helper_8c.html#abcdc87e03bb5a716d9ddc8d8b8f4de58">_XAie_TxnResourceCleanup()</a>.</p>
+<p>References <a class="el" href="xaie__helper_8c.html#abcdc87e03bb5a716d9ddc8d8b8f4de58">_XAie_TxnResourceCleanup()</a>.</p>
 
 </div>
 </div>
@@ -421,6 +430,43 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xaie__helper_8c.html#a1ebe826824ac1f1a38422c8db8c7f97f">_XAie_TxnFree()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a109662f465d66eaf37bfc9cfaf1c5b14"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AieRC XAie_IsDeviceCheckerboard </td>
+          <td>(</td>
+          <td class="paramtype">XAie_DevInst *&#160;</td>
+          <td class="paramname"><em>DevInst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>IsCheckerBoard</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This is the API to return if the device generation has checkboarded tiles for broadcast ungating. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevInst</td><td>- Global AIE device instance pointer. </td></tr>
+    <tr><td class="paramname">IsCheckerBoard</td><td>- pointer to be set if tile is checkerboarded </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 </div>
 </div>
@@ -689,6 +735,83 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, Error code on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0640c858efdbd06fca5ece8b0bd395a7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AieRC XAie_PartitionInitialize </td>
+          <td>(</td>
+          <td class="paramtype">XAie_DevInst *&#160;</td>
+          <td class="paramname"><em>DevInst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XAie_PartInitOpts *&#160;</td>
+          <td class="paramname"><em>Opts</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This is the api to initialize the AI engine partition. </p>
+<p>It will initialize the AI engine partition hardware.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevInst</td><td>- Global AIE device instance pointer. </td></tr>
+    <tr><td class="paramname">Opts</td><td>- AI engine partition initialization options. If  is NULL, it will do the default options without clock gating. The default options will:<ul>
+<li>reset columns,</li>
+<li>reset shims,</li>
+<li>set to block NOC AXI MM decode and slave errors</li>
+<li>setup isolation If  is not NULL, it will follow the set bits of the InitOpts field, the available options are as follows:</li>
+<li>XAIE_PART_INIT_OPT_DEFAULT</li>
+<li>XAIE_PART_INIT_OPT_COLUMN_RST</li>
+<li>XAIE_PART_INIT_OPT_SHIM_RST</li>
+<li>XAIE_PART_INIT_OPT_BLOCK_NOCAXIMMERR</li>
+<li>XAIE_PART_INIT_OPT_ISOLATE</li>
+<li>XAIE_PART_INIT_OPT_ZEROIZEMEM (not on by default)</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success and error code on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5547d5e2526366694cbfc80f2d6b7dac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AieRC XAie_PartitionTeardown </td>
+          <td>(</td>
+          <td class="paramtype">XAie_DevInst *&#160;</td>
+          <td class="paramname"><em>DevInst</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This is the api to teardown the AI engine partition. </p>
+<p>It will initialize the AI engine partition hardware.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">DevInst</td><td>- Global AIE device instance pointer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success and error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 </div>

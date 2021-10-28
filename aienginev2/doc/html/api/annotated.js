@@ -15,6 +15,8 @@ var annotated =
     [ "aie_rsc_bc_req", "structaie__rsc__bc__req.html", null ],
     [ "aie_rsc_req", "structaie__rsc__req.html", null ],
     [ "aie_rsc_req_rsp", "structaie__rsc__req__rsp.html", null ],
+    [ "aie_rsc_user_stat", "structaie__rsc__user__stat.html", null ],
+    [ "aie_rsc_user_stat_array", "structaie__rsc__user__stat__array.html", null ],
     [ "aie_tiles_array", "structaie__tiles__array.html", null ],
     [ "aie_txn_inst", "structaie__txn__inst.html", null ],
     [ "ion_allocation_data", "struction__allocation__data.html", null ],

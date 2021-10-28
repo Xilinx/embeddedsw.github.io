@@ -50,7 +50,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -91,7 +91,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
                     as one of the streaming slaves to itself. CR#876604
 2.11  mus  02/26/20 Updated as per 2020.1 Vitis toolchain directory structure
 2.13  mus  05/23/21 Added -fno-tree-loop-distribute-patterns to prevent for loops
-                    to memset conversions. It fixes CR#1090083.</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
+                    to memset conversions. It fixes CR#1090083.
+2.14  mus  08/23/21 Removed fsl.h, it is duplicate of standalone/src/microblaze/fsl.h.
+                    It fixes CR#1108558.</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This file may contain architecture-dependent items (memory-mapped or non-memory-mapped I/O). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

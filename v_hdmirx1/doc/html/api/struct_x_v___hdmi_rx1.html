@@ -57,7 +57,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -73,7 +73,7 @@ $(document).ready(function(){initNavTree('struct_x_v___hdmi_rx1.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>The XHdmiRx1 driver instance data.  
+<p>The XHdmiRx1 driver instance data.
  <a href="struct_x_v___hdmi_rx1.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -306,6 +306,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a59c722dfcd49130ef9a2fdddfbb84ce8"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1.html#a59c722dfcd49130ef9a2fdddfbb84ce8">IsErrorPrintCount</a></td></tr>
 <tr class="memdesc:a59c722dfcd49130ef9a2fdddfbb84ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error Print is completed.  <a href="#a59c722dfcd49130ef9a2fdddfbb84ce8">More...</a><br/></td></tr>
 <tr class="separator:a59c722dfcd49130ef9a2fdddfbb84ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a758e032d0b3e5e39699df3f6374960b1"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1.html#a758e032d0b3e5e39699df3f6374960b1">SubsysVidIntfc</a></td></tr>
+<tr class="memdesc:a758e032d0b3e5e39699df3f6374960b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Video Interface 0 - AXI4S, 1 - Native, 2 - Native DE.  <a href="#a758e032d0b3e5e39699df3f6374960b1">More...</a><br/></td></tr>
+<tr class="separator:a758e032d0b3e5e39699df3f6374960b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50c0acabe2941de42168d34ada6fb0d9"><td class="memItemLeft" align="right" valign="top">XVidC_PixelsPerClock&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v___hdmi_rx1.html#a50c0acabe2941de42168d34ada6fb0d9">SubsysPpc</a></td></tr>
+<tr class="memdesc:a50c0acabe2941de42168d34ada6fb0d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subsystem Pixels per clock.  <a href="#a50c0acabe2941de42168d34ada6fb0d9">More...</a><br/></td></tr>
+<tr class="separator:a50c0acabe2941de42168d34ada6fb0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The XHdmiRx1 driver instance data. </p>
@@ -1282,6 +1288,34 @@ Data Fields</h2></td></tr>
 <p>To be passed to the stream up callback. </p>
 
 <p>Referenced by <a class="el" href="xv__hdmirx1__intr_8c.html#a7039dd1c40555eb136d7fcddda44d7b0">XV_HdmiRx1_SetCallback()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a50c0acabe2941de42168d34ada6fb0d9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XVidC_PixelsPerClock XV_HdmiRx1::SubsysPpc</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Subsystem Pixels per clock. </p>
+
+</div>
+</div>
+<a class="anchor" id="a758e032d0b3e5e39699df3f6374960b1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XV_HdmiRx1::SubsysVidIntfc</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Video Interface 0 - AXI4S, 1 - Native, 2 - Native DE. </p>
 
 </div>
 </div>

@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps_hw.c
-* @addtogroup iicps_v3_13
+* @addtogroup iicps_v3_14
 * @{
 *
 * Contains implementation of required functions for providing the reset sequence
@@ -58,7 +58,7 @@
 * This function will not modify the slcr registers that are relevant for
 * I2c controller
 ******************************************************************************/
-void XIicPs_ResetHw(u32 BaseAddress)
+void XIicPs_ResetHw(UINTPTR BaseAddress)
 {
 	u32 RegVal;
 

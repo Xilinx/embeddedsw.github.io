@@ -32,8 +32,11 @@
 #include <stdlib.h>
 
 #include "xaie_elfloader.h"
+#include "xaie_feature_config.h"
 #include "xaie_ecc.h"
 #include "xaie_mem.h"
+
+#ifdef XAIE_FEATURE_ELF_ENABLE
 /************************** Constant Definitions *****************************/
 #define XAIESIM_CMDIO_CMD_SETSTACK       0U
 #define XAIESIM_CMDIO_CMD_LOADSYM        1U
@@ -182,7 +185,7 @@ static AieRC _XAie_GetTargetTileLoc(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_ERR;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid tile type for address\n");
 		return XAIE_ERR;
@@ -394,7 +397,7 @@ AieRC XAie_LoadElfMem(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -409,7 +412,7 @@ AieRC XAie_LoadElfMem(XAie_DevInst *DevInst, XAie_LocType Loc,
 		_XAie_EccEvntResetPM(DevInst, Loc);
 	}
 
-	for(u8 phnum = 0U; phnum < Ehdr->e_phnum; phnum++) {
+	for(u32 phnum = 0U; phnum < Ehdr->e_phnum; phnum++) {
 		Phdr = (Elf32_Phdr*) (ElfMem + sizeof(*Ehdr) +
 			phnum * sizeof(*Phdr));
 		_XAie_PrintProgSectHdr(Phdr);
@@ -522,7 +525,7 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -626,4 +629,88 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 	return XAIE_OK;
 }
 
+/*****************************************************************************/
+/**
+*
+* This routine is used to write to the specified program section by reading the
+* corresponding data from the ELF buffer.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: AIE Tile location
+* @param	SectionPtr: Poiner to the program section entry.
+* @param	Phdr: Pointer to the program header.
+*
+* @return	XAIE_OK on success and error code for failure.
+*
+* @note		None.
+*
+*******************************************************************************/
+AieRC XAie_LoadElfSection(XAie_DevInst *DevInst, XAie_LocType Loc,
+		const unsigned char *SectionPtr, const Elf32_Phdr *Phdr)
+{
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) || (SectionPtr == XAIE_NULL) ||
+			(Phdr == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	return _XAie_WriteProgramSection(DevInst, Loc, SectionPtr, Phdr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API is used to write a block of the program section to the program memory
+* of AIE Tile.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: AIE Tile location
+* @param	SectionPtr: Poiner to the program section entry.
+* @param	TgtAddr: Target Address in the program memory.
+* @param	Size: Number of 32 bit words to be written to the program memory
+*
+* @return	XAIE_OK on success and error code for failure.
+*
+* @note		The user is responsible to pass valid section pointers and
+*		corresponding size to this API. The API itself does not have
+*		any context of the whole section or the elf.
+*
+*******************************************************************************/
+AieRC XAie_LoadElfSectionBlock(XAie_DevInst *DevInst, XAie_LocType Loc,
+		const unsigned char* SectionPtr, u64 TgtAddr, u32 Size)
+{
+	u8 TileType;
+	u64 Addr;
+	const XAie_CoreMod *CoreMod;
+
+	if((DevInst == XAIE_NULL) || (SectionPtr == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	CoreMod = DevInst->DevProp.DevMod[TileType].CoreMod;
+	Addr = CoreMod->ProgMemHostOffset + TgtAddr +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+
+	return XAie_BlockWrite32(DevInst, Addr, (u32 *)SectionPtr,
+			(Size + 4U - 1U) / 4U);
+}
+
+#endif /* XAIE_FEATURE_ELF_ENABLE */
 /** @} */

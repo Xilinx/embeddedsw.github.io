@@ -27,7 +27,7 @@ var xdfeequ_8h =
     [ "XDfeEqu_Initialize", "xdfeequ_8h.html#ga84403d8f6f2f4e9a45668d9dc7dc5b28", null ],
     [ "XDfeEqu_InstanceClose", "xdfeequ_8h.html#ga197062db05b1c51bc800b6a90e82838a", null ],
     [ "XDfeEqu_InstanceInit", "xdfeequ_8h.html#ga57eeb135c4ee22d243462e43795fcd45", null ],
-    [ "XDfeEqu_LoadCoefficients", "xdfeequ_8h.html#gacb69ed9880c250579086547eacbc64fc", null ],
+    [ "XDfeEqu_LoadCoefficients", "xdfeequ_8h.html#gab553aa1cfced879709804331bda8c876", null ],
     [ "XDfeEqu_ReadReg", "xdfeequ_8h.html#ga2db0a7c59b290206e4066985e27d1a3b", null ],
     [ "XDfeEqu_Reset", "xdfeequ_8h.html#ga14d48b6aa1a784e94ac55d1a8950c2bf", null ],
     [ "XDfeEqu_SetInterruptMask", "xdfeequ_8h.html#ga4cf6da5776ef6d7e7ad2b3ec50315d30", null ],

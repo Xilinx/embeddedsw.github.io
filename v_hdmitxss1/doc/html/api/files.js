@@ -9,6 +9,8 @@ var files =
     [ "sha2.c", "sha2_8c.html", "sha2_8c" ],
     [ "si5344drv.c", "si5344drv_8c.html", "si5344drv_8c" ],
     [ "si5344drv.h", "si5344drv_8h.html", "si5344drv_8h" ],
+    [ "si570drv.c", "si570drv_8c.html", "si570drv_8c" ],
+    [ "si570drv.h", "si570drv_8h.html", "si570drv_8h" ],
     [ "xhdcp22_common.h", "xhdcp22__common_8h.html", "xhdcp22__common_8h" ],
     [ "xhdmi_edid.c", "xhdmi__edid_8c.html", null ],
     [ "xhdmi_edid.h", "xhdmi__edid_8h.html", "xhdmi__edid_8h" ],

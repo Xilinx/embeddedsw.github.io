@@ -11,6 +11,8 @@ var files =
     [ "pcam_5C_cfgs.h", "pcam__5_c__cfgs_8h.html", null ],
     [ "pipeline_program.c", "pipeline__program_8c.html", "pipeline__program_8c" ],
     [ "pipeline_program.h", "pipeline__program_8h.html", "pipeline__program_8h" ],
+    [ "si570drv.c", "si570drv_8c.html", "si570drv_8c" ],
+    [ "si570drv.h", "si570drv_8h.html", "si570drv_8h" ],
     [ "xcsiss.c", "xcsiss_8c.html", "xcsiss_8c" ],
     [ "xcsiss.h", "xcsiss_8h.html", "xcsiss_8h" ],
     [ "xcsiss_hw.h", "xcsiss__hw_8h.html", "xcsiss__hw_8h" ],

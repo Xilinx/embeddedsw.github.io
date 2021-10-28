@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -73,127 +73,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <p>
 1.0   Tejus   03/17/2020  Initial creation
 1.1   Tejus   04/13/2020  Remove use of range in apis
-</pre> </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:af146071ea74b0a7489ff4f161e034f4d"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__locks_8c.html#af146071ea74b0a7489ff4f161e034f4d">XAie_LockAcquire</a> (XAie_DevInst *DevInst, XAie_LocType Loc, XAie_Lock Lock, u32 TimeOut)</td></tr>
-<tr class="memdesc:af146071ea74b0a7489ff4f161e034f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API is used to acquire the specified lock with or without value.  <a href="#af146071ea74b0a7489ff4f161e034f4d">More...</a><br/></td></tr>
-<tr class="separator:af146071ea74b0a7489ff4f161e034f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3117896720cbb92d9b6b7d64ff040c1d"><td class="memItemLeft" align="right" valign="top">AieRC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xaie__locks_8c.html#a3117896720cbb92d9b6b7d64ff040c1d">XAie_LockRelease</a> (XAie_DevInst *DevInst, XAie_LocType Loc, XAie_Lock Lock, u32 TimeOut)</td></tr>
-<tr class="memdesc:a3117896720cbb92d9b6b7d64ff040c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API is used to release the specified lock with or without value.  <a href="#a3117896720cbb92d9b6b7d64ff040c1d">More...</a><br/></td></tr>
-<tr class="separator:a3117896720cbb92d9b6b7d64ff040c1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="af146071ea74b0a7489ff4f161e034f4d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">AieRC XAie_LockAcquire </td>
-          <td>(</td>
-          <td class="paramtype">XAie_DevInst *&#160;</td>
-          <td class="paramname"><em>DevInst</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">XAie_LocType&#160;</td>
-          <td class="paramname"><em>Loc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">XAie_Lock&#160;</td>
-          <td class="paramname"><em>Lock</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>TimeOut</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This API is used to acquire the specified lock with or without value. </p>
-<p>Lock acquired without value if LockVal is (XAIE_LOCK_WITH_NO_VALUE). Lock without value can be acquired for AIE only. This API can be blocking or non-blocking based on the TimeOut value. If the TimeOut is 0us, the API behaves in a non-blocking fashion and returns immediately after the first lock acquire request. If TimeOut &gt; 0, then the API is a blocking call and will issue lock acquire request until the acquire is successful or it times out, whichever occurs first.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">DevInst,:</td><td>Device Instance </td></tr>
-    <tr><td class="paramname">Loc,:</td><td>Location of AIE Tile </td></tr>
-    <tr><td class="paramname">Lock,:</td><td>Lock data structure with LockId and LockValue. </td></tr>
-    <tr><td class="paramname">TimeOut,:</td><td>Timeout value for which the acquire request needs to be repeated. Value in usecs.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>XAIE_OK if Lock Acquired, else XAIE_LOCK_RESULT_FAILED.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a3117896720cbb92d9b6b7d64ff040c1d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">AieRC XAie_LockRelease </td>
-          <td>(</td>
-          <td class="paramtype">XAie_DevInst *&#160;</td>
-          <td class="paramname"><em>DevInst</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">XAie_LocType&#160;</td>
-          <td class="paramname"><em>Loc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">XAie_Lock&#160;</td>
-          <td class="paramname"><em>Lock</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>TimeOut</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This API is used to release the specified lock with or without value. </p>
-<p>Lock is released without value if LockVal is (XAIE_LOCK_WITH_NO_VALUE). Lock without value can be released for AIE only. This API can be blocking or non-blocking based on the TimeOut value. If the TimeOut is 0us, the API behaves in a non-blocking fashion and returns immediately after the first lock release request. If TimeOut &gt; 0, then the API is a blocking call and will issue lock release request until the release is successful or it times out, whichever occurs first.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">DevInst,:</td><td>Device Instance </td></tr>
-    <tr><td class="paramname">Loc,:</td><td>Location of AIE Tile </td></tr>
-    <tr><td class="paramname">Lock,:</td><td>Lock data structure with LockId and LockValue. </td></tr>
-    <tr><td class="paramname">TimeOut,:</td><td>Timeout value for which the release request needs to be repeated. Value in usecs.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>XAIE_OK if Lock Release, else XAIE_LOCK_RESULT_FAILED.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

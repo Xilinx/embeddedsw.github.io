@@ -27,8 +27,11 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include "xaie_feature_config.h"
 #include "xaie_perfcnt.h"
 #include "xaie_events.h"
+
+#ifdef XAIE_FEATURE_PERFCOUNT_ENABLE
 
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
@@ -42,6 +45,7 @@
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 * @param	Counter:Performance Counter
 * @param	CounterVal: Pointer to store Counter Value
 * @return	XAIE_OK on success
@@ -66,7 +70,7 @@ AieRC XAie_PerfCounterGet(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -75,7 +79,6 @@ AieRC XAie_PerfCounterGet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -110,6 +113,7 @@ AieRC XAie_PerfCounterGet(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 * @param	Counter:Performance Counter
 * @param	StartEvent:Event that triggers start to the counter
 * @Param	StopEvent: Event that triggers stop to the counter
@@ -137,7 +141,7 @@ AieRC XAie_PerfCounterControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -146,7 +150,6 @@ AieRC XAie_PerfCounterControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -215,6 +218,7 @@ AieRC XAie_PerfCounterControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 * @param	Counter:Performance Counter
 * @param	ResetEvent:Event that triggers reset to the counter
 * @return	XAIE_OK on success
@@ -241,7 +245,7 @@ AieRC XAie_PerfCounterResetControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -250,7 +254,6 @@ AieRC XAie_PerfCounterResetControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -313,6 +316,7 @@ AieRC XAie_PerfCounterResetControlSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 *
 * @param	Counter:Performance Counter
 * @param	CounterVal:Performance Counter Value
@@ -339,7 +343,7 @@ AieRC XAie_PerfCounterSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -348,7 +352,6 @@ AieRC XAie_PerfCounterSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -382,6 +385,7 @@ AieRC XAie_PerfCounterSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 * @param	Counter:Performance Counter
 * @param	EventVal:Event value to set
 * @return	XAIE_OK on success
@@ -406,7 +410,7 @@ AieRC XAie_PerfCounterEventValueSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -415,7 +419,6 @@ AieRC XAie_PerfCounterEventValueSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -450,6 +453,7 @@ AieRC XAie_PerfCounterEventValueSet(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param        Module: Module of tile.
 *                       For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                       For Pl or Shim tile - XAIE_PL_MOD,
+*                       For Mem tile - XAIE_MEM_MOD.
 * @param        Counter:Performance Counter
 * @return       XAIE_OK on success
 *               XAIE_INVALID_ARGS if any argument is invalid
@@ -472,6 +476,7 @@ AieRC XAie_PerfCounterEventValueReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param        Module: Module of tile.
 *                       For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                       For Pl or Shim tile - XAIE_PL_MOD,
+*                       For Mem tile - XAIE_MEM_MOD.
 *
 * @param        Counter:Performance Counter
 * @return       XAIE_OK on success
@@ -496,6 +501,7 @@ AieRC XAie_PerfCounterReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param        Module: Module of tile.
 *                       For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                       For Pl or Shim tile - XAIE_PL_MOD,
+*                       For Mem tile - XAIE_MEM_MOD.
 * @param        Counter:Performance Counter
 * @return       XAIE_OK on success
 *               XAIE_INVALID_ARGS if any argument is invalid
@@ -517,7 +523,7 @@ AieRC XAie_PerfCounterResetControlReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -526,7 +532,6 @@ AieRC XAie_PerfCounterResetControlReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -556,6 +561,7 @@ AieRC XAie_PerfCounterResetControlReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param        Module: Module of tile.
 *                       For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                       For Pl or Shim tile - XAIE_PL_MOD,
+*                       For Mem tile - XAIE_MEM_MOD.
 * @param        Counter:Performance Counter
 * @return       XAIE_OK on success
 *               XAIE_INVALID_ARGS if any argument is invalid
@@ -578,7 +584,7 @@ AieRC XAie_PerfCounterControlReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -587,7 +593,6 @@ AieRC XAie_PerfCounterControlReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -650,7 +655,7 @@ AieRC XAie_PerfCounterGetControlConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		return XAIE_INVALID_TILE;
 	}
@@ -719,3 +724,53 @@ AieRC XAie_PerfCounterGetControlConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	return XAIE_OK;
 }
+
+/*****************************************************************************/
+/**
+*
+* This API returns the perf counter event based on the tile location
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of AIE Tile
+* @param	Module: Module of tile.
+*			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
+*			for Shim tile - XAIE_PL_MOD.
+* @param	Event: Base event of tile
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		None
+******************************************************************************/
+AieRC XAie_PerfCounterGetEventBase(XAie_DevInst *DevInst, XAie_LocType Loc,
+		XAie_ModuleType Module, XAie_Events *Event)
+{
+	AieRC RC;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) || (Event == NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	RC = _XAie_CheckModule(DevInst, Loc, Module);
+	if(RC != XAIE_OK) {
+		return XAIE_INVALID_ARGS;
+	}
+
+	if (TileType == XAIEGBL_TILE_TYPE_AIETILE) {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[Module].PerfCntEventBase;
+	} else {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[0U].PerfCntEventBase;
+	}
+
+	return RC;
+}
+
+#endif /* XAIE_FEATURE_PERFCOUNT_ENABLE */

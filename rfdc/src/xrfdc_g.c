@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_g.c
-* @addtogroup rfdc_v10_0
+* @addtogroup rfdc_v11_0
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -26,6 +26,7 @@
 * 8.1   cog    06/24/20 Upversion.
 * 9.0   cog    11/25/20 Upversion.
 * 10.0  cog    11/26/20 Refactor and split files.
+* 11.0  cog    05/31/21 Upversion.
 *
 * </pre>
 *
@@ -68,6 +69,7 @@ XRFdc_Config XRFdc_ConfigTable[XPAR_XRFDC_NUM_INSTANCES] = {
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC0_BAND,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC0_FS_MAX,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC0_SLICES,
+			  XPAR_USP_RF_DATA_CONVERTER_0_DAC0_LINK_COUPLING,
 			  {
 				  {
 					  XPAR_USP_RF_DATA_CONVERTER_0_DAC_SLICE00_ENABLE,
@@ -141,6 +143,7 @@ XRFdc_Config XRFdc_ConfigTable[XPAR_XRFDC_NUM_INSTANCES] = {
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC1_BAND,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC1_FS_MAX,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC1_SLICES,
+			  XPAR_USP_RF_DATA_CONVERTER_0_DAC1_LINK_COUPLING,
 			  {
 				  {
 					  XPAR_USP_RF_DATA_CONVERTER_0_DAC_SLICE10_ENABLE,
@@ -214,6 +217,7 @@ XRFdc_Config XRFdc_ConfigTable[XPAR_XRFDC_NUM_INSTANCES] = {
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC2_BAND,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC2_FS_MAX,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC2_SLICES,
+			  XPAR_USP_RF_DATA_CONVERTER_0_DAC2_LINK_COUPLING,
 			  {
 				  {
 					  XPAR_USP_RF_DATA_CONVERTER_0_DAC_SLICE20_ENABLE,
@@ -287,6 +291,7 @@ XRFdc_Config XRFdc_ConfigTable[XPAR_XRFDC_NUM_INSTANCES] = {
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC3_BAND,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC3_FS_MAX,
 			  XPAR_USP_RF_DATA_CONVERTER_0_DAC3_SLICES,
+			  XPAR_USP_RF_DATA_CONVERTER_0_DAC3_LINK_COUPLING,
 			  {
 				  {
 					  XPAR_USP_RF_DATA_CONVERTER_0_DAC_SLICE30_ENABLE,

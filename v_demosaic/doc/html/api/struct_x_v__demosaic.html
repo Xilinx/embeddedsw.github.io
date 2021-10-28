@@ -40,6 +40,8 @@
     <ul class="tablist">
       <li><a href="index.html"><span>Overview</span></a></li>
       <li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
+      <li><a href="globals.html"><span>APIs</span></a></li>
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
       <li><a href="pages.html"><span>Examples</span></a></li>
     </ul>
   </div>
@@ -56,7 +58,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -72,7 +74,7 @@ $(document).ready(function(){initNavTree('struct_x_v__demosaic.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Driver instance data.  
+<p>Driver instance data.
  <a href="struct_x_v__demosaic.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -83,11 +85,51 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a2e6892bddb002533a0ebc4cd3ad7bfe0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v__demosaic.html#a2e6892bddb002533a0ebc4cd3ad7bfe0">IsReady</a></td></tr>
 <tr class="memdesc:a2e6892bddb002533a0ebc4cd3ad7bfe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device is initialized and ready.  <a href="#a2e6892bddb002533a0ebc4cd3ad7bfe0">More...</a><br/></td></tr>
 <tr class="separator:a2e6892bddb002533a0ebc4cd3ad7bfe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfde826222c9c106cd340bd9b5c1a697"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v__demosaic.html#abfde826222c9c106cd340bd9b5c1a697">CallbackDoneRef</a></td></tr>
+<tr class="memdesc:abfde826222c9c106cd340bd9b5c1a697"><td class="mdescLeft">&#160;</td><td class="mdescRight">To be passed to the connect interrupt callback.  <a href="#abfde826222c9c106cd340bd9b5c1a697">More...</a><br/></td></tr>
+<tr class="separator:abfde826222c9c106cd340bd9b5c1a697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b1f0a19c1b1ea77b8e6a4cc6f35bed8"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v__demosaic.html#a1b1f0a19c1b1ea77b8e6a4cc6f35bed8">CallbackReadyRef</a></td></tr>
+<tr class="memdesc:a1b1f0a19c1b1ea77b8e6a4cc6f35bed8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">To be passed to the connect interrupt
+</pre><p> callback  <a href="#a1b1f0a19c1b1ea77b8e6a4cc6f35bed8">More...</a><br/></td></tr>
+<tr class="separator:a1b1f0a19c1b1ea77b8e6a4cc6f35bed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Driver instance data. </p>
 <p>An instance must be allocated for each core in use. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="abfde826222c9c106cd340bd9b5c1a697"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* XV_demosaic::CallbackDoneRef</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>To be passed to the connect interrupt callback. </p>
+
+<p>Referenced by <a class="el" href="group__v__demosaic__v1__3.html#gaec49738eff318af31f6412423d884cde">XVDemosaic_InterruptHandler()</a>, and <a class="el" href="group__v__demosaic__v1__3.html#ga8adc7ef231a300187bbdb466e5d4a280">XVDemosaic_SetCallback()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1b1f0a19c1b1ea77b8e6a4cc6f35bed8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* XV_demosaic::CallbackReadyRef</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><pre class="fragment">To be passed to the connect interrupt
+</pre><p> callback </p>
+
+<p>Referenced by <a class="el" href="group__v__demosaic__v1__3.html#gaec49738eff318af31f6412423d884cde">XVDemosaic_InterruptHandler()</a>, and <a class="el" href="group__v__demosaic__v1__3.html#ga8adc7ef231a300187bbdb466e5d4a280">XVDemosaic_SetCallback()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aaa6abec510a55e8d0400663b308884a4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -113,6 +155,8 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Device is initialized and ready. </p>
+
+<p>Referenced by <a class="el" href="group__v__demosaic__v1__3.html#gaec49738eff318af31f6412423d884cde">XVDemosaic_InterruptHandler()</a>.</p>
 
 </div>
 </div>

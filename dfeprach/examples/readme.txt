@@ -1,10 +1,13 @@
 /** \page example Examples
 You can refer to the below stated example applications for more details on how to use the driver.
 
-@section ex1 xdfeprach_selftest_example.c
-Contains an example on how to initialise XDfePrach driver.
-daughter board on zcu208.
-This example does the following:
+@section ex1 xdfeprach_examples.c
+Examples are:
+1. Self test on one instance:
+    - initialisation from reset to activation
+    - close the driver
 
-For details, see xdfeprach_selftest_example.c.
+The example code is written and tested for zcu670 board.
+Running example in a Bare metal environment includes setting an output clock on si570.
+For details, see xdfeprach examples code.
 */

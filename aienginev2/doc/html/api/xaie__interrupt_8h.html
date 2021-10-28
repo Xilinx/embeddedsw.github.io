@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -135,13 +135,11 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <dl class="section note"><dt>Note</dt><dd>This API assumes the whole AIE as a single partition and the following broadcast channels to be available. To avoid conflicts, it is the user's responsibility to make sure none of the below channels are being used.<ul>
 <li>Broadcast channel #0 in AIE array tiles.</li>
 <li>Switch A L1 IRQ 16.</li>
-<li>For shim tiles from column 0 to 43 broadcast lines used follows the pattern as: 0 1 2 3 4 5 0 1.</li>
-<li>For shim tiles from column 44 to 49 broadcast lines used follows the pattern as: 0 1 2 3 4 5.</li>
 <li>NPI interrupt line #5. Currently, this API only supports Linux UIO, CDO, and debug backends. </li>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>, <a class="el" href="xaie__npi_8c.html#abc0885c4687ba1b75c7423920e218b1c">_XAie_NpiIrqEnable()</a>, <a class="el" href="xaie__clock_8c.html#ad25a84503eba8e917a7de901e0189e42">_XAie_PmIsTileRequested()</a>, <a class="el" href="xaie__events_8c.html#a998ae05693fe3a481c141927bed1bf2c">XAie_EventBroadcastBlockDir()</a>, <a class="el" href="xaie__interrupt_8c.html#aa905e9a29d431d136027991b5257b735">XAie_IntrCtrlL1BroadcastBlock()</a>, <a class="el" href="xaie__interrupt_8c.html#a9db370106778e1901bb5d35333e424f0">XAie_IntrCtrlL1Enable()</a>, <a class="el" href="xaie__interrupt_8c.html#a2b49119ab9058058880a38ab96e464ab">XAie_IntrCtrlL1IrqSet()</a>, <a class="el" href="xaie__interrupt_8c.html#ad7e9a6a0ef661d72f9aeb73dfe7ff9a9">XAie_IntrCtrlL2Enable()</a>, and <a class="el" href="xaie__interrupt_8c.html#aa0712b02cfcca24f1ec4cbe0f57fe3e8">XAie_IntrCtrlL2IrqSet()</a>.</p>
+<p>References <a class="el" href="xaie__interrupt_8c.html#aa905e9a29d431d136027991b5257b735">XAie_IntrCtrlL1BroadcastBlock()</a>, <a class="el" href="xaie__interrupt_8c.html#a9db370106778e1901bb5d35333e424f0">XAie_IntrCtrlL1Enable()</a>, <a class="el" href="xaie__interrupt_8c.html#a2b49119ab9058058880a38ab96e464ab">XAie_IntrCtrlL1IrqSet()</a>, and <a class="el" href="xaie__interrupt_8c.html#ad7e9a6a0ef661d72f9aeb73dfe7ff9a9">XAie_IntrCtrlL2Enable()</a>.</p>
 
 </div>
 </div>
@@ -194,8 +192,6 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
 <p>Referenced by <a class="el" href="xaie__interrupt_8h.html#a39225d25ca2b0d17ee742edae4b62fc2">XAie_ErrorHandlingInit()</a>.</p>
 
@@ -250,8 +246,6 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Each broadcast line is allocated and utilized for channeling particular types of events. Hence this API enforces unblocking broadcast line per ID basis rather than a bitmap. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
 </div>
 </div>
@@ -415,8 +409,6 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a2b49119ab9058058880a38ab96e464ab"></a>
@@ -467,8 +459,6 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
 
 <p>Referenced by <a class="el" href="xaie__interrupt_8h.html#a39225d25ca2b0d17ee742edae4b62fc2">XAie_ErrorHandlingInit()</a>.</p>
 
@@ -605,10 +595,6 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who     Date     Changes
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XAIE_OK on success, error code on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="xaie__helper_8c.html#ab180010538ca49839c83f6d83cd28afd">_XAie_GetTileTypefromLoc()</a>.</p>
-
-<p>Referenced by <a class="el" href="xaie__interrupt_8h.html#a39225d25ca2b0d17ee742edae4b62fc2">XAie_ErrorHandlingInit()</a>.</p>
 
 </div>
 </div>

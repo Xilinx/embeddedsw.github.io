@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic.h
-* @addtogroup scugic_v4_5
+* @addtogroup scugic_v4_6
 * @{
 * @details
 *
@@ -169,6 +169,7 @@
 * 4.5   asa  03/07/21 Included a header file xil_spinlock.h to ensure that
 *                     GIC driver can use newly introduced spinlock
 *                     functionality.
+* 4.6	sk   08/05/21 Fix scugic misrac violations.
 *
 * </pre>
 *
@@ -236,6 +237,10 @@ typedef struct
 	u32 IsReady;		 /**< Device is initialized and ready */
 	u32 UnhandledInterrupts; /**< Intc Statistics */
 } XScuGic;
+
+/************************** Variable Definitions *****************************/
+
+extern XScuGic_Config XScuGic_ConfigTable[];	/**< Config table */
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -553,15 +558,15 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id);
 s32  XScuGic_CfgInitialize(XScuGic *InstancePtr, XScuGic_Config *ConfigPtr,
 							u32 EffectiveAddr);
 
-s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Id);
+s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier);
 
 void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 					u8 *Priority, u8 *Trigger);
 void XScuGic_SetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 					u8 Priority, u8 Trigger);
-void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id);
-void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id);
-void XScuGic_UnmapAllInterruptsFromCpu(XScuGic *InstancePtr, u8 Cpu_Id);
+void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_Id);
+void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_Id);
+void XScuGic_UnmapAllInterruptsFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier);
 void XScuGic_Stop(XScuGic *InstancePtr);
 void XScuGic_SetCpuID(u32 CpuCoreId);
 u32 XScuGic_GetCpuID(void);
@@ -580,8 +585,6 @@ void XScuGic_InterruptHandler(XScuGic *InstancePtr);
  */
 s32  XScuGic_SelfTest(XScuGic *InstancePtr);
 
-void XScuGic_EnableSGI_PPI(XScuGic *InstancePtr,u32 ID);
-void XScuGic_SetPPI_SGI_Priority(XScuGic *InstancePtr,u32 ID, u32 priority);
 #if defined (GICv3)
 void XScuGic_MarkCoreAsleep(XScuGic *InstancePtr);
 void XScuGic_MarkCoreAwake(XScuGic *InstancePtr);

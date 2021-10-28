@@ -23,6 +23,7 @@ var struct_x_v__frmbufrd___config =
     [ "Y12En", "struct_x_v__frmbufrd___config.html#a33a690d459578c94feca9a088f5d24e4", null ],
     [ "Y16En", "struct_x_v__frmbufrd___config.html#a0289c00ae14478df4c4c6c934d48d71d", null ],
     [ "Y8En", "struct_x_v__frmbufrd___config.html#a2be774ba1b959b5db938eb11c82088e5", null ],
+    [ "Y_U_V8En", "struct_x_v__frmbufrd___config.html#ac5e83943b8d5ce0a4a9cfd94ce826603", null ],
     [ "Y_UV10_420En", "struct_x_v__frmbufrd___config.html#a237956ff2d7b7e3ba9446191a814a0ef", null ],
     [ "Y_UV10En", "struct_x_v__frmbufrd___config.html#a91ab6c96db15ae2bea46023087a80a72", null ],
     [ "Y_UV12_420En", "struct_x_v__frmbufrd___config.html#a4b91ff5115bff40354e38275d7002773", null ],

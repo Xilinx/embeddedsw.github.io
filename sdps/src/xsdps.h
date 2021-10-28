@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps.h
-* @addtogroup sdps_v3_12
+* @addtogroup sdps_v3_13
 * @{
 * @details
 *
@@ -142,6 +142,7 @@
 *       sk     04/08/21 Fixed doxygen warnings in all source files.
 *       sk     05/25/21 Fix the compilation issue in Cortex-A72 + EL1_NS by
 *                       removing the DLL reset logic (Dead code for Versal).
+* 3.13  sk     08/10/21 Limit the SD operating frequency to 19MHz for Versal.
 *
 * </pre>
 *
@@ -231,7 +232,9 @@ typedef struct {
 #endif
 } XSdPs_Config;
 
-/* ADMA2 32-Bit descriptor table */
+/**
+ * ADMA2 32-Bit descriptor table
+ */
 typedef struct {
 	u16 Attribute;		/**< Attributes of descriptor */
 	u16 Length;		/**< Length of current dma transfer */
@@ -243,7 +246,9 @@ typedef struct {
 }  __attribute__((__packed__))XSdPs_Adma2Descriptor32;
 #endif
 
-/* ADMA2 64-Bit descriptor table */
+/**
+ * ADMA2 64-Bit descriptor table
+ */
 typedef struct {
 	u16 Attribute;		/**< Attributes of descriptor */
 	u16 Length;		/**< Length of current dma transfer */
@@ -288,6 +293,21 @@ typedef struct {
 } XSdPs;
 
 /***************** Macros (Inline Functions) Definitions *********************/
+/**
+ * @name SD High Speed mode configuration options
+ * @{
+ */
+/**
+ * User configuration option to enable or disable SD HS mode.
+ * By default SD HS mode is disabled for Versal and enabled for
+ * other platforms.
+ */
+#ifdef versal
+#define SD_HS_MODE_ENABLE	0
+#else
+#define SD_HS_MODE_ENABLE	1
+#endif
+/** @} */
 
 /************************** Function Prototypes ******************************/
 XSdPs_Config *XSdPs_LookupConfig(u16 DeviceId);

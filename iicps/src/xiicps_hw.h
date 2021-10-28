@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps_hw.h
-* @addtogroup iicps_v3_13
+* @addtogroup iicps_v3_14
 * @{
 *
 * This header file contains the hardware definition for an IIC device.
@@ -350,7 +350,7 @@ extern "C" {
 /*
  * Perform reset operation to the I2c interface
  */
-void XIicPs_ResetHw(u32 BaseAddress);
+void XIicPs_ResetHw(UINTPTR BaseAddress);
 #ifdef __cplusplus
 }
 #endif

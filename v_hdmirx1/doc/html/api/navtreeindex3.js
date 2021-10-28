@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"xv__hdmirx1__hw_8h.html#aefb8dcc326ae1f421f1755d7eae42f2c":[2,3,361],
+"xv__hdmirx1__hw_8h.html#aefcdacbbc2f6a3187ba765e7a4510c3a":[2,3,150],
 "xv__hdmirx1__hw_8h.html#aefd7163342d38fe7440ac8cb178bb734":[2,3,339],
 "xv__hdmirx1__hw_8h.html#af0d3e6ec08e4edb7c641c6ddc513072d":[2,3,135],
 "xv__hdmirx1__hw_8h.html#af194c444b1a273aed3950eca10ca1135":[2,3,249],

@@ -338,6 +338,16 @@ namespace xaiefal {
 
 			return BcId;
 		}
+
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_TRACE_CTRL_RSC);
+		}
+		uint32_t getAvailManagedRscs() {
+			return TraceSlotBits.size() - TraceSlotBits.count();
+		}
+		uint32_t getManagedRscsType() {
+			return static_cast<uint32_t>(XAIE_TRACE_EVENTS_RSC);
+		}
 	protected:
 		AieRC _reserve() {
 			AieRC RC;
@@ -484,6 +494,15 @@ namespace xaiefal {
 				}
 			}
 			return RC;
+		}
+		void _getRscs(std::vector<XAie_UserRsc> &vRscs) const {
+			vRscs.push_back(Rsc);
+			if (StartMod != Mod) {
+				StartBC->getRscs(vRscs);
+			}
+			if (StopMod != Mod) {
+				StopBC->getRscs(vRscs);
+			}
 		}
 
 		std::bitset<8> TraceSlotBits; /**< trace slots bitmap */
@@ -638,6 +657,9 @@ namespace xaiefal {
 
 			return BcId;
 		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_TRACE_EVENTS_RSC);
+		}
 	protected:
 		AieRC _reserve() {
 			AieRC RC;
@@ -739,6 +761,20 @@ namespace xaiefal {
 				}
 			}
 			return RC;
+		}
+		void _getRscs(std::vector<XAie_UserRsc> &vRscs) const {
+			XAie_UserRsc Rsc;
+
+			Rsc.Loc.Col = Loc.Col;
+			Rsc.Loc.Row = Loc.Row;
+			Rsc.Mod = static_cast<uint32_t>(TraceCntr->getModule());
+			Rsc.RscType = static_cast<uint32_t>(XAIE_TRACE_EVENTS_RSC);
+			Rsc.RscId = Slot;
+			vRscs.push_back(Rsc);
+
+			if (EventMod != TraceCntr->getModule()) {
+				BC->getRscs(vRscs);
+			}
 		}
 	protected:
 		std::shared_ptr<XAieTraceCntr> TraceCntr;

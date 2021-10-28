@@ -2,6 +2,8 @@ var files =
 [
     [ "xdppsu.c", "xdppsu_8c.html", "xdppsu_8c" ],
     [ "xdppsu.h", "xdppsu_8h.html", "xdppsu_8h" ],
+    [ "xdppsu_common_example.c", "xdppsu__common__example_8c.html", "xdppsu__common__example_8c" ],
+    [ "xdppsu_common_example.h", "xdppsu__common__example_8h.html", "xdppsu__common__example_8h" ],
     [ "xdppsu_edid.c", "xdppsu__edid_8c.html", "xdppsu__edid_8c" ],
     [ "xdppsu_hw.h", "xdppsu__hw_8h.html", "xdppsu__hw_8h" ],
     [ "xdppsu_intr.c", "xdppsu__intr_8c.html", "xdppsu__intr_8c" ],

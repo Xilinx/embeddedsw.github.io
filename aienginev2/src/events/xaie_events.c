@@ -29,7 +29,10 @@
 ******************************************************************************/
 /***************************** Include Files *********************************/
 #include "xaie_events.h"
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
+
+#ifdef XAIE_FEATURE_EVENTS_ENABLE
 
 /***************************** Macro Definitions *****************************/
 #define XAIE_EVENT_PC_RESET		0xFFFF
@@ -46,6 +49,7 @@
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	Event: Event to be triggered
 *
 * @return	XAIE_OK on success, error code on failure.
@@ -68,7 +72,7 @@ AieRC XAie_EventGenerate(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -76,7 +80,6 @@ AieRC XAie_EventGenerate(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -115,6 +118,7 @@ AieRC XAie_EventGenerate(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	ComboId: Combo index.
 * @param	Op: Logical operation between Event1 and Event2 to trigger combo
 *		    event.
@@ -142,11 +146,10 @@ static AieRC _XAie_EventComboControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u8 TileType, Event1Lsb, Event2Lsb, MappedEvent1, MappedEvent2;
 	const XAie_EvntMod *EvntMod;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -210,6 +213,7 @@ static AieRC _XAie_EventComboControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	ComboId: Combo index.
 * @param	Op: Logical operation between Event1 and Event2 to trigger combo
 *		    event.
@@ -239,7 +243,7 @@ AieRC XAie_EventComboConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -247,6 +251,54 @@ AieRC XAie_EventComboConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	return _XAie_EventComboControl(DevInst, Loc, Module, ComboId, Op,
 			Event1, Event2);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API returns the combo base event based on the tile location
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of AIE Tile
+* @param	Module: Module of tile.
+*			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
+*			for Shim tile - XAIE_PL_MOD.
+* @param	Event: Base event of tile
+*
+* @return	XAIE_OK on success, error code on failure
+*
+* @note		None
+******************************************************************************/
+AieRC XAie_EventGetComboEventBase(XAie_DevInst *DevInst, XAie_LocType Loc,
+		XAie_ModuleType Module, XAie_Events *Event)
+{
+	AieRC RC;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) || (Event == NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	RC = _XAie_CheckModule(DevInst, Loc, Module);
+	if(RC != XAIE_OK) {
+		return XAIE_INVALID_ARGS;
+	}
+
+	if (TileType == XAIEGBL_TILE_TYPE_AIETILE) {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[Module].ComboEventBase;
+	} else {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[0U].ComboEventBase;
+	}
+
+	return RC;
 }
 
 /*****************************************************************************/
@@ -260,6 +312,7 @@ AieRC XAie_EventComboConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	ComboId: Combo index.
 *
 * @return	XAIE_OK on success, error code on failure.
@@ -279,19 +332,24 @@ AieRC XAie_EventComboReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
+	}
+
+	if(_XAie_CheckModule(DevInst, Loc, Module) != XAIE_OK) {
+		return XAIE_INVALID_ARGS;
 	}
 
 	if(Module == XAIE_CORE_MOD) {
 		Event = XAIE_EVENT_NONE_CORE;
 	} else if(Module == XAIE_PL_MOD) {
 		Event = XAIE_EVENT_NONE_PL;
-	} else if(Module == XAIE_MEM_MOD) {
-		if(TileType == XAIEGBL_TILE_TYPE_RESERVED)
-			Event = XAIE_EVENT_NONE_MEM;
+	} else {
+		/* Memory module */
+		if(TileType == XAIEGBL_TILE_TYPE_MEMTILE)
+			Event = XAIE_EVENT_NONE_MEM_TILE;
 		else
 			Event = XAIE_EVENT_NONE_MEM;
 	}
@@ -344,7 +402,7 @@ static AieRC _XAie_EventSelectStrmPortConfig(XAie_DevInst *DevInst,
 		return XAIE_ERR_STREAM_PORT;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_AIETILE)
 		EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[XAIE_CORE_MOD];
 	else
@@ -419,7 +477,7 @@ AieRC XAie_EventSelectStrmPort(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -457,14 +515,13 @@ AieRC XAie_EventSelectStrmPortReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
-
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_AIETILE)
 		Port = CORE;
 	else if(TileType == XAIEGBL_TILE_TYPE_SHIMPL ||
 		TileType == XAIEGBL_TILE_TYPE_SHIMNOC)
 		Port = CTRL;
-	else if(TileType == XAIEGBL_TILE_TYPE_RESERVED)
+	else if(TileType == XAIEGBL_TILE_TYPE_MEMTILE)
 		Port = DMA;
 	else {
 		XAIE_ERROR("Failed to reset event select strm port. Invalid tile type\n");
@@ -475,6 +532,56 @@ AieRC XAie_EventSelectStrmPortReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 			XAIE_STRMSW_SLAVE, Port, 0U);
 }
 
+/*****************************************************************************/
+/**
+*
+* This API returns the port idle base event based on the tile location
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of AIE Tile
+* @param	Module: Module of tile.
+*			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
+*			for Shim tile - XAIE_PL_MOD.
+* @param	Event: Base event of tile
+*
+* @return	XAIE_OK on success, error code on failure
+*
+* @note		None
+******************************************************************************/
+AieRC XAie_EventGetIdlePortEventBase(XAie_DevInst *DevInst, XAie_LocType Loc,
+		XAie_ModuleType Module, XAie_Events *Event)
+{
+	AieRC RC;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) || (Event == NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid device instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	RC = _XAie_CheckModule(DevInst, Loc, Module);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
+
+	if (TileType == XAIEGBL_TILE_TYPE_AIETILE) {
+		if (Module == XAIE_MEM_MOD) {
+			return XAIE_INVALID_ARGS;
+		}
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[Module].PortIdleEventBase;
+	} else {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[0U].PortIdleEventBase;
+	}
+
+	return RC;
+}
 
 /*****************************************************************************/
 /**
@@ -487,6 +594,7 @@ AieRC XAie_EventSelectStrmPortReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	BroadcastId: Broadcast index.
 * @param	Event: Event to broadcast.
 *
@@ -504,11 +612,10 @@ static AieRC _XAie_EventBroadcastConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u8 TileType, MappedEvent;
 	const XAie_EvntMod *EvntMod;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -550,6 +657,7 @@ static AieRC _XAie_EventBroadcastConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	BroadcastId: Broadcast index.
 * @param	Event: Event to broadcast.
 *
@@ -569,7 +677,7 @@ AieRC XAie_EventBroadcast(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -589,6 +697,7 @@ AieRC XAie_EventBroadcast(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	BroadcastId: Broadcast index.
 *
 * @return	XAIE_OK on success, error code on failure.
@@ -608,19 +717,24 @@ AieRC XAie_EventBroadcastReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
+	}
+
+	if(_XAie_CheckModule(DevInst, Loc, Module) != XAIE_OK) {
+		return XAIE_INVALID_ARGS;
 	}
 
 	if(Module == XAIE_CORE_MOD) {
 		Event = XAIE_EVENT_NONE_CORE;
 	} else if(Module == XAIE_PL_MOD) {
 		Event = XAIE_EVENT_NONE_PL;
-	} else if(Module == XAIE_MEM_MOD) {
-		if(TileType == XAIEGBL_TILE_TYPE_RESERVED)
-			Event = XAIE_EVENT_NONE_MEM;
+	} else {
+		/* Memory module */
+		if(TileType == XAIEGBL_TILE_TYPE_MEMTILE)
+			Event = XAIE_EVENT_NONE_MEM_TILE;
 		else
 			Event = XAIE_EVENT_NONE_MEM;
 	}
@@ -639,9 +753,10 @@ AieRC XAie_EventBroadcastReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	Switch: Event switch in the given module.
 *			for AIE Tile switch value is XAIE_EVENT_SWITCH_A,
-*			for Shim tile switch value could be
+*			for Shim tile and Mem tile switch value could be
 *			XAIE_EVENT_SWITCH_A or XAIE_EVENT_SWITCH_B.
 * @param	BroadcastId: Broadcast index.
 * @parma	Dir: Direction to block events on given broadcast index. Values
@@ -671,7 +786,7 @@ AieRC XAie_EventBroadcastBlockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -679,7 +794,6 @@ AieRC XAie_EventBroadcastBlockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -727,9 +841,10 @@ AieRC XAie_EventBroadcastBlockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	Switch: Event switch in the given module.
 *			for AIE Tile switch value is XAIE_EVENT_SWITCH_A,
-*			for Shim tile switch value could be
+*			for Shim tile and Mem tile switch value could be
 *			XAIE_EVENT_SWITCH_A or XAIE_EVENT_SWITCH_B.
 * @param	ChannelBitMap: Bitmap to block broadcast channels.
 * @parma	Dir: Direction to block events on given broadcast index. Values
@@ -759,7 +874,7 @@ AieRC XAie_EventBroadcastBlockMapDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -767,7 +882,6 @@ AieRC XAie_EventBroadcastBlockMapDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -815,9 +929,10 @@ AieRC XAie_EventBroadcastBlockMapDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	Switch: Event switch in the given module.
 *			for AIE Tile switch value is XAIE_EVENT_SWITCH_A,
-*			for Shim tile switch value could be
+*			for Shim tile and Mem tile switch value could be
 *			XAIE_EVENT_SWITCH_A or XAIE_EVENT_SWITCH_B.
 * @param	BroadcastId: Broadcast index.
 * @parma	Dir: Direction to unblock events on given broadcast index.
@@ -847,7 +962,7 @@ AieRC XAie_EventBroadcastUnblockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -855,7 +970,6 @@ AieRC XAie_EventBroadcastUnblockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -904,6 +1018,7 @@ AieRC XAie_EventBroadcastUnblockDir(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	GroupEvent: Group event ID.
 * @param	GroupBitMap: Bit mask.
 * @param	Reset: XAIE_RESETENABLE or XAIE_RESETDISABLE to reset or unreset
@@ -924,11 +1039,10 @@ static AieRC _XAie_EventGroupConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u8 TileType;
 	const XAie_EvntMod *EvntMod;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -973,6 +1087,7 @@ static AieRC _XAie_EventGroupConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	GroupEvent: Group event ID.
 * @param	GroupBitMap: Bit mask.
 *
@@ -992,7 +1107,7 @@ AieRC XAie_EventGroupControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1013,6 +1128,7 @@ AieRC XAie_EventGroupControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	GroupEvent: Group event ID.
 *
 * @return	XAIE_OK on success, error code on failure.
@@ -1031,7 +1147,7 @@ AieRC XAie_EventGroupReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1052,6 +1168,7 @@ AieRC XAie_EventGroupReset(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD,
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	PCEventId: PC Event index.
 * @param	PCAddr: PC event on this instruction address.
 * @param	Valid: XAIE_ENABLE or XAIE_DISABLE to enable or disable PC
@@ -1071,7 +1188,7 @@ static AieRC _XAie_EventPCConfig(XAie_DevInst *DevInst, XAie_LocType Loc,
 	u8 TileType;
 	const XAie_EvntMod *EvntMod;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 
 	EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[XAIE_CORE_MOD];
 
@@ -1139,7 +1256,7 @@ AieRC XAie_EventPCEnable(XAie_DevInst *DevInst, XAie_LocType Loc, u8 PCEventId,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1173,7 +1290,7 @@ AieRC XAie_EventPCDisable(XAie_DevInst *DevInst, XAie_LocType Loc, u8 PCEventId)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1207,7 +1324,7 @@ AieRC XAie_EventPCReset(XAie_DevInst *DevInst, XAie_LocType Loc, u8 PCEventId)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1244,7 +1361,7 @@ AieRC XAie_EventLogicalToPhysicalConv(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		return XAIE_INVALID_TILE;
 	}
@@ -1303,7 +1420,7 @@ AieRC XAie_EventPhysicalToLogicalConv(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		return XAIE_INVALID_TILE;
 	}
@@ -1341,6 +1458,7 @@ AieRC XAie_EventPhysicalToLogicalConv(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module: Module of tile.
 *			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			for Shim tile - XAIE_PL_MOD.
+*			for Mem tile - XAIE_MEM_MOD.
 * @param	Events: List of XAie_Events.
 * @param	Status: Buffer to return status of event.
 *
@@ -1363,7 +1481,7 @@ AieRC XAie_EventReadStatus(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid tile type\n");
 		return XAIE_INVALID_TILE;
@@ -1371,7 +1489,6 @@ AieRC XAie_EventReadStatus(XAie_DevInst *DevInst, XAie_LocType Loc,
 
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -1399,4 +1516,53 @@ AieRC XAie_EventReadStatus(XAie_DevInst *DevInst, XAie_LocType Loc,
 	return XAIE_OK;
 }
 
+/*****************************************************************************/
+/**
+*
+* This API returns the user base event based on the tile location
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of AIE Tile
+* @param	Module: Module of tile.
+*			for AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
+*			for Shim tile - XAIE_PL_MOD.
+* @param	Event: Base event of tile
+*
+* @return	XAIE_OK, error code on failure
+*
+* @note		None
+******************************************************************************/
+AieRC XAie_EventGetUserEventBase(XAie_DevInst *DevInst, XAie_LocType Loc,
+		XAie_ModuleType Module, XAie_Events *Event)
+{
+	AieRC RC;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) || (Event == NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid tile type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	RC = _XAie_CheckModule(DevInst, Loc, Module);
+	if(RC != XAIE_OK) {
+		return XAIE_INVALID_ARGS;
+	}
+
+	if (TileType == XAIEGBL_TILE_TYPE_AIETILE) {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[Module].UserEventBase;
+	} else {
+		*Event = DevInst->DevProp.DevMod[TileType].EvntMod[0U].UserEventBase;
+	}
+
+	return RC;
+}
+
+#endif /* XAIE_FEATURE_EVENTS_ENABLE */
 /** @} */

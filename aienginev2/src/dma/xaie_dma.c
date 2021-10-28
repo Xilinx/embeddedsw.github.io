@@ -34,8 +34,11 @@
 /***************************** Include Files *********************************/
 #include <string.h>
 #include "xaie_dma.h"
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaiegbl_regdef.h"
+
+#ifdef XAIE_FEATURE_DMA_ENABLE
 
 /************************** Constant Definitions *****************************/
 #define XAIE_DMA_32BIT_TXFER_LEN			2U
@@ -72,7 +75,7 @@ AieRC XAie_DmaDescInit(XAie_DevInst *DevInst, XAie_DmaDesc *DmaDesc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -121,15 +124,14 @@ static AieRC _XAie_DmaLockConfig(XAie_DmaDesc *DmaDesc, XAie_Lock Acq,
 		return XAIE_INVALID_ARGS;
 	}
 
+	DmaMod = DmaDesc->DmaMod;
 	LockMod = DmaDesc->LockMod;
-	if((Acq.LockId >LockMod->NumLocks) ||
+	if((Acq.LockId > DmaMod->NumLocks) ||
 			(Acq.LockVal > LockMod->LockValUpperBound) ||
 			(Rel.LockVal > LockMod->LockValUpperBound)) {
 		XAIE_ERROR("Invalid Lock\n");
 		return XAIE_INVALID_LOCK_ID;
 	}
-
-	DmaMod = DmaDesc->DmaMod;
 
 	return DmaMod->SetLock(DmaDesc, Acq, Rel, AcqEn, RelEn);
 }
@@ -180,6 +182,45 @@ AieRC XAie_DmaSetPkt(XAie_DmaDesc *DmaDesc, XAie_Packet Pkt)
 	DmaDesc->PktDesc.PktEn = XAIE_ENABLE;
 	DmaDesc->PktDesc.PktId = Pkt.PktId;
 	DmaDesc->PktDesc.PktType = Pkt.PktType;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+*
+* This api sets up the value of inserted out of order ID field in packet header.
+*
+* @param	DmaDesc: Initialized dma descriptor.
+* @param	OutofOrderBdId: Value of out of order ID field in packet header.
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The api sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware. This API
+*		works only for AIEML and has no effect on AIE. The buffer
+*		descriptor with this feature enabled can work only for MM2S
+*		channels.
+*
+******************************************************************************/
+AieRC XAie_DmaSetOutofOrderBdId(XAie_DmaDesc *DmaDesc, u8 OutofOrderBdId)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->OutofOrderBdId == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaDesc->BdEnDesc.OutofOrderBdId = OutofOrderBdId;
+	DmaDesc->EnOutofOrderBdId = XAIE_ENABLE;
 
 	return XAIE_OK;
 }
@@ -374,7 +415,11 @@ AieRC XAie_DmaSetAddrOffsetLen(XAie_DmaDesc *DmaDesc, XAie_MemInst *MemInst,
 *
 * @return	XAIE_OK on success, Error code on failure.
 *
-* @note		None.
+* @note		None. The stepsize and wrap parameters operate at 32 bit
+*		granularity. The address is the absolute address of the buffer
+*		which is 32 bit aligned. The driver will configure the BD
+*		register with necessary bits(<32 bits) as required by the
+*		hardware.
 *
 ******************************************************************************/
 AieRC XAie_DmaSetMultiDimAddr(XAie_DmaDesc *DmaDesc, XAie_DmaTensor *Tensor,
@@ -405,6 +450,76 @@ AieRC XAie_DmaSetMultiDimAddr(XAie_DmaDesc *DmaDesc, XAie_DmaTensor *Tensor,
 		DmaMod->BdProp->LenActualOffset;
 
 	return	DmaMod->SetMultiDim(DmaDesc, Tensor);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API setups the iteration parameters for a Buffer descriptor.
+*
+* @param	DmaDesc: Initialized Dma Descriptor.
+* @param	StepSize: Offset applied at each execution of the BD.
+* @param	Wrap: Iteration Wrap.
+* @param	IterCurr: Current iteration step. This field is incremented by
+*		the hardware after BD is loaded.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None. The stepsize and wrap parameters operate at 32 bit
+*		granularity. The address is the absolute address of the buffer
+*		which is 32 bit aligned. The driver will configure the BD
+*		register with necessary bits(<32 bits) as required by the
+*		hardware.
+*
+******************************************************************************/
+AieRC XAie_DmaSetBdIteration(XAie_DmaDesc *DmaDesc, u32 StepSize, u8 Wrap,
+		u8 IterCurr)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+
+	return DmaMod->SetBdIter(DmaDesc, StepSize, Wrap, IterCurr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API enables the compression bit in the DMA Descriptor.
+*
+* @param	DmaDesc: Initialized Dma Descriptor.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		The API sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware.
+*
+******************************************************************************/
+AieRC XAie_DmaEnableCompression(XAie_DmaDesc *DmaDesc)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->Compression == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature not supported\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaDesc->EnCompression = XAIE_ENABLE;
+
+	return XAIE_OK;
 }
 
 /*****************************************************************************/
@@ -650,7 +765,7 @@ AieRC XAie_DmaWriteBd(XAie_DevInst *DevInst, XAie_DmaDesc *DmaDesc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	if(DmaDesc->TileType != _XAie_GetTileTypefromLoc(DevInst, Loc)) {
+	if(DmaDesc->TileType != DevInst->DevOps->GetTTypefromLoc(DevInst, Loc)) {
 		XAIE_ERROR("Tile type mismatch\n");
 		return XAIE_INVALID_TILE;
 	}
@@ -704,7 +819,7 @@ AieRC XAie_DmaChannelReset(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if((TileType == XAIEGBL_TILE_TYPE_SHIMPL) ||
 			(TileType == XAIEGBL_TILE_TYPE_SHIMNOC)) {
 		XAIE_ERROR("Invalid Tile Type\n");
@@ -759,7 +874,7 @@ AieRC XAie_DmaChannelResetAll(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -822,7 +937,7 @@ AieRC XAie_DmaChannelPauseStream(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_ERR;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_SHIMNOC) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -885,7 +1000,7 @@ AieRC XAie_DmaChannelPauseMem(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 		return XAIE_ERR;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_SHIMNOC) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -928,6 +1043,7 @@ AieRC XAie_DmaChannelPauseMem(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 AieRC XAie_DmaChannelPushBdToQueue(XAie_DevInst *DevInst, XAie_LocType Loc,
 		u8 ChNum, XAie_DmaDirection Dir, u8 BdNum)
 {
+	AieRC RC;
 	u8 TileType;
 	u64 Addr;
 	const XAie_DmaMod *DmaMod;
@@ -943,7 +1059,7 @@ AieRC XAie_DmaChannelPushBdToQueue(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -959,6 +1075,10 @@ AieRC XAie_DmaChannelPushBdToQueue(XAie_DevInst *DevInst, XAie_LocType Loc,
 		XAIE_ERROR("Invalid BD number\n");
 		return XAIE_INVALID_BD_NUM;
 	}
+
+	RC = DmaMod->BdChValidity(BdNum, ChNum);
+	if(RC != XAIE_OK)
+		return RC;
 
 	Addr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
 		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
@@ -1002,7 +1122,7 @@ static AieRC _XAie_DmaChannelControl(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -1100,7 +1220,7 @@ AieRC XAie_DmaGetPendingBdCount(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -1148,7 +1268,7 @@ AieRC XAie_DmaWaitForDone(XAie_DevInst *DevInst, XAie_LocType Loc, u8 ChNum,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -1192,7 +1312,7 @@ AieRC XAie_DmaGetMaxQueueSize(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -1202,4 +1322,698 @@ AieRC XAie_DmaGetMaxQueueSize(XAie_DevInst *DevInst, XAie_LocType Loc,
 	return XAIE_OK;
 }
 
+/*****************************************************************************/
+/**
+*
+* This API pushes a Buffer Descriptor number, configures repeat count and token
+* status to start channel queue.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: Location of AIE Tile
+* @param	ChNum: Channel number of the DMA.
+* @param	Dir: Direction of the DMA Channel. (MM2S or S2MM)
+* @param	BdNum: Bd number to be pushed to the queue.
+* 		RepeatCount: Number of times the task is to be repeated.
+* 		EnTokenIssue: Determines whether or not issue a token when task
+* 			     is completed
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		This feature is not supported for AIE. For AIE-ML the enable
+*		token issue can be XAIE_ENABLE or XAIE_DISABLE.
+*		This API doesn't support out of order.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelSetStartQueue(XAie_DevInst *DevInst, XAie_LocType Loc,
+		u8 ChNum, XAie_DmaDirection Dir, u8 BdNum, u32 RepeatCount,
+		u8 EnTokenIssue)
+{
+	XAie_DmaDeclareQueueConfig(DmaQueueDesc, BdNum, RepeatCount,
+			EnTokenIssue, XAIE_DISABLE);
+
+	return XAie_DmaChannelSetStartQueueGeneric(DevInst, Loc, ChNum, Dir,
+			&DmaQueueDesc);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API pushes a Buffer Descriptor number, configures repeat count and token
+* status to start channel queue.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: Location of AIE Tile
+* @param	ChNum: Channel number of the DMA.
+* @param	Dir: Direction of the DMA Channel. (MM2S or S2MM)
+* @param	DmaQueueDesc: Pointer of DMA queue descriptor
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		This feature is not supported for AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelSetStartQueueGeneric(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 ChNum, XAie_DmaDirection Dir,
+		XAie_DmaQueueDesc *DmaQueueDesc)
+{
+	AieRC RC;
+	u8 TileType;
+	u8 StartBd;
+	u32 Val = 0;
+	u64 Addr;
+	const XAie_DmaMod *DmaMod;
+
+	if((DevInst == XAIE_NULL) ||
+		(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance to start queue\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	if(DmaQueueDesc == XAIE_NULL) {
+		XAIE_ERROR("Invalid Dma queue description pointer to start queue.\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	if(Dir >= DMA_MAX) {
+		XAIE_ERROR("Invalid DMA direction\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL ||
+		TileType == XAIEGBL_TILE_TYPE_MAX) {
+		XAIE_ERROR("Invalid Tile Type to start queue\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	DmaMod = DevInst->DevProp.DevMod[TileType].DmaMod;
+	if(DmaMod->RepeatCount == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Repeat count feature in start queue is not supported for this device generation\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(DmaMod->EnTokenIssue == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Enable token issue feature in start queue is not supported for this device generation\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(ChNum > DmaMod->NumChannels) {
+		XAIE_ERROR("Invalid Channel number\n");
+		return XAIE_INVALID_CHANNEL_NUM;
+	}
+
+	if((DmaQueueDesc->RepeatCount < 1U) ||
+		(DmaQueueDesc->RepeatCount > DmaMod->ChProp->MaxRepeatCount)) {
+		XAIE_ERROR("Invalid Repeat Count: %d\n",
+			DmaQueueDesc->RepeatCount);
+		return XAIE_INVALID_ARGS;
+	}
+
+	if(DmaQueueDesc->OutOfOrder != XAIE_ENABLE) {
+		StartBd = DmaQueueDesc->StartBd;
+		if(StartBd > DmaMod->NumBds) {
+			XAIE_ERROR("Invalid BD number\n");
+			return XAIE_INVALID_BD_NUM;
+		}
+		RC = DmaMod->BdChValidity(StartBd, ChNum);
+		if(RC != XAIE_OK) {
+			return RC;
+		}
+	} else {
+		StartBd = 0;
+	}
+
+	Addr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+		DmaMod->StartQueueBase + ChNum * DmaMod->ChIdxOffset +
+		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
+
+	Val = XAie_SetField(StartBd, DmaMod->ChProp->StartBd.Lsb,
+			DmaMod->ChProp->StartBd.Mask) |
+		XAie_SetField((DmaQueueDesc->RepeatCount - 1),
+			DmaMod->ChProp->RptCount.Lsb,
+			DmaMod->ChProp->RptCount.Mask) |
+		XAie_SetField(DmaQueueDesc->EnTokenIssue,
+			DmaMod->ChProp->EnToken.Lsb,
+			DmaMod->ChProp->EnToken.Mask);
+
+	return XAie_Write32(DevInst, Addr, Val);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API updates the length of the buffer descriptor in the dma module.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: Location of AIE Tile
+* @param	Len: Length of BD in bytes.
+* @param	BdNum: Hardware BD number to be written to.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		This API accesses the hardware directly and does not operate
+*		on software descriptor.
+******************************************************************************/
+AieRC XAie_DmaUpdateBdLen(XAie_DevInst *DevInst, XAie_LocType Loc, u32 Len,
+		u8 BdNum)
+{
+	const XAie_DmaMod *DmaMod;
+	u32 AdjustedLen;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	DmaMod = DevInst->DevProp.DevMod[TileType].DmaMod;
+	if(BdNum > DmaMod->NumBds) {
+		XAIE_ERROR("Invalid BD number\n");
+		return XAIE_INVALID_BD_NUM;
+	}
+
+	AdjustedLen = (Len >> XAIE_DMA_32BIT_TXFER_LEN) -
+		DmaMod->BdProp->LenActualOffset;
+
+
+	return DmaMod->UpdateBdLen(DevInst, DmaMod, Loc, AdjustedLen, BdNum);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API updates the address of the buffer descriptor in the dma module.
+*
+* @param	DevInst: Device Instance.
+* @param	Loc: Location of AIE Tile
+* @param	Addr: Buffer address
+* @param	BdNum: Hardware BD number to be written to.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		This API accesses the hardware directly and does not operate
+*		on software descriptor.
+******************************************************************************/
+AieRC XAie_DmaUpdateBdAddr(XAie_DevInst *DevInst, XAie_LocType Loc, u64 Addr,
+		u8 BdNum)
+{
+	const XAie_DmaMod *DmaMod;
+	u8 TileType;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	DmaMod = DevInst->DevProp.DevMod[TileType].DmaMod;
+	if(BdNum > DmaMod->NumBds) {
+		XAIE_ERROR("Invalid BD number\n");
+		return XAIE_INVALID_BD_NUM;
+	}
+
+	if(((Addr & DmaMod->BdProp->AddrAlignMask) != 0U) ||
+			(Addr > DmaMod->BdProp->AddrMax)) {
+		XAIE_ERROR("Invalid Address\n");
+		return XAIE_INVALID_ADDRESS;
+	}
+
+	return DmaMod->UpdateBdAddr(DevInst, DmaMod, Loc, Addr, BdNum);
+}
+
+/*****************************************************************************/
+/**
+*
+* This API initializes the Dma Channel Descriptor for AIE DMAs for a given
+* location.
+*
+* @param	DevInst: Device Instance.
+* @param	DmaChannelDesc: Pointer to user allocated dma channel descriptor
+* @param	Loc: Location of AIE-ML Tile
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		This API should be called before setting individual fields for
+* 		Dma Channel Descriptor. This API works only for AIE-ML and has
+* 		no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelDescInit(XAie_DevInst *DevInst,
+		XAie_DmaChannelDesc *DmaChannelDesc, XAie_LocType Loc)
+{
+	u8 TileType;
+	const XAie_DmaMod *DmaMod;
+
+	if((DevInst == XAIE_NULL) || (DmaChannelDesc == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType == XAIEGBL_TILE_TYPE_SHIMPL) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	DmaMod = DevInst->DevProp.DevMod[TileType].DmaMod;
+
+	memset((void *)DmaChannelDesc, 0U, sizeof(XAie_DmaChannelDesc));
+
+	DmaChannelDesc->TileType = TileType;
+	DmaChannelDesc->IsReady = XAIE_COMPONENT_IS_READY;
+	DmaChannelDesc->DmaMod = DmaMod;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* This API enables/disables the Encompression bit in the DMA Channel Descriptor.
+*
+* @param	DmaChannelDesc: Initialized Dma channel Descriptor.
+* @param	EnCompression: XAIE_ENABLE or XAIE_DISABLE for
+* 				Compression / Decompression.
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		The API sets the enable/disable choice for
+* 		Compression / Decompression in dma channel descriptor and does
+* 		not configure the descriptor field in the hardware.
+* 		This API works only for AIE-ML and has no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelEnCompression(XAie_DmaChannelDesc *DmaChannelDesc,
+		u8 EnCompression)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaChannelDesc == XAIE_NULL) ||
+			(DmaChannelDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaChannelDesc->DmaMod;
+	if(DmaMod->ChProp->HasEnCompression == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature not supported\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaChannelDesc->EnCompression = EnCompression;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* This API enables/disables out of order mode in the DMA Channel Descriptor.
+*
+* @param	DmaChannelDesc: Initialized Dma Channel Descriptor.
+* @param	EnOutofOrder: XAIE_ENABLE or XAIE_DISABLE for out of order mode.
+* 				XAIE_DISABLE = in-order mode.
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		The API sets the enable/disable choice for
+* 		out of order mode in dma channel descriptor and does
+* 		not configure the descriptor field in the hardware.
+* 		This API works only for AIE-ML and has no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelEnOutofOrder(XAie_DmaChannelDesc *DmaChannelDesc,
+		u8 EnOutofOrder)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaChannelDesc == XAIE_NULL) ||
+			(DmaChannelDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaChannelDesc->DmaMod;
+	if(DmaMod->ChProp->HasEnOutOfOrder == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature not supported\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaChannelDesc->EnOutofOrderId = EnOutofOrder;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* This api sets the task complete token controller id field in the DMA Channel
+* Descriptor.
+*
+* @param	DmaChannelDesc: Initialized dma channel descriptor.
+* @param	ControllerId: Task-complete-token controller ID field
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The api sets the controller id in the dma channel descriptor and
+*		does not configure the descriptor field in the hardware. This
+*		API works only for AIE-ML and has no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelSetControllerId(XAie_DmaChannelDesc *DmaChannelDesc,
+		u32 ControllerId)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaChannelDesc == XAIE_NULL) ||
+			(DmaChannelDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaChannelDesc->DmaMod;
+	if(DmaMod->ChProp->HasControllerId == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(ControllerId > DmaMod->ChProp->ControllerId.Mask >>
+			DmaMod->ChProp->ControllerId.Lsb) {
+		XAIE_ERROR("Invalid ControllerId: %d\n", ControllerId);
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaChannelDesc->ControllerId = ControllerId;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+* This api sets the task complete token controller id field in the DMA Channel
+* Descriptor.
+*
+* @param	DmaChannelDesc: Initialized dma channel descriptor.
+* @param	FoTMode: Finish on TLAST mode (DMA_FoT_DISABLED,
+* 			DMA_FoT_NO_COUNTS, DMA_FoT_COUNTS_WITH_TASK_TOKENS or
+*			DMA_FoT_COUNTS_FROM_MM_REG)
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The api sets the FoT Mode in the dma channel descriptor and
+*		does not configure the descriptor field in the hardware. This
+*		API works only for AIE-ML and has no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaChannelSetFoTMode(XAie_DmaChannelDesc *DmaChannelDesc,
+		XAie_DmaChannelFoTMode FoTMode)
+{
+	const XAie_DmaMod *DmaMod;
+
+	if((DmaChannelDesc == XAIE_NULL) ||
+			(DmaChannelDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaChannelDesc->DmaMod;
+	if(DmaMod->ChProp->HasFoTMode == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(FoTMode > DmaMod->ChProp->MaxFoTMode) {
+		XAIE_ERROR("Invalid FoTMode: %d\n", FoTMode);
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaChannelDesc->FoTMode = FoTMode;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/**
+=======
+* This API configures the Dma channel descriptor fields in the hardware for a
+* particular tile location. This includes FoT mode, Controller id, out of order
+* and Compression/Decompression.
+*
+*
+* @param	DevInst: Device Instance.
+* @param	DmaChannelDesc: Initialized Dma Channel Descriptor.
+* @param	Loc: Location of AIE Tile
+* @param	ChNum: Channel number of the DMA.
+* @param	Dir: Direction of the DMA Channel. (MM2S or S2MM)
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		This API works only for AIE-ML and has no effect on AIE.
+*
+******************************************************************************/
+AieRC XAie_DmaWriteChannel(XAie_DevInst *DevInst,
+		XAie_DmaChannelDesc *DmaChannelDesc, XAie_LocType Loc,
+		u8 ChNum, XAie_DmaDirection Dir)
+{
+	u64 Addr;
+	u32 Val;
+	const XAie_DmaMod *DmaMod;
+
+	if((DevInst == XAIE_NULL) || (DmaChannelDesc == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	if(DevInst->DevProp.DevGen == XAIE_DEV_GEN_AIE) {
+		XAIE_ERROR("Feature not supported\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if(Dir >= DMA_MAX) {
+		XAIE_ERROR("Invalid DMA direction\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	if((DmaChannelDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Dma Channel descriptor not initilized\n");
+		return XAIE_INVALID_DMA_DESC;
+	}
+
+	if(DmaChannelDesc->TileType != DevInst->DevOps->GetTTypefromLoc(DevInst, Loc)) {
+		XAIE_ERROR("Tile type mismatch\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	DmaMod = DevInst->DevProp.DevMod[DmaChannelDesc->TileType].DmaMod;
+	if(ChNum > DmaMod->NumChannels) {
+		XAIE_ERROR("Invalid Channel number\n");
+		return XAIE_INVALID_CHANNEL_NUM;
+	}
+
+	Addr = _XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col) +
+		DmaMod->ChCtrlBase + ChNum * DmaMod->ChIdxOffset +
+		Dir * DmaMod->ChIdxOffset * DmaMod->NumChannels;
+
+	Val = XAie_SetField(DmaChannelDesc->EnOutofOrderId, (DmaMod->ChProp->EnOutofOrder.Lsb),
+			(DmaMod->ChProp->EnOutofOrder.Mask)) |
+		XAie_SetField(DmaChannelDesc->EnCompression, (DmaMod->ChProp->EnCompression.Lsb),
+			(DmaMod->ChProp->EnCompression.Mask)) |
+		XAie_SetField(DmaChannelDesc->ControllerId, (DmaMod->ChProp->ControllerId.Lsb),
+			(DmaMod->ChProp->ControllerId.Mask)) |
+		XAie_SetField(DmaChannelDesc->FoTMode, (DmaMod->ChProp->FoTMode.Lsb),
+			(DmaMod->ChProp->FoTMode.Mask));
+
+	return XAie_Write32(DevInst, Addr, Val);
+}
+
+/******************************************************************************/
+/**
+* This api sets the number of 32 bit words to be added before and after each
+* dimenstion for a DMA BD descriptor.
+*
+* @param	DmaDesc: Initialized dma descriptor.
+* @param	PadTensor: Padding tensor with After and Before values for each
+*		dimension.
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The API sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware.
+*
+*******************************************************************************/
+AieRC XAie_DmaSetPadding(XAie_DmaDesc *DmaDesc, XAie_DmaPadTensor *PadTensor)
+{
+	const XAie_DmaMod *DmaMod;
+	if((DmaDesc == XAIE_NULL) || (PadTensor == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->ZeroPadding == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	for(u8 i = 0U; i < PadTensor->NumDim; i++) {
+		DmaDesc->PadDesc[i].After = PadTensor->PadDesc[i].After;
+		DmaDesc->PadDesc[i].Before = PadTensor->PadDesc[i].Before;
+	}
+
+	return XAIE_OK;
+}
+
+/******************************************************************************/
+/**
+* This api sets the number of zeros to be added before or after  the given
+* dimension for a dma descriptor.
+*
+* @param	DmaDesc: Initialized dma descriptor.
+* @param	NumZeros: No. of zeros to be added
+* @param	Dim: Dimension - 0, 1 or 2.
+* @param	Pos: Position for zeros padding i.e.
+* 			DMA_ZERO_PADDING_BEFORE or DMA_ZERO_PADDING_AFTER
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The API sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware.
+*
+*******************************************************************************/
+AieRC XAie_DmaSetZeroPadding(XAie_DmaDesc *DmaDesc, u8 Dim,
+		XAie_DmaZeroPaddingPos Pos, u8 NumZeros)
+{
+	const XAie_DmaMod *DmaMod;
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->ZeroPadding == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	switch(Pos){
+	case DMA_ZERO_PADDING_BEFORE: {
+		switch(Dim){
+		case 0U:
+		case 1U:
+		case 2U:
+		{
+			DmaDesc->PadDesc[Dim].Before = NumZeros;
+			break;
+		}
+		default:
+			XAIE_ERROR("Invalid Dimension: %d\n", Dim);
+			return XAIE_INVALID_ARGS;
+		}
+		break;
+	}
+
+	case DMA_ZERO_PADDING_AFTER: {
+		switch(Dim){
+		case 0U:
+		case 1U:
+		case 2U:
+		{
+			DmaDesc->PadDesc[Dim].After = NumZeros;
+			break;
+		}
+		default:
+			XAIE_ERROR("Invalid Dimension: %d\n", Dim);
+			return XAIE_INVALID_ARGS;
+		}
+		break;
+	}
+	default:
+		XAIE_ERROR("Invalid Position: %d\n", Pos);
+		return XAIE_INVALID_ARGS;
+	}
+
+	return XAIE_OK;
+}
+
+/******************************************************************************/
+/**
+* This api enables the DMA to assert TLAST signal after the DMA transfer is
+* complete. By default, the TLAST assertion is enabled in the DmaDesc during
+* dma descriptor initialization.
+*
+* @param	DmaDesc: Initialized dma descriptor.
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The API sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware.
+*
+*******************************************************************************/
+AieRC XAie_DmaTlastEnable(XAie_DmaDesc *DmaDesc)
+{
+	const XAie_DmaMod *DmaMod;
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->TlastSuppress == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaDesc->TlastSuppress = XAIE_DISABLE;
+
+	return XAIE_OK;
+}
+
+/******************************************************************************/
+/**
+* This api configures the DMA descriptor to not assert the TLAST signal after
+* the DMA transfer is complete. By default, the TLAST assertion is enabled in
+* the DmaDesc during dma descriptor initialization.
+*
+* @param	DmaDesc: Initialized dma descriptor.
+*
+* @return	XAIE_OK on success, error code on failure.
+*
+* @note		The API sets up the value in the dma descriptor and does not
+*		configure the buffer descriptor field in the hardware.
+*
+*******************************************************************************/
+AieRC XAie_DmaTlastDisable(XAie_DmaDesc *DmaDesc)
+{
+	const XAie_DmaMod *DmaMod;
+	if((DmaDesc == XAIE_NULL) ||
+			(DmaDesc->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Arguments\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	DmaMod = DmaDesc->DmaMod;
+	if(DmaMod->TlastSuppress == XAIE_FEATURE_UNAVAILABLE) {
+		XAIE_ERROR("Feature unavailable\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	DmaDesc->TlastSuppress = XAIE_ENABLE;
+
+	return XAIE_OK;
+}
+
+#endif /* XAIE_FEATURE_DMA_ENABLE */
 /** @} */

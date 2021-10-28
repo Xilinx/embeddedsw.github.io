@@ -105,24 +105,14 @@ namespace xaiefal {
 					" Mod=" << Mod <<  " resource is not reserved." << std::endl;
 				RC = XAIE_ERR;
 			} else {
-				XAie_Events BaseE;
-				uint32_t TType = _XAie_GetTileTypefromLoc(dev(), Loc);
-
-				if (TType == XAIEGBL_TILE_TYPE_AIETILE) {
-					if (Mod == XAIE_CORE_MOD) {
-						BaseE = XAIE_EVENT_COMBO_EVENT_0_CORE;
-					} else {
-						BaseE = XAIE_EVENT_COMBO_EVENT_0_MEM;
-					}
-				} else {
-					BaseE = XAIE_EVENT_COMBO_EVENT_0_PL;
-				}
+				XAie_Events BaseEvent;
+				XAie_EventGetComboEventBase(dev(), Loc, Mod, &BaseEvent);
 				vE.clear();
 				if (vOps.size() == 1) {
-					vE.push_back((XAie_Events)((uint32_t)BaseE + vRscs[0].RscId));
+					vE.push_back((XAie_Events)((uint32_t)BaseEvent + vRscs[0].RscId));
 				} else {
 					for (uint32_t i = 0; i < (uint32_t)vOps.size(); i++) {
-						vE.push_back((XAie_Events)((uint32_t)BaseE + i));
+						vE.push_back((XAie_Events)((uint32_t)BaseEvent + i));
 					}
 				}
 				RC = XAIE_OK;
@@ -152,6 +142,9 @@ namespace xaiefal {
 			}
 			return RC;
 		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_COMBO_EVENTS_RSC);
+		}
 	protected:
 		std::vector<XAie_Events> vEvents; /**< input events */
 		std::vector<XAie_EventComboOps> vOps; /**< combo operations */
@@ -160,12 +153,12 @@ namespace xaiefal {
 		AieRC _reserve() {
 			AieRC RC;
 
-			for (int i = 0; i < vEvents.size(); i++) {
+			for (uint32_t i = 0; i < vEvents.size(); i++) {
 				XAie_UserRsc Rsc;
 				vRscs.push_back(Rsc);
 			}
 
-			XAie_UserRscReq Req = {Loc, Mod, vEvents.size()};
+			XAie_UserRscReq Req = {Loc, Mod, static_cast<uint32_t>(vEvents.size())};
 			RC = XAie_RequestComboEvents(AieHd->dev(), 1, &Req, vEvents.size(), &vRscs[0]);
 			if (RC != XAIE_OK) {
 				vRscs.clear();
@@ -195,7 +188,7 @@ namespace xaiefal {
 			AieRC RC;
 			XAie_EventComboId StartCId;
 
-			for (int i = 0 ; i < vEvents.size(); i += 2) {
+			for (uint32_t i = 0 ; i < vEvents.size(); i += 2) {
 				XAie_EventComboId ComboId;
 
 				if (vRscs[i].RscId == 0) {
@@ -248,6 +241,9 @@ namespace xaiefal {
 			}
 			return XAIE_OK;
 		}
+		void _getRscs(std::vector<XAie_UserRsc> &vRs) const {
+			vRs.insert(vRs.end(), vRscs.begin(), vRscs.end());
+		}
 	};
 
 	/**
@@ -286,6 +282,9 @@ namespace xaiefal {
 				E = _getEventFromId(Rsc.RscId);
 			}
 			return RC;
+		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_USER_EVENTS_RSC);
 		}
 	private:
 		AieRC _reserve() {
@@ -341,14 +340,7 @@ namespace xaiefal {
 		 */
 		uint32_t _getIdFromEvent(XAie_Events E) const {
 			XAie_Events UserEventStart;
-
-			if (Mod == XAIE_PL_MOD) {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_PL;
-			} else if (Mod == XAIE_CORE_MOD) {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_CORE;
-			} else {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_MEM;
-			}
+			XAie_EventGetUserEventBase(AieHd->dev(), Loc, Mod, &UserEventStart);
 
 			return static_cast<uint32_t>(E - UserEventStart);
 		}
@@ -361,14 +353,7 @@ namespace xaiefal {
 		 */
 		XAie_Events _getEventFromId(uint32_t I) const {
 			XAie_Events UserEventStart;
-
-			if (Mod == XAIE_PL_MOD) {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_PL;
-			} else if (Mod == XAIE_CORE_MOD) {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_CORE;
-			} else {
-				UserEventStart = XAIE_EVENT_USER_EVENT_0_MEM;
-			}
+			XAie_EventGetUserEventBase(AieHd->dev(), Loc, Mod, &UserEventStart);
 
 			return static_cast<XAie_Events>(static_cast<uint32_t>(UserEventStart) + I);
 		}

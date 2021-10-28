@@ -14,6 +14,7 @@ var xv__frmbufwr__l2_8h =
     [ "XVFrmbufWr_IsY12Enabled", "xv__frmbufwr__l2_8h.html#ae7e66b039f58a353c128e09a25008806", null ],
     [ "XVFrmbufWr_IsY16Enabled", "xv__frmbufwr__l2_8h.html#a1ca50a2b60ee7ba60504c6321efe1e78", null ],
     [ "XVFrmbufWr_IsY8Enabled", "xv__frmbufwr__l2_8h.html#aa1e55cb22cc4068c537c46a90ac92780", null ],
+    [ "XVFrmbufWr_IsY_U_V8Enabled", "xv__frmbufwr__l2_8h.html#a30d57ef8f9b7a9b5f592dfccdd2b4db2", null ],
     [ "XVFrmbufWr_IsY_UV10_420Enabled", "xv__frmbufwr__l2_8h.html#a545f80fb4a287747fa9d6dc835841779", null ],
     [ "XVFrmbufWr_IsY_UV10Enabled", "xv__frmbufwr__l2_8h.html#a4c43d86c33361db3072a00a0f196dbea", null ],
     [ "XVFrmbufWr_IsY_UV12_420Enabled", "xv__frmbufwr__l2_8h.html#a76ec6759bf3524942f26f59fe48a8e94", null ],
@@ -44,6 +45,7 @@ var xv__frmbufwr__l2_8h =
     [ "XVFrmbufWr_GetBufferAddr", "xv__frmbufwr__l2_8h.html#gafd87229d20fa2601db7c527f10d4425f", null ],
     [ "XVFrmbufWr_GetChromaBufferAddr", "xv__frmbufwr__l2_8h.html#gaeea208892ad56d1c83915b753f15d6f3", null ],
     [ "XVFrmbufWr_GetFieldID", "xv__frmbufwr__l2_8h.html#ga02ac61b5da119e29efb4fcb6bb0a8340", null ],
+    [ "XVFrmbufWr_GetVChromaBufferAddr", "xv__frmbufwr__l2_8h.html#gaf5b5f5abec7d6763bd3333f3ef4df008", null ],
     [ "XVFrmbufWr_GetVideoStream", "xv__frmbufwr__l2_8h.html#ga628707a22dc9888af5371e4e7fc82b68", null ],
     [ "XVFrmbufWr_Initialize", "xv__frmbufwr__l2_8h.html#ga5453dda299a1e77ed1c692f31dbcb844", null ],
     [ "XVFrmbufWr_InterruptDisable", "xv__frmbufwr__l2_8h.html#gacb9da6afd1c85b903b5d19048f2079f4", null ],
@@ -53,6 +55,7 @@ var xv__frmbufwr__l2_8h =
     [ "XVFrmbufWr_SetCallback", "xv__frmbufwr__l2_8h.html#gaaef29cb5e2485c63e589f6f0621eac9d", null ],
     [ "XVFrmbufWr_SetChromaBufferAddr", "xv__frmbufwr__l2_8h.html#gae3ad3f1fa2f369041d8e9ab7683a05b0", null ],
     [ "XVFrmbufWr_SetMemFormat", "xv__frmbufwr__l2_8h.html#ga4951453d9f7373886327dbbcb8b3ada2", null ],
+    [ "XVFrmbufWr_SetVChromaBufferAddr", "xv__frmbufwr__l2_8h.html#gaf68f85db7571469e49626a9483567a50", null ],
     [ "XVFrmbufWr_Start", "xv__frmbufwr__l2_8h.html#ga62c170ef332a536b7461b3ce81def351", null ],
     [ "XVFrmbufWr_Stop", "xv__frmbufwr__l2_8h.html#ga0cfe9c77cc5534a27e613e5fc87a8ab4", null ],
     [ "XVFrmbufWr_WaitForIdle", "xv__frmbufwr__l2_8h.html#ga28dc4f189245f3c9e8152ff270a40813", null ]

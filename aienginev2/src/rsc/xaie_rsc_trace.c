@@ -24,9 +24,12 @@
 /***************************** Include Files *********************************/
 #include <stdlib.h>
 
+#include "xaie_feature_config.h"
 #include "xaie_rsc.h"
 #include "xaie_rsc_internal.h"
 #include "xaie_helper.h"
+
+#ifdef XAIE_FEATURE_RSC_ENABLE
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
 /**************************** Type Definitions *******************************/
@@ -166,5 +169,6 @@ AieRC XAie_RequestAllocatedTraceCtrl(XAie_DevInst *DevInst, u32 NumReq,
 	return _XAie_RscMgr_RequestAllocatedRsc(DevInst, NumReq, RscReq,
 			XAIE_TRACE_CTRL_RSC);
 }
+#endif /* XAIE_FEATURE_RSC_ENABLE */
 
 /** @} */

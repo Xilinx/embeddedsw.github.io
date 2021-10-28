@@ -70,6 +70,9 @@ namespace xaiefal {
 			}
 			return RC;
 		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_PC_EVENTS_RSC);
+		}
 	protected:
 		uint32_t PcAddr; /**< PC address */
 	private:
@@ -189,6 +192,9 @@ namespace xaiefal {
 			}
 			return RC;
 		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_PC_EVENTS_RSC);
+		}
 	protected:
 		uint32_t PcAddrs[2]; /**< starting and end PC addresses */
 		XAie_UserRsc Rscs[2]; /**< start and end PC events */
@@ -205,8 +211,8 @@ namespace xaiefal {
 			} else {
 					RC = XAie_RequestPCRangeEvents(AieHd->dev(), 1, &Req, 2, Rscs);
 					if (RC == XAIE_OK && Rscs[1].RscId != (Rscs[0].RscId + 1)) {
-						XAie_ReleasePerfcnt(AieHd->dev(), 1, &Rscs[1]);
-						XAie_ReleasePerfcnt(AieHd->dev(), 1, &Rscs[0]);
+						XAie_ReleasePCEvents(AieHd->dev(), 1, &Rscs[1]);
+						XAie_ReleasePCEvents(AieHd->dev(), 1, &Rscs[0]);
 
 						RC = XAIE_ERR;
 					}
@@ -227,8 +233,8 @@ namespace xaiefal {
 		AieRC _release() {
 			Rscs[0].RscId += static_cast<uint32_t>(XAIE_EVENT_PC_0_CORE);
 			Rscs[1].RscId += static_cast<uint32_t>(XAIE_EVENT_PC_0_CORE);
-			XAie_ReleasePerfcnt(AieHd->dev(), 1, &Rscs[0]);
-			XAie_ReleasePerfcnt(AieHd->dev(), 1, &Rscs[1]);
+			XAie_ReleasePCEvents(AieHd->dev(), 1, &Rscs[0]);
+			XAie_ReleasePCEvents(AieHd->dev(), 1, &Rscs[1]);
 			Rscs[0].RscId -= static_cast<uint32_t>(XAIE_EVENT_PC_0_CORE);
 			Rscs[1].RscId -= static_cast<uint32_t>(XAIE_EVENT_PC_0_CORE);
 
@@ -264,6 +270,10 @@ namespace xaiefal {
 				RC = XAIE_OK;
 			}
 			return RC;
+		}
+		void _getRscs(std::vector<XAie_UserRsc> &vRscs) const {
+			vRscs.push_back(Rscs[0]);
+			vRscs.push_back(Rscs[1]);
 		}
 	};
 }

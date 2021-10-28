@@ -51,8 +51,20 @@
 
 #define XAIE_TRANSACTION_ENABLE_AUTO_FLUSH	0b1
 #define XAIE_TRANSACTION_DISABLE_AUTO_FLUSH	0b0
+
+#define XAIE_PART_INIT_OPT_COLUMN_RST		(1U << 0)
+#define XAIE_PART_INIT_OPT_SHIM_RST		(1U << 1)
+#define XAIE_PART_INIT_OPT_BLOCK_NOCAXIMMERR	(1U << 2)
+#define XAIE_PART_INIT_OPT_ISOLATE		(1U << 3)
+#define XAIE_PART_INIT_OPT_ZEROIZEMEM		(1U << 4)
+#define XAIE_PART_INIT_OPT_DEFAULT	(XAIE_PART_INIT_OPT_COLUMN_RST | \
+		XAIE_PART_INIT_OPT_SHIM_RST | \
+		XAIE_PART_INIT_OPT_BLOCK_NOCAXIMMERR | \
+		XAIE_PART_INIT_OPT_ISOLATE)
+
 /**************************** Type Definitions *******************************/
 typedef struct XAie_TileMod XAie_TileMod;
+typedef struct XAie_DeviceOps XAie_DeviceOps;
 typedef struct XAie_DmaMod XAie_DmaMod;
 typedef struct XAie_LockMod XAie_LockMod;
 typedef struct XAie_Backend XAie_Backend;
@@ -112,8 +124,8 @@ typedef struct {
 	u8 NumRows;   /* Number of rows allocated to the partition */
 	u8 NumCols;   /* Number of cols allocated to the partition */
 	u8 ShimRow;   /* ShimRow location */
-	u8 ReservedRowStart;
-	u8 ReservedNumRows;
+	u8 MemTileRowStart; /* Mem tile starting row in the partition */
+	u8 MemTileNumRows;  /* Number of memtile rows in the partition */
 	u8 AieTileRowStart; /* Aie tile starting row in the partition */
 	u8 AieTileNumRows;  /* Number of aie tile rows in the partition */
 	u8 IsReady;
@@ -126,6 +138,7 @@ typedef struct {
 	void *IOInst;	       /* IO Instance for the backend */
 	XAie_DevProp DevProp; /* Pointer to the device property. To be
 				     setup to AIE prop during intialization*/
+	XAie_DeviceOps *DevOps; /* Device level operations */
 	XAie_PartitionProp PartProp; /* Partition property */
 	XAie_List TxnList; /* Head of the list of txn buffers */
 } XAie_DevInst;
@@ -164,8 +177,8 @@ typedef struct {
 	u8 NumRows;
 	u8 NumCols;
 	u8 ShimRowNum;
-	u8 ReservedRowStart;
-	u8 ReservedNumRows;
+	u8 MemTileRowStart;
+	u8 MemTileNumRows;
 	u8 AieTileRowStart;
 	u8 AieTileNumRows;
 	XAie_PartitionProp PartProp;
@@ -178,6 +191,17 @@ typedef struct {
 	u8 Row;
 	u8 Col;
 } XAie_LocType;
+
+/*
+ * This typedef contains the attributes for an AIE partition initialization
+ * options. The structure is used by the AI engine partition initialization
+ * API.
+ */
+typedef struct XAie_PartInitOpts {
+	XAie_LocType *Locs; /* Array of tiles locactions which will be used */
+	u32 NumUseTiles; /* Number of tiles to use */
+	u32 InitOpts; /* AI engine partition initialization options */
+} XAie_PartInitOpts;
 
 /*
  * This enum contains all the Stream Switch Port types. These enums are used to
@@ -198,6 +222,11 @@ typedef enum{
 
 /* Data structures to capture data shape for dmas */
 typedef struct {
+	u32 StepSize;
+	u32 Wrap;
+} XAie_AieMlDmaDimDesc;
+
+typedef struct {
 	u32 Offset;
 	u32 Incr;
 	u32 Wrap;
@@ -205,6 +234,7 @@ typedef struct {
 
 typedef union {
 	XAie_AieDmaDimDesc AieDimDesc;
+	XAie_AieMlDmaDimDesc AieMlDimDesc;
 } XAie_DmaDimDesc;
 
 typedef struct {
@@ -238,6 +268,7 @@ typedef struct {
 	u8 ValidBd;
 	u8 NxtBd;
 	u8 UseNxtBd;
+	u8 OutofOrderBdId;
 } XAie_BdEnDesc;
 
 typedef struct {
@@ -261,19 +292,42 @@ typedef struct {
 	u8 EnInterleaved;
 } XAie_AieMultiDimDesc;
 
+typedef struct {
+	u16 Wrap;
+	u32 StepSize;
+} XAie_AieMlDimDesc;
+
+typedef struct {
+	u8 IterCurr;
+	XAie_AieMlDimDesc IterDesc;
+	XAie_AieMlDimDesc DimDesc[4U];	/* Max 4D addressing supported */
+} XAie_AieMlMultiDimDesc;
+
 typedef union {
 	XAie_AieMultiDimDesc AieMultiDimDesc;
+	XAie_AieMlMultiDimDesc AieMlMultiDimDesc;
 } XAie_MultiDimDesc;
 
 typedef struct {
-	u8 ControllerId;
+	u8 Before;
+	u8 After;
+} XAie_PadDesc;
+
+typedef struct {
+	u8 NumDim;
+	XAie_PadDesc *PadDesc;
+} XAie_DmaPadTensor;
+
+typedef struct {
 	u8 EnOutofOrderId;
-	u8 Reset;
 	u8 EnTokenIssue;
-	u8 PauseStream;
-	u8 PauseMem;
-	u8 Enable;
-} XAie_ChannelDesc;
+	u8 EnCompression;
+	u8 FoTMode;
+	u8 TileType;
+	u8 IsReady;
+	u32 ControllerId;
+	const XAie_DmaMod *DmaMod;
+} XAie_DmaChannelDesc;
 
 typedef struct {
 	XAie_PktDesc PktDesc;
@@ -284,15 +338,25 @@ typedef struct {
 	XAie_LockDesc LockDesc_2;
 	XAie_AddrDesc AddrDesc_2;
 	XAie_MultiDimDesc MultiDimDesc;
-	XAie_ChannelDesc ChDesc;
+	XAie_PadDesc PadDesc[3U];
 	const XAie_DmaMod *DmaMod;
 	const XAie_LockMod *LockMod;
 	XAie_MemInst *MemInst;
 	u8 EnDoubleBuff;
 	u8 FifoMode;
+	u8 EnCompression;
+	u8 EnOutofOrderBdId;
+	u8 TlastSuppress;
 	u8 TileType;
 	u8 IsReady;
 } XAie_DmaDesc;
+
+typedef struct {
+	u32 RepeatCount;
+	u8 StartBd;
+	u8 EnTokenIssue;
+	u8 OutOfOrder;
+} XAie_DmaQueueDesc;
 
 /*
  * This enum contains the dma channel reset for aie dmas.
@@ -310,6 +374,23 @@ typedef enum {
 	DMA_MAX
 } XAie_DmaDirection;
 
+/*
+ * This enum contains the FoT mode for aie Dma Channel.
+ */
+typedef enum {
+	DMA_FoT_DISABLED,
+	DMA_FoT_NO_COUNTS,
+	DMA_FoT_COUNTS_WITH_TASK_TOKENS,
+	DMA_FoT_COUNTS_FROM_MM_REG,
+} XAie_DmaChannelFoTMode;
+
+/*
+ * This enum contains the positions for dma zero padding.
+ */
+typedef enum {
+	DMA_ZERO_PADDING_BEFORE,
+	DMA_ZERO_PADDING_AFTER,
+} XAie_DmaZeroPaddingPos;
 /*
  * This enum captures all the error codes from the driver
  */
@@ -345,8 +426,8 @@ typedef enum{
 /*
  * This enum is to identify different hardware modules within a tile type.
  * An AIE tile can have memory or core module. A PL or Shim tile will have
- * Pl module. Any hardware module addition in future generations of AIE needs
- * to be appended to this enum.
+ * Pl module. A mem tile will have memory module. Any hardware module
+ * addition in future generations of AIE needs to be appended to this enum.
  */
 typedef enum{
 	XAIE_MEM_MOD,
@@ -374,6 +455,8 @@ typedef struct {
 
 /**************************** Function prototypes ***************************/
 AieRC XAie_CfgInitialize(XAie_DevInst *InstPtr, XAie_Config *ConfigPtr);
+AieRC XAie_PartitionInitialize(XAie_DevInst *DevInst, XAie_PartInitOpts *Opts);
+AieRC XAie_PartitionTeardown(XAie_DevInst *DevInst);
 AieRC XAie_Finish(XAie_DevInst *DevInst);
 AieRC XAie_SetIOBackend(XAie_DevInst *DevInst, XAie_BackendType Backend);
 XAie_MemInst* XAie_MemAllocate(XAie_DevInst *DevInst, u64 Size,
@@ -392,7 +475,7 @@ AieRC XAie_StartTransaction(XAie_DevInst *DevInst, u32 Flags);
 AieRC XAie_SubmitTransaction(XAie_DevInst *DevInst, XAie_TxnInst *TxnInst);
 XAie_TxnInst* XAie_ExportTransactionInstance(XAie_DevInst *DevInst);
 AieRC XAie_FreeTransactionInstance(XAie_TxnInst *TxnInst);
-
+AieRC XAie_IsDeviceCheckerboard(XAie_DevInst *DevInst, u8 *IsCheckerBoard);
 /*****************************************************************************/
 /*
 *
@@ -503,10 +586,10 @@ static inline void XAie_SetupConfigPartProp(XAie_Config *ConfigPtr, u32 Nid,
 * @param	_NumCols: Number of cols in the hardware.
 * @param	_NumRows: Number of rows in the hardware.
 * @param	_ShimRowNum: Row number of the shimrow.
-* @param	_ReservedRowStart: Reserved
-* @param	_ReservedNumRows: Reserved
-* @param	_AieTileRowStart: Starting row number of the aie tile.
-* @param	_AieTileNumRows: Number of aie tile rows.
+* @param	_MemTileRowStart: Starting row number of the mem tile.
+* @param	_MemTileNumRows: Number of mem tile rows.
+* @param	_AieTileRowStart: Starting row number of the mem tile.
+* @param	_AieTileNumRows: Number of mem tile rows.
 *
 * @return	None.
 *
@@ -514,7 +597,7 @@ static inline void XAie_SetupConfigPartProp(XAie_Config *ConfigPtr, u32 Nid,
 *
 *******************************************************************************/
 #define XAie_SetupConfig(Config, _AieGen, _BaseAddr, _ColShift, _RowShift,\
-		_NumCols, _NumRows, _ShimRowNum, _ReservedRowStart, _ReservedNumRows,\
+		_NumCols, _NumRows, _ShimRowNum, _MemTileRowStart, _MemTileNumRows,\
 		_AieTileRowStart, _AieTileNumRows) \
 		XAie_Config Config = {\
 			.AieGen = _AieGen,\
@@ -524,8 +607,8 @@ static inline void XAie_SetupConfigPartProp(XAie_Config *ConfigPtr, u32 Nid,
 			.NumRows = _NumRows,\
 			.NumCols = _NumCols,\
 			.ShimRowNum = _ShimRowNum,\
-			.ReservedRowStart = _ReservedRowStart,\
-			.ReservedNumRows = _ReservedNumRows,\
+			.MemTileRowStart = _MemTileRowStart,\
+			.MemTileNumRows = _MemTileNumRows,\
 			.AieTileRowStart = _AieTileRowStart,\
 			.AieTileNumRows = _AieTileNumRows,\
 			.PartProp = {0}, \

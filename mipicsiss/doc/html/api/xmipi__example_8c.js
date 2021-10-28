@@ -4,6 +4,7 @@ var xmipi__example_8c =
     [ "I2C_MUX_ADDR", "xmipi__example_8c.html#a9e3c02ccaf71eeda39e2524f2fb02a41", null ],
     [ "CamReset", "xmipi__example_8c.html#a757a75677d4ddc9b3d14e2f4f3f0332c", null ],
     [ "CloneTxEdid", "xmipi__example_8c.html#ac0e2b7e475ed03270d5000ad9bd4e923", null ],
+    [ "config_csi_cap_path", "xmipi__example_8c.html#a0d6479cb60c1d56d8f2b0bffd93dbe15", null ],
     [ "EnableColorBar", "xmipi__example_8c.html#adc524e092889eb6825e874b8a94fa38b", null ],
     [ "EnableDSI", "xmipi__example_8c.html#a72dc2cf47df7366bd814007b9a38f9a3", null ],
     [ "I2cClk", "xmipi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510", null ],

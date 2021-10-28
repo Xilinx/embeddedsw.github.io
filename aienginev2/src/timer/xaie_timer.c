@@ -29,9 +29,12 @@
 #include <stdlib.h>
 
 #include "xaie_events.h"
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaie_timer.h"
 #include "xaiegbl.h"
+
+#ifdef XAIE_FEATURE_TIMER_ENABLE
 
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
@@ -52,6 +55,7 @@
 * @param	Module: Module of tile.
 *			For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			For Pl or Shim tile - XAIE_PL_MOD,
+*			For Mem tile - XAIE_MEM_MOD.
 *
 * @param	LowEventValue: Value to set for the timer to trigger timer low
 *                              event.
@@ -78,7 +82,7 @@ AieRC XAie_SetTimerTrigEventVal(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -87,7 +91,6 @@ AieRC XAie_SetTimerTrigEventVal(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -123,6 +126,7 @@ AieRC XAie_SetTimerTrigEventVal(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module - Module of the tile
 *			 For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *			 For Pl or Shim tile - XAIE_PL_MOD,
+*			 For Mem tile - XAIE_MEM_MOD.
 *
 * @return	XAIE_OK on success.
 *		XAIE_INVALID_ARGS if any argument is invalid
@@ -145,7 +149,7 @@ AieRC XAie_ResetTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -154,7 +158,6 @@ AieRC XAie_ResetTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -185,6 +188,7 @@ AieRC XAie_ResetTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module - Module of the tile
 *                         For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                         For Pl or Shim tile - XAIE_PL_MOD,
+*                         For Mem tile - XAIE_MEM_MOD.
 * @param	Event - Reset event.
 * @param	Reset - Indicate if reset is also required in this call.
 *                       (XAIE_RESETENABLE, XAIE_RESETDISABLE)
@@ -217,7 +221,7 @@ AieRC XAie_SetTimerResetEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -226,7 +230,6 @@ AieRC XAie_SetTimerResetEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -280,6 +283,7 @@ AieRC XAie_SetTimerResetEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param	Module - Module of the tile
 *                         For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                         For Pl or Shim tile - XAIE_PL_MOD,
+*                         For Mem tile - XAIE_MEM_MOD.
 * @param	TimerVal - Pointer to store Timer Value.
 *
 * @return	XAIE_OK on success
@@ -303,7 +307,7 @@ AieRC XAie_ReadTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -312,7 +316,6 @@ AieRC XAie_ReadTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
         if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
                 return XAIE_INVALID_ARGS;
 	}
 
@@ -352,6 +355,7 @@ AieRC XAie_ReadTimer(XAie_DevInst *DevInst, XAie_LocType Loc,
 * @param        Module - Module of the tile
 *                        For AIE Tile - XAIE_MEM_MOD or XAIE_CORE_MOD,
 *                        For Pl or Shim tile - XAIE_PL_MOD,
+*                        For Mem tile - XAIE_MEM_MOD.
 * @param        CycleCnt - No. of timer clock cycles to elapse.
 *
 * @return       XAIE_OK on success
@@ -378,7 +382,7 @@ AieRC XAie_WaitCycles(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType == XAIEGBL_TILE_TYPE_MAX) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -387,7 +391,6 @@ AieRC XAie_WaitCycles(XAie_DevInst *DevInst, XAie_LocType Loc,
 	/* check for module and tiletype combination */
 	RC = _XAie_CheckModule(DevInst, Loc, Module);
 	if(RC != XAIE_OK) {
-		XAIE_ERROR("Invalid Module\n");
 		return XAIE_INVALID_ARGS;
 	}
 
@@ -461,7 +464,7 @@ static XAie_Events _XAie_GetBroadcastEventfromRscId(XAie_DevInst *DevInst,
 	u8 TileType;
 	const XAie_EvntMod *EvntMod;
 
-	TileType =  _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType =  DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 
 	if(Mod == XAIE_PL_MOD)
 		EvntMod = &DevInst->DevProp.DevMod[TileType].EvntMod[0U];
@@ -520,7 +523,7 @@ static void _XAie_ClearTimerConfig(XAie_DevInst *DevInst, u32 Index,
 
 	for(u32 k = 0; k < Index; k++) {
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, RscsBC[k].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, RscsBC[k].Loc);
 		if(RscsBC[k].Mod == XAIE_PL_MOD)
 			EvntMod = &DevInst->DevProp.DevMod[TileType].
 				EvntMod[0U];
@@ -603,7 +606,8 @@ AieRC XAie_SyncTimer(XAie_DevInst *DevInst)
 		XAie_TileLoc(0, 0), XAIE_PL_MOD, BcastChannelIdShim);
 
 	for(u32 j = 0; j < UserRscNum; j++) {
-		u8 TileType = _XAie_GetTileTypefromLoc(DevInst, RscsBC[j].Loc);
+		u8 TileType =  DevInst->DevOps->GetTTypefromLoc(DevInst,
+				RscsBC[j].Loc);
 		AieRC lRC = XAIE_OK;
 
 		/* Blocking unncessary broadcasting */
@@ -750,3 +754,5 @@ AieRC XAie_SyncTimer(XAie_DevInst *DevInst)
 
 	return XAIE_OK;
 }
+
+#endif /* XAIE_FEATURE_TIMER_ENABLE */

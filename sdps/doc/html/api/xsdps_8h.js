@@ -19,6 +19,7 @@ var xsdps_8h =
     [ "SD_CLK_19_MHZ", "xsdps_8h.html#ga5348592d5802b364df8d3e96c0a3c454", null ],
     [ "SD_CLK_25_MHZ", "xsdps_8h.html#gaaa8483d5e22a34ded603eb88e1805aa0", null ],
     [ "SD_CLK_26_MHZ", "xsdps_8h.html#ga671326aa4ef3737f7f31a6c929c3604f", null ],
+    [ "SD_HS_MODE_ENABLE", "xsdps_8h.html#gab6d1efc7e1e190a2a265752012d21bf7", null ],
     [ "UHS_DDR50_SUPPORT", "xsdps_8h.html#gab6d8b9d8dfb5c12e16fee49452b1c1b1", null ],
     [ "UHS_SDR104_SUPPORT", "xsdps_8h.html#ga7bad99c0dac6870ee0a0a8ca83522852", null ],
     [ "UHS_SDR12_SUPPORT", "xsdps_8h.html#gafcfa86089805c4306f98f4e3838b1858", null ],

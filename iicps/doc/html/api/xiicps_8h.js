@@ -46,5 +46,6 @@ var xiicps_8h =
     [ "XIicPs_SlaveRecv", "xiicps_8h.html#ga1840936a940459c5a71858f94915f933", null ],
     [ "XIicPs_SlaveRecvPolled", "xiicps_8h.html#ga74b0af9e4395c8de724dc377e3504d0d", null ],
     [ "XIicPs_SlaveSend", "xiicps_8h.html#ga4478d1d94f349deda02c0191a7529113", null ],
-    [ "XIicPs_SlaveSendPolled", "xiicps_8h.html#ga5ca49d9131b13d66f58de0b5a23faea4", null ]
+    [ "XIicPs_SlaveSendPolled", "xiicps_8h.html#ga5ca49d9131b13d66f58de0b5a23faea4", null ],
+    [ "XIicPs_ConfigTable", "xiicps_8h.html#ga549d334ca8efcb3b3152a86807dea92d", null ]
 ];

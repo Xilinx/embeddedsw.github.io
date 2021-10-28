@@ -10,6 +10,8 @@ var files =
     [ "sha2.c", "sha2_8c.html", "sha2_8c" ],
     [ "si5324drv.c", "si5324drv_8c.html", "si5324drv_8c" ],
     [ "si5324drv.h", "si5324drv_8h.html", "si5324drv_8h" ],
+    [ "si570drv.c", "si570drv_8c.html", "si570drv_8c" ],
+    [ "si570drv.h", "si570drv_8h.html", "si570drv_8h" ],
     [ "xhdcp22_common.h", "xhdcp22__common_8h.html", "xhdcp22__common_8h" ],
     [ "xhdmi_hdcp_keys.c", "xhdmi__hdcp__keys_8c.html", "xhdmi__hdcp__keys_8c" ],
     [ "xhdmi_hdcp_keys.h", "xhdmi__hdcp__keys_8h.html", "xhdmi__hdcp__keys_8h" ],

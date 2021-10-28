@@ -68,7 +68,7 @@ var xv__hdmitxss1_8c =
     [ "XV_HdmiTxSs1_SetSampleFrequency", "xv__hdmitxss1_8c.html#ad4c9a6490f1c9497cb14ebf803e1b154", null ],
     [ "XV_HdmiTxSs1_SetSamplingRate", "xv__hdmitxss1_8c.html#a86628b390250f2344dce14426b163182", null ],
     [ "XV_HdmiTxSs1_SetScrambler", "xv__hdmitxss1_8c.html#a8392a8323436ad44e244dd4df6b09211", null ],
-    [ "XV_HdmiTxSs1_SetStream", "xv__hdmitxss1_8c.html#a0a74f1909227cd3e552e1059c050f2ff", null ],
+    [ "XV_HdmiTxSs1_SetStream", "xv__hdmitxss1_8c.html#a7b7e1b62424441f0c6b2e2a7110687e0", null ],
     [ "XV_HdmiTxSs1_SetTmdsClockRatio", "xv__hdmitxss1_8c.html#aa186949422abd2e06a75e77f02353965", null ],
     [ "XV_HdmiTxSs1_SetVideoIDCode", "xv__hdmitxss1_8c.html#ab7585e3214884828ab42900fbd258e43", null ],
     [ "XV_HdmiTxSs1_SetVideoStream", "xv__hdmitxss1_8c.html#abf6b7d43c8f19f0712a6808e01172e59", null ],

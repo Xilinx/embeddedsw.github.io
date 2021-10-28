@@ -51,7 +51,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -75,8 +75,10 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date        Changes
 1.00  kc   12/21/2017 Initial release
 2.00  bsv  03/01/2019 Added error handling APIs
 2.01  bsv  11/06/2019 XCfupmc_ClearCfuIsr API added
-3.00  bsv  27/06/2020 Code clean up
-</pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
+3.00  bsv  06/27/2020 Code clean up
+4.00  ma   06/17/2021 Added defines for CFU_STREAM_2 and CFU_FDRO_2
+                      base addresses
+      bsv  07/15/2021 Fix doxygen warnings</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -89,14 +91,14 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga39120577b537c1708a654105bd8c9ac4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_cfupmc___config.html">XCfupmc_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cfupmc__v1__2.html#ga39120577b537c1708a654105bd8c9ac4">XCfupmc_LookupConfig</a> (u16 DeviceId)</td></tr>
-<tr class="memdesc:ga39120577b537c1708a654105bd8c9ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">XCfupmc_LookupConfig returns a reference to an <a class="el" href="struct_x_cfupmc___config.html" title="This typedef contains configuration information for a CFU core. ">XCfupmc_Config</a> structure based on the unique device id, <em>DeviceId</em>.  <a href="group__cfupmc__v1__2.html#ga39120577b537c1708a654105bd8c9ac4">More...</a><br/></td></tr>
+<tr class="memitem:ga39120577b537c1708a654105bd8c9ac4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_cfupmc___config.html">XCfupmc_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cfupmc__v1__3.html#ga39120577b537c1708a654105bd8c9ac4">XCfupmc_LookupConfig</a> (u16 DeviceId)</td></tr>
+<tr class="memdesc:ga39120577b537c1708a654105bd8c9ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">XCfupmc_LookupConfig returns a reference to an <a class="el" href="struct_x_cfupmc___config.html" title="This typedef contains configuration information for a CFU core. ">XCfupmc_Config</a> structure based on the unique device id, <em>DeviceId</em>.  <a href="group__cfupmc__v1__3.html#ga39120577b537c1708a654105bd8c9ac4">More...</a><br/></td></tr>
 <tr class="separator:ga39120577b537c1708a654105bd8c9ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae431e6d523e3367426562b426498a69b"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcfupmc_8h.html#ae431e6d523e3367426562b426498a69b">XCfupmc_CfgInitialize</a> (<a class="el" href="struct_x_cfupmc.html">XCfupmc</a> *InstancePtr, const <a class="el" href="struct_x_cfupmc___config.html">XCfupmc_Config</a> *CfgPtr, u32 EffectiveAddr)</td></tr>
 <tr class="memdesc:ae431e6d523e3367426562b426498a69b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes an CFU core.  <a href="#ae431e6d523e3367426562b426498a69b">More...</a><br/></td></tr>
 <tr class="separator:ae431e6d523e3367426562b426498a69b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99e1c013f0adcbda4fdbf3225c114f5a"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cfupmc__v1__2.html#ga99e1c013f0adcbda4fdbf3225c114f5a">XCfupmc_SelfTest</a> (const <a class="el" href="struct_x_cfupmc.html">XCfupmc</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga99e1c013f0adcbda4fdbf3225c114f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the driver and hardware device.  <a href="group__cfupmc__v1__2.html#ga99e1c013f0adcbda4fdbf3225c114f5a">More...</a><br/></td></tr>
+<tr class="memitem:ga99e1c013f0adcbda4fdbf3225c114f5a"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cfupmc__v1__3.html#ga99e1c013f0adcbda4fdbf3225c114f5a">XCfupmc_SelfTest</a> (const <a class="el" href="struct_x_cfupmc.html">XCfupmc</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga99e1c013f0adcbda4fdbf3225c114f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the driver and hardware device.  <a href="group__cfupmc__v1__3.html#ga99e1c013f0adcbda4fdbf3225c114f5a">More...</a><br/></td></tr>
 <tr class="separator:ga99e1c013f0adcbda4fdbf3225c114f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a292850519911e823d55c85033de72933"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcfupmc_8h.html#a292850519911e823d55c85033de72933">XCfupmc_MaskRegWrite</a> (const <a class="el" href="struct_x_cfupmc.html">XCfupmc</a> *InstancePtr, u32 Addr, u32 Mask, u32 Val)</td></tr>
 <tr class="memdesc:a292850519911e823d55c85033de72933"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does CFI register write using MASK register.  <a href="#a292850519911e823d55c85033de72933">More...</a><br/></td></tr>

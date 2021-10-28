@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_ap.c
-* @addtogroup rfdc_v10_0
+* @addtogroup rfdc_v11_0
 * @{
 *
 * Contains the interface functions of the Analogue Path Settings in XRFdc driver.
@@ -27,6 +27,9 @@
 *       cog    01/05/21 Second signal detector removed.
 *       cog    01/06/21 Added DAC data scaler APIs.
 *       cog    01/11/21 Tuning for autocalibration.
+* 11.0  cog    05/31/21 Upversion.
+*       cog    08/05/21 Fixed issue where VOP initial value was incorrect.
+*       cog    08/18/21 Disallow VOP for DC coupled DACs.
 *
 * </pre>
 *
@@ -40,7 +43,7 @@
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
-
+#define XRFDC_DAC_LINK_COUPLING_AC 0x0U
 /************************** Function Prototypes ******************************/
 
 /*****************************************************************************/
@@ -2619,6 +2622,13 @@ u32 XRFdc_SetDACVOP(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 uACurrent
 		goto RETURN_PATH;
 	}
 
+	if (InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].LinkCoupling != XRFDC_DAC_LINK_COUPLING_AC) {
+		Status = XRFDC_FAILURE;
+		metal_log(METAL_LOG_ERROR,
+			  "\n Requested functionality not available DC coupled configuration in %s\r\n", __func__);
+		goto RETURN_PATH;
+	}
+
 	Status = XRFdc_CheckBlockEnabled(InstancePtr, XRFDC_DAC_TILE, Tile_Id, Block_Id);
 	if (Status != XRFDC_SUCCESS) {
 		metal_log(METAL_LOG_ERROR, "\n DAC %u block %u not available in %s\r\n", Tile_Id, Block_Id, __func__);
@@ -2661,7 +2671,8 @@ u32 XRFdc_SetDACVOP(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 uACurrent
 	}
 
 	uACurrentNext =
-		((float)(XRFdc_RDReg(InstancePtr, BaseAddr, XRFDC_DAC_MC_CFG3_OFFSET, XRFDC_DAC_MC_CFG3_CSGAIN_MASK)) *
+		((float)(XRFdc_RDReg(InstancePtr, BaseAddr, XRFDC_DAC_MC_CFG3_OFFSET, XRFDC_DAC_MC_CFG3_CSGAIN_MASK) >>
+			 XRFDC_DAC_MC_CFG3_CSGAIN_SHIFT) *
 		 XRFDC_STEP_I_UA(InstancePtr->RFdc_Config.SiRevision)) +
 		(float)XRFDC_MIN_I_UA_INT(InstancePtr->RFdc_Config.SiRevision);
 

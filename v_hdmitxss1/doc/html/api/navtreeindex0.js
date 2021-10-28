@@ -179,6 +179,10 @@ var NAVTREEINDEX0 =
 "si5344drv_8h.html":[2,8],
 "si5344drv_8h.html#a1f3d3143acc8afeb12c5532282dd2f6a":[2,8,1],
 "si5344drv_8h.html#a3d8a44fb264afb55000142d5abdb682b":[2,8,0],
+"si570drv_8c.html":[2,9],
+"si570drv_8c.html#aafcd3aacee14d0c6d6101785a45be0d3":[2,9,0],
+"si570drv_8h.html":[2,10],
+"si570drv_8h.html#aafcd3aacee14d0c6d6101785a45be0d3":[2,10,0],
 "struct_x_hdmi___exdes.html":[0,0,1],
 "struct_x_hdmi___exdes.html#a36b215857be51d20dc17ed649d2e7e2a":[0,0,1,2],
 "struct_x_hdmi___exdes.html#a78c708ff1765685768d0ee54b591e10a":[0,0,1,4],
@@ -245,9 +249,5 @@ var NAVTREEINDEX0 =
 "struct_x_v___hdmi_tx_ss1.html#ad2d23f1bf5e2abda055dfea721a38e9a":[0,0,5,54],
 "struct_x_v___hdmi_tx_ss1.html#ad5186619e28ce571972f0628785b3e2d":[0,0,5,24],
 "struct_x_v___hdmi_tx_ss1.html#ad5bec773c650bb7a791c777f9bf4ad4e":[0,0,5,45],
-"struct_x_v___hdmi_tx_ss1.html#ae5499d63499710c85a1c2040ccb50435":[0,0,5,43],
-"struct_x_v___hdmi_tx_ss1.html#ae69bdb8fe123a9b6c8d0dc955ccb7e6d":[0,0,5,6],
-"struct_x_v___hdmi_tx_ss1.html#ae994beb8c7dc596d7139328d617e3ce4":[0,0,5,21],
-"struct_x_v___hdmi_tx_ss1.html#aec5ea5b9de3421ff6542da966c26995a":[0,0,5,56],
-"struct_x_v___hdmi_tx_ss1.html#aed5af133ae07146455d92bb6c85aa5f0":[0,0,5,7]
+"struct_x_v___hdmi_tx_ss1.html#ae5499d63499710c85a1c2040ccb50435":[0,0,5,43]
 };

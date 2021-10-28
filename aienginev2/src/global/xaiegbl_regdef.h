@@ -106,6 +106,20 @@ typedef struct {
 } XAie_RegCoreDebug;
 
 /*
+ * This typedef contains the attributes for core debug halt status register
+ */
+typedef struct {
+	u32 RegOff;
+	XAie_RegFldAttr DbgEvent1Halt;
+	XAie_RegFldAttr DbgEvent0Halt;
+	XAie_RegFldAttr DbgStrmStallHalt;
+	XAie_RegFldAttr DbgLockStallHalt;
+	XAie_RegFldAttr DbgMemStallHalt;
+	XAie_RegFldAttr DbgPCEventHalt;
+	XAie_RegFldAttr DbgHalt;
+} XAie_RegCoreDebugStatus;
+
+/*
  * This typedef contains the attributes for enable events register
  */
 typedef struct {
@@ -115,6 +129,15 @@ typedef struct {
 	XAie_RegFldAttr DisableEvent;
 	XAie_RegFldAttr EnableEvent;
 } XAie_RegCoreEvents;
+
+/*
+ * This typedef contains the attributes for core accumulator control register
+ */
+typedef struct {
+	XAie_RegFldAttr CascadeInput;
+	XAie_RegFldAttr CascadeOutput;
+	u32 RegOff;
+} XAie_RegCoreAccumCtrl;
 
 /*
  * This typedef captures port base address and number of slave ports available
@@ -135,12 +158,30 @@ typedef struct {
 } XAie_StrmSwPortMap;
 
 /*
+ * This typedef captures the register fields required to configure stream switch
+ * deterministic merge registers
+ */
+typedef struct {
+	u8 NumArbitors;
+	u8 NumPositions;
+	u32 ArbConfigOffset;
+	u32 ConfigBase;
+	u32 EnableBase;
+	XAie_RegFldAttr SlvId0;
+	XAie_RegFldAttr SlvId1;
+	XAie_RegFldAttr PktCount0;
+	XAie_RegFldAttr PktCount1;
+	XAie_RegFldAttr Enable;
+} XAie_StrmSwDetMerge;
+
+/*
  * This typedef contains the attributes for Stream Switch Module
  */
 typedef struct {
 	u8 NumSlaveSlots;
 	u8 MaxMasterPhyPortId;
 	u8 MaxSlavePhyPortId;
+	u8 DetMergeFeature;
 	u32 SlvConfigBaseAddr;
 	u32 MstrConfigBaseAddr;
 	u32 PortOffset;		  /**< Offset between ports */
@@ -162,7 +203,19 @@ typedef struct {
 	const XAie_StrmPort *SlvSlotConfig;
 	const XAie_StrmSwPortMap *MasterPortMap;
 	const XAie_StrmSwPortMap *SlavePortMap;
+	const XAie_StrmSwDetMerge *DetMerge;
+
+	AieRC (*PortVerify)(StrmSwPortType Slave, u8 SlvPortNum,
+			StrmSwPortType Master, u8 MstrPortNum);
 } XAie_StrmMod;
+
+/*
+ * The typedef contains the attributes of core processor bus.
+ */
+typedef struct {
+	u32 RegOff;
+	XAie_RegFldAttr CtrlEn;
+} XAie_RegCoreProcBusCtrl;
 
 /*
  * The typedef contains the attributes of Core Modules
@@ -176,10 +229,14 @@ typedef struct XAie_CoreMod {
 	u32 DataMemSize;
 	u32 DataMemShift;
 	u32 EccEvntRegOff;
+	u32 CorePCOff;
+	const XAie_RegCoreDebugStatus *CoreDebugStatus;
 	const XAie_RegCoreSts *CoreSts;
 	const XAie_RegCoreCtrl *CoreCtrl;
 	const XAie_RegCoreDebug *CoreDebug;
 	const XAie_RegCoreEvents *CoreEvent;
+	const XAie_RegCoreAccumCtrl *CoreAccumCtrl;
+	const XAie_RegCoreProcBusCtrl *ProcBusCtrl;
 	AieRC (*ConfigureDone)(XAie_DevInst *DevInst, XAie_LocType Loc,
 			const struct XAie_CoreMod *CoreMod);
 	AieRC (*WaitForDone)(XAie_DevInst *DevInst, XAie_LocType Loc,
@@ -194,6 +251,7 @@ typedef struct XAie_CoreMod {
  * The typedef captures the Buffer descriptor validity properties
  */
 typedef struct {
+	XAie_RegBdFldAttr TlastSuppress;
 	XAie_RegBdFldAttr ValidBd;
 	XAie_RegBdFldAttr NxtBd;
 	XAie_RegBdFldAttr UseNxtBd;
@@ -230,10 +288,22 @@ typedef struct {
 } XAie_AieDmaLock;
 
 /*
+ * The typedef captures the buffer descriptor lock properties of aieml
+ */
+typedef struct {
+	XAie_RegBdFldAttr LckRelVal;
+	XAie_RegBdFldAttr LckRelId;
+	XAie_RegBdFldAttr LckAcqEn;
+	XAie_RegBdFldAttr LckAcqVal;
+	XAie_RegBdFldAttr LckAcqId;
+} XAie_AieMlDmaLock;
+
+/*
  * union to capture lock properties of dma
  */
 typedef union {
 	XAie_AieDmaLock AieDmaLock;
+	XAie_AieMlDmaLock AieMlDmaLock;
 } XAie_DmaBdLock;
 
 /*
@@ -287,12 +357,50 @@ typedef struct {
 } XAie_AieAddressMode;
 
 /*
+ * The typedef captures the dimension descriptors for aieml
+ */
+typedef struct {
+	XAie_RegBdFldAttr StepSize;
+	XAie_RegBdFldAttr Wrap;
+} XAie_AieMlDmaDimProp;
+
+/*
+ * The typedef captures buffer descriptor fields of aieml multi dimension
+ * address generation
+ */
+typedef struct {
+	XAie_AieMlDmaDimProp DmaDimProp[4U];
+	XAie_AieMlDmaDimProp Iter;
+	XAie_RegBdFldAttr IterCurr;
+} XAie_AieMlAddressMode;
+
+/*
  * union captures multi dimension address generation properties between hardware
  * generations
  */
 typedef union {
 	XAie_AieAddressMode AieMultiDimAddr;
+	XAie_AieMlAddressMode AieMlMultiDimAddr;
 } XAie_DmaBdMultiDimAddr;
+
+/*
+ * The typedef captures Zero padding properties of buffer descriptor
+ */
+typedef struct {
+	XAie_RegBdFldAttr D0_ZeroBefore;
+	XAie_RegBdFldAttr D0_ZeroAfter;
+	XAie_RegBdFldAttr D1_ZeroBefore;
+	XAie_RegBdFldAttr D1_ZeroAfter;
+	XAie_RegBdFldAttr D2_ZeroBefore;
+	XAie_RegBdFldAttr D2_ZeroAfter;
+} XAie_DmaBdZeroPad;
+
+/*
+ * The typedef captures zero compression properties of aie
+ */
+typedef struct {
+	XAie_RegBdFldAttr EnCompression;
+} XAie_DmaBdCompression;
 
 /*
  * The typedef captures system level properties of DMA. This is applicable only
@@ -314,12 +422,19 @@ typedef struct {
 	u8 AddrAlignMask;
 	u8 AddrAlignShift;
 	u8 LenActualOffset;
+	u32 StepSizeMax;
+	u16 WrapMax;
+	u32 IterStepSizeMax;
+	u8 IterWrapMax;
+	u8 IterCurrMax;
 	const XAie_DmaBdBuffer *Buffer;
 	const XAie_DmaBdDoubleBuffer *DoubleBuffer;
 	const XAie_DmaBdLock *Lock;
 	const XAie_DmaBdPkt *Pkt;
 	const XAie_DmaBdEnProp *BdEn;
 	const XAie_DmaBdMultiDimAddr *AddrMode;
+	const XAie_DmaBdZeroPad *ZeroPad;
+	const XAie_DmaBdCompression *Compression;
 	const XAie_DmaSysProp *SysProp;
 } XAie_DmaBdProp;
 
@@ -329,8 +444,18 @@ typedef struct {
 	XAie_RegFldAttr Stalled;
 } XAie_AieDmaChStatus;
 
+typedef struct {
+	XAie_RegFldAttr Status;
+	XAie_RegFldAttr StalledLockRel;
+	XAie_RegFldAttr StalledLockAcq;
+	XAie_RegFldAttr StalledStreamStarve;
+	XAie_RegFldAttr TaskQSize;
+	XAie_RegFldAttr StalledTCT;
+} XAie_AieMlDmaChStatus;
+
 typedef union {
 	XAie_AieDmaChStatus AieDmaChStatus;
+	XAie_AieMlDmaChStatus AieMlDmaChStatus;
 } XAie_DmaChStatus;
 
 /*
@@ -338,7 +463,19 @@ typedef union {
  */
 typedef struct {
 	u8 StartQSizeMax;
+	u8 HasFoTMode;
+	u8 HasControllerId;
+	u8 HasEnCompression;
+	u8 HasEnOutOfOrder;
+	u8 MaxFoTMode;
+	u32 MaxRepeatCount;
+	XAie_RegBdFldAttr EnToken;
+	XAie_RegBdFldAttr RptCount;
 	XAie_RegBdFldAttr StartBd;
+	XAie_RegBdFldAttr ControllerId;
+	XAie_RegBdFldAttr EnCompression;
+	XAie_RegBdFldAttr EnOutofOrder;
+	XAie_RegBdFldAttr FoTMode;
 	XAie_RegBdFldAttr Reset;
 	XAie_RegBdFldAttr Enable;
 	XAie_RegBdFldAttr PauseMem;
@@ -355,12 +492,19 @@ typedef struct XAie_DmaMod {
 	u8  ChIdxOffset;
 	u8  NumAddrDim;
 	u8  DoubleBuffering;
+	u8  Compression;
+	u8  ZeroPadding;
+	u8  OutofOrderBdId;
 	u8  InterleaveMode;
 	u8  FifoMode;
+	u8  EnTokenIssue;
+	u8  RepeatCount;
+	u8  TlastSuppress;
+	u32 StartQueueBase;
 	u32 BaseAddr;
 	u32 IdxOffset;
 	u32 ChCtrlBase;
-	u32 NumChannels;
+	u8 NumChannels;
 	u32 ChStatusBase;
 	u32 ChStatusOffset;
 	const XAie_DmaBdProp *BdProp;
@@ -371,6 +515,8 @@ typedef struct XAie_DmaMod {
 	AieRC (*SetIntrleave) (XAie_DmaDesc *Desc, u8 DoubleBuff,
 			u8 IntrleaveCount, u16 IntrleaveCurr);
 	AieRC (*SetMultiDim) (XAie_DmaDesc *Desc, XAie_DmaTensor *Tensor);
+	AieRC (*SetBdIter) (XAie_DmaDesc *Desc, u32 StepSize, u8 Wrap,
+			u8 IterCurr);
 	AieRC (*WriteBd)(XAie_DevInst *DevInst, XAie_DmaDesc *Desc,
 			XAie_LocType Loc, u8 BdNum);
 	AieRC (*PendingBd)(XAie_DevInst *DevInst, XAie_LocType Loc,
@@ -379,6 +525,11 @@ typedef struct XAie_DmaMod {
 	AieRC (*WaitforDone)(XAie_DevInst *DevINst, XAie_LocType Loc,
 			const XAie_DmaMod *DmaMod, u8 ChNum,
 			XAie_DmaDirection Dir, u32 TimeOutUs);
+	AieRC (*BdChValidity)(u8 BdNum, u8 ChNum);
+	AieRC (*UpdateBdLen)(XAie_DevInst *DevInst, const XAie_DmaMod *DmaMod,
+			XAie_LocType Loc, u32 Len, u8 BdNum);
+	AieRC (*UpdateBdAddr)(XAie_DevInst *DevInst, const XAie_DmaMod *DmaMod,
+			XAie_LocType Loc, u64 Addr, u8 BdNum);
 } XAie_DmaMod;
 
 /*
@@ -466,12 +617,18 @@ typedef struct XAie_LockMod {
 	u32 LockIdOff;		/* Offset between conseccutive locks */
 	u32 RelAcqOff;  	/* Offset between Release and Acquire locks */
 	u32 LockValOff; 	/* Offset thats added to the lock address for a value. */
+	u32 LockSetValBase;	/* Base address of the register to set lock value */
+	u32 LockSetValOff;	/* Offset between lock set value registers */
+	const XAie_RegFldAttr *LockInit; /* Lock intialization reg attributes */
 	AieRC (*Acquire)(XAie_DevInst *DevInst,
 			const struct XAie_LockMod *LockMod, XAie_LocType Loc,
 			XAie_Lock Lock, u32 TimeOut);
 	AieRC (*Release)(XAie_DevInst *DevInst,
 			const struct XAie_LockMod *LockMod, XAie_LocType Loc,
 			XAie_Lock Lock, u32 TimeOut);
+	AieRC (*SetValue)(XAie_DevInst *DevInst,
+			const struct XAie_LockMod *LockMod, XAie_LocType Loc,
+			XAie_Lock Lock);
 } XAie_LockMod;
 
 /* This typedef contains attributes of Performace Counter module */
@@ -508,6 +665,10 @@ typedef struct XAie_EvntMod {
 	const u8 *XAie_EventNumber;	/* Array of event numbers with true event val */
 	u32 EventMin;		/* number corresponding to evt 0 in the enum */
 	u32 EventMax;		/* number corresponding to last evt in enum */
+	u32 ComboEventBase;
+	u32 PerfCntEventBase;
+	u32 UserEventBase;
+	u32 PortIdleEventBase;
 	u32 GenEventRegOff;
 	XAie_RegFldAttr GenEvent;
 	u32 ComboInputRegOff;
@@ -598,6 +759,9 @@ typedef struct XAie_L1IntrMod {
 	u8 NumIrqEvents;
 	u8 IrqEventOff;
 	u8 NumBroadcastIds;
+	u8 MaxErrorBcIdsRvd;
+	u8 (*IntrCtrlL1IrqId)(XAie_DevInst *DevInst, XAie_LocType Loc,
+		XAie_BroadcastSw Switch);
 } XAie_L1IntrMod;
 
 /*
@@ -611,6 +775,26 @@ typedef struct XAie_L2IntrMod {
 	u8 NumBroadcastIds;
 	u8 NumNoCIntr;
 } XAie_L2IntrMod;
+
+/*
+ * This typedef contains the attributes for Tile control Module
+ */
+typedef struct XAie_TileCtrlMod{
+	u32 TileCtrlRegOff;
+	XAie_RegFldAttr IsolateEast;	  /**< Isolate from east */
+	XAie_RegFldAttr IsolateNorth;	  /**< Isolate from north */
+	XAie_RegFldAttr IsolateWest;	  /**< Isolate from west */
+	XAie_RegFldAttr IsolateSouth;	  /**< Isolate from south */
+	u8 IsolateDefaultOn;
+} XAie_TileCtrlMod;
+
+/*
+ * This typedef contains the attributes for memory control module
+ */
+typedef struct XAie_MemCtrlMod{
+	u32 MemCtrlRegOff;		/**< memory control reg offset */
+	XAie_RegFldAttr MemZeroisation;	/**< memory zeroisation field */
+} XAie_MemCtrlMod;
 
 /*
  * This structure captures all attributes related to resource manager.
@@ -637,7 +821,21 @@ typedef struct XAie_TileMod {
 	const XAie_ClockMod *ClockMod;
 	const XAie_L1IntrMod *L1IntrMod;
 	const XAie_L2IntrMod *L2IntrMod;
+	const XAie_TileCtrlMod *TileCtrlMod;
+	const XAie_MemCtrlMod *MemCtrlMod;
 } XAie_TileMod;
+
+
+typedef struct XAie_DeviceOps {
+	u8 IsCheckerBoard;
+	u8 (*GetTTypefromLoc)(XAie_DevInst *DevInst, XAie_LocType Loc);
+	AieRC (*SetPartColShimReset)(XAie_DevInst *DevInst, u8 Enable);
+	AieRC (*SetPartColClockAfterRst)(XAie_DevInst *DevInst, u8 Enable);
+	AieRC (*SetPartIsolationAfterRst)(XAie_DevInst *DevInst);
+	AieRC (*PartMemZeroInit)(XAie_DevInst *DevInst);
+	AieRC (*RequestTiles)(XAie_DevInst *DevInst,
+			XAie_BackendTilesArray *Args);
+} XAie_DeviceOps;
 
 #endif
 

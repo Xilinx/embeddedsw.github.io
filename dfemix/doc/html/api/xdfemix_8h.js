@@ -16,7 +16,7 @@ var xdfemix_8h =
       [ "XDFEMIX_STATE_OPERATIONAL", "xdfemix_8h.html#ggad928151f284be6a0860fc5f7d356d182a70bb5386262cd92aff769fcbca86bb0f", null ]
     ] ],
     [ "XDfeMix_Activate", "xdfemix_8h.html#gac304b90aa0961397e33041aaf9ea7af4", null ],
-    [ "XDfeMix_AddCC", "xdfemix_8h.html#ga5f635f1eab5bd905e44384cd42840ee8", null ],
+    [ "XDfeMix_AddCC", "xdfemix_8h.html#ga454f75564ebe21c8d450aa50b7a8e604", null ],
     [ "XDfeMix_ClearInterruptStatus", "xdfemix_8h.html#ga6ae8d72d645ccc3c7131b87749107bd0", null ],
     [ "XDfeMix_Configure", "xdfemix_8h.html#gaa2cf38486d8a775970d6fa1c77c0f4a7", null ],
     [ "XDfeMix_Deactivate", "xdfemix_8h.html#ga039c8a5929a26a9af72ef137817c6767", null ],
@@ -24,7 +24,9 @@ var xdfemix_8h =
     [ "XDfeMix_GetInterruptMask", "xdfemix_8h.html#gafe5f1ad70b9370bf649088a3872e352c", null ],
     [ "XDfeMix_GetInterruptStatus", "xdfemix_8h.html#ga218cc8c6c6ca62d14351d64be4d64ca8", null ],
     [ "XDfeMix_GetMixerStatus", "xdfemix_8h.html#ga88d1ef6d743401342ea5a04b08e976dd", null ],
+    [ "XDfeMix_GetTDataDelay", "xdfemix_8h.html#ga18fe2895271a101d0b2a90857004a521", null ],
     [ "XDfeMix_GetTriggersCfg", "xdfemix_8h.html#gace396f6630605798c654ddbff69c75ba", null ],
+    [ "XDfeMix_GetTUserDelay", "xdfemix_8h.html#ga514c4fe3d9cf12e949385facda882e0b", null ],
     [ "XDfeMix_GetVersions", "xdfemix_8h.html#ga499409b4675bb141d962a2c15ad3dc61", null ],
     [ "XDfeMix_Initialize", "xdfemix_8h.html#ga789426bf0d0065ad899ef44cab1d1a45", null ],
     [ "XDfeMix_InstanceClose", "xdfemix_8h.html#ga01627e33029344d87e1dce02269309d2", null ],
@@ -38,6 +40,7 @@ var xdfemix_8h =
     [ "XDfeMix_SetAntennaGain", "xdfemix_8h.html#gae0a135411942e1b9a7c8b0f564b8fee9", null ],
     [ "XDfeMix_SetInterruptMask", "xdfemix_8h.html#ga74185fdf22fb5317ba20623233e0f132", null ],
     [ "XDfeMix_SetTriggersCfg", "xdfemix_8h.html#ga5a9e206d3191e92986737d8e2b0b8625", null ],
+    [ "XDfeMix_SetTUserDelay", "xdfemix_8h.html#ga92d9bb5aef65adb32b1d27a650d218ff", null ],
     [ "XDfeMix_UpdateCC", "xdfemix_8h.html#gab210c53e1a1df3b8a50c2f90ba8e9d2a", null ],
     [ "XDfeMix_WriteReg", "xdfemix_8h.html#ga9112702cf50c35d540be389fa38f691a", null ]
 ];

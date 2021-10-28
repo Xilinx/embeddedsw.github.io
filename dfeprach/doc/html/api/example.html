@@ -52,7 +52,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -67,9 +67,16 @@ $(document).ready(function(){initNavTree('example.html','');});
 <div class="contents">
 <div class="textblock"><p>You can refer to the below stated example applications for more details on how to use the driver.</p>
 <h1><a class="anchor" id="ex1"></a>
-xdfeprach_selftest_example.c</h1>
-<p>Contains an example on how to initialise <a class="el" href="struct_x_dfe_prach.html" title="PRACH Structure. ">XDfePrach</a> driver. daughter board on zcu208. This example does the following:</p>
-<p>For details, see <a class="el" href="xdfeprach__selftest__example_8c.html" title="This file contains a selftest example for using the Prach hardware and Prach driver. ">xdfeprach_selftest_example.c</a>. </p>
+xdfeprach_examples.c</h1>
+<p>Examples are:</p>
+<ol type="1">
+<li>Self test on one instance:<ul>
+<li>initialisation from reset to activation</li>
+<li>close the driver</li>
+</ul>
+</li>
+</ol>
+<p>The example code is written and tested for zcu670 board. Running example in a Bare metal environment includes setting an output clock on si570. For details, see xdfeprach examples code. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

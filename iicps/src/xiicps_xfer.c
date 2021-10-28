@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps_xfer.c
-* @addtogroup iicps_v3_13
+* @addtogroup iicps_v3_14
 * @{
 *
 * Contains implementation of required helper functions for the XIicPs driver.
@@ -59,7 +59,7 @@
 s32 XIicPs_SetupMaster(XIicPs *InstancePtr, s32 Role)
 {
 	u32 ControlReg;
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 
 	BaseAddr = InstancePtr->Config.BaseAddress;
 	ControlReg = XIicPs_ReadReg(BaseAddr, XIICPS_CR_OFFSET);
@@ -83,7 +83,7 @@ s32 XIicPs_SetupMaster(XIicPs *InstancePtr, s32 Role)
 	if (Role == RECVING_ROLE) {
 		ControlReg |= (u32)XIICPS_CR_RD_WR_MASK;
 	}else {
-		ControlReg &= (u32)(~XIICPS_CR_RD_WR_MASK);
+		ControlReg &= ~((u32)XIICPS_CR_RD_WR_MASK);
 	}
 
 	XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET, ControlReg);
@@ -123,7 +123,7 @@ void MasterSendData(XIicPs *InstancePtr)
 			XIicPs_WriteReg(InstancePtr->Config.BaseAddress,
 					(u32)XIICPS_CR_OFFSET,
 					XIicPs_ReadReg(InstancePtr->Config.BaseAddress,
-						(u32)XIICPS_CR_OFFSET) & (u32)(~ XIICPS_CR_HOLD_MASK));
+						(u32)XIICPS_CR_OFFSET) & ~((u32)XIICPS_CR_HOLD_MASK));
 		}
 	}
 
@@ -146,7 +146,7 @@ void MasterSendData(XIicPs *InstancePtr)
 s32 SlaveRecvData(XIicPs *InstancePtr)
 {
 	u32 StatusReg;
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 

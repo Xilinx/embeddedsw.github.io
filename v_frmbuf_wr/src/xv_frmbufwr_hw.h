@@ -1,5 +1,5 @@
 // ==============================================================
-// Copyright (c) 1986 - 2020 Xilinx Inc. All rights reserved.
+// Copyright (c) 1986 - 2021 Xilinx Inc. All rights reserved.
 // SPDX-License-Identifier: MIT
 // ==============================================================
 #ifndef XV_FRMBUFWR_HW_H_  /* prevent circular inclusions */
@@ -84,6 +84,8 @@ extern "C" {
 #define XV_FRMBUFWR_CTRL_BITS_HWREG_FRM_BUFFER2_V_DATA 64
 #define XV_FRMBUFWR_CTRL_ADDR_HWREG_FIELD_ID_DATA      0x48
 #define XV_FRMBUFWR_CTRL_BITS_HWREG_FIELD_ID_DATA      1
+#define XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER3_V_DATA 0x54
+#define XV_FRMBUFWR_CTRL_BITS_HWREG_FRM_BUFFER3_V_DATA 64
 
 #ifdef __cplusplus
 }

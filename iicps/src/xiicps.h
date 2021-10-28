@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps.h
-* @addtogroup iicps_v3_13
+* @addtogroup iicps_v3_14
 * @{
 * @details
 *
@@ -170,6 +170,7 @@
 * 3.11  rna  02/20/20 Reorganization of driver for modularity.
 *		      Added new files xiicps_xfer.c and xiicps_xfer.h.
 *		      Moved internal data transfer APIs to xiicps_xfer.
+* 3.13  rna  05/24/21 Fixed Misra-c violations
 * </pre>
 *
 ******************************************************************************/
@@ -239,7 +240,7 @@ extern "C" {
 #define RECVING_ROLE		0  /**< Transfer direction is receiving */
 
 
-#define XIICPS_MAX_TRANSFER_SIZE	(u32)(255U - 3U) /**< Max transfer size */
+#define XIICPS_MAX_TRANSFER_SIZE	((u32)255U - (u32)3U) /**< Max transfer size */
 
 /**************************** Type Definitions *******************************/
 
@@ -261,7 +262,7 @@ typedef void (*XIicPs_IntrHandler) (void *CallBackRef, u32 StatusEvent);
  */
 typedef struct {
 	u16 DeviceId;     /**< Unique ID  of device */
-	u32 BaseAddress;  /**< Base address of the device */
+	UINTPTR BaseAddress;  /**< Base address of the device */
 	u32 InputClockHz; /**< Input clock frequency */
 #if defined  (XCLOCKING)
 	u32 RefClk;	  /**< Input clocks */
@@ -295,6 +296,9 @@ typedef struct {
 #endif
 	void *CallBackRef;	/**< Callback reference for event handler */
 } XIicPs;
+
+/************************** Variable Definitions *****************************/
+extern XIicPs_Config XIicPs_ConfigTable[];	/**< Configuration table */
 
 /***************** Macros (Inline Functions) Definitions *********************/
 /****************************************************************************/

@@ -52,7 +52,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -82,6 +82,9 @@ $(document).ready(function(){initNavTree('xbram__intr__example_8c.html','');});
  4.1   ms   01/23/17 Modified xil_printf statement in main function to
                      ensure that "Successfully ran" and "Failed" strings are
                      available in all examples. This is a fix for CR-965028.
+ 4.7   mus  08/25/21 BRAM and interrupt controller instance need not to be
+                     declared in case of peripheral test, added condition to skip
+                     them in case of peripheral test (CR#1108877)
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -146,7 +149,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_bram___config.html#ae96ce11672cf82713b994dc80a1a05aa">XBram_Config::CtrlBaseAddress</a>, <a class="el" href="struct_x_bram___config.html#ac12c18f690cc9dbc18392ee8c01c29d7">XBram_Config::EccStatusInterruptPresent</a>, <a class="el" href="struct_x_bram___config.html#a58c670c0f23257fa4521b4fc219773bc">XBram_Config::FaultInjectionPresent</a>, <a class="el" href="struct_x_bram___config.html#a33d6e8224ae0b1a661e4c2dad194377c">XBram_Config::UncorrectableFailingDataRegs</a>, <a class="el" href="group__bram__v4__6.html#gab305438b0844ddb20139878c21ef0e6b">XBram_CfgInitialize()</a>, <a class="el" href="group__bram__v4__6.html#ga8b01c0b7cae31073a32887283a730adf">XBRAM_IR_ALL_MASK</a>, <a class="el" href="group__bram__v4__6.html#gab4bacc0667e96732958979264a8a1296">XBram_LookupConfig()</a>, and <a class="el" href="group__bram__v4__6.html#gaedbdefb6cda5c212f03271143ccf7a98">XBram_SelfTest()</a>.</p>
+<p>References <a class="el" href="struct_x_bram___config.html#ae96ce11672cf82713b994dc80a1a05aa">XBram_Config::CtrlBaseAddress</a>, <a class="el" href="struct_x_bram___config.html#ac12c18f690cc9dbc18392ee8c01c29d7">XBram_Config::EccStatusInterruptPresent</a>, <a class="el" href="struct_x_bram___config.html#a58c670c0f23257fa4521b4fc219773bc">XBram_Config::FaultInjectionPresent</a>, <a class="el" href="struct_x_bram___config.html#a33d6e8224ae0b1a661e4c2dad194377c">XBram_Config::UncorrectableFailingDataRegs</a>, <a class="el" href="group__bram__v4__7.html#gab305438b0844ddb20139878c21ef0e6b">XBram_CfgInitialize()</a>, <a class="el" href="group__bram__v4__7.html#ga8b01c0b7cae31073a32887283a730adf">XBRAM_IR_ALL_MASK</a>, <a class="el" href="group__bram__v4__7.html#gab4bacc0667e96732958979264a8a1296">XBram_LookupConfig()</a>, and <a class="el" href="group__bram__v4__7.html#gaedbdefb6cda5c212f03271143ccf7a98">XBram_SelfTest()</a>.</p>
 
 <p>Referenced by <a class="el" href="xbram__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

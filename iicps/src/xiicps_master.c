@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps_master.c
-* @addtogroup iicps_v3_13
+* @addtogroup iicps_v3_14
 * @{
 *
 * Handles master mode transfers.
@@ -50,6 +50,7 @@
 *	    02/18/20 Modified latest code for MISRA-C:2012 Compliance.
 * 3.13  rna 11/24/20 Added timeout to XIicPs_MasterSendPolled function.
 *	rna 12/17/20 Clear hold bit at correct time in Rx path of ISR
+*	rna 05/24/21 Fix Misra c violations
 * </pre>
 *
 ******************************************************************************/
@@ -65,7 +66,7 @@
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
-#define TX_MAX_LOOPCNT 1000000	/**< Used to wait in polled function */
+#define TX_MAX_LOOPCNT 1000000U	/**< Used to wait in polled function */
 
 /************************** Function Prototypes ******************************/
 
@@ -92,7 +93,7 @@
 void XIicPs_MasterSend(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 		 u16 SlaveAddr)
 {
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	u32 Platform = XGetPlatform_Info();
 
 	/*
@@ -154,7 +155,7 @@ void XIicPs_MasterSend(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 	{
 		XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
 				XIicPs_ReadReg(BaseAddr, (u32)XIICPS_CR_OFFSET) &
-				(u32)(~XIICPS_CR_HOLD_MASK));
+				(~(u32)XIICPS_CR_HOLD_MASK));
 	}
 
 }
@@ -180,7 +181,7 @@ void XIicPs_MasterSend(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 void XIicPs_MasterRecv(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 		 u16 SlaveAddr)
 {
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 
 	/*
 	 * Assert validates the input arguments.
@@ -239,7 +240,7 @@ void XIicPs_MasterRecv(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 	XIicPs_EnableInterrupts(BaseAddr,
 		(u32)XIICPS_IXR_NACK_MASK | (u32)XIICPS_IXR_DATA_MASK |
 		(u32)XIICPS_IXR_RX_OVR_MASK | (u32)XIICPS_IXR_COMP_MASK |
-		(u32)XIICPS_IXR_ARB_LOST_MASK | XIICPS_IXR_TO_MASK);
+		(u32)XIICPS_IXR_ARB_LOST_MASK | (u32)XIICPS_IXR_TO_MASK);
 	/*
 	 * Do the address transfer to signal the slave.
 	 */
@@ -276,7 +277,7 @@ s32 XIicPs_MasterSendPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 {
 	u32 IntrStatusReg;
 	u32 StatusReg;
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	u32 Intrs;
 	s32 Status = (s32)XST_FAILURE;
 	u32 timeout = 0;
@@ -392,7 +393,7 @@ s32 XIicPs_MasterSendPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 
 	/* Set the Status for XST_SUCCESS */
 	if (((IntrStatusReg & Intrs) == 0U) && (timeout != TX_MAX_LOOPCNT)) {
-		Status = XST_SUCCESS;
+		Status = (s32)XST_SUCCESS;
 	}
 
 	return Status;
@@ -427,7 +428,7 @@ s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 {
 	u32 IntrStatusReg;
 	u32 Intrs;
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	s32 Result;
 	s32 IsHold;
 	s32 UpdateTxSize = 0;
@@ -440,7 +441,7 @@ s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(MsgPtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == (u32)XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid(XIICPS_ADDR_MASK >= SlaveAddr);
+	Xil_AssertNonvoid((u16)XIICPS_ADDR_MASK >= SlaveAddr);
 
 	BaseAddr = InstancePtr->Config.BaseAddress;
 	InstancePtr->RecvBufferPtr = MsgPtr;
@@ -619,7 +620,7 @@ s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 ****************************************************************************/
 void XIicPs_EnableSlaveMonitor(XIicPs *InstancePtr, u16 SlaveAddr)
 {
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	u32 ConfigReg;
 
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -642,13 +643,13 @@ void XIicPs_EnableSlaveMonitor(XIicPs *InstancePtr, u16 SlaveAddr)
 	ConfigReg = XIicPs_ReadReg(BaseAddr, (u32)XIICPS_CR_OFFSET);
 	ConfigReg |= (u32)XIICPS_CR_MS_MASK | (u32)XIICPS_CR_CLR_FIFO_MASK |
 			(u32)XIICPS_CR_SLVMON_MASK;
-	ConfigReg &= (u32)(~XIICPS_CR_RD_WR_MASK);
+	ConfigReg &= ~((u32)XIICPS_CR_RD_WR_MASK);
 
 	/*
 	 * Check if 10 bit address option is set.
 	 */
 	if (InstancePtr->Is10BitAddr == 1) {
-		ConfigReg &= (u32)(~XIICPS_CR_NEA_MASK);
+		ConfigReg &= ~((u32)XIICPS_CR_NEA_MASK);
 	} else {
 		ConfigReg |= (u32)(XIICPS_CR_NEA_MASK);
 	}
@@ -688,7 +689,7 @@ void XIicPs_EnableSlaveMonitor(XIicPs *InstancePtr, u16 SlaveAddr)
 ****************************************************************************/
 void XIicPs_DisableSlaveMonitor(XIicPs *InstancePtr)
 {
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	u32 ControlReg;
 
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -789,7 +790,7 @@ void XIicPs_MasterInterruptHandler(XIicPs *InstancePtr)
 {
 	u32 IntrStatusReg;
 	u32 StatusEvent = 0U;
-	u32 BaseAddr;
+	UINTPTR BaseAddr;
 	u16 SlaveAddr;
 	s32 ByteCnt;
 	s32 IsHold;

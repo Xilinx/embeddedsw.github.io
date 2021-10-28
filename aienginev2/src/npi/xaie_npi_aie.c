@@ -14,9 +14,12 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+#include "xaie_feature_config.h"
 #include "xaie_helper.h"
 #include "xaie_npi.h"
 #include "xaiegbl.h"
+
+#ifdef XAIE_FEATURE_PRIVILEGED_ENABLE
 
 /************************** Constant Definitions *****************************/
 #define XAIE_NPI_PCSR_MASK				0x00000000U
@@ -82,15 +85,11 @@ static AieRC _XAie_NpiSetProtectedRegField(XAie_DevInst *DevInst,
 {
 	(void) DevInst;
 
-	if (Req->StartCol != 0 || Req->NumCols != 0) {
-		XAIE_ERROR("no columns fields in protected reg\n");
-		return XAIE_INVALID_ARGS;
-	}
-
 	*RegVal = XAie_SetField(Req->Enable, _XAieNpiMod.ProtRegEnable.Lsb,
 			       _XAieNpiMod.ProtRegEnable.Mask);
 
 	return XAIE_OK;
 }
 
+#endif /* XAIE_FEATURE_PRIVILEGED_ENABLE */
 /** @} */

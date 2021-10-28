@@ -58,7 +58,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -70,11 +70,11 @@ $(document).ready(function(){initNavTree('struct_x_dfe_prach___schedule.html',''
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">XDfePrach_Schedule Struct Reference<div class="ingroups"><a class="el" href="group__xdfeprach__v1__0.html">Xdfeprach_v1_0</a></div></div>  </div>
+<div class="title">XDfePrach_Schedule Struct Reference<div class="ingroups"><a class="el" href="group__xdfeprach__v1__1.html">Xdfeprach_v1_1</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Static Schedule for a RACH Channel.  
+<p>Static Schedule for a RACH Channel.
  <a href="struct_x_dfe_prach___schedule.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -96,11 +96,11 @@ Data Fields</h2></td></tr>
 </pre><p> a RACH Capture should begin.  <a href="#a060a6fe951033884c8c9f39afb5f5570">More...</a><br/></td></tr>
 <tr class="separator:a060a6fe951033884c8c9f39afb5f5570"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa931f6127e2f84aea2e747fea616f762"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_prach___schedule.html#aa931f6127e2f84aea2e747fea616f762">Duration</a></td></tr>
-<tr class="memdesc:aa931f6127e2f84aea2e747fea616f762"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">       [1-2^12] Specify the duration of a single RACH
+<tr class="memdesc:aa931f6127e2f84aea2e747fea616f762"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">       [1-2^12] Specifies the duration of a single RACH
 </pre><p> capture, in slots  <a href="#aa931f6127e2f84aea2e747fea616f762">More...</a><br/></td></tr>
 <tr class="separator:aa931f6127e2f84aea2e747fea616f762"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a046c93b443f753567fc010a624183af4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_prach___schedule.html#a046c93b443f753567fc010a624183af4">Repeats</a></td></tr>
-<tr class="memdesc:a046c93b443f753567fc010a624183af4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [1-256] Specify the number of consecutive captures
+<tr class="memdesc:a046c93b443f753567fc010a624183af4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [1-256] Specifies the number of consecutive captures
 </pre><p> to execute.  <a href="#a046c93b443f753567fc010a624183af4">More...</a><br/></td></tr>
 <tr class="separator:a046c93b443f753567fc010a624183af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -117,7 +117,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">       [1-2^12] Specify the duration of a single RACH
+<p><pre class="fragment">       [1-2^12] Specifies the duration of a single RACH
 </pre><p> capture, in slots </p>
 
 </div>
@@ -163,9 +163,9 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">      [1-256] Specify the number of consecutive captures
+<p><pre class="fragment">      [1-256] Specifies the number of consecutive captures
 </pre><p> to execute. </p>
-<p>New capture will begin on the slot immediately after "Duration" has ended </p>
+<p>New capture will begin on the sl`ot immediately after "Duration" has ended </p>
 
 </div>
 </div>
@@ -181,7 +181,7 @@ Data Fields</h2></td></tr>
 
 <p><pre class="fragment">     [0-7] Slot number whcih denotes the slot at which
 </pre><p> a RACH Capture should begin. </p>
-<p>Only valid when FrameID==frame count and Only valid when SubframeID==sub frame count: CC SCS restricts the range of slots available: CC_SCS == 15KHz =&gt; slotID=={0} CC_SCS == 30KHz =&gt; slotID=={0,1} CC_SCS == 60KHz =&gt; slotID=={0,1,2,3} CC_SCS == 120KHz =&gt; slotID=={0,1,2,3,4,5,6,7} CC_SCS == 240KHz =&gt; slotID=={0,1,2,3,4,5,6,7,8,9,10, 11,12,13,14,15} (unused) </p>
+<p>Only valid when FrameID==frame count and only valid when SubframeID==sub frame count: CC SCS restricts the range of slots available: CC_SCS == 15KHz =&gt; slotID=={0} CC_SCS == 30KHz =&gt; slotID=={0,1} CC_SCS == 60KHz =&gt; slotID=={0,1,2,3} CC_SCS == 120KHz =&gt; slotID=={0,1,2,3,4,5,6,7} CC_SCS == 240KHz =&gt; slotID=={0,1,2,3,4,5,6,7,8,9,10, 11,12,13,14,15} (unused) </p>
 
 </div>
 </div>

@@ -1,5 +1,5 @@
 // ==============================================================
-// Copyright (c) 1986 - 2020 Xilinx Inc. All rights reserved.
+// Copyright (c) 1986 - 2021 Xilinx Inc. All rights reserved.
 // SPDX-License-Identifier: MIT
 // ==============================================================
 
@@ -79,6 +79,7 @@ typedef struct {
   u16 Y_UV16En;             /**< Y_UV16     support */
   u16 Y_UV16_420En;         /**< Y_UV16_420 support */
   u16 Y16En;                /**< Y16      support */
+  u16 Y_U_V8En;             /**< Y_U_V8 support */
   u16 Interlaced;           /**< Interlaced support */
 } XV_frmbufrd_Config;
 #endif
@@ -87,7 +88,7 @@ typedef struct {
 * Driver instance data. An instance must be allocated for each core in use.
 */
 typedef struct {
-  XV_frmbufrd_Config Config;   /**< Hardware Configuration */
+  XV_frmbufrd_Config Config;    /**< Hardware Configuration */
   u32 IsReady;                  /**< Device is initialized and ready */
 } XV_frmbufrd;
 
@@ -145,8 +146,14 @@ void XV_frmbufrd_Set_HwReg_frm_buffer_V(XV_frmbufrd *InstancePtr, u64 Data);
 u64 XV_frmbufrd_Get_HwReg_frm_buffer_V(XV_frmbufrd *InstancePtr);
 void XV_frmbufrd_Set_HwReg_frm_buffer2_V(XV_frmbufrd *InstancePtr, u64 Data);
 u64 XV_frmbufrd_Get_HwReg_frm_buffer2_V(XV_frmbufrd *InstancePtr);
+void XV_frmbufrd_Set_HwReg_frm_buffer3_V(XV_frmbufrd *InstancePtr, u64 Data);
+u64 XV_frmbufrd_Get_HwReg_frm_buffer3_V(XV_frmbufrd *InstancePtr);
 void XV_frmbufrd_Set_HwReg_field_id(XV_frmbufrd *InstancePtr, u32 Data);
 u32 XV_frmbufrd_Get_HwReg_field_id(XV_frmbufrd *InstancePtr);
+void XV_frmbufrd_Set_HwReg_fidOutMode(XV_frmbufrd *InstancePtr, u32 Data);
+u32 XV_frmbufrd_Get_HwReg_fidOutMode(XV_frmbufrd *InstancePtr);
+u32 XV_frmbufrd_Get_HwReg_fid_error(XV_frmbufrd *InstancePtr);
+u32 XV_frmbufrd_Get_HwReg_field_out(XV_frmbufrd *InstancePtr);
 
 void XV_frmbufrd_InterruptGlobalEnable(XV_frmbufrd *InstancePtr);
 void XV_frmbufrd_InterruptGlobalDisable(XV_frmbufrd *InstancePtr);

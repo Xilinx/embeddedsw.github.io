@@ -25,9 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "xaie_feature_config.h"
 #include "xaie_rsc.h"
 #include "xaie_rsc_internal.h"
 #include "xaie_helper.h"
+
+#ifdef XAIE_FEATURE_RSC_ENABLE
 /*****************************************************************************/
 /***************************** Macro Definitions *****************************/
 #define XAIE_TRACE_CTRL_RSCS_PER_MOD	1U
@@ -226,8 +229,9 @@ AieRC _XAie_RscMgrInit(XAie_DevInst *DevInst)
 					"type:%d\n", i);
 			for(u8 k = 0U; k < i; k++) {
 				free(DevInst->RscMapping[k].Bitmaps);
-				goto error;
 			}
+			free(DevInst->RscMapping);
+			return XAIE_ERR;
 		}
 
 		for(u8 RscType = 0U; RscType < XAIE_MAX_RSC; RscType++) {
@@ -258,7 +262,11 @@ AieRC _XAie_RscMgrInit(XAie_DevInst *DevInst)
 				for(u8 k = 0U; k < RscType; k++) {
 					free(RscMap->Bitmaps[k]);
 				}
-				goto freeRscMaps;
+				for(u8 k = 0U; k < i; k++) {
+					free(DevInst->RscMapping[k].Bitmaps);
+				}
+				free(DevInst->RscMapping);
+				return XAIE_ERR;
 			}
 		}
 	}
@@ -267,18 +275,6 @@ AieRC _XAie_RscMgrInit(XAie_DevInst *DevInst)
 		DevInst->RscMapping[XAIEGBL_TILE_TYPE_SHIMPL];
 
 	return XAIE_OK;
-
-freeRscMaps:
-	for(u8 k = 0U; k < i; k++) {
-		free(DevInst->RscMapping[k].Bitmaps);
-	}
-
-error:
-	free(DevInst->RscMapping);
-
-	XAIE_ERROR("Memory allocation for resource manager bitmaps failed\n");
-	return XAIE_ERR;
-
 }
 
 /*****************************************************************************/
@@ -327,7 +323,7 @@ u32 _XAie_GetStartBit(XAie_DevInst *DevInst, XAie_LocType Loc, u32 MaxRscVal)
 	u8 TileType;
 	u32 StartRow, BitmapNumRows;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	StartRow = _XAie_GetStartRow(DevInst, TileType);
 	BitmapNumRows = _XAie_GetNumRows(DevInst, TileType);
 
@@ -358,7 +354,7 @@ void _XAie_MarkChannelBitmapAndRscId(XAie_DevInst *DevInst,
 	XAie_BitmapOffsets Offsets;
 
 	for(u32 i = 0; i < UserRscNum; i++) {
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Rscs[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Rscs[i].Loc);
 		Bitmap = DevInst->RscMapping[TileType].
 				Bitmaps[XAIE_BCAST_CHANNEL_RSC];
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, XAIE_BCAST_CHANNEL_RSC,
@@ -568,7 +564,7 @@ u32 _XAie_RscMgr_GetMaxRscVal(XAie_DevInst *DevInst, XAie_RscType RscType,
 	{
 		const XAie_PerfMod *PerfMod;
 		u8 TileType;
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 		PerfMod = _XAie_GetPerfMod(DevInst, TileType, Mod);
 		return PerfMod->MaxCounterVal;
 	}
@@ -577,7 +573,7 @@ u32 _XAie_RscMgr_GetMaxRscVal(XAie_DevInst *DevInst, XAie_RscType RscType,
 		const XAie_EvntMod *EventMod;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 		EventMod = _XAie_GetEventMod(DevInst, TileType, Mod);
 		return EventMod->NumUserEvents;
 	}
@@ -586,7 +582,7 @@ u32 _XAie_RscMgr_GetMaxRscVal(XAie_DevInst *DevInst, XAie_RscType RscType,
 		const XAie_EvntMod *EventMod;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 		EventMod = _XAie_GetEventMod(DevInst, TileType, Mod);
 		return EventMod->NumPCEvents;
 	}
@@ -599,7 +595,7 @@ u32 _XAie_RscMgr_GetMaxRscVal(XAie_DevInst *DevInst, XAie_RscType RscType,
 		const XAie_EvntMod *EventMod;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 		EventMod = _XAie_GetEventMod(DevInst, TileType, Mod);
 		return EventMod->NumStrmPortSelectIds;
 	}
@@ -608,7 +604,7 @@ u32 _XAie_RscMgr_GetMaxRscVal(XAie_DevInst *DevInst, XAie_RscType RscType,
 		const XAie_EvntMod *EventMod;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 		EventMod = _XAie_GetEventMod(DevInst, TileType, Mod);
 		return EventMod->NumGroupEvents;
 	}
@@ -648,7 +644,7 @@ void _XAie_RscMgr_GetBitmapOffsets(XAie_DevInst *DevInst, XAie_RscType RscType,
 	u32 MaxRscVal;
 	u8 TileType;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	MaxRscVal = _XAie_RscMgr_GetMaxRscVal(DevInst, RscType, Loc, Mod);
 	if(Mod == XAIE_CORE_MOD)
 		BitmapOffset = _XAie_GetCoreBitmapOffset(DevInst,
@@ -700,7 +696,7 @@ AieRC _XAie_RscMgr_RequestRsc(XAie_DevInst *DevInst, u32 NumReq,
 		XAie_BitmapOffsets Offsets;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, RscReq[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, RscReq[i].Loc);
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, RscType,
 				RscReq[i].Loc, RscReq[i].Mod, &Offsets);
 
@@ -714,7 +710,6 @@ AieRC _XAie_RscMgr_RequestRsc(XAie_DevInst *DevInst, u32 NumReq,
 		TilesRsc.Mod = RscReq[i].Mod;
 		TilesRsc.NumRscPerTile = RscReq[i].NumRscPerTile;
 		TilesRsc.Rscs = &Rscs[UserRscIndex];
-		TilesRsc.Flags = 0;
 
 		RC = XAie_RunOp(DevInst, XAIE_BACKEND_OP_REQUEST_RESOURCE,
 				(void *)&TilesRsc);
@@ -749,7 +744,7 @@ AieRC _XAie_RscMgr_RequestRscContiguous(XAie_DevInst *DevInst, u32 NumReq,
 		XAie_BitmapOffsets Offsets;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, RscReq[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, RscReq[i].Loc);
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, RscType,
 				RscReq[i].Loc, RscReq[i].Mod, &Offsets);
 
@@ -813,7 +808,7 @@ AieRC _XAie_RscMgr_FreeRscs(XAie_DevInst *DevInst, u32 RscNum,
 		XAie_BitmapOffsets Offsets;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Rscs[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Rscs[i].Loc);
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, RscType,
 				Rscs[i].Loc, Rscs[i].Mod, &Offsets);
 
@@ -862,7 +857,7 @@ AieRC _XAie_RscMgr_ReleaseRscs(XAie_DevInst *DevInst, u32 RscNum,
 		XAie_BitmapOffsets Offsets;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Rscs[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Rscs[i].Loc);
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, RscType,
 				Rscs[i].Loc, Rscs[i].Mod, &Offsets);
 
@@ -917,7 +912,7 @@ AieRC _XAie_RscMgr_RequestAllocatedRsc(XAie_DevInst *DevInst, u32 NumReq,
 		XAie_BitmapOffsets Offsets;
 		u8 TileType;
 
-		TileType = _XAie_GetTileTypefromLoc(DevInst, Rscs[i].Loc);
+		TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Rscs[i].Loc);
 		_XAie_RscMgr_GetBitmapOffsets(DevInst, RscType,
 				Rscs[i].Loc, Rscs[i].Mod, &Offsets);
 
@@ -1087,7 +1082,7 @@ static XAie_ModuleType _XAie_GetModTypefromModIndex(u8 TileType, u8 ModIndex)
 
 				break;
 			}
-		case XAIEGBL_TILE_TYPE_RESERVED:
+		case XAIEGBL_TILE_TYPE_MEMTILE:
 			{
 				if(ModIndex == 0U)
 					return XAIE_MEM_MOD;
@@ -1134,12 +1129,17 @@ AieRC XAie_SaveAllocatedRscsToFile(XAie_DevInst *DevInst, const char *File)
 
 	/* Write NumRscs and first offset value to file */
 	Ret = fwrite(&NumRscsInFile, sizeof(NumRscsInFile), 1U, F);
-	if(Ret != 1U)
-		goto error;
+	if(Ret != 1U) {
+		fclose(F);
+		XAIE_ERROR("Failed to write resource bitmaps to file\n");
+		return XAIE_ERR;
+	}
 	Ret = fwrite(&FirstRscsOffset, sizeof(FirstRscsOffset), 1U, F);
-	if(Ret != 1U)
-		goto error;
-
+	if(Ret != 1U) {
+		fclose(F);
+		XAIE_ERROR("Failed to write resource bitmaps to file\n");
+		return XAIE_ERR;
+	}
 	for(u8 i = 0U; i < XAIEGBL_TILE_TYPE_MAX; i++) {
 		u32 NumRows;
 		XAie_ResourceManager *RscMap;
@@ -1177,8 +1177,11 @@ AieRC XAie_SaveAllocatedRscsToFile(XAie_DevInst *DevInst, const char *File)
 				XAIE_DBG("RSC HEADER: 0x%lx\n", RscHeader);
 				Ret = fwrite(&RscHeader, sizeof(RscHeader), 1U,
 					       F);
-				if(Ret != 1U)
-					goto error;
+				if(Ret != 1U) {
+					fclose(F);
+					XAIE_ERROR("Failed to write resource bitmaps to file\n");
+					return XAIE_ERR;
+				}
 
 				if(Mod == XAIE_CORE_MOD) {
 					u32 MemModRscs;
@@ -1210,8 +1213,11 @@ AieRC XAie_SaveAllocatedRscsToFile(XAie_DevInst *DevInst, const char *File)
 
 					Ret = fwrite(&Payload, sizeof(Payload),
 								1U, F);
-					if(Ret != 1U)
-						goto error;
+					if(Ret != 1U) {
+						free(DevInst->RscMapping);
+						XAIE_ERROR("Memory allocation for resource manager bitmaps failed\n");
+						return XAIE_ERR;
+					}
 				}
 
 				NumRscsInFile++;
@@ -1222,16 +1228,15 @@ AieRC XAie_SaveAllocatedRscsToFile(XAie_DevInst *DevInst, const char *File)
 	/* Update Number of Rscs entries */
 	rewind(F);
 	Ret = fwrite(&NumRscsInFile, sizeof(NumRscsInFile), 1U, F);
-	if(Ret != 1U)
-		goto error;
+	if(Ret != 1U) {
+		fclose(F);
+		XAIE_ERROR("Failed to write resource bitmaps to file\n");
+		return XAIE_ERR;
+	}
 
 	fclose(F);
 	return XAIE_OK;
 
-error:
-	fclose(F);
-	XAIE_ERROR("Failed to write resource bitmaps to file\n");
-	return XAIE_ERR;
 }
 
 /*****************************************************************************/
@@ -1303,7 +1308,6 @@ AieRC XAie_LoadStaticRscfromMem(XAie_DevInst *DevInst, const char *MetaData)
 			return XAIE_INVALID_ARGS;
 		}
 
-		NumRows = _XAie_GetNumRows(DevInst, TileType);
 		RscMap = &DevInst->RscMapping[TileType];
 		Bits32 = RscMap->Bitmaps[RscType];
 		/*
@@ -1366,5 +1370,95 @@ AieRC XAie_LoadStaticRscfromMem(XAie_DevInst *DevInst, const char *MetaData)
 
 	return XAIE_OK;
 }
+
+/*****************************************************************************/
+/**
+* This helper API is used to get resource statistics information.
+*
+* @param	DevInst: Device Instance
+* @param	NumRscStat: Number of resource statistics requests
+* @param	RscStats: Resuorce statistics requests. Each element contains
+*		the resource type, module type and tile type.
+* @param	RscStatType: resource statistics type it supports:
+*			* XAIE_BACKEND_RSC_STAT_STATIC
+*			* XAIE_BACKEND_RSC_STAT_USED
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		This function is internal to this file only.
+*
+*******************************************************************************/
+static AieRC _XAie_GetRscsStat(XAie_DevInst *DevInst, u32 NumRscStat,
+		XAie_UserRscStat *RscStats,
+		XAie_BackendRscStatType RscStatType)
+{
+	XAie_BackendRscStat BRscStats = {0};
+
+	if((DevInst == XAIE_NULL) || (NumRscStat == 0) ||
+		(DevInst->IsReady != XAIE_COMPONENT_IS_READY) ||
+		(RscStats == XAIE_NULL)) {
+		XAIE_ERROR("Invalid arguments for requesting resource statistics\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	for (u32 i = 0; i < NumRscStat; i++) {
+		if (_XAie_CheckModule(DevInst, RscStats[i].Loc,
+			(XAie_ModuleType)(RscStats[i].Mod)) != XAIE_OK) {
+			XAIE_ERROR("Invalid tile(%u, %u) for requesting resource statistics\n",
+				RscStats[i].Loc.Col, RscStats[i].Loc.Row);
+			return XAIE_INVALID_ARGS;
+		}
+	}
+
+	BRscStats.NumRscStats = NumRscStat;
+	BRscStats.RscStatType = RscStatType;
+	BRscStats.RscStats = RscStats;
+	return XAie_RunOp(DevInst, XAIE_BACKEND_OP_GET_RSC_STAT,
+			(void *)&BRscStats);
+}
+
+/*****************************************************************************/
+/**
+* This API is used to request the number of statically allocated resources of a
+* resource type of a module of a tile.
+*
+* @param	DevInst: Device Instance
+* @param	NumRscStat: Number of resource statistics requests
+* @param	RscStats: Resuorce statistics requests
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		None
+*
+*******************************************************************************/
+AieRC XAie_GetStaticRscStat(XAie_DevInst *DevInst, u32 NumRscStat,
+		XAie_UserRscStat *RscStats)
+{
+	return _XAie_GetRscsStat(DevInst, NumRscStat, RscStats,
+			XAIE_BACKEND_RSC_STAT_STATIC);
+}
+
+/*****************************************************************************/
+/**
+* This API is used to request the number of available resources of a resource
+* type of a module of a tile.
+*
+* @param	DevInst: Device Instance
+* @param	NumRscStat: Number of resource statistics requests
+* @param	RscStats: Resuorce statistics requests
+*
+* @return	XAIE_OK on success and error code on failure.
+*
+* @note		None
+*
+*******************************************************************************/
+AieRC XAie_GetAvailRscStat(XAie_DevInst *DevInst, u32 NumRscStat,
+		XAie_UserRscStat *RscStats)
+{
+	return _XAie_GetRscsStat(DevInst, NumRscStat, RscStats,
+			XAIE_BACKEND_RSC_STAT_AVAIL);
+}
+
+#endif /* XAIE_FEATURE_RSC_ENABLE */
 
 /** @} */

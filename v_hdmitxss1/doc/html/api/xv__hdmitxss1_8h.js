@@ -76,15 +76,6 @@ var xv__hdmitxss1_8h =
       [ "XV_HDMITXSS1_LOG_EVT_FRL_LTSL", "xv__hdmitxss1_8h.html#a3235ae792b21ddbc07efb7b78edde194a804ceb02af08e270b63aaaaaebddc548", null ],
       [ "XV_HDMITXSS1_LOG_EVT_DUMMY", "xv__hdmitxss1_8h.html#a3235ae792b21ddbc07efb7b78edde194af927e6926684df592bce30a715e59a22", null ]
     ] ],
-    [ "XVMaskColorId", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cd", [
-      [ "XV_BKGND_BLACK", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cdaa98dfb2e4cdab289fd803c18748b3c39", null ],
-      [ "XV_BKGND_WHITE", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cdac67c2a500bb3d2c6283e05386763a292", null ],
-      [ "XV_BKGND_RED", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cdae2da29fb2efbf1aafb4fcd73aeb9e41f", null ],
-      [ "XV_BKGND_GREEN", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cda8703f3dd3dc38bdd474a4edea5c32d97", null ],
-      [ "XV_BKGND_BLUE", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cda447a2e6f9899f0720c7f82413cf3eec8", null ],
-      [ "XV_BKGND_NOISE", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cdaa67dd31fe2f71aa00c52868635d73d15", null ],
-      [ "XV_BKGND_LAST", "xv__hdmitxss1_8h.html#a5560783b48cec42ab0d279ecebd4d7cda5450651a8a174e508b6b7d0b8fb898be", null ]
-    ] ],
     [ "XV_HdmiTxSs1_AudioMute", "xv__hdmitxss1_8h.html#ac57d46d00c0560d30074c0cddb499340", null ],
     [ "XV_HdmiTxSs1_CfgInitialize", "xv__hdmitxss1_8h.html#a33b732506d6578b5daf78406e2864af0", null ],
     [ "XV_HdmiTxSs1_ClearFrlWrongLtp", "xv__hdmitxss1_8h.html#a7556dbfe39718b3de88b74a58f3d2b4e", null ],
@@ -171,7 +162,7 @@ var xv__hdmitxss1_8h =
     [ "XV_HdmiTxSs1_SetSampleFrequency", "xv__hdmitxss1_8h.html#ad4c9a6490f1c9497cb14ebf803e1b154", null ],
     [ "XV_HdmiTxSs1_SetSamplingRate", "xv__hdmitxss1_8h.html#a86628b390250f2344dce14426b163182", null ],
     [ "XV_HdmiTxSs1_SetScrambler", "xv__hdmitxss1_8h.html#a8392a8323436ad44e244dd4df6b09211", null ],
-    [ "XV_HdmiTxSs1_SetStream", "xv__hdmitxss1_8h.html#a0a74f1909227cd3e552e1059c050f2ff", null ],
+    [ "XV_HdmiTxSs1_SetStream", "xv__hdmitxss1_8h.html#a5ea2e54a0b5aaaaf895a63a02ce5bb5e", null ],
     [ "XV_HdmiTxSs1_SetTmdsClockRatio", "xv__hdmitxss1_8h.html#aa186949422abd2e06a75e77f02353965", null ],
     [ "XV_HdmiTxSs1_SetVideoIDCode", "xv__hdmitxss1_8h.html#ab7585e3214884828ab42900fbd258e43", null ],
     [ "XV_HdmiTxSs1_SetVideoStream", "xv__hdmitxss1_8h.html#abf6b7d43c8f19f0712a6808e01172e59", null ],

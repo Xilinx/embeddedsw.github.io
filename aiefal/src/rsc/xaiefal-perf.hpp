@@ -31,13 +31,14 @@ namespace xaiefal {
 		XAiePerfCounter() = delete;
 		XAiePerfCounter(std::shared_ptr<XAieDevHandle> DevHd,
 			XAie_LocType L, XAie_ModuleType M,
-			bool CrossM = false):
+			bool CrossM = false, uint32_t Threshold = 0):
 			XAieSingleTileRsc(DevHd, L, M), CrossMod(CrossM) {
 			StartMod = Mod;
 			StopMod = Mod;
 			RstMod = Mod;
 			RstEvent = XAIE_EVENT_NONE_CORE;
 			State.Initialized = 1;
+			EventVal = Threshold;
 		}
 		XAiePerfCounter(XAieDev &Dev,
 			XAie_LocType L, XAie_ModuleType M,
@@ -299,19 +300,33 @@ namespace xaiefal {
 					" resource not allocated." << std::endl;
 				RC = XAIE_ERR;
 			} else {
-				if (static_cast<XAie_ModuleType>(Rsc.Mod) == XAIE_CORE_MOD) {
-					E = XAIE_EVENT_PERF_CNT_0_CORE;
-				} else if (static_cast<XAie_ModuleType>(Rsc.Mod) == XAIE_MEM_MOD) {
-					E = XAIE_EVENT_PERF_CNT_0_MEM;
-				} else {
-					E = XAIE_EVENT_PERF_CNT_0_PL;
-				}
 				M = static_cast<XAie_ModuleType>(Rsc.Mod);
-				E = (XAie_Events)((uint32_t)E + Rsc.RscId);
+				XAie_PerfCounterGetEventBase(AieHd->dev(), Loc, M, &E);
+				E = static_cast<XAie_Events>(static_cast<uint32_t>(E) + Rsc.RscId);
 				RC = XAIE_OK;
 			}
 
 			return RC;
+		}
+		uint32_t getRscType() const {
+			return static_cast<uint32_t>(XAIE_PERFCNT_RSC);
+		}
+		XAieRscStat getRscStat(const std::string &GName) const {
+			XAieRscStat RscStat(GName);
+			(void) GName;
+
+			if (preferredId == XAIE_RSC_ID_ANY) {
+				if (CrossMod) {
+					return AieHd->getRscGroup(GName).getRscStat(Loc,
+						getRscType());
+				} else {
+					return AieHd->getRscGroup(GName).getRscStat(Loc,
+						Mod, getRscType());
+				}
+			} else {
+				return AieHd->getRscGroup(GName).getRscStat(Loc,
+						Mod, getRscType(), preferredId);
+			}
 		}
 	protected:
 		XAie_Events StartEvent; /**< start event */
@@ -438,7 +453,12 @@ namespace xaiefal {
 				XAie_Events lStopE = StopEvent;
 				XAie_Events lRstE = RstEvent;
 
-				if (StartMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
+				if(EventVal != 0) {
+					RC = XAie_PerfCounterEventValueSet(dev(), Loc, static_cast<XAie_ModuleType>(Rsc.Mod),
+						Rsc.RscId, EventVal);
+				}
+
+				if (RC == XAIE_OK && StartMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
 					StartBC->getEvent(Loc, static_cast<XAie_ModuleType>(Rsc.Mod), lStartE);
 					RC = XAie_EventBroadcast(dev(), Loc, StartMod, StartBC->getBc(), StartEvent);
 					if (RC == XAIE_OK) {
@@ -484,6 +504,7 @@ namespace xaiefal {
 			iRC = (int)XAie_PerfCounterControlReset(dev(), Loc, static_cast<XAie_ModuleType>(Rsc.Mod), Rsc.RscId);
 			iRC |= (int)XAie_PerfCounterResetControlReset(dev(), Loc, static_cast<XAie_ModuleType>(Rsc.Mod), Rsc.RscId);
 			iRC |= (int)XAie_PerfCounterReset(dev(), Loc, static_cast<XAie_ModuleType>(Rsc.Mod), Rsc.RscId);
+			iRC |= (int)XAie_PerfCounterEventValueReset(dev(), Loc, static_cast<XAie_ModuleType>(Rsc.Mod), Rsc.RscId);
 
 			if (StartMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
 				StartBC->getEvent(Loc, static_cast<XAie_ModuleType>(Rsc.Mod), StartEvent);
@@ -514,6 +535,20 @@ namespace xaiefal {
 			}
 			return RC;
 		}
+
+		void _getRscs(std::vector<XAie_UserRsc> &vRscs) const {
+			vRscs.push_back(Rsc);
+			if (StartMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
+				StartBC->getRscs(vRscs);
+			}
+			if (StopMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
+				StopBC->getRscs(vRscs);
+			}
+			if (RstEvent != XAIE_EVENT_NONE_CORE && StopMod != static_cast<XAie_ModuleType>(Rsc.Mod)) {
+				RstBC->getRscs(vRscs);
+			}
+			_getRscsAppend(vRscs);
+		}
 		virtual AieRC _startPrepend() {
 			return XAIE_OK;
 		}
@@ -525,6 +560,9 @@ namespace xaiefal {
 		}
 		virtual AieRC _releaseAppend() {
 			return XAIE_OK;
+		}
+		virtual void _getRscsAppend(std::vector<XAie_UserRsc> &vRscs) const {
+			(void)vRscs;
 		}
 	};
 }

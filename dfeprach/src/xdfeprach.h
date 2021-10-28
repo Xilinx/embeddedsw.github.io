@@ -7,7 +7,7 @@
 /**
 *
 * @file xdfeprach.h
-* @addtogroup xdfeprach_v1_0
+* @addtogroup xdfeprach_v1_1
 * @{
 *
 * The PRACH IP logicore provides a wrapper around the PRACH block
@@ -56,6 +56,8 @@
 *       dc     04/21/21 Update due to restructured registers
 *       dc     05/08/21 Update to common trigger
 *       dc     05/18/21 Handling RachUpdate trigger
+* 1.1   dc     06/30/21 Doxygen documentation update
+*       dc     07/13/21 Update to common latency requirements
 *
 * </pre>
 *
@@ -110,6 +112,21 @@ typedef __s16 s16;
 typedef __u64 u64;
 typedef __s64 s64;
 typedef __s8 s8;
+#else
+#define XDFEPRACH_CUSTOM_DEV(_dev_name, _baseaddr, _idx)                       \
+	{                                                                      \
+		.name = _dev_name, .bus = NULL, .num_regions = 1,              \
+		.regions = { {                                                 \
+			.virt = (void *)_baseaddr,                             \
+			.physmap = &metal_phys[_idx],                          \
+			.size = 0x10000,                                       \
+			.page_shift = (u32)(-1),                               \
+			.page_mask = (u32)(-1),                                \
+			.mem_flags = 0x0,                                      \
+			.ops = { NULL },                                       \
+		} },                                                           \
+		.node = { NULL }, .irq_num = 0, .irq_info = NULL,              \
+	}
 #endif
 
 typedef enum XDfePrach_StateId {
@@ -362,7 +379,7 @@ typedef struct {
 		FrameID==frame count */
 	u32 SlotId; /**< [0-7] Slot number whcih denotes the slot at which
 		a RACH Capture should begin. Only valid when FrameID==frame
-		count and Only valid when SubframeID==sub frame count:
+		count and only valid when SubframeID==sub frame count:
 			CC SCS restricts the range of slots available:
 			CC_SCS == 15KHz => slotID=={0}
 			CC_SCS == 30KHz => slotID=={0,1}
@@ -370,10 +387,10 @@ typedef struct {
 			CC_SCS == 120KHz => slotID=={0,1,2,3,4,5,6,7}
 			CC_SCS == 240KHz => slotID=={0,1,2,3,4,5,6,7,8,9,10,
 				11,12,13,14,15} (unused) */
-	u32 Duration; /**< [1-2^12] Specify the duration of a single RACH
+	u32 Duration; /**< [1-2^12] Specifies the duration of a single RACH
 		capture, in slots */
-	u32 Repeats; /**< [1-256] Specify the number of consecutive captures
-		to execute. New capture will begin on the slot immediately
+	u32 Repeats; /**< [1-256] Specifies the number of consecutive captures
+		to execute. New capture will begin on the sl`ot immediately
 		after "Duration" has ended */
 } XDfePrach_Schedule;
 
@@ -381,7 +398,7 @@ typedef struct {
  * Full RC configuration.
  */
 typedef struct {
-	u32 Enable; /**< [0,1] Indicate if this RCID is enabled. */
+	u32 Enable; /**< [0,1] Indicates if this RCID is enabled. */
 	u32 RCId; /**< [0-15] RCCID number allocated to this RACH channel
 		configuration. This is the TID identifier on the RACH/FFT
 		interface. */
@@ -410,7 +427,7 @@ typedef struct {
 } XDfePrach_MixerStatusOverflow;
 
 typedef struct {
-	u32 DecimatorOverflow; /**< [0-1] Overflow Occurred in the mixer. */
+	u32 DecimatorOverflow; /**< [0-1] Overflow occurred in the mixer. */
 	u32 FirstAntennaOverflowing; /**< [0-7] Lowest antenna in which
 		overflow has occurred. */
 	u32 FirstRCIdOverflowing; /**< [0-15] Lowest RCID in which overflow has
@@ -418,10 +435,10 @@ typedef struct {
 } XDfePrach_DecimatorStatusOverflow;
 
 typedef struct {
-	u32 MixerOverrun; /**< [0-1] Overrun Occurred in the mixer. */
+	u32 MixerOverrun; /**< [0-1] Overrun occurred in the mixer. */
 	u32 FirstAntennaOverruning; /**< [0-7] Lowest antenna in which
 		Overrun has occurred. */
-	u32 FirstRCIdOverruning; /**< [0-15] Lowest RCID in which Overrun has
+	u32 FirstRCIdOverruning; /**< [0-15] Lowest RCID in which overrun has
 		occurred. */
 } XDfePrach_MixerStatusOverrun;
 
@@ -503,7 +520,7 @@ u32 XDfePrach_AddCC(XDfePrach *InstancePtr, s32 CCID, u32 BitSequence,
 		    const XDfePrach_CarrierCfg *CarrierCfg);
 u32 XDfePrach_RemoveCC(XDfePrach *InstancePtr, s32 CCID);
 u32 XDfePrach_UpdateCC(const XDfePrach *InstancePtr, s32 CCID,
-			const XDfePrach_CarrierCfg *CarrierCfg);
+		       const XDfePrach_CarrierCfg *CarrierCfg);
 void XDfePrach_CloneCC(const XDfePrach *InstancePtr);
 u32 XDfePrach_AddRCCfg(const XDfePrach *InstancePtr, s32 CCID, u32 RCId,
 		       u32 RachChan, XDfePrach_DDCCfg *DdcCfg,
@@ -536,6 +553,9 @@ void XDfePrach_GetInterruptStatus(const XDfePrach *InstancePtr,
 				  XDfePrach_InterruptMask *Flags);
 void XDfePrach_ClearInterruptStatus(const XDfePrach *InstancePtr,
 				    const XDfePrach_InterruptMask *Flags);
+void XDfePrach_SetTUserDelay(const XDfePrach *InstancePtr, u32 Delay);
+u32 XDfePrach_GetTUserDelay(const XDfePrach *InstancePtr);
+u32 XDfePrach_GetTDataDelay(const XDfePrach *InstancePtr);
 void XDfePrach_GetVersions(const XDfePrach *InstancePtr,
 			   XDfePrach_Version *SwVersion,
 			   XDfePrach_Version *HwVersion);

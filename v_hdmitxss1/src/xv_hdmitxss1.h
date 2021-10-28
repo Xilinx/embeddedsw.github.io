@@ -79,20 +79,6 @@ extern "C" {
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-/**
- * This typedef contains the different background colors available
- */
-typedef enum
-{
-  XV_BKGND_BLACK = 0,
-  XV_BKGND_WHITE,
-  XV_BKGND_RED,
-  XV_BKGND_GREEN,
-  XV_BKGND_BLUE,
-  XV_BKGND_NOISE,
-  XV_BKGND_LAST
-}XVMaskColorId;
-
 /** @name Handler Types
 * @{
 */
@@ -306,6 +292,7 @@ typedef struct
 	u32 MaxFrlRate;                   /** < Maximum FRL Rate Supporte */
 	u32 DynHdr;			/**< Supports Dynamic HDR */
     u32 AxiLiteClkFreq;               /**< AXI Lite Clock Frequency in Hz */
+    u8 VideoInterface;	/**< 0 - AXI4S 1 - Native 2 - Native DE video interface */
     XV_HdmiTxSs1_SubCore HdcpTimer;    /**< Sub-core instance configuration */
     XV_HdmiTxSs1_SubCore Hdcp14;       /**< Sub-core instance configuration */
     XV_HdmiTxSs1_SubCore Hdcp22;       /**< Sub-core instance configuration */
@@ -547,12 +534,13 @@ XHdmiC_AVI_InfoFrame *XV_HdmiTxSs1_GetAviInfoframe(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_AudioInfoFrame *XV_HdmiTxSs1_GetAudioInfoframe(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_VSIF *XV_HdmiTxSs1_GetVSIF(XV_HdmiTxSs1 *InstancePtr);
 XHdmiC_DRMInfoFrame *XV_HdmiTxSs1_GetDrmInfoframe(XV_HdmiTxSs1 *InstancePtr);
-u64 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
+u32 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 		XVidC_VideoTiming VideoTiming,
 		XVidC_FrameRate FrameRate,
 		XVidC_ColorFormat ColorFormat,
 		XVidC_ColorDepth Bpc,
-		XVidC_3DInfo *Info3D);
+		XVidC_3DInfo *Info3D,
+		u64 *TmdsClk);
 XVidC_VideoStream *XV_HdmiTxSs1_GetVideoStream(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetVideoStream(XV_HdmiTxSs1 *InstancePtr,
 				XVidC_VideoStream VidStream);

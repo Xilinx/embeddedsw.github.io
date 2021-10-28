@@ -58,7 +58,7 @@
       <div id="nav-sync" class="sync"></div>
     </div>
   </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
+  <div id="splitbar" style="-moz-user-select:none;"
        class="ui-resizable-handle">
   </div>
 </div>
@@ -70,11 +70,11 @@ $(document).ready(function(){initNavTree('struct_x_dfe_equ___eq_config.html','')
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">XDfeEqu_EqConfig Struct Reference<div class="ingroups"><a class="el" href="group__xdfeequ__v1__0.html">Xdfeequ_v1_0</a></div></div>  </div>
+<div class="title">XDfeEqu_EqConfig Struct Reference<div class="ingroups"><a class="el" href="group__xdfeequ__v1__1.html">Xdfeequ_v1_1</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Equalizer Configuration Structure.  
+<p>Equalizer Configuration Structure.
  <a href="struct_x_dfe_equ___eq_config.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -111,7 +111,7 @@ Data Fields</h2></td></tr>
 </pre><p> Set depending on whether the equalizer is running in real, complex or matrix mode. </p>
 <p>EEach of the eight channels consists of 2 sub-channels (shown in the figure below in xDFEEqualizerCoefficientsT description). In complex and matrix modes, the 2 sub-channels form a single filter channel acting on the data's real and imaginary parts. In real mode, the two sub-channels act as independent filter channels acting on the two real samples at the input. </p>
 
-<p>Referenced by <a class="el" href="group__xdfeequ__v1__0.html#ga84403d8f6f2f4e9a45668d9dc7dc5b28">XDfeEqu_Initialize()</a>, and <a class="el" href="group__xdfeequ__v1__0.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
+<p>Referenced by <a class="el" href="group__xdfeequ__v1__1.html#ga84403d8f6f2f4e9a45668d9dc7dc5b28">XDfeEqu_Initialize()</a>, <a class="el" href="xdfeequ__pass__through__example_8c.html#a12d7169da8086c7d940094f4c468e3dd">XDfeEqu_PassThroughExample()</a>, <a class="el" href="xdfeequ__one__instance__initialization__example_8c.html#af6db33d7a9353be5cfaa65046001a7ee">XDfeEqu_SelfExample()</a>, and <a class="el" href="group__xdfeequ__v1__1.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
 
 </div>
 </div>
@@ -127,7 +127,7 @@ Data Fields</h2></td></tr>
 
 <p>[0,1] Set high to flush the buffers. </p>
 
-<p>Referenced by <a class="el" href="group__xdfeequ__v1__0.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
+<p>Referenced by <a class="el" href="group__xdfeequ__v1__1.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
 
 </div>
 </div>
@@ -144,7 +144,7 @@ Data Fields</h2></td></tr>
 <p>[0-3] Matrix mode only. </p>
 <p>Coefficient set to use for imaginary datapath (Hc and Hd). </p>
 
-<p>Referenced by <a class="el" href="group__xdfeequ__v1__0.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
+<p>Referenced by <a class="el" href="group__xdfeequ__v1__1.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
 
 </div>
 </div>
@@ -162,7 +162,7 @@ Data Fields</h2></td></tr>
 </pre><p> data path (Ha and Hb in complex and matrix mode. </p>
 <p>Ha, Hb, Hc and Hd in real mode). In complex mode the datapath set is limited to 0 or 2. </p>
 
-<p>Referenced by <a class="el" href="group__xdfeequ__v1__0.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
+<p>Referenced by <a class="el" href="group__xdfeequ__v1__1.html#ga493536b08c0b66462836a39423895aae">XDfeEqu_Update()</a>.</p>
 
 </div>
 </div>

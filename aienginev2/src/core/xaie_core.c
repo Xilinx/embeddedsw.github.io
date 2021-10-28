@@ -33,6 +33,9 @@
 /***************************** Include Files *********************************/
 #include "xaie_core.h"
 #include "xaie_events.h"
+#include "xaie_feature_config.h"
+
+#ifdef XAIE_FEATURE_CORE_ENABLE
 
 /************************** Constant Definitions *****************************/
 #define XAIETILE_CORE_STATUS_DEF_WAIT_USECS 500U
@@ -66,7 +69,7 @@ static AieRC _XAie_CoreWaitStatus(XAie_DevInst *DevInst, XAie_LocType Loc,
 	const XAie_CoreMod *CoreMod;
 	u8 TileType;
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -122,7 +125,7 @@ AieRC XAie_CoreDisable(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -164,7 +167,7 @@ AieRC XAie_CoreEnable(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -203,7 +206,7 @@ AieRC XAie_CoreReset(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -246,7 +249,7 @@ AieRC XAie_CoreUnreset(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -289,7 +292,7 @@ AieRC XAie_CoreWaitForDone(XAie_DevInst *DevInst, XAie_LocType Loc, u32 TimeOut)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -368,7 +371,7 @@ static AieRC _XAie_CoreDebugCtrlHalt(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -422,6 +425,101 @@ AieRC XAie_CoreDebugUnhalt(XAie_DevInst *DevInst, XAie_LocType Loc)
 /*****************************************************************************/
 /*
 *
+* This API reads the status from the debug halt status register of AIE.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of the AIE tile.
+* @param	DebugStatus: Pointer to store status.
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None.
+*
+******************************************************************************/
+AieRC XAie_CoreGetDebugHaltStatus(XAie_DevInst *DevInst, XAie_LocType Loc,
+		u32 *DebugStatus)
+{
+	AieRC RC;
+	u8 TileType;
+	u32 Mask;
+	u64 RegAddr;
+	const XAie_CoreMod *CoreMod;
+	const XAie_RegCoreDebugStatus *DbgStat;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	CoreMod = DevInst->DevProp.DevMod[TileType].CoreMod;
+
+	RegAddr = CoreMod->CoreDebugStatus->RegOff +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+
+	RC = XAie_Read32(DevInst, RegAddr, DebugStatus);
+	if(RC != XAIE_OK) {
+		return RC;
+	}
+
+	DbgStat = CoreMod->CoreDebugStatus;
+
+	Mask = DbgStat->DbgEvent1Halt.Mask | DbgStat->DbgEvent0Halt.Mask |
+		DbgStat->DbgStrmStallHalt.Mask |
+		DbgStat->DbgLockStallHalt.Mask | DbgStat->DbgMemStallHalt.Mask |
+		DbgStat->DbgPCEventHalt.Mask | DbgStat->DbgHalt.Mask;
+
+	*DebugStatus &= Mask;
+
+	return XAIE_OK;
+}
+
+/*****************************************************************************/
+/*
+*
+* This API reads the current value of the AIE PC value.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of the AIE tile.
+* @param	PCValue: Pointer to store current PC value.
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		None.
+*
+******************************************************************************/
+AieRC XAie_CoreGetPCValue(XAie_DevInst *DevInst, XAie_LocType Loc, u32 *PCValue)
+{
+	u8 TileType;
+	u64 RegAddr;
+	const XAie_CoreMod *CoreMod;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	CoreMod = DevInst->DevProp.DevMod[TileType].CoreMod;
+	RegAddr = CoreMod->CorePCOff +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+
+	return  XAie_Read32(DevInst, RegAddr, PCValue);
+}
+
+/*****************************************************************************/
+/*
+*
 * This API reads the Done bit value in the core status register.
 *
 * @param	DevInst: Device Instance
@@ -445,7 +543,7 @@ AieRC XAie_CoreReadDoneBit(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -490,7 +588,7 @@ AieRC XAie_CoreConfigDebugControl1(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -573,7 +671,7 @@ AieRC XAie_CoreClearDebugControl1(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -617,7 +715,7 @@ AieRC XAie_CoreConfigureEnableEvent(XAie_DevInst *DevInst, XAie_LocType Loc,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -675,7 +773,7 @@ AieRC XAie_CoreConfigureDone(XAie_DevInst *DevInst, XAie_LocType Loc)
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -713,7 +811,7 @@ AieRC XAie_ClearCoreDisableEventOccurred(XAie_DevInst *DevInst,
 		return XAIE_INVALID_ARGS;
 	}
 
-	TileType = _XAie_GetTileTypefromLoc(DevInst, Loc);
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
 	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
 		XAIE_ERROR("Invalid Tile Type\n");
 		return XAIE_INVALID_TILE;
@@ -729,5 +827,165 @@ AieRC XAie_ClearCoreDisableEventOccurred(XAie_DevInst *DevInst,
 
 	return XAie_MaskWrite32(DevInst, RegAddr, Mask, Value);
 }
+
+/*****************************************************************************/
+/*
+*
+* This API configures the core accumulator control register to specify the
+* direction of cascade stream.
+*
+* @param       DevInst: Device Instance
+* @param       Loc: Location of the aie tile.
+* @param       InDir: Input direction. Valid values: NORTH, WEST
+* @param       OutDir: Output direction. Valid values: SOUTH, EAST
+*
+* @return      XAIE_OK on success, Error code on failure.
+*
+* @note                None.
+*
+******************************************************************************/
+AieRC XAie_CoreConfigAccumulatorControl(XAie_DevInst *DevInst,
+               XAie_LocType Loc, StrmSwPortType InDir, StrmSwPortType OutDir)
+{
+	u8 TileType;
+	const XAie_CoreMod *CoreMod;
+	const XAie_RegCoreAccumCtrl *AccumCtrl;
+	u32 RegVal;
+	u64 RegAddr;
+
+	if((DevInst == XAIE_NULL) ||
+		(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	CoreMod = DevInst->DevProp.DevMod[TileType].CoreMod;
+	AccumCtrl = CoreMod->CoreAccumCtrl;
+
+	if (AccumCtrl == XAIE_NULL) {
+		XAIE_ERROR("Configure accum control is not supported.\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	if ((InDir != NORTH && InDir != WEST) ||
+		(OutDir != SOUTH && OutDir != EAST)) {
+		XAIE_ERROR("Configure accum control failed, invalid direction.\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	RegAddr = AccumCtrl->RegOff +
+		_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+
+	/*
+	 * Here is the directions in the enum sequence:
+	 *  * SOUTH, WEST, NORTH, EAST
+	 *  * For input , 0 == NORTH, 1 == WEST
+	 *  * For output, 0 == SOUTH, 1 == EAST
+	 */
+	RegVal = XAie_SetField((InDir - SOUTH) % 2U,
+			AccumCtrl->CascadeInput.Lsb,
+			AccumCtrl->CascadeInput.Mask) |
+		XAie_SetField((OutDir - SOUTH) % 2U,
+			AccumCtrl->CascadeOutput.Lsb,
+			AccumCtrl->CascadeOutput.Mask);
+
+	return XAie_Write32(DevInst, RegAddr, RegVal);
+}
+
+/*****************************************************************************/
+/*
+*
+* This API configures the core processor bus control register to enable or
+* disable core's access processor bus.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of the aie tile.
+* @param	Enable: XAIE_ENABLE to enable, and XAIE_DISABLE to disable.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note		Internal only.
+*
+******************************************************************************/
+static AieRC _XAie_CoreProcessorBusConfig(XAie_DevInst *DevInst,
+		XAie_LocType Loc, u8 Enable)
+{
+	u8 TileType;
+	u32 RegVal, RegMask;
+	u64 RegAddr;
+	const XAie_CoreMod *CoreMod;
+	const XAie_RegCoreProcBusCtrl *ProcBusCtrl;
+
+	if((DevInst == XAIE_NULL) ||
+			(DevInst->IsReady != XAIE_COMPONENT_IS_READY)) {
+		XAIE_ERROR("Invalid Device Instance\n");
+		return XAIE_INVALID_ARGS;
+	}
+
+	TileType = DevInst->DevOps->GetTTypefromLoc(DevInst, Loc);
+	if(TileType != XAIEGBL_TILE_TYPE_AIETILE) {
+		XAIE_ERROR("Invalid Tile Type\n");
+		return XAIE_INVALID_TILE;
+	}
+
+	CoreMod = DevInst->DevProp.DevMod[TileType].CoreMod;
+
+	ProcBusCtrl = CoreMod->ProcBusCtrl;
+	if (ProcBusCtrl == XAIE_NULL) {
+		XAIE_ERROR("Core processor bus control is not supported.\n");
+		return XAIE_FEATURE_NOT_SUPPORTED;
+	}
+
+	RegMask = ProcBusCtrl->CtrlEn.Mask;
+	RegVal = XAie_SetField(Enable, ProcBusCtrl->CtrlEn.Lsb, RegMask);
+	RegAddr = ProcBusCtrl->RegOff +
+			_XAie_GetTileAddr(DevInst, Loc.Row, Loc.Col);
+
+	return XAie_MaskWrite32(DevInst, RegAddr, RegMask, RegVal);
+}
+
+/*****************************************************************************/
+/*
+*
+* This API enables core's access to the processor bus.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of the aie tile.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note
+*
+******************************************************************************/
+AieRC XAie_CoreProcessorBusEnable(XAie_DevInst *DevInst, XAie_LocType Loc)
+{
+	return _XAie_CoreProcessorBusConfig(DevInst, Loc, XAIE_ENABLE);
+}
+
+/*****************************************************************************/
+/*
+*
+* This API disables core's access to the processor bus.
+*
+* @param	DevInst: Device Instance
+* @param	Loc: Location of the aie tile.
+*
+* @return	XAIE_OK on success, Error code on failure.
+*
+* @note
+*
+******************************************************************************/
+AieRC XAie_CoreProcessorBusDisable(XAie_DevInst *DevInst, XAie_LocType Loc)
+{
+	return _XAie_CoreProcessorBusConfig(DevInst, Loc, XAIE_DISABLE);
+}
+
+#endif /* XAIE_FEATURE_CORE_ENABLE */
 
 /** @} */

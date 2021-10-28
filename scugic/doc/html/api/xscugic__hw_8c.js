@@ -9,6 +9,5 @@ var xscugic__hw_8c =
     [ "XScuGic_InterruptUnmapFromCpuByDistAddr", "xscugic__hw_8c.html#gaa02951e223977118dd89dfffc151a966", null ],
     [ "XScuGic_RegisterHandler", "xscugic__hw_8c.html#ga73f026dbb3a8f29b830fb0a64a42c4bf", null ],
     [ "XScuGic_SetPriTrigTypeByDistAddr", "xscugic__hw_8c.html#gaf58a00ee3c052d8aec17b179c86388c7", null ],
-    [ "XScuGic_UnmapAllInterruptsFromCpuByDistAddr", "xscugic__hw_8c.html#ga15a21f6b75030f175dec61355b6ef905", null ],
-    [ "XScuGic_ConfigTable", "xscugic__hw_8c.html#gaca56d0e0512f7fb4430977d6b6d598a9", null ]
+    [ "XScuGic_UnmapAllInterruptsFromCpuByDistAddr", "xscugic__hw_8c.html#ga15a21f6b75030f175dec61355b6ef905", null ]
 ];

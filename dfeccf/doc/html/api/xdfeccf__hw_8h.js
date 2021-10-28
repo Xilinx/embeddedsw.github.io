@@ -7,6 +7,8 @@ var xdfeccf__hw_8h =
     [ "XDFECCF_COEFF_CFG", "xdfeccf__hw_8h.html#gae5dfececf906aeebc670da1fe66d810a", null ],
     [ "XDFECCF_COEFF_LOAD", "xdfeccf__hw_8h.html#ga88eb6b2567676a263a39f044054290da", null ],
     [ "XDFECCF_COEFF_VALUE", "xdfeccf__hw_8h.html#ga80752d482cac93cfb73be72a27c7e493", null ],
+    [ "XDFECCF_DATA_LATENCY_OFFSET", "xdfeccf__hw_8h.html#ga6b92570fb88fd1088361ec718629fbb5", null ],
+    [ "XDFECCF_DELAY_OFFSET", "xdfeccf__hw_8h.html#ga2fbd78859a912a30fcce590cfd9f4255", null ],
     [ "XDFECCF_GAIN_STG_EN_OFFSET", "xdfeccf__hw_8h.html#gac1827acd2c5f29ba949a6a4c818611a3", null ],
     [ "XDFECCF_IDR", "xdfeccf__hw_8h.html#ga435e7ed6de08409dcc12bcb631719ee1", null ],
     [ "XDFECCF_IER", "xdfeccf__hw_8h.html#ga1ca01ebf96c163b5f4f5a92c1eda0e04", null ],

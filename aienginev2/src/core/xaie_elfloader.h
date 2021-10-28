@@ -25,6 +25,9 @@
 #ifndef XAIELOADER_H
 #define XAIELOADER_H
 
+#include "xaie_feature_config.h"
+#ifdef XAIE_FEATURE_ELF_ENABLE
+
 /***************************** Include Files *********************************/
 #include <elf.h>
 #include <stdlib.h>
@@ -47,5 +50,12 @@ AieRC XAie_LoadElf(XAie_DevInst *DevInst, XAie_LocType Loc, const char *ElfPtr,
 		u8 LoadSym);
 AieRC XAie_LoadElfMem(XAie_DevInst *DevInst, XAie_LocType Loc,
 		const unsigned char* ElfMem);
+AieRC XAie_LoadElfSection(XAie_DevInst *DevInst, XAie_LocType Loc,
+		const unsigned char *SectionPtr, const Elf32_Phdr *Phdr);
+AieRC XAie_LoadElfSectionBlock(XAie_DevInst *DevInst, XAie_LocType Loc,
+		const unsigned char* SectionPtr, u64 TgtAddr, u32 Size);
+
+#endif /* XAIE_FEATURE_ELF_ENABLE */
+
 #endif		/* end of protection macro */
 /** @} */

@@ -1,5 +1,5 @@
 // ==============================================================
-// Copyright (c) 1986 - 2020 Xilinx Inc. All rights reserved.
+// Copyright (c) 1986 - 2021 Xilinx Inc. All rights reserved.
 // SPDX-License-Identifier: MIT
 // ==============================================================
 
@@ -208,6 +208,22 @@ u64 XV_frmbufwr_Get_HwReg_frm_buffer2_V(XV_frmbufwr *InstancePtr) {
 
     Data = XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER2_V_DATA);
     Data += (u64)XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER2_V_DATA + 4) << 32;
+    return Data;
+}
+
+void XV_frmbufwr_Set_HwReg_frm_buffer3_V(XV_frmbufwr *InstancePtr, u64 Data) {
+    Xil_AssertVoid(InstancePtr != NULL);
+    Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+    XV_frmbufwr_WriteReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER3_V_DATA, (u32)(Data));
+    XV_frmbufwr_WriteReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER3_V_DATA + 4, (u32)(Data >> 32));
+}
+
+u64 XV_frmbufwr_Get_HwReg_frm_buffer3_V(XV_frmbufwr *InstancePtr) {
+    u64 Data;
+    Xil_AssertNonvoid(InstancePtr != NULL);
+    Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+    Data = XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER3_V_DATA);
+    Data += (u64)XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_HWREG_FRM_BUFFER3_V_DATA + 4) << 32;
     return Data;
 }
 

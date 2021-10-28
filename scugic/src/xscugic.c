@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic.c
-* @addtogroup scugic_v4_5
+* @addtogroup scugic_v4_6
 * @{
 *
 * Contains required functions for the XScuGic driver for the Interrupt
@@ -128,6 +128,8 @@
 *                     the existing flow will remain unchanged. On how to
 *                     enable spinlocks, please refer to the documentations
 *                     at: lib/bsp/standalone/src/arm/common/gcc/xil_spinlock.c
+* 4.6	sk   08/05/21 Fix scugic Misra-c violations.
+* 4.7	sk   09/14/21 Fix gcc compiler warnings for A72 processor.
 * </pre>
 *
 ******************************************************************************/
@@ -169,7 +171,7 @@ static void StubHandler(void *CallBackRef);
 * @note		None.
 *
 ******************************************************************************/
-static void DoDistributorInit(XScuGic *InstancePtr)
+static void DoDistributorInit(const XScuGic *InstancePtr)
 {
 	u32 Int_Id;
 
@@ -278,7 +280,7 @@ static void DistributorInit(XScuGic *InstancePtr)
 {
 	u32 RegValue;
 
-#if USE_AMP==1 && (defined (ARMA9) || defined(__aarch64__))
+#if (defined (USE_AMP) && (USE_AMP==1)) && (defined (ARMA9) || defined(__aarch64__))
 #warning "Building GIC for AMP"
 	/*
 	 * GIC initialization is taken care by master CPU in
@@ -312,7 +314,7 @@ static void DistributorInit(XScuGic *InstancePtr)
 * @note		None.
 *
 ******************************************************************************/
-static void CPUInitialize(XScuGic *InstancePtr)
+static void CPUInitialize(const XScuGic *InstancePtr)
 {
 	/*
 	 * Program the priority mask of the CPU using the Priority mask register
@@ -525,7 +527,7 @@ void XScuGic_Disconnect(XScuGic *InstancePtr, u32 Int_Id)
 	 * The Int_Id is used to create the appropriate mask for the
 	 * desired bit position. Int_Id currently limited to 0 - 31
 	 */
-	Mask = 0x00000001U << (Int_Id % 32U);
+	Mask = (u32)0x00000001U << (Int_Id % 32U);
 
 	/*
 	 * Disable the interrupt such that it won't occur while disconnecting
@@ -569,7 +571,7 @@ void XScuGic_Disconnect(XScuGic *InstancePtr, u32 Int_Id)
 void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 {
 	u32 Mask;
-	u8 Cpu_Id = (u8)CpuId;
+	u8 Cpu_Identifier = (u8)CpuId;
 
 #if defined (GICv3)
 	u32 Temp;
@@ -583,7 +585,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
-		XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Id, Int_Id);
+		XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
 
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
@@ -593,7 +595,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 		XScuGic_ReDistSGIPPIWriteReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
 	}
 #endif
-	XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Id, Int_Id);
+	XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
 	/*
 	 * Call spinlock to protect multiple applications running at separate
 	 * CPUs to write to the same register. This macro also ensures that
@@ -605,7 +607,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 	 * The Int_Id is used to create the appropriate mask for the
 	 * desired bit position.
 	 */
-	Mask = 0x00000001U << (Int_Id % 32U);
+	Mask = (u32)0x00000001U << (Int_Id % 32U);
 	/*
 	 * Enable the selected interrupt source by setting the
 	 * corresponding bit in the Enable Set register.
@@ -641,7 +643,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 {
 	u32 Mask;
-	u8 Cpu_Id = (u8)CpuId;
+	u8 Cpu_Identifier = (u8)CpuId;
 #if defined (GICv3)
 	u32 Temp;
 #endif
@@ -656,7 +658,7 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
 
-		XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Id, Int_Id);
+		XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Identifier, Int_Id);
 
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
@@ -666,7 +668,7 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 		XScuGic_ReDistSGIPPIWriteReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
 	}
 #endif
-	XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Id, Int_Id);
+	XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Identifier, Int_Id);
 
 	/*
 	 * Call spinlock to protect multiple applications running at separate
@@ -679,7 +681,7 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 	 * The Int_Id is used to create the appropriate mask for the
 	 * desired bit position. Int_Id currently limited to 0 - 31
 	 */
-	Mask = 0x00000001U << (Int_Id % 32U);
+	Mask = (u32)0x00000001U << (Int_Id % 32U);
 
 	/*
 	 * Disable the selected interrupt source by setting the
@@ -706,7 +708,7 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 *
 * @param	InstancePtr is a pointer to the XScuGic instance.
 * @param	Int_Id is the software interrupt ID to simulate an interrupt.
-* @param	Cpu_Id is the list of CPUs to send the interrupt.
+* @param	Cpu_Identifier is the list of CPUs to send the interrupt.
 *
 * @return
 *
@@ -716,7 +718,7 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 * @note		None.
 *
 ******************************************************************************/
-s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Id)
+s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier)
 {
 	u32 Mask;
 
@@ -726,10 +728,10 @@ s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Id)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(Int_Id <= 15U);
-	Xil_AssertNonvoid(Cpu_Id <= 255U);
+	Xil_AssertNonvoid(Cpu_Identifier <= 255U);
 
 #if defined (GICv3)
-	Mask = (Cpu_Id | (Int_Id << XSCUGIC_SGIR_EL1_INITID_SHIFT));
+	Mask = (Cpu_Identifier | (Int_Id << XSCUGIC_SGIR_EL1_INITID_SHIFT));
 #if EL3
 	XScuGic_WriteICC_SGI0R_EL1(Mask);
 #else
@@ -750,7 +752,7 @@ s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Id)
 	 * desired interrupt. Int_Id currently limited to 0 - 15
 	 * Use the target list for the Cpu ID.
 	 */
-	Mask = ((Cpu_Id << 16U) | Int_Id) &
+	Mask = ((Cpu_Identifier << 16U) | Int_Id) &
 		(XSCUGIC_SFI_TRIG_CPU_MASK | XSCUGIC_SFI_TRIG_INTID_MASK);
 
 	/*
@@ -873,7 +875,7 @@ void XScuGic_SetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 	 * Shift and Mask the correct bits for the priority and trigger in the
 	 * register
 	 */
-	RegValue &= ~(XSCUGIC_PRIORITY_MASK << ((Int_Id%4U)*8U));
+	RegValue &= ~((u32)XSCUGIC_PRIORITY_MASK << ((Int_Id%4U)*8U));
 	RegValue |= (u32)LocalPriority << ((Int_Id%4U)*8U);
 
 	/*
@@ -892,7 +894,7 @@ void XScuGic_SetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 	 * Shift and Mask the correct bits for the priority and trigger in the
 	 * register
 	 */
-	RegValue &= ~(XSCUGIC_INT_CFG_MASK << ((Int_Id%16U)*2U));
+	RegValue &= ~((u32)XSCUGIC_INT_CFG_MASK << ((Int_Id%16U)*2U));
 	RegValue |= (u32)Trigger << ((Int_Id%16U)*2U);
 
 	/*
@@ -966,7 +968,7 @@ void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 * Sets the target CPU for the interrupt of a peripheral
 *
 * @param	InstancePtr is a pointer to the instance to be worked on.
-* @param	Cpu_Id is a CPU number for which the interrupt has to be targeted
+* @param	Cpu_Identifier is a CPU number for which the interrupt has to be targeted
 * @param	Int_Id is the IRQ source number to modify
 *
 * @return	None.
@@ -974,7 +976,7 @@ void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 * @note		None
 *
 *****************************************************************************/
-void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
+void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_Id)
 {
 	u32 RegValue;
 
@@ -985,11 +987,12 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 		Temp = Int_Id - 32;
 		RegValue = XScuGic_DistReadReg(InstancePtr,
 				XSCUGIC_IROUTER_OFFSET_CALC(Temp));
-		RegValue |= Cpu_Id;
+		RegValue |= Cpu_Identifier;
 		XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
-						  (Cpu_Id-1));
+						  (Cpu_Identifier-1));
 	}
 #else
+	u8 Cpu_CoreId;
 	u32 Offset;
 	Xil_AssertVoid(InstancePtr != NULL);
 
@@ -1005,9 +1008,9 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 			XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id));
 
 	Offset = (Int_Id & 0x3U);
-	Cpu_Id = (0x1U << Cpu_Id);
+	Cpu_CoreId = (0x1U << Cpu_Identifier);
 
-	RegValue |= (Cpu_Id) << (Offset*8U);
+	RegValue |= (u32)(Cpu_CoreId) << (Offset*8U);
 	XScuGic_DistWriteReg(InstancePtr,
 					XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id),
 					RegValue);
@@ -1023,7 +1026,7 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 * Unmaps specific SPI interrupt from the target CPU
 *
 * @param	InstancePtr is a pointer to the instance to be worked on.
-* @param	Cpu_Id is a CPU number from which the interrupt has to be
+* @param	Cpu_Identifier is a CPU number from which the interrupt has to be
 *			unmapped
 * @param	Int_Id is the IRQ source number to modify
 *
@@ -1032,7 +1035,7 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 * @note		None
 *
 *****************************************************************************/
-void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
+void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_Id)
 {
 	u32 RegValue;
 
@@ -1043,11 +1046,12 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 		Temp = Int_Id - 32;
 		RegValue = XScuGic_DistReadReg(InstancePtr,
 				XSCUGIC_IROUTER_OFFSET_CALC(Temp));
-		RegValue &= ~Cpu_Id;
+		RegValue &= ~Cpu_Identifier;
 		XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
-						  (Cpu_Id-1));
+						  (Cpu_Identifier-1));
 	}
 #else
+	u32 Cpu_CoreId;
 	u32 Offset;
 	Xil_AssertVoid(InstancePtr != NULL);
 
@@ -1063,9 +1067,9 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 				XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id));
 
 	Offset = (Int_Id & 0x3U);
-	Cpu_Id = (0x1U << Cpu_Id);
+	Cpu_CoreId = ((u32)0x1U << Cpu_Identifier);
 
-	RegValue &= ~(Cpu_Id << (Offset*8U));
+	RegValue &= ~(Cpu_CoreId << (Offset*8U));
 	XScuGic_DistWriteReg(InstancePtr,
 				XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id),
 			RegValue);
@@ -1082,7 +1086,7 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 * Unmaps all SPI interrupts from the target CPU
 *
 * @param	InstancePtr is a pointer to the instance to be worked on.
-* @param	Cpu_Id is a CPU number from which the interrupts has to be
+* @param	Cpu_Identifier is a CPU number from which the interrupts has to be
 *			unmapped
 *
 * @return	None.
@@ -1090,11 +1094,11 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Id, u32 Int_Id)
 * @note		None
 *
 *****************************************************************************/
-void XScuGic_UnmapAllInterruptsFromCpu(XScuGic *InstancePtr, u8 Cpu_Id)
+void XScuGic_UnmapAllInterruptsFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier)
 {
 	u32 Int_Id;
 	u32 Target_Cpu;
-	u32 LocalCpuID = (1U << Cpu_Id);
+	u32 LocalCpuID = ((u32)1U << Cpu_Identifier);
 
 	Xil_AssertVoid(InstancePtr != NULL);
 
@@ -1147,7 +1151,7 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 	u32 Int_Id;
 	u32 RegValue;
 	u32 Target_Cpu;
-	#if USE_AMP==1
+	#if (defined (USE_AMP) && (USE_AMP==1))
 	u32 DistDisable = 0; /* Do not disable distributor */
 	#else
 	u32 DistDisable = 1; /* Track distributor status*/
@@ -1183,7 +1187,7 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 
 		Target_Cpu = XScuGic_DistReadReg(InstancePtr,
 					XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id));
-		if ((Target_Cpu != LocalCpuID) && (Target_Cpu != 0)) {
+		if ((Target_Cpu != LocalCpuID) && (Target_Cpu != (u32)0)) {
 			/*
 			 * If any other CPU is also programmed to target
 			 * register, GIC distributor can not be disabled.
@@ -1202,7 +1206,7 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 	 * If GIC distributor is safe to be disabled, disable all the interrupt
 	 * and then disable distributor.
 	 */
-	if (DistDisable == 1) {
+	if (DistDisable == (u32)1) {
 		for (Int_Id = 0U; Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS;
 				Int_Id = Int_Id+32U) {
 			/*
