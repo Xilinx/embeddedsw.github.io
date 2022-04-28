@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv_control.h
-* @addtogroup ospipsv_v1_5
+* @addtogroup Overview
 * @{
 *
 * This is the header file for the low-level functions of OSPIPSV driver.
@@ -19,6 +19,7 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------.
 * 1.2   sk  02/20/20 First release
+* 1.6   sk  02/07/22 Replaced driver version in addtogroup with Overview.
 *
 * </pre>
 *
@@ -109,6 +110,9 @@ u32 XOspiPsv_CheckOspiIdle(const XOspiPsv *InstancePtr);
 u32 XOspiPsv_WaitForLock(const XOspiPsv *InstancePtr, u32 Mask);
 u32 XOspiPsv_ExecuteRxTuning(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
 								u32 TXTap);
+u32 XOspiPsv_CalculateRxTap(XOspiPsv *InstancePtr, XOspiPsv_Msg *FlashMsg,
+		u8 *Avg_RXTap, u8 *Max_WindowSize, u8 Dummy_Incr, u32 TXTap);
+u32 XOspiPsv_ConfigureTaps(const XOspiPsv *InstancePtr, u32 RxTap, u32 TxTap);
 
 #ifdef __cplusplus
 }

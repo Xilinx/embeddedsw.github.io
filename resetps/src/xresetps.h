@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xresetps.h
-* @addtogroup xresetps_v1_4
+* @addtogroup xresetps_v1_5
 * @{
 * @details
 *
@@ -32,6 +32,7 @@
 * 1.2   sd     07/20/18 Fixed Doxygen Reported warnings.
 * 1.4   sk     09/01/20 Updated the Makefile to support parallel make
 *                       execution.
+* 1.5   sk     11/30/21 Fix compilation warnings reported with "-Wundef" flag.
 * </pre>
 *
 ******************************************************************************/

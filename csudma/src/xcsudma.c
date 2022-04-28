@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,11 @@
 /**
 *
 * @file xcsudma.c
-* @addtogroup csudma_v1_10
+* @addtogroup Overview
 * @{
 *
-* This file contains the implementation of the interface functions for CSU_DMA
-* driver. Refer to the header file xcsudma.h for more detailed information.
+* This section contains the functions of the CSU_DMA driver.
+* Refer to the header file xcsudma.h for more detailed information.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -36,6 +36,9 @@
 *			 processors and cache functionality.
 * 1.7	sk	08/26/20 Fix MISRA-C violations.
 * 1.7	sk	08/26/20 Remove busy check in SetConfig.
+* 1.11	sk	03/03/22 Replace driver version in addtogroup with Overview.
+* 1.11	sk	03/03/22 Update Overview section based on review comments.
+* 1.11	sk	03/03/22 Update XCsuDma_GetSize return type description.
 * </pre>
 *
 ******************************************************************************/
@@ -315,7 +318,7 @@ u64 XCsuDma_GetAddr(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
-* @return	Size is amount of data yet to be transfered.
+* @return	Returns number of bytes of data yet to be transferred.
 *
 * @note		None.
 *

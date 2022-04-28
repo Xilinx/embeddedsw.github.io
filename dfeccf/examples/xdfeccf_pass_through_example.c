@@ -1,7 +1,7 @@
 /******************************************************************************
- * Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
- * SPDX-License-Identifier: MIT
- ******************************************************************************/
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
+******************************************************************************/
 
 /*****************************************************************************/
 /**
@@ -17,12 +17,14 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/05/21 Align event handlers
 *
 * </pre>
 *
 *****************************************************************************/
-
 /***************************** Include Files ********************************/
+#include <unistd.h>
 #include "xdfeccf_examples.h"
 
 /************************** Constant Definitions ****************************/
@@ -65,7 +67,9 @@ int XDfeCcf_PassThroughExample()
 	XDfeCcf_Coefficients Coeffs = {
 		0, 0, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 	};
-	XDfeCcf_CarrierCfg CarrierCfg = { 0, 0, 0, 1, 0, 0, 0 };
+	XDfeCcf_CarrierCfg CarrierCfg = { 0, 0, 0 };
+	XDfeCcf_Status Status;
+	u32 Return;
 	XDfeCcf_Version SwVersion;
 	XDfeCcf_Version HwVersion;
 
@@ -118,20 +122,30 @@ int XDfeCcf_PassThroughExample()
 	Coeffs.Value[2] = 1 << 13;
 	XDfeCcf_LoadCoefficients(InstancePtr, 1, Shift, &Coeffs);
 
-	/* Clear events */
-	XDfeCcf_ClearEventStatus(InstancePtr);
+	/* Clear event status */
+	Status.OverflowCCID = XDFECCF_ISR_CLEAR;
+	Status.CCUpdate = XDFECCF_ISR_CLEAR;
+	Status.CCSequenceError = XDFECCF_ISR_CLEAR;
+	XDfeCcf_ClearEventStatus(InstancePtr, &Status);
 	usleep(10000U); /* Give trigger time to finish */
 
 	/* Add component carrier */
 	CCID = 0;
 	BitSequence = 0xffff;
-	CarrierCfg.Rate = 16U;
 	CarrierCfg.Gain = round(1024 * 8);
 	CarrierCfg.ImagCoeffSet = 0;
 	CarrierCfg.RealCoeffSet = 0;
-	XDfeCcf_AddCC(InstancePtr, CCID, BitSequence, &CarrierCfg);
+	Return = XDfeCcf_AddCC(InstancePtr, CCID, BitSequence, &CarrierCfg);
 
-	/* Close and exit */
+	if (Return == XST_SUCCESS) {
+		printf("Add CC done!\n\r");
+	} else {
+		printf("Add CC failed!\n\r");
+		printf("Channel Filter \"Pass Through\" Example: Fail\r\n");
+		return XST_FAILURE;
+	}
+
+	/* Shutdown the block */
 	XDfeCcf_Deactivate(InstancePtr);
 	XDfeCcf_InstanceClose(InstancePtr);
 

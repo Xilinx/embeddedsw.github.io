@@ -7,7 +7,7 @@
 /**
  *
  * @file xdp_hw.h
- * @addtogroup dp_v7_5
+ * @addtogroup dp_v7_6
  * @{
  *
  * This header file contains the identifiers and low-level driver functions (or
@@ -283,12 +283,6 @@
 							configuration. */
 #define XDP_TX_PHY_VOLTAGE_DIFF_LANE_0	0x220	/**< Controls the differential
 							voltage swing. */
-#define XDP_TX_PHY_VOLTAGE_DIFF_LANE_1	0x224	/**< Controls the differential
-							voltage swing. */
-#define XDP_TX_PHY_VOLTAGE_DIFF_LANE_2	0x228	/**< Controls the differential
-							voltage swing. */
-#define XDP_TX_PHY_VOLTAGE_DIFF_LANE_3	0x22C	/**< Controls the differential
-							voltage swing. */
 #define XDP_TX_PHY_TRANSMIT_PRBS7	0x230	/**< Enable pseudo random bit
 							sequence 7 pattern
 							transmission for link
@@ -297,30 +291,11 @@
 							generate the proper
 							clock frequency for the
 							required link rate. */
-#define XDP_TX_PHY_POWER_DOWN		0x238	/**< Controls PHY power down. */
 #define XDP_TX_PHY_PRECURSOR_LANE_0	0x23C	/**< Controls the pre-cursor
-							level. */
-#define XDP_TX_PHY_PRECURSOR_LANE_1	0x240	/**< Controls the pre-cursor
-							level. */
-#define XDP_TX_PHY_PRECURSOR_LANE_2	0x244	/**< Controls the pre-cursor
-							level. */
-#define XDP_TX_PHY_PRECURSOR_LANE_3	0x248	/**< Controls the pre-cursor
 							level. */
 #define XDP_TX_PHY_POSTCURSOR_LANE_0	0x24C	/**< Controls the post-cursor
 							level. */
-#define XDP_TX_PHY_POSTCURSOR_LANE_1	0x250	/**< Controls the post-cursor
-							level. */
-#define XDP_TX_PHY_POSTCURSOR_LANE_2	0x254	/**< Controls the post-cursor
-							level. */
-#define XDP_TX_PHY_POSTCURSOR_LANE_3	0x258	/**< Controls the post-cursor
-							level. */
 #define XDP_TX_PHY_STATUS		0x280	/**< Current PHY status. */
-#define XDP_TX_GT_DRP_COMMAND		0x2A0	/**< Provides access to the GT
-							DRP ports. */
-#define XDP_TX_GT_DRP_READ_DATA		0x2A4	/**< Provides access to GT DRP
-							read data. */
-#define XDP_TX_GT_DRP_CHANNEL_STATUS	0x2A8	/**< Provides access to GT DRP
-							channel status. */
 /* @} */
 
 /** @name DPTX core registers: DisplayPort audio.
@@ -1333,14 +1308,12 @@
 							(0x100 bytes). */
 /* @} */
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 /** @name DPRX core registers: DPCD registers for HDCP22.
  * @{
  */
 #define XDP_RX_DPCD_HDCP22_TABLE	0x1000	/**< HDCP22 register table
 						  (0x558 bytes). */
 /* @} */
-#endif
 
 /** @name DPRX core registers: MST field for sideband message buffers and the
   *	  virtual channel payload table.
@@ -1552,7 +1525,6 @@
 					0x01000000 /**< Mask the interrupt
 							for a read of the HDCP
 							BInfo register. */
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 #define XDP_RX_INTERRUPT_MASK_HDCP22_AKE_INIT_MASK \
 	0x00000001 /**< Mask the interrupt for a write of the HDCP22
 		     Ake_Init message*/
@@ -1586,7 +1558,6 @@
 #define XDP_RX_INTERRUPT_MASK_HDCP22_RPTR_STREAM_MANAGE_MASK \
 	0x00000400 /**< Mask the interrupt for a write of the HDCP22
 		     Stream Management message*/
-#endif
 #define XDP_RX_INTERRUPT_MASK_AUDIO_OVER_MASK \
 					0x08000000 /**< Mask the interrupt
 							assertion caused for an

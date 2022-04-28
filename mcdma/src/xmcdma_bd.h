@@ -7,7 +7,7 @@
 /**
 *
 * @file xmcdma_bd.h
-* @addtogroup mcdma_v1_5
+* @addtogroup mcdma_v1_6
 * @{
 * MODIFICATION HISTORY:
 *
@@ -19,7 +19,7 @@
 *****************************************************************************/
 
 #ifndef XMCDMA_BD_H_
-#define XMCDMA_BD_H
+#define XMCDMA_BD_H_
 
 #include "xil_types.h"
 

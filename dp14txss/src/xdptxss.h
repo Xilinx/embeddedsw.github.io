@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss.h
-* @addtogroup dptxss_v6_6
+* @addtogroup dptxss_v6_7
 * @{
 * @details
 *
@@ -126,9 +126,7 @@ extern "C" {
 #include "xdptxss_dualsplitter.h"
 #include "xdptxss_hdcp1x.h"
 #include "xdptxss_vtc.h"
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 #include "xdptxss_hdcp22.h"
-#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -156,12 +154,9 @@ typedef enum {
 						  *  swing change interrupt
 						  *  type for DisplayPort
 						  *  core */
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 	XDPTXSS_HANDLER_HDCP_RPTR_EXCHG,	/**< Repeater Exchange
 						  *  interrupt type for
 						  *  HDCP core */
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 	XDPTXSS_HANDLER_HDCP22_AUTHENTICATED, /**< Handler for
 					       * HDCP22 unauthenticated
 					       * event */
@@ -170,7 +165,6 @@ typedef enum {
 						 * event */
 	XDPTXSS_HANDLER_HDCP22_UPDATE_DOWNSTREAM_TOPOLOGY, /**< Handler for
 						 * HDCP22 downstream topology available */
-#endif
 	XDPTXSS_HANDLER_DP_SET_MSA,		/**< Set MSA immediate change
 						  *  change interrupt type for
 						  *  DisplayPort core */
@@ -224,6 +218,15 @@ typedef struct {
 	u8 VtcAdjustBs;		/**< Adjustment in Blanking symbol timing */
 } XDpTxSs_UsrOpt;
 
+/*
+ * This typedef contains configuration information for the
+ * DpTxSs subcore instances.
+ */
+typedef struct {
+	u16 DeviceId;	/**< Device ID of the sub-core */
+	UINTPTR AbsAddr;/**< Absolute Base Address of the Sub-cores*/
+} XDpTxSs_SubCoreConfig;
+
 /**
 * VTC Sub-core structure.
 */
@@ -233,17 +236,15 @@ typedef struct {
 				  * configuration information */
 } XDpTxSs_VtcSubCore;
 
-#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 /**
 * Dual Splitter Sub-core structure.
 */
 typedef struct {
 	u16 IsPresent;		/**< Flag to hold the presence of Dual
 				  *  Splitter core. */
-	XDualSplitter_Config DsConfig;	/**< Dual Splitter core configuration
-					  *  information */
+	XDpTxSs_SubCoreConfig DsConfig;	/**< Dual Splitter core configuration
+					 *  information */
 } XDpTxSs_DsSubCore;
-#endif
 
 /**
 * DisplayPort Sub-core structure.
@@ -255,27 +256,34 @@ typedef struct {
 				  *  information */
 } XDpTxSs_DpSubCore;
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 /**
 * High-Bandwidth Content Protection (HDCP) Sub-core structure.
 */
 typedef struct {
 	u16 IsPresent;		/**< Flag to hold the presence of HDCP core */
-	XHdcp1x_Config Hdcp1xConfig;	/**< HDCP core configuration
-					  *  information */
+	XDpTxSs_SubCoreConfig Hdcp1xConfig;	/**< HDCP core configuration
+						 *  information */
 } XDpTxSs_Hdcp1xSubCore;
-#endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
+
 /**
 * Timer Counter Sub-core structure.
 */
 typedef struct {
 	u16 IsPresent;		/**< Flag to hold the presence of Timer
 				  *  Counter core */
-	XTmrCtr_Config TmrCtrConfig;	/**< Timer Counter core
-					  * configuration information */
+	XDpTxSs_SubCoreConfig TmrCtrConfig;	/**< Timer Counter core
+						 * configuration information */
 } XDpTxSs_TmrCtrSubCore;
-#endif
+
+/**
+ * HDCP22 Sub-core structure.
+ */
+typedef struct
+{
+	u16 IsPresent;  /**< Flag to indicate if sub-core is present
+			  in the design*/
+	XDpTxSs_SubCoreConfig Hdcp22Config; /**< HDCP22 core configuration */
+} XDpTxSs_Hdcp22SubCore;
 
 /**
 * This typedef contains configuration information for the DisplayPort
@@ -301,20 +309,12 @@ typedef struct {
 				  *  enabled by this core instance. */
 	u8 NumMstStreams;	/**< The total number of MST streams supported
 				  *  by this core instance. */
-	XDpTxSs_DpSubCore DpSubCore;	/**< DisplayPort Configuration */
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
-	XDpTxSs_Hdcp1xSubCore Hdcp1xSubCore;	/**< HDCP Configuration */
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
-	XDpTxSs_Hdcp22SubCore Hdcp22SubCore;	/**< HDCP22 Configuration */
-#endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 	XDpTxSs_TmrCtrSubCore TmrCtrSubCore;	/**< Timer Counter
-						  *  Configuration */
-#endif
-#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
+							  *  Configuration */
+	XDpTxSs_DpSubCore DpSubCore;	/**< DisplayPort Configuration */
+	XDpTxSs_Hdcp1xSubCore Hdcp1xSubCore;	/**< HDCP Configuration */
+	XDpTxSs_Hdcp22SubCore Hdcp22SubCore;	/**< HDCP22 Configuration */
 	XDpTxSs_DsSubCore DsSubCore;	/**< Dual Splitter Configuration */
-#endif
 	XDpTxSs_VtcSubCore VtcSubCore[XDPTXSS_NUM_STREAMS]; /**< VTC
 							      *  Configura-
 							      *  tion */
@@ -361,16 +361,10 @@ typedef struct {
 #if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
 	XDualSplitter *DsPtr;		/**< Dual Splitter sub-core instance */
 #endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 	XHdcp1x *Hdcp1xPtr;		/**< HDCP sub-core instance */
-#endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 	XTmrCtr *TmrCtrPtr;		/**< Timer Counter sub-core instance */
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
-	XHdcp22_Tx  *Hdcp22Ptr;		/**< handle to sub-core driver
+	XHdcp22_Tx_Dp  *Hdcp22Ptr;		/**< handle to sub-core driver
 					  instance */
-#endif
 	XDp *DpPtr;			/**< DisplayPort sub-core instance */
 	XVtc *VtcPtr[XDPTXSS_NUM_STREAMS];/**< Maximum number of VTC sub-core
 					  *  instances */
@@ -381,15 +375,11 @@ typedef struct {
 	u8 link_up_trigger;
 	u8 no_video_trigger;
 	XDpTxSs_HdcpProtocol    HdcpProtocol;    /**< HDCP protocol selected */
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 	u32 HdcpIsReady;     /**< HDCP ready flag */
 	XDpTxSs_HdcpProtocol HdcpCapability;  /**< HDCP protocol desired */
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 	XDpTxSs_HdcpEventQueue HdcpEventQueue; /**< HDCP22 event queue */
 	u8 *Hdcp22Lc128Ptr;			/**< Pointer to HDCP 2.2 LC128*/
 	u8 *Hdcp22SrmPtr;			/**< Pointer to HDCP 2.2 SRM */
-#endif
 } XDpTxSs;
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -404,15 +394,11 @@ typedef struct {
 */
 #define XDpTxSs_MainStreamAttributes	XDp_TxMainStreamAttributes
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 #define XDpTxSs_Printf		XHdcp1x_Printf	/**< Debug printf */
 #define XDpTxSs_LogMsg		XHdcp1x_LogMsg	/**< Debug log message */
-#endif
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 #define XDpTxSs_HdcpIsReady(InstancePtr) \
 	(InstancePtr)->HdcpIsReady
-#endif
 
 /************************** Function Prototypes ******************************/
 
@@ -444,7 +430,6 @@ void XDpTxSs_SetHasRedriverInPath(XDpTxSs *InstancePtr, u8 Set);
 void XDpTxSs_SetUserPixelWidth(XDpTxSs *InstancePtr, u8 UserPixelWidth,
 				u8 StreamId);
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 /* Optional HDCP related functions */
 u32 XDpTxSs_Authenticate(XDpTxSs *InstancePtr);
 u32 XDpTxSs_IsAuthenticated(XDpTxSs *InstancePtr);
@@ -457,8 +442,6 @@ int XDpTxSs_HdcpSetProtocol(XDpTxSs *InstancePtr,
 		XDpTxSs_HdcpProtocol Protocol);
 u32 XDpTxSs_EnableEncryption(XDpTxSs *InstancePtr, u64 StreamMap);
 u32 XDpTxSs_DisableEncryption(XDpTxSs *InstancePtr, u64 StreamMap);
-#endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 u32 XDpTxSs_Poll(XDpTxSs *InstancePtr);
 u32 XDpTxSs_IsHdcpCapable(XDpTxSs *InstancePtr);
 u64 XDpTxSs_GetEncryption(XDpTxSs *InstancePtr);
@@ -468,7 +451,6 @@ void XDpTxSs_SetDebugPrintf(XDpTxSs *InstancePtr, XDpTxSs_Printf PrintfFunc);
 void XDpTxSs_SetDebugLogMsg(XDpTxSs *InstancePtr, XDpTxSs_LogMsg LogFunc);
 u32 XDpTxSs_ReadDownstream(XDpTxSs *InstancePtr);
 void XDpTxSs_HandleTimeout(XDpTxSs *InstancePtr);
-#endif
 
 void XDpTxSs_ReportCoreInfo(XDpTxSs *InstancePtr);
 void XDpTxSs_ReportLinkInfo(XDpTxSs *InstancePtr);
@@ -482,17 +464,10 @@ void XDpTxSs_ReportHdcpInfo(XDpTxSs *InstancePtr);
 u32 XDpTxSs_SelfTest(XDpTxSs *InstancePtr);
 
 /* Interrupt functions in xdptxss_intr.c */
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 void XDpTxSs_HdcpIntrHandler(void *InstancePtr);
-#endif
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 void XDpTxSs_TmrCtrIntrHandler(void *InstancePtr);
-#endif
-
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 void XDpTxSs_Hdcp22SetKey(XDpTxSs *InstancePtr,
 		XDpTxSs_Hdcp22KeyType KeyType, u8 *KeyPtr);
-#endif
 void XDpTxSs_DpIntrHandler(void *InstancePtr);
 u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 			void *CallbackFunc, void *CallbackRef);

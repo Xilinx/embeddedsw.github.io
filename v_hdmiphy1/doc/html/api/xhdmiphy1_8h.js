@@ -30,7 +30,8 @@ var xhdmiphy1_8h =
       [ "XHDMIPHY1_GT_STATE_READY", "xhdmiphy1_8h.html#gga19e4c793abee3457123797eca4f61cd0af0bd0b978b52982e2caf6a30afc3f57d", null ],
       [ "XHDMIPHY1_GT_TYPE_GTHE4", "xhdmiphy1_8h.html#gga14aff85d3d062cd34c21b0a1b571a547a5cbb4014f308cb04fbeebf989e359122", null ],
       [ "XHDMIPHY1_GT_TYPE_GTYE4", "xhdmiphy1_8h.html#gga14aff85d3d062cd34c21b0a1b571a547a98faa3846183fa3e2f28a1aa414e6f1e", null ],
-      [ "XHDMIPHY1_GT_TYPE_GTYE5", "xhdmiphy1_8h.html#gga14aff85d3d062cd34c21b0a1b571a547a9cc9f15a988f4e9a2f610a91b0b788f3", null ]
+      [ "XHDMIPHY1_GT_TYPE_GTYE5", "xhdmiphy1_8h.html#gga14aff85d3d062cd34c21b0a1b571a547a9cc9f15a988f4e9a2f610a91b0b788f3", null ],
+      [ "XHDMIPHY1_GT_TYPE_GTYP", "xhdmiphy1_8h.html#gga14aff85d3d062cd34c21b0a1b571a547ab8851afdcbd21bf6120d2c6f5a590006", null ]
     ] ],
     [ "XHdmiphy1_HdmiHandlerType", "xhdmiphy1_8h.html#ga8df8a80a15683dd3ffe31d80780f6329", [
       [ "XHDMIPHY1_HDMI_HANDLER_TXINIT", "xhdmiphy1_8h.html#gga8df8a80a15683dd3ffe31d80780f6329a96b12cc5ff9908c81fcb6231b7aec8ac", null ],

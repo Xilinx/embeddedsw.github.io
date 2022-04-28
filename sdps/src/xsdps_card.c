@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_card.c
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -26,6 +26,9 @@
 *                       low for versal platform
 * 3.12  sk     01/28/21 Added support for non-blocking write.
 *       sk     02/12/21 Fix the issue in reading CID and CSD.
+* 3.14  sk     10/22/21 Add support for Erase feature.
+*       mn     11/28/21 Fix MISRA-C violations.
+*       sk     01/10/22 Add support to read slot_type parameter.
 *
 * </pre>
 *
@@ -63,7 +66,7 @@ s32 XSdPs_Read(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff)
 {
 	s32 Status;
 
-	XSdPs_SetupReadDma(InstancePtr, BlkCnt, InstancePtr->BlkSize, Buff);
+	XSdPs_SetupReadDma(InstancePtr, (u16)BlkCnt, (u16)InstancePtr->BlkSize, Buff);
 
 	if (BlkCnt == 1U) {
 		/* Send single block read command */
@@ -103,7 +106,7 @@ s32 XSdPs_Write(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, const u8 *Buff)
 {
 	s32 Status;
 
-	XSdPs_SetupWriteDma(InstancePtr, BlkCnt, InstancePtr->BlkSize, Buff);
+	XSdPs_SetupWriteDma(InstancePtr, (u16)BlkCnt, (u16)InstancePtr->BlkSize, Buff);
 
 	if (BlkCnt == 1U) {
 		/* Send single block write command */
@@ -655,8 +658,8 @@ s32 XSdPs_GetCsd(XSdPs *InstancePtr)
 	}
 
 	if (((CSD[3] & CSD_STRUCT_MASK) >> 22U) == 0U) {
-		BlkLen = 1U << ((u32)(CSD[2] & READ_BLK_LEN_MASK) >> 8U);
-		Mult = 1U << ((u32)((CSD[1] & C_SIZE_MULT_MASK) >> 7U) + 2U);
+		BlkLen = (u32)1U << ((u32)(CSD[2] & READ_BLK_LEN_MASK) >> 8U);
+		Mult = (u32)1U << ((u32)((CSD[1] & C_SIZE_MULT_MASK) >> 7U) + (u32)2U);
 		DeviceSize = (CSD[1] & C_SIZE_LOWER_MASK) >> 22U;
 		DeviceSize |= (CSD[2] & C_SIZE_UPPER_MASK) << 10U;
 		DeviceSize = (DeviceSize + 1U) * Mult;
@@ -695,7 +698,7 @@ s32 XSdPs_CardSetVoltage18(XSdPs *InstancePtr)
 	/* Stop the clock */
 	CtrlReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
 			XSDPS_CLK_CTRL_OFFSET);
-	CtrlReg &= ~(XSDPS_CC_SD_CLK_EN_MASK | XSDPS_CC_INT_CLK_EN_MASK);
+	CtrlReg &= (u16)(~(XSDPS_CC_SD_CLK_EN_MASK | XSDPS_CC_INT_CLK_EN_MASK));
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress, XSDPS_CLK_CTRL_OFFSET,
 			CtrlReg);
 
@@ -712,6 +715,7 @@ s32 XSdPs_CardSetVoltage18(XSdPs *InstancePtr)
 	Status = XSdPs_EnableClock(InstancePtr, ClockReg);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	/* Wait for 1mSec */
@@ -862,7 +866,7 @@ s32 XSdPs_SetupVoltageSwitch(XSdPs *InstancePtr)
 	do {
 		ReadReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 				XSDPS_PRES_STATE_OFFSET);
-		Timeout = Timeout - 1;
+		Timeout = Timeout - 1U;
 		usleep(1);
 	} while (((ReadReg & (XSDPS_PSR_CMD_SG_LVL_MASK |
 			XSDPS_PSR_DAT30_SG_LVL_MASK)) != 0U)
@@ -889,7 +893,7 @@ RETURN_PATH:
 ******************************************************************************/
 s32 XSdPs_CheckBusHigh(XSdPs *InstancePtr)
 {
-	u32 Timeout = 10000;
+	u32 Timeout;
 	s32 Status;
 	u32 ReadReg;
 
@@ -898,7 +902,7 @@ s32 XSdPs_CheckBusHigh(XSdPs *InstancePtr)
 	do {
 		ReadReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 				XSDPS_PRES_STATE_OFFSET);
-		Timeout = Timeout - 1;
+		Timeout = Timeout - 1U;
 		usleep(1);
 	} while (((ReadReg & (XSDPS_PSR_CMD_SG_LVL_MASK | XSDPS_PSR_DAT30_SG_LVL_MASK))
 			!= (XSDPS_PSR_CMD_SG_LVL_MASK | XSDPS_PSR_DAT30_SG_LVL_MASK))
@@ -950,12 +954,20 @@ void XSdPs_Identify_UhsMode(XSdPs *InstancePtr, u8 *ReadBuff)
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_DDR50_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_DDR50;
 		InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_DDR50;
-		InstancePtr->ITapDelay = SD_ITAPDLYSEL_SD_DDR50;
+		if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
+			InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_DDR50;
+		} else {
+			InstancePtr->ITapDelay = SD_ITAPDLYSEL_SD_DDR50;
+		}
 	} else if (((ReadBuff[13] & UHS_SDR25_SUPPORT) != 0U) &&
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_SDR25_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR25;
 		InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_HSD;
-		InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+		if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
+			InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_SDR25;
+		} else {
+			InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+		}
 	} else {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR12;
 	}
@@ -1036,16 +1048,17 @@ s32 XSdPs_Change_SdBusSpeed(XSdPs *InstancePtr)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	if (InstancePtr->Switch1v8 != 0U) {
 		/* Set UHS mode in controller */
 		CtrlReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
 				XSDPS_HOST_CTRL2_OFFSET);
-		CtrlReg &= (u16)(~XSDPS_HC2_UHS_MODE_MASK);
+		CtrlReg &= (~(u16)XSDPS_HC2_UHS_MODE_MASK);
 		XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 						XSDPS_HOST_CTRL2_OFFSET,
-						CtrlReg | InstancePtr->Mode);
+						CtrlReg | (u16)InstancePtr->Mode);
 	}
 
 	Status = XST_SUCCESS;
@@ -1085,6 +1098,7 @@ s32 XSdPs_Change_MmcBusSpeed(XSdPs *InstancePtr)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	Status = XST_SUCCESS;
@@ -1211,7 +1225,7 @@ void XSdPs_SetupADMA2DescTbl64Bit(XSdPs *InstancePtr, u32 BlkCnt)
 	static XSdPs_Adma2Descriptor64 Adma2_DescrTbl[32] __attribute__ ((aligned(32)));
 #endif
 	u32 TotalDescLines;
-	u64 DescNum;
+	u32 DescNum;
 	u32 BlkSize;
 
 	/* Setup ADMA2 - Write descriptor table and point ADMA SAR to it */
@@ -1232,31 +1246,31 @@ void XSdPs_SetupADMA2DescTbl64Bit(XSdPs *InstancePtr, u32 BlkCnt)
 
 	}
 
-	for (DescNum = 0U; DescNum < (TotalDescLines-1); DescNum++) {
+	for (DescNum = 0U; DescNum < (TotalDescLines - 1U); DescNum++) {
 		Adma2_DescrTbl[DescNum].Address =
 				InstancePtr->Dma64BitAddr +
-				(DescNum*XSDPS_DESC_MAX_LENGTH);
+				((u64)DescNum*XSDPS_DESC_MAX_LENGTH);
 		Adma2_DescrTbl[DescNum].Attribute =
 				XSDPS_DESC_TRAN | XSDPS_DESC_VALID;
 		Adma2_DescrTbl[DescNum].Length = 0U;
 	}
 
-	Adma2_DescrTbl[TotalDescLines-1].Address =
+	Adma2_DescrTbl[TotalDescLines - 1U].Address =
 				InstancePtr->Dma64BitAddr +
-				(DescNum*XSDPS_DESC_MAX_LENGTH);
+				((u64)DescNum*XSDPS_DESC_MAX_LENGTH);
 
-	Adma2_DescrTbl[TotalDescLines-1].Attribute =
+	Adma2_DescrTbl[TotalDescLines - 1U].Attribute =
 			XSDPS_DESC_TRAN | XSDPS_DESC_END | XSDPS_DESC_VALID;
 
-	Adma2_DescrTbl[TotalDescLines-1].Length =
+	Adma2_DescrTbl[TotalDescLines - 1U].Length =
 			(u16)((BlkCnt*BlkSize) - (u32)(DescNum*XSDPS_DESC_MAX_LENGTH));
 
 	XSdPs_WriteReg(InstancePtr->Config.BaseAddress, XSDPS_ADMA_SAR_OFFSET,
-			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & (u32)~0x0));
+			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & ~(u32)0x0U));
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheFlushRange((INTPTR)&(Adma2_DescrTbl[0]),
-			sizeof(XSdPs_Adma2Descriptor64) * 32U);
+			(INTPTR)sizeof(XSdPs_Adma2Descriptor64) * (INTPTR)32U);
 	}
 
 	/* Clear the 64-Bit Address variable */
@@ -1301,7 +1315,7 @@ s32 XSdPs_DllReset(XSdPs *InstancePtr)
 	ClockReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
 				XSDPS_CLK_CTRL_OFFSET);
 	/* Enable the clock in the controller */
-	Status = XSdPs_EnableClock(InstancePtr, ClockReg);
+	Status = XSdPs_EnableClock(InstancePtr, (u16)ClockReg);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
 	}
@@ -1419,7 +1433,7 @@ s32 XSdPs_SetClock(XSdPs *InstancePtr, u32 SelFreq)
 	}
 
 	/* Calculate the clock */
-	ClockReg = XSdPs_CalcClock(InstancePtr, SelFreq);
+	ClockReg = (u16)XSdPs_CalcClock(InstancePtr, SelFreq);
 
 	/* Enable the clock in the controller */
 	Status = XSdPs_EnableClock(InstancePtr, ClockReg);
@@ -1559,6 +1573,87 @@ s32 XSdPs_SendCmd(XSdPs *InstancePtr, u32 Cmd)
 RETURN_PATH:
 	return Status;
 
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This function performs Set the address of the first write block to be erased.
+*
+* @param	InstancePtr is a pointer to the instance to be worked on.
+* @param	StartAddr is the address of the first write block.
+*
+* @return
+* 		- XST_SUCCESS if Set start Address is successful
+* 		- XST_FAILURE if failure - could be because failed to set EndAddr.
+*
+******************************************************************************/
+s32 XSdPs_SetStartAddr(XSdPs *InstancePtr, u32 StartAddr)
+{
+	s32 Status;
+
+	if (InstancePtr->CardType == XSDPS_CARD_SD) {
+		Status = XSdPs_CmdTransfer(InstancePtr, CMD32, StartAddr, 0U);
+	} else {
+		Status = XSdPs_CmdTransfer(InstancePtr, CMD35, StartAddr, 0U);
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This function performs Set the address of the last write block to be erased.
+*
+* @param	InstancePtr is a pointer to the instance to be worked on.
+* @param	EndAddr is the address of the last write block.
+*
+* @return
+* 		- XST_SUCCESS if Set End Address is successful.
+* 		- XST_FAILURE if failure - could be because failed to set EndAddr.
+*
+******************************************************************************/
+s32 XSdPs_SetEndAddr(XSdPs *InstancePtr, u32 EndAddr)
+{
+	s32 Status;
+
+	if (InstancePtr->CardType == XSDPS_CARD_SD) {
+		Status = XSdPs_CmdTransfer(InstancePtr, CMD33, EndAddr, 0U);
+	} else {
+		Status = XSdPs_CmdTransfer(InstancePtr, CMD36, EndAddr, 0U);
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This function send Erase command to the device and wait for transfer complete
+*
+* @param	InstancePtr is a pointer to the instance to be worked on.
+*
+* @return
+* 		- XST_SUCCESS if erase operation is successful
+* 		- XST_FAILURE if failure - could be because erase operation failed.
+*
+******************************************************************************/
+s32 XSdPs_SendErase(XSdPs *InstancePtr)
+{
+	s32 Status;
+
+	Status = XSdPs_CmdTransfer(InstancePtr, CMD38, 0U, 0U);
+	if (Status != XST_SUCCESS) {
+		Status = XST_FAILURE;
+		goto RETURN_PATH ;
+	}
+
+	/* Check for transfer done */
+	Status = XSdps_CheckTransferDone(InstancePtr);
+
+RETURN_PATH:
+	return Status;
 }
 
 /** @} */

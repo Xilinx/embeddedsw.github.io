@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic.c
-* @addtogroup scugic_v4_6
+* @addtogroup scugic_v4_7
 * @{
 *
 * Contains required functions for the XScuGic driver for the Interrupt
@@ -130,6 +130,17 @@
 *                     at: lib/bsp/standalone/src/arm/common/gcc/xil_spinlock.c
 * 4.6	sk   08/05/21 Fix scugic Misra-c violations.
 * 4.7	sk   09/14/21 Fix gcc compiler warnings for A72 processor.
+* 4.7	sk   10/13/21 Update APIs to perform interrupt mapping/unmapping only
+* 		      when (Int_Id >= XSCUGIC_SPI_INT_ID_START).
+* 4.7   dp   11/22/21 Added new API XScuGic_IsInitialized() to check and return
+*                     the GIC initialization status.
+* 4.7   mus  03/17/22 Fixed XScuGic_InterruptMaptoCpu and
+*                     XScuGic_InterruptUnmapFromCpu for GICv3. It fixes
+*                     CR#1126156.
+* 4.7   asa  03/29/22 The API XScuGic_IsInitialized has a bug where if the
+*                     Distributor Control Register, GICD_CTLR has both
+*                     bit 0 and bit 1 set, the API wrongly returns 0,
+*                     This is fixed with this change.
 * </pre>
 *
 ******************************************************************************/
@@ -585,7 +596,6 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
-		XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
 
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
@@ -593,6 +603,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 		Temp = XScuGic_ReDistSGIPPIReadReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET);
 		Temp |= Int_Id;
 		XScuGic_ReDistSGIPPIWriteReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
+		return;
 	}
 #endif
 	XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
@@ -658,14 +669,13 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
 
-		XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Identifier, Int_Id);
-
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
 
 		Temp = XScuGic_ReDistSGIPPIReadReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET);
 		Temp &= ~Int_Id;
 		XScuGic_ReDistSGIPPIWriteReg(InstancePtr,XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
+		return;
 	}
 #endif
 	XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Identifier, Int_Id);
@@ -980,17 +990,14 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_
 {
 	u32 RegValue;
 
+if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
-	u32 Temp;
 	Xil_AssertVoid(InstancePtr != NULL);
-	if (Int_Id >= 32) {
-		Temp = Int_Id - 32;
-		RegValue = XScuGic_DistReadReg(InstancePtr,
-				XSCUGIC_IROUTER_OFFSET_CALC(Temp));
-		RegValue |= Cpu_Identifier;
-		XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
-						  (Cpu_Identifier-1));
-	}
+	RegValue = XScuGic_DistReadReg(InstancePtr,
+			XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
+	RegValue |= Cpu_Identifier;
+	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Int_Id),
+					  RegValue);
 #else
 	u8 Cpu_CoreId;
 	u32 Offset;
@@ -1021,6 +1028,7 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_
 	XIL_SPINUNLOCK();
 #endif
 }
+}
 /****************************************************************************/
 /**
 * Unmaps specific SPI interrupt from the target CPU
@@ -1039,17 +1047,14 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 
 {
 	u32 RegValue;
 
+if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
-	u32 Temp;
 	Xil_AssertVoid(InstancePtr != NULL);
-	if (Int_Id >= 32) {
-		Temp = Int_Id - 32;
-		RegValue = XScuGic_DistReadReg(InstancePtr,
-				XSCUGIC_IROUTER_OFFSET_CALC(Temp));
-		RegValue &= ~Cpu_Identifier;
-		XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
-						  (Cpu_Identifier-1));
-	}
+	RegValue = XScuGic_DistReadReg(InstancePtr,
+			XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
+	RegValue &= ~Cpu_Identifier;
+	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Int_Id),
+						  RegValue);
 #else
 	u32 Cpu_CoreId;
 	u32 Offset;
@@ -1080,6 +1085,7 @@ void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 
 	 */
 	XIL_SPINUNLOCK();
 #endif
+}
 }
 /****************************************************************************/
 /**
@@ -1258,6 +1264,33 @@ u32 XScuGic_GetCpuID(void)
 	return CpuId;
 }
 
+/****************************************************************************/
+/**
+* It checks whether the XScGic is initialized or not given the device id.
+*
+* @param	DeviceId the XScuGic device.
+*
+* @return	Returns 1 if initialized otherwise 0.
+*
+* @note		None
+*
+*****************************************************************************/
+u8 XScuGic_IsInitialized(u32 DeviceId)
+{
+	u8 Device_Initilaized = 0U;
+	XScuGic_Config *CfgPtr;
+	u32 RegVal;
+
+	CfgPtr = XScuGic_LookupConfig(DeviceId);
+	if (CfgPtr != NULL) {
+		RegVal = XScuGic_ReadReg(CfgPtr->DistBaseAddress, XSCUGIC_DIST_EN_OFFSET);
+		if (RegVal & XSCUGIC_EN_INT_MASK) {
+			Device_Initilaized = 1U;
+		}
+	}
+
+	return Device_Initilaized;
+}
 #if defined (GICv3)
 /****************************************************************************/
 /**

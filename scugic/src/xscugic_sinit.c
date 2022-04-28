@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic_sinit.c
-* @addtogroup scugic_v4_6
+* @addtogroup scugic_v4_7
 * @{
 *
 * Contains static init functions for the XScuGic driver for the Interrupt
@@ -76,5 +76,19 @@ XScuGic_Config *XScuGic_LookupConfig(u16 DeviceId)
 	}
 
 	return (XScuGic_Config *)CfgPtr;
+}
+
+XScuGic_Config *XScuGic_LookupConfigBaseAddr(UINTPTR BaseAddress)
+{
+        XScuGic_Config *CfgPtr = NULL;
+        u32 Index;
+
+        for (Index = 0U; Index < (u32)XPAR_SCUGIC_NUM_INSTANCES; Index++) {
+                if (XScuGic_ConfigTable[Index].DistBaseAddress == BaseAddress) {
+                        CfgPtr = &XScuGic_ConfigTable[Index];
+                        break;
+                }
+        }
+        return (XScuGic_Config *)CfgPtr;
 }
 /** @} */

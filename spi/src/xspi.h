@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2001 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2001 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xspi.h
-* @addtogroup spi_v4_8
+* @addtogroup spi_v4_9
 * @{
 * @details
 *
@@ -283,6 +283,8 @@
 *                     in between multiple transfers.
 * 4.8   akm  01/19/21 Fix multiple byte transfer hang issue, when FIFOs are
 *                     disabled.
+* 4.9	adk  31/01/22 Fix interrupt controller name in SMP designs, Changes are
+* 		      made in the interrupt app tcl file.
 * </pre>
 *
 ******************************************************************************/

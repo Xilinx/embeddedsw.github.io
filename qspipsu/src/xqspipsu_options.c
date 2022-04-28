@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspipsu_options.c
-* @addtogroup qspipsu_v1_14
+* @addtogroup Overview
 * @{
 *
 * This file implements functions to configure the QSPIPSU component,
@@ -45,6 +45,8 @@
 * 1.11 akm 03/09/20 Reorganize the source code, enable qspi controller and
 *		     interrupts in XQspiPsu_CfgInitialize() API.
 * 1.13 akm 01/04/21 Fix MISRA-C violations.
+* 1.15 akm 03/03/22 Enable tapdelay settings for applications on Microblaze
+* 		     platform.
 *
 * </pre>
 *
@@ -345,7 +347,7 @@ s32 XQspiPsu_SetClkPrescaler(const XQspiPsu *InstancePtr, u8 Prescaler)
 		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
 				ConfigReg);
 
-#if defined (ARMR5) || (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__) || defined (__MICROBLAZE__)
 		Status = XQspipsu_Calculate_Tapdelay(InstancePtr,Prescaler);
 #else
 		Status = (s32)XST_SUCCESS;

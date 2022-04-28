@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_hw.h
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -103,6 +103,10 @@
 *       cog    06/10/21 When setting the powermode, the IP now takes care of the
 *                       configuration registers.
 *       cog    07/12/21 Simplified clock distribution user interface.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    11/26/21 Reset clock gaters when setting decimation rate.
+*       cog    12/21/21 Read DAC coupling from a register rather than from
+*                       the config structure.
 *
 *</pre>
 *
@@ -337,6 +341,7 @@ extern "C" {
 #define XRFDC_PLL_FS 0x304U /**< Sampling rate register */
 #define XRFDC_CAL_TMR_MULT_OFFSET 0x30CU /**< Calibration timer register */
 #define XRFDC_CAL_DLY_OFFSET 0x310U /**< Calibration delay register */
+#define XRFDC_CPL_TYPE_OFFSET 0x314U /**< Coupling type register */
 #define XRFDC_FIFO_ENABLE 0x230U /**< FIFO Enable and Disable */
 #define XRFDC_PLL_SDM_CFG0 0x00U /**< PLL Configuration bits for sdm */
 #define XRFDC_PLL_SDM_SEED0 0x18U /**< PLL Bits for sdm LSB */
@@ -2011,6 +2016,7 @@ extern "C" {
 
 #define XRFDC_FAB_CLK_DIV_MASK 0x0000000FU /**< clk div mask */
 #define XRFDC_FAB_CLK_DIV_CAL_MASK 0x000000F0U /**< clk div cal mask */
+#define XRFDC_FAB_CLK_DIV_SYNC_PULSE_MASK 0x00000400U /**< clk div cal mask */
 
 /* @} */
 
@@ -2069,6 +2075,7 @@ extern "C" {
 #define XRFDC_CLK_NETWORK_CTRL1_USE_PLL_MASK 0x1U /**< PLL clock mask */
 #define XRFDC_CLK_NETWORK_CTRL1_USE_RX_MASK 0x2U /**< PLL clock mask */
 #define XRFDC_CLK_NETWORK_CTRL1_REGS_MASK 0x3U /**< PLL clock mask */
+#define XRFDC_CLK_NETWORK_CTRL1_EN_SYNC_MASK 0x1000U /**< PLL clock mask */
 
 /* @} */
 

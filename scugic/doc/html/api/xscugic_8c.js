@@ -9,6 +9,7 @@ var xscugic_8c =
     [ "XScuGic_GetPriorityTriggerType", "xscugic_8c.html#ga6ed162180ffb45b082c2fbe23951ba13", null ],
     [ "XScuGic_InterruptMaptoCpu", "xscugic_8c.html#ga2a94f1a519d965f051d598e5a6b5a855", null ],
     [ "XScuGic_InterruptUnmapFromCpu", "xscugic_8c.html#ga04f8ea74458251784b293e4ad98f2d74", null ],
+    [ "XScuGic_IsInitialized", "xscugic_8c.html#ga72b9aec992716861e5f0929e4d0d9f7c", null ],
     [ "XScuGic_SetCpuID", "xscugic_8c.html#ga945e029b4356be809020c81745c4a23b", null ],
     [ "XScuGic_SetPriorityTriggerType", "xscugic_8c.html#ga79abd6248cb578142e9c475f20dbeb06", null ],
     [ "XScuGic_SoftwareIntr", "xscugic_8c.html#gaca28a576540ab5fcd75cee1f38917ae4", null ],

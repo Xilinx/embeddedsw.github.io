@@ -25,7 +25,7 @@ var xwdttb_8h =
     [ "XWdtTb_IntrClear", "xwdttb_8h.html#gaf2b1b1175aac0974fa1c9c1c7c50550c", null ],
     [ "XWdtTb_IsGenericWdtFWExpired", "xwdttb_8h.html#ga24e80e9f7fb7d427513e7fe03833dc1e", null ],
     [ "XWdtTb_IsWdtExpired", "xwdttb_8h.html#gaa1ec9f43580e5497f47960d47a231cb1", null ],
-    [ "XWdtTb_LookupConfig", "xwdttb_8h.html#ga14a07eb4184572676004f3d965ebb7fd", null ],
+    [ "XWdtTb_LookupConfig", "xwdttb_8h.html#gaee07fe98efd02a8c9a21aeb15b968dc3", null ],
     [ "XWdtTb_ProgramWDTWidth", "xwdttb_8h.html#ga86133d7e1b0053409d5c743746a129fc", null ],
     [ "XWdtTb_RestartWdt", "xwdttb_8h.html#gaf1baa5a1d69ac6c61ecc62d5df1a0c01", null ],
     [ "XWdtTb_SelfTest", "xwdttb_8h.html#gaa9e410506154d92a551b6261742d98b1", null ],

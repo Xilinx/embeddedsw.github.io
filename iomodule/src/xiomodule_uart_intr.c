@@ -8,7 +8,7 @@
 /**
 *
 * @file xiomodule_uart_intr.c
-* @addtogroup iomodule_v2_12
+* @addtogroup iomodule_v2_13
 * @{
 *
 * Contains required functions for the XIOModule UART driver interrupt mode.
@@ -27,6 +27,7 @@
 *		      Pending register.
 * 2.12	sk   06/08/21 Update XIOModule_Send and XIOModule_Recv API's argument
 		      (NumBytes) datatype to fix the coverity warnings.
+* 2.13	sk   10/04/21 Update functions return type to fix misra-c violation.
 *
 * </pre>
 *
@@ -248,7 +249,7 @@ void XIOModule_ResetFifos(XIOModule *InstancePtr)
 * @note		None.
 *
 *****************************************************************************/
-int XIOModule_IsSending(XIOModule *InstancePtr)
+s32 XIOModule_IsSending(XIOModule *InstancePtr)
 {
 	u32 StatusRegister;
 

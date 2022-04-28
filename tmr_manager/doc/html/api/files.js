@@ -11,6 +11,7 @@ var files =
     [ "xtmr_manager_low_level_example.c", "xtmr__manager__low__level__example_8c.html", "xtmr__manager__low__level__example_8c" ],
     [ "xtmr_manager_polled_example.c", "xtmr__manager__polled__example_8c.html", "xtmr__manager__polled__example_8c" ],
     [ "xtmr_manager_recover.c", "xtmr__manager__recover_8c.html", "xtmr__manager__recover_8c" ],
+    [ "xtmr_manager_recovery_example.c", "xtmr__manager__recovery__example_8c.html", "xtmr__manager__recovery__example_8c" ],
     [ "xtmr_manager_selftest.c", "xtmr__manager__selftest_8c.html", "xtmr__manager__selftest_8c" ],
     [ "xtmr_manager_selftest_example.c", "xtmr__manager__selftest__example_8c.html", "xtmr__manager__selftest__example_8c" ],
     [ "xtmr_manager_sinit.c", "xtmr__manager__sinit_8c.html", "xtmr__manager__sinit_8c" ],

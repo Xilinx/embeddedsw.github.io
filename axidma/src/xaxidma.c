@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xaxidma.c
-* @addtogroup axidma_v9_13
+* @addtogroup axidma_v9_14
 * @{
 *
 * This file implements DMA engine-wise initialization and control functions.

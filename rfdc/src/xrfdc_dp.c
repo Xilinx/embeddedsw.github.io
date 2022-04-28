@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_dp.c
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 *
 * Contains the interface functions of the Digital Path Settings in XRFdc driver.
@@ -20,6 +20,12 @@
 * ----- ---    -------- -----------------------------------------------
 * 10.0  cog    11/26/20 Refactor and split files.
 * 11.0  cog    05/31/21 Upversion.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    11/26/21 Reset clock gaters when setting decimation rate.
+*       cog    01/06/22 Check Nyquist zone compatibility when setting the
+*                       inverse sinc filter.
+*       cog    01/18/22 Added safety checks.
+*       cog    01/24/22 Metal log change.
 *
 * </pre>
 *
@@ -130,14 +136,19 @@ static u32 XRFdc_SetDecimationFactorInt(XRFdc *InstancePtr, u32 Tile_Id, u32 Blo
 	XRFdc_IntResetInternalFIFOWidth(InstancePtr, XRFDC_ADC_TILE, Tile_Id, Block_Id, Channel);
 
 	if (InstancePtr->RFdc_Config.IPType >= XRFDC_GEN3) {
+		BaseAddr = XRFDC_DRP_BASE(XRFDC_ADC_TILE, Tile_Id) + XRFDC_HSCOM_ADDR;
+		XRFdc_ClrSetReg(InstancePtr, BaseAddr, XRFDC_CLK_NETWORK_CTRL1, XRFDC_CLK_NETWORK_CTRL1_EN_SYNC_MASK,
+				XRFDC_CLK_NETWORK_CTRL1_EN_SYNC_MASK);
+		XRFdc_ClrSetReg(InstancePtr, BaseAddr, XRFDC_HSCOM_CLK_DIV_OFFSET, XRFDC_FAB_CLK_DIV_SYNC_PULSE_MASK,
+				XRFDC_FAB_CLK_DIV_SYNC_PULSE_MASK);
+
 		switch (DecimationFactor) {
 		case XRFDC_INTERP_DECIM_1X:
 		case XRFDC_INTERP_DECIM_2X:
 		case XRFDC_INTERP_DECIM_4X:
 		case XRFDC_INTERP_DECIM_8X:
-			XRFdc_ClrSetReg(InstancePtr, (XRFDC_DRP_BASE(XRFDC_ADC_TILE, Tile_Id) + XRFDC_HSCOM_ADDR),
-					XRFDC_HSCOM_FIFO_START_TDD_OFFSET(Channel), XRFDC_ADC_FIFO_DELAY_MASK,
-					XRFDC_FIFO_CHANNEL_ACT);
+			XRFdc_ClrSetReg(InstancePtr, BaseAddr, XRFDC_HSCOM_FIFO_START_TDD_OFFSET(Channel),
+					XRFDC_ADC_FIFO_DELAY_MASK, XRFDC_FIFO_CHANNEL_ACT);
 			break;
 		case XRFDC_INTERP_DECIM_3X:
 		case XRFDC_INTERP_DECIM_6X:
@@ -148,8 +159,8 @@ static u32 XRFdc_SetDecimationFactorInt(XRFdc *InstancePtr, u32 Tile_Id, u32 Blo
 		case XRFDC_INTERP_DECIM_20X:
 		case XRFDC_INTERP_DECIM_24X:
 		case XRFDC_INTERP_DECIM_40X:
-			XRFdc_ClrSetReg(InstancePtr, (XRFDC_DRP_BASE(XRFDC_ADC_TILE, Tile_Id) + XRFDC_HSCOM_ADDR),
-					XRFDC_HSCOM_FIFO_START_TDD_OFFSET(Channel), XRFDC_ADC_FIFO_DELAY_MASK,
+			XRFdc_ClrSetReg(InstancePtr, BaseAddr, XRFDC_HSCOM_FIFO_START_TDD_OFFSET(Channel),
+					XRFDC_ADC_FIFO_DELAY_MASK,
 					XRFDC_ADC_CG_WAIT_CYCLES << XRFDC_ADC_FIFO_DELAY_SHIFT);
 			break;
 		default:
@@ -683,6 +694,7 @@ u32 XRFdc_SetInvSincFIR(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u16 Mode)
 {
 	u32 Status;
 	u32 BaseAddr;
+	u32 NyquistZone;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
@@ -690,7 +702,6 @@ u32 XRFdc_SetInvSincFIR(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u16 Mode)
 	if (Mode > ((InstancePtr->RFdc_Config.IPType < XRFDC_GEN3) ? XRFDC_INV_SYNC_EN_MAX : XRFDC_INV_SYNC_MODE_MAX)) {
 		metal_log(METAL_LOG_ERROR, "\n Invalid mode value (%u) for DAC %u block %u in %s\r\n", Mode, Tile_Id,
 			  Block_Id, __func__);
-		;
 		Status = XRFDC_FAILURE;
 		goto RETURN_PATH;
 	}
@@ -698,6 +709,19 @@ u32 XRFdc_SetInvSincFIR(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u16 Mode)
 	if (Status != XRFDC_SUCCESS) {
 		metal_log(METAL_LOG_ERROR, "\n DAC %u block %u not available in %s\r\n", Tile_Id, Block_Id, __func__);
 		goto RETURN_PATH;
+	}
+
+	Status = XRFdc_GetNyquistZone(InstancePtr, XRFDC_DAC_TILE, Tile_Id, Block_Id, &NyquistZone);
+	if (Status != XRFDC_SUCCESS) {
+		metal_log(METAL_LOG_ERROR, "\n Could not determine Nyquist zone for DAC %u block %u in %s\r\n", Tile_Id,
+			  Block_Id, __func__);
+		goto RETURN_PATH;
+	}
+
+	if ((Mode != XRFDC_DISABLED) && (Mode != NyquistZone)) {
+		metal_log(METAL_LOG_WARNING,
+			  "\n Inverse Sinc mode and Nyquist Zone are incompatible for DAC %u block %u in %s\r\n",
+			  Tile_Id, Block_Id, __func__);
 	}
 
 	BaseAddr = XRFDC_BLOCK_BASE(XRFDC_DAC_TILE, Tile_Id, Block_Id);
@@ -907,8 +931,8 @@ u32 XRFdc_SetFabClkOutDiv(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u16 FabClkD
 
 	if ((Type == XRFDC_ADC_TILE) && (FabClkDiv == XRFDC_FAB_CLK_DIV1)) {
 		Status = XRFDC_FAILURE;
-		metal_log(METAL_LOG_ERROR, "\n Invalid clock divider (%u) for %s %u in %s\r\n", FabClkDiv,
-			  (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
+		metal_log(METAL_LOG_ERROR, "\n Invalid clock divider (%u) for ADC %u in %s\r\n", FabClkDiv, Tile_Id,
+			  __func__);
 		goto RETURN_PATH;
 	} else {
 		XRFdc_ClrSetReg(InstancePtr, BaseAddr, XRFDC_HSCOM_CLK_DIV_OFFSET, XRFDC_FAB_CLK_DIV_MASK, FabClkDiv);
@@ -1926,6 +1950,18 @@ double XRFdc_GetFabClkFreq(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
 {
 	double FabClkFreq;
 
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter type in %s\r\n", __func__);
+		return 0.0;
+	}
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0.0;
+	}
+
 	if (Type == XRFDC_ADC_TILE) {
 		FabClkFreq = InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id].FabClkFreq;
 	} else {
@@ -1953,6 +1989,22 @@ double XRFdc_GetFabClkFreq(XRFdc *InstancePtr, u32 Type, u32 Tile_Id)
 u32 XRFdc_IsFifoEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id)
 {
 	u32 FifoEnable;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter type in %s\r\n", __func__);
+		return 0U;
+	}
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0U;
+	}
+	if (Block_Id > XRFDC_BLOCK_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter block number in %s\r\n", __func__);
+		return 0U;
+	}
 
 	if (Type == XRFDC_ADC_TILE) {
 		FifoEnable =

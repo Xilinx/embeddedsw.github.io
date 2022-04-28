@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_options.c
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 *
 * Contains API's for changing the various options in host and card.
@@ -60,6 +60,7 @@
 *       mn     03/16/20 Move XSdPs_Select_Card API to User APIs
 * 3.10  mn     06/05/20 Modified code for SD Non-Blocking Read support
 * 3.12  sk     01/28/21 Added support for non-blocking write.
+* 3.14  mn     11/28/21 Fix MISRA-C violations.
 *
 * </pre>
 *
@@ -208,11 +209,12 @@ s32 XSdPs_Get_BusWidth(XSdPs *InstancePtr, u8 *ReadBuff)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)ReadBuff,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 	}
 
 	Status = XST_SUCCESS;
@@ -312,7 +314,7 @@ s32 XSdPs_Change_BusWidth(XSdPs *InstancePtr)
 	if (InstancePtr->Mode == XSDPS_DDR52_MODE) {
 		StatusReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
 					XSDPS_HOST_CTRL2_OFFSET);
-		StatusReg &= (u32)(~XSDPS_HC2_UHS_MODE_MASK);
+		StatusReg &= (~(u32)XSDPS_HC2_UHS_MODE_MASK);
 		StatusReg |= InstancePtr->Mode;
 		XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
 					XSDPS_HOST_CTRL2_OFFSET, (u16)StatusReg);
@@ -375,11 +377,12 @@ s32 XSdPs_Get_BusSpeed(XSdPs *InstancePtr, u8 *ReadBuff)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)ReadBuff,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 	}
 
 	Status = XST_SUCCESS;
@@ -438,11 +441,12 @@ s32 XSdPs_Get_Status(XSdPs *InstancePtr, u8 *SdStatReg)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)SdStatReg,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 	}
 
 	Status = XST_SUCCESS;
@@ -568,11 +572,12 @@ s32 XSdPs_Get_Mmc_ExtCsd(XSdPs *InstancePtr, u8 *ReadBuff)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)ReadBuff,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 	}
 
 	Status = XST_SUCCESS;
@@ -616,6 +621,7 @@ s32 XSdPs_Set_Mmc_ExtCsd(XSdPs *InstancePtr, u32 Arg)
 	Status = XSdps_CheckTransferDone(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
 	Status = XST_SUCCESS;

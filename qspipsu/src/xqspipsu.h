@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,14 @@
 /**
  *
  * @file xqspipsu.h
- * @addtogroup qspipsu_v1_14
+ * @addtogroup Overview
  * @{
  * @details
  *
- * This is the header file for the implementation of QSPIPSU driver.
+ * This section explains the implementation the functions required to use the
+ * QSPIPSU hardware to perform a transfer. These are accessible to the user
+ * via xqspipsu.h.
+ *
  * Generic QSPI interface allows for communication to any QSPI slave device.
  * GQSPI contains a GENFIFO into which the bus transfers required are to be
  * pushed with appropriate configuration. The controller provides TX and RX
@@ -20,35 +23,37 @@
  * GENFIFO entry noting the configuration and places data on the bus as required
  *
  * The different options in GENFIFO are as follows:
- * IMM_DATA : Can be one byte of data to be transmitted, number of clocks or
- *            number of bytes in transfer.
- * DATA_XFER : Indicates that data/clocks need to be transmitted or received.
- * EXPONENT : e when 2^e bytes are involved in transfer.
- * SPI_MODE : SPI/Dual SPI/Quad SPI
- * CS : Lower or Upper CS or Both
- * Bus : Lower or Upper Bus or Both
- * TX : When selected, controller transmits data in IMM or fetches number of
- *      bytes mentioned form TX FIFO. If not selected, dummies are pumped.
- * RX : When selected, controller receives and fills the RX FIFO/allows RX DMA
- *      of requested number of bytes. If not selected, RX data is discarded.
- * Stripe : Byte stripe over lower and upper bus or not.
- * Poll : Polls response to match for to a set value (used along with POLL_CFG
- *        registers) and then proceeds to next GENFIFO entry.
- *        This feature is not currently used in the driver.
+ * - IMM_DATA : Can be one byte of data to be transmitted, number of clocks or
+ *              number of bytes in transfer.
+ * - DATA_XFER : Indicates that data/clocks need to be transmitted or received.
+ * - EXPONENT : e when 2^e bytes are involved in transfer.
+ * - SPI_MODE : SPI/Dual SPI/Quad SPI
+ * - CS : Lower or Upper CS or Both
+ * - Bus : Lower or Upper Bus or Both
+ * - TX : When selected, controller transmits data in IMM or fetches number of
+ *        bytes mentioned form TX FIFO. If not selected, dummies are pumped.
+ * - RX : When selected, controller receives and fills the RX FIFO/allows RX DMA
+ *        of requested number of bytes. If not selected, RX data is discarded.
+ * - Stripe : Byte stripe over lower and upper bus or not.
+ * - Poll : Polls response to match for to a set value (used along with POLL_CFG
+ *          registers) and then proceeds to next GENFIFO entry.
+ *          This feature is not currently used in the driver.
  *
  * GENFIFO has manual and auto start options.
  * All DMA requests need a 4-byte aligned destination address buffer and
  * size of transfer should also be a multiple of 4.
  * This driver supports DMA RX and IO RX.
  *
- * Initialization:
+ * <b>Initialization & Configuration</b>
+ *
  * This driver uses the GQSPI controller with RX DMA. It supports both
  * interrupt and polled transfers. Manual start of GENFIFO is used.
  * XQspiPsu_CfgInitialize() initializes the instance variables.
  * Additional setting can be done using SetOptions/ClearOptions functions
  * and SelectSlave function.
  *
- * Transfer:
+ * <b>Transfer</b>
+ *
  * Polled or Interrupt transfers can be done. The transfer function needs the
  * message(s) to be transmitted in the form of an array of type XQspiPsu_Msg.
  * This is supposed to contain the byte count and any TX/RX buffers as required.
@@ -542,6 +547,14 @@ s32 XQspiPsu_SetReadMode(XQspiPsu *InstancePtr, u32 Mode);
 void XQspiPsu_SetWP(const XQspiPsu *InstancePtr, u8 Value);
 void XQspiPsu_WriteProtectToggle(const XQspiPsu *InstancePtr, u32 Toggle);
 void XQspiPsu_Idle(const XQspiPsu *InstancePtr);
+
+/************************** Variable Prototypes ******************************/
+
+/**
+ * This table contains configuration information for each QSPIPSU device
+ * in the system.
+ */
+extern XQspiPsu_Config XQspiPsu_ConfigTable[XPAR_XQSPIPSU_NUM_INSTANCES];
 
 #ifdef __cplusplus
 }

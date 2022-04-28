@@ -7,7 +7,7 @@
 /**
  *
  * @file xdp_intr.c
- * @addtogroup dp_v7_5
+ * @addtogroup dp_v7_6
  * @{
  *
  * This file contains functions related to XDp interrupt handling.
@@ -548,7 +548,7 @@ int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 
 	case XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP:
 		if (InstancePtr->Config.DpProtocol == XDP_PROTOCOL_DP_1_4) {
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[0] = CallbackFunc;
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[0] = CallbackFunc;
 			InstancePtr->RxInstance.IntrAdapatveSyncSdpCallbackRef[0] = CallbackRef;
 			Status = XST_SUCCESS;
 		} else {
@@ -562,7 +562,7 @@ int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 		Index = ((HandlerType + 1) -
 			XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP_STREAM_2);
 			InstancePtr->RxInstance.
-			IntrAdapatveSyncSdpHandler[Index] = CallbackFunc;
+			IntrAdaptiveSyncSdpHandler[Index] = CallbackFunc;
 			InstancePtr->RxInstance.
 			IntrAdapatveSyncSdpCallbackRef[Index] = CallbackRef;
 			Status = XST_SUCCESS;
@@ -663,7 +663,6 @@ int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 		Status = XST_SUCCESS;
 		break;
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	case XDP_RX_HANDLER_HDCP22_AKE_INIT:
 		InstancePtr->RxInstance.IntrHdcp22AkeInitWrHandler =
 			CallbackFunc;
@@ -734,7 +733,6 @@ int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 			CallbackRef;
 		Status = XST_SUCCESS;
 		break;
-#endif
 
 	case XDP_RX_HANDLER_UNPLUG:
 		InstancePtr->RxInstance.IntrUnplugHandler = CallbackFunc;
@@ -1268,7 +1266,6 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 			InstancePtr->RxInstance.IntrHdcpBinfoRdCallbackRef);
 	}
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/* A write to the HDCP22 Ake_Init MSB register has been performed. */
 	if ((IntrStatus2 & XDP_RX_INTERRUPT_MASK_HDCP22_AKE_INIT_MASK) &&
 			InstancePtr->RxInstance.IntrHdcp22AkeInitWrHandler) {
@@ -1367,7 +1364,6 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 				InstancePtr->RxInstance.
 				IntrHdcp22RepeatAuthStreamMangWrCallbackRef);
 	}
-#endif /*XPAR_XHDCP22_RX_NUM_INSTANCES*/
 
 	/* An unplug event has occurred. */
 	if ((IntrStatus & XDP_RX_INTERRUPT_CAUSE_UNPLUG_MASK) &&
@@ -1442,8 +1438,8 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 		if ((IntrStatus2 &
 			XDP_RX_INTERRUPT_ADAPTIVE_SYNC_SDP_STREAMX_MASK(
 			XDP_RX_STREAM_ID1)) &&
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[0]) {
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[0](
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[0]) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[0](
 				InstancePtr->RxInstance.
 				IntrAdapatveSyncSdpCallbackRef[0]);
 		}
@@ -1451,8 +1447,8 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 		if ((IntrStatus2 &
 			XDP_RX_INTERRUPT_ADAPTIVE_SYNC_SDP_STREAMX_MASK(
 			XDP_RX_STREAM_ID2)) &&
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[1]) {
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[1](
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[1]) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[1](
 				InstancePtr->RxInstance.
 				IntrAdapatveSyncSdpCallbackRef[1]);
 		}
@@ -1460,8 +1456,8 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 		if ((IntrStatus2 &
 			XDP_RX_INTERRUPT_ADAPTIVE_SYNC_SDP_STREAMX_MASK(
 			XDP_RX_STREAM_ID3)) &&
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[2]) {
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[2](
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[2]) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[2](
 				InstancePtr->RxInstance.
 				IntrAdapatveSyncSdpCallbackRef[2]);
 		}
@@ -1469,8 +1465,8 @@ static void XDp_RxInterruptHandler(XDp *InstancePtr)
 		if ((IntrStatus2 &
 			XDP_RX_INTERRUPT_ADAPTIVE_SYNC_SDP_STREAMX_MASK(
 			XDP_RX_STREAM_ID4)) &&
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[3]) {
-			InstancePtr->RxInstance.IntrAdapatveSyncSdpHandler[3](
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[3]) {
+			InstancePtr->RxInstance.IntrAdaptiveSyncSdpHandler[3](
 				InstancePtr->RxInstance.
 				IntrAdapatveSyncSdpCallbackRef[3]);
 		}

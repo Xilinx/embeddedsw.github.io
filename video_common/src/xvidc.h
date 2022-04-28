@@ -7,7 +7,7 @@
 /**
  *
  * @file xvidc.h
- * @addtogroup video_common_v4_12
+ * @addtogroup video_common_v4_13
  * @{
  * @details
  *
@@ -450,6 +450,7 @@ typedef enum {
 	XVIDC_CSF_MEM_R_G_B8,       // [7:0] R:8, [7:0] G:8, [7:0] B:8
 	XVIDC_CSF_MEM_Y_U_V8_420,   // [15:0] Y:Y 8:8, [7:0] U:8, [7:0] V:8
 	XVIDC_CSF_MEM_Y_U_V8,       // [7:0] Y:8, [7:0] U:8, [7:0] V:8
+	XVIDC_CSF_MEM_Y_U_V10,      // [9:0] Y:10, [9:0] U:10, [9:0] V:10
 	XVIDC_CSF_MEM_END,          // End of memory formats
 
 	/* Streaming formats with components re-ordered */
@@ -589,20 +590,23 @@ typedef enum {
  * Video stream structure.
  */
 typedef struct {
-	XVidC_ColorFormat	  ColorFormatId;
-	XVidC_ColorDepth	  ColorDepth;
-	XVidC_PixelsPerClock  PixPerClk;
-	XVidC_FrameRate		  FrameRate;
-	XVidC_AspectRatio	  AspectRatio;
-	u8			          IsInterlaced;
-	u8			          Is3D;
-	XVidC_3DInfo		  Info_3D;
-	XVidC_VideoMode		  VmId;
-	XVidC_VideoTiming	  Timing;
+	XVidC_ColorFormat	ColorFormatId;
+	XVidC_ColorDepth	ColorDepth;
+	XVidC_PixelsPerClock	PixPerClk;
+	XVidC_FrameRate		FrameRate;
+	XVidC_AspectRatio	AspectRatio;
+	u8			IsInterlaced;
+	u8			Is3D;
+	XVidC_3DInfo		Info_3D;
+	XVidC_VideoMode		VmId;
+	XVidC_VideoTiming	Timing;
 	XVidC_Eotf		Eotf;
 	XVidC_ColorStd		ColorStd;
-	XVidC_FrameRate		  BaseFrameRate;
-	XVidC_VideoTiming	  BaseTiming;
+	XVidC_FrameRate		BaseFrameRate;
+	XVidC_VideoTiming	BaseTiming;
+	/* For DSC streams */
+	u8			IsDSCompressed;
+	XVidC_VideoTiming	UncompressedTiming;
 } XVidC_VideoStream;
 
 /**

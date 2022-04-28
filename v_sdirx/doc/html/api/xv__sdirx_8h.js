@@ -80,6 +80,7 @@ var xv__sdirx_8h =
     [ "XV_SdiRx_GetIntrStatus", "xv__sdirx_8h.html#a51f76f20ef6b9169790e73b79ccba859", null ],
     [ "XV_SdiRx_GetPayloadId", "xv__sdirx_8h.html#ac36464a3c528cb595b0ca975a5139df3", null ],
     [ "XV_SdiRx_GetSdiMode", "xv__sdirx_8h.html#aee258ea49b5efc86d34ece895236a71a", null ],
+    [ "XV_SdiRx_HandleNoPayload", "xv__sdirx_8h.html#a20c435efc0107528bb8a4ed56441033d", null ],
     [ "XV_SdiRx_InterruptClear", "xv__sdirx_8h.html#af464c662bc41fd9d6b3f3e07847ea9eb", null ],
     [ "XV_SdiRx_IntrDisable", "xv__sdirx_8h.html#a3f7bbadf43e42e34a23a2fb23609dab7", null ],
     [ "XV_SdiRx_IntrEnable", "xv__sdirx_8h.html#aed746e1235a8a4799a8c61ec02a8f52b", null ],

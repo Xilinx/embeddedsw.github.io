@@ -7,7 +7,7 @@
 /**
 *
 * @file xscutimer.c
-* @addtogroup scutimer_v2_3
+* @addtogroup scutimer_v2_4
 * @{
 *
 * Contains the implementation of interface functions of the SCU Timer driver.
@@ -88,6 +88,10 @@ s32 XScuTimer_CfgInitialize(XScuTimer *InstancePtr,
 		 * Indicate the instance is ready to use, successfully initialized.
 		 */
 		InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
+#ifdef XIL_INTERRUPT
+		InstancePtr->Config.IntrId = ConfigPtr->IntrId;
+		InstancePtr->Config.IntrParent = ConfigPtr->IntrParent;
+#endif
 
 		Status =(s32)XST_SUCCESS;
 	}

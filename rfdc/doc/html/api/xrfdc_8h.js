@@ -80,7 +80,7 @@ var xrfdc_8h =
     [ "XRFdc_IsDACBlockEnabled", "xrfdc_8h.html#gafb29ca1d86c9584741dbd4836e10631c", null ],
     [ "XRFdc_IsDACDigitalPathEnabled", "xrfdc_8h.html#ga5b590baa42793f4bf2d36eed75be0d3c", null ],
     [ "XRFdc_IsFifoEnabled", "xrfdc_8h.html#ga5d4b9f3f2a6537c481241102777c8e90", null ],
-    [ "XRFdc_IsHighSpeedADC", "xrfdc_8h.html#ga964b11e3d49ca288d0aa53b00250dc9a", null ],
+    [ "XRFdc_IsHighSpeedADC", "xrfdc_8h.html#gab0e915848a69e9133dab0cd0d2a4aa58", null ],
     [ "XRFdc_LookupConfig", "xrfdc_8h.html#ga80407a3a6737440fa38fc79eee240ad2", null ],
     [ "XRFdc_MTS_Sysref_Config", "xrfdc_8h.html#ga547044facc23aa8502473e5f2b1c4cc4", null ],
     [ "XRFdc_MultiBand", "xrfdc_8h.html#gad7e3cba3e05ff50ddfe105a36f81fb80", null ],

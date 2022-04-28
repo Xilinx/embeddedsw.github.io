@@ -1,11 +1,16 @@
 var xdfeequ_8h =
 [
     [ "XDFEEQU_ANT_NUM_MAX", "xdfeequ_8h.html#ga99a39fd91f592f1b752b984392872ecd", null ],
-    [ "XDFEEQU_CC_NUM", "xdfeequ_8h.html#gab87433a6d4dfc72ef42d1abd246f2439", null ],
-    [ "XDFEEQU_NCO_MAX", "xdfeequ_8h.html#ga235e8692e8005b9849c6b39178a125ae", null ],
+    [ "XDFEEQU_CHANNEL_NUM", "xdfeequ_8h.html#gaadf9be0bc4827eaac4d5008b9faa9456", null ],
+    [ "XDFEEQU_DATAPATH_MODE_COMPLEX", "xdfeequ_8h.html#ga76e23380bb8727b7a0911033d89acd58", null ],
+    [ "XDFEEQU_DATAPATH_MODE_REAL", "xdfeequ_8h.html#ga82ddb44f51cd9e5acfdc6ece541dd788", null ],
+    [ "XDFEEQU_MAX_NUM_INSTANCES", "xdfeequ_8h.html#gafa958a022563aa0b6dfa7c714793b91d", null ],
+    [ "XDFEEQU_MAX_NUMBER_OF_UNITS_COMPLEX", "xdfeequ_8h.html#ga4d60c6f305213213dfd6e74958db6488", null ],
+    [ "XDFEEQU_MAX_NUMBER_OF_UNITS_REAL", "xdfeequ_8h.html#gacff5bea44d61c3c275a962ce79ab7c6e", null ],
     [ "XDFEEQU_NODE_NAME_MAX_LENGTH", "xdfeequ_8h.html#ga0554c517156fd8a4ba486fd05303ecc5", null ],
-    [ "XDFEEQU_RATE_MAX", "xdfeequ_8h.html#gad5025198eaf1f346206ad3578f72943e", null ],
-    [ "XDFEEQU_SEQ_LENGTH_MAX", "xdfeequ_8h.html#ga4788f7f7bf7b6dbad612a65a2d98c04d", null ],
+    [ "XDFEEQU_NUM_COEFF", "xdfeequ_8h.html#gae6ce8af571e21eb59ae21ec998164642", null ],
+    [ "XST_FAILURE", "xdfeequ_8h.html#ga9478d2b97aa40e09052dee2571940ef9", null ],
+    [ "XST_SUCCESS", "xdfeequ_8h.html#ga959ffc15251ddc9b3a883a30f97b7715", null ],
     [ "XDfeEqu_StateId", "xdfeequ_8h.html#ga023ff98141bd1c5721ba461a697a109f", [
       [ "XDFEEQU_STATE_NOT_READY", "xdfeequ_8h.html#gga023ff98141bd1c5721ba461a697a109fa20b5a3ffc1c22a1f9d0bae0db1c6fe77", null ],
       [ "XDFEEQU_STATE_READY", "xdfeequ_8h.html#gga023ff98141bd1c5721ba461a697a109fa3be0bb48ca98583d5c9ea76534cf9825", null ],
@@ -15,11 +20,13 @@ var xdfeequ_8h =
       [ "XDFEEQU_STATE_OPERATIONAL", "xdfeequ_8h.html#gga023ff98141bd1c5721ba461a697a109fa765d8176e3699b911928f667e5708057", null ]
     ] ],
     [ "XDfeEqu_Activate", "xdfeequ_8h.html#gac3eedb65f956253285490a558a751862", null ],
-    [ "XDfeEqu_ClearEventStatus", "xdfeequ_8h.html#gab14bcd43c245555373345b5c0bfb2d18", null ],
+    [ "XDfeEqu_ClearEventStatus", "xdfeequ_8h.html#ga3e19322f6ba584b9be6f796a51a4fdc1", null ],
     [ "XDfeEqu_Configure", "xdfeequ_8h.html#ga8517b5d3c53f9694d03a3fe0868b3937", null ],
     [ "XDfeEqu_Deactivate", "xdfeequ_8h.html#gace488d54e41f3d8d9179f9be9bbbef58", null ],
     [ "XDfeEqu_GetActiveSets", "xdfeequ_8h.html#ga0223057a4cb6242c44ddf078d49bb509", null ],
-    [ "XDfeEqu_GetEventStatus", "xdfeequ_8h.html#ga70e822bef7cd18176b6b2e606f7ab044", null ],
+    [ "XDfeEqu_GetEventStatus", "xdfeequ_8h.html#ga2e9a673ea4ad489f2525f095fb920aa4", null ],
+    [ "XDfeEqu_GetInterruptMask", "xdfeequ_8h.html#gabe7873b94d13d47c80bf23035136e326", null ],
+    [ "XDfeEqu_GetStateID", "xdfeequ_8h.html#ga7343bc5dbb0c15974f3c15184955ad89", null ],
     [ "XDfeEqu_GetTDataDelay", "xdfeequ_8h.html#gaec6fe6a5dad5653305058c1f3b72111a", null ],
     [ "XDfeEqu_GetTriggersCfg", "xdfeequ_8h.html#ga6007e4c4495f0ce8cd9c4ec9ec2a94a4", null ],
     [ "XDfeEqu_GetTUserDelay", "xdfeequ_8h.html#ga5bf51f632644d52094760f6560d399dc", null ],
@@ -28,11 +35,9 @@ var xdfeequ_8h =
     [ "XDfeEqu_InstanceClose", "xdfeequ_8h.html#ga197062db05b1c51bc800b6a90e82838a", null ],
     [ "XDfeEqu_InstanceInit", "xdfeequ_8h.html#ga57eeb135c4ee22d243462e43795fcd45", null ],
     [ "XDfeEqu_LoadCoefficients", "xdfeequ_8h.html#gab553aa1cfced879709804331bda8c876", null ],
-    [ "XDfeEqu_ReadReg", "xdfeequ_8h.html#ga2db0a7c59b290206e4066985e27d1a3b", null ],
     [ "XDfeEqu_Reset", "xdfeequ_8h.html#ga14d48b6aa1a784e94ac55d1a8950c2bf", null ],
-    [ "XDfeEqu_SetInterruptMask", "xdfeequ_8h.html#ga4cf6da5776ef6d7e7ad2b3ec50315d30", null ],
+    [ "XDfeEqu_SetInterruptMask", "xdfeequ_8h.html#ga532bd09f9d28805fb487f0d2f8e00679", null ],
     [ "XDfeEqu_SetTriggersCfg", "xdfeequ_8h.html#ga8397193c8752e178b30f4161ebf24617", null ],
     [ "XDfeEqu_SetTUserDelay", "xdfeequ_8h.html#ga4996ddd3d1b3e4a372ece433df9a5766", null ],
-    [ "XDfeEqu_Update", "xdfeequ_8h.html#ga493536b08c0b66462836a39423895aae", null ],
-    [ "XDfeEqu_WriteReg", "xdfeequ_8h.html#ga7a8a93b7679803f5decb11bd338eacfd", null ]
+    [ "XDfeEqu_Update", "xdfeequ_8h.html#ga493536b08c0b66462836a39423895aae", null ]
 ];

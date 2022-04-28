@@ -1,9 +1,11 @@
 var xospipsv__control_8h =
 [
     [ "XOSPIPSV_LOWLEVEL_H_", "xospipsv__control_8h.html#gad5d4884f3757c314991e0d72bf344c59", null ],
+    [ "XOspiPsv_CalculateRxTap", "xospipsv__control_8h.html#gabef79236b8c8e5ada4f6ddb58132e35c", null ],
     [ "XOspiPsv_CheckOspiIdle", "xospipsv__control_8h.html#ga289baf1466add8dfa4a70a3952354cd7", null ],
     [ "XOspiPsv_Config_Dma", "xospipsv__control_8h.html#ga7dd7305678eaea4774657b38046cc5e4", null ],
     [ "XOspiPsv_Config_IndirectAhb", "xospipsv__control_8h.html#gae199f0006d6d3282aad2a18c4e87d479", null ],
+    [ "XOspiPsv_ConfigureTaps", "xospipsv__control_8h.html#gacb2c9597040e54b985ddf380365af639", null ],
     [ "XOspiPsv_Dac_Read", "xospipsv__control_8h.html#ga9f70d70b4dcd8a325a7dacc3aa31a5ef", null ],
     [ "XOspiPsv_Dac_Write", "xospipsv__control_8h.html#gadb1ae4f737c07e890039cdaf3a006b26", null ],
     [ "XOspiPsv_Dma_Read", "xospipsv__control_8h.html#gab882c01ec4fd29b29a58e0a07075414d", null ],

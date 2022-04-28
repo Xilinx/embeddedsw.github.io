@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +7,9 @@
 /**
 *
 * @file xdfeccf_hw.h
-* @addtogroup dfeccf_v1_1
+* @addtogroup Overview
 * @{
-*
+* @cond nocomments
 * Contains the register definitions for xdfeccf. This is
 * created to be used initially while waiting for IP.
 *
@@ -26,6 +26,10 @@
 *       dc     05/08/21 Update to common trigger
 *       dc     05/18/21 Handling CCUpdate trigger
 * 1.1   dc     07/13/21 Update to common latency requirements
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/05/21 Align event handlers
+*       dc     11/30/21 Convert AntennaCfg to structure
+* 1.3   dc     01/31/22 CCF IP MODEL_PARAM register change
 *
 * </pre>
 *
@@ -57,10 +61,10 @@ extern "C" {
 #define XDFECCF_MODEL_PARAM_RESERVED_OFFSET 0U
 #define XDFECCF_MODEL_PARAM_NUM_ANTENNA_WIDTH 4U
 #define XDFECCF_MODEL_PARAM_NUM_ANTENNA_OFFSET 4U
-#define XDFECCF_MODEL_PARAM_NUM_CC_PER_ANTENNA_WIDTH 4U
+#define XDFECCF_MODEL_PARAM_NUM_CC_PER_ANTENNA_WIDTH 5U
 #define XDFECCF_MODEL_PARAM_NUM_CC_PER_ANTENNA_OFFSET 8U
-#define XDFECCF_MODEL_PARAM_ANTENNA_INTERLEAVE_WIDTH 3U
-#define XDFECCF_MODEL_PARAM_ANTENNA_INTERLEAVE_OFFSET 12U
+#define XDFECCF_MODEL_PARAM_ANTENNA_INTERLEAVE_WIDTH 4U
+#define XDFECCF_MODEL_PARAM_ANTENNA_INTERLEAVE_OFFSET 16U
 #define XDFECCF_GAIN_STG_EN_OFFSET 0x0CU /**< Register offset */
 #define XDFECCF_GAIN_STG_EN_DISABLED 0x00U
 #define XDFECCF_GAIN_STG_EN_ENABLED 0x01U
@@ -111,6 +115,7 @@ extern "C" {
 #define XDFECCF_ISR 0x40U /**< Register offset */
 #define XDFECCF_ISR_HAS_NOT_OCCURRED 0U
 #define XDFECCF_ISR_OCCURRED 1U
+#define XDFECCF_ISR_CLEAR 1U
 #define XDFECCF_IER 0x44U /**< Register offset */
 #define XDFECCF_IER_NO_CHANGE 0U
 #define XDFECCF_IER_SET_BIT 1U
@@ -168,6 +173,8 @@ extern "C" {
 #define XDFECCF_GAIN_OFFSET 16U
 #define XDFECCF_ANTENNA_CONFIGURATION_CURRENT 0x1300U /**< Register offset */
 #define XDFECCF_ANTENNA_CONFIGURATION_NEXT 0x1304U /**< Register offset */
+#define XDFECCF_ANTENNA_DISABLE 0U
+#define XDFECCF_ANTENNA_ENABLE 1U
 
 /* Filter */
 #define XDFECCF_COEFF_LOAD 0x3000U /**< Register offset */
@@ -195,4 +202,7 @@ extern "C" {
 #endif
 
 #endif
+/**
+* @endcond
+*/
 /** @} */

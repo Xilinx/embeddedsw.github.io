@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,12 +17,18 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/05/21 Align event handlers
+*       dc     11/19/21 Update doxygen documentation
 *
 * </pre>
+* @addtogroup Overview
+* @{
 *
 *****************************************************************************/
-
+/** @cond nocomments */
 /***************************** Include Files ********************************/
+#include <unistd.h>
 #include "xdfemix_examples.h"
 
 /************************** Constant Definitions ****************************/
@@ -31,6 +37,7 @@
 /************************** Function Prototypes *****************************/
 /************************** Variable Definitions ****************************/
 
+/** @endcond */
 /****************************************************************************/
 /**
 *
@@ -51,6 +58,7 @@
 *		- XST_FAILURE if the example has failed.
 *
 ****************************************************************************/
+/** //! [testexample1] */
 int XDfeMix_AddCCExample()
 {
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -66,9 +74,10 @@ int XDfeMix_AddCCExample()
 	double FrequencyControlWord;
 	XDfeMix_TriggerCfg TriggerCfg;
 	XDfeMix_CarrierCfg CarrierCfg;
+	XDfeMix_NCO NCO;
 	XDfeMix_Version SwVersion;
 	XDfeMix_Version HwVersion;
-	XDfeMix_InterruptMask ClearMask;
+	XDfeMix_Status Status;
 
 	printf("\r\nMixer \"Pass Through\" Example - Start\r\n");
 
@@ -78,7 +87,7 @@ int XDfeMix_AddCCExample()
 		return XST_FAILURE;
 	}
 
-	/* Initialize the instance of channel filter driver */
+	/* Initialize the instance of Mixer driver */
 	InstancePtr = XDfeMix_InstanceInit(XDFEMIX_NODE_NAME);
 
 	/* Get SW and HW version numbers */
@@ -112,39 +121,39 @@ int XDfeMix_AddCCExample()
 
 	/* Set antenna gain */
 
-	/* Clear interrupt status */
-	ClearMask.DLCCUpdate = 1U;
+	/* Clear event status */
+	Status.DUCDDCOverflow = XDFEMIX_ISR_CLEAR;
+	Status.MixerOverflow = XDFEMIX_ISR_CLEAR;
+	Status.CCUpdate = XDFEMIX_ISR_CLEAR;
+	Status.CCSequenceError = XDFEMIX_ISR_CLEAR;
 	usleep(10000);
-	XDfeMix_ClearInterruptStatus(InstancePtr, &ClearMask);
+	XDfeMix_ClearEventStatus(InstancePtr, &Status);
 	/* Set antenna 0 gain */
 	AntennaId = 0;
 	AntennaGain = 1U;
 	XDfeMix_SetAntennaGain(InstancePtr, AntennaId, AntennaGain);
 
-	/* Clear interrupt status */
-	ClearMask.DLCCUpdate = 1U;
+	/* Clear event status */
 	usleep(10000);
-	XDfeMix_ClearInterruptStatus(InstancePtr, &ClearMask);
+	XDfeMix_ClearEventStatus(InstancePtr, &Status);
 	/* Set antenna 0 gain */
 	AntennaId = 1U;
 	XDfeMix_SetAntennaGain(InstancePtr, AntennaId, AntennaGain);
 
 	/* Add component carrier */
-	/* Clear interrupt status */
-	ClearMask.DLCCUpdate = 1U;
+	/* Clear event status */
 	usleep(10000);
-	XDfeMix_ClearInterruptStatus(InstancePtr, &ClearMask);
+	XDfeMix_ClearEventStatus(InstancePtr, &Status);
 	/* Add CC */
 	CCID = 0;
-	CarrierCfg.DUCDDCCfg.Rate = 2U;
-	CarrierCfg.DUCDDCCfg.NCO = 0;
+	CarrierCfg.DUCDDCCfg.NCOIdx = 0;
 	CarrierCfg.DUCDDCCfg.CCGain = 3U;
-	CarrierCfg.NCO.NCOGain = 0;
+	NCO.NCOGain = 0;
 	FreqMhz = 40;
 	NcoFreqMhz = 491.52;
 	FrequencyControlWord = floor((FreqMhz / NcoFreqMhz) * 0x100000000);
-	CarrierCfg.NCO.FrequencyCfg.FrequencyControlWord = FrequencyControlWord;
-	XDfeMix_AddCC(InstancePtr, CCID, BitSequence, &CarrierCfg);
+	NCO.FrequencyCfg.FrequencyControlWord = FrequencyControlWord;
+	XDfeMix_AddCC(InstancePtr, CCID, BitSequence, &CarrierCfg, &NCO);
 
 	/* Close and exit */
 	XDfeMix_Deactivate(InstancePtr);
@@ -152,3 +161,5 @@ int XDfeMix_AddCCExample()
 	printf("Mixer \"Pass Through\" Example: Pass\r\n");
 	return XST_SUCCESS;
 }
+/** //! [testexample1] */
+/** @} */

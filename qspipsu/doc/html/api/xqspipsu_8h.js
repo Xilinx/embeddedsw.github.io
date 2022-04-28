@@ -91,5 +91,6 @@ var xqspipsu_8h =
     [ "XQspiPsu_SetStatusHandler", "xqspipsu_8h.html#ga02ea5e95c8939c2be78d26c255a6ba6f", null ],
     [ "XQspiPsu_SetWP", "xqspipsu_8h.html#ga54cce449d0bda6133fe2c254a164e08e", null ],
     [ "XQspiPsu_StartDmaTransfer", "xqspipsu_8h.html#ga769969b43f91def18f7501555ec35b11", null ],
-    [ "XQspiPsu_WriteProtectToggle", "xqspipsu_8h.html#ga0ec97b3d7c6cb24544f0bfa8114b56d7", null ]
+    [ "XQspiPsu_WriteProtectToggle", "xqspipsu_8h.html#ga0ec97b3d7c6cb24544f0bfa8114b56d7", null ],
+    [ "XQspiPsu_ConfigTable", "xqspipsu_8h.html#ga0a1440bbf114a2e065b65bca531a14c3", null ]
 ];

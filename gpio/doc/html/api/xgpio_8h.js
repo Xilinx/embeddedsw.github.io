@@ -5,7 +5,7 @@ var xgpio_8h =
     [ "XGpio_DiscreteClear", "xgpio_8h.html#gae430718af9f347c91be42aad580b216c", null ],
     [ "XGpio_DiscreteRead", "xgpio_8h.html#gaed95c58f21d567fca624f9f51cb25e20", null ],
     [ "XGpio_DiscreteSet", "xgpio_8h.html#ga8f2cea7ef78412c03c7ebdba87b7cdd4", null ],
-    [ "XGpio_DiscreteWrite", "xgpio_8h.html#gab6965e5986a770e5e9d62d0ea4e56636", null ],
+    [ "XGpio_DiscreteWrite", "xgpio_8h.html#gae188a28725318c991ac45afb2452ad9b", null ],
     [ "XGpio_GetDataDirection", "xgpio_8h.html#ga77090853c15dc3d72e2bfbc66e635ada", null ],
     [ "XGpio_Initialize", "xgpio_8h.html#ga080482882d1f60cbd84b8e4ea856560c", null ],
     [ "XGpio_InterruptClear", "xgpio_8h.html#ga5138b55159f8b2387f5cf16079b40bbe", null ],

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,10 @@
 /**
 *
 * @file xcsudma_intr.c
-* @addtogroup csudma_v1_10
+* @addtogroup Overview
 * @{
 *
-* This file contains interrupt related functions of Xilinx CSU_DMA core.
+* The xcsudma_intr.c file contains interrupt related functions of Xilinx CSU_DMA core.
 * Please see xcsudma.h for more details of the driver.
 *
 * <pre>
@@ -20,6 +20,8 @@
 * Ver   Who     Date     Changes
 * ----- ------  -------- ---------------------------------------------------
 * 1.0   vnsld  22/10/14  First release
+* 1.11	sk     03/03/22  Replace driver version in addtogroup with Overview.
+* 1.11	sk     03/03/22  Update Overview section based on review comments.
 * </pre>
 *
 ******************************************************************************/

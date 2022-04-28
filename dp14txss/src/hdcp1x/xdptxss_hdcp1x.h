@@ -31,11 +31,9 @@ extern "C" {
 /***************************** Include Files *********************************/
 
 #include "xparameters.h"
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 #include "xhdcp1x.h"
 #include "xhdcp1x_port.h"
 #include "xtmrctr.h"
-#endif
 
 /************************** Constant Definitions *****************************/
 

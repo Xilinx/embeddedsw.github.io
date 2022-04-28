@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_hw.h
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -40,11 +40,13 @@
 *       mn     05/21/19 Disable DLL Reset code for Versal
 *       mn     07/03/19 Update Input Tap Delays for Versal
 * 3.9   mn     03/03/20 Restructured the code for more readability and modularity
+* 3.14  mn     11/28/21 Fix MISRA-C violations.
 *
 * </pre>
 *
 ******************************************************************************/
 
+/** @cond INTERNAL */
 #ifndef SD_HW_H_
 #define SD_HW_H_
 
@@ -613,16 +615,6 @@ extern "C" {
 #define XSDPS_HC_SPEC_V1		0x0000U	/**< HC spec version 1 */
 /** @} */
 
-/** @name Block size mask for 512 bytes
- *
- * Block size mask for 512 bytes - This is the default block size.
- * @{
- */
-
-#define XSDPS_BLK_SIZE_512_MASK	0x200U	/**< Blk Size 512 */
-
-/** @} */
-
 /** @name Commands
  *
  * Constant definitions for commands and response related to SD
@@ -657,6 +649,11 @@ extern "C" {
 #define ACMD23	 (XSDPS_APP_CMD_PREFIX + 0x1700U)
 #define CMD24	 0x1800U
 #define CMD25	 0x1900U
+#define CMD32	 0x2000U
+#define CMD33	 0x2100U
+#define CMD35	 0x2300U
+#define CMD36	 0x2400U
+#define CMD38	 0x2600U
 #define CMD41	 0x2900U
 #define ACMD41	 (XSDPS_APP_CMD_PREFIX + 0x2900U)
 #define ACMD42	 (XSDPS_APP_CMD_PREFIX + 0x2A00U)
@@ -700,19 +697,19 @@ extern "C" {
 /**
  * Operation Conditions Register Definitions
  */
-#define XSDPS_OCR_PWRUP_STS	(1U<<31)
-#define XSDPS_OCR_CC_STS	(1U<<30)
-#define XSDPS_OCR_S18		(1U<<24)
-#define XSDPS_OCR_3V5_3V6	(1U<<23)
-#define XSDPS_OCR_3V4_3V5	(1U<<22)
-#define XSDPS_OCR_3V3_3V4	(1U<<21)
-#define XSDPS_OCR_3V2_3V3	(1U<<20)
-#define XSDPS_OCR_3V1_3V2	(1U<<19)
-#define XSDPS_OCR_3V0_3V1	(1U<<18)
-#define XSDPS_OCR_2V9_3V0	(1U<<17)
-#define XSDPS_OCR_2V8_2V9	(1U<<16)
-#define XSDPS_OCR_2V7_2V8	(1U<<15)
-#define XSDPS_OCR_1V7_1V95	(1U<<7)
+#define XSDPS_OCR_PWRUP_STS	(0x00000001U << 31)
+#define XSDPS_OCR_CC_STS	(0x00000001U << 30)
+#define XSDPS_OCR_S18		(0x00000001U << 24)
+#define XSDPS_OCR_3V5_3V6	(0x00000001U << 23)
+#define XSDPS_OCR_3V4_3V5	(0x00000001U << 22)
+#define XSDPS_OCR_3V3_3V4	(0x00000001U << 21)
+#define XSDPS_OCR_3V2_3V3	(0x00000001U << 20)
+#define XSDPS_OCR_3V1_3V2	(0x00000001U << 19)
+#define XSDPS_OCR_3V0_3V1	(0x00000001U << 18)
+#define XSDPS_OCR_2V9_3V0	(0x00000001U << 17)
+#define XSDPS_OCR_2V8_2V9	(0x00000001U << 16)
+#define XSDPS_OCR_2V7_2V8	(0x00000001U << 15)
+#define XSDPS_OCR_1V7_1V95	(0x00000001U << 7)
 #define XSDPS_OCR_HIGH_VOL	0x00FF8000U
 #define XSDPS_OCR_LOW_VOL	0x00000080U
 /** @} */
@@ -856,6 +853,9 @@ extern "C" {
 #define C_SIZE_UPPER_MASK		0x00000003U
 #define CSD_STRUCT_MASK			0x00C00000U
 #define CSD_V2_C_SIZE_MASK		0x3FFFFF00U
+#define CSD_CCC_MASK			0xFFF00000U
+#define CSD_CCC_SHIFT			20U
+#define CSD_CCC_CLASS5_MASK		0x20U
 /** @} */
 
 /**
@@ -1117,6 +1117,8 @@ extern "C" {
 #define XSDPS_WIDTH_8		8U	/**< Bus width 8 */
 #define XSDPS_WIDTH_4		4U	/**< Bus width 4 */
 
+#define XSDPS_SLOTTYPE_SDADIR		4U	/**< SD3.0 Auto Direction */
+
 /**
  * @name Tap delays
  * @{
@@ -1147,6 +1149,9 @@ extern "C" {
 #define SD_ITAPDLYSEL_HSD			0x0000002CU
 #define SD_OTAPDLYSEL_SD_HSD		0x00000004U
 #define SD_OTAPDLYSEL_EMMC_HSD		0x00000005U
+#define SD_AUTODIR_ITAPDLYSEL_HSD	0x00000025U
+#define SD_AUTODIR_ITAPDLYSEL_SDR25	0x00000026U
+#define SD_AUTODIR_ITAPDLYSEL_DDR50	0x0000002AU
 #else
 #define SD0_ITAPDLY_SEL_MASK		0x000000FFU
 #define SD0_OTAPDLY_SEL_MASK		0x0000003FU
@@ -1174,6 +1179,9 @@ extern "C" {
 #define SD_ITAPDLYSEL_HSD			0x00000015U
 #define SD_OTAPDLYSEL_SD_HSD		0x00000005U
 #define SD_OTAPDLYSEL_EMMC_HSD		0x00000006U
+#define SD_AUTODIR_ITAPDLYSEL_HSD	0x00000028U
+#define SD_AUTODIR_ITAPDLYSEL_SDR25	0x0000002CU
+#define SD_AUTODIR_ITAPDLYSEL_DDR50	0x00000033U
 #endif
 /** @} */
 
@@ -1248,7 +1256,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XSdPs_ReadReg(BaseAddress, RegOffset) \
-	XSdPs_In32((BaseAddress) + (RegOffset))
+	XSdPs_In32((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset))
 
 /***************************************************************************/
 /**
@@ -1267,7 +1275,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XSdPs_WriteReg(BaseAddress, RegOffset, RegisterValue) \
-	XSdPs_Out32((BaseAddress) + (RegOffset), (RegisterValue))
+	XSdPs_Out32((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset), (RegisterValue))
 
 /****************************************************************************/
 /**
@@ -1292,7 +1300,7 @@ static INLINE u16 XSdPs_ReadReg16(u32 BaseAddress, u8 RegOffset)
 	Reg >>= ((RegOffset & 0x3)*8);
 	return (u16)Reg;
 #else
-	return XSdPs_In16((BaseAddress) + (RegOffset));
+	return XSdPs_In16((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset));
 #endif
 }
 
@@ -1323,7 +1331,7 @@ static INLINE void XSdPs_WriteReg16(u32 BaseAddress, u8 RegOffset, u16 RegisterV
 	Reg |= RegisterValue <<((RegOffset & 0x3)*8);
 	XSdPs_Out32(BaseAddress, Reg);
 #else
-	XSdPs_Out16((BaseAddress) + (RegOffset), (RegisterValue));
+	XSdPs_Out16((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset), (RegisterValue));
 #endif
 }
 
@@ -1350,7 +1358,7 @@ static INLINE u8 XSdPs_ReadReg8(u32 BaseAddress, u8 RegOffset)
 	Reg >>= ((RegOffset & 0x3)*8);
 	return (u8)Reg;
 #else
-	return XSdPs_In8((BaseAddress) + (RegOffset));
+	return XSdPs_In8((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset));
 #endif
 }
 /***************************************************************************/
@@ -1379,7 +1387,7 @@ static INLINE void XSdPs_WriteReg8(u32 BaseAddress, u8 RegOffset, u8 RegisterVal
 	Reg |= RegisterValue <<((RegOffset & 0x3)*8);
 	XSdPs_Out32(BaseAddress, Reg);
 #else
-	XSdPs_Out8((BaseAddress) + (RegOffset), (RegisterValue));
+	XSdPs_Out8((UINTPTR)(BaseAddress) + (UINTPTR)(RegOffset), (RegisterValue));
 #endif
 }
 /***************************************************************************/
@@ -1407,4 +1415,5 @@ static INLINE void XSdPs_WriteReg8(u32 BaseAddress, u8 RegOffset, u8 RegisterVal
 #endif
 
 #endif /* SD_HW_H_ */
+/** @endcond */
 /** @} */

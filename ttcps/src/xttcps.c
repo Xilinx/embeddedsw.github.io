@@ -7,7 +7,7 @@
 /**
 *
 * @file xttcps.c
-* @addtogroup ttcps_v3_14
+* @addtogroup ttcps_v3_15
 * @{
 *
 * This file contains the implementation of the XTtcPs driver. This driver
@@ -113,6 +113,10 @@ s32 XTtcPs_CfgInitialize(XTtcPs *InstancePtr, XTtcPs_Config *ConfigPtr,
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 	InstancePtr->Config.InputClockHz = ConfigPtr->InputClockHz;
 	InstancePtr->StatusHandler = StubStatusHandler;
+#ifdef XIL_INTERRUPT
+	InstancePtr->Config.IntrId = ConfigPtr->IntrId;
+	InstancePtr->Config.IntrParent = ConfigPtr->IntrParent;
+#endif
 
 	IsStartResult = XTtcPs_IsStarted(InstancePtr);
 	/*

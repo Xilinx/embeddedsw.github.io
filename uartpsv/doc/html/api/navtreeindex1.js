@@ -52,8 +52,5 @@ var NAVTREEINDEX1 =
 "xuartpsv__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,10,0],
 "xuartpsv__sinit_8c.html":[2,11],
 "xuartpsv__sinit_8c.html#ga7477291ed48190c1ef632c2086e013e9":[2,11,0],
-"xuartpsv__xfer_8h.html":[2,12],
-"xuartpsv__xfer_8h.html#ga2236ec3fe4acd721566be3025554826b":[2,12,2],
-"xuartpsv__xfer_8h.html#ga675c10635a020bec17ffa1adaace783a":[2,12,0],
-"xuartpsv__xfer_8h.html#gab7c628a4fd29e1f9d1d4cb9cbe672279":[2,12,1]
+"xuartpsv__xfer_8h.html":[2,12]
 };

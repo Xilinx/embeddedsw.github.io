@@ -170,6 +170,9 @@ int XV_SdiRx_CfgInitialize(XV_SdiRx *InstancePtr, XV_SdiRx_Config *CfgPtr,
 	/* Reset all peripherals */
 	XV_SdiRx_IntrDisable(InstancePtr, XV_SDIRX_IER_ALLINTR_MASK);
 
+	/* Ignore VPID / ST352 payload to generate Video lock interrupt */
+	InstancePtr->HandleNoPayload = 1;
+
 	/* Start SDI core */
 	XV_SdiRx_Start(InstancePtr, XV_SDIRX_MULTISEARCHMODE);
 
@@ -417,9 +420,16 @@ int XV_SdiRx_Stop(XV_SdiRx *InstancePtr)
 	Data = XV_SdiRx_ReadReg(InstancePtr->Config.BaseAddress,
 				(XV_SDIRX_RST_CTRL_OFFSET));
 	Data &= ~XV_SDIRX_RST_CTRL_SDIRX_SS_EN_MASK;
-
 	XV_SdiRx_WriteReg((InstancePtr)->Config.BaseAddress,
 				(XV_SDIRX_RST_CTRL_OFFSET), (Data));
+
+	/* Set VPID bit to its default */
+	Data = XV_SdiRx_ReadReg(InstancePtr->Config.BaseAddress,
+				(XV_SDIRX_MDL_CTRL_OFFSET));
+	if (InstancePtr->HandleNoPayload)
+		Data |= XV_SDIRX_MDL_CTRL_VPID_MASK;
+	XV_SdiRx_WriteReg((InstancePtr)->Config.BaseAddress,
+				(XV_SDIRX_MDL_CTRL_OFFSET), (Data));
 
 	return XST_SUCCESS;
 }
@@ -516,6 +526,12 @@ void XV_SdiRx_Start(XV_SdiRx *InstancePtr, XV_SdiRx_SearchMode Mode)
 				| XV_SDIRX_MDL_CTRL_MODE_DET_EN_MASK);
 		Data |= (Mode << XV_SDIRX_MDL_CTRL_FORCED_MODE_SHIFT);
 	}
+
+	/* Ignore VPID / ST352 payload to generate Video lock interrupt */
+	if (InstancePtr->HandleNoPayload)
+		Data &= ~XV_SDIRX_MDL_CTRL_VPID_MASK;
+	else
+		Data |= XV_SDIRX_MDL_CTRL_VPID_MASK;
 
 	XV_SdiRx_WriteReg((InstancePtr)->Config.BaseAddress,
 				(XV_SDIRX_MDL_CTRL_OFFSET), (Data));
@@ -1003,6 +1019,30 @@ void XV_SdiRx_SetBitDepth(XV_SdiRx *InstancePtr, XVidC_ColorDepth BitDepth)
 	InstancePtr->BitDepth = BitDepth;
 }
 
+/*****************************************************************************/
+/**
+*
+* This function disables generating Video lock interrupt for no payload case
+*
+* @param	InstancePtr is a pointer to the XV_SdiRx core instance.
+* @param	enable is to enable/disable the Handling of nopayload case
+* 			0 is to disable
+* 			1 is to enable
+*
+* @return	None
+*
+******************************************************************************/
+void XV_SdiRx_HandleNoPayload(XV_SdiRx *InstancePtr, u8 enable)
+{
+	/* Verify argument. */
+	Xil_AssertVoid(InstancePtr != NULL);
+
+	if (enable)
+		InstancePtr->HandleNoPayload = 1;
+	else
+		InstancePtr->HandleNoPayload = 0;
+
+}
 
 /*****************************************************************************/
 /**

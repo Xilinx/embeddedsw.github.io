@@ -1,10 +1,14 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
+* @file xcsudma.h
+* @addtogroup Overview
+* @{
+* @details
 *
 * The CSU_DMA is present inside CSU (Configuration Security Unit) module which
 * is located within the Low-Power Subsystem (LPS) internal to the PS.
@@ -15,9 +19,9 @@
 * The CSU_DMA is a 2 channel simple DMA, allowing separate control of the SRC
 * (read) channel and DST (write) channel. The DMA is effectively able to
 * transfer data:
-*	- From PS-side to the SSS-side (SRC DMA only)
-*	- From SSS-side to the PS-side (DST DMA only)
-*	- Simultaneous PS-side to SSS_side and SSS-side to the PS-side
+*	- From PS-side to the SSS-side (SRC DMA only).
+*	- From SSS-side to the PS-side (DST DMA only).
+*	- Simultaneous PS-side to SSS_side and SSS-side to the PS-side.
 *
 * <b>Initialization & Configuration</b>
 *
@@ -61,12 +65,7 @@
 * The XCsuDma driver is composed of several source files. This allows the user
 * to build and link only those parts of the driver that are necessary.
 *
-* @file xcsudma.h
-* @addtogroup csudma_v1_10
-* @{
-* @details
-*
-* This header file contains identifiers and register-level driver functions (or
+* This section contains identifiers and register-level driver functions (or
 * macros), range macros, structure typedefs that can be used to access the
 * Xilinx CSU_DMA core instance.
 *
@@ -101,6 +100,11 @@
 * 1.8   nsk     12/14/20 Updated the tcl to not to use the instance names.
 * 1.9	sk	02/11/21 Add description for the dmatype macros.
 * 1.9	sk	02/11/21 Remove the prototype of undefined functions.
+* 1.11	sk	03/03/22 Move addtogroup to starting of the file and replace
+* 			 driver version with Overview.
+* 1.11	sk	03/03/22 Update overview section based on review comments.
+* 1.11	adk	03/15/22 Fixed syntax errors in csudma_tapp.tcl file, when stdout
+* 			 is configured as none.
 * </pre>
 *
 ******************************************************************************/

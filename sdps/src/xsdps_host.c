@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_host.c
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 *
 * Contains the interface functions of the XSdPs driver.
@@ -27,6 +27,9 @@
 *       sk     12/17/20 Removed checking platform specific SD macros and used
 *                       Baseaddress instead.
 * 3.13  sk     08/10/21 Limit the SD operating frequency to 19MHz for Versal.
+* 3.14  sk     10/22/21 Add support for Erase feature.
+*       mn     11/28/21 Fix MISRA-C violations.
+*       sk     01/10/22 Add support to read slot_type parameter.
 *
 * </pre>
 *
@@ -43,7 +46,7 @@
 
 /************************** Function Prototypes ******************************/
 
-#if EL1_NONSECURE && defined (__aarch64__)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 void XSdps_Smc(XSdPs *InstancePtr, u32 RegOffset, u32 Mask, u32 Val)
 {
 	(void)Xil_Smc(MMIO_WRITE_SMC_FID, (u64)(InstancePtr->SlcrBaseAddr +
@@ -274,7 +277,12 @@ s32 XSdPs_SdModeInit(XSdPs *InstancePtr)
 					(InstancePtr->BusWidth >= XSDPS_4_BIT_WIDTH)) {
 				InstancePtr->Mode = XSDPS_HIGH_SPEED_MODE;
 				InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_HSD;
-				InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+				if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
+					InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_HSD;
+				} else {
+					InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+				}
+
 				Status = XSdPs_Change_BusSpeed(InstancePtr);
 				if (Status != XST_SUCCESS) {
 					Status = XST_FAILURE;
@@ -732,10 +740,11 @@ s32 XSdPs_EnableClock(XSdPs *InstancePtr, u16 ClockReg)
 	u32 Timeout = 150000U;
 	s32 Status;
 	u16 ReadReg;
+	u16 ClkReg = ClockReg;
 
-	ClockReg |= (u16)XSDPS_CC_INT_CLK_EN_MASK;
+	ClkReg |= (u16)XSDPS_CC_INT_CLK_EN_MASK;
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
-			XSDPS_CLK_CTRL_OFFSET, ClockReg);
+			XSDPS_CLK_CTRL_OFFSET, ClkReg);
 
 	/* Wait for 150ms for internal clock to stabilize */
 	do {
@@ -752,9 +761,9 @@ s32 XSdPs_EnableClock(XSdPs *InstancePtr, u16 ClockReg)
 	}
 
 	/* Enable SD clock */
-	ClockReg |= XSDPS_CC_SD_CLK_EN_MASK;
+	ClkReg |= XSDPS_CC_SD_CLK_EN_MASK;
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
-			XSDPS_CLK_CTRL_OFFSET, ClockReg);
+			XSDPS_CLK_CTRL_OFFSET, ClkReg);
 
 	Status = XST_SUCCESS;
 
@@ -862,7 +871,7 @@ void XSdPs_SetupReadDma(XSdPs *InstancePtr, u16 BlkCnt, u16 BlkSize, u8 *Buff)
 		XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
 		if (InstancePtr->Config.IsCacheCoherent == 0U) {
 			Xil_DCacheInvalidateRange((INTPTR)Buff,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 		}
 	}
 
@@ -905,7 +914,7 @@ void XSdPs_SetupWriteDma(XSdPs *InstancePtr, u16 BlkCnt, u16 BlkSize, const u8 *
 		XSdPs_SetupADMA2DescTbl(InstancePtr, BlkCnt, Buff);
 		if (InstancePtr->Config.IsCacheCoherent == 0U) {
 			Xil_DCacheFlushRange((INTPTR)Buff,
-				(INTPTR)BlkCnt * BlkSize);
+				((INTPTR)BlkCnt * (INTPTR)BlkSize));
 		}
 	}
 
@@ -944,7 +953,7 @@ void XSdPs_Setup32ADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 	static XSdPs_Adma2Descriptor32 Adma2_DescrTbl[32] __attribute__ ((aligned(32)));
 #endif
 	u32 TotalDescLines;
-	u64 DescNum;
+	u32 DescNum;
 	u32 BlkSize;
 
 	/* Setup ADMA2 - Write descriptor table and point ADMA SAR to it */
@@ -961,29 +970,29 @@ void XSdPs_Setup32ADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 		}
 	}
 
-	for (DescNum = 0U; DescNum < (TotalDescLines-1); DescNum++) {
+	for (DescNum = 0U; DescNum < (TotalDescLines - 1U); DescNum++) {
 		Adma2_DescrTbl[DescNum].Address =
-				(u32)((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
+				(u32)((UINTPTR)Buff + ((UINTPTR)DescNum*XSDPS_DESC_MAX_LENGTH));
 		Adma2_DescrTbl[DescNum].Attribute =
 				XSDPS_DESC_TRAN | XSDPS_DESC_VALID;
 		Adma2_DescrTbl[DescNum].Length = 0U;
 	}
 
-	Adma2_DescrTbl[TotalDescLines-1].Address =
-			(u32)((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
+	Adma2_DescrTbl[TotalDescLines - 1U].Address =
+			(u32)((UINTPTR)Buff + ((UINTPTR)DescNum*XSDPS_DESC_MAX_LENGTH));
 
-	Adma2_DescrTbl[TotalDescLines-1].Attribute =
+	Adma2_DescrTbl[TotalDescLines - 1U].Attribute =
 			XSDPS_DESC_TRAN | XSDPS_DESC_END | XSDPS_DESC_VALID;
 
-	Adma2_DescrTbl[TotalDescLines-1].Length =
+	Adma2_DescrTbl[TotalDescLines - 1U].Length =
 			(u16)((BlkCnt*BlkSize) - (u32)(DescNum*XSDPS_DESC_MAX_LENGTH));
 
 	XSdPs_WriteReg(InstancePtr->Config.BaseAddress, XSDPS_ADMA_SAR_OFFSET,
-			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & (u32)~0x0));
+			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & ~(u32)0x0U));
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheFlushRange((INTPTR)&(Adma2_DescrTbl[0]),
-			sizeof(XSdPs_Adma2Descriptor32) * 32U);
+			(INTPTR)sizeof(XSdPs_Adma2Descriptor32) * (INTPTR)32U);
 	}
 }
 
@@ -1012,7 +1021,7 @@ void XSdPs_Setup64ADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 	static XSdPs_Adma2Descriptor64 Adma2_DescrTbl[32] __attribute__ ((aligned(32)));
 #endif
 	u32 TotalDescLines;
-	u64 DescNum;
+	u32 DescNum;
 	u32 BlkSize;
 
 	/* Setup ADMA2 - Write descriptor table and point ADMA SAR to it */
@@ -1029,21 +1038,21 @@ void XSdPs_Setup64ADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 		}
 	}
 
-	for (DescNum = 0U; DescNum < (TotalDescLines-1); DescNum++) {
+	for (DescNum = 0U; DescNum < (TotalDescLines - 1U); DescNum++) {
 		Adma2_DescrTbl[DescNum].Address =
-				((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
+				((UINTPTR)Buff + ((UINTPTR)DescNum*XSDPS_DESC_MAX_LENGTH));
 		Adma2_DescrTbl[DescNum].Attribute =
 				XSDPS_DESC_TRAN | XSDPS_DESC_VALID;
 		Adma2_DescrTbl[DescNum].Length = 0U;
 	}
 
-	Adma2_DescrTbl[TotalDescLines-1].Address =
-			(u64)((UINTPTR)Buff + (DescNum*XSDPS_DESC_MAX_LENGTH));
+	Adma2_DescrTbl[TotalDescLines - 1U].Address =
+			(u64)((UINTPTR)Buff + ((UINTPTR)DescNum*XSDPS_DESC_MAX_LENGTH));
 
-	Adma2_DescrTbl[TotalDescLines-1].Attribute =
+	Adma2_DescrTbl[TotalDescLines - 1U].Attribute =
 			XSDPS_DESC_TRAN | XSDPS_DESC_END | XSDPS_DESC_VALID;
 
-	Adma2_DescrTbl[TotalDescLines-1].Length =
+	Adma2_DescrTbl[TotalDescLines - 1U].Length =
 			(u16)((BlkCnt*BlkSize) - (u32)(DescNum*XSDPS_DESC_MAX_LENGTH));
 
 #if defined(__aarch64__) || defined(__arch64__)
@@ -1052,11 +1061,11 @@ void XSdPs_Setup64ADMA2DescTbl(XSdPs *InstancePtr, u32 BlkCnt, const u8 *Buff)
 #endif
 
 	XSdPs_WriteReg(InstancePtr->Config.BaseAddress, XSDPS_ADMA_SAR_OFFSET,
-			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & (u32)~0x0));
+			(u32)((UINTPTR)&(Adma2_DescrTbl[0]) & ~(u32)0x0U));
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheFlushRange((INTPTR)&(Adma2_DescrTbl[0]),
-			sizeof(XSdPs_Adma2Descriptor64) * 32U);
+			(INTPTR)sizeof(XSdPs_Adma2Descriptor64) * (INTPTR)32U);
 	}
 }
 
@@ -1124,7 +1133,7 @@ void XSdPs_DllRstCtrl(XSdPs *InstancePtr, u8 EnRst)
 
 	BaseAddress = InstancePtr->Config.BaseAddress;
 	if (BaseAddress == XSDPS_ZYNQMP_SD0_BASE) {
-#if EL1_NONSECURE && defined (__aarch64__)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		(void)DllCtrl;
 
 		XSdps_Smc(InstancePtr, SD_DLL_CTRL, SD0_DLL_RST, (EnRst == 1U) ? SD0_DLL_RST : 0U);
@@ -1138,7 +1147,7 @@ void XSdPs_DllRstCtrl(XSdPs *InstancePtr, u8 EnRst)
 		XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_DLL_CTRL, DllCtrl);
 #endif
 	} else {
-#if EL1_NONSECURE && defined (__aarch64__)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		(void)DllCtrl;
 
 		XSdps_Smc(InstancePtr, SD_DLL_CTRL, SD1_DLL_RST, (EnRst == 1U) ? SD1_DLL_RST : 0U);
@@ -1186,7 +1195,7 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 
 #ifdef versal
 	(void) BaseAddress;
-	if (ITapDelay) {
+	if (ITapDelay != 0U) {
 		TapDelay = SD_ITAPCHGWIN;
 		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_ITAPDLY, TapDelay);
 		/* Program the ITAPDLY */
@@ -1201,16 +1210,16 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 	}
 
 	/* Program the OTAPDLY */
-	if (OTapDelay) {
+	if (OTapDelay != 0U) {
 		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, OTapDelay);
 	} else {
 		XSdPs_WriteReg(InstancePtr->Config.BaseAddress, SD_OTAPDLY, 0x0);
 	}
 #else
 	if (BaseAddress == XSDPS_ZYNQMP_SD0_BASE) {
-#if EL1_NONSECURE && defined (__aarch64__)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		(void)TapDelay;
-		if (ITapDelay) {
+		if (ITapDelay != 0U) {
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPCHGWIN, SD0_ITAPCHGWIN);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPDLYENA, SD0_ITAPDLYENA);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD0_ITAPDLY_SEL_MASK, ITapDelay);
@@ -1219,13 +1228,13 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, (SD0_ITAPDLY_SEL_MASK |
 					SD0_ITAPCHGWIN | SD0_ITAPDLYENA), 0x0);
 		}
-		if (OTapDelay) {
+		if (OTapDelay != 0U) {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD0_OTAPDLY_SEL_MASK, OTapDelay);
 		} else {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD0_OTAPDLY_SEL_MASK, 0x0);
 		}
 #else
-		if (ITapDelay) {
+		if (ITapDelay != 0U) {
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY);
 			TapDelay |= SD0_ITAPCHGWIN;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
@@ -1239,10 +1248,10 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 		} else {
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY);
-			TapDelay &= ~(u32)(SD0_ITAPDLY_SEL_MASK | SD0_ITAPCHGWIN | SD0_ITAPDLYENA);
+			TapDelay &= ~((u32)SD0_ITAPDLY_SEL_MASK | (u32)SD0_ITAPCHGWIN | (u32)SD0_ITAPDLYENA);
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 		}
-		if (OTapDelay) {
+		if (OTapDelay != 0U) {
 			/* Program the OTAPDLY */
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
 			TapDelay &= ~SD0_OTAPDLY_SEL_MASK;
@@ -1257,9 +1266,9 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 	} else {
 		ITapDelay = ITapDelay << 16U;
 		OTapDelay = OTapDelay << 16U;
-#if EL1_NONSECURE && defined (__aarch64__)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		(void)TapDelay;
-		if (ITapDelay) {
+		if (ITapDelay != 0U) {
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPCHGWIN, SD1_ITAPCHGWIN);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPDLYENA, SD1_ITAPDLYENA);
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, SD1_ITAPDLY_SEL_MASK, ITapDelay);
@@ -1268,13 +1277,13 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			XSdps_Smc(InstancePtr, SD_ITAPDLY, (SD1_ITAPDLY_SEL_MASK |
 					SD1_ITAPCHGWIN | SD1_ITAPDLYENA), 0x0);
 		}
-		if (OTapDelay) {
+		if (OTapDelay != 0U) {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD1_OTAPDLY_SEL_MASK, OTapDelay);
 		} else {
 			XSdps_Smc(InstancePtr, SD_OTAPDLY, SD1_OTAPDLY_SEL_MASK, 0x0);
 		}
 #else
-		if (ITapDelay) {
+		if (ITapDelay != 0U) {
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY);
 			TapDelay |= SD1_ITAPCHGWIN;
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
@@ -1291,7 +1300,7 @@ void XSdPs_ConfigTapDelay(XSdPs *InstancePtr)
 			TapDelay &= ~(u32)(SD1_ITAPDLY_SEL_MASK | SD1_ITAPCHGWIN | SD1_ITAPDLYENA);
 			XSdPs_WriteReg(InstancePtr->SlcrBaseAddr, SD_ITAPDLY, TapDelay);
 		}
-		if (OTapDelay) {
+		if (OTapDelay != 0U) {
 			/* Program the OTAPDLY */
 			TapDelay = XSdPs_ReadReg(InstancePtr->SlcrBaseAddr, SD_OTAPDLY);
 			TapDelay &= ~SD1_OTAPDLY_SEL_MASK;
@@ -1577,7 +1586,7 @@ s32 XSdPs_CheckBusIdle(XSdPs *InstancePtr, u32 Value)
 		do {
 			StatusReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
 					XSDPS_PRES_STATE_OFFSET);
-			Timeout = Timeout - 1;
+			Timeout = Timeout - 1U;
 			usleep(1);
 		} while (((StatusReg & Value) != 0U)
 				&& (Timeout != 0U));
@@ -1684,6 +1693,15 @@ u32 XSdPs_FrameCmd(XSdPs *InstancePtr, u32 Cmd)
 	case CMD24:
 	case CMD25:
 		RetVal |= RESP_R1 | (u32)XSDPS_DAT_PRESENT_SEL_MASK;
+		break;
+	case CMD32:
+	case CMD33:
+	case CMD35:
+	case CMD36:
+		RetVal |= RESP_R1;
+		break;
+	case CMD38:
+		RetVal |= RESP_R1B;
 		break;
 	case ACMD41:
 		RetVal |= RESP_R3;

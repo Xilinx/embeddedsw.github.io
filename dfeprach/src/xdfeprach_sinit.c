@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,10 +7,7 @@
 /**
 *
 * @file xdfeprach_sinit.c
-* @addtogroup xdfeprach_v1_1
-* @{
-*
-* The implementation of the XDfePrach component's static initialization
+* The implementation of the PRACH component's static initialization
 * functionality.
 *
 * <pre>
@@ -23,11 +20,16 @@
 *       dc     04/07/21 Fix bare metal initialisation
 *       dc     04/21/21 Update due to restructured registers
 * 1.1   dc     06/30/21 Doxygen documentation update
+*       dc     10/26/21 Make driver R5 compatible
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/19/21 Update doxygen documentation
 *
 * </pre>
-*
+* @addtogroup Overview
+* @{
 ******************************************************************************/
-
+/**< @cond nocomments */
 /***************************** Include Files *********************************/
 #include "xdfeprach.h"
 #include <string.h>
@@ -47,23 +49,37 @@
 /**************************** Type Definitions *******************************/
 /***************** Macros (Inline Functions) Definitions *********************/
 #ifndef __BAREMETAL__
-#define XDFEPRACH_CONFIG_DATA_PROPERTY "param-list" /* device tree property */
-#define XDFEPRACH_COMPATIBLE_STRING "xlnx,xdfe-nr-prach-1.0"
-#define XDFEPRACH_PLATFORM_DEVICE_DIR "/sys/bus/platform/devices/"
-#define XDFEPRACH_COMPATIBLE_PROPERTY "compatible" /* device tree property */
-#define XDFEPRACH_BUS_NAME "platform"
+/**
+* @endcond
+*/
+#define XDFEPRACH_COMPATIBLE_STRING                                            \
+	"xlnx,xdfe-nr-prach-1.0" /**< Device name property. */
+#define XDFEPRACH_PLATFORM_DEVICE_DIR                                          \
+	"/sys/bus/platform/devices/" /**< Device location in a file system. */
+#define XDFEPRACH_COMPATIBLE_PROPERTY "compatible" /**< Device tree property */
+#define XDFEPRACH_BUS_NAME "platform" /**< System bus name. */
 #define XDFEPRACH_DEVICE_ID_SIZE 4U
-#define XDFEPRACH_CONFIG_DATA_SIZE sizeof(XDfePrach_Config)
-#define XDFEPRACH_BASEADDR_PROPERTY "reg" /* device tree property */
+#define XDFEPRACH_BASEADDR_PROPERTY "reg" /**< Base address property. */
 #define XDFEPRACH_BASEADDR_SIZE 8U
-#define XDFEPRACH_NUM_ANTENNA_CFG "xlnx,num-antenna"
-#define XDFEPRACH_NUM_CC_PER_ANTENNA_CFG "xlnx,num-cc-per-antenna"
-#define XDFEPRACH_NUM_SLOT_CHANNELS_CFG "xlnx,num-slot-channels"
-#define XDFEPRACH_NUM_SLOTS_CFG "xlnx,num-slots"
-#define XDFEPRACH_NUM_RACH_LINES_CFG "xlnx,num-rach-lanes"
-#define XDFEPRACH_NUM_RACH_CHANNELS_CFG "xlnx,num-rach-channels"
-#define XDFEPRACH_HAS_AXIS_CTRL_CFG "xlnx,has-axis-ctrl"
-#define XDFEPRACH_HAS_IRQ_CFG "xlnx,has-irq"
+#define XDFEPRACH_NUM_ANTENNA_CFG                                              \
+	"xlnx,num-antenna" /**< Number of antenna 1-8. */
+#define XDFEPRACH_NUM_CC_PER_ANTENNA_CFG                                       \
+	"xlnx,num-cc-per-antenna" /**< Maximum number of CC's per antenna 1-8. */
+#define XDFEPRACH_NUM_SLOT_CHANNELS_CFG                                        \
+	"xlnx,num-slot-channels" /**< Number of Parallel Data Channels 1-4. */
+#define XDFEPRACH_NUM_SLOTS_CFG                                                \
+	"xlnx,num-slots" /**< Number of Antenna TDM slots, per CC 1-8. */
+#define XDFEPRACH_NUM_RACH_LINES_CFG                                           \
+	"xlnx,num-rach-lanes" /**< Number of RACH output Lanes 1-2. */
+#define XDFEPRACH_NUM_RACH_CHANNELS_CFG                                        \
+	"xlnx,num-rach-channels" /**<  Number of RACH Channels channels 1-16 */
+#define XDFEPRACH_HAS_AXIS_CTRL_CFG                                            \
+	"xlnx,has-axis-ctrl" /**< The AXIS dynamic scheduling control interface is present */
+#define XDFEPRACH_HAS_IRQ_CFG                                                  \
+	"xlnx,has-irq" /**< The core has an IRQ port enabled. */
+/**
+* @cond nocomments
+*/
 #define XDFEPRACH_WORD_SIZE 4U
 #else
 #define XDFEPRACH_BUS_NAME "generic"
@@ -91,8 +107,8 @@ XDfePrach XDfePrach_Prach[XDFEPRACH_MAX_NUM_INSTANCES];
 * extracted from the NodeName. Returns pointer to the ConfigTable with a matched
 * base address.
 *
-* @param    InstancePtr is a pointer to the Ccf instance.
-* @param    ConfigTable is a configuration table container.
+* @param    InstancePtr Pointer to the PRACH instance.
+* @param    ConfigTable Configuration table container.
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -111,7 +127,7 @@ u32 XDfePrach_GetConfigTable(XDfePrach *InstancePtr,
 
 	strncpy(Str, InstancePtr->NodeName, sizeof(Str));
 	AddrStr = strtok(Str, ".");
-	Addr = strtol(AddrStr, NULL, 16);
+	Addr = strtoul(AddrStr, NULL, 16);
 
 	for (Index = 0; Index < XDFEPRACH_MAX_NUM_INSTANCES; Index++) {
 		if (XDfePrach_ConfigTable[Index].BaseAddr == Addr) {
@@ -128,9 +144,9 @@ u32 XDfePrach_GetConfigTable(XDfePrach *InstancePtr,
 * Compares two strings in the reversed order. This function compares only
 * the last "Count" number of characters of Str1Ptr and Str2Ptr.
 *
-* @param    Str1Ptr is base address of first string.
-* @param    Str2Ptr is base address of second string.
-* @param    Count is the number of last characters to be compared between
+* @param    Str1Ptr Base address of first string.
+* @param    Str2Ptr Base address of second string.
+* @param    Count Number of last characters to be compared between
 *           Str1Ptr and Str2Ptr.
 *
 * @return
@@ -164,9 +180,9 @@ static s32 XDfePrach_Strrncmp(const char *Str1Ptr, const char *Str2Ptr,
 * device with the name DeviceNodeName.
 * If the match is found then check if the device is compatible with the driver.
 *
-* @param    DeviceNamePtr is base address of char array, where device name
-*           will be stored.
-* @param    DeviceNodeName is device node name.
+* @param    DeviceNamePtr Base address of char array, where device name
+*           will be stored
+* @param    DeviceNodeName Device node name.
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -176,10 +192,9 @@ static s32 XDfePrach_Strrncmp(const char *Str1Ptr, const char *Str2Ptr,
 static s32 XDfePrach_IsDeviceCompatible(char *DeviceNamePtr,
 					const char *DeviceNodeName)
 {
-	char CompatibleString[100];
+	char CompatibleString[256];
 	struct metal_device *DevicePtr;
 	struct dirent **DirentPtr;
-	char Len = strlen(XDFEPRACH_COMPATIBLE_STRING);
 	int NumFiles;
 	u32 Status = XST_FAILURE;
 	int i = 0;
@@ -219,16 +234,22 @@ static s32 XDfePrach_IsDeviceCompatible(char *DeviceNamePtr,
 		/* Get a "compatible" device property */
 		if (0 > metal_linux_get_device_property(
 				DevicePtr, XDFEPRACH_COMPATIBLE_PROPERTY,
-				CompatibleString, Len)) {
+				CompatibleString,
+				sizeof(CompatibleString) - 1)) {
 			metal_log(METAL_LOG_ERROR,
 				  "\n Failed to read device tree property");
 			metal_device_close(DevicePtr);
 			continue;
 		}
 
-		/* Check a "compatible" device property */
-		if (strncmp(CompatibleString, XDFEPRACH_COMPATIBLE_STRING,
-			    Len) != 0) {
+		/* Check does "compatible" device property has name of this
+		   driver instance */
+		if (NULL ==
+		    strstr(CompatibleString, XDFEPRACH_COMPATIBLE_STRING)) {
+			metal_log(
+				METAL_LOG_ERROR,
+				"No compatible property match.(Driver:%s, Device:%s)\n",
+				XDFEPRACH_COMPATIBLE_STRING, CompatibleString);
 			metal_device_close(DevicePtr);
 			continue;
 		}
@@ -255,7 +276,7 @@ static s32 XDfePrach_IsDeviceCompatible(char *DeviceNamePtr,
 *
 * Looks up the device configuration based on the unique device ID.
 *
-* @param    InstancePtr is a pointer to the PRACH instance.
+* @param    InstancePtr Pointer to the PRACH instance.
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -380,9 +401,9 @@ end_failure:
 *
 * Registers/opens the device and maps PRACH to the IO region.
 *
-* @param    DeviceId contains the ID of the device to register/map.
-* @param    DevicePtr is a pointer to the metal device.
-* @param    DeviceNodeName is device node name.
+* @param    InstancePtr Pointer to the PRACH instance.
+* @param    DevicePtr Pointer to the metal device.
+* @param    DeviceNodeName Device node name,
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -449,7 +470,7 @@ s32 XDfePrach_RegisterMetal(XDfePrach *InstancePtr,
 *
 * Initializes a specific PRACH instance such that the driver is ready to use.
 *
-* @param    InstancePtr is a pointer to the XDfePrach instance.
+* @param    InstancePtr Pointer to the PRACH instance.
 *
 * @note     The user needs to first call the XDfePrach_LookupConfig() API
 *           which returns the Configuration structure pointer which is
@@ -475,4 +496,7 @@ void XDfePrach_CfgInitialize(XDfePrach *InstancePtr)
 #endif
 }
 
+/**
+* @endcond
+*/
 /** @} */

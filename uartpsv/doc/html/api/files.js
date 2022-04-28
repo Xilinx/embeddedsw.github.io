@@ -12,5 +12,5 @@ var files =
     [ "xuartpsv_selftest.c", "xuartpsv__selftest_8c.html", "xuartpsv__selftest_8c" ],
     [ "xuartpsv_selftest_example.c", "xuartpsv__selftest__example_8c.html", "xuartpsv__selftest__example_8c" ],
     [ "xuartpsv_sinit.c", "xuartpsv__sinit_8c.html", "xuartpsv__sinit_8c" ],
-    [ "xuartpsv_xfer.h", "xuartpsv__xfer_8h.html", "xuartpsv__xfer_8h" ]
+    [ "xuartpsv_xfer.h", "xuartpsv__xfer_8h.html", null ]
 ];

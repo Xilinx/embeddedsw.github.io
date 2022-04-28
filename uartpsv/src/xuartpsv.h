@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,11 +7,12 @@
 /**
 *
 * @file xuartpsv.h
-* @addtogroup uartpsv_v1_5
+* @addtogroup Overview
 * @{
 * @details
 *
-* This driver supports the following features:
+* This section contains the implementation of the interface functions for
+* XUartPsv driver. The UartPsv driver supports the following features:
 *
 * - Dynamic data format (baud rate, data bits, stop bits, parity)
 * - Polled mode
@@ -111,6 +112,8 @@
 * 1.4  sne  02/03/21  Updated uartpsv_tapp.tcl to support CIPS3.0 hier designs.
 *      rna  03/15/21  Updated 'XUartPsv_SetBaudRate' function
 * 1.5  rna  03/31/21  Fixed doxygen warnings
+* 1.6  adk  03/15/22  Updated uartpsv_tapp.tcl interrupt id variable for
+* 		      CIPS3 designs when stdout is configured as none.
 * </pre>
 *
 ******************************************************************************/

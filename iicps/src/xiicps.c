@@ -7,11 +7,11 @@
 /**
 *
 * @file xiicps.c
-* @addtogroup iicps_v3_14
+* @addtogroup Overview
 * @{
 *
-* Contains implementation of required functions for the XIicPs driver.
-* See xiicps.h for detailed description of the device and driver.
+* This section contains implementation of required functions for
+* the XIicPs driver.
 *
 * <pre> MODIFICATION HISTORY:
 *

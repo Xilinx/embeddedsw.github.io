@@ -19,7 +19,7 @@ var files =
     [ "xdprxss_dprx.h", "xdprxss__dprx_8h.html", "xdprxss__dprx_8h" ],
     [ "xdprxss_hdcp1x.c", "xdprxss__hdcp1x_8c.html", null ],
     [ "xdprxss_hdcp1x.h", "xdprxss__hdcp1x_8h.html", "xdprxss__hdcp1x_8h" ],
-    [ "xdprxss_hdcp22.c", "xdprxss__hdcp22_8c.html", null ],
+    [ "xdprxss_hdcp22.c", "xdprxss__hdcp22_8c.html", "xdprxss__hdcp22_8c" ],
     [ "xdprxss_hdcp22.h", "xdprxss__hdcp22_8h.html", "xdprxss__hdcp22_8h" ],
     [ "xdprxss_hdcp_example.c", "xdprxss__hdcp__example_8c.html", "xdprxss__hdcp__example_8c" ],
     [ "xdprxss_hw.h", "xdprxss__hw_8h.html", "xdprxss__hw_8h" ],

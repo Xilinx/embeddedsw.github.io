@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_ap.c
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 *
 * Contains the interface functions of the Analogue Path Settings in XRFdc driver.
@@ -30,6 +30,11 @@
 * 11.0  cog    05/31/21 Upversion.
 *       cog    08/05/21 Fixed issue where VOP initial value was incorrect.
 *       cog    08/18/21 Disallow VOP for DC coupled DACs.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    12/21/21 Read DAC coupling from a register rather than from
+*                       the config structure.
+*       cog    01/18/22 Refactor connected data components.
+*       cog    01/18/22 Added safety checks.
 *
 * </pre>
 *
@@ -190,7 +195,7 @@ u32 XRFdc_SetQMCSettings(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block_Id
 		/* Phase Correction factor is applicable to ADC/DAC IQ Pair mode only */
 		if (QMCSettingsPtr->EnablePhase == XRFDC_ENABLED) {
 			if (((u32)XRFdc_GetConnectedIData(InstancePtr, Type, Tile_Id, Block_Id) == Block_Id) &&
-			    (XRFdc_GetConnectedQData(InstancePtr, Type, Tile_Id, Block_Id) != -1)) {
+			    (XRFdc_GetConnectedQData(InstancePtr, Type, Tile_Id, Block_Id) != XRFDC_BLK_ID_NONE)) {
 				PhaseCorrectionFactor =
 					((QMCSettingsPtr->PhaseCorrectionFactor / XRFDC_MAX_PHASE_CORR_FACTOR) *
 					 XRFDC_QMC_PHASE_MULT);
@@ -2594,6 +2599,7 @@ u32 XRFdc_SetDACVOP(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 uACurrent
 	float uACurrentInt;
 	float uACurrentNext;
 	u32 Code;
+	u32 LinkCoupling;
 
 	/* Tuned optimization values*/
 	u32 BldrOPCBias[64] = { 22542, 26637, 27661, 27661, 28686, 28686, 29710, 29711, 30735, 30735, 31760,
@@ -2622,13 +2628,6 @@ u32 XRFdc_SetDACVOP(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 uACurrent
 		goto RETURN_PATH;
 	}
 
-	if (InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].LinkCoupling != XRFDC_DAC_LINK_COUPLING_AC) {
-		Status = XRFDC_FAILURE;
-		metal_log(METAL_LOG_ERROR,
-			  "\n Requested functionality not available DC coupled configuration in %s\r\n", __func__);
-		goto RETURN_PATH;
-	}
-
 	Status = XRFdc_CheckBlockEnabled(InstancePtr, XRFDC_DAC_TILE, Tile_Id, Block_Id);
 	if (Status != XRFDC_SUCCESS) {
 		metal_log(METAL_LOG_ERROR, "\n DAC %u block %u not available in %s\r\n", Tile_Id, Block_Id, __func__);
@@ -2647,6 +2646,16 @@ u32 XRFdc_SetDACVOP(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id, u32 uACurrent
 		Status = XRFDC_FAILURE;
 		goto RETURN_PATH;
 	}
+
+	BaseAddr = XRFDC_CTRL_STS_BASE(XRFDC_DAC_TILE, Tile_Id);
+	LinkCoupling = XRFdc_ReadReg(InstancePtr, BaseAddr, XRFDC_CPL_TYPE_OFFSET);
+	if (LinkCoupling != XRFDC_DAC_LINK_COUPLING_AC) {
+		Status = XRFDC_FAILURE;
+		metal_log(METAL_LOG_ERROR,
+			  "\n Requested functionality not available DC coupled configuration in %s\r\n", __func__);
+		goto RETURN_PATH;
+	}
+
 	uACurrentInt = (float)uACurrent;
 
 	BaseAddr = XRFDC_BLOCK_BASE(XRFDC_DAC_TILE, Tile_Id, Block_Id);
@@ -2998,6 +3007,19 @@ u32 XRFdc_IsDACBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
 	u32 BlockShift;
 	u32 BlockEnableReg;
 
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0U;
+	}
+
+	if (Block_Id > XRFDC_BLOCK_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter block number in %s\r\n", __func__);
+		return 0U;
+	}
+
 	BlockShift = Block_Id + (XRFDC_PATH_ENABLED_TILE_SHIFT * Tile_Id);
 	BlockEnableReg = XRFdc_ReadReg(InstancePtr, XRFDC_IP_BASE, XRFDC_DAC_PATHS_ENABLED_OFFSET);
 	BlockEnableReg &= (XRFDC_ENABLED << BlockShift);
@@ -3024,6 +3046,19 @@ u32 XRFdc_IsADCBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
 	u32 IsBlockAvail;
 	u32 BlockShift;
 	u32 BlockEnableReg;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0U;
+	}
+
+	if (Block_Id > XRFDC_BLOCK_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter block number in %s\r\n", __func__);
+		return 0U;
+	}
 
 	if (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_ENABLED) {
 		if ((Block_Id == 2U) || (Block_Id == 3U)) {
@@ -3065,6 +3100,9 @@ u32 XRFdc_CheckBlockEnabled(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u32 Block
 	u32 IsBlockAvail;
 	u32 Status;
 
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
 	if ((Type != XRFDC_ADC_TILE) && (Type != XRFDC_DAC_TILE)) {
 		Status = XRFDC_FAILURE;
 		goto RETURN_PATH;
@@ -3099,10 +3137,24 @@ RETURN_PATH:
 *
 * @return
 *           - Return Inversesync filter for DAC block
+*           - Return 0 if invalid
 *
 ******************************************************************************/
 u32 XRFdc_GetInverseSincFilter(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
 {
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0U;
+	}
+
+	if (Block_Id > XRFDC_BLOCK_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter block number in %s\r\n", __func__);
+		return 0U;
+	}
+
 	return InstancePtr->RFdc_Config.DACTile_Config[Tile_Id].DACBlock_Analog_Config[Block_Id].InvSyncEnable;
 }
 
@@ -3118,10 +3170,24 @@ u32 XRFdc_GetInverseSincFilter(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
 *
 * @return
 *           - Return mixed mode for DAC block
+*           - Return 0 if invalid
 *
 ******************************************************************************/
 u32 XRFdc_GetMixedMode(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id)
 {
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Tile_Id > XRFDC_TILE_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter tile number in %s\r\n", __func__);
+		return 0U;
+	}
+
+	if (Block_Id > XRFDC_BLOCK_ID_MAX) {
+		metal_log(METAL_LOG_WARNING, "\n Invalid converter block number in %s\r\n", __func__);
+		return 0U;
+	}
+
 	return InstancePtr->DAC_Tile[Tile_Id].DACBlock_Analog_Datapath[Block_Id].MixedMode;
 }
 

@@ -7,10 +7,11 @@
 /**
 *
 * @file xuartpsv_xfer.h
-* @addtogroup uartpsv_v1_5
+* @addtogroup Overview
 * @{
 *
-* This header file contains the prototypes of objects used internally.
+* The xuartpsv_xfer.h header file contains the prototypes of objects used
+* internally.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -21,6 +22,7 @@
 * </pre>
 *
 ******************************************************************************/
+/** @cond INTERNAL */
 #ifndef XUARTPSV_XFER_H		/* prevent circular inclusions */
 #define XUARTPSV_XFER_H		/**< by using protection macros */
 
@@ -49,4 +51,5 @@ u32  XUartPsv_ReceiveBuffer(XUartPsv *InstancePtr);
 #endif
 
 #endif /* end of protection macro */
+/** @endcond */
 /** @} */

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps_g.c
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -46,6 +46,7 @@ XSdPs_Config XSdPs_ConfigTable[] =
 		XPAR_XSDPS_0_BUS_WIDTH,
 		XPAR_XSDPS_0_MIO_BANK,
 		XPAR_XSDPS_0_HAS_EMIO,
+		XPAR_XSDPS_0_SLOT_TYPE,
 		XPAR_XSDPS_0_IS_CACHE_COHERENT
 	}
 };

@@ -23,5 +23,5 @@ var files =
     [ "xiicps_slave.c", "xiicps__slave_8c.html", "xiicps__slave_8c" ],
     [ "xiicps_slave_monitor_example.c", "xiicps__slave__monitor__example_8c.html", "xiicps__slave__monitor__example_8c" ],
     [ "xiicps_xfer.c", "xiicps__xfer_8c.html", "xiicps__xfer_8c" ],
-    [ "xiicps_xfer.h", "xiicps__xfer_8h.html", "xiicps__xfer_8h" ]
+    [ "xiicps_xfer.h", "xiicps__xfer_8h.html", null ]
 ];

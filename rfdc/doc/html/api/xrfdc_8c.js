@@ -21,7 +21,7 @@ var xrfdc_8c =
     [ "XRFdc_GetNoOfDACBlock", "xrfdc_8c.html#gad2a9eeeb86bd1bc0e4aba438a6fe1f3d", null ],
     [ "XRFdc_GetPwrMode", "xrfdc_8c.html#ga988457a61856845ec98129b9d83076c4", null ],
     [ "XRFdc_GetTileLayout", "xrfdc_8c.html#ga81f57de8de394ff1498bab6c3b46837e", null ],
-    [ "XRFdc_IsHighSpeedADC", "xrfdc_8c.html#ga964b11e3d49ca288d0aa53b00250dc9a", null ],
+    [ "XRFdc_IsHighSpeedADC", "xrfdc_8c.html#gab0e915848a69e9133dab0cd0d2a4aa58", null ],
     [ "XRFdc_RDReg", "xrfdc_8c.html#gada94b454ebfa6c06d6591352ca57f3f1", null ],
     [ "XRFdc_Reset", "xrfdc_8c.html#gaa7e0f063f24927037b37fbfcf01e55c2", null ],
     [ "XRFdc_SetDataPathMode", "xrfdc_8c.html#ga32b26582f802cbabc390adcf56f064f6", null ],

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -18,11 +18,6 @@
  * To see the debug print, you need a Uart16550 or uartlite in your system,
  * and please set "-DDEBUG" in your compiler options. You need to rebuild your
  * software executable.
- *
- * Make sure that MEMORY_BASE is defined properly as per the HW system. The
- * h/w system built in Area mode has a maximum DDR memory limit of 64MB. In
- * throughput mode, it is 512MB.  These limits are need to ensured for
- * proper operation of this code.
  *
  *
  * <pre>
@@ -52,6 +47,8 @@
  *                     available in all examples. This is a fix for CR-965028.
  * 9.9   rsp  01/21/19 Fix use of #elif check in deriving DDR_BASE_ADDR.
  * 9.10  rsp  09/17/19 Fix cache maintenance ops for source and dest buffer.
+ * 9.14  sk   03/08/22 Delete DDR memory limits comments as they are not
+ * 		       relevant to this driver version.
  * </pre>
  *
  * ***************************************************************************
@@ -286,7 +283,7 @@ static int RxSetup(XAxiDma * AxiDmaInstPtr)
 	UINTPTR RxBufferPtr;
 	int Index;
 
-	RxRingPtr = XAxiDma_GetRxRing(&AxiDma);
+	RxRingPtr = XAxiDma_GetRxRing(AxiDmaInstPtr);
 
 	/* Disable all RX interrupts before RxBD space setup */
 
@@ -409,7 +406,7 @@ static int TxSetup(XAxiDma * AxiDmaInstPtr)
 	int Status;
 	u32 BdCount;
 
-	TxRingPtr = XAxiDma_GetTxRing(&AxiDma);
+	TxRingPtr = XAxiDma_GetTxRing(AxiDmaInstPtr);
 
 	/* Disable all TX interrupts before TxBD space setup */
 

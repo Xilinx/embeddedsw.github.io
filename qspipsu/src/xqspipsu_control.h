@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xqspipsu_control.h
- * @addtogroup qspipsu_v1_14
+ * @addtogroup Overview
  * @{
  *
  * This is the header file for the implementation of QSPIPSU driver.
@@ -26,11 +26,14 @@
  * ----- --- -------- -----------------------------------------------.
  * 1.11   akm  03/09/20 First release
  * 1.13   akm  01/04/21 Fix MISRA-C violations.
+ * 1.15   akm  03/03/22 Enable tapdelay settings for applications on
+ * 			 Microblaze platform.
  *
  * </pre>
  *
  ******************************************************************************/
 
+/** @cond INTERNAL */
 #ifndef XQSPIPSU_CONTROL_H_		/**< prevent circular inclusions */
 #define XQSPIPSU_CONTROL_H_		/**< by using protection macros */
 
@@ -46,7 +49,7 @@ extern "C" {
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-#if defined (ARMR5) || (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__) || defined (__MICROBLAZE__)
 #define TAPDLY_BYPASS_VALVE_40MHZ 0x01U
 #define TAPDLY_BYPASS_VALVE_100MHZ 0x01U
 #define USE_DLY_LPBK  0x01U
@@ -56,6 +59,9 @@ extern "C" {
 #define LPBK_DLY_ADJ_DLY1 0X02U
 #endif
 
+#ifdef __MICROBLAZE__
+#define XPS_SYS_CTRL_BASEADDR   0xFF180000U     /**< System controller Baseaddress */
+#endif
 /************************** Function Prototypes ******************************/
 void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg);
 u32 XQspiPsu_SetIOMode(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg);
@@ -80,7 +86,7 @@ void XQspiPsu_SetDefaultConfig(XQspiPsu *InstancePtr);
 void XQspiPsu_FillTxFifo(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg, u32 Size);
 void XQspiPsu_ReadRxFifo(XQspiPsu *InstancePtr,	XQspiPsu_Msg *Msg, s32 Size);
 
-#if defined (ARMR5) || (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__) || defined (__MICROBLAZE__)
 s32 XQspipsu_Set_TapDelay(const XQspiPsu *InstancePtr, u32 TapdelayBypass,
 						u32 LPBKDelay, u32 Datadelay);
 s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler);
@@ -92,4 +98,5 @@ s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler);
 
 
 #endif /* XQSPIPSU_CONTROL_H_ */
+/** @endcond */
 /** @} */

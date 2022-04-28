@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,11 +17,16 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/19/21 Update doxygen documentation
+* 1.3   dc     01/19/22 Assert Update trigger
+*       dc     01/24/22 Auto-compute number of units
 *
 * </pre>
+* @addtogroup Overview
+* @{
 *
 *****************************************************************************/
-
+/** @cond nocomments */
 /***************************** Include Files ********************************/
 #include "xdfeequ_examples.h"
 
@@ -31,6 +36,7 @@
 /************************** Function Prototypes *****************************/
 /************************** Variable Definitions ****************************/
 
+/** @endcond */
 /****************************************************************************/
 /**
 *
@@ -51,6 +57,7 @@
 *		- XST_FAILURE if the example has failed.
 *
 ****************************************************************************/
+/** //! [testexample2] */
 int XDfeEqu_PassThroughExample()
 {
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -58,7 +65,7 @@ int XDfeEqu_PassThroughExample()
 	XDfeEqu *InstancePtr = NULL;
 	XDfeEqu_EqConfig Config;
 	XDfeEqu_TriggerCfg TriggerCfg;
-	XDfeEqu_Coefficients Coeffs = { 1U, 0, { 0, 0, 0, 0, 0, 0, 0, 0,
+	XDfeEqu_Coefficients Coeffs = { 8U, 0, { 0, 0, 0, 0, 0, 0, 0, 0,
 						 0, 0, 0, 0, 0, 0, 0, 0,
 						 0, 0, 0, 0, 0, 0, 0, 0 } };
 	u32 ChannelField = 0xffU;
@@ -75,7 +82,7 @@ int XDfeEqu_PassThroughExample()
 		return XST_FAILURE;
 	}
 
-	/* Initialize the instance of channel filter driver */
+	/* Initialize the instance of Equalizer driver */
 	InstancePtr = XDfeEqu_InstanceInit(XDFEEQU_NODE_NAME);
 
 	/* Get SW and HW version numbers */
@@ -96,10 +103,10 @@ int XDfeEqu_PassThroughExample()
 	XDfeEqu_Initialize(InstancePtr, &Config);
 
 	/* Set trigger */
-	TriggerCfg.Activate.Mode = 1U;
+	TriggerCfg.Activate.Mode = 0U;
 	TriggerCfg.Activate.TuserEdgeLevel = 0;
 	TriggerCfg.Activate.TUSERBit = 0;
-	TriggerCfg.Update.Mode = 1U;
+	TriggerCfg.Update.Mode = 0U;
 	TriggerCfg.Update.TuserEdgeLevel = 1U;
 	TriggerCfg.Update.TUSERBit = 0;
 	XDfeEqu_SetTriggersCfg(InstancePtr, &TriggerCfg);
@@ -117,5 +124,8 @@ int XDfeEqu_PassThroughExample()
 	XDfeEqu_Deactivate(InstancePtr);
 	XDfeEqu_InstanceClose(InstancePtr);
 	printf("Equalizer \"Pass Through\" Example: Pass\r\n");
+
 	return XST_SUCCESS;
 }
+/** //! [testexample2] */
+/** @} */

@@ -19,8 +19,13 @@
 
 proc generate {drv_handle} {
     xdefine_include_file $drv_handle "xparameters.h" "XTtcPs" "NUM_INSTANCES" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_TTC_CLK_FREQ_HZ" "C_TTC_CLK_CLKSRC"
-    xdefine_config_file $drv_handle "xttcps_g.c" "XTtcPs"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_TTC_CLK_FREQ_HZ"
-
+    set intr_wrap [common::get_property CONFIG.xil_interrupt [hsi::get_os]]
+    if { [string match -nocase $intr_wrap "true"] > 0} {
+        xdefine_config_file $drv_handle "xttcps_g.c" "XTtcPs"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_TTC_CLK_FREQ_HZ" "C_INTERRUPT" "C_INTR_PARENT"
+        gen_intr $drv_handle "xparameters.h"
+    } else {
+        xdefine_config_file $drv_handle "xttcps_g.c" "XTtcPs"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_TTC_CLK_FREQ_HZ"
+    }
     xdefine_canonical_xpars $drv_handle "xparameters.h" "XTtcPs" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_TTC_CLK_FREQ_HZ" "C_TTC_CLK_CLKSRC"
 }
 
@@ -45,11 +50,12 @@ proc xdefine_include_file {drv_handle file_name drv_string args} {
 
     lappend newargs
     foreach arg $args {
-	set value [common::get_property CONFIG.$arg $drv_handle]
-	if {[llength $value] == 0} {
+	set value [::hsi::utils::get_param_value  $drv_handle $arg]
+
+	if {[llength $value] == 0 || [string compare -nocase "DEVICE_ID" $arg] == 0} {
 	    lappend newargs $arg
 	} else {
-	    puts $file_handle "#define [::hsi::utils::get_driver_param_name $drv_string $arg] [common::get_property CONFIG.$arg $drv_handle]$uSuffix"
+	    puts $file_handle "#define [::hsi::utils::get_driver_param_name $drv_string $arg] [::hsi::utils::get_param_value $drv_handle $arg]$uSuffix"
 	}
     }
     set args $newargs
@@ -121,9 +127,9 @@ proc xdefine_config_file {drv_handle file_name drv_string args} {
 	    set comma ""
 	    foreach arg $args {
 		# Check if this is a driver parameter or a peripheral parameter
-		set value [common::get_property CONFIG.$arg $drv_handle]
-		if {[llength $value] == 0} {
-		    set local_value [common::get_property CONFIG.$arg $periph]
+		set value [::hsi::utils::get_param_value $drv_handle $arg]
+		if {[llength $value] == 0 || [string compare -nocase "DEVICE_ID" $arg] == 0} {
+		    set local_value [::hsi::utils::get_param_value $periph $arg]
 		    # If a parameter isn't found locally (in the current
 		    # peripheral), we will (for some obscure and ancient reason)
 		    # look in peripherals connected via point to point links
@@ -272,4 +278,76 @@ proc xdefine_getSuffix {arg_name value} {
 			set uSuffix "U"
 		}
 		return $uSuffix
+}
+
+proc gen_intr {drv_handle file_name} {
+    set file_handle [::hsi::utils::open_include_file $file_name]
+    set ips [::hsi::utils::get_common_driver_ips $drv_handle]
+    set sw_processor [hsi::get_sw_processor]
+    set processor [hsi::get_cells -hier [common::get_property HW_INSTANCE $sw_processor]]
+    set processor_type [common::get_property IP_NAME $processor]
+
+    foreach ip $ips {
+       set isintr [::hsm::utils::is_ip_interrupting_current_proc $ip]
+       set device_id [string index $ip end]
+       set ip_name [common::get_property IP_NAME $ip]
+       set inst_name [common::get_property NAME $ip]
+       set inst_name [string range $inst_name 0 end-2]
+       set intc_parent_addr 0xffff
+       set intr 0xffff
+       for {set x 0} {$x<3} {incr x} {
+           set val [expr $device_id * 3 + $x]
+           if {$isintr == 1} {
+                set intr_pin_name [hsi::get_pins -of_objects [hsi::get_cells -hier $ip]  -filter {TYPE==INTERRUPT&&DIRECTION==O}]
+                foreach pin $intr_pin_name {
+                   set intcname [::hsi::utils::get_connected_intr_cntrl $ip $pin]
+                   if {[llength $intcname] == 0 || [string match $intcname "{}"] } {
+                        continue
+                   }
+                   foreach intc $intcname {
+                       set ipname [common::get_property IP_NAME $intc]
+		       if {$processor_type == "ps7_cortexa9" && $ipname == "ps7_scugic"} {
+			   set intc_parent_addr [common::get_property CONFIG.C_PPI_S_AXI_BASEADDR $intc]
+		       }
+                       if {$processor_type == "psu_cortexa53" && $ipname == "psu_acpu_gic"} {
+                           set intc_parent_addr [common::get_property CONFIG.C_S_AXI_BASEADDR $intc]
+                       }
+                       if {$processor_type == "psu_cortexr5" && $ipname == "psu_rcpu_gic"} {
+                           set intc_parent_addr [common::get_property CONFIG.C_S_AXI_BASEADDR $intc]
+                       }
+                       if {$processor_type == "psv_cortexa72" && $ipname == "psv_acpu_gic"} {
+                           set intc_parent_addr [common::get_property CONFIG.C_S_AXI_BASEADDR $intc]
+                       }
+                       if {$processor_type == "psv_cortexr5" && $ipname == "psv_rcpu_gic"} {
+                           set intc_parent_addr [common::get_property CONFIG.C_S_AXI_BASEADDR $intc]
+                       }
+                       if {$ipname == "axi_intc"} {
+                           set intc_parent_addr [common::get_property CONFIG.C_BASEADDR $intc]
+                           incr intc_parent_addr
+                           set intc_parent_addr [format 0x%xU $intc_parent_addr]
+                       }
+                  }
+                }
+               if {${processor_type} == "microblaze"} {
+                   set intcname [string toupper $intcname]
+                   set ip_name [string toupper $ip]
+                   set intr_pin_name [string toupper $intr_pin_name]
+                   puts $file_handle "\#define [::hsi::utils::get_driver_param_name $ip "C_INTERRUPT"] XPAR_${intcname}_${ip_name}_${intr_pin_name}_INTR"
+              } else {
+                   set ip_name [string toupper $ip_name]
+                   set inst_name [string toupper $inst_name]
+                   puts $file_handle "\#define XPAR_${inst_name}_${val}_INTERRUPT XPAR_${ip_name}_${val}_INTERRUPT_ID"
+              }
+           } else {
+               set ip_name [string toupper $ip_name]
+               puts $file_handle "\#define XPAR_${ip_name}_${val}_INTERRUPT $intr"
+           }
+
+            set ip_name [string toupper $ip_name]
+            set inst_name [string toupper $inst_name]
+            puts $file_handle "\#define XPAR_${inst_name}_${val}_INTR_PARENT $intc_parent_addr"
+        }
+     }
+
+    close $file_handle
 }

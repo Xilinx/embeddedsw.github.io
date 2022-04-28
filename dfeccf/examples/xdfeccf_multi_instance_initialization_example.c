@@ -1,7 +1,7 @@
 /******************************************************************************
- * Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
- * SPDX-License-Identifier: MIT
- ******************************************************************************/
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* SPDX-License-Identifier: MIT
+******************************************************************************/
 
 /*****************************************************************************/
 /**
@@ -17,11 +17,15 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/19/21 Update doxygen documentation
 *
 * </pre>
+* @addtogroup Overview_examples
+* @{
 *
 *****************************************************************************/
-
+/** @cond nocomments */
 /***************************** Include Files ********************************/
 #include "xdfeccf_examples.h"
 
@@ -31,11 +35,12 @@
 /************************** Function Prototypes *****************************/
 /************************** Variable Definitions ****************************/
 
+/** @endcond */
 /****************************************************************************/
 /**
 *
-* This function runs two instances of DFE Channel Filter.
-* This function does the following tasks:
+* This example runs two instances of DFE Channel Filter.
+* The example does the following tasks:
 *	- Create and system initialize the device driver instance.
 *	- Read SW and HW version numbers.
 *	- Reset the device.
@@ -49,6 +54,7 @@
 *		- XST_FAILURE if the example has failed.
 *
 ****************************************************************************/
+/** //! [testexample1] */
 int XDfeCcf_MultiInstancesExample()
 {
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -98,3 +104,5 @@ int XDfeCcf_MultiInstancesExample()
 	printf("Channel Filter \"Multi Instances Initialization\" Example: Pass\r\n");
 	return XST_SUCCESS;
 }
+/** //! [testexample1] */
+/** @} */

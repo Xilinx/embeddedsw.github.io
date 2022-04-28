@@ -7,11 +7,11 @@
 /**
 *
 * @file xiicps_xfer.h
-* @addtogroup iicps_v3_14
+* @addtogroup Overview
 * @{
 *
-* Contains implementation of required helper functions for the XIicPs driver.
-* See xiicps.h for detailed description of the device and driver.
+* The xiicps_xfer.h file contains implementation of required helper functions
+* for the XIicPs driver.
 *
 * <pre> MODIFICATION HISTORY:
 *
@@ -21,6 +21,7 @@
 * </pre>
 *
 ******************************************************************************/
+/** @cond INTERNAL */
 #ifndef XIICPS_XFER_H             /* prevent circular inclusions */
 #define XIICPS_XFER_H             /**< by using protection macros */
 
@@ -100,4 +101,5 @@ s32 SlaveRecvData(XIicPs *InstancePtr);
 #endif
 
 #endif /* end of protection macro */
+/** @endcond */
 /** @} */

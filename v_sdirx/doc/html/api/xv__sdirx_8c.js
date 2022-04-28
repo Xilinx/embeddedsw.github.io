@@ -11,6 +11,7 @@ var xv__sdirx_8c =
     [ "XV_SdiRx_FramerEnable", "xv__sdirx_8c.html#a3f489d8879386783b5219b87fdfdffa6", null ],
     [ "XV_SdiRx_GetPayloadId", "xv__sdirx_8c.html#ac36464a3c528cb595b0ca975a5139df3", null ],
     [ "XV_SdiRx_GetSdiMode", "xv__sdirx_8c.html#aee258ea49b5efc86d34ece895236a71a", null ],
+    [ "XV_SdiRx_HandleNoPayload", "xv__sdirx_8c.html#a20c435efc0107528bb8a4ed56441033d", null ],
     [ "XV_SdiRx_ReportDetectedError", "xv__sdirx_8c.html#aa5e237f32f024f3faff39e35aa4cb117", null ],
     [ "XV_SdiRx_ResetStream", "xv__sdirx_8c.html#aa66cc2cf6652b5b1278dd7a49ddf9a8e", null ],
     [ "XV_SdiRx_SetBitDepth", "xv__sdirx_8c.html#a136ea0572bd8a2d63572d89e53c515af", null ],

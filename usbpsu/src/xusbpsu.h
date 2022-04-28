@@ -7,9 +7,53 @@
 /**
 *
 * @file xusbpsu.h
-* @addtogroup usbpsu_v1_10
+* @addtogroup Overview
 * @{
 * @details
+*
+* This section explains the implementation of functions of USBPSU driver.
+* This driver supports both USB high-speed and super-speed features for USB
+* peripheral mode.
+*
+* The definitions for endpoints is included by the xusbps_endpoint.c, which
+* is implementing the endpoint functions and by xusbps_intr.c.
+*
+* <b>Initialization & Configuration</b>
+*
+* The XUsbPsu_Config structure is used by the driver to configure itself.
+* Fields inside this structure are properties of XUsbPsu based on its hardware
+* build.
+*
+* To support multiple runtime loading and initialization strategies employed
+* by various operating systems, the driver instance can be initialized in the
+* following way:
+*
+*   - XUsbPsu_CfgInitialize(InstancePtr, CfgPtr, EffectiveAddr) - Uses a
+*	 configuration structure provided by the caller. If running in a system
+*	 with address translation, the parameter EffectiveAddr should be the
+* 	 virtual address.
+*
+* <b>Endpoint Support</b>
+*
+* This driver supports control, bulk, interrupt and ISO endpoint and its
+* applications like mass-storage, HID, audio and composite, etc. Based on
+* user application configuration set by the application.
+*
+* <b>Interrupts</b>
+*
+* The driver defaults to no interrupts at initialization such that interrupts
+* must be enabled if desired. An interrupt is generated for one of the
+* following conditions.
+*
+* - Disconnect Detected Event Enable
+* - USB Reset Enable
+* - Connection Done Enable
+* - Link State Change Event Enable
+* - Wakeup Event Enable
+*
+* The SetupInterruptSystem function setups the interrupt system such that
+* interrupts can occur. This function is application specific since the actual
+* system may or may not have an interrupt controller.
 *
 * <pre>
 *
@@ -88,6 +132,7 @@ extern "C" {
 
 /************************** Constant Definitions ****************************/
 
+/** @cond INTERNAL */
 #define NO_OF_TRB_PER_EP		4U	/**< number of TRB*/
 
 #if defined (PLATFORM_ZYNQMP) || defined (versal)
@@ -99,6 +144,7 @@ extern "C" {
 #endif
 
 #define	XUSBPSU_PHY_TIMEOUT		5000U	/**< Phy timeout- microseconds */
+/** @endcond */
 
 #define XUSBPSU_EP_DIR_IN		1U	/**< Direction IN */
 #define XUSBPSU_EP_DIR_OUT		0U	/**< Direction OUT */
@@ -119,6 +165,7 @@ extern "C" {
 #define	XUSBPSU_TEST_PACKET		4U	/**< Test Mode TEST PACKET */
 #define	XUSBPSU_TEST_FORCE_ENABLE	5U	/**< Test Mode FORCE ENABLE */
 
+/** @cond INTERNAL */
 #define XUSBPSU_NUM_TRBS		8U	/**< Number of TRB */
 
 #define XUSBPSU_EVENT_PENDING		(0x00000001U << 0U)
@@ -247,6 +294,7 @@ extern "C" {
  * Link State
  */
 #define XUSBPSU_LINK_STATE_MASK			0x0FU /**< Link State Mask */
+/** @endcond */
 
 /**
  * @param XusbPsuLinkState This typedef defines link state.
@@ -301,6 +349,7 @@ typedef enum {
 #define		XUSBPSU_SPEED_HIGH		3U /**< Device Speed High */
 #define		XUSBPSU_SPEED_SUPER		4U /**< Device Speed Speed */
 
+/** @cond INTERNAL */
 /*
  * return Physical EP number as dwc3 mapping
  */
@@ -308,6 +357,7 @@ typedef enum {
 						/**< Return Physical EP number
 						 *   as dwc3 mapping
 						 */
+/** @endcond */
 
 /**************************** Type Definitions ******************************/
 
@@ -697,6 +747,7 @@ union XUsbPsu_Event {
 extern XUsbPsu_Config XUsbPsu_ConfigTable[]; /**< Configuration table */
 
 /***************** Macros (Inline Functions) Definitions *********************/
+/** @cond INTERNAL */
 #if defined (__ICCARM__)
 #define IS_ALIGNED(x, a)	(((x) & ((u32)(a) - 1U)) == 0U) /**< parameter
 								 * aligned
@@ -730,6 +781,7 @@ extern XUsbPsu_Config XUsbPsu_ConfigTable[]; /**< Configuration table */
 	(Instance).ConfigDescSize = sizeof((desc)) /**< Config descriptor
 						    * declaration
 						    */
+/** @endcond */
 
 /*****************************************************************************/
 /**

@@ -81,6 +81,7 @@ static void XV_Rx_HdmiRx_TmdsConfig_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_VrrVfp_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_VtemPkt_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_DynHdrPkt_Cb(void *CallbackRef);
+static void XV_Rx_HdmiRX_DscDdcStsUpdt_Cb(void *CallbackRef);
 
 static void XV_Rx_HdmiRx_StateDisconnected(XV_Rx *InstancePtr,
 					XV_Rx_Hdmi_Events Event,
@@ -200,7 +201,23 @@ void Hdmiphy1HdmiRxReadyCallback(void *CallbackRef)
 
 	xdbg_xv_rx_print("%s,%d : XHdmiphy1_ClkDetGetRefClkFreqHz: %d\r\n",
 			__func__, __LINE__, Hdmiphy1Ptr->HdmiRxRefClkHz);
-
+#if defined (XPS_BOARD_VCK190)
+	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
+		XV_HdmiRxSs1_SetStream(HdmiRxSs1Ptr,
+				       Hdmiphy1Ptr->HdmiRxRefClkHz,
+				       (XHdmiphy1_GetLineRateHz(
+						Hdmiphy1Ptr, 0,
+						XHDMIPHY1_CHANNEL_ID_CMN0) /
+					1000000));
+	} else {
+		XV_HdmiRxSs1_SetStream(HdmiRxSs1Ptr,
+				       Hdmiphy1Ptr->HdmiRxRefClkHz,
+				       (XHdmiphy1_GetLineRateHz(
+						Hdmiphy1Ptr, 0,
+						XHDMIPHY1_CHANNEL_ID_CMN1) /
+					1000000));
+	}
+#else
 	if (!(RxPllType == XHDMIPHY1_PLL_TYPE_CPLL)) {
 		XV_HdmiRxSs1_SetStream(HdmiRxSs1Ptr,
 				       Hdmiphy1Ptr->HdmiRxRefClkHz,
@@ -217,6 +234,7 @@ void Hdmiphy1HdmiRxReadyCallback(void *CallbackRef)
 						XHDMIPHY1_CHANNEL_ID_CH1) /
 					1000000));
 	}
+#endif
 }
 
 void XV_Rx_VPhy_SetCallbacks(XV_Rx *InstancePtr)
@@ -399,7 +417,19 @@ u64 XV_Rx_GetLineRate(XV_Rx *InstancePtr)
 				     0,
 				     XHDMIPHY1_DIR_RX,
 				     XHDMIPHY1_CHANNEL_ID_CH1);
+#if defined (XPS_BOARD_VCK190)
 
+	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
+		LineRate = InstancePtr->VidPhy->Quads[0].Plls[
+					XHDMIPHY1_CHANNEL_ID_CMN0 -
+					XHDMIPHY1_CHANNEL_ID_CH1].LineRateHz;
+	} else {
+		LineRate = InstancePtr->VidPhy->Quads[0].Plls[
+					XHDMIPHY1_CHANNEL_ID_CMN1 -
+					XHDMIPHY1_CHANNEL_ID_CH1].LineRateHz;
+	}
+
+#else
 	if (!(RxPllType == XHDMIPHY1_PLL_TYPE_CPLL)) {
 		LineRate = InstancePtr->VidPhy->Quads[0].Plls[
 					XHDMIPHY1_CHANNEL_ID_CMN0 -
@@ -407,7 +437,7 @@ u64 XV_Rx_GetLineRate(XV_Rx *InstancePtr)
 	} else {
 		LineRate = InstancePtr->VidPhy->Quads[0].Plls[0].LineRateHz;
 	}
-
+#endif
 	return LineRate;
 }
 
@@ -601,6 +631,10 @@ u32 XV_Rx_SetTriggerCallbacks(XV_Rx *InstancePtr,
 		InstancePtr->RxDynHdrCbRef = CallbackRef;
 		break;
 
+	case XV_RX_TRIG_HANDLER_DSCDDCSTSUPDTEVNT:
+		InstancePtr->RxDscDdcCb = Callback;
+		InstancePtr->RxDscDdcCbRef = CallbackRef;
+		break;
 #ifdef USE_HDCP_HDMI_RX
 	case XV_RX_TRIG_HANDLER_HDCP_SET_CONTENTSTREAMTYPE:
 		InstancePtr->HdcpSetContentStreamTypeCb = Callback;
@@ -721,6 +755,10 @@ u32 XV_Rx_HdmiRxSs_Setup_Callbacks(XV_Rx *InstancePtr)
 					(void *)XV_Rx_HdmiRX_DynHdrPkt_Cb,
 					(void *)InstancePtr);
 
+	Status |= XV_HdmiRxSs1_SetCallback(InstancePtr->HdmiRxSs,
+					XV_HDMIRXSS1_HANDLER_DSC_STS_UPDT,
+					(void *)XV_Rx_HdmiRX_DscDdcStsUpdt_Cb,
+					(void *)InstancePtr);
 	return Status;
 }
 
@@ -1522,6 +1560,14 @@ static void XV_Rx_HdmiRX_DynHdrPkt_Cb (void *CallbackRef)
 
 }
 
+static void XV_Rx_HdmiRX_DscDdcStsUpdt_Cb (void *CallbackRef)
+{
+	Xil_AssertVoid(CallbackRef);
+	XV_Rx *recvInst = (XV_Rx *)CallbackRef;
+	if (recvInst->RxDscDdcCb != NULL) {
+		recvInst->RxDscDdcCb(recvInst->RxDscDdcCbRef);
+	}
+}
 
 /******************* XV RX STATE MACHINE IMPLEMENTATION **********************/
 
@@ -2399,6 +2445,12 @@ static void XV_Rx_HdmiRx_EnterStateTmdsConfig(XV_Rx *InstancePtr)
 	Xil_AssertVoid(InstancePtr);
 
 	InstancePtr->RxClkSrcConfig(InstancePtr->RxClkSrcConfigCallbackRef);
+
+#ifdef XPS_BOARD_VCU118
+	//Set GT in LPM Mode for TMDS
+	XHdmiphy1_SetRxLpm(&Hdmiphy1, 0,
+	XHDMIPHY1_CHANNEL_ID_CHA, XHDMIPHY1_DIR_RX, 1);
+#endif
 
 	XHdmiphy1_Hdmi20Config(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
 

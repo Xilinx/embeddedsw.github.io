@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +7,6 @@
 /**
 *
 * @file xdfeccf_sinit.c
-* @addtogroup dfeccf_v1_1
-* @{
-*
 * The implementation of the XDfeCcf component's static initialization
 * functionality.
 *
@@ -26,10 +23,19 @@
 *       dc     04/06/21 Register with full node name
 *       dc     04/07/21 Fix bare metal initialisation
 *       dc     04/20/21 Doxygen documentation update
+* 1.1   dc     10/26/21 Make driver R5 compatible
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/19/21 Update doxygen documentation
 *
 * </pre>
+* @addtogroup Overview
+* @{
 *
 ******************************************************************************/
+/*
+* @cond nocomments
+*/
 
 /***************************** Include Files *********************************/
 #include "xdfeccf.h"
@@ -50,22 +56,31 @@
 /**************************** Type Definitions *******************************/
 /***************** Macros (Inline Functions) Definitions *********************/
 #ifndef __BAREMETAL__
-#define XDFECCF_CONFIG_DATA_PROPERTY "param-list" /* device tree property */
-#define XDFECCF_COMPATIBLE_STRING "xlnx,xdfe-cc-filter-1.0"
-#define XDFECCF_PLATFORM_DEVICE_DIR "/sys/bus/platform/devices/"
-#define XDFECCF_COMPATIBLE_PROPERTY "compatible" /* device tree property */
-#define XDFECCF_BUS_NAME "platform"
-#define XDFECCF_DEVICE_ID_SIZE 4U
-#define XDFECCF_BASEADDR_PROPERTY "reg" /* device tree property */
-#define XDFECCF_BASEADDR_SIZE 8U
-#define XDFECCF_DATA_IWIDTH_CFG "xlnx,data-iwidth"
-#define XDFECCF_DATA_OWIDTH_CFG "xlnx,data-owidth"
-#define XDFECCF_NUM_ANTENNA_CFG "xlnx,num-antenna"
-#define XDFECCF_NUM_CC_PER_ANTENNA_CFG "xlnx,num-cc-per-antenna"
-#define XDFECCF_NUM_SLOT_CHANNELS_CFG "xlnx,num-slot-channels"
-#define XDFECCF_ANTENNA_INTERLEAVE_CFG "xlnx,antenna-interleave"
-#define XDFECCF_TUSER_WIDTH_CFG "xlnx,tuser-width"
-#define XDFECCF_VERSION_REGISTER_CFG "xlnx,version-register"
+/**
+* @endcond
+*/
+#define XDFECCF_COMPATIBLE_STRING                                              \
+	"xlnx,xdfe-cc-filter-1.0" /**< Device name property. */
+#define XDFECCF_PLATFORM_DEVICE_DIR                                            \
+	"/sys/bus/platform/devices/" /**< Device location in a file system. */
+#define XDFECCF_COMPATIBLE_PROPERTY "compatible" /**< Device tree property */
+#define XDFECCF_BUS_NAME "platform" /**< System bus name. */
+#define XDFECCF_BASEADDR_PROPERTY "reg" /**< Base address property. */
+#define XDFECCF_BASEADDR_SIZE 8U /**< Base address bit-size. */
+#define XDFECCF_DATA_IWIDTH_CFG "xlnx,data-iwidth" /**< Data IWIDTH property. */
+#define XDFECCF_DATA_OWIDTH_CFG "xlnx,data-owidth" /**< Data OWIDTH property. */
+#define XDFECCF_NUM_ANTENNA_CFG                                                \
+	"xlnx,num-antenna" /**< Number of antenna property. */
+#define XDFECCF_NUM_CC_PER_ANTENNA_CFG                                         \
+	"xlnx,num-cc-per-antenna" /**< Maximum number of CC's per antenna. */
+#define XDFECCF_NUM_SLOT_CHANNELS_CFG                                          \
+	"xlnx,num-slot-channels" /**< Number of slot channels property. */
+#define XDFECCF_ANTENNA_INTERLEAVE_CFG                                         \
+	"xlnx,antenna-interleave" /**< Number of Antenna TDM slots, per CC. */
+#define XDFECCF_TUSER_WIDTH_CFG "xlnx,tuser-width" /**< TUSER width property. */
+/*
+* @cond nocomments
+*/
 #define XDFECCF_MODE_SIZE 10U
 #define XDFECCF_WORD_SIZE 4U
 
@@ -95,13 +110,12 @@ XDfeCcf XDfeCcf_ChFilter[XDFECCF_MAX_NUM_INSTANCES];
 * extracted from the NodeName. Return pointer to the ConfigTable with a matched
 * base address.
 *
-* @param    InstancePtr is a pointer to the Ccf instance.
-* @param    ConfigTable is a configuration table container.
+* @param    InstancePtr Pointer to the Ccf instance.
+* @param    ConfigTable Configuration table container.
 *
 * @return
  *           - XST_SUCCESS if successful.
  *           - XST_FAILURE if device entry not found for given device id.
-*
 *
 ******************************************************************************/
 u32 XDfeCcf_GetConfigTable(XDfeCcf *InstancePtr, XDfeCcf_Config **ConfigTable)
@@ -115,7 +129,7 @@ u32 XDfeCcf_GetConfigTable(XDfeCcf *InstancePtr, XDfeCcf_Config **ConfigTable)
 
 	strncpy(Str, InstancePtr->NodeName, sizeof(Str));
 	AddrStr = strtok(Str, ".");
-	Addr = strtol(AddrStr, NULL, 16);
+	Addr = strtoul(AddrStr, NULL, 16);
 
 	for (Index = 0; Index < XDFECCF_MAX_NUM_INSTANCES; Index++) {
 		if (XDfeCcf_ConfigTable[Index].BaseAddr == Addr) {
@@ -132,15 +146,14 @@ u32 XDfeCcf_GetConfigTable(XDfeCcf *InstancePtr, XDfeCcf_Config **ConfigTable)
 * Compares two strings in the reversed order. This function compares only
 * the last "Count" number of characters of Str1Ptr and Str2Ptr.
 *
-* @param    Str1Ptr is the base address of first string.
-* @param    Str2Ptr is the base address of second string.
-* @param    Count is the number of last characters  to be compared between
+* @param    Str1Ptr Base address of first string.
+* @param    Str2Ptr Base address of second string.
+* @param    Count Number of last characters to be compared between
 *           Str1Ptr and Str2Ptr.
 *
 * @return
 *           0 if last "Count" number of bytes matches between Str1Ptr and
 *           Str2Ptr, else difference in unmatched character.
-*
 *
 ******************************************************************************/
 static s32 XDfeCcf_Strrncmp(const char *Str1Ptr, const char *Str2Ptr,
@@ -169,23 +182,21 @@ static s32 XDfeCcf_Strrncmp(const char *Str1Ptr, const char *Str2Ptr,
 * device with the name DeviceNodeName.
 * If the match is found than check is the device compatible with the driver.
 *
-* @param    DeviceNamePtr is base address of char array, where device name
+* @param    DeviceNamePtr Base address of char array, where device name
 *           will be stored
-* @param    DeviceNodeName is device node name,
+* @param    DeviceNodeName Device node name
 *
 * @return
- *           - XST_SUCCESS if successful.
- *           - XST_FAILURE if device entry not found for given device id.
- *
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if device entry not found for given device id.
 *
 ******************************************************************************/
 static s32 XDfeCcf_IsDeviceCompatible(char *DeviceNamePtr,
 				      const char *DeviceNodeName)
 {
-	char CompatibleString[100];
+	char CompatibleString[256];
 	struct metal_device *DevicePtr;
 	struct dirent **DirentPtr;
-	char Len = strlen(XDFECCF_COMPATIBLE_STRING);
 	int NumFiles;
 	u32 Status = XST_FAILURE;
 	int i = 0;
@@ -224,16 +235,22 @@ static s32 XDfeCcf_IsDeviceCompatible(char *DeviceNamePtr,
 		/* Get a "compatible" device property */
 		if (0 > metal_linux_get_device_property(
 				DevicePtr, XDFECCF_COMPATIBLE_PROPERTY,
-				CompatibleString, Len)) {
+				CompatibleString,
+				sizeof(CompatibleString) - 1)) {
 			metal_log(METAL_LOG_ERROR,
 				  "\n Failed to read device tree property");
 			metal_device_close(DevicePtr);
 			continue;
 		}
 
-		/* Check a "compatible" device property */
-		if (strncmp(CompatibleString, XDFECCF_COMPATIBLE_STRING, Len) !=
-		    0) {
+		/* Check does "compatible" device property has name of this
+		   driver instance */
+		if (NULL ==
+		    strstr(CompatibleString, XDFECCF_COMPATIBLE_STRING)) {
+			metal_log(
+				METAL_LOG_ERROR,
+				"No compatible property match.(Driver:%s, Device:%s)\n",
+				XDFECCF_COMPATIBLE_STRING, CompatibleString);
 			metal_device_close(DevicePtr);
 			continue;
 		}
@@ -260,11 +277,11 @@ static s32 XDfeCcf_IsDeviceCompatible(char *DeviceNamePtr,
 *
 * Looks up the device configuration based on the unique device ID.
 *
-* @param    InstancePtr is a pointer to the Channel Filter instance.
+* @param    InstancePtr Pointer to the Channel Filter instance.
 *
 * @return
- *           - XST_SUCCESS if successful.
- *           - XST_FAILURE if device entry not found for given device id.
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if device entry not found for given device id.
 *
 * @note
 *         - For BM a table contains the configuration info for each device
@@ -309,7 +326,7 @@ s32 XDfeCcf_LookupConfig(XDfeCcf *InstancePtr)
 				   &d, XDFECCF_WORD_SIZE)) {
 		goto end_failure;
 	}
-	InstancePtr->Config.AntenaInterleave = ntohl(d);
+	InstancePtr->Config.AntennaInterleave = ntohl(d);
 
 	return XST_SUCCESS;
 
@@ -330,7 +347,7 @@ end_failure:
 
 	InstancePtr->Config.NumAntenna = ConfigTable->NumAntenna;
 	InstancePtr->Config.NumCCPerAntenna = ConfigTable->NumCCPerAntenna;
-	InstancePtr->Config.AntenaInterleave = ConfigTable->AntenaInterleave;
+	InstancePtr->Config.AntennaInterleave = ConfigTable->AntennaInterleave;
 	InstancePtr->Config.BaseAddr = ConfigTable->BaseAddr;
 
 	return XST_SUCCESS;
@@ -342,14 +359,13 @@ end_failure:
 *
 * Register/open the deviceand map CCF to the IO region.
 *
-* @param    InstancePtr is a pointer to the Channel Filter instance.
-* @param    DevicePtr is a pointer to the metal device.
-* @param    DeviceNodeName is device node name,
+* @param    InstancePtr Pointer to the Channel Filter instance.
+* @param    DevicePtr Pointer to the metal device.
+* @param    DeviceNodeName Device node name,
 *
 * @return
 *           - XST_SUCCESS if successful.
 *           - XST_FAILURE if error occurs.
-*
 *
 ******************************************************************************/
 s32 XDfeCcf_RegisterMetal(XDfeCcf *InstancePtr, struct metal_device **DevicePtr,
@@ -411,7 +427,7 @@ s32 XDfeCcf_RegisterMetal(XDfeCcf *InstancePtr, struct metal_device **DevicePtr,
 * Initializes a specific XDfeCcf instance such that the driver is ready to use.
 *
 *
-* @param    InstancePtr is a pointer to the XDfeCcf instance.
+* @param    InstancePtr Pointer to the XDfeCcf instance.
 *
 *
 * @note     The user needs to first call the XDfeCcf_LookupConfig() API
@@ -438,4 +454,7 @@ void XDfeCcf_CfgInitialize(XDfeCcf *InstancePtr)
 #endif
 }
 
+/**
+* @endcond
+*/
 /** @} */

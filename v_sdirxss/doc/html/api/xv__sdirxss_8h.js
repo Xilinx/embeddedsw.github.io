@@ -31,6 +31,7 @@ var xv__sdirxss_8h =
     [ "XV_SdiRxSs_CfgInitialize", "xv__sdirxss_8h.html#a43a9c2aa8bc176afeaa71534eb0e8304", null ],
     [ "XV_SdiRxSs_ClearYCbCr444_RGB_10bit", "xv__sdirxss_8h.html#af49a48ec567ed898bcfeb44aca665f13", null ],
     [ "XV_SdiRxSs_GetVideoStream", "xv__sdirxss_8h.html#a890d07c87dfb74ed53a8cdedfd13d463", null ],
+    [ "XV_SdiRxSs_HandleNoPayload", "xv__sdirxss_8h.html#ab1ca3e2e4ccfd482bb5c59d30238e1e9", null ],
     [ "XV_SdiRxSs_IntrDisable", "xv__sdirxss_8h.html#a1c43a11c0334d76865b099c1c9e126f8", null ],
     [ "XV_SdiRxSs_IntrEnable", "xv__sdirxss_8h.html#a68c587dc98e40471fbf8f033ea32b2c4", null ],
     [ "XV_SdiRxSs_IsStreamUp", "xv__sdirxss_8h.html#a4d5f7c1195f84c95a4a00c87071d4be7", null ],

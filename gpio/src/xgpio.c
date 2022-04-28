@@ -6,15 +6,13 @@
 /*****************************************************************************/
 /**
 * @file xgpio.c
-* @addtogroup gpio_v4_8
+* @addtogroup Overview
 * @{
 *
-* The implementation of the XGpio driver's basic functionality. See xgpio.h
-* for more information about the driver.
+* This section explains the implementation of the XGpio driver's basic
+* functionality.
+* See xgpio.h for more information about the driver.
 *
-* @note
-*
-* None
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -39,6 +37,7 @@
 * 4.2   sk   08/16/16 Used UINTPTR instead of u32 for Baseaddress as part of
 *                     adding 64 bit support. CR# 867425.
 *                     Changed the prototype of XGpio_CfgInitialize API.
+* 4.9   pm   11/30/21 Addressed Doxygen warning
 * </pre>
 *
 *****************************************************************************/
@@ -205,7 +204,7 @@ u32 XGpio_DiscreteRead(XGpio * InstancePtr, unsigned Channel)
 *
 * @param	InstancePtr is a pointer to an XGpio instance to be worked on.
 * @param	Channel contains the channel of the GPIO (1 or 2) to operate on.
-* @param	Data is the value to be written to the discretes register.
+* @param	Mask is the value to be written to the discretes register.
 *
 * @return	None.
 *
@@ -215,7 +214,7 @@ u32 XGpio_DiscreteRead(XGpio * InstancePtr, unsigned Channel)
 *		XGpio_DiscreteClear().
 *
 *****************************************************************************/
-void XGpio_DiscreteWrite(XGpio * InstancePtr, unsigned Channel, u32 Data)
+void XGpio_DiscreteWrite(XGpio * InstancePtr, unsigned Channel, u32 Mask)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -224,6 +223,6 @@ void XGpio_DiscreteWrite(XGpio * InstancePtr, unsigned Channel, u32 Data)
 
 	XGpio_WriteReg(InstancePtr->BaseAddress,
 			((Channel - 1) * XGPIO_CHAN_OFFSET) + XGPIO_DATA_OFFSET,
-			Data);
+			Mask);
 }
 /** @} */

@@ -8,6 +8,7 @@ var xtrngpsv_8c =
     [ "XTRNGPSV_BURST_SIZE", "xtrngpsv_8c.html#gae698f09de78d4a85f18ceb4584290998", null ],
     [ "XTRNGPSV_BURST_SIZE_BITS", "xtrngpsv_8c.html#ga419ce29ea934d1e7df31bd91af268484", null ],
     [ "XTRNGPSV_BYTES_PER_REG", "xtrngpsv_8c.html#ga33ffb78c8affb44dce84e9992b98f5bf", null ],
+    [ "XTRNGPSV_GENERATE_TIMEOUT", "xtrngpsv_8c.html#gab045c4eb49985e55ba704c592926638e", null ],
     [ "XTRNGPSV_MAX_DFLENMUL", "xtrngpsv_8c.html#ga2b6fa99d5fa0f5e63f0547fb7cbee39e", null ],
     [ "XTRNGPSV_MAX_QCNT", "xtrngpsv_8c.html#ga23303f6c4f0940e8e3152c51d6cbe517", null ],
     [ "XTRNGPSV_MAX_SEEDLIFE", "xtrngpsv_8c.html#gab7362c7d0aed7d4750953ee42bcefda8", null ],
@@ -15,9 +16,10 @@ var xtrngpsv_8c =
     [ "XTRNGPSV_MIN_SEEDLIFE", "xtrngpsv_8c.html#ga3245cf5a97edbe50c506de8b0400c8be", null ],
     [ "XTRNGPSV_NUM_INIT_REGS", "xtrngpsv_8c.html#gad5311926d609af993f9d8d38353fc198", null ],
     [ "XTRNGPSV_REG_SIZE", "xtrngpsv_8c.html#ga3d6e918667815c5c782c4c621a858fed", null ],
+    [ "XTRNGPSV_RESEED_TIMEOUT", "xtrngpsv_8c.html#ga08661f569f5eaed8ccfce4bbe77418ee", null ],
     [ "XTrngpsv_CfgInitialize", "xtrngpsv_8c.html#ga092381b1f5b73eed497579c6fce84b91", null ],
     [ "XTrngpsv_Generate", "xtrngpsv_8c.html#ga2d5b1c7182c8de3767e0345a3435ffe5", null ],
     [ "XTrngpsv_Instantiate", "xtrngpsv_8c.html#ga7b6a82053b11bedbd37a2a82dd0ba14d", null ],
-    [ "XTrngpsv_Reseed", "xtrngpsv_8c.html#ga4cc7c41c9284180cb537bd796f331d8d", null ],
+    [ "XTrngpsv_Reseed", "xtrngpsv_8c.html#ga7740e9622a48052d5ebb9ddf10165138", null ],
     [ "XTrngpsv_Uninstantiate", "xtrngpsv_8c.html#gad0c8b58adb37a766661ca12aa302ed53", null ]
 ];

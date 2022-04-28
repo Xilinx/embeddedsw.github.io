@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_mts.c
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 *
 * Contains the multi tile sync functions of the XRFdc driver.
@@ -51,6 +51,10 @@
 *                       reduced for Gen 3 devices.
 * 11.0  cog    05/31/21 Upversion.
 *       cog    09/21/21 Factor in half bandwidth when using MTS in IMR modes.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    01/18/22 Added safety checks.
+*       cog    01/18/22 Add cast in XRFdc_MTS_Dtc_Calc.
+*       cog    01/18/22 Initialize DatapathMode in XRFdc_MTS_Latency.
 *
 * </pre>
 *
@@ -381,7 +385,7 @@ static u32 XRFdc_MTS_Dtc_Calc(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_M
 	Last = -1;
 	FlagsPtr[XRFDC_MTS_NUM_DTC] = 1;
 	for (Index = 0U; Index <= XRFDC_MTS_NUM_DTC; Index++) {
-		Current_Gap = Index - Last;
+		Current_Gap = (int)Index - Last;
 		if (FlagsPtr[Index] != 0) {
 			if (Current_Gap > Min_Gap_Allowed) {
 				Codes[Num_Found] = Last + (Current_Gap / 2);
@@ -972,7 +976,7 @@ static u32 XRFdc_MTS_Latency(XRFdc *InstancePtr, u32 Type, XRFdc_MultiConverter_
 	XRFdc_Mixer_Settings Mixer_Settings;
 	u32 IQFactor = 1U;
 	u32 DatapathModeFactor = 1U;
-	u32 DatapathMode;
+	u32 DatapathMode = 0U;
 
 	Status = XRFDC_MTS_OK;
 	if (Type == XRFDC_ADC_TILE) {
@@ -1420,11 +1424,20 @@ RETURN_PATH:
 *
 * @return
 *           - Return Master Tile for ADC/DAC tiles
+*           - Return XRFDC_TILE_ID_INV if invalid tile
 *
 ******************************************************************************/
 u32 XRFdc_GetMasterTile(XRFdc *InstancePtr, u32 Type)
 {
 	u32 MasterTile;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Type > XRFDC_DAC_TILE) {
+		metal_log(METAL_LOG_ERROR, "\n Invalid converter type in %s\r\n", __func__);
+		return XRFDC_TILE_ID_INV;
+	}
 
 	if (Type == XRFDC_ADC_TILE) {
 		MasterTile = InstancePtr->RFdc_Config.MasterADCTile;
@@ -1445,11 +1458,20 @@ u32 XRFdc_GetMasterTile(XRFdc *InstancePtr, u32 Type)
 *
 * @return
 *           - Return Sysref source for ADC/DAC tile
+*           - Return XRFDC_TILE_ID_INV if invalid tile
 *
 ******************************************************************************/
 u32 XRFdc_GetSysRefSource(XRFdc *InstancePtr, u32 Type)
 {
 	u32 SysRefSource;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
+
+	if (Type > XRFDC_DAC_TILE) {
+		metal_log(METAL_LOG_ERROR, "\n Invalid converter type in %s\r\n", __func__);
+		return XRFDC_TILE_ID_INV;
+	}
 
 	if (Type == XRFDC_ADC_TILE) {
 		SysRefSource = InstancePtr->RFdc_Config.ADCSysRefSource;

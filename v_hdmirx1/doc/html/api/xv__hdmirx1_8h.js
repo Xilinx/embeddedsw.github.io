@@ -128,7 +128,10 @@ var xv__hdmirx1_8h =
       [ "XV_HDMIRX1_HANDLER_FRL_LTSL", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a9eba6d1f5929d753ac9589ba711a0501", null ],
       [ "XV_HDMIRX1_HANDLER_VFP_CHANGE", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a9b60139f3a0336b0e920ab5dd18dc183", null ],
       [ "XV_HDMIRX1_HANDLER_VRR_RDY", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a19a71662e67c08479b6f24a6c6930be7", null ],
-      [ "XV_HDMIRX1_HANDLER_DYN_HDR", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a6c6dec8c2000bd56980e104718de20b8", null ]
+      [ "XV_HDMIRX1_HANDLER_DYN_HDR", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a6c6dec8c2000bd56980e104718de20b8", null ],
+      [ "XV_HDMIRX1_HANDLER_DSC_STRM_CH", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942ae440e854baa6be9065fa24b541a211a8", null ],
+      [ "XV_HDMIRX1_HANDLER_DSC_PKT_ERR", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942abd439ec152f3be928e4b1a78f6e462f8", null ],
+      [ "XV_HDMIRX1_HANDLER_DSC_STS_UPDT", "xv__hdmirx1_8h.html#abbfb262ec57764dd666d070dbda26942a7e57e5a185607118363c0a8d86b20c6d", null ]
     ] ],
     [ "XV_HdmiRx1_State", "xv__hdmirx1_8h.html#aaff80d21f94c4b494ab6beb909f74eba", [
       [ "XV_HDMIRX1_STATE_FRL_LINK_TRAINING", "xv__hdmirx1_8h.html#aaff80d21f94c4b494ab6beb909f74ebaad316e3ba632274ab8621a8fa98580feb", null ],

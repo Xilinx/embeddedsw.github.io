@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss_intr.c
-* @addtogroup dptxss_v6_6
+* @addtogroup dptxss_v6_7
 * @{
 *
 * This file contains interrupt related functions of Xilinx DisplayPort TX
@@ -96,7 +96,6 @@ void XDpTxSs_DpIntrHandler(void *InstancePtr)
 	XDp_InterruptHandler(XDpTxSsPtr->DpPtr);
 }
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 /*****************************************************************************/
 /**
 *
@@ -124,9 +123,6 @@ void XDpTxSs_HdcpIntrHandler(void *InstancePtr)
 	/* HDCP Cipher interrupt handler */
 	XHdcp1x_CipherIntrHandler(XDpTxSsPtr->Hdcp1xPtr);
 }
-#endif
-
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -154,7 +150,6 @@ void XDpTxSs_TmrCtrIntrHandler(void *InstancePtr)
 	/* Timer Counter interrupt handler */
 	XTmrCtr_InterruptHandler(XDpTxSsPtr->TmrCtrPtr);
 }
-#endif
 
 /*****************************************************************************/
 /**
@@ -491,40 +486,37 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 			Status = XST_SUCCESS;
 			break;
 
-#if (XPAR_DPTXSS_0_HDCP_ENABLE > 0)
 		case XDPTXSS_HANDLER_HDCP_RPTR_EXCHG:
 			XHdcp1x_SetCallBack(InstancePtr->Hdcp1xPtr,
 				XHDCP1X_RPTR_HDLR_REPEATER_EXCHANGE,
 					CallbackFunc, CallbackRef);
 			Status = XST_SUCCESS;
 			break;
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES > 0)
+
 		case XDPTXSS_HANDLER_HDCP22_AUTHENTICATED:
 			/* Register HDCP 2.2 callbacks */
-			XHdcp22Tx_SetCallback(InstancePtr->Hdcp22Ptr,
+			XHdcp22Tx_Dp_SetCallback(InstancePtr->Hdcp22Ptr,
 				XHDCP22_TX_HANDLER_AUTHENTICATED,
-				(void *)(XHdcp22_Tx_Callback)CallbackFunc,
+				(void *)(XHdcp22_Tx_Dp_Callback)CallbackFunc,
 				(void *)CallbackRef);
 			Status = XST_SUCCESS;
 			break;
 		case XDPTXSS_HANDLER_HDCP22_UNAUTHENTICATED:
 			/** Register HDCP 2.2 callbacks */
-			XHdcp22Tx_SetCallback(InstancePtr->Hdcp22Ptr,
+			XHdcp22Tx_Dp_SetCallback(InstancePtr->Hdcp22Ptr,
 				XHDCP22_TX_HANDLER_UNAUTHENTICATED,
-				(void *)(XHdcp22_Tx_Callback)CallbackFunc,
+				(void *)(XHdcp22_Tx_Dp_Callback)CallbackFunc,
 				(void *)CallbackRef);
 			Status = XST_SUCCESS;
 			break;
 		case XDPTXSS_HANDLER_HDCP22_UPDATE_DOWNSTREAM_TOPOLOGY:
 			/** Register HDCP 2.2 callbacks */
-			XHdcp22Tx_SetCallback(InstancePtr->Hdcp22Ptr,
+			XHdcp22Tx_Dp_SetCallback(InstancePtr->Hdcp22Ptr,
 					XHDCP22_TX_HANDLER_DOWNSTREAM_TOPOLOGY_AVAILABLE,
-					(void *)(XHdcp22_Tx_Callback)CallbackFunc,
+					(void *)(XHdcp22_Tx_Dp_Callback)CallbackFunc,
 					(void *)CallbackRef);
 			Status = XST_SUCCESS;
 			break;
-#endif
 
 		case XDPTXSS_HANDLER_DP_SET_MSA:
 			XDp_TxSetCallback(InstancePtr->DpPtr,

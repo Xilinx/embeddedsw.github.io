@@ -36,7 +36,10 @@ var xv__hdmirxss1_8h =
       [ "XV_HDMIRXSS1_HANDLER_VIC_ERROR", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a66e901595e22345bc6ffd7996f28ec7c", null ],
       [ "XV_HDMIRXSS1_HANDLER_VFP_CH", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a36fa72d92f1bac93c88fdf46df0e67f8", null ],
       [ "XV_HDMIRXSS1_HANDLER_VRR_RDY", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a8092f6a147cc535b2d93c79be904f41c", null ],
-      [ "XV_HDMIRXSS1_HANDLER_DYN_HDR", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5aca1d643f245f984b434db42ee85a8304", null ]
+      [ "XV_HDMIRXSS1_HANDLER_DYN_HDR", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5aca1d643f245f984b434db42ee85a8304", null ],
+      [ "XV_HDMIRXSS1_HANDLER_DSC_STRM_CH", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a28b9e00fea1d05e22cb6e4652bc78799", null ],
+      [ "XV_HDMIRXSS1_HANDLER_DSC_PKT_ERR", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a443b07569a573003c028698068cdf93b", null ],
+      [ "XV_HDMIRXSS1_HANDLER_DSC_STS_UPDT", "xv__hdmirxss1_8h.html#ad720d316ed02be13ce06db41537bcfe5a3134b4e34d8c3a673d79dd7b382e7c05", null ]
     ] ],
     [ "XV_HdmiRxSs1_HdcpProtocol", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343", [
       [ "XV_HDMIRXSS1_HDCP_NONE", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343afe0c709fbf3f3aa7de6b6c2f2a2ec79a", null ],
@@ -83,6 +86,9 @@ var xv__hdmirxss1_8h =
       [ "XV_HDMIRXSS1_LOG_EVT_FRL_START", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0ab504fdc779ba9ec62eac132c5eefbf88", null ],
       [ "XV_HDMIRXSS1_LOG_EVT_VRR_RDY", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0afd235e475905a42dad9e929a7a58a4b9", null ],
       [ "XV_HDMIRXSS1_LOG_EVT_DYN_HDR", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a7770e8095abc37d7d9150dc8deb73918", null ],
+      [ "XV_HDMIRXSS1_LOG_EVT_DSC_STRM_EVT", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a70edef705a825bec6aac5fab6b405d8d", null ],
+      [ "XV_HDMIRXSS1_LOG_EVT_DSC_PKT_ERR", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0af0758eb6967a462fc80c1c9f4005f0aa", null ],
+      [ "XV_HDMIRXSS1_LOG_EVT_DSC_DDC_STS_UPDT", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a3b2db1b5771178fbea84f6029af01369", null ],
       [ "XV_HDMIRXSS1_LOG_EVT_DUMMY", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a8ed30251fa3c3015f408b804112f2a57", null ]
     ] ],
     [ "XV_HdmiRxSs1_AudioMute", "xv__hdmirxss1_8h.html#adc7b5eec7611fe852444d65aeaf7e3de", null ],

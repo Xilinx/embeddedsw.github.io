@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv.c
-* @addtogroup ospipsv_v1_5
+* @addtogroup Overview
 * @{
 *
 * This file implements the functions required to use the OSPIPSV hardware to
@@ -38,6 +38,7 @@
 * 1.4   sk   02/18/21 Added support for Dual byte opcode.
 *       sk   05/07/21 Fixed MISRAC violations.
 * 1.5   sk   08/17/21 Added DCache invalidate after non-blocking DMA read.
+* 1.6   sk   02/07/22 Replaced driver version in addtogroup with Overview.
 *
 * </pre>
 *
@@ -213,7 +214,7 @@ u32 XOspiPsv_DeviceReset(u8 Type)
 	u32 Status;
 
 	if (Type == XOSPIPSV_HWPIN_RESET) {
-#if EL1_NONSECURE
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		Xil_Smc(PIN_REQUEST_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
 		Xil_Smc(PIN_SET_CONFIG_SMC_FID, (((u64)PIN_CONFIG_SCHMITT_CMOS << 32) |
 				PMC_GPIO_NODE_12_ID) , 0x1, 0, 0, 0, 0, 0);
@@ -230,7 +231,7 @@ u32 XOspiPsv_DeviceReset(u8 Type)
 		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
 			((u32)XPMC_MIO12_DATA_MASK_LSW << XPMC_MIO12_DATA_MASK_LSW_SHIFT) |
 			(u32)XPMC_MIO12_MASK);
-#if EL1_NONSECURE
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
 		Xil_Smc(PIN_REQUEST_SMC_FID, PMC_GPIO_NODE_12_ID, 0, 0, 0, 0, 0, 0);
 		Xil_Smc(PIN_SET_CONFIG_SMC_FID, (((u64)PIN_CONFIG_TRI_STATE << 32) |
 				PMC_GPIO_NODE_12_ID) , 0, 0, 0, 0, 0, 0);

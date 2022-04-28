@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspipsu_sinit.c
-* @addtogroup qspipsu_v1_14
+* @addtogroup Overview
 * @{
 *
 * The implementation of the XQspiPsu component's static initialization
@@ -19,6 +19,7 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.0   hk  08/21/14 First release
+* 1.15  akm 10/26/21 Fix MISRA-C violations.
 * </pre>
 *
 ******************************************************************************/
@@ -39,8 +40,6 @@
 
 /************************** Variable Definitions *****************************/
 
-extern XQspiPsu_Config XQspiPsu_ConfigTable[XPAR_XQSPIPSU_NUM_INSTANCES];
-
 /*****************************************************************************/
 /**
 *
@@ -50,10 +49,9 @@ extern XQspiPsu_Config XQspiPsu_ConfigTable[XPAR_XQSPIPSU_NUM_INSTANCES];
 * @param	DeviceId contains the ID of the device to look up the
 *		configuration for.
 *
-* @return
-*
-* A pointer to the configuration found or NULL if the specified device ID was
-* not found. See xqspipsu.h for the definition of XQspiPsu_Config.
+* @return	A pointer to the configuration found or NULL if the specified
+* 		device ID was not found. See xqspipsu.h for the definition of
+* 		XQspiPsu_Config.
 *
 * @note		None.
 *

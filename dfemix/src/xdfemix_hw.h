@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +7,9 @@
 /**
 *
 * @file xdfemix_reg.h
-* @addtogroup xdfemix_v1_1
+* @addtogroup Overview
 * @{
-*
+* @cond nocomments
 * Contains the register definitions for dfemixer. This is
 * created to be used initially while waiting for IP.
 *
@@ -26,6 +26,9 @@
 *       dc     05/08/21 Update to common trigger
 *       dc     05/18/21 Handling CCUpdate trigger
 * 1.1   dc     07/13/21 Update to common latency requirements
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+*       dc     11/05/21 Align event handlers
 *
 * </pre>
 *
@@ -70,7 +73,7 @@ extern "C" {
 #define XDFEMIX_MODEL_PARAM_1_MIXER_CPS_OFFSET 20U
 
 #define XDFEMIX_MODEL_PARAM_2_OFFSET 0x0CU /* Register offset */
-#define XDFEMIX_MODEL_PARAM_2_DATA_IWIDTH_WIDTH 4U
+#define XDFEMIX_MODEL_PARAM_2_DATA_IWIDTH_WIDTH 5U
 #define XDFEMIX_MODEL_PARAM_2_DATA_IWIDTH_OFFSET 0U
 #define XDFEMIX_MODEL_PARAM_2_DATA_OWIDTH_WIDTH 5U
 #define XDFEMIX_MODEL_PARAM_2_DATA_OWIDTH_OFFSET 8U
@@ -125,6 +128,7 @@ extern "C" {
 #define XDFEMIX_ISR 0x34U /* Register offset */
 #define XDFEMIX_ISR_HAS_NOT_OCCURRED 0U
 #define XDFEMIX_ISR_OCCURRED 1U
+#define XDFEMIX_ISR_CLEAR 1U
 #define XDFEMIX_IER 0x38U /* Register offset */
 #define XDFEMIX_IER_NO_CHANGE 0U
 #define XDFEMIX_IER_SET_BIT 1U
@@ -253,4 +257,7 @@ extern "C" {
 #endif
 
 #endif
+/**
+* @endcond
+*/
 /** @} */

@@ -7,7 +7,7 @@
 /**
 *
 * @file xintc_intr.c
-* @addtogroup intc_v3_13
+* @addtogroup intc_v3_14
 * @{
 *
 * This file contains the interrupt processing for the XIntc component which
@@ -53,6 +53,8 @@
 *                     include/compiled if XPAR_INTC_SINGLE_DEVICE_ID is defined.
 * 1.10c mta  03/21/07 Updated to new coding style
 * 2.00a ktn  10/20/09 Updated to use HAL Processor APIs.
+* 3.14  mus  11/25/21 Updated XIntc_InterruptHandler function to fix
+*                     compilation warning. CR#1116127
 *
 * </pre>
 *
@@ -145,6 +147,6 @@ void XIntc_InterruptHandler(XIntc * InstancePtr)
 	 * (the casts are to avoid a compiler warning)
 	 */
 	XIntc_DeviceInterruptHandler((void *)
-				     ((u32) (InstancePtr->CfgPtr->DeviceId)));
+				     ((UINTPTR) (InstancePtr->CfgPtr->DeviceId)));
 }
 /** @} */

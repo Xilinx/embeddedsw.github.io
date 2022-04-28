@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xqspipsu_hw.c
- * @addtogroup qspipsu_v1_14
+ * @addtogroup Overview
  * @{
  *
  * This file contains functions to reads RXFifo, writes TXFifo and setup
@@ -22,6 +22,12 @@
  * 1.11   akm  03/09/20 First release
  *         mn  03/30/20 Add xil_smc.h include for Xil_Smc calls
  * 1.13   akm  01/04/21 Fix MISRA-C violations.
+ * 1.15   akm  10/21/21 Fix MISRA-C violations.
+ * 1.15   akm  11/16/21 Typecast function parameter with appropriate
+ * 			data type.
+ * 1.15   akm  11/30/21 Fix compilation warnings reported with -Wundef flag
+ * 1.15   akm  03/03/22 Enable tapdelay settings for applications on
+ * 			 Microblaze platform.
  *
  * </pre>
  ******************************************************************************/
@@ -175,7 +181,7 @@ void XQspiPsu_SetupRxDma(const XQspiPsu *InstancePtr,
 		Msg->ByteCount = (u32)DmaRxBytes;
 	}
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
-		Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, Msg->ByteCount);
+		Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 	}
 	/* Write no. of words to DMA DST SIZE */
 	XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress,
@@ -297,12 +303,13 @@ void XQspiPsu_RXSetup(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
 #endif
 	InstancePtr->RxBytes = (s32)Msg->ByteCount;
 
-	if (((Msg->RxAddr64bit >= XQSPIPSU_RXADDR_OVER_32BIT) ||
-		(Msg->Xfer64bit != (u8)0U)) &&
-		(InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA)) {
-		XQspiPsu_Setup64BRxDma(InstancePtr, Msg);
-	} else if (InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA) {
-		XQspiPsu_SetupRxDma(InstancePtr, Msg);
+	if (InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA) {
+		if ((Msg->RxAddr64bit >= XQSPIPSU_RXADDR_OVER_32BIT) ||
+			(Msg->Xfer64bit != (u8)0U)) {
+			XQspiPsu_Setup64BRxDma(InstancePtr, Msg);
+		} else {
+			XQspiPsu_SetupRxDma(InstancePtr, Msg);
+		}
 	}
 }
 
@@ -693,12 +700,15 @@ void XQspiPsu_IORead(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
 		RxThr = RxThr*4;
 		XQspiPsu_ReadRxFifo(InstancePtr, Msg, RxThr);
 
-	} else if ((StatusReg & XQSPIPSU_ISR_GENFIFOEMPTY_MASK) != 0U) {
+		return;
+	}
+
+	if ((StatusReg & XQSPIPSU_ISR_GENFIFOEMPTY_MASK) != 0U) {
 		XQspiPsu_ReadRxFifo(InstancePtr, Msg, InstancePtr->RxBytes);
 	}
 }
 
-#if defined (ARMR5) || (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__) || defined (__MICROBLAZE__)
 /*****************************************************************************/
 /**
 *
@@ -734,7 +744,7 @@ s32 XQspipsu_Set_TapDelay(const XQspiPsu *InstancePtr, u32 TapdelayBypass,
 	if (InstancePtr->IsBusy == (u32)TRUE) {
 		Status = (s32)XST_DEVICE_BUSY;
 	} else {
-#if EL1_NONSECURE && defined (__aarch64__) && !defined (versal)
+#if defined (__aarch64__) && (EL1_NONSECURE == 1) && !defined (versal)
 		Xil_Smc(MMIO_WRITE_SMC_FID, (u64)(XPS_SYS_CTRL_BASEADDR +
 				IOU_TAPDLY_BYPASS_OFFSET) | ((u64)(0x4) << 32),
 				(u64)TapdelayBypass, 0, 0, 0, 0, 0);

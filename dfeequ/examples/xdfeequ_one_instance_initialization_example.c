@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,11 +17,14 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/19/21 Update doxygen documentation
 *
 * </pre>
+* @addtogroup Overview
+* @{
 *
 *****************************************************************************/
-
+/** @cond nocomments */
 /***************************** Include Files ********************************/
 #include "xdfeequ_examples.h"
 
@@ -31,6 +34,7 @@
 /************************** Function Prototypes *****************************/
 /************************** Variable Definitions ****************************/
 
+/** @endcond */
 /****************************************************************************/
 /**
 *
@@ -49,6 +53,7 @@
 *		- XST_FAILURE if the example has failed.
 *
 ****************************************************************************/
+/** //! [testexample1] */
 int XDfeEqu_SelfExample()
 {
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -66,7 +71,7 @@ int XDfeEqu_SelfExample()
 		return XST_FAILURE;
 	}
 
-	/* Initialize the instance of channel filter driver */
+	/* Initialize the instance of Equalizer driver */
 	InstancePtr = XDfeEqu_InstanceInit(XDFEEQU_NODE_NAME);
 
 	/* Get SW and HW version numbers */
@@ -78,15 +83,22 @@ int XDfeEqu_SelfExample()
 	       HwVersion.Patch);
 
 	/* Go through initialization states of the state machine */
+	/* Reset */
 	XDfeEqu_Reset(InstancePtr);
+	/* Configure */
 	XDfeEqu_Configure(InstancePtr, &Cfg);
+	/* Initialise */
 	Config.DatapathMode = 0;
 	XDfeEqu_Initialize(InstancePtr, &Config);
+	/* Activate - disable low power */
 	XDfeEqu_Activate(InstancePtr, false);
 
+	/* Close and exit */
 	XDfeEqu_Deactivate(InstancePtr);
 	XDfeEqu_InstanceClose(InstancePtr);
 	printf("Equalizer \"One Instance Initialization\" Example: Pass\r\n");
 
 	return XST_SUCCESS;
 }
+/** //! [testexample1] */
+/** @} */

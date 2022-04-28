@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -66,7 +66,7 @@ int XDfeMix_SelfTestExample()
 		return XST_FAILURE;
 	}
 
-	/* Initialize the instance of channel filter driver */
+	/* Initialize the instance of Mixer driver */
 	InstancePtr = XDfeMix_InstanceInit(XDFEMIX_NODE_NAME);
 
 	/* Get SW and HW version numbers */

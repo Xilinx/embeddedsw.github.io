@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc.h
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 * @details
 *
@@ -279,6 +279,11 @@
 * 11.0  cog    05/31/21 Upversion.
 *       cog    07/12/21 Simplified clock distribution user interface.
 *       cog    08/18/21 Disallow VOP for DC coupled DACs.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    11/26/21 Header file clean up, this fixes a C++ compilation issue.
+*       cog    11/26/21 Pack all structs for RAFT compatibility.
+*       cog    12/06/21 Rearrange XRFdc_Distribution_Settings.
+*       cog    01/18/22 Added safety checks.
 *
 * </pre>
 *
@@ -286,6 +291,8 @@
 
 #ifndef RFDC_H_
 #define RFDC_H_
+
+#include <metal/device.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -302,10 +309,7 @@ extern "C" {
 #include "sleep.h"
 #endif
 #include <metal/sys.h>
-#include <metal/device.h>
 #include <metal/irq.h>
-#include <metal/atomic.h>
-#include <metal/io.h>
 #include <metal/sleep.h>
 #include "metal/alloc.h"
 #include "xrfdc_hw.h"
@@ -386,8 +390,8 @@ typedef struct {
 } XRFdc_Distribution_Info;
 
 typedef struct {
-	u32 SourceTileId;
 	u32 SourceType;
+	u32 SourceTileId;
 	u32 EdgeTileIds[2];
 	u32 EdgeTypes[2];
 	double DistRefClkFreq;
@@ -399,9 +403,6 @@ typedef struct {
 typedef struct {
 	XRFdc_Distribution_Settings Distributions[8];
 } XRFdc_Distribution_System_Settings;
-#ifndef __BAREMETAL__
-#pragma pack()
-#endif
 
 /**
  * MTS DTC Settings.
@@ -572,9 +573,6 @@ typedef struct {
 				 1 if all flags asserted, 0 otherwise */
 } XRFdc_BlockStatus;
 
-#ifndef __BAREMETAL__
-#pragma pack(1)
-#endif
 /**
  * DAC block Analog DataPath Config settings.
  */
@@ -671,9 +669,7 @@ typedef struct {
 	XRFdc_DACTile_Config DACTile_Config[4];
 	XRFdc_ADCTile_Config ADCTile_Config[4];
 } XRFdc_Config;
-#ifndef __BAREMETAL__
-#pragma pack()
-#endif
+
 /**
  * DAC Block Analog DataPath Structure.
  */
@@ -774,6 +770,9 @@ typedef struct {
 	void *CallBackRef; /* Callback reference for event handler */
 	u8 UpdateMixerScale; /* Set to 1, if user overwrite mixer scale */
 } XRFdc;
+#ifndef __BAREMETAL__
+#pragma pack()
+#endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -1448,7 +1447,7 @@ u32 XRFdc_ResetInternalFIFOWidthObs(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_I
 void XRFdc_ClrSetReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask, u16 Data);
 void XRFdc_ClrReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask);
 u16 XRFdc_RDReg(XRFdc *InstancePtr, u32 BaseAddr, u32 RegAddr, u16 Mask);
-u32 XRFdc_IsHighSpeedADC(XRFdc *InstancePtr, int Tile);
+u32 XRFdc_IsHighSpeedADC(XRFdc *InstancePtr, u32 Tile);
 u32 XRFdc_IsDACBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
 u32 XRFdc_IsADCBlockEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);
 u32 XRFdc_IsDACDigitalPathEnabled(XRFdc *InstancePtr, u32 Tile_Id, u32 Block_Id);

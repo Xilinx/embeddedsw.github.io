@@ -24,7 +24,7 @@
  * 1.1   ku   17/05/20 Adding uniquification to avoid clash with vphy
  * </pre>
  *
- * @addtogroup xhdmiphy1_v2_3
+ * @addtogroup xhdmiphy1_v2_4
  * @{
 *******************************************************************************/
 
@@ -106,6 +106,8 @@ extern const XHdmiphy1_GtConfig XHdmiphy1_Gthe4Config;
 extern const XHdmiphy1_GtConfig XHdmiphy1_Gtye4Config;
 #elif (XPAR_HDMIPHY1_0_TRANSCEIVER == XHDMIPHY1_GTYE5)
 extern const XHdmiphy1_GtConfig Gtye5Config;
+#elif (XPAR_HDMIPHY1_0_TRANSCEIVER == XHDMIPHY1_GTYP)
+extern const XHdmiphy1_GtConfig GtypConfig;
 #endif
 
 #ifdef __cplusplus

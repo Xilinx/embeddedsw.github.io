@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -32,6 +32,8 @@
 *       dc     04/14/21 Add FIR_ENABLE/MIXER_ENABLE register support
 * 1.1   dc     07/13/21 Update to common latency requirements
 *       dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+* 1.3   dc     03/21/22 Add prefix to global variables
 *
 * </pre>
 *
@@ -48,14 +50,15 @@ extern int XDfeSi570_SetMgtOscillator(double CurrentFrequency,
 				      double NewFrequency);
 extern int XDfeMix_SelfTestExample();
 extern int XDfeMix_AddCCExample();
+extern int XDfeMix_MultiAddCCExample();
 
 /************************** Variable Definitions ****************************/
 #ifdef __BAREMETAL__
-metal_phys_addr_t metal_phys[XDFEMIX_MAX_NUM_INSTANCES] = {
+metal_phys_addr_t XDfeMix_metal_phys[XDFEMIX_MAX_NUM_INSTANCES] = {
 	XPAR_XDFEMIX_0_S_AXI_BASEADDR,
 };
 
-struct metal_device CustomDevice[XDFEMIX_MAX_NUM_INSTANCES] = {
+struct metal_device XDfeMix_CustomDevice[XDFEMIX_MAX_NUM_INSTANCES] = {
 	XDFEMIX_CUSTOM_DEV(XPAR_XDFEMIX_0_DEV_NAME,
 			   XPAR_XDFEMIX_0_S_AXI_BASEADDR, 0)
 };
@@ -100,6 +103,16 @@ int main(void)
 	 * the Device ID that is generated in xparameters.h.
 	 */
 	if (XST_SUCCESS != XDfeMix_AddCCExample()) {
+		printf("Pass through Example failed\r\n");
+		return XST_FAILURE;
+	}
+
+	/*
+	 * Run the DFE Mixer pass through example with multiAddCC API.
+	 * For bare metal specify the Device ID that is generated in
+	 * xparameters.h.
+	 */
+	if (XST_SUCCESS != XDfeMix_MultiAddCCExample()) {
 		printf("Pass through Example failed\r\n");
 		return XST_FAILURE;
 	}

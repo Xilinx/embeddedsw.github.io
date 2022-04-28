@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +7,9 @@
 /**
 *
 * @file xdfeprach_hw.h
-* @addtogroup xdfeprach_v1_1
+* @addtogroup Overview
 * @{
-*
+* @cond nocomments
 * Contains the register definitions for xdfeprach. This is
 * created to be used initialy while waiting for IP.
 *
@@ -24,6 +24,9 @@
 *       dc     05/18/21 Handling RachUpdate trigger
 * 1.1   dc     06/30/21 Doxygen documentation update
 *       dc     07/13/21 Update to common latency requirements
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
+* 1.3   dc     01/31/22 Add CORE_SETTINGS register
 *
 * </pre>
 *
@@ -135,15 +138,24 @@ extern "C" {
 #define XDFEPRACH_FRAME_INIT_TRIGGERED_OFFSET 6U
 #define XDFEPRACH_FRAME_INIT_TRIGGERED_LOW 0U
 #define XDFEPRACH_FRAME_INIT_TRIGGERED_HIGH 1U
-#define XDFEPRACH_IRQ_FLAGS_MASK 0x7FU
+#define XDFEPRACH_FRAME_ERROR_WIDTH 1U
+#define XDFEPRACH_FRAME_ERROR_OFFSET 7U
+#define XDFEPRACH_FRAME_ERROR_LOW 0U
+#define XDFEPRACH_FRAME_ERROR_HIGH 1U
+#define XDFEPRACH_IRQ_FLAGS_MASK 0xFFU
 
 /* Latency */
 #define XDFEPRACH_DELAY_OFFSET 0x80U /**< Register offset */
-#define XDFEPRACH_DELAY_VALUE_WIDTH 15U
+#define XDFEPRACH_DELAY_VALUE_WIDTH 12U
 #define XDFEPRACH_DELAY_VALUE_OFFSET 0U
 #define XDFEPRACH_LATENCY_OFFSET 0x84U /**< Register offset */
-#define XDFEPRACH_LATENCY_VALUE_WIDTH 15U
+#define XDFEPRACH_LATENCY_VALUE_WIDTH 12U
 #define XDFEPRACH_LATENCY_VALUE_OFFSET 0U
+
+/* Core settings */
+#define XDFEPRACH_CORE_SETTINGS 0x88U /**< Register offset */
+#define XDFEPRACH_USE_FREQ_OFFSET_ENABLE 1U
+#define XDFEPRACH_USE_FREQ_OFFSET_DISABLE 0U
 
 /* RACH configuration */
 
@@ -289,7 +301,8 @@ extern "C" {
 #define XDFEPRACH_FREQUENCY_CONTROL_WORD_OFFSET 0U
 
 /* NCO CTRL */
-#define XDFEPRACH_NCO_CTRL_ADDR_STEP 0x40U
+#define XDFEPRACH_NCO_CTRL_ADDR_STEP 0x20U
+#define XDFEPRACH_NCO_NUM 8U
 /* Phase */
 #define XDFEPRACH_PHASE_PHASE_OFFSET 0xC00U /**< Register offset */
 #define XDFEPRACH_PHASE_PHASE_OFFSET_WIDTH 18U
@@ -328,27 +341,12 @@ extern "C" {
 #define XDFEPRACH_CAPTURED_PHASE_DUAL_MOD_SEL_WIDTH 1U
 #define XDFEPRACH_CAPTURED_PHASE_DUAL_MOD_SEL_OFFSET 0U
 
-#define XDFEPRACH_FREQUENCY_UPDATE 0xC20U /**< Register offset */
-#define XDFEPRACH_FREQUENCY_UPDATE_WIDTH 1U
-#define XDFEPRACH_FREQUENCY_UPDATE_OFFSET 0U
-
-#define XDFEPRACH_PHASE_UPDATE 0xC24U /**< Register offset */
-#define XDFEPRACH_PHASE_UPDATE_WIDTH 1U
-#define XDFEPRACH_PHASE_UPDATE_OFFSET 0U
-
-#define XDFEPRACH_PHASE_RESET 0xC28U /**< Register offset */
-#define XDFEPRACH_PHASE_RESET_WIDTH 1U
-#define XDFEPRACH_PHASE_RESET_OFFSET 0U
-
-#define XDFEPRACH_PHASE_ACC_ENABLE 0xC2CU /**< Register offset */
-#define XDFEPRACH_PHASE_ACC_ENABLE_WIDTH 1U
-#define XDFEPRACH_PHASE_ACC_ENABLE_OFFSET 0U
-#define XDFEPRACH_PHASE_ACC_ENABLE_NO 0U
-#define XDFEPRACH_PHASE_ACC_ENABLE_YES 1U
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+/**
+* @endcond
+*/
 /** @} */

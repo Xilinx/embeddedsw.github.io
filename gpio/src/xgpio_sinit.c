@@ -6,15 +6,12 @@
 /*****************************************************************************/
 /**
 * @file xgpio_sinit.c
-* @addtogroup gpio_v4_8
+* @addtogroup Overview
 * @{
 *
-* The implementation of the XGpio driver's static initialization
-* functionality.
+* The xgpio_sinit.c file contains the implementation of the XGpio driver's
+* static initialization functionality.
 *
-* @note
-*
-* None
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -59,9 +56,9 @@
 * @param	DeviceId is the device identifier to lookup.
 *
 * @return
-*		 - A pointer of data type XGpio_Config which points to the
-*		device configuration if DeviceID is found.
-* 		- NULL if DeviceID is not found.
+*		- A pointer of data type XGpio_Config which points to the
+*		  device configuration if DeviceID is found.
+*		- NULL if DeviceID is not found.
 *
 * @note		None.
 *
@@ -101,8 +98,8 @@ XGpio_Config *XGpio_LookupConfig(u16 DeviceId)
 *
 * @return
 *		- XST_SUCCESS if the initialization was successful.
-* 		- XST_DEVICE_NOT_FOUND  if the device configuration data was not
-*		found for a device with the supplied device ID.
+*		- XST_DEVICE_NOT_FOUND  if the device configuration data was not
+*		  found for a device with the supplied device ID.
 *
 * @note		None.
 *

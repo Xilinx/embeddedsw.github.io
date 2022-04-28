@@ -25,6 +25,7 @@ var xscugic_8h =
     [ "XScuGic_InterruptHandler", "xscugic_8h.html#gaa26a952ecd376be0bc3d8433023d1364", null ],
     [ "XScuGic_InterruptMaptoCpu", "xscugic_8h.html#ga2a94f1a519d965f051d598e5a6b5a855", null ],
     [ "XScuGic_InterruptUnmapFromCpu", "xscugic_8h.html#ga04f8ea74458251784b293e4ad98f2d74", null ],
+    [ "XScuGic_IsInitialized", "xscugic_8h.html#ga72b9aec992716861e5f0929e4d0d9f7c", null ],
     [ "XScuGic_LookupConfig", "xscugic_8h.html#gab2c0554b809121cc91a96fcd8c749c25", null ],
     [ "XScuGic_SelfTest", "xscugic_8h.html#ga081a9a62546b413d94e609894282a575", null ],
     [ "XScuGic_SetCpuID", "xscugic_8h.html#ga945e029b4356be809020c81745c4a23b", null ],

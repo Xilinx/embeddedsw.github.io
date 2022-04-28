@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,11 +7,13 @@
 /**
 *
 * @file xsdps.h
-* @addtogroup sdps_v3_13
+* @addtogroup Overview
 * @{
 * @details
 *
-* This file contains the implementation of XSdPs driver.
+* This section explains the implementation of the XSdPs driver.
+* See xsdps.h for a detailed description of the device and driver.
+*
 * This driver is used initialize read from and write to the SD card.
 * Features such as switching bus width to 4-bit and switching to high speed,
 * changing clock frequency, block size etc. are supported.
@@ -25,7 +27,8 @@
 * line) can be sent, most often to obtain status.
 * This driver does not support multi card slots at present.
 *
-* Initialization:
+* <b>Initialization & Configuration</b>
+*
 * This includes initialization on the host controller side to select
 * clock frequency, bus power and default transfer related parameters.
 * The default voltage is 3.3V.
@@ -33,7 +36,8 @@
 * implemented. This resets the card, gives it a unique address/ID and
 * identifies key card related specifications.
 *
-* Data transfer:
+* <b>Data transfer</b>
+*
 * The SD card is put in transfer state to read from or write to it.
 * The default block size is 512 bytes and if supported,
 * default bus width is 4-bit and bus speed is High speed.
@@ -46,7 +50,8 @@
 * event one of them is set, driver will clear the interrupt status and
 * communicate failure to the upper layer.
 *
-* File system use:
+* <b>File system use</b>
+*
 * This driver can be used with xilffs library to read and write files to SD.
 * (Please refer to procedure in diskio.c). The file system read/write example
 * in polled mode can used for reference.
@@ -61,7 +66,8 @@
 * Interrupt mode is not supported because it offers no improvement when used
 * with file system.
 *
-* eMMC support:
+* <b>eMMC support</b>
+*
 * SD driver supports SD and eMMC based on the "enable MMC" parameter in SDK.
 * The features of eMMC supported by the driver will depend on those supported
 * by the host controller. The current driver supports read/write on eMMC card
@@ -143,6 +149,9 @@
 *       sk     05/25/21 Fix the compilation issue in Cortex-A72 + EL1_NS by
 *                       removing the DLL reset logic (Dead code for Versal).
 * 3.13  sk     08/10/21 Limit the SD operating frequency to 19MHz for Versal.
+* 3.14  sk     10/22/21 Add support for Erase feature.
+*       sk     11/29/21 Fix compilation warnings reported with "-Wundef" flag.
+*       sk     01/10/22 Add support to read slot_type parameter.
 *
 * </pre>
 *
@@ -207,12 +216,17 @@ extern "C" {
 #define XSDPS_VERSAL_SD0_BASE		0xF1040000U	/**< Versal SD0 Baseaddress */
 #define XSDPS_VERSAL_SD1_BASE		0xF1050000U	/**< Versal SD1 Baseaddress */
 
-/**************************** Type Definitions *******************************/
-
-/**
- * Function pointer for configuring the Tap delays.
+/** @name Block size mask for 512 bytes
+ *
+ * Block size mask for 512 bytes - This is the default block size.
+ * @{
  */
-typedef void (*XSdPs_ConfigTap) (u32 Bank, u32 DeviceId, u32 CardType);
+
+#define XSDPS_BLK_SIZE_512_MASK	0x200U	/**< Blk Size 512 */
+
+/** @} */
+
+/**************************** Type Definitions *******************************/
 
 /**
  * This typedef contains configuration information for the device.
@@ -226,6 +240,7 @@ typedef struct {
 	u32 BusWidth;			/**< Bus Width */
 	u32 BankNumber;			/**< MIO Bank selection for SD */
 	u32 HasEMIO;			/**< If SD is connected to EMIO */
+	u8 SlotType;			/**< Slot type */
 	u8 IsCacheCoherent; 		/**< If SD is Cache Coherent or not */
 #if defined  (XCLOCKING)
 	u32 RefClk;			/**< Input clocks */
@@ -333,6 +348,7 @@ s32 XSdPs_StartReadTransfer(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff);
 s32 XSdPs_CheckReadTransfer(XSdPs *InstancePtr);
 s32 XSdPs_StartWriteTransfer(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff);
 s32 XSdPs_CheckWriteTransfer(XSdPs *InstancePtr);
+s32 XSdPs_Erase(XSdPs *InstancePtr, u32 StartAddr, u32 EndAddr);
 
 #ifdef __cplusplus
 }

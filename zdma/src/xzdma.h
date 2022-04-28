@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xzdma.h
-* @addtogroup zdma_v1_13
+* @addtogroup zdma_v1_14
 * @{
 * @details
 *
@@ -113,6 +113,8 @@
 *			 check to support versal adma IP.
 * 1.10  hk      04/29/20 Enable Scatter Gather setup and Enable APIs for use
 *                        in applications directly.
+* 1.14	adk	03/15/22 Fixed syntax errors in zdma_tapp.tcl file, when stdout
+* 			 is configured as none.
 * </pre>
 *
 ******************************************************************************/

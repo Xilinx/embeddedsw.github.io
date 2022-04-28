@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +7,6 @@
 /**
 *
 * @file xdfeequ_intr.c
-* @addtogroup xdfeequ_v1_1
-* @{
-*
 * This file contains functions related to Equalizer interrupt handling.
 *
 * <pre>
@@ -21,10 +18,17 @@
 *       dc     02/22/21 align driver to current specification
 *       dc     04/18/21 Update trigger and event handlers
 *       dc     04/20/21 Doxygen documentation update
+* 1.2   dc     10/29/21 Update doxygen comments
+*       dc     11/05/21 Align event handlers
+*       dc     11/19/21 Update doxygen documentation
 *
 * </pre>
-*
+* @addtogroup Overview
+* @{
 ******************************************************************************/
+/**
+* @cond nocomments
+*/
 
 #include "xdfeequ.h"
 #include "xdfeequ_hw.h"
@@ -35,62 +39,75 @@
 extern u32 XDfeEqu_RdBitField(u32 FieldWidth, u32 FieldOffset, u32 Data);
 extern u32 XDfeEqu_WrBitField(u32 FieldWidth, u32 FieldOffset, u32 Data,
 			      u32 Val);
+/**
+* @endcond
+*/
 
 /****************************************************************************/
 /**
 *
-* Gets Equalizer event status for channel ID.
+* Gets event status.
 *
-* @param    InstancePtr is a pointer to the Equalizer instance.
-* @param    ChannelId is a channel ID.
-* @param    Status is an Equalizer status container.
-*
+* @param    InstancePtr Pointer to the Equalizer instance.
+* @param    Status Equalizer status container.
 *
 ****************************************************************************/
-void XDfeEqu_GetEventStatus(const XDfeEqu *InstancePtr, u32 ChannelId,
-			    XDfeEqu_Status *Status)
+void XDfeEqu_GetEventStatus(const XDfeEqu *InstancePtr, XDfeEqu_Status *Status)
 {
+	u32 Index;
 	u32 Data;
 	u32 Offset;
 
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(ChannelId < XDFEEQU_CHANNEL_NUM);
 	Xil_AssertVoid(Status != NULL);
 
 	/* Reads the relevant bits of the Channel_Id Status register. Populates
 	   Status.i_status and Status.q_status. */
-	Offset = XDFEEQU_CHANNEL_0_STATUS_OFFSET +
-		 (XDFEEQU_CHANNEL_STATUS_OFFSET * ChannelId);
-	Data = XDfeEqu_ReadReg(InstancePtr, Offset);
-	Status->IStatus = Data & XDFEEQU_CHANNEL_I_STATUS_MASK;
-	Status->QStatus = (Data & XDFEEQU_CHANNEL_Q_STATUS_MASK) >>
-			  XDFEEQU_CHANNEL_Q_STATUS_OFFSET;
+	Offset = XDFEEQU_CHANNEL_0_STATUS_OFFSET;
+	for (Index = 0; Index < XDFEEQU_CHANNEL_NUM; Index++) {
+		Data = XDfeEqu_ReadReg(
+			InstancePtr,
+			Offset + (XDFEEQU_CHANNEL_STATUS_OFFSET * Index));
+		Status->IStatus[Index] = Data & XDFEEQU_CHANNEL_I_STATUS_MASK;
+		Status->QStatus[Index] =
+			(Data & XDFEEQU_CHANNEL_Q_STATUS_MASK) >>
+			XDFEEQU_CHANNEL_Q_STATUS_OFFSET;
+	}
 }
 
 /****************************************************************************/
 /**
 *
-* Clears Equalizer status for channel ID.
+* Clears Equalizer status. The channel status will be cleared for any IStatus
+* or QStatus not equal 0.
 *
-* @param    InstancePtr is a pointer to the Equalizer instance.
-* @param    ChannelId bits indicate which channel is enabled.
+* @param    InstancePtr Pointer to the Equalizer instance.
+* @param    Status Equalizer status container.
+*
+* @note     The Status registers are only present for a given channel when it
+*           is present in the configured IP. The number of channels present is
+*           given by CONFIG.NUM_CHANNELS.
 *
 ****************************************************************************/
-void XDfeEqu_ClearEventStatus(const XDfeEqu *InstancePtr, u32 ChannelId)
+void XDfeEqu_ClearEventStatus(const XDfeEqu *InstancePtr,
+			      const XDfeEqu_Status *Status)
 {
 	u32 Index;
 	u32 Offset;
+	u32 Data;
 
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(ChannelId < ((u32)1U << XDFEEQU_CHANNEL_NUM));
+	Xil_AssertVoid(Status != NULL);
 
-	/* Clears the relevant bits of the Channel_Id Status register. */
+	/* Clears the Status register if IStatus or Qstatus are not 0. */
+	Offset = XDFEEQU_CHANNEL_0_STATUS_OFFSET;
 	for (Index = 0; Index < XDFEEQU_CHANNEL_NUM; Index++) {
-		if (0U != (ChannelId & ((u32)1U << Index))) {
-			Offset = XDFEEQU_CHANNEL_0_STATUS_MASK_OFFSET +
-				 (0x10U * Index);
-			XDfeEqu_WriteReg(InstancePtr, Offset, 0U);
-		}
+		Data = (Status->IStatus[Index] & 1U) |
+		       ((Status->QStatus[Index] & 1U)
+			<< XDFEEQU_CHANNEL_Q_STATUS_OFFSET);
+		XDfeEqu_WriteReg(
+			InstancePtr,
+			Offset + (XDFEEQU_CHANNEL_STATUS_OFFSET * Index), Data);
 	}
 }
 
@@ -99,29 +116,58 @@ void XDfeEqu_ClearEventStatus(const XDfeEqu *InstancePtr, u32 ChannelId)
 *
 * Enables an Equalizer status for channel ID.
 *
-* @param    InstancePtr is a pointer to the Equalizer instance.
-* @param    ChannelField bits indicate which channel is enabled.
-* @param    StatusMask is an Equalizer status mask container.
+* @param    InstancePtr Pointer to the Equalizer instance.
+* @param    ChannelField Bits indicating which channel is enabled.
+* @param    InterruptMask Equalizer interrupt mask container.
+*
+* @note     The Status Mask registers are only present for a given channel when
+*           it is present in the configured IP. The number of channels present
+*           is given by CONFIG.NUM_CHANNELS.
 *
 ****************************************************************************/
-void XDfeEqu_SetInterruptMask(const XDfeEqu *InstancePtr, u32 ChannelField,
-			      const XDfeEqu_InterruptMask *StatusMask)
+void XDfeEqu_SetInterruptMask(const XDfeEqu *InstancePtr,
+			      const XDfeEqu_InterruptMask *InterruptMask)
 {
 	u32 Index;
 	u32 Offset;
-	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(ChannelField < ((u32)1U << XDFEEQU_CHANNEL_NUM));
-	Xil_AssertVoid(StatusMask->Status <
-		       (1U << XDFEEQU_CHANNEL_STATUS_MASK_ENABLE_WIDTH));
 
-	/* Sets the Status Mask register for each channel selected in Channel_Field. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InterruptMask != NULL);
+
+	/* Sets the Status Mask register */
+	Offset = XDFEEQU_CHANNEL_0_STATUS_MASK_OFFSET;
 	for (Index = 0; Index < XDFEEQU_CHANNEL_NUM; Index++) {
-		if (0U != (ChannelField & ((u32)1U << Index))) {
-			Offset = XDFEEQU_CHANNEL_0_STATUS_MASK_OFFSET +
-				 (XDFEEQU_CHANNEL_STATUS_OFFSET * Index);
-			XDfeEqu_WriteReg(InstancePtr, Offset,
-					 StatusMask->Status);
-		}
+		XDfeEqu_WriteReg(
+			InstancePtr,
+			Offset + (XDFEEQU_CHANNEL_STATUS_OFFSET * Index),
+			InterruptMask->Mask[Index]);
+	}
+}
+
+/****************************************************************************/
+/**
+*
+* Gets interrupt mask.
+*
+* @param    InstancePtr Pointer to the Equalizer instance.
+* @param    InterruptMask Equalizer interrupt mask container.
+*
+****************************************************************************/
+void XDfeEqu_GetInterruptMask(const XDfeEqu *InstancePtr,
+			      XDfeEqu_InterruptMask *InterruptMask)
+{
+	u32 Index;
+	u32 Offset;
+
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InterruptMask != NULL);
+
+	/* Reads the Status Mask register */
+	Offset = XDFEEQU_CHANNEL_0_STATUS_MASK_OFFSET;
+	for (Index = 0; Index < XDFEEQU_CHANNEL_NUM; Index++) {
+		InterruptMask->Mask[Index] = XDfeEqu_ReadReg(
+			InstancePtr,
+			Offset + (XDFEEQU_CHANNEL_STATUS_OFFSET * Index));
 	}
 }
 

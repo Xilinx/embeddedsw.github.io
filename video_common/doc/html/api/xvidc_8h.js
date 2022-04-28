@@ -78,6 +78,7 @@ var xvidc_8h =
       [ "XVIDC_CSF_MEM_R_G_B8", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a8914cd0c0b28095f47a6f053dc844946", null ],
       [ "XVIDC_CSF_MEM_Y_U_V8_420", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a2c73331a9f08c9fe13a9b0edcdb4969c", null ],
       [ "XVIDC_CSF_MEM_Y_U_V8", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633ac389ee341ee5a94bf7a800d9cb0d5c27", null ],
+      [ "XVIDC_CSF_MEM_Y_U_V10", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a07fccdd92dc95cbb5872d1cacdd29fdc", null ],
       [ "XVIDC_CSF_MEM_END", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a6f5d130079effae84498de70c79a64d9", null ],
       [ "XVIDC_CSF_YCBCR_422", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a292455f571d2f9bfa3cb4e92db0db903", null ],
       [ "XVIDC_CSF_YCBCR_420", "xvidc_8h.html#ggaa562703f77eeee8ef4a222f1b99c8633a60b36df18ef89a3bf64e6019bf15fe6c", null ],

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspipsu_g.c
-* @addtogroup qspipsu_v1_14
+* @addtogroup Overview
 * @{
 *
 * This file contains a configuration table that specifies the configuration of

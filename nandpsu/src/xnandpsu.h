@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xnandpsu.h
-* @addtogroup nandpsu_v1_9
+* @addtogroup nandpsu_v1_10
 * @{
 * @details
 *
@@ -149,6 +149,9 @@
 * 1.6	sd     20/03/20    Added compilation flag
 * 1.8   sg     03/18/21    Added validation check for parameter page.
 * 1.9   akm    07/15/21    Initialize NandInstPtr with Data Interface & Timing mode info.
+* 1.10  akm    10/20/21    Fix gcc warnings.
+* 1.10  akm    12/21/21    Validate input parameters before use.
+* 1.10  akm    01/05/22    Remove assert checks form static and internal APIs.
 *
 * </pre>
 *

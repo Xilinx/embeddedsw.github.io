@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xtmr_manager.c
-* @addtogroup tmr_manager_v1_2
+* @addtogroup tmr_manager_v1_3
 * @{
 *
 * Contains required functions for the XTMR_Manager driver. See the xtmr_manager.h
@@ -19,6 +19,8 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -----------------------------------------------
 * 1.0   sa   04/05/17 First release
+* 1.3   adk  02/23/22 Added new API XTMR_Manager_Configure_BrkDelay()
+*       	      for configuring break delay.
 * </pre>
 *
 *****************************************************************************/
@@ -170,5 +172,25 @@ static void StubHandler(void *CallBackRef)
 	Xil_AssertVoidAlways();
 }
 
+/****************************************************************************
+*
+* This function configures the break delay value in Break Delay
+* Initialization Register.
+*
+* @param	InstancePtr is a pointer to the XTMR_Manager instance.
+* @param	BrkDelay is the break delay value.
+*
+* @return	None.
+*
+* @note		None.
+*
+*****************************************************************************/
+void XTMR_Manager_Configure_BrkDelay(XTMR_Manager *InstancePtr, u32 BrkDelay)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+
+	XTMR_Manager_WriteReg(InstancePtr->RegBaseAddress, XTM_BDIR_OFFSET,
+			      BrkDelay);
+}
 
 /** @} */

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 *
 * @file xdfeprach_one_instance_initialization_example.c
 *
-* This file contains a load coefficients example.
+* This file contains One instance initialisation example.
 *
 * <pre>
 *
@@ -17,11 +17,15 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------------
 * 1.1   dc     07/21/21 Add and reorganise examples
+* 1.2   dc     11/19/21 Update doxygen documentation
+* 1.3   dc     02/07/22 Configure 2 CC and 3 RC examples
 *
 * </pre>
+* @addtogroup Overview
+* @{
 *
 *****************************************************************************/
-
+/** @cond nocomments */
 /***************************** Include Files ********************************/
 #include "xdfeprach_examples.h"
 
@@ -31,11 +35,12 @@
 /************************** Function Prototypes *****************************/
 /************************** Variable Definitions ****************************/
 
+/** @endcond */
 /****************************************************************************/
 /**
 *
-* This function runs the DFE Prach device using the driver APIs.
-* This function does the following tasks:
+* This example runs the DFE Prach device using the driver APIs.
+* The example goes through the following steps:
 *	- Create and system initialize the device driver instance.
 *	- Read SW and HW version numbers.
 *	- Reset the device.
@@ -49,6 +54,7 @@
 *		- XST_FAILURE if the example has failed.
 *
 ****************************************************************************/
+/** //! [testexample1] */
 int XDfePrach_SelfTestExample()
 {
 	struct metal_init_params init_param = METAL_INIT_DEFAULTS;
@@ -58,7 +64,7 @@ int XDfePrach_SelfTestExample()
 	XDfePrach_Version HwVersion;
 	XDfePrach_Init Init;
 
-	printf("\r\nPrach \"One Instance Initialization\" Example - Start\r\n");
+	printf("\n\rPrach \"One Instance Initialization\" Example - Start\n\n\r");
 
 	/* Initialize libmetal */
 	if (XST_SUCCESS != metal_init(&init_param)) {
@@ -66,7 +72,7 @@ int XDfePrach_SelfTestExample()
 		return XST_FAILURE;
 	}
 
-	/* Initialize the instance of channel filter driver */
+	/* Initialize the instance of PRACH driver */
 	InstancePtr = XDfePrach_InstanceInit(XDFEPRACH_NODE_NAME);
 
 	/* Get SW and HW version numbers */
@@ -86,7 +92,9 @@ int XDfePrach_SelfTestExample()
 	XDfePrach_Deactivate(InstancePtr);
 	XDfePrach_InstanceClose(InstancePtr);
 
-	printf("Prach \"One Instance Initialization\" Example: Pass\r\n");
+	printf("\n\rPrach \"One Instance Initialization\" Example: Pass\n\n\r");
 
 	return XST_SUCCESS;
 }
+/** //! [testexample1] */
+/** @} */

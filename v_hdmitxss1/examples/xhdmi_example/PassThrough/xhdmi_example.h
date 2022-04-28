@@ -122,6 +122,10 @@ extern "C" {
 #include "xv_frmbufrd_l2.h"
 #endif
 
+#if defined (XPAR_XAXIS_SWITCH_NUM_INSTANCES)
+#include "xaxis_switch.h"
+#endif
+
 /* AUXFIFOSIZE: Must be set to 3 or higher*/
 #define AUXFIFOSIZE 10
 
@@ -357,6 +361,7 @@ XIicPs Ps_Iic0, Iic;
 XIic Iic;
 #endif
 
+#define TX_RX_RATE 0
 
 extern XHdmi_Exdes xhdmi_exdes_ctrlr;
 

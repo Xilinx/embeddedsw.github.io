@@ -7,7 +7,7 @@
 /**
 *
 * @file xdprxss.c
-* @addtogroup dprxss_v7_0
+* @addtogroup dprxss_v8_0
 * @{
 *
 * This is the main file for Xilinx DisplayPort Receiver Subsystem driver.
@@ -59,6 +59,9 @@
 *                   XDpRxss_GetColorComponent
 *                   XDpRxss_GetColorimetry
 *                   XDpRxss_GetDynamicRange
+* 8.0  jb  01/12/22 Added clk_wizard configuration for rx_dec_clk which is
+*                   required for 8b10b logic.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -69,6 +72,7 @@
 #include "xdprxss_mcdp6000.h"
 #include "string.h"
 #include "xdebug.h"
+#include "sleep.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -78,6 +82,63 @@ extern u32 MCDP6000_IC_Rev;
 
 #define EDID_IIC_ADDRESS	0x50
 
+/* Clock Wizard registers */
+#define XCLK_WIZ_SWRST_OFFSET	0x00000000
+#define XCLK_WIZ_SWRST_VAL	0x0A
+#define XCLK_WIZ_STATUS_OFFSET	0x00000004
+#define XCLK_WIZ_ISR_OFFSET	0x0000000C
+#define XCLK_WIZ_IER_OFFSET	0x00000010
+#define XCLK_WIZ_RECONFIG_OFFSET	0x00000014
+#define XCLK_WIZ_RECONFIG_VAL	0x03
+#define XCLK_WIZ_REG1_OFFSET	0x00000330
+#define XCLK_WIZ_REG2_OFFSET	0x00000334
+#define XCLK_WIZ_REG3_OFFSET	0x00000338
+#define XCLK_WIZ_REG4_OFFSET	0x0000033C
+#define XCLK_WIZ_REG12_OFFSET	0x00000380
+#define XCLK_WIZ_REG13_OFFSET	0x00000384
+#define XCLK_WIZ_REG11_OFFSET	0x00000378
+#define XCLK_WIZ_REG11_VAL	0x2E
+#define XCLK_WIZ_REG14_OFFSET	0x00000398
+#define XCLK_WIZ_REG14_VAL	0xE80
+#define XCLK_WIZ_REG15_OFFSET	0x0000039C
+#define XCLK_WIZ_REG15_VAL	0x4271
+#define XCLK_WIZ_REG16_OFFSET	0x000003A0
+#define XCLK_WIZ_REG16_VAL	0x43E9
+#define XCLK_WIZ_REG17_OFFSET	0x000003A8
+#define XCLK_WIZ_REG17_VAL	0x1C
+#define XCLK_WIZ_REG19_OFFSET	0x000003CC
+#define XCLK_WIZ_REG25_OFFSET	0x000003F0
+#define XCLK_WIZ_REG26_OFFSET	0x000003FC
+#define XCLK_WIZ_REG26_VAL	0x01
+
+/* Lock */
+#define XCLK_WIZ_LOCK			1
+#define XCLK_WIZ_REG3_PREDIV2		(1 << 11)
+#define XCLK_WIZ_REG3_USED		(1 << 12)
+#define XCLK_WIZ_REG3_MX		(1 << 9)
+#define XCLK_WIZ_REG1_PREDIV2		(1 << 12)
+/* FBout enable */
+#define XCLK_WIZ_REG1_EN		(1 << 9)
+#define XCLK_WIZ_REG1_MX		(1 << 10)
+#define XCLK_WIZ_RECONFIG_LOAD		1
+#define XCLK_WIZ_RECONFIG_SADDR		2
+#define XCLK_WIZ_REG1_EDGE_MASK		(1 << 8)
+
+#define XCLK_WIZ_CLKOUT0_PREDIV2_SHIFT	11
+#define XCLK_WIZ_CLKOUT0_MX_SHIFT	9
+#define XCLK_WIZ_CLKOUT0_P5EN_SHIFT	13
+#define XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT	15
+#define XCLK_WIZ_REG12_EDGE_SHIFT	10
+
+#define M_VAL_405	28
+#define M_VAL_270	44
+#define M_VAL_135	88
+#define M_VAL_81	148
+#define D_VAL_ALL	5
+
+#define XCLK_WIZ_STATUS_RETRY	10000
+#define XCLK_WIZ_STATUS_WAIT	100
+
 /**************************** Type Definitions *******************************/
 
 /* Subsystem sub-core's structure includes instances of each sub-core */
@@ -86,17 +147,9 @@ typedef struct {
 #ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic IicInst;
 #endif
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	XHdcp1x Hdcp1xInst;
-#endif
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-	(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	XTmrCtr TmrCtrInst;
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
-	XHdcp22_Rx Hdcp22Inst;
-#endif
+	XHdcp22_Rx_Dp Hdcp22Inst;
 } XDpRxSs_SubCores;
 
 /************************** Function Prototypes ******************************/
@@ -108,23 +161,14 @@ static void StubTp2Callback(void *InstancePtr);
 static void StubUnplugCallback(void *InstancePtr);
 static void StubAccessLaneSetCallback(void *InstancePtr);
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 static int DpRxSs_HdcpStartTimer(void *InstancePtr, u16 TimeoutInMs);
 static int DpRxSs_HdcpStopTimer(void *InstancePtr);
 static int DpRxSs_HdcpBusyDelay(void *InstancePtr, u16 DelayInMs);
 static void DpRxSs_TimerCallback(void *InstancePtr, u8 TmrCtrNumber);
 static u32 DpRxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq);
-#endif
-
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-	(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 static void DpRxSs_TimeOutCallback(void *InstancePtr, u8 TmrCtrNumber);
-#endif
-
-#if ((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_RX_NUM_INSTANCES > 0))
 static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr);
-#endif
+static void XDpRxSs_Set_Dec_Clk(XDpRxSs *InstancePtr);
 
 /************************** Variable Definitions *****************************/
 
@@ -185,9 +229,7 @@ XDpRxSs_SubCores DpRxSsSubCores[XPAR_XDPRXSS_NUM_INSTANCES];
 u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 				UINTPTR EffectiveAddr)
 {
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-	XHdcp1x_Config Hdcp1xConfig;
-#endif
+	XHdcp1x_Config *Hdcp1xConfig;
 #ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic_Config IicConfig;
 #endif
@@ -207,6 +249,11 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 
 	/* Get included sub-cores in the DisplayPort RX Subsystem */
 	DpRxSs_GetIncludedSubCores(InstancePtr);
+
+	if (InstancePtr->Config.IncludeClkWiz)
+		InstancePtr->clk_wiz_abs_addr =
+			InstancePtr->Config.BaseAddress +
+			InstancePtr->Config.ClkWizSubCore.ClkWizConfig.AbsAddr;
 
 	/* Check for IIC availability */
 #ifdef XPAR_XIIC_NUM_INSTANCES
@@ -319,9 +366,6 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		DpRxSs_PopulateDpRxPorts(InstancePtr);
 	}
 
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-			(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	/* Check for Timer Counter availability */
 	XTmrCtr_Config *ConfigPtr;
 	if (InstancePtr->TmrCtrPtr != NULL) {
@@ -358,37 +402,36 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		/* Set the reset value to Timer Counter zero */
 		XTmrCtr_SetResetValue(InstancePtr->TmrCtrPtr, 0,
 				XDPRXSS_TMRCTR_RST_VAL);
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-		/* Initialize the HDCP timer functions */
-		XHdcp1x_SetTimerStart(InstancePtr->Hdcp1xPtr,
-				&DpRxSs_HdcpStartTimer);
-		XHdcp1x_SetTimerStop(InstancePtr->Hdcp1xPtr,
-				&DpRxSs_HdcpStopTimer);
-		XHdcp1x_SetTimerDelay(InstancePtr->Hdcp1xPtr,
-				&DpRxSs_HdcpBusyDelay);
-#endif /*XPAR_DPRXSS_0_HDCP_ENABLE*/
-	}
-#endif
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
+		if (InstancePtr->Hdcp1xPtr != NULL) {
+			/* Initialize the HDCP timer functions */
+			XHdcp1x_SetTimerStart(InstancePtr->Hdcp1xPtr,
+					&DpRxSs_HdcpStartTimer);
+			XHdcp1x_SetTimerStop(InstancePtr->Hdcp1xPtr,
+					&DpRxSs_HdcpStopTimer);
+			XHdcp1x_SetTimerDelay(InstancePtr->Hdcp1xPtr,
+					&DpRxSs_HdcpBusyDelay);
+		}
+	}
+
 	/* Check for HDCP availability */
 	if ((InstancePtr->Hdcp1xPtr != NULL) &&
 					(InstancePtr->Config.HdcpEnable)) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Initializing HDCP IP "
 				"\n\r");
 
-		/* Calculate absolute base address of HDCP sub-core */
-		InstancePtr->Config.Hdcp1xSubCore.Hdcp1xConfig.BaseAddress +=
-					InstancePtr->Config.BaseAddress;
-		(void)memcpy((void *)&(Hdcp1xConfig),
-			(const void *)&CfgPtr->Hdcp1xSubCore.Hdcp1xConfig,
-				sizeof(XHdcp1x_Config));
+		Hdcp1xConfig = XHdcp1x_LookupConfig(
+				InstancePtr->Config.Hdcp1xSubCore.Hdcp1xConfig.DeviceId);
+		if (!ConfigPtr) {
+			return XST_DEVICE_NOT_FOUND;
+		}
 
-		/* HDCP config initialize */
-		Hdcp1xConfig.BaseAddress += InstancePtr->Config.BaseAddress;
+		/* Calculate absolute base address of HDCP sub-core */
+		Hdcp1xConfig->BaseAddress += InstancePtr->Config.BaseAddress;
+		/* HDCP1x config initialize */
 		Status = XHdcp1x_CfgInitialize(InstancePtr->Hdcp1xPtr,
-				&Hdcp1xConfig, (void *)InstancePtr->DpPtr,
-				Hdcp1xConfig.BaseAddress);
+				Hdcp1xConfig, (void *)InstancePtr->DpPtr,
+				Hdcp1xConfig->BaseAddress);
 		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:: HDCP "
 				"initialization failed\n\r");
@@ -400,9 +443,7 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 
 		XHdcp1x_LateInit(InstancePtr->Hdcp1xPtr);
 	}
-#endif
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/* HDCP 2.2 */
 	if (InstancePtr->Hdcp22Ptr && InstancePtr->Config.Hdcp22Enable)
 	{
@@ -417,17 +458,13 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			return(XST_FAILURE);
 		}
 
-		XHdcp22Rx_SetHdcp22OverProtocol(InstancePtr->Hdcp22Ptr,
+		XHdcp22Rx_Dp_SetHdcp22OverProtocol(InstancePtr->Hdcp22Ptr,
 				XHDCP22_RX_DP);
 	}
-#endif
 
-#if ((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_RX_NUM_INSTANCES > 0))
 	/* Default value */
 	InstancePtr->HdcpIsReady = FALSE;
-#endif
 
-#if ((XPAR_DPRXSS_0_HDCP_ENABLE > 0) && (XPAR_XHDCP22_RX_NUM_INSTANCES > 0))
 	/*
 	 * Set default HDCP protocol.
 	 * Setting HDCP1x as default if both HDCP1x
@@ -449,19 +486,17 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 	}
-#elif (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	/*
 	 * HDCP1X.
 	 * HDCP is ready when only the HDCP 1.4 core is
 	 * instantiated and the key is loaded
 	 */
-	if (InstancePtr->Hdcp1xPtr) {
+	else if (InstancePtr->Hdcp1xPtr) {
 		InstancePtr->HdcpIsReady = TRUE;
 
 		/* Set default HDCP content protection scheme */
 		XDpRxSs_HdcpSetProtocol(InstancePtr, XDPRXSS_HDCP_14);
 	}
-#elif (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/*HDCP22*/
 	if (InstancePtr->Hdcp22Ptr &&
 			InstancePtr->Hdcp22Lc128Ptr &&
@@ -471,8 +506,6 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		/* Set default HDCP content protection scheme */
 		XDpRxSs_HdcpSetProtocol(InstancePtr, XDPRXSS_HDCP_22);
 	}
-#endif
-
 	/* Set the flag to indicate the subsystem is ready */
 	InstancePtr->IsReady = (u32)(XIL_COMPONENT_IS_READY);
 
@@ -482,7 +515,6 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 				XDpRxSs_DrvVideoHandler, InstancePtr);
 	XDpRxSs_SetCallBack(InstancePtr, XDPRXSS_DRV_HANDLER_DP_PWR_CHG_EVENT,
 				XDpRxSs_DrvPowerChangeHandler, InstancePtr);
-
 	return XST_SUCCESS;
 }
 
@@ -503,26 +535,18 @@ void XDpRxSs_Reset(XDpRxSs *InstancePtr)
 {
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
-
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	/* Reset HDCP interface */
 	if ((InstancePtr->Hdcp1xPtr) && (InstancePtr->Config.HdcpEnable)) {
 		XHdcp1x_Reset(InstancePtr->Hdcp1xPtr);
 	}
-#endif
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-	(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	/* Reset Timer Counter zero */
 	if (InstancePtr->TmrCtrPtr) {
 		XTmrCtr_Reset(InstancePtr->TmrCtrPtr, 0);
 	}
-#endif
 	/* Reset the video and AUX logic from DP RX */
 	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
 			XDP_RX_SOFT_RESET, XDP_RX_SOFT_RESET_VIDEO_MASK |
 				XDP_RX_SOFT_RESET_AUX_MASK);
-
 	/* Reset the IIC core */
 #ifdef XPAR_XIIC_NUM_INSTANCES
 	if (InstancePtr->Config.IncludeAxiIic && InstancePtr->IicPtr) {
@@ -945,7 +969,6 @@ u32 XDpRxSs_HandleDownReq(XDpRxSs *InstancePtr)
 	return Status;
 }
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -969,17 +992,14 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr);
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
-#endif
+	if (InstancePtr->Hdcp1xPtr)
+		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
+	if (InstancePtr->Hdcp22Ptr)
+		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
 
 	switch (InstancePtr->HdcpProtocol) {
 		/* Disable HDCP 1.4 and HDCP 2.2 */
 		case XDPRXSS_HDCP_NONE :
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Disable(
 						InstancePtr->Hdcp1xPtr);
@@ -987,18 +1007,14 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 				 *  command is executed */
 				XHdcp1x_Poll(InstancePtr->Hdcp1xPtr);
 			}
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
-				Status2 = XHdcp22Rx_Disable(
+				Status2 = XHdcp22Rx_Dp_Disable(
 						InstancePtr->Hdcp22Ptr);
 			}
-#endif
 			break;
 
 			/* Enable HDCP 1.4 and disable HDCP 2.2 */
 		case XDPRXSS_HDCP_14 :
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Enable(
 						InstancePtr->Hdcp1xPtr);
@@ -1009,20 +1025,14 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 			else {
 				Status1 = XST_FAILURE;
 			}
-#else
-			Status1 = XST_FAILURE;
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
-				Status2 = XHdcp22Rx_Disable(
+				Status2 = XHdcp22Rx_Dp_Disable(
 						InstancePtr->Hdcp22Ptr);
 			}
-#endif
 			break;
 
 			/* Enable HDCP 2.2 and disable HDCP 1.4 */
 		case XDPRXSS_HDCP_22 :
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Disable(
 						InstancePtr->Hdcp1xPtr);
@@ -1030,18 +1040,13 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 				 * command is executed. */
 				XHdcp1x_Poll(InstancePtr->Hdcp1xPtr);
 			}
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
-				Status2 = XHdcp22Rx_Enable(
+				Status2 = XHdcp22Rx_Dp_Enable(
 						InstancePtr->Hdcp22Ptr);
 			}
 			else {
 				Status2 = XST_FAILURE;
 			}
-#else
-			Status2 = XST_FAILURE;
-#endif
 			break;
 
 		default :
@@ -1072,21 +1077,20 @@ u32 XDpRxSs_HdcpDisable(XDpRxSs *InstancePtr)
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr);
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
-#endif
+
+	if (InstancePtr->Hdcp1xPtr)
+		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
+
+	if (InstancePtr->Hdcp22Ptr)
+		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
+
 	/* Set protocol to NONE then reset/disable HDCP 1X and 2.2 */
 	InstancePtr->HdcpProtocol = XDPRXSS_HDCP_NONE;
 	Status = XDpRxSs_HdcpReset(InstancePtr);
 
 	return Status;
 }
-#endif
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 /*****************************************************************************/
 /**
 *
@@ -1148,9 +1152,7 @@ u32 XDpRxSs_SetPhysicalState(XDpRxSs *InstancePtr, u32 PhyState)
 
 	return Status;
 }
-#endif
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -1175,17 +1177,15 @@ u32 XDpRxSs_SetLane(XDpRxSs *InstancePtr, u32 Lane)
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr);
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
-#endif
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
-	Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
-#endif
+	if (InstancePtr->Hdcp1xPtr)
+		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
+	if (InstancePtr->Hdcp22Ptr)
+		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
+
 	Xil_AssertNonvoid((Lane == XDPRXSS_LANE_COUNT_SET_1) ||
 			(Lane == XDPRXSS_LANE_COUNT_SET_2) ||
 			(Lane == XDPRXSS_LANE_COUNT_SET_4));
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	if (InstancePtr->Hdcp1xPtr) {
 		/* Set lanes into the HDCP interface */
 		Status = XHdcp1x_SetLaneCount(InstancePtr->Hdcp1xPtr, Lane);
@@ -1196,18 +1196,13 @@ u32 XDpRxSs_SetLane(XDpRxSs *InstancePtr, u32 Lane)
 			return XST_FAILURE;
 		}
 	}
-#endif
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
-		XHdcp22_RxSetLaneCount(InstancePtr->Hdcp22Ptr, Lane);
-#endif
+		XHdcp22_Dp_RxSetLaneCount(InstancePtr->Hdcp22Ptr, Lane);
 
 	return Status;
 }
-#endif
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 /*****************************************************************************/
 /**
 *
@@ -1366,11 +1361,7 @@ u32 XDpRxSs_DownstreamReady(XDpRxSs *InstancePtr)
 
 	return Status;
 }
-#endif
 
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-	(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 /*****************************************************************************/
 /**
 *
@@ -1450,14 +1441,11 @@ static void DpRxSs_TimeOutCallback(void *InstancePtr, u8 TmrCtrNumber)
 	/* Set Timer Counter reset done */
 	XDpRxSsPtr->TmrCtrResetDone = 1;
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/* Call HDCP22 Timer handler */
-	XHdcp22Rx_TimerHandler((void *)XDpRxSsPtr->Hdcp22Ptr, TmrCtrNumber);
-#endif
-}
-#endif
+	XHdcp22Rx_Dp_TimerHandler((void *)XDpRxSsPtr->Hdcp22Ptr, TmrCtrNumber);
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
+}
+
 /*****************************************************************************/
 /**
 *
@@ -1679,7 +1667,6 @@ static u32 DpRxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq)
 
 	return NumTicks;
 }
-#endif
 
 /*****************************************************************************/
 /**
@@ -1707,35 +1694,28 @@ static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr)
 			: NULL);
 	}
 #endif
-
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
 	/* Assign instance of HDCP core */
 	InstancePtr->Hdcp1xPtr =
 		((InstancePtr->Config.Hdcp1xSubCore.IsPresent) ?
 	(&DpRxSsSubCores[InstancePtr->Config.DeviceId].Hdcp1xInst) : NULL);
-#endif
 
-#if (((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || \
-	(XPAR_XHDCP22_RX_NUM_INSTANCES > 0)) \
-		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
+
 	/* Assign instance of Timer Counter core */
 	InstancePtr->TmrCtrPtr =
 		((InstancePtr->Config.TmrCtrSubCore.IsPresent) ?
 	(&DpRxSsSubCores[InstancePtr->Config.DeviceId].TmrCtrInst) : NULL);
-#endif
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
-	InstancePtr->Hdcp1xPtr->Hdcp1xRef = (void *)InstancePtr->TmrCtrPtr;
-#endif
+	if (InstancePtr->Hdcp1xPtr != NULL)
+		InstancePtr->Hdcp1xPtr->Hdcp1xRef =
+			(void *)InstancePtr->TmrCtrPtr;
 
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/*Assign Instance of HDCP22 core*/
 	InstancePtr->Hdcp22Ptr =
 		((InstancePtr->Config.Hdcp22SubCore.IsPresent) ?
 		 (&DpRxSsSubCores[InstancePtr->Config.DeviceId].Hdcp22Inst) :
 		 NULL);
-#endif
+
 }
 
 /*****************************************************************************/
@@ -1892,7 +1872,14 @@ static void StubTp1Callback(void *InstancePtr)
 
 	/* Link bandwidth callback */
 	if (DpRxSsPtr->LinkBwCallback) {
+		if (DpRxSsPtr->Config.IncludeClkWiz)
+			XDpRxSs_Set_Dec_Clk(DpRxSsPtr);
+
 		DpRxSsPtr->LinkBwCallback(DpRxSsPtr->LinkBwRef);
+
+		if (DpRxSsPtr->Config.IncludeClkWiz)
+			if (XDpRxSs_Get_Dec_Clk_Lock(DpRxSsPtr) == XST_FAILURE)
+				xil_printf("Rx Dec clock failed to lock\n\r");
 	}
 
 	XDpRxSs_WriteReg(DpRxSsPtr->DpPtr->Config.BaseAddr,
@@ -2080,8 +2067,6 @@ void XDpRxSs_McDp6000_init(void *InstancePtr)
 				XDPRXSS_MCDP6000_IIC_SLAVE);
 
 }
-
-#if ((XPAR_DPRXSS_0_HDCP_ENABLE > 0) || (XPAR_XHDCP22_RX_NUM_INSTANCES > 0))
 /*****************************************************************************/
 /**
 *
@@ -2104,7 +2089,7 @@ static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr)
 
 	int Status = XST_SUCCESS;
 
-#if (XPAR_DPRXSS_0_HDCP_ENABLE > 0)
+
 	/* HDCP 1.4 */
 	/* Resetting HDCP 1.4 causes the state machine to be enabled, therefore
 	 * disable must be called immediately after reset is called
@@ -2124,20 +2109,18 @@ static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr)
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
 	}
-#endif
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
 	/* HDCP 2.2*/
 	if (InstancePtr->Hdcp22Ptr) {
-		Status = XHdcp22Rx_Reset(InstancePtr->Hdcp22Ptr);
+		Status = XHdcp22Rx_Dp_Reset(InstancePtr->Hdcp22Ptr);
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
 
-		Status = XHdcp22Rx_Disable(InstancePtr->Hdcp22Ptr);
+		Status = XHdcp22Rx_Dp_Disable(InstancePtr->Hdcp22Ptr);
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
 	}
-#endif
+
 
 	return Status;
 }
@@ -2182,9 +2165,9 @@ int XDpRxSs_HdcpSetProtocol(XDpRxSs *InstancePtr,
 
 	return XST_SUCCESS;
 }
-#endif
 
-#if (XPAR_XHDCP22_RX_NUM_INSTANCES > 0)
+
+
 /*****************************************************************************/
 /**
  *
@@ -2219,7 +2202,6 @@ void XDpRxSs_Hdcp22SetKey(XDpRxSs *InstancePtr,
 			break;
 	}
 }
-#endif
 
 /*****************************************************************************/
 /**
@@ -2391,4 +2373,123 @@ int XDpRxSs_GetVtotal(XDpRxSs *InstancePtr, u8 Stream)
 	return VTotal;
 }
 
+static void XDpRxSs_Set_Dec_Clk(XDpRxSs *InstancePtr)
+{
+	u32 HighTime, DivEdge, Reg, P5Enable, P5fEdge;
+	u16 Oval, Dval, Mval;
+
+	/*
+	 * For each line rate, the M, D, Div values for MMCM are chosen such that
+	 * MMCM gives a /20 clock output for /16 clk input.
+	 *
+	 * GT ch0outclk (/16) --> MMCM --> /20 clock
+	 *
+	 * Thus:
+	 * 8.1G  : Input MMCM clock is 506.25, output is 405
+	 * 5.4G  : Input MMCM clock is 337.5, output is 270
+	 * 2.7G  : Input MMCM clock is 168.75, output is 135
+	 * 1.62G : Input MMCM clock is 101.25, output is 81
+	 */
+	switch (InstancePtr->UsrOpt.LinkRate) {
+	case XDP_LINK_BW_SET_810GBPS:
+		Mval = M_VAL_405;
+		break;
+	case XDP_LINK_BW_SET_540GBPS:
+		Mval = M_VAL_270;
+		break;
+	case XDP_LINK_BW_SET_270GBPS:
+		Mval = M_VAL_135;
+		break;
+	default:
+		Mval = M_VAL_81;
+	}
+	Dval = D_VAL_ALL;
+	Oval = Mval / 4;
+
+	/*
+	 * MMCM is dynamically programmed for the respective rate
+	 * using the M, D, Div values
+	 */
+	HighTime = (Oval / 4);
+	Reg =  XCLK_WIZ_REG3_PREDIV2 | XCLK_WIZ_REG3_USED | XCLK_WIZ_REG3_MX;
+	if (Oval % 4 <= 1) {
+		DivEdge = 0;
+	} else {
+		DivEdge = 1;
+	}
+	Reg |= (DivEdge << 8);
+	P5fEdge = Oval % 2;
+	P5Enable = Oval % 2;
+	Reg = Reg | P5Enable <<
+		(XCLK_WIZ_CLKOUT0_P5EN_SHIFT |
+		 P5fEdge << XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG3_OFFSET, Reg);
+	Reg = HighTime | HighTime << 8;
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG4_OFFSET, Reg);
+
+	/* Implement D */
+	HighTime = (Dval / 2);
+	Reg  = 0;
+	Reg = Reg & ~(1 << XCLK_WIZ_REG12_EDGE_SHIFT);
+	DivEdge = Dval % 2;
+	Reg = Reg | DivEdge << XCLK_WIZ_REG12_EDGE_SHIFT;
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG12_OFFSET, Reg);
+	Reg = HighTime | HighTime << 8;
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG13_OFFSET, Reg);
+
+	/* Implement M*/
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG25_OFFSET, 0);
+
+	DivEdge = Mval % 2;
+	HighTime = Mval / 2;
+	Reg = HighTime | HighTime << 8;
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG2_OFFSET, Reg);
+	Reg = XCLK_WIZ_REG1_PREDIV2 | XCLK_WIZ_REG1_EN | XCLK_WIZ_REG1_MX;
+
+	if (DivEdge) {
+		Reg = Reg | XCLK_WIZ_REG1_EDGE_MASK;
+	} else {
+		Reg = Reg & ~XCLK_WIZ_REG1_EDGE_MASK;
+	}
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_REG1_OFFSET, Reg);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG11_OFFSET,
+			XCLK_WIZ_REG11_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG14_OFFSET,
+			XCLK_WIZ_REG14_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG15_OFFSET,
+			XCLK_WIZ_REG15_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG16_OFFSET,
+			XCLK_WIZ_REG16_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG17_OFFSET,
+			XCLK_WIZ_REG17_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr, XCLK_WIZ_REG26_OFFSET,
+			XCLK_WIZ_REG26_VAL);
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_RECONFIG_OFFSET,
+			(XCLK_WIZ_RECONFIG_LOAD | XCLK_WIZ_RECONFIG_SADDR));
+}
+
+int XDpRxSs_Get_Dec_Clk_Lock(XDpRxSs *InstancePtr)
+{
+	u32 retry = 0;
+	/* MMCM issued a reset */
+	XDpRxSs_WriteReg(InstancePtr->clk_wiz_abs_addr,
+			XCLK_WIZ_SWRST_OFFSET, XCLK_WIZ_SWRST_VAL);
+	while(!(XDpRxSs_ReadReg(InstancePtr->clk_wiz_abs_addr,
+					XCLK_WIZ_STATUS_OFFSET) & 1)) {
+		if(retry == XCLK_WIZ_STATUS_RETRY)
+			return XST_FAILURE;
+		usleep(XCLK_WIZ_STATUS_WAIT);
+		retry++;
+	}
+
+	return XST_SUCCESS;
+}
 /** @} */

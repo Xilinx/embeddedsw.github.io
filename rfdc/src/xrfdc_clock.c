@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xrfdc_clock.c
-* @addtogroup rfdc_v11_0
+* @addtogroup Overview
 * @{
 *
 * Contains the interface functions of the Clock Settings in XRFdc driver.
@@ -73,6 +73,14 @@
 *              06/01/21 MetalLog Updates.
 *       cog    07/12/21 Simplified clock distribution user interface.
 *       cog    09/21/21 Fixed rounding error in cast.
+* 11.1  cog    11/16/21 Upversion.
+*       cog    11/17/21 Fixed powerup bit toggle issue.
+*       cog    12/07/21 Added clocking configurations for DFE devices.
+*       cog    12/23/21 Added output divder value in appropriate error messages.
+*       cog    01/06/22 Added error checks to disallow invalid sample rate/reference
+*                       clock combinations.
+*       cog    01/12/22 Fix compiler warnings.
+*       cog    01/24/22 Fix static analysis errors.
 * </pre>
 *
 ******************************************************************************/
@@ -768,8 +776,8 @@ u32 XRFdc_SetClkDistribution(XRFdc *InstancePtr, XRFdc_Distribution_Settings *Di
 		XRFdc_DistTile2TypeTile(InstancePtr, (DistributionSettingsPtr->Info.Source + Delay), &Type, &Tile);
 		Settings.SampleRate = (DistributionSettingsPtr->SampleRates[Type][Tile]);
 		if (Type == XRFDC_ADC_TILE) {
-			if ((Tile == XRFDC_TILE_ID3) && (Settings.PLLEnable != XRFDC_ENABLED) &&
-			    (Settings.RefClkFreq != Settings.SampleRate)) {
+			if ((Tile == ((TileLayout == XRFDC_3ADC_2DAC_TILES) ? XRFDC_TILE_ID2 : XRFDC_TILE_ID3)) &&
+			    (Settings.PLLEnable != XRFDC_ENABLED) && (Settings.RefClkFreq != Settings.SampleRate)) {
 				Settings.DistributedClock = XRFDC_DIST_OUT_OUTDIV;
 			}
 		}
@@ -887,22 +895,22 @@ u32 XRFdc_GetClkDistribution(XRFdc *InstancePtr, XRFdc_Distribution_System_Setti
 	u32 Status;
 	u32 ClockDetReg;
 	u32 DistRegCurrent;
-	u32 DistRegSrc;
+	u32 DistRegSrc = 0U;
 	s8 CurrentTile;
 	u8 DelayOutSourceLeft;
 	u8 DelayOutSourceRight;
 	XRFdc_Tile_Clock_Settings *ClockSettingsPtr;
 	u32 Type;
-	u32 SrcType;
+	u32 SrcType = XRFDC_CLK_DST_INVALID;
 	u32 Tile;
-	u32 SrcTile;
+	u32 SrcTile = XRFDC_CLK_DST_INVALID;
 	u8 PkgSrcTile;
 	u8 Distribution;
 	u8 i;
-	u8 PrevSrc;
+	u8 PrevSrc = XRFDC_CLK_DST_INVALID;
 	u8 FirstTile;
 	u8 TileLayout;
-	XRFdc_Distribution_Settings *DistributionSettingsPtr;
+	XRFdc_Distribution_Settings *DistributionSettingsPtr = NULL;
 	XRFdc_PLL_Settings PLLSettings;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -917,7 +925,6 @@ u32 XRFdc_GetClkDistribution(XRFdc *InstancePtr, XRFdc_Distribution_System_Setti
 	memset(DistributionSystemPtr, 0, sizeof(XRFdc_Distribution_System_Settings));
 	TileLayout = XRFdc_GetTileLayout(InstancePtr);
 	FirstTile = (TileLayout == XRFDC_3ADC_2DAC_TILES) ? XRFDC_CLK_DST_TILE_228 : XRFDC_CLK_DST_TILE_231;
-	PrevSrc = XRFDC_CLK_DST_INVALID;
 
 	for (CurrentTile = FirstTile, Distribution = 0; CurrentTile <= XRFDC_CLK_DST_TILE_224; CurrentTile++) {
 		XRFdc_DistTile2TypeTile(InstancePtr, CurrentTile, &Type, &Tile);
@@ -1536,7 +1543,7 @@ u32 XRFdc_GetPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, XRFdc_PLL_Sett
 	u32 FeedbackDivider;
 	u8 OutputDivider;
 	u32 RefClkDivider;
-	u32 Enabled;
+	u32 Enabled = XRFDC_DISABLED;
 	u8 DivideMode;
 	u32 PLLFreq;
 	u32 PLLFS;
@@ -1689,8 +1696,8 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 	u32 BaseAddr;
 	u32 PLLEnable = 0x0U;
 	u32 InitialPowerUpState;
-	double MaxSampleRate;
-	double MinSampleRate;
+	double MaxSampleRate = 0.0;
+	double MinSampleRate = 0.0;
 	u32 OpDiv;
 	u32 PLLFreq;
 	u32 PLLFS;
@@ -1701,6 +1708,8 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 	u32 NetCtrlReg = 0x0U;
 	u32 NorthClk = 0x0U;
 	u32 FGDelay = 0x0U;
+	u32 ADCEdgeTileId;
+	u32 TileLayout;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XRFDC_COMPONENT_IS_READY);
@@ -1745,6 +1754,24 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 	PLLFreq = (u32)((RefClkFreq + 0.0005) * XRFDC_MILLI);
 	PLLFS = (u32)((SamplingRate + 0.0005) * XRFDC_MILLI);
 	OpDiv = (u32)((RefClkFreq / SamplingRate) + 0.5);
+	if ((Source == XRFDC_EXTERNAL_CLK) && (PLLFreq != PLLFS)) {
+		if (InstancePtr->RFdc_Config.IPType < XRFDC_GEN3) {
+			metal_log(
+				METAL_LOG_ERROR,
+				"\n Sampling rate value (%lf) must match the reference frequency (%lf) for %s %u in %s\r\n",
+				SamplingRate, RefClkFreq, (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		} else if ((PLLFreq % PLLFS) != 0U) {
+			metal_log(
+				METAL_LOG_ERROR,
+				"\n The reference frequency (%lf) must be an integer multiple of the Sampling rate (%lf) for %s %u in %s\r\n",
+				RefClkFreq, SamplingRate, (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
+			Status = XRFDC_FAILURE;
+			goto RETURN_PATH;
+		}
+	}
+
 	if (Source == XRFDC_INTERNAL_PLL_CLK) {
 		if ((RefClkFreq < XRFDC_REFFREQ_MIN) || (RefClkFreq > XRFDC_REFFREQ_MAX)) {
 			metal_log(
@@ -1773,6 +1800,9 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 			Status = XRFDC_SUCCESS;
 			goto RETURN_PATH;
 		}
+	} else {
+		BaseAddr = XRFDC_DRP_BASE(Type, Tile_Id) + XRFDC_HSCOM_ADDR;
+		NetCtrlReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_CLK_NETWORK_CTRL1);
 	}
 
 	if (Type == XRFDC_ADC_TILE) {
@@ -1790,22 +1820,10 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 	/*
 	 * Stop the ADC or DAC tile by putting tile in reset state if not stopped already
 	 */
-	if (InitialPowerUpState != XRFDC_DISABLED) {
-		XRFdc_ClrSetReg(InstancePtr, XRFDC_CTRL_STS_BASE(Type, Tile_Id), XRFDC_RESTART_STATE_OFFSET,
-				XRFDC_PWR_STATE_MASK, (XRFDC_SM_STATE1 << XRFDC_RSR_START_SHIFT) | XRFDC_SM_STATE1);
-		/* Trigger restart */
-		XRFdc_WriteReg(InstancePtr, XRFDC_CTRL_STS_BASE(Type, Tile_Id), XRFDC_RESTART_OFFSET,
-			       XRFDC_RESTART_MASK);
-		Status |= XRFdc_WaitForState(InstancePtr, Type, Tile_Id, XRFDC_SM_STATE1);
-		if (Status != XRFDC_SUCCESS) {
-			Status = XRFDC_FAILURE;
-			goto RETURN_PATH;
-		}
-	}
-
-	if (InstancePtr->RFdc_Config.IPType >= XRFDC_GEN3) {
-		NetCtrlReg = XRFdc_ReadReg16(InstancePtr, BaseAddr, XRFDC_CLK_NETWORK_CTRL1);
-	}
+	BaseAddr = XRFDC_CTRL_STS_BASE(Type, Tile_Id);
+	InitialPowerUpState = XRFdc_RDReg(InstancePtr, BaseAddr, XRFDC_STATUS_OFFSET, XRFDC_PWR_UP_STAT_MASK) >>
+			      XRFDC_PWR_UP_STAT_SHIFT;
+	BaseAddr = XRFDC_DRP_BASE(Type, Tile_Id) + XRFDC_HSCOM_ADDR;
 
 	if (Source == XRFDC_INTERNAL_PLL_CLK) {
 		PLLEnable = 0x1;
@@ -1852,6 +1870,8 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 		}
 	} else {
 		if (InstancePtr->RFdc_Config.IPType >= XRFDC_GEN3) {
+			TileLayout = XRFdc_GetTileLayout(InstancePtr);
+			ADCEdgeTileId = (TileLayout == XRFDC_3ADC_2DAC_TILES) ? XRFDC_TILE_ID2 : XRFDC_TILE_ID3;
 			switch (OpDiv) {
 			case 1U:
 				/*This is a special case where we want to totally bypass the entire block.*/
@@ -1862,12 +1882,13 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 				break;
 			case 2U:
 				/*dividers used depend on configuration*/
-				if ((Type == XRFDC_ADC_TILE) && (Tile_Id < XRFDC_TILE_ID3) &&
+				if ((Type == XRFDC_ADC_TILE) && (Tile_Id < ADCEdgeTileId) &&
 				    (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_DISABLED)) {
 					NorthClk = XRFdc_RDReg(
 						InstancePtr, XRFDC_ADC_TILE_DRP_ADDR((Tile_Id + 1U)) + XRFDC_HSCOM_ADDR,
 						XRFDC_HSCOM_CLK_DSTR_OFFSET,
 						(XRFDC_CLK_DISTR_MUX6_SRC_INT | XRFDC_CLK_DISTR_MUX6_SRC_NTH));
+
 					SecondaryDivideValue = XRFdc_RDReg(
 						InstancePtr,
 						XRFDC_BLOCK_BASE(XRFDC_ADC_TILE, (Tile_Id + 1U), XRFDC_BLK_ID0),
@@ -1888,21 +1909,21 @@ u32 XRFdc_DynamicPLLConfig(XRFdc *InstancePtr, u32 Type, u32 Tile_Id, u8 Source,
 				break;
 			case 4U:
 				PLLBypVal = XRFDC_PLL_DIVIDER0_BYP_PLL_MASK;
-				if ((Type == XRFDC_ADC_TILE) && (Tile_Id == XRFDC_TILE_ID3) &&
+				if ((Type == XRFDC_ADC_TILE) && (Tile_Id == ADCEdgeTileId) &&
 				    (XRFdc_IsHighSpeedADC(InstancePtr, Tile_Id) == XRFDC_DISABLED)) {
 					DivideMode = XRFDC_PLL_OUTDIV_MODE_2;
 					PrimaryDivideValue = XRFDC_DISABLED;
 					SecondaryDivideValue = XRFDC_RX_PR_MC_CFG0_IDIV_MASK;
 				} else {
-					metal_log(METAL_LOG_ERROR, "\n Invalid divider value for %s %u in %s\r\n",
-						  (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
+					metal_log(METAL_LOG_ERROR, "\n Invalid divider value (%u) for %s %u in %s\r\n",
+						  OpDiv, (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
 					Status = XRFDC_FAILURE;
 					goto RETURN_PATH;
 				}
 
 				break;
 			default:
-				metal_log(METAL_LOG_ERROR, "\n Invalid divider value for %s %u in %s\r\n",
+				metal_log(METAL_LOG_ERROR, "\n Invalid divider value (%u) for %s %u in %s\r\n", OpDiv,
 					  (Type == XRFDC_ADC_TILE) ? "ADC" : "DAC", Tile_Id, __func__);
 				Status = XRFDC_FAILURE;
 				goto RETURN_PATH;
