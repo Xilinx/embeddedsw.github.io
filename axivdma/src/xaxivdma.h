@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2012 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2012 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xaxivdma.h
-* @addtogroup axivdma_v6_11
+* @addtogroup axivdma_v6_12
 * @{
 * @details
 *
@@ -276,6 +276,8 @@
 *                     definitions of axivdma in xparameters.h
 *       ms   08/07/17 Fixed compilation warnings in xaxivdma_sinit.c
 * 6.6   rsp  07/02/18 Add vertical flip states in config structures
+* 6.12  sa   08/12/22 Updated the examples to use latest MIG cannoical define
+* 		       i.e XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR.
 *
 * </pre>
 *

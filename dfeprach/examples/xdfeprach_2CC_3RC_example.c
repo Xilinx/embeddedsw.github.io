@@ -8,7 +8,7 @@
 *
 * @file xdfeprach_2CC_3RC_example.c
 *
-* This file contains One instance initialisation example.
+* This file contains 2 CC and 3 RC setting example.
 *
 * <pre>
 *
@@ -19,7 +19,7 @@
 * 1.3   dc     02/07/22 Configure 2 CC and 3 RC examples
 *
 * </pre>
-* @addtogroup Overview
+* @addtogroup dfeprach Overview
 * @{
 *
 *****************************************************************************/

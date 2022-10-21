@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xqspips_hw.h
-* @addtogroup qspips_v3_9
+* @addtogroup qspips_v3_10
 * @{
 *
 * This header file contains the identifiers and basic HW access driver

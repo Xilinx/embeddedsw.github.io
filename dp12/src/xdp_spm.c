@@ -223,6 +223,7 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 		/* Allocate a fixed size for single-stream transport (SST)
 		 * operation. */
 		MsaConfig->TransferUnitSize = 64;
+		MsaConfig->StartTs = 1;
 
 		/* Calculate the average number of bytes per transfer unit.
 		 * Note: Both the integer and the fractional part is stored in
@@ -799,6 +800,33 @@ void XDp_TxClearMsaValues(XDp *InstancePtr, u8 Stream)
 
 /******************************************************************************/
 /**
+ * This function Overrides the polarity of Horizontal and vertical sync signals
+ *
+ * @param	InstancePtr is a pointer to the XDp instance.
+ * @param	Stream is the stream number for which to set the MSA values for.
+ *
+ * @return	None.
+ *
+ * @note	None.
+ *
+*******************************************************************************/
+void XDp_TxOverrideSyncPolarity(XDp *InstancePtr, u8 Stream)
+{
+	XDp_Config *ConfigPtr;
+	XDp_TxMainStreamAttributes *MsaConfig;
+	u32 StreamOffset[4] = {0, XDP_TX_STREAM2_MSA_START_OFFSET,
+					XDP_TX_STREAM3_MSA_START_OFFSET,
+					XDP_TX_STREAM4_MSA_START_OFFSET};
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+	Xil_AssertVoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
+
+	MsaConfig = &InstancePtr->TxInstance.MsaConfig[Stream - 1];
+	MsaConfig->OverrideSyncPolarity = 1;
+}
+/******************************************************************************/
+/**
  * This function sets the main stream attributes registers of the DisplayPort TX
  * core with the values specified in the main stream attributes configuration
  * structure.
@@ -818,7 +846,6 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
 	u32 StreamOffset[4] = {0, XDP_TX_STREAM2_MSA_START_OFFSET,
 					XDP_TX_STREAM3_MSA_START_OFFSET,
 					XDP_TX_STREAM4_MSA_START_OFFSET};
-
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -844,11 +871,24 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
 		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_VTOTAL +
 			StreamOffset[Stream - 1],
 			MsaConfig->Vtm.Timing.F0PVTotal);
-		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_POLARITY +
+
+		if (MsaConfig->OverrideSyncPolarity)
+		{
+			XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_POLARITY +
 			StreamOffset[Stream - 1],
 			MsaConfig->Vtm.Timing.HSyncPolarity |
 			(MsaConfig->Vtm.Timing.VSyncPolarity <<
 			XDP_TX_MAIN_STREAMX_POLARITY_VSYNC_POL_SHIFT));
+		}
+		else
+		{
+			XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_POLARITY +
+			StreamOffset[Stream - 1],
+			(~(MsaConfig->Vtm.Timing.HSyncPolarity) & 0x01) |
+			((~MsaConfig->Vtm.Timing.VSyncPolarity & 0x01) <<
+			XDP_TX_MAIN_STREAMX_POLARITY_VSYNC_POL_SHIFT));
+		}
+
 		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_HSWIDTH +
 			StreamOffset[Stream - 1],
 			MsaConfig->Vtm.Timing.HSyncWidth);
@@ -1179,32 +1219,32 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 	XDp_TxLinkConfig *LinkConfig = &InstancePtr->TxInstance.LinkConfig;
 	double PeakPixelBw;
 	u32 LinkBw;
+	u32 TsInt;
 	double Average_StreamSymbolTimeSlotsPerMTP;
 	double Target_Average_StreamSymbolTimeSlotsPerMTP;
 	double MaximumTarget_Average_StreamSymbolTimeSlotsPerMTP;
-	u32 TsInt;
-	u32 TsFrac;
+	double TsFrac;
+	double pbn;
 
 	PeakPixelBw = ((double)MsaConfig->PixelClockHz / 1000000) *
 						((double)BitsPerPixel / 8);
 	LinkBw = (LinkConfig->LaneCount * LinkConfig->LinkRate * 27);
-
+	pbn = (double)((double)PeakPixelBw / ((double)54 / 64));
 	/* Calculate the payload bandwidth number (PBN).  */
-	InstancePtr->TxInstance.MstStreamConfig[Stream - 1].MstPbn =
-					1.006 * PeakPixelBw * ((double)64 / 54);
+	InstancePtr->TxInstance.MstStreamConfig[Stream - 1].MstPbn = (double)
+					1.006 * pbn;
+
 	/* Ceil - round up if required, avoiding overhead of math.h. */
-	if ((double)(1.006 * PeakPixelBw * ((double)64 / 54)) >
-			((double)InstancePtr->TxInstance.MstStreamConfig[
+	if ((double)(1.006 * pbn) >
+			(InstancePtr->TxInstance.MstStreamConfig[
 			Stream - 1].MstPbn)) {
 		InstancePtr->TxInstance.MstStreamConfig[Stream - 1].MstPbn++;
 	}
-
 	/* Calculate the average stream symbol time slots per MTP. */
-	Average_StreamSymbolTimeSlotsPerMTP = (64.0 * PeakPixelBw / LinkBw);
-	MaximumTarget_Average_StreamSymbolTimeSlotsPerMTP = (54.0 *
+	Average_StreamSymbolTimeSlotsPerMTP = (double)((double)PeakPixelBw / LinkBw * 64);
+	MaximumTarget_Average_StreamSymbolTimeSlotsPerMTP = (double)(54.0 *
 		((double)InstancePtr->TxInstance.MstStreamConfig[Stream - 1].
 		MstPbn / LinkBw));
-
 	/* The target value to be found needs to follow the condition:
 	 *	Average_StreamSymbolTimeSlotsPerMTP <=
 	 *		Target_Average_StreamSymbolTimeSlotsPerMTP
@@ -1220,20 +1260,13 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 			(MaximumTarget_Average_StreamSymbolTimeSlotsPerMTP -
 			Target_Average_StreamSymbolTimeSlotsPerMTP)));
 
-	/* Determine the integer and the fractional part of the number of time
-	 * slots that will be allocated for the stream. */
 	TsInt = Target_Average_StreamSymbolTimeSlotsPerMTP;
-	TsFrac = (((double)Target_Average_StreamSymbolTimeSlotsPerMTP * 1000) -
+	MsaConfig->TransferUnitSize =TsInt;
+	TsFrac = (((double)(Target_Average_StreamSymbolTimeSlotsPerMTP * 1000)) -
 								(TsInt * 1000));
-
-	/* Store TsInt and TsFrac in AvgBytesPerTU. */
-	MsaConfig->AvgBytesPerTU = TsInt * 1000 + TsFrac;
-
-	/* Set the number of time slots to allocate for this stream. */
-	MsaConfig->TransferUnitSize = TsInt;
 	if (TsFrac != 0) {
 		/* Round up. */
-		MsaConfig->TransferUnitSize++;
+		MsaConfig->TransferUnitSize ++;
 	}
 	if ((InstancePtr->Config.PayloadDataWidth == 4) &&
 				(MsaConfig->TransferUnitSize % 4) != 0) {
@@ -1245,11 +1278,8 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 		/* Set to an even boundary. */
 		MsaConfig->TransferUnitSize++;
 	}
-
-	/* Determine the PBN for the stream. */
-	InstancePtr->TxInstance.MstStreamConfig[Stream - 1].MstPbn =
-			MsaConfig->TransferUnitSize *
-			(LinkConfig->LaneCount * LinkConfig->LinkRate / 2);
+	/* Store TsInt and TsFrac in AvgBytesPerTU. */
+	MsaConfig->AvgBytesPerTU = TsInt * 1000 + TsFrac;
 }
 
 /******************************************************************************/

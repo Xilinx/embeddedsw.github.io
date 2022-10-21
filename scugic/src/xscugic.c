@@ -7,7 +7,7 @@
 /**
 *
 * @file xscugic.c
-* @addtogroup scugic_v4_7
+* @addtogroup scugic_v5_0
 * @{
 *
 * Contains required functions for the XScuGic driver for the Interrupt
@@ -137,10 +137,13 @@
 * 4.7   mus  03/17/22 Fixed XScuGic_InterruptMaptoCpu and
 *                     XScuGic_InterruptUnmapFromCpu for GICv3. It fixes
 *                     CR#1126156.
-* 4.7   asa  03/29/22 The API XScuGic_IsInitialized has a bug where if the
-*                     Distributor Control Register, GICD_CTLR has both
-*                     bit 0 and bit 1 set, the API wrongly returns 0,
+* 5.0   mus  22/02/22 Added support for VERSAL NET.
+* 5.0   asa  03/29/22 The API XScuGic_IsInitialized has a bug where if
+* 		      Distributor Control Register, GICD_CTLR has both
+* 		      bit 0 and 1 set, the API wrongly returns 0.
 *                     This is fixed with this change.
+* 5.0   dp   04/25/22 Update XScuGic_GetPriorityTriggerType() to read and
+*                     update priority and trigger properly for GICv3.
 * </pre>
 *
 ******************************************************************************/
@@ -408,6 +411,10 @@ s32  XScuGic_CfgInitialize(XScuGic *InstancePtr,
 
 		InstancePtr->IsReady = 0U;
 		InstancePtr->Config = ConfigPtr;
+		#if defined(ARMR52)
+		/* Read Distributor base address through IMP_CBAR register */
+		ConfigPtr->DistBaseAddress = mfcp(XREG_IMP_CBAR);
+		#endif
 
 
 		for (Int_Id = 0U; Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS;
@@ -430,6 +437,12 @@ s32  XScuGic_CfgInitialize(XScuGic *InstancePtr,
 		}
 #if defined (GICv3)
 	u32 Waker_State;
+	#if defined (GIC600)
+	XScuGic_ReDistWriteReg(InstancePtr,XSCUGIC_RDIST_PWRR_OFFSET,
+			(XScuGic_ReDistReadReg(InstancePtr, XSCUGIC_RDIST_PWRR_OFFSET) &
+			(~XSCUGIC_RDIST_PWRR_RDPD_MASK)));
+	#endif
+
 	Waker_State = XScuGic_ReDistReadReg(InstancePtr,XSCUGIC_RDIST_WAKER_OFFSET);
 	XScuGic_ReDistWriteReg(InstancePtr,XSCUGIC_RDIST_WAKER_OFFSET,
 							Waker_State & (~ XSCUGIC_RDIST_WAKER_LOW_POWER_STATE_MASK));
@@ -946,6 +959,16 @@ void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 	Xil_AssertVoid(Priority != NULL);
 	Xil_AssertVoid(Trigger != NULL);
 
+#if defined (GICv3)
+	if (Int_Id < XSCUGIC_SPI_INT_ID_START )
+	{
+		*Priority = XScuGic_ReDistSGIPPIReadReg(InstancePtr,XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC(Int_Id));
+		RegValue = XScuGic_ReDistSGIPPIReadReg(InstancePtr,XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC(Int_Id));
+		RegValue = RegValue >> ((Int_Id%16U)*2U);
+		*Trigger = (u8)(RegValue & XSCUGIC_INT_CFG_MASK);
+		return;
+	}
+#endif
 	/*
 	 * Determine the register to read to using the Int_Id.
 	 */

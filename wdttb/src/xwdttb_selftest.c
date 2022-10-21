@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdttb_selftest.c
-* @addtogroup Overview
+* @addtogroup wdttb Overview
 * @{
 *
 * The xwdttb_selftest.c file contains diagnostic self-test functions for the

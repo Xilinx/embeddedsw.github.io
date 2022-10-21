@@ -556,6 +556,7 @@ typedef struct {
 						is also the number of time slots
 						that are alloted in the payload
 						ID table. */
+	u32 StartTs;
 	u32 InitWait;			/**< Number of initial wait cycles at
 						the start of a new line by
 						the framing logic. */
@@ -572,6 +573,9 @@ typedef struct {
 	u8 OverrideUserPixelWidth;	/**< If set to 1, the value stored for
 						UserPixelWidth will be used as
 						the pixel width. */
+	u8 OverrideSyncPolarity;	/**< Overrides the Horizontal
+						and vertical sync polarity */
+
 } XDp_TxMainStreamAttributes;
 
 /**
@@ -831,6 +835,7 @@ typedef struct {
 	u8 TrainAdaptive;			/**< Downshift lane count and
 							link rate if necessary
 							during training. */
+	u8 NumOfMSTStreams;/**< No of mst streams supported */
 	XDp_TxSinkConfig RxConfig;		/**< Configuration structure for
 							the RX device. */
 	XDp_TxLinkConfig LinkConfig;		/**< Configuration structure for
@@ -1291,6 +1296,7 @@ u32 XDp_TxRemoteIicWrite(XDp *InstancePtr, u8 LinkCountTotal,
 /* xdp_mst.c: Multi-stream transport (MST) functions related to MST stream
  * allocation. */
 u32 XDp_TxAllocatePayloadStreams(XDp *InstancePtr);
+u32 XDp_TxSendEnumPathResourceRequest(XDp *InstancePtr);
 u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts,
 		u8 StartTs);
 u32 XDp_TxClearPayloadVcIdTable(XDp *InstancePtr);
@@ -1357,6 +1363,7 @@ void XDp_TxCfgMsaEnSynchClkMode(XDp *InstancePtr, u8 Stream, u8 Enable);
 void XDp_TxSetVideoMode(XDp *InstancePtr, u8 Stream);
 void XDp_TxClearMsaValues(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream);
+void XDp_TxOverrideSyncPolarity(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth);
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 

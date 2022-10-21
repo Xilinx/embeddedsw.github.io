@@ -17,6 +17,7 @@ var xcsi_8h =
     [ "XCsi_GetIntrStatus", "xcsi_8h.html#gad685546b6515977cc8149620ef3298bd", null ],
     [ "XCsi_GetShortPacket", "xcsi_8h.html#ga9a4ced8d01b40c64ed467ff71ed4533c", null ],
     [ "XCsi_GetVCInfo", "xcsi_8h.html#gaccba2dc3c98a68b73ca3bfec33abe747", null ],
+    [ "XCsi_GetVCSelection", "xcsi_8h.html#ga20061dc4d29af4f28937f3791e12b282", null ],
     [ "XCsi_InterruptClear", "xcsi_8h.html#ga237454e9bbb1b663513369b6bc703f97", null ],
     [ "XCsi_IntrDisable", "xcsi_8h.html#ga9cc5750f241d74489ee972978f99ec74", null ],
     [ "XCsi_IntrEnable", "xcsi_8h.html#gacd995a7fb82069ad196da70b4d033f19", null ],
@@ -25,5 +26,6 @@ var xcsi_8h =
     [ "XCsi_LookupConfig", "xcsi_8h.html#gab1b26db795947d7a9f130f35649dcd18", null ],
     [ "XCsi_Reset", "xcsi_8h.html#ga0069d82265929da556da847513183dc5", null ],
     [ "XCsi_SelfTest", "xcsi_8h.html#gab06eaea50112054c5a19ea52976d00e9", null ],
-    [ "XCsi_SetCallBack", "xcsi_8h.html#gacb1df45621d8075df1f159781ae4936e", null ]
+    [ "XCsi_SetCallBack", "xcsi_8h.html#gacb1df45621d8075df1f159781ae4936e", null ],
+    [ "XCsi_SetVCSelection", "xcsi_8h.html#ga32489a42829995877019f38cfaa06cf8", null ]
 ];

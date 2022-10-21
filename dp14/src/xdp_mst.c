@@ -42,6 +42,19 @@
  * multiple fragments. */
 #define XDP_MAX_LENGTH_SBMSG 48
 
+/* Maximum number of bytes to be read from downstream receiver. */
+#define XDP_MAX_BYTES_TO_READ 16
+/* Down request offset. */
+#define XDP_DOWN_REQ_OFFSET 0x10
+/* MST device is detected. */
+#define XDP_MST_DEVICE_DETECTED 0x01
+/* Source device or SST Branch device connected to a UFP. */
+#define XDP_MST_SOURCE_DEVICE_DETECTED 0x01
+/* Device with MST Branching Unit or SST Branch device connected to a DFP. */
+#define XDP_MST_BRANCH_DEVICE_DETECTED 0x02
+/* SST Sink device or Stream Sink in an MST Sink/Composite device. */
+#define XDP_MST_SINK_DEVICE_DETECTED 0x03
+
 #if XPAR_XDPTXSS_NUM_INSTANCES
 /* Error out if waiting for a sideband message reply or waiting for the payload
  * ID table to be updated takes more than 5000 AUX read iterations. */
@@ -49,6 +62,13 @@
 /* Error out if waiting for the RX device to indicate that it has received an
  * ACT trigger takes more than 30 AUX read iterations. */
 #define XDP_TX_VCP_TABLE_MAX_TIMEOUT_COUNT 30
+/* Error out if waiting for a sideband message reply or waiting for the payload
+ * ID table to be updated takes more than 30 AUX read iterations.
+ */
+#define XDP_TX_ALLOCATE_PAYLOAD_MAX_TIMEOUT_COUNT 30
+/* Maximum timeslots available for payload allocation. */
+#define XDP_TX_NUM_PAYLOAD_TIMESLOTS 64
+
 #endif
 
 /****************************** Type Definitions ******************************/
@@ -700,11 +720,6 @@ u32 XDp_TxFindAccessibleDpDevices(XDp *InstancePtr, u8 LinkCountTotal,
 	/* Write GUID to the branch device if it doesn't already have one. */
 	XDp_TxIssueGuid(InstancePtr, LinkCountTotal, RelativeAddress, Topology,
 							DeviceInfo.Guid);
-
-	/* Add the branch device to the topology table. */
-	XDp_TxAddBranchToList(InstancePtr, &DeviceInfo, LinkCountTotal,
-							RelativeAddress);
-
 	/* Downstream devices will be an extra link away from the source than
 	 * this branch device. */
 	LinkCountTotal++;
@@ -715,29 +730,30 @@ u32 XDp_TxFindAccessibleDpDevices(XDp *InstancePtr, u8 LinkCountTotal,
 		/* Any downstream device downstream device will have the RAD of
 		 * the current branch device appended with the port number. */
 		RelativeAddress[LinkCountTotal - 2] = PortDetails->PortNum;
-
-		if ((PortDetails->InputPort == 0) &&
-					(PortDetails->PeerDeviceType != 0x2) &&
-					(PortDetails->DpDevPlugStatus == 1)) {
-
-			if ((PortDetails->MsgCapStatus == 1) &&
-					(PortDetails->DpcdRev >= 0x12)) {
-				/* Write GUID to the branch device if it
-				 * doesn't already have one. */
-				XDp_TxIssueGuid(InstancePtr,
-					LinkCountTotal, RelativeAddress,
-					Topology, PortDetails->Guid);
+		/*presence of HPD */
+		if (PortDetails->DpDevPlugStatus == XDP_MST_DEVICE_DETECTED) {
+			/* information of RX*/
+			if (PortDetails->InputPort == 0) {
+				if (PortDetails->MsgCapStatus == 1 &&
+				    PortDetails->PeerDeviceType
+						 == XDP_MST_BRANCH_DEVICE_DETECTED) {
+					/* Add branch device to the topology table. */
+					XDp_TxAddBranchToList(InstancePtr, &DeviceInfo,
+								LinkCountTotal, RelativeAddress);
+					DownBranchesDownPorts[NumDownBranches] =
+						PortDetails->PortNum;
+					NumDownBranches++;
+				} else if (PortDetails->MsgCapStatus == 0 &&
+					 PortDetails->PeerDeviceType ==
+						XDP_MST_SINK_DEVICE_DETECTED) {
+					/* Add sink device to the topology table. */
+					XDp_TxAddSinkToList(InstancePtr,
+						PortDetails, LinkCountTotal, RelativeAddress);
+				} else if (PortDetails->MsgCapStatus == 1 &&
+					 PortDetails->PeerDeviceType ==
+						XDP_MST_SOURCE_DEVICE_DETECTED) {
+				}
 			}
-
-			XDp_TxAddSinkToList(InstancePtr, PortDetails,
-					LinkCountTotal,
-					RelativeAddress);
-		}
-
-		if (PortDetails->PeerDeviceType == 0x2) {
-			DownBranchesDownPorts[NumDownBranches] =
-							PortDetails->PortNum;
-			NumDownBranches++;
 		}
 	}
 
@@ -750,6 +766,10 @@ u32 XDp_TxFindAccessibleDpDevices(XDp *InstancePtr, u8 LinkCountTotal,
 		/* Found a branch device; recurse the algorithm to see what
 		 * DisplayPort devices are connected to it with the appended
 		 * RAD. */
+		/* This Delay is added to match with UCD400 flow. This delay
+		 * should be deleted once UCD400 fixes its internal issues.
+		 */
+		usleep(10000);
 		Status = XDp_TxFindAccessibleDpDevices(InstancePtr,
 					LinkCountTotal, RelativeAddress);
 		if (Status != XST_SUCCESS) {
@@ -1279,12 +1299,66 @@ u32 XDp_TxRemoteIicWrite(XDp *InstancePtr, u8 LinkCountTotal,
 	}
 	/* Send remote I2C sideband message. */
 	else {
-		Status = XDp_TxSendSbMsgRemoteIicWrite(InstancePtr,
-			LinkCountTotal, RelativeAddress, IicAddress,
-			BytesToWrite, WriteData);
+		/*
+		 * Status = XDp_TxSendSbMsgRemoteIicWrite(InstancePtr,
+		 * LinkCountTotal, RelativeAddress, IicAddress,
+		 * BytesToWrite, WriteData);
+		 */
+		/* currently UCD400/500 doesn't support this remote i2c writes, So this sideband
+		 * message is removed. This will be re-visited once UCD fixes its internal issues
+		 * TBD.
+		 */
 	}
 
 	return Status;
+}
+
+/******************************************************************************/
+/**
+ * This function is to get the available payload bandwidth from downstream receiver
+ *
+ * @param	InstancePtr is a pointer to the XDp instance.
+ *
+ * @return
+ *		- XST_SUCCESS if the enum path request is issued successfully
+ *		- XST_FAILURE otherwise - if an AUX read or write transaction
+ *		  failed, the header or body CRC of a sideband message did not
+ *		  match the calculated value, or the a reply was negative
+ *		  acknowledged (NACK'ed).
+ *
+ * @note	None.
+ *
+ *******************************************************************************/
+u32 XDp_TxSendEnumPathResourceRequest(XDp *InstancePtr)
+{
+	u32 Status;
+	u8 StreamIndex;
+	XDp_TxMstStream *MstStream;
+	XDp_TxMainStreamAttributes *MsaConfig;
+	u16 FullPbn;
+	u16 AvailPbn;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
+
+	/* Allocate the payload table for each stream in both the DisplayPort TX
+	 * and RX device.
+	 */
+	for (StreamIndex = 0; StreamIndex < InstancePtr->TxInstance.NumOfMstStreams;
+	     StreamIndex++) {
+		if (XDp_TxMstStreamIsEnabled(InstancePtr, StreamIndex + XDP_TX_STREAM_ID1)) {
+			MstStream = &InstancePtr->TxInstance.MstStreamConfig[StreamIndex];
+			Status =  XDp_TxSendSbMsgEnumPathResources(InstancePtr,
+								   MstStream->LinkCountTotal,
+								   MstStream->RelativeAddress,
+								   &AvailPbn, &FullPbn);
+			if (Status != XST_SUCCESS)
+				return Status;
+		}
+	}
+	return XST_SUCCESS;
 }
 
 /******************************************************************************/
@@ -1315,22 +1389,27 @@ u32 XDp_TxAllocatePayloadStreams(XDp *InstancePtr)
 	u32 Status;
 	u8 StreamIndex;
 	u8 StartTs = 1;
+	u8 NumOfStreams;
 	XDp_TxMstStream *MstStream;
 	XDp_TxMainStreamAttributes *MsaConfig;
+	XDp_TxTopology *Msatopology;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
+	Msatopology = &InstancePtr->TxInstance.Topology;
 
 	/* Allocate the payload table for each stream in both the DisplayPort TX
 	 * and RX device. */
-	for (StreamIndex = 0; StreamIndex < XDP_TX_STREAM_ID4; StreamIndex++) {
+	for (StreamIndex = 0; StreamIndex < InstancePtr->TxInstance.NumOfMstStreams;
+			StreamIndex++) {
 		if (!XDp_TxMstStreamIsEnabled(InstancePtr,
 					StreamIndex + XDP_TX_STREAM_ID1)) {
 			continue;
 		}
 		MsaConfig = &InstancePtr->TxInstance.MsaConfig[StreamIndex];
+		MsaConfig->StartTs = StartTs;
 
 		Status = XDp_TxAllocatePayloadVcIdTable(InstancePtr,
 			StreamIndex + XDP_TX_STREAM_ID1,
@@ -1339,20 +1418,13 @@ u32 XDp_TxAllocatePayloadStreams(XDp *InstancePtr)
 			return Status;
 		}
 		StartTs += MsaConfig->TransferUnitSize;
-	}
 
-	/* Generate an ACT event. */
-	Status = XDp_TxSendActTrigger(InstancePtr);
-	if (Status != XST_SUCCESS) {
-		return Status;
-	}
-
-	/* Send ALLOCATE_PAYLOAD request. */
-	for (StreamIndex = 0; StreamIndex < XDP_TX_STREAM_ID4; StreamIndex++) {
-		if (!XDp_TxMstStreamIsEnabled(InstancePtr,
-					StreamIndex + XDP_TX_STREAM_ID1)) {
-			continue;
+		/* Generate an ACT event. */
+		Status = XDp_TxSendActTrigger(InstancePtr);
+		if (Status != XST_SUCCESS) {
+			return Status;
 		}
+
 		MstStream =
 			&InstancePtr->TxInstance.MstStreamConfig[StreamIndex];
 
@@ -1402,6 +1474,9 @@ u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts, u8 StartTs)
 	u32 Status;
 	u8 AuxData[3];
 	u8 Index;
+	u8 TimeoutCount = 0;
+	u8 PayloadCount = 0;
+	XDp_TxMainStreamAttributes *MsaConfig;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1419,15 +1494,30 @@ u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts, u8 StartTs)
 	}
 
 	/* Check that there are enough time slots available. */
-	if ((VcId != 0) && (((63 - StartTs + 1) < Ts) || (StartTs == 0))) {
+	if (VcId != 0 && (((63 - StartTs + 1) < Ts))) {
 		/* Payload ID table needs to be cleared to. */
 		return XST_BUFFER_TOO_SMALL;
 	}
 
-	/* Allocate timeslots in TX. */
-	for (Index = StartTs; Index < (StartTs + Ts); Index++) {
-		XDp_WriteReg(InstancePtr->Config.BaseAddr,
-			(XDP_TX_VC_PAYLOAD_BUFFER_ADDR + (4 * Index)), VcId);
+	for (u8 StreamIndex = 0; StreamIndex < VcId; StreamIndex++) {
+		MsaConfig = &InstancePtr->TxInstance.MsaConfig[StreamIndex];
+		/* Allocate timeslots in TX. */
+		for (Index =  MsaConfig->StartTs;
+				Index < (MsaConfig->StartTs + MsaConfig->TransferUnitSize);
+				Index++) {
+			XDp_WriteReg(InstancePtr->Config.BaseAddr,
+				     (XDP_TX_VC_PAYLOAD_BUFFER_ADDR + (4 * Index)),
+				      StreamIndex + XDP_TX_STREAM_ID1);
+			PayloadCount++;
+		}
+	}
+	if (VcId != 0) {
+		for (int i = PayloadCount + 1; i < XDP_TX_NUM_PAYLOAD_TIMESLOTS; i++) {
+			int vicid = 0;
+
+			XDp_WriteReg(InstancePtr->Config.BaseAddr,
+				     (XDP_TX_VC_PAYLOAD_BUFFER_ADDR + (4 * i)), vicid);
+		}
 	}
 
 	XDp_WaitUs(InstancePtr, 1000);
@@ -1460,6 +1550,12 @@ u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts, u8 StartTs)
 			/* The AUX read transaction failed. */
 			return Status;
 		}
+		/* Error out if timed out. */
+		if (TimeoutCount > XDP_TX_ALLOCATE_PAYLOAD_MAX_TIMEOUT_COUNT)
+			return XST_ERROR_COUNT_MAX;
+
+		TimeoutCount++;
+		XDp_WaitUs(InstancePtr, 1000);
 	} while ((AuxData[0] & 0x01) != 0x01);
 
 	XDp_WaitUs(InstancePtr, 1000);
@@ -2193,6 +2289,7 @@ u32 XDp_TxSendSbMsgAllocatePayload(XDp *InstancePtr, u8 LinkCountTotal,
 u32 XDp_TxSendSbMsgClearPayloadIdTable(XDp *InstancePtr)
 {
 	u32 Status;
+	u8 AuxData;
 	XDp_SidebandMsg Msg;
 	XDp_SidebandReply SbMsgReply;
 
@@ -2227,6 +2324,19 @@ u32 XDp_TxSendSbMsgClearPayloadIdTable(XDp *InstancePtr)
 		return Status;
 	}
 	Status = XDp_TxReceiveSbMsg(InstancePtr, &SbMsgReply);
+	if (Status != XST_SUCCESS) {
+		/* Either the reply indicates a NACK, an AUX read or write
+		 * transaction failed, there was a time out waiting for a reply,
+		 * or a CRC check failed.
+		 */
+		return Status;
+	}
+	/* Enable MST in the immediate branch device and tell it that its
+	 * upstream device is a source (the DisplayPort TX).
+	 */
+	AuxData = XDP_DPCD_UP_IS_SRC_MASK | XDP_DPCD_UP_REQ_EN_MASK |
+							XDP_DPCD_MST_EN_MASK;
+	Status = XDp_TxAuxWrite(InstancePtr, XDP_DPCD_MSTM_CTRL, 1, &AuxData);
 
 	return Status;
 }
@@ -3433,7 +3543,7 @@ static u32 XDp_TxSendActTrigger(XDp *InstancePtr)
 	u8 AuxData;
 	u8 TimeoutCount = 0;
 
-	XDp_WaitUs(InstancePtr, 10000);
+	XDp_WaitUs(InstancePtr, 1000);
 
 	XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_MST_CONFIG, 0x3);
 
@@ -3454,14 +3564,6 @@ static u32 XDp_TxSendActTrigger(XDp *InstancePtr)
 		XDp_WaitUs(InstancePtr, 1000);
 	} while ((AuxData & 0x02) != 0x02);
 
-	/* Clear the ACT event received bit. */
-	AuxData = 0x2;
-	Status = XDp_TxAuxWrite(InstancePtr,
-			XDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS, 1, &AuxData);
-	if (Status != XST_SUCCESS) {
-		/* The AUX write transaction failed. */
-		return Status;
-	}
 
 	return XST_SUCCESS;
 }
@@ -3499,20 +3601,6 @@ static u32 XDp_SendSbMsgFragment(XDp *InstancePtr, XDp_SidebandMsg *Msg)
 	u8 Index;
 
 	XDp_WaitUs(InstancePtr, InstancePtr->TxInstance.SbMsgDelayUs);
-
-#if XPAR_XDPTXSS_NUM_INSTANCES
-	if (XDp_GetCoreType(InstancePtr) == XDP_TX) {
-		/* First, clear the DOWN_REP_MSG_RDY in case the RX device is in
-		 * a weird state. */
-		Data[0] = 0x10;
-		Status = XDp_TxAuxWrite(InstancePtr,
-				XDP_DPCD_SINK_DEVICE_SERVICE_IRQ_VECTOR_ESI0, 1,
-				Data);
-		if (Status != XST_SUCCESS) {
-			return Status;
-		}
-	}
-#endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 
 	/* Add the header to the sideband message transaction. */
 	Msg->Header.MsgHeaderLength = 0;
@@ -3625,8 +3713,10 @@ static void XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg)
 static u32 XDp_TxReceiveSbMsg(XDp *InstancePtr, XDp_SidebandReply *SbReply)
 {
 	u32 Status;
+	int BytesToRead = 0;
 	u8 Index = 0;
 	u8 AuxData[80];
+	u8 DownReqOffset = XDP_DOWN_REQ_OFFSET;
 	XDp_SidebandMsg Msg;
 
 	Msg.FragmentNum = 0;
@@ -3642,11 +3732,29 @@ static u32 XDp_TxReceiveSbMsg(XDp *InstancePtr, XDp_SidebandReply *SbReply)
 		}
 
 		/* Receive reply. */
-		Status = XDp_TxAuxRead(InstancePtr, XDP_DPCD_DOWN_REP, 80,
+		Status = XDp_TxAuxRead(InstancePtr, XDP_DPCD_DOWN_REP, XDP_MAX_BYTES_TO_READ,
 								AuxData);
 		if (Status != XST_SUCCESS) {
 			/* The AUX read transaction failed. */
 			return Status;
+		}
+
+		DownReqOffset = XDP_DOWN_REQ_OFFSET;
+		BytesToRead = AuxData[1];
+		BytesToRead = BytesToRead & 0x003F;
+		BytesToRead = BytesToRead - XDP_MAX_BYTES_TO_READ;
+		while (BytesToRead >= 0) {
+			/* Receive reply. */
+			Status = XDp_TxAuxRead(InstancePtr,
+					       XDP_DPCD_DOWN_REP + DownReqOffset,
+					       XDP_MAX_BYTES_TO_READ,
+					       &AuxData[DownReqOffset]);
+			if (Status != XST_SUCCESS) {
+				/* The AUX read transaction failed. */
+				return Status;
+			}
+			BytesToRead = BytesToRead - XDP_MAX_BYTES_TO_READ;
+			DownReqOffset += XDP_DOWN_REQ_OFFSET;
 		}
 
 		/* Convert the reply transaction into XDp_SidebandReply
@@ -3658,12 +3766,6 @@ static u32 XDp_TxReceiveSbMsg(XDp *InstancePtr, XDp_SidebandReply *SbReply)
 			return XST_FAILURE;
 		}
 
-		/* Collect body data into an array. */
-		for (Index = 0; Index < Msg.Body.MsgDataLength; Index++) {
-			SbReply->Data[SbReply->Length++] =
-							Msg.Body.MsgData[Index];
-		}
-
 		/* Clear. */
 		AuxData[0] = 0x10;
 		Status = XDp_TxAuxWrite(InstancePtr,
@@ -3673,6 +3775,13 @@ static u32 XDp_TxReceiveSbMsg(XDp *InstancePtr, XDp_SidebandReply *SbReply)
 			/* The AUX write transaction failed. */
 			return Status;
 		}
+
+		/* Collect body data into an array. */
+		for (Index = 0; Index < Msg.Body.MsgDataLength; Index++) {
+			SbReply->Data[SbReply->Length++] =
+							Msg.Body.MsgData[Index];
+		}
+
 	}
 	while (Msg.Header.EndOfMsgTransaction == 0);
 

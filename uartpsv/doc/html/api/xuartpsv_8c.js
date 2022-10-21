@@ -2,6 +2,7 @@ var xuartpsv_8c =
 [
     [ "XUARTPSV_MAX_BAUD_ERROR_RATE", "xuartpsv_8c.html#ga8dc8acae0282012aa1a20d979be436a6", null ],
     [ "XUartPsv_CfgInitialize", "xuartpsv_8c.html#gae977262c7eae574f573fe4122ac6c0ab", null ],
+    [ "XUartPsv_Cleanup", "xuartpsv_8c.html#ga1344d64394e0af7cf3abe12336900098", null ],
     [ "XUartPsv_ProgramCtrlReg", "xuartpsv_8c.html#gaa19ed118438249d9c56cd3afcfa8898c", null ],
     [ "XUartPsv_ReceiveBuffer", "xuartpsv_8c.html#gab7c628a4fd29e1f9d1d4cb9cbe672279", null ],
     [ "XUartPsv_Recv", "xuartpsv_8c.html#ga4d4d20bbcedb1de2adbe2644b821d12d", null ],

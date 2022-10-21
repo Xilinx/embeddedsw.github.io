@@ -197,6 +197,10 @@ int main(void)
 	filter_configs_ptr = &warp_drv_configs.filterConfigs;
 	filter_configs_ptr->src_buf_addr = SRC_BUF_START_ADDR;
 	filter_configs_ptr->dest_buf_addr = DST_BUF_START_ADDR;
+	if(WarpInst.config->perf_level == 0)
+	{
+		lblock_count = 	valid_seg ;
+	}
 	XVWarpFilter_ProgramDescriptor(&WarpInst, 0, filter_configs_ptr,
 			valid_seg, lblock_count, line_num);
 
@@ -235,15 +239,6 @@ int main(void)
 
 	xil_printf("Got Frame done Interrupt...Time taken = %u\n\r",
 			((tmrctr_1_value * (0xFFFFFFFF/322)) + tmrctr_value/322));
-
-	int out_crc = 0;
-	unsigned char *dest = (unsigned char *)DST_BUF_START_ADDR;
-
-	for (int i = 0; i < filter_configs_ptr->height * filter_configs_ptr->stride; i++)
-		out_crc = out_crc ^ dest[i];
-
-	if (out_crc == warp_drv_configs.golden_crc)
-		xil_printf("\nTest Pass\n");
 
 	XVWarpInit_ClearNumOfDescriptors(&WarpInitInst);
 	XVWarpFilter_ClearNumOfDescriptors(&WarpInst);

@@ -3,6 +3,7 @@ var struct_x_v___hdmi_tx_ss1___config =
     [ "AxiLiteClkFreq", "struct_x_v___hdmi_tx_ss1___config.html#aa8205c90494b16611fb959bb27b10304", null ],
     [ "BaseAddress", "struct_x_v___hdmi_tx_ss1___config.html#a2fad82bc5ec410236e8995be3b421baf", null ],
     [ "DeviceId", "struct_x_v___hdmi_tx_ss1___config.html#acfe7283fe422114877f8a4df825c0889", null ],
+    [ "DSC", "struct_x_v___hdmi_tx_ss1___config.html#a5c5d05779f4a6e3f55f868ef9e37994f", null ],
     [ "DynHdr", "struct_x_v___hdmi_tx_ss1___config.html#a3d9c7f27b41ac6c3575679c8cff34227", null ],
     [ "Hdcp14", "struct_x_v___hdmi_tx_ss1___config.html#ab0da29e56fdf9b2c32fc38b797f3ec88", null ],
     [ "Hdcp22", "struct_x_v___hdmi_tx_ss1___config.html#a24ce299ea4d8c6c7e1052ee2e83d4924", null ],

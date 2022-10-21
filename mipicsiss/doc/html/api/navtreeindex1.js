@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"xhdcp_8h.html":[2,22],
+"xhdcp_8h.html#a9e17e5c2544c08ef9b2c61a9ce460c1e":[2,22,0],
+"xhdmi__edid_8c.html":[2,23],
+"xhdmi__edid_8h.html":[2,24],
 "xhdmi__edid_8h.html#a89011d5a06daa5f37bfee23cce604b1e":[2,24,0],
 "xhdmi__example_8c.html":[2,25],
 "xhdmi__example_8c.html#a00804c9887066c8b73a180344f5c4dbc":[2,25,2],

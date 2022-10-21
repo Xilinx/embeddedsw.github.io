@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2005 - 2022 Xilinx, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -226,7 +226,7 @@ proc gen_testfunc_call {swproj mhsinst} {
           
       }
    } else {
-     if {$ps_wdt == 1} {
+     if {$ps_wdt == 1 && $iftmrintr == 1} {
         append testfunc_call "
 
    {
@@ -345,7 +345,7 @@ proc gen_testfunc_call {swproj mhsinst} {
            }
          }
        } else {
-         if {$ps_wdt == 1} {
+         if {$ps_wdt == 1 && $iftmrintr == 1} {
     append testfunc_call "
 
    {

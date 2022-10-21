@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss.h
-* @addtogroup dptxss_v6_7
+* @addtogroup dptxss_v6_8
 * @{
 * @details
 *
@@ -415,6 +415,7 @@ void XDpTxSs_Stop(XDpTxSs *InstancePtr);
 void XDpTxSs_Reset(XDpTxSs *InstancePtr);
 void XDpTxSs_VtcAdjustBSTimingEnable(XDpTxSs *InstancePtr);
 void XDpTxSs_VtcAdjustBSTimingDisable(XDpTxSs *InstancePtr);
+void XDpTxSs_OverrideSyncPolarity(XDpTxSs *InstancePtr, u8 Stream);
 u32 XDpTxSs_SetBpc(XDpTxSs *InstancePtr, u8 Bpc);
 u32 XDpTxSs_SetVidMode(XDpTxSs *InstancePtr, XVidC_VideoMode VidMode);
 u32 XDpTxSs_SetLinkRate(XDpTxSs *InstancePtr, u8 LinkRate);
@@ -429,6 +430,7 @@ u32 XDpTxSs_GetRemoteEdid(XDpTxSs *InstancePtr, u8 SinkNum, u8 *Edid);
 void XDpTxSs_SetHasRedriverInPath(XDpTxSs *InstancePtr, u8 Set);
 void XDpTxSs_SetUserPixelWidth(XDpTxSs *InstancePtr, u8 UserPixelWidth,
 				u8 StreamId);
+u8 XDpTxSs_GetNumOfMstStreams(XDpTxSs *InstancePtr);
 
 /* Optional HDCP related functions */
 u32 XDpTxSs_Authenticate(XDpTxSs *InstancePtr);

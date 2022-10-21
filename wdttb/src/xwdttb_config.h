@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdttb_config.h
-* @addtogroup Overview
+* @addtogroup wdttb Overview
 * @{
 *
 * The xwdttb_config.h file contains the required functions of the XWdtTb driver.
@@ -24,6 +24,7 @@
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
+/** @cond INTERNAL */
 #ifndef XWDTTB_CONFIG_H                /**< prevent circular inclusions */
 #define XWDTTB_CONFIG_H                /**< by using protection macros */
 
@@ -48,4 +49,5 @@ s32 XWdtTb_DisableTimebaseWdt(XWdtTb *InstancePtr);
 #endif
 
 #endif /* end of protection macro */
+/** @endcond */
 /** @} */

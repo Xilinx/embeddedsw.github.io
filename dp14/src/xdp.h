@@ -617,6 +617,8 @@ typedef struct {
 						is also the number of time slots
 						that are alloted in the payload
 						ID table. */
+	u32 StartTs;		/**< Starting timeslot for payload
+								allocation */
 	u32 InitWait;			/**< Number of initial wait cycles at
 						the start of a new line by
 						the framing logic. */
@@ -633,6 +635,8 @@ typedef struct {
 	u8 OverrideUserPixelWidth;	/**< If set to 1, the value stored for
 						UserPixelWidth will be used as
 						the pixel width. */
+	u8 OverrideSyncPolarity;	/**< Overrides the Horizontal
+						and vertical sync polarity */
 } XDp_TxMainStreamAttributes;
 
 /**
@@ -926,6 +930,7 @@ typedef struct {
 	u8 TrainAdaptive;			/**< Downshift lane count and
 							link rate if necessary
 							during training. */
+	u8 NumOfMstStreams;		/**< No of mst streams supported */
 	u8 IsTps4Supported;		/**< Is TPS4 supported by the
 							downstream sink */
 	u8 ColorimetryThroughVsc;		/**< Enable / Disable of sending
@@ -1611,6 +1616,7 @@ u32 XDp_TxSendSbMsgEnumPathResources(XDp *InstancePtr, u8 LinkCountTotal,
 u32 XDp_TxSendSbMsgAllocatePayload(XDp *InstancePtr, u8 LinkCountTotal,
 					u8 *RelativeAddress, u8 VcId, u16 Pbn);
 u32 XDp_TxSendSbMsgClearPayloadIdTable(XDp *InstancePtr);
+u32 XDp_TxSendEnumPathResourceRequest(XDp *InstancePtr);
 
 /* xdp_mst.c: Multi-stream transport (MST) utility functions. */
 void XDp_TxWriteGuid(XDp *InstancePtr, u8 LinkCountTotal, u8 *RelativeAddress,
@@ -1655,6 +1661,7 @@ void XDp_TxCfgMsaEnSynchClkMode(XDp *InstancePtr, u8 Stream, u8 Enable);
 void XDp_TxSetVideoMode(XDp *InstancePtr, u8 Stream);
 void XDp_TxClearMsaValues(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream);
+void XDp_TxOverrideSyncPolarity(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth);
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 

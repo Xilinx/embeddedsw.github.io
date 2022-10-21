@@ -7,11 +7,11 @@
 /**
 *
 * @file xsdps_g.c
-* @addtogroup Overview
+* @addtogroup sdps Overview
 * @{
 *
-* This file contains a configuration table that specifies the configuration of
-* SD devices in the system.
+* The xsdps_g.c file contains a configuration table that specifies the
+* configuration of SD devices in the system.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -47,7 +47,13 @@ XSdPs_Config XSdPs_ConfigTable[] =
 		XPAR_XSDPS_0_MIO_BANK,
 		XPAR_XSDPS_0_HAS_EMIO,
 		XPAR_XSDPS_0_SLOT_TYPE,
-		XPAR_XSDPS_0_IS_CACHE_COHERENT
+		XPAR_XSDPS_0_IS_CACHE_COHERENT,
+		XPAR_XSDPS_0_CLK_50_SDR_ITAP_DLY,
+		XPAR_XSDPS_0_CLK_50_SDR_OTAP_DLY,
+		XPAR_XSDPS_0_CLK_50_DDR_ITAP_DLY,
+		XPAR_XSDPS_0_CLK_50_DDR_OTAP_DLY,
+		XPAR_XSDPS_0_CLK_100_SDR_OTAP_DLY,
+		XPAR_XSDPS_0_CLK_200_SDR_OTAP_DLY
 	}
 };
 /** @} */

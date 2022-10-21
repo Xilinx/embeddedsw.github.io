@@ -7,7 +7,7 @@
 /**
 *
 * @file xospipsv_hw.c
-* @addtogroup Overview
+* @addtogroup ospipsv Overview
 * @{
 *
 * This file implements the hardware functions used by the functions in
@@ -275,6 +275,11 @@ void XOspiPsv_Setup_Dev_Write_Instr_Reg(const XOspiPsv *InstancePtr,
 			Addrxfer_Type = DQ0;
 			Instxfer_Type = DQ0_7;
 			Dataxfer_Type = DQ0;
+			break;
+		case XOSPIPSV_WRITE_8_0_8:
+			Addrxfer_Type = DQ0;
+			Instxfer_Type = DQ0_7;
+			Dataxfer_Type = DQ0_7;
 			break;
 		default :
 			Dataxfer_Type = DQ0;

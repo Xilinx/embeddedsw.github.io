@@ -26,6 +26,7 @@ var xhdmiphy1__hdmi_8c =
     [ "XHdmiphy1_HdmiUpdateClockSelection", "xhdmiphy1__hdmi_8c.html#ga1d8702f582054727e5bafc4e6cf32739", null ],
     [ "XHdmiphy1_PatgenEnable", "xhdmiphy1__hdmi_8c.html#gafe6529e3429c7199f87f7f8fc7f43fe0", null ],
     [ "XHdmiphy1_PatgenSetRatio", "xhdmiphy1__hdmi_8c.html#ga51d10d93fa76ebe0c031600b61955d4d", null ],
+    [ "Xhdmiphy1_RefClkValue", "xhdmiphy1__hdmi_8c.html#a6379077b417b3f435699335235439978", null ],
     [ "XHdmiphy1_SetHdmiRxParam", "xhdmiphy1__hdmi_8c.html#ga2bf27809a22eecc5194a8bad16261280", null ],
     [ "XHdmiphy1_SetHdmiTxParam", "xhdmiphy1__hdmi_8c.html#ga69e679f0c4444350910817be69cde77c", null ],
     [ "XHdmiphy1_TxAlignReset", "xhdmiphy1__hdmi_8c.html#a355efb9fbbf8e3d0102738e912971bca", null ],

@@ -7,7 +7,7 @@
 /**
 *
 * @file xsdps.h
-* @addtogroup Overview
+* @addtogroup sdps Overview
 * @{
 * @details
 *
@@ -152,6 +152,10 @@
 * 3.14  sk     10/22/21 Add support for Erase feature.
 *       sk     11/29/21 Fix compilation warnings reported with "-Wundef" flag.
 *       sk     01/10/22 Add support to read slot_type parameter.
+* 4.0   sk     02/25/22 Add support for eMMC5.1.
+*       sk     04/07/22 Add support to read custom tap delay values from design
+*                       for SD/eMMC.
+*       sk     06/03/22 Fix issue in internal clock divider calculation logic.
 *
 * </pre>
 *
@@ -207,6 +211,8 @@ extern "C" {
 #define EXT_CSD_DEVICE_TYPE_DDR_1V2_HIGH_SPEED	0x8U	/**< CSD Dev type DDR 1.2v speed */
 #define EXT_CSD_DEVICE_TYPE_SDR_1V8_HS200		0x10U	/**< CSD SDR 1.8v HS200 */
 #define EXT_CSD_DEVICE_TYPE_SDR_1V2_HS200		0x20U	/**< CSD SDR 1.2v HS200 */
+#define EXT_CSD_DEVICE_TYPE_DDR_1V8_HS400		0x40U	/**< CSD SDR 1.8v HS400 */
+#define EXT_CSD_DEVICE_TYPE_DDR_1V2_HS400		0x80U	/**< CSD SDR 1.2v HS400 */
 #define CSD_SPEC_VER_3		0x3U		/**< CSD card spec ver 3 */
 #define SCR_SPEC_VER_3		0x80U		/**< SCR spec ver 3 */
 #define ADDRESS_BEYOND_32BIT	0x100000000U	/**< Macro used for beyond 32-bit addr */
@@ -245,6 +251,12 @@ typedef struct {
 #if defined  (XCLOCKING)
 	u32 RefClk;			/**< Input clocks */
 #endif
+	u32 ITapDly_SDR_Clk50;	/**< Input Tap delay for HSD/SDR25 modes */
+	u32 OTapDly_SDR_Clk50;	/**< Output Tap delay for HSD/SDR25 modes */
+	u32 ITapDly_DDR_Clk50;	/**< Input Tap delay for DDR50 modes */
+	u32 OTapDly_DDR_Clk50;	/**< Output Tap delay for DDR50 modes */
+	u32 OTapDly_SDR_Clk100;	/**< Input Tap delay for SDR50 modes */
+	u32 OTapDly_SDR_Clk200;	/**< Input Tap delay for SDR104/HS200 modes */
 } XSdPs_Config;
 
 /**
@@ -305,6 +317,7 @@ typedef struct {
 	u32 SlcrBaseAddr;	/**< SLCR base address*/
 	u8  IsBusy;			/**< Busy Flag*/
 	u32 BlkSize;		/**< Block Size*/
+	u8  IsTuningDone;	/**< Flag to indicate HS200 tuning complete */
 } XSdPs;
 
 /***************** Macros (Inline Functions) Definitions *********************/

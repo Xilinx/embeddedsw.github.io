@@ -6,7 +6,7 @@
 /*****************************************************************************/
 /**
 * @file xsysmonpsv.h
-* @addtogroup sysmonpsv_v3_0
+* @addtogroup Overview
 * @{
 *
 * The XSysMon driver supports the Xilinx System Monitor device on Versal
@@ -112,6 +112,8 @@
 * 2.3   aad    07/26/21 Added doxygen comments.
 * 2.3   aad    09/01/21 Fixed compilation warning.
 * 3.0   cog    03/25/21 Driver Restructure
+* 3.1   cog    04/09/22 Remove GIC standalone related functionality for
+*                       arch64 architecture
 *
 * </pre>
 *
@@ -131,7 +133,7 @@ extern "C" {
 #include "xsysmonpsv_hw.h"
 #include "xsysmonpsv_common.h"
 #include "xsysmonpsv_services.h"
-#if defined (ARMR5) || defined (__arch64__) || defined (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__)
 #include "xscugic.h"
 #endif
 /**************************** Type Definitions *******************************/
@@ -412,7 +414,7 @@ int XSysMonPsv_GetSupplyThresholdUpper(XSysMonPsv *InstancePtr, u32 Supply,
 int XSysMonPsv_GetSupplyThresholdLower(XSysMonPsv *InstancePtr, u32 Supply,
 				       u32 *Val);
 
-#if defined (ARMR5) || defined (__arch64__) || defined (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__)
 int XSysMonPsv_RegisterDeviceTempOps(XSysMonPsv *InstancePtr,
 				     XSysMonPsv_Handler CallbackFunc,
 				     void *CallbackRef);
@@ -440,7 +442,7 @@ void XSysMonPsv_IntrClear(XSysMonPsv *InstancePtr, u32 Mask);
 void XSysMonPsv_SetNewDataIntSrc(XSysMonPsv *InstancePtr,
 				 XSysMonPsv_Supply Supply, u32 Mask);
 
-#if defined (ARMR5) || defined (__arch64__) || defined (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__)
 void XSysMonPsv_SetTempEventHandler(XSysMonPsv *InstancePtr,
 				    XSysMonPsv_Handler CallbackFunc,
 				    void *CallbackRef);

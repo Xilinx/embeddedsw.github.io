@@ -7,10 +7,10 @@
 /**
 *
 * @file xsdps_card.c
-* @addtogroup Overview
+* @addtogroup sdps Overview
 * @{
 *
-* Contains the interface functions of the XSdPs driver.
+* The xsdps_card.c file contains the interface functions of the XSdPs driver.
 * See xsdps.h for a detailed description of the device and driver.
 *
 * <pre>
@@ -29,6 +29,9 @@
 * 3.14  sk     10/22/21 Add support for Erase feature.
 *       mn     11/28/21 Fix MISRA-C violations.
 *       sk     01/10/22 Add support to read slot_type parameter.
+* 4.0   sk     02/25/22 Add support for eMMC5.1.
+*       sk     04/07/22 Add support to read custom tap delay values from design
+*                       for SD/eMMC.
 *
 * </pre>
 *
@@ -941,7 +944,9 @@ void XSdPs_Identify_UhsMode(XSdPs *InstancePtr, u8 *ReadBuff)
 	if (((ReadBuff[13] & UHS_SDR104_SUPPORT) != 0U) &&
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_INPUT_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR104;
-		if (InstancePtr->Config.BankNumber == 2U) {
+		if (InstancePtr->Config.OTapDly_SDR_Clk200) {
+			InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_SDR_Clk200;
+		} else if (InstancePtr->Config.BankNumber == 2U) {
 			InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B2;
 		} else {
 			InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B0;
@@ -949,24 +954,46 @@ void XSdPs_Identify_UhsMode(XSdPs *InstancePtr, u8 *ReadBuff)
 	} else if (((ReadBuff[13] & UHS_SDR50_SUPPORT) != 0U) &&
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_SDR50_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR50;
-		InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD50;
+		if (InstancePtr->Config.OTapDly_SDR_Clk100) {
+			InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_SDR_Clk100;
+		} else {
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD50;
+		}
 	} else if (((ReadBuff[13] & UHS_DDR50_SUPPORT) != 0U) &&
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_DDR50_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_DDR50;
-		InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_DDR50;
-		if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
+		if (InstancePtr->Config.OTapDly_DDR_Clk50 &&
+			InstancePtr->Config.ITapDly_DDR_Clk50) {
+			InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_DDR_Clk50;
+			InstancePtr->ITapDelay = InstancePtr->Config.ITapDly_DDR_Clk50;
+			if ((InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) &&
+				(InstancePtr->ITapDelay == SD_ITAPDLYSEL_SD_DDR50)) {
+				InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_DDR50;
+			}
+		} else if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
 			InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_DDR50;
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_DDR50;
 		} else {
 			InstancePtr->ITapDelay = SD_ITAPDLYSEL_SD_DDR50;
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_DDR50;
 		}
 	} else if (((ReadBuff[13] & UHS_SDR25_SUPPORT) != 0U) &&
 		(InstancePtr->Config.InputClockHz >= XSDPS_SD_SDR25_MAX_CLK)) {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR25;
-		InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_HSD;
-		if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
+		if (InstancePtr->Config.OTapDly_SDR_Clk50 &&
+			InstancePtr->Config.ITapDly_SDR_Clk50) {
+			InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_SDR_Clk50;
+			InstancePtr->ITapDelay = InstancePtr->Config.ITapDly_SDR_Clk50;
+			if ((InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) &&
+				(InstancePtr->ITapDelay == SD_ITAPDLYSEL_HSD)) {
+				InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_SDR25;
+			}
+		} else if (InstancePtr->Config.SlotType == XSDPS_SLOTTYPE_SDADIR) {
 			InstancePtr->ITapDelay = SD_AUTODIR_ITAPDLYSEL_SDR25;
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_HSD;
 		} else {
 			InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+			InstancePtr->OTapDelay = SD_OTAPDLYSEL_SD_HSD;
 		}
 	} else {
 		InstancePtr->Mode = XSDPS_UHS_SPEED_MODE_SDR12;
@@ -1340,29 +1367,59 @@ void XSdPs_IdentifyEmmcMode(XSdPs *InstancePtr, const u8 *ExtCsd)
 		InstancePtr->Mode = XSDPS_DEFAULT_SPEED_MODE;
 	} else {
 		/* Check for card supported speed */
+#if defined (VERSAL_NET) && defined (ENABLE_HS400_MODE)
 		if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
-				(EXT_CSD_DEVICE_TYPE_SDR_1V8_HS200 |
-				EXT_CSD_DEVICE_TYPE_SDR_1V2_HS200)) != 0U) {
-			InstancePtr->Mode = XSDPS_HS200_MODE;
+				(EXT_CSD_DEVICE_TYPE_DDR_1V8_HS400 |
+				EXT_CSD_DEVICE_TYPE_DDR_1V2_HS400)) != 0U) {
+			InstancePtr->Mode = XSDPS_HS400_MODE;
+			InstancePtr->IsTuningDone = 0U;
 			if (InstancePtr->Config.BankNumber == 2U) {
 				InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B2;
 			} else {
 				InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B0;
 			}
-		} else if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
-				(EXT_CSD_DEVICE_TYPE_DDR_1V8_HIGH_SPEED |
-				EXT_CSD_DEVICE_TYPE_DDR_1V2_HIGH_SPEED)) != 0U) {
-			InstancePtr->Mode = XSDPS_DDR52_MODE;
-			InstancePtr->OTapDelay = SD_OTAPDLYSEL_EMMC_DDR50;
-			InstancePtr->ITapDelay = SD_ITAPDLYSEL_EMMC_DDR50;
-		} else if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
-				EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0U) {
-			InstancePtr->Mode = XSDPS_HIGH_SPEED_MODE;
-			InstancePtr->OTapDelay = SD_OTAPDLYSEL_EMMC_HSD;
-			InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
 		} else {
-			InstancePtr->Mode = XSDPS_DEFAULT_SPEED_MODE;
+#endif
+			if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
+					(EXT_CSD_DEVICE_TYPE_SDR_1V8_HS200 |
+					EXT_CSD_DEVICE_TYPE_SDR_1V2_HS200)) != 0U) {
+				InstancePtr->Mode = XSDPS_HS200_MODE;
+				if (InstancePtr->Config.OTapDly_SDR_Clk200) {
+					InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_SDR_Clk200;
+				} else if (InstancePtr->Config.BankNumber == 2U) {
+					InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B2;
+				} else {
+					InstancePtr->OTapDelay = SD_OTAPDLYSEL_HS200_B0;
+				}
+			} else if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
+					(EXT_CSD_DEVICE_TYPE_DDR_1V8_HIGH_SPEED |
+					EXT_CSD_DEVICE_TYPE_DDR_1V2_HIGH_SPEED)) != 0U) {
+				InstancePtr->Mode = XSDPS_DDR52_MODE;
+				if (InstancePtr->Config.OTapDly_DDR_Clk50 &&
+					InstancePtr->Config.ITapDly_DDR_Clk50) {
+					InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_DDR_Clk50;
+					InstancePtr->ITapDelay = InstancePtr->Config.ITapDly_DDR_Clk50;
+				} else {
+					InstancePtr->OTapDelay = SD_OTAPDLYSEL_EMMC_DDR50;
+					InstancePtr->ITapDelay = SD_ITAPDLYSEL_EMMC_DDR50;
+				}
+			} else if ((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] &
+					EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0U) {
+				InstancePtr->Mode = XSDPS_HIGH_SPEED_MODE;
+				if (InstancePtr->Config.OTapDly_SDR_Clk50 &&
+					InstancePtr->Config.ITapDly_SDR_Clk50) {
+					InstancePtr->OTapDelay = InstancePtr->Config.OTapDly_SDR_Clk50;
+					InstancePtr->ITapDelay = InstancePtr->Config.ITapDly_SDR_Clk50;
+				} else {
+					InstancePtr->OTapDelay = SD_OTAPDLYSEL_EMMC_HSD;
+					InstancePtr->ITapDelay = SD_ITAPDLYSEL_HSD;
+				}
+			} else {
+				InstancePtr->Mode = XSDPS_DEFAULT_SPEED_MODE;
+			}
+#if defined (VERSAL_NET) && defined (ENABLE_HS400_MODE)
 		}
+#endif
 	}
 }
 
@@ -1387,20 +1444,31 @@ s32 XSdPs_CheckEmmcTiming(XSdPs *InstancePtr, u8 *ExtCsd)
 		goto RETURN_PATH;
 	}
 
-	if (InstancePtr->Mode == XSDPS_HS200_MODE) {
-		if (ExtCsd[EXT_CSD_HS_TIMING_BYTE] != EXT_CSD_HS_TIMING_HS200) {
-			Status = XST_FAILURE;
-			goto RETURN_PATH;
-		}
-	} else if ((InstancePtr->Mode == XSDPS_HIGH_SPEED_MODE) ||
-			(InstancePtr->Mode == XSDPS_DDR52_MODE)) {
-		if (ExtCsd[EXT_CSD_HS_TIMING_BYTE] != EXT_CSD_HS_TIMING_HIGH) {
+#ifdef VERSAL_NET
+	if (InstancePtr->Mode == XSDPS_HS400_MODE) {
+		if (ExtCsd[EXT_CSD_HS_TIMING_BYTE] != EXT_CSD_HS_TIMING_HS400) {
 			Status = XST_FAILURE;
 			goto RETURN_PATH;
 		}
 	} else {
-		Status = XST_FAILURE;
+#endif
+		if (InstancePtr->Mode == XSDPS_HS200_MODE) {
+			if (ExtCsd[EXT_CSD_HS_TIMING_BYTE] != EXT_CSD_HS_TIMING_HS200) {
+				Status = XST_FAILURE;
+				goto RETURN_PATH;
+			}
+		} else if ((InstancePtr->Mode == XSDPS_HIGH_SPEED_MODE) ||
+				(InstancePtr->Mode == XSDPS_DDR52_MODE)) {
+			if (ExtCsd[EXT_CSD_HS_TIMING_BYTE] != EXT_CSD_HS_TIMING_HIGH) {
+				Status = XST_FAILURE;
+				goto RETURN_PATH;
+			}
+		} else {
+			Status = XST_FAILURE;
+		}
+#ifdef VERSAL_NET
 	}
+#endif
 
 RETURN_PATH:
 	return Status;
@@ -1421,6 +1489,8 @@ s32 XSdPs_SetClock(XSdPs *InstancePtr, u32 SelFreq)
 {
 	u16 ClockReg;
 	s32 Status;
+	u32 Reg;
+	u32 Timeout = 1000U;
 
 	/* Disable clock */
 	XSdPs_WriteReg16(InstancePtr->Config.BaseAddress,
@@ -1432,6 +1502,36 @@ s32 XSdPs_SetClock(XSdPs *InstancePtr, u32 SelFreq)
 		goto RETURN_PATH ;
 	}
 
+#ifdef VERSAL_NET
+	if (InstancePtr->CardType == XSDPS_CHIP_EMMC) {
+		Reg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET);
+		Reg &= ~XSDPS_PHYREG2_DLL_EN_MASK;
+		if ((InstancePtr->Mode != XSDPS_DEFAULT_SPEED_MODE) &&
+			(InstancePtr->Config.InputClockHz >= XSDPD_MIN_DLL_MODE_CLK)) {
+			XSdPs_WriteReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET, Reg);
+			Reg &= ~XSDPS_PHYREG2_FREQ_SEL_MASK;
+			Reg &= ~XSDPS_PHYREG2_TRIM_ICP_MASK;
+			Reg &= ~XSDPS_PHYREG2_DLYTX_SEL_MASK;
+			Reg &= ~XSDPS_PHYREG2_DLYRX_SEL_MASK;
+			Reg |= (XSDPS_PHYREG2_TRIM_ICP_DEF_VAL <<
+					XSDPS_PHYREG2_TRIM_ICP_SHIFT);
+			if (SelFreq == XSDPS_MMC_DDR_MAX_CLK) {
+				Reg |= (XSDPS_FREQ_SEL_50MHZ_79MHz <<
+							XSDPS_PHYREG2_FREQ_SEL_SHIFT);
+			}
+			XSdPs_WriteReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET, Reg);
+		} else {
+			Reg |= XSDPS_PHYREG2_DLYTX_SEL_MASK;
+			Reg |= XSDPS_PHYREG2_DLYRX_SEL_MASK;
+			XSdPs_WriteReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET, Reg);
+		}
+	}
+#endif
+
 	/* Calculate the clock */
 	ClockReg = (u16)XSdPs_CalcClock(InstancePtr, SelFreq);
 
@@ -1440,6 +1540,35 @@ s32 XSdPs_SetClock(XSdPs *InstancePtr, u32 SelFreq)
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
 	}
+
+#ifdef VERSAL_NET
+	if ((InstancePtr->CardType == XSDPS_CHIP_EMMC) &&
+		(InstancePtr->Mode != XSDPS_DEFAULT_SPEED_MODE) &&
+			(InstancePtr->Config.InputClockHz >= XSDPD_MIN_DLL_MODE_CLK)) {
+		Reg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET);
+		Reg |= XSDPS_PHYREG2_DLL_EN_MASK;
+		XSdPs_WriteReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET, Reg);
+
+		/* Wait for 1000 micro sec for DLL READY */
+		do {
+			Reg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
+					XSDPS_PHYCTRLREG2_OFFSET);
+			Timeout = Timeout - 1U;
+			usleep(1);
+		} while (((Reg & XSDPS_PHYREG2_DLL_RDY_MASK) == 0U)
+					&& (Timeout != 0U));
+
+		if (Timeout == 0U) {
+			Status = XST_FAILURE;
+			goto RETURN_PATH ;
+		}
+	}
+#else
+	(void)Reg;
+	(void)Timeout;
+#endif
 
 RETURN_PATH:
 	return Status;

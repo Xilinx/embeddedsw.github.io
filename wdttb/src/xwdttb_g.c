@@ -1,5 +1,5 @@
 /*******************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xwdttb_g.c
-* @addtogroup Overview
+* @addtogroup wdttb Overview
 * @{
 *
 * The xwdttb_g.c file contains the required functions of the XWdtTb driver.

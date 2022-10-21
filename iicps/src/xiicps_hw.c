@@ -7,7 +7,7 @@
 /**
 *
 * @file xiicps_hw.c
-* @addtogroup Overview
+* @addtogroup iicps Overview
 * @{
 *
 * The xiicps_hw.c file contains implementation of required functions for
@@ -52,7 +52,7 @@
 *
 * @param   BaseAddress of the interface
 *
-* @return N/A
+* @return None.
 *
 * @note
 * This function will not modify the slcr registers that are relevant for

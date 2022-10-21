@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xaxis_switch.c
-* @addtogroup axis_switch_v1_4
+* @addtogroup axis_switch_v1_5
 * @{
 *
 * This is the main file for Xilinx AXI4-Stream Switch Control Router core.
@@ -22,6 +22,12 @@
 * 1.1   sk  08/16/16 Used UINTPTR instead of u32 for Baseaddress as part of
 *                    adding 64 bit support. CR# 867425.
 *                    Changed the prototype of XAxisScr_CfgInitialize API.
+* 1.5   asa 08/25/22 Remove the incorrect check in the API
+*                    XAxisScr_IsMiPortEnabled. Because of the incorrect check
+*                    the API can return a false TRUE for an failure case.
+*                    As an example, if a MI is configured for SI[7] and the
+*                    API is called to check if the MI is configured for SI[3],
+*                    the API will return TRUE.
 * </pre>
 *
 ******************************************************************************/
@@ -203,15 +209,9 @@ s32 XAxisScr_IsMiPortEnabled(XAxis_Switch *InstancePtr, u8 MiIndex,
 	/* Fetch SI value */
 	RegValue &= XAXIS_SCR_MI_X_MUX_MASK;
 
-
-	/* When SiIndex is zero */
 	if ((RegValue == SiIndex) && (!Enable)) {
 		RegValue = TRUE;
-	}
-	else if((RegValue & SiIndex) && (!Enable)) {
-		RegValue = TRUE;
-	}
-	else {
+	} else {
 		RegValue = FALSE;
 	}
 

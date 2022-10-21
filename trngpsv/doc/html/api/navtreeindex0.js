@@ -135,6 +135,7 @@ var NAVTREEINDEX0 =
 "xtrngpsv__sinit_8c.html":[1,11],
 "xtrngpsv__sinit_8c.html#ga9b06ac326694fa3a8cf6407ff99c644f":[1,11,0],
 "xtrngpsv__tests_8c.html":[1,12],
-"xtrngpsv__tests_8c.html#ga4db54d9685d0ac834bf95023fe659a0d":[1,12,1],
-"xtrngpsv__tests_8c.html#gab3d40fb1f24910ed5c246968ac462b69":[1,12,0]
+"xtrngpsv__tests_8c.html#ga4db54d9685d0ac834bf95023fe659a0d":[1,12,2],
+"xtrngpsv__tests_8c.html#gaa4efc7233a8b20aff8654f7c79fc1abb":[1,12,0],
+"xtrngpsv__tests_8c.html#gab3d40fb1f24910ed5c246968ac462b69":[1,12,1]
 };

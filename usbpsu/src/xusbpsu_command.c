@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *****************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xusbpsu_command.c
-* @addtogroup Overview
+* @addtogroup usbpsu USBPSU v1.12
 * @{
 *
 *
@@ -19,6 +19,7 @@
 * 1.0   pm  03/03/20 First release
 * 1.8	pm  24/07/20 Fixed MISRA-C and Coverity warnings
 * 1.10	pm  24/07/21 Fixed MISRA-C and Coverity warnings
+* 1.12	pm  10/08/22 Update doxygen tag and addtogroup version
 *
 * </pre>
 *

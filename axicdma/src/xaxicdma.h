@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
  *  @file xaxicdma.h
-* @addtogroup axicdma_v4_9
+* @addtogroup axicdma_v4_10
 * @{
 * @details
  *
@@ -316,6 +316,8 @@
  *       ms   04/05/17 Modified Comment lines in functions of axicdma
  *                     examples to recognize it as documentation block
  *                     for doxygen generation of examples.
+ * 4.10  sa   08/12/22 Updated the examples to use latest MIG cannoical define
+ * 		       i.e XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR.
  * </pre>
  *****************************************************************************/
 

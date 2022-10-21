@@ -4,6 +4,7 @@ var xdfemix_8h =
     [ "XDFEMIX_CC_GAIN_MAX", "xdfemix_8h.html#ga24149324f9641e904101ea11a0f13476", null ],
     [ "XDFEMIX_CC_NUM", "xdfemix_8h.html#gac12a737201b98f541df965a9896f2475", null ],
     [ "XDFEMIX_MAX_NUM_INSTANCES", "xdfemix_8h.html#ga03a4e92dd27b24eef253f7b2ec5185eb", null ],
+    [ "XDFEMIX_NCO_MAX", "xdfemix_8h.html#ga77b07bd25cea4b0b3bbf699ca7373bd0", null ],
     [ "XDFEMIX_NODE_NAME_MAX_LENGTH", "xdfemix_8h.html#gaf3c8743a5ef63e5f36a2f3036f78b87b", null ],
     [ "XDFEMIX_SEQ_LENGTH_MAX", "xdfemix_8h.html#ga0acf82e7e3db7bb7f935b30b54c3a25e", null ],
     [ "XST_FAILURE", "xdfemix_8h.html#ga9478d2b97aa40e09052dee2571940ef9", null ],

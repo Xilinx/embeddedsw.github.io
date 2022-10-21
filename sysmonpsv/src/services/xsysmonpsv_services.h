@@ -6,7 +6,7 @@
 /*****************************************************************************/
 /**
 * @file xsysmonpsv_services.h
-* @addtogroup sysmonpsv_v3_0
+* @addtogroup Overview
 *
 * Services layers provide APIs to which a user can subscribe to like Temperature,
 * voltage alarms.
@@ -17,6 +17,8 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------
 * 3.0   cog    03/25/21 Driver Restructure
+* 3.1   cog    04/09/22 Remove GIC standalone related functionality for
+*                       arch64 architecture
 *
 * </pre>
 *
@@ -32,7 +34,7 @@ extern "C" {
 #include "xil_types.h"
 #include "xil_assert.h"
 #include "xsysmonpsv_lowlevel.h"
-#if defined (ARMR5) || defined (__arch64__) || defined (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__)
 #include "xscugic.h"
 #endif
 
@@ -40,7 +42,7 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
 				   u32 IntrNum);
 int XSysMonPsv_DisableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply);
 
-#if defined (ARMR5) || defined (__arch64__) || defined (__aarch64__)
+#if defined (ARMR5) || defined (__aarch64__)
 void XSysMonPsv_RegisterDevTempCallback(XSysMonPsv *InstancePtr,
 					XSysMonPsv_Handler CallbackFunc,
 					void *CallbackRef);

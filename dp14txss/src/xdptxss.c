@@ -7,7 +7,7 @@
 /**
 *
 * @file xdptxss.c
-* @addtogroup dptxss_v6_7
+* @addtogroup dptxss_v6_8
 * @{
 *
 * This is the main file for Xilinx DisplayPort Transmitter Subsystem driver.
@@ -794,6 +794,30 @@ u32 XDpTxSs_SetVidMode(XDpTxSs *InstancePtr, XVidC_VideoMode VidMode)
 	return XST_SUCCESS;
 }
 
+/******************************************************************************/
+/**
+ * This function overrides the Polarity for Horizontal and Vertical Sync signals
+ *
+ * @param	InstancePtr is a pointer to the XDpTxSs instance.
+ * @param	Stream is the stream number for which to change the Polarity.
+ *
+ * @return	None.
+ *
+ * @note	None.
+ *
+*******************************************************************************/
+void XDpTxSs_OverrideSyncPolarity(XDpTxSs *InstancePtr, u8 Stream)
+{
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid((Stream == XDP_TX_STREAM_ID1) ||
+						(Stream == XDP_TX_STREAM_ID2) ||
+						(Stream == XDP_TX_STREAM_ID3) ||
+						(Stream == XDP_TX_STREAM_ID4));
+
+	XDp_TxOverrideSyncPolarity(InstancePtr->DpPtr, Stream);
+}
+
 /*****************************************************************************/
 /**
 *
@@ -1193,6 +1217,29 @@ u32 XDpTxSs_IsMstCapable(XDpTxSs *InstancePtr)
 	Status = XDp_TxMstCapable(InstancePtr->DpPtr);
 
 	return Status;
+}
+
+/*****************************************************************************/
+/**
+ *
+ * This function returns number of downstream MST sink devices enumerated and available for
+ * payload allocation .
+ *
+ * @param	InstancePtr is a pointer to the XDpTxSs core instance.
+ *
+ * @return
+ *		- Number of MST sinks to be enabled for payload allocation
+ *
+ * @note		None.
+ *
+ ******************************************************************************/
+u8 XDpTxSs_GetNumOfMstStreams(XDpTxSs *InstancePtr)
+{
+		/* Verify argument.*/
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* Return number of mst streams to be enabled*/
+	return InstancePtr->DpPtr->TxInstance.NumOfMstStreams;
 }
 
 /******************************************************************************/
@@ -2346,18 +2393,7 @@ static u32 DpTxSs_CheckRxDeviceMode(XDpTxSs *InstancePtr)
 	/* Check RX device is MST capable */
 	Status = XDp_TxMstCapable(InstancePtr->DpPtr);
 	if ((Status == XST_SUCCESS) && (InstancePtr->Config.MstSupport)) {
-		if (InstancePtr->UsrOpt.MstSupport <
-					InstancePtr->Config.MstSupport) {
-			/* Enable SST mode when RX is MST */
-			InstancePtr->UsrOpt.MstSupport = 0;
-
-			/* set maximum number of streams to one */
-			InstancePtr->UsrOpt.NumOfStreams = 1;
-			xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Setting "
-				"to SST even though RX device is with MST "
-					"capable!\n\r");
-		}
-		else {
+		{
 			/* Enable MST mode */
 			InstancePtr->UsrOpt.MstSupport =
 					InstancePtr->Config.MstSupport;

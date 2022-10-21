@@ -52,6 +52,11 @@
 * 1.13 KU 12/22/21 2022.1 -	Versal: MMCM that generates the rx_dec_clk is now part of
 * 							RX SS. The application has been modified for this change.
 * 							App will work for both configurations of MMCM.
+* 1.14 ND 07/21/22 2022.2 - Updated the LMK03318 address.
+* 1.15 ND 08/05/22 2022.2 - Added support for gpio to monitor gt_powergood
+* 1.16 ND 08/26/22 2022.2 - Added DELAY macro to increase delay in IDT_8T49N24x_SetClock()
+* 					   		if encountering iic race condition.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -139,6 +144,10 @@ XIic IicInstance; 	/* I2C bus for MC6000 and IDT */
 XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
 #else
 void* VPhyInst;
+#endif
+
+#ifdef versal
+XGpio Gpio; /* The Instance of the GPIO Driver */
 #endif
 
 typedef struct {
@@ -558,6 +567,9 @@ u32 DpSs_Main(void)
 #ifdef Tx
 
 #ifdef versal
+	/*Wait till gtpowergood for accessing gt and its registers*/
+	while(!((XGpio_DiscreteRead(&Gpio, 1)) & 0x1));
+
     //de-asserting TX reset to GT
     GtCtrl (GT_RST_MASK, 0x00000000, 1);
     good = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x280);
@@ -1328,6 +1340,16 @@ u32 DpSs_PlatformInit(void)
 	 if (Status != XST_SUCCESS) {
 			 return XST_FAILURE;
 	 }
+
+	 /* Initialize the GPIO driver */
+	 Status = XGpio_Initialize(&Gpio, XPAR_GPIO_2_DEVICE_ID);
+	 if (Status != XST_SUCCESS) {
+			xil_printf("Gpio Initialization Failed\r\n");
+			return XST_FAILURE;
+	 }
+
+	 /* Set the direction for gpio channel 1 bit 0 as input */
+	 XGpio_SetDataDirection(&Gpio, 1, 0x01);
 
 #endif
 

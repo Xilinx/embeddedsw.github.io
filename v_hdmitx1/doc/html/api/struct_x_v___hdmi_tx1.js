@@ -15,6 +15,8 @@ var struct_x_v___hdmi_tx1 =
     [ "ConnectCallback", "struct_x_v___hdmi_tx1.html#aef6b3f6753d278df67f1c9803f667e08", null ],
     [ "ConnectRef", "struct_x_v___hdmi_tx1.html#a99c1d407019995c9faedf34060140f35", null ],
     [ "CpuClkFreq", "struct_x_v___hdmi_tx1.html#aed733a651634b05b6113daf320c32646", null ],
+    [ "DscDecodeFailCallback", "struct_x_v___hdmi_tx1.html#a2b619bbff33578107cf420cacecd2e18", null ],
+    [ "DscDecodeFailRef", "struct_x_v___hdmi_tx1.html#ac635278b5e2faa35578d29830359877a", null ],
     [ "DynHdrMtwCallback", "struct_x_v___hdmi_tx1.html#aa75eb56d2fcf4058da44bb2a2c3eba9b", null ],
     [ "DynHdrMtwRef", "struct_x_v___hdmi_tx1.html#a027b1a92f27a2b2839254e3a69120fd1", null ],
     [ "FrlConfigCallback", "struct_x_v___hdmi_tx1.html#ac495d5b8980b11427969918c7ea6eb56", null ],

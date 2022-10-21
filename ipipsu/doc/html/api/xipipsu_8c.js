@@ -11,5 +11,5 @@ var xipipsu_8c =
     [ "XIpiPsu_Reset", "xipipsu_8c.html#ga9c55b8deb0e6b0a4ff355ad3a74aa2f1", null ],
     [ "XIpiPsu_SetConfigTable", "xipipsu_8c.html#gab4466706c8ede1b9b6e5b592a075afa7", null ],
     [ "XIpiPsu_TriggerIpi", "xipipsu_8c.html#ga8aa0005ec03abef3b3c1a506cb924e6e", null ],
-    [ "XIpiPsu_WriteMessage", "xipipsu_8c.html#ga21edd11331c715ee4b2c7a34471eac0d", null ]
+    [ "XIpiPsu_WriteMessage", "xipipsu_8c.html#ga429d934e93e38c71d92ad98775b9cd92", null ]
 ];

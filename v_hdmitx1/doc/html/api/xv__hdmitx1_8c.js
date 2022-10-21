@@ -1,6 +1,8 @@
 var xv__hdmitx1_8c =
 [
     [ "XV_HdmiTx1_AudioEnable", "xv__hdmitx1_8c.html#ae842f2e11b05dbc07382f202bffbf7ea", null ],
+    [ "XV_HdmiTx1_Aux_Dsc_Send_Data", "xv__hdmitx1_8c.html#afaf9e97accf4f26abbdac8ef9410dcab", null ],
+    [ "XV_HdmiTx1_Aux_Dsc_Send_Header", "xv__hdmitx1_8c.html#a0ac2f0429e283d420ab2498273c288a4", null ],
     [ "XV_HdmiTx1_AuxEnable", "xv__hdmitx1_8c.html#a1b7d74b3288271064644bda7857a1c8b", null ],
     [ "XV_HdmiTx1_AuxSend", "xv__hdmitx1_8c.html#a49560390a20d63cec3fd7c79c2f44a76", null ],
     [ "XV_HdmiTx1_CfgInitialize", "xv__hdmitx1_8c.html#ade49d67af0d4ac0c3d5756a5cfdfe15f", null ],

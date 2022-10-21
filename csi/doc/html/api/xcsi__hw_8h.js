@@ -204,6 +204,7 @@ var xcsi__hw_8h =
     [ "XCSI_VC8INF2R_OFFSET", "xcsi__hw_8h.html#gadb2cf7e0667aa02c1789ce486838ce88", null ],
     [ "XCSI_VC9INF1R_OFFSET", "xcsi__hw_8h.html#gaea739c2b5064ae49d41d19e3f2b33bcc", null ],
     [ "XCSI_VC9INF2R_OFFSET", "xcsi__hw_8h.html#ga63baeb72c4d364863356094ec55def73", null ],
+    [ "XCSI_VC_SEL_OFFSET", "xcsi__hw_8h.html#gabfbc42b0ca4fcd2013748d70adb40e64", null ],
     [ "XCSI_VCX_FE_OFFSET", "xcsi__hw_8h.html#ga53f623d43aa529c983d38dd2d226a4d7", null ],
     [ "XCSI_VCXINF1R_BYTECOUNT_MASK", "xcsi__hw_8h.html#gaf68735f792689ed44e2a81233fa94f35", null ],
     [ "XCSI_VCXINF1R_BYTECOUNT_SHIFT", "xcsi__hw_8h.html#gad1b30946e45739cd6279e0dfd66401fd", null ],

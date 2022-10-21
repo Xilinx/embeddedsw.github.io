@@ -36,6 +36,7 @@
 *			 processors and cache functionality.
 * 1.7	sk	08/26/20 Fix MISRA-C violations.
 * 1.7	sk	08/26/20 Remove busy check in SetConfig.
+* 1.11  bm      02/21/22 Add byte-aligned support for VERSAL_NET devices
 * 1.11	sk	03/03/22 Replace driver version in addtogroup with Overview.
 * 1.11	sk	03/03/22 Update Overview section based on review comments.
 * 1.11	sk	03/03/22 Update XCsuDma_GetSize return type description.
@@ -48,6 +49,8 @@
 #include "xcsudma.h"
 #include <stdbool.h>
 
+/************************** Constant Definitions *****************************/
+#define XCSUDMA_WORD_SIZE	(4U)
 /************************** Function Prototypes ******************************/
 
 
@@ -135,20 +138,31 @@ s32 XCsuDma_CfgInitialize(XCsuDma *InstancePtr, XCsuDma_Config *CfgPtr,
 void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					u64 Addr, u32 Size, u8 EnDataLast)
 {
+	u32 DataSize = 0U;
 	/* Verify arguments */
 	Xil_AssertVoid(InstancePtr != NULL);
+#ifdef VERSAL_NET
+	Xil_AssertVoid(Addr != 0x0UL);
+#else
 	Xil_AssertVoid(((Addr) & (u64)(XCSUDMA_ADDR_LSB_MASK)) == (u64)0x00);
+#endif
 	Xil_AssertVoid((Channel == (XCSUDMA_SRC_CHANNEL)) ||
 					(Channel == (XCSUDMA_DST_CHANNEL)));
 	Xil_AssertVoid(Size <= (u32)(XCSUDMA_SIZE_MAX));
 	Xil_AssertVoid(InstancePtr->IsReady == (u32)(XIL_COMPONENT_IS_READY));
+
+#ifdef VERSAL_NET
+	DataSize = Size * XCSUDMA_WORD_SIZE;
+#else
+	DataSize = Size;
+#endif
 
 #if defined(ARMR5)
 	/* No action if 64 bit address is used when this code is running on R5.
 	 * Flush if 32 bit addressing is used.
 	 */
 	if ((Addr >> XCSUDMA_MSB_ADDR_SHIFT) == 0U) {
-		Xil_DCacheFlushRange((INTPTR)Addr, Size << XCSUDMA_SIZE_SHIFT);
+		Xil_DCacheFlushRange((INTPTR)Addr, DataSize << XCSUDMA_SIZE_SHIFT);
 	}
 #else
 	/* No action required for PSU_PMU.
@@ -157,10 +171,10 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 	#if defined(__aarch64__)
 		if (Channel == (XCSUDMA_SRC_CHANNEL)) {
 			Xil_DCacheFlushRange((INTPTR)Addr,
-					(INTPTR)(Size << XCSUDMA_SIZE_SHIFT));
+					(INTPTR)(DataSize << XCSUDMA_SIZE_SHIFT));
 		} else {
 			Xil_DCacheInvalidateRange((INTPTR)Addr,
-					(INTPTR)(Size << XCSUDMA_SIZE_SHIFT));
+					(INTPTR)(DataSize << XCSUDMA_SIZE_SHIFT));
 		}
 	#endif
 #endif
@@ -176,18 +190,18 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			((u32)((Addr & ULONG64_HI_MASK) >> XCSUDMA_MSB_ADDR_SHIFT) &
 					(u32)(XCSUDMA_MSB_ADDR_MASK)));
 
-	if (EnDataLast == (u8)(XCSUDMA_LAST_WORD_MASK)) {
+	if (EnDataLast == (u8)1U) {
 		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 			((u32)(XCSUDMA_SIZE_OFFSET) +
 				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
-			((Size << (u32)(XCSUDMA_SIZE_SHIFT)) |
+			((DataSize << (u32)(XCSUDMA_SIZE_SHIFT)) |
 					(u32)(XCSUDMA_LAST_WORD_MASK)));
 	}
 	else {
 		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 			((u32)(XCSUDMA_SIZE_OFFSET) +
 				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
-				(Size << (u32)(XCSUDMA_SIZE_SHIFT)));
+				(DataSize << (u32)(XCSUDMA_SIZE_SHIFT)));
 	}
 }
 
@@ -231,6 +245,7 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			   u32 AddrLow, u32 AddrHigh, u32 Size, u8 EnDataLast)
 {
+	u32 DataSize = 0U;
 	/* Verify arguments */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid((Channel == (XCSUDMA_SRC_CHANNEL)) ||
@@ -238,7 +253,11 @@ void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 	Xil_AssertVoid(Size <= (u32)(XCSUDMA_SIZE_MAX));
 	Xil_AssertVoid(InstancePtr->IsReady == (u32)(XIL_COMPONENT_IS_READY));
 
-
+#ifdef VERSAL_NET
+	DataSize = Size * XCSUDMA_WORD_SIZE;
+#else
+	DataSize = Size;
+#endif
 	XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 		((u32)(XCSUDMA_ADDR_OFFSET) +
 		((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
@@ -249,18 +268,18 @@ void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
 		    (AddrHigh & XCSUDMA_MSB_ADDR_MASK));
 
-	if (EnDataLast == (u8)(XCSUDMA_LAST_WORD_MASK)) {
+	if (EnDataLast == (u8)1U) {
 		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 			((u32)(XCSUDMA_SIZE_OFFSET) +
 				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
-			((Size << (u32)(XCSUDMA_SIZE_SHIFT)) |
+			((DataSize << (u32)(XCSUDMA_SIZE_SHIFT)) |
 					(u32)(XCSUDMA_LAST_WORD_MASK)));
 	}
 	else {
 		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 			((u32)(XCSUDMA_SIZE_OFFSET) +
 				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
-				(Size << (u32)(XCSUDMA_SIZE_SHIFT)));
+				(DataSize << (u32)(XCSUDMA_SIZE_SHIFT)));
 	}
 }
 

@@ -24,6 +24,7 @@
 * 1.11	sk     03/03/22 Replace driver version in addtogroup with Overview.
 * 1.11	sk     03/03/22 Update Overview section based on review comments.
 * 1.11	sk     03/03/22 Add cond INTERNAL to avoid internal macros.
+* 1.12	sk     03/03/22 Added support for VERSAL NET.
 * </pre>
 *
 ******************************************************************************/
@@ -39,6 +40,7 @@ extern "C" {
 /***************************** Include Files *********************************/
 
 #include "xil_io.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -103,7 +105,11 @@ extern "C" {
 /** @name Address register bit masks
  * @{
  */
+#if defined (VERSAL_NET)
+#define XCSUDMA_ADDR_MASK	0xFFFFFFFFU	/**< Address mask */
+#else
 #define XCSUDMA_ADDR_MASK	0xFFFFFFFCU	/**< Address mask */
+#endif
 #define XCSUDMA_ADDR_LSB_MASK	0x00000003U	/**< Address alignment check
 						  *  mask */
 /*@}*/
@@ -113,8 +119,13 @@ extern "C" {
  * @{
  */
 #define XCSUDMA_SIZE_MASK	0x1FFFFFFCU	/**< Mask for size */
+#if defined (VERSAL_NET)
+#define XCSUDMA_LAST_WORD_MASK	0x20000000U	/**< Last word check bit mask*/
+#define XCSUDMA_SIZE_SHIFT	0U		/**< Shift for size */
+#else
 #define XCSUDMA_LAST_WORD_MASK	0x00000001U	/**< Last word check bit mask*/
 #define XCSUDMA_SIZE_SHIFT	2U		/**< Shift for size */
+#endif
 /*@}*/
 
 /** @cond INTERNAL */

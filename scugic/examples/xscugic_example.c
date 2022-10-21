@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,6 +23,14 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- ----------------------------------------------------
 * 1.00a drg  01/18/10 First release
+* 5.0   mus  04/04/22 Updated example to support it on any CPU
+*                     instance, for which example is compiled.
+*                     It fixes CR#1126331.
+* 5.0   adk  04/18/22 Replace infinite while loop with
+* 		      Xil_WaitForEventSet() API.
+*       adk  30/05/22 Fix typecast of the variable InterruptProcessed.
+*       adk  20/07/22 Update the Xil_WaitForEventSet() API arguments as
+*      		      per latest API.
 * </pre>
 ******************************************************************************/
 
@@ -37,6 +45,7 @@
 #include "xil_printf.h"
 #include "xil_types.h"
 #include "xscugic.h"
+#include "xil_util.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -47,6 +56,9 @@
  */
 #define INTC_DEVICE_ID		XPAR_SCUGIC_0_DEVICE_ID
 #define INTC_DEVICE_INT_ID	0x0E
+
+#define XSCUGIC_SPI_CPU_MASK	(XSCUGIC_SPI_CPU0_MASK << XPAR_CPU_ID)
+#define XSCUGIC_SW_TIMEOUT_VAL	10000000U /* Wait for 10 sec */
 
 /**************************** Type Definitions *******************************/
 
@@ -67,7 +79,7 @@ static XScuGic_Config *GicConfig;    /* The configuration parameters of the
  * Create a shared variable to be used by the main thread of processing and
  * the interrupt processing
  */
-volatile static int InterruptProcessed = FALSE;
+volatile static u32 InterruptProcessed = FALSE;
 
 static void AssertPrint(const char8 *FilenamePtr, s32 LineNumber){
 	xil_printf("ASSERT: File Name: %s ", FilenamePtr);
@@ -195,24 +207,19 @@ int ScuGicExample(u16 DeviceId)
 	 */
 	Status = XScuGic_SoftwareIntr(&InterruptController,
 					INTC_DEVICE_INT_ID,
-					XSCUGIC_SPI_CPU0_MASK);
+					XSCUGIC_SPI_CPU_MASK);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	/*
 	 * Wait for the interrupt to be processed, if the interrupt does not
-	 * occur this loop will wait forever
+	 * occur return failure after timeout.
 	 */
-	while (1) {
-		/*
-		 * If the interrupt occurred which is indicated by the global
-		 * variable which is set in the device driver handler, then
-		 * stop waiting
-		 */
-		if (InterruptProcessed) {
-			break;
-		}
+	Status = Xil_WaitForEventSet(XSCUGIC_SW_TIMEOUT_VAL, 1,
+				     &InterruptProcessed);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
 	}
 
 	return XST_SUCCESS;

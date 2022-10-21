@@ -26,7 +26,8 @@
 * 1.1   aad    07/16/19 Added register unlock
 * 1.1   aad    07/21/19 Added Temperature measurement
 * 2.0   aad    10/29/20 Graceful exit when no supplies enabled
-* 3.0   cog    03/25/21 Driver Restructure
+* 3.0   cog    03/25/22 Driver Restructure
+* 3.1   cog    04/09/22 Fix supply iterator
 *
 * </pre>
 *
@@ -90,18 +91,18 @@ int SysMonPsvPolledExample()
 	;
 	float Voltage;
 	float TempMin, TempMax;
-	XSysMonPsv_Supply Supply = (XSysMonPsv_Supply)0;
+	int Supply = 0;
 
 	XSysMonPsv_Init(&InstancePtr, NULL);
 
-	if (Supply != EndList) {
-		while (Supply != EndList) {
+	if (Supply != (int)EndList) {
+		do {
 			XSysMonPsv_ReadSupplyProcessed(&InstancePtr, Supply,
 						       &Voltage);
 			printf("Voltage for %s=%fv \r\n",
 			       XSysMonPsv_Supply_Arr[Supply], Voltage);
 			Supply++;
-		}
+		} while (Supply != (int)EndList);
 	} else {
 		printf("No Supplies Enabled\r\n");
 	}

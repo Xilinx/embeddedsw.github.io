@@ -7,10 +7,10 @@
 /**
 *
 * @file xuartpsv.c
-* @addtogroup Overview
+* @addtogroup uartpsv Overview
 * @{
 *
-* This file contains the implementation of the interface functions for
+* The xuartpsv.c file contains the implementation of the interface functions for
 * XUartPsv driver. Refer to the header file xuartpsv.h for more detailed
 * information.
 *
@@ -24,6 +24,7 @@
 *		      the sequence mentioned in TRM
 * 1.4  rna  03/12/21  Add read,write of LCR in 'XUartPsv_SetBaudRate' from TRM
 *           03/15/21  Improve the accuracy of FBRD value
+* 1.5  sd   05/04/22  Update the loop XUartPsv_ReceiveBuffer
 * </pre>
 *
 ******************************************************************************/
@@ -266,7 +267,8 @@ u32 XUartPsv_Send(XUartPsv *InstancePtr, u8 *BufferPtr, u32 NumBytes)
 ******************************************************************************/
 u32 XUartPsv_Recv(XUartPsv *InstancePtr, u8 *BufferPtr, u32 NumBytes)
 {
-	u32 ReceivedCount;
+	u32 ReceivedCount = 0U;
+	u32 IntrMask;
 
 	/* Assert validates the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -278,8 +280,10 @@ u32 XUartPsv_Recv(XUartPsv *InstancePtr, u8 *BufferPtr, u32 NumBytes)
 	InstancePtr->ReceiveBuffer.RemainingBytes = NumBytes;
 	InstancePtr->ReceiveBuffer.NextBytePtr = BufferPtr;
 
+	IntrMask = XUartPsv_GetInterruptMask(InstancePtr);
 	/* Receive the data from the device */
-	ReceivedCount = XUartPsv_ReceiveBuffer(InstancePtr);
+	if (IntrMask == 0 )
+		ReceivedCount = XUartPsv_ReceiveBuffer(InstancePtr);
 
 	return ReceivedCount;
 }
@@ -394,7 +398,7 @@ u32 XUartPsv_ReceiveBuffer(XUartPsv *InstancePtr)
 	 * Loop until there is no more data in RX FIFO or the specified
 	 * number of bytes has been received
 	 */
-	while ((ReceivedCount <= InstancePtr->ReceiveBuffer.RemainingBytes) &&
+	while ((ReceivedCount < InstancePtr->ReceiveBuffer.RemainingBytes) &&
 		(((FlagRegister & XUARTPSV_UARTFR_RXFE) == (u32)0))) {
 
 		InstancePtr->ReceiveBuffer.NextBytePtr[ReceivedCount] =
@@ -638,6 +642,24 @@ void XUartPsv_ProgramCtrlReg(XUartPsv *InstancePtr, u32 CtrlRegister)
 			XUARTPSV_UARTCR_OFFSET, TempCtrlRegister);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is a cleanup function to  allow reseting NextBytePtr, RemainingBytes and
+* RequestedBytes.
+*
+* @return	None.
+*
+* @note 	None.
+*
+******************************************************************************/
+
+void XUartPsv_Cleanup(XUartPsv *InstancePtr)
+{
+	InstancePtr->SendBuffer.NextBytePtr = NULL;
+	InstancePtr->SendBuffer.RemainingBytes = 0U;
+	InstancePtr->SendBuffer.RequestedBytes = 0U;
+}
 /*****************************************************************************/
 /**
 *

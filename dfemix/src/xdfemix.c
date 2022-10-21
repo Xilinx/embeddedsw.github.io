@@ -16,7 +16,7 @@
 * ----- ---    -------- -----------------------------------------------
 * 1.0   dc     10/21/20 Initial version
 *       dc     02/02/21 Remove hard coded device node name
-*       dc     02/15/21 align driver to curent specification
+*       dc     02/15/21 align driver to current specification
 *       dc     02/22/21 include HW in versioning
 *       dc     03/18/21 New model parameter list
 *       dc     04/06/21 Register with full node name
@@ -45,9 +45,12 @@
 *       dc     01/19/22 Assert CCUpdate trigger
 *       dc     02/10/22 Add latency information
 *       dc     03/21/22 Add prefix to global variables
+* 1.4   dc     04/04/22 Correct conversion rate calculation
+*       dc     04/06/22 Update documentation
+*       dc     08/19/22 Update register map
 *
 * </pre>
-* @addtogroup Overview
+* @addtogroup dfemix Overview
 * @{
 ******************************************************************************/
 /**
@@ -84,7 +87,7 @@
 /**
 * @endcond
 */
-#define XDFEMIX_DRIVER_VERSION_MINOR (3U) /**< Driver's minor version number */
+#define XDFEMIX_DRIVER_VERSION_MINOR (4U) /**< Driver's minor version number */
 #define XDFEMIX_DRIVER_VERSION_MAJOR (1U) /**< Driver's major version number */
 
 /************************** Function Prototypes *****************************/
@@ -475,7 +478,7 @@ static u32 XDfeMix_NCOArch4ModeInMoveOrUpdateCC(const XDfeMix *InstancePtr,
 /**
 *
 * Adds the specified CCID, to the CC sequence. The sequence is defined with
-* CCSeqBitmap where bit0 coresponds to CC[0], bit1 to CC[1], and so on.
+* CCSeqBitmap where bit0 corresponds to CC[0], bit1 to CC[1], and so on.
 *
 * Sequence data that is returned in the CCIDSequence is not the same as what is
 * written in the registers. The translation is:
@@ -520,7 +523,7 @@ static u32 XDfeMix_AddCCIDAndTranslateSeq(XDfeMix *InstancePtr, s32 CCID,
 		return XST_FAILURE;
 	}
 
-	/* Check are bits set in CCSeqBitmap to 1 avaliable (-1)*/
+	/* Check are bits set in CCSeqBitmap to 1 available (-1)*/
 	Mask = 1U;
 	for (Index = 0U; Index < CCIDSequence->Length; Index++) {
 		if (0U != (CCSeqBitmap & Mask)) {
@@ -629,8 +632,11 @@ static u32 XDfeMix_FindRate(const XDfeMix *InstancePtr, u32 CCSeqBitmap,
 		*Rate = 0;
 	} else {
 		/* Calculate conversion ratio */
-		ConversionRatio = InstancePtr->Config.AntennaInterleave *
-				  (InstancePtr->SequenceLength / OnesCounter);
+		ConversionRatio =
+			(InstancePtr->Config.AntennaInterleave *
+			 (InstancePtr->SequenceLength / OnesCounter)) /
+			InstancePtr->Config.MixerCps;
+		;
 		/* Select Rate from Interpolation/decimation rate */
 		switch (ConversionRatio) {
 		case 1: /* 1: 1x interpolation/decimation */
@@ -1437,6 +1443,10 @@ void XDfeMix_Configure(XDfeMix *InstancePtr, XDfeMix_Cfg *Cfg)
 		XDfeMix_RdBitField(XDFEMIX_MODEL_PARAM_1_MIXER_CPS_WIDTH,
 				   XDFEMIX_MODEL_PARAM_1_MIXER_CPS_OFFSET,
 				   ModelParam);
+	InstancePtr->Config.NumAuxiliary =
+		XDfeMix_RdBitField(XDFEMIX_MODEL_PARAM_1_NUM_AUXILIARY_WIDTH,
+				   XDFEMIX_MODEL_PARAM_1_NUM_AUXILIARY_OFFSET,
+				   ModelParam);
 
 	ModelParam = XDfeMix_ReadReg(InstancePtr, XDFEMIX_MODEL_PARAM_2_OFFSET);
 	InstancePtr->Config.DataIWidth =
@@ -1461,6 +1471,7 @@ void XDfeMix_Configure(XDfeMix *InstancePtr, XDfeMix_Cfg *Cfg)
 	Cfg->ModelParams.AntennaInterleave =
 		InstancePtr->Config.AntennaInterleave;
 	Cfg->ModelParams.MixerCps = InstancePtr->Config.MixerCps;
+	Cfg->ModelParams.NumAuxiliary = InstancePtr->Config.NumAuxiliary;
 	Cfg->ModelParams.DataIWidth = InstancePtr->Config.DataIWidth;
 	Cfg->ModelParams.DataOWidth = InstancePtr->Config.DataOWidth;
 	Cfg->ModelParams.TUserWidth = InstancePtr->Config.TUserWidth;
@@ -1789,7 +1800,8 @@ void XDfeMix_GetEmptyCCCfg(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg)
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID for which configuration parameters are returned,
+*           range [0-15].
 * @param    CCSeqBitmap CC slot position container.
 * @param    CarrierCfg CC configuration container.
 * @param    NCO NCO configuration container.
@@ -1805,7 +1817,7 @@ void XDfeMix_GetCarrierCfgAndNCO(const XDfeMix *InstancePtr,
 	u32 Mask = 1U;
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(CCCfg != NULL);
-	Xil_AssertVoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertVoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertVoid(CCSeqBitmap != NULL);
 	Xil_AssertVoid(CarrierCfg != NULL);
 	Xil_AssertVoid(NCO != NULL);
@@ -1853,17 +1865,16 @@ void XDfeMix_SetAntennaCfgInCCCfg(const XDfeMix *InstancePtr,
 * an error.
 * Initiates CC update (enable CCUpdate trigger TUSER Single Shot).
 *
-* The returned CCCfg.Sequence is transleted as there is no explicit indication
-* that SEQUENCE[i] is not used - 0 can define the slot as either used or
-* not used. Sequence data that is returned in the CCIDSequence is not the same
-* as what is written in the registers. The translation is:
+* The CCID sequence register value 0 can define the slot as either used or
+* not used. That's why the register values are translated into CCCfg.Sequence
+* The translation is:
 * - CCIDSequence.CCID[i] = -1    - if [i] is unused slot
 * - CCIDSequence.CCID[i] = CCID  - if [i] is used slot
 * - a returned CCIDSequence->Length = length in register + 1
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID to be added to configuration, range [0-15].
 * @param    CCSeqBitmap CC slot position container.
 * @param    CarrierCfg CC configuration container.
 * @param    NCO NCO configuration container.
@@ -1880,7 +1891,7 @@ u32 XDfeMix_AddCCtoCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg, s32 CCID,
 	u32 AddSuccess;
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(CCCfg != NULL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 	Xil_AssertNonvoid(NCO != NULL);
 
@@ -1923,11 +1934,12 @@ u32 XDfeMix_AddCCtoCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg, s32 CCID,
 /****************************************************************************/
 /**
 *
-* Removes specified CCID from a local CC configuration structure.
+* Removes specified CCID from a local CC configuration structure and the slots
+* in the sequence for that CCID are set to -1.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID to be removed, range [0-15].
 *
 * @note     For a sequence conversion see XDfeMix_AddCCtoCCCfg() comment.
 *
@@ -1936,7 +1948,7 @@ void XDfeMix_RemoveCCfromCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 			       s32 CCID)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertVoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertVoid(CCCfg != NULL);
 
 	/* Remove CCID from sequence and mark carrier configuration as
@@ -1955,7 +1967,7 @@ void XDfeMix_RemoveCCfromCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID to be updated, range [0-15].
 * @param    CarrierCfg CC configuration container.
 *
 * @return
@@ -1968,7 +1980,7 @@ u32 XDfeMix_UpdateCCinCCCfg(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(CCCfg != NULL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 
 	/* Check is Mixer in ARCH4 mode */
@@ -2053,7 +2065,7 @@ u32 XDfeMix_SetNextCCCfgAndTrigger(const XDfeMix *InstancePtr,
 * Initiates CC update (enable CCUpdate trigger TUSER Single Shot).
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 * @param    CCSeqBitmap - up to 16 defined slots into which a CC can be
 *           allocated. The number of slots can be from 1 to 16 depending on
 *           system initialization. The number of slots is defined by the
@@ -2080,7 +2092,7 @@ u32 XDfeMix_AddCC(XDfeMix *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 	Xil_AssertNonvoid(CarrierCfg->DUCDDCCfg.NCOIdx <= XDFEMIX_NCO_MAX);
 	Xil_AssertNonvoid(CarrierCfg->DUCDDCCfg.CCGain <= XDFEMIX_CC_GAIN_MAX);
@@ -2145,7 +2157,7 @@ u32 XDfeMix_AddCC(XDfeMix *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 * Initiates CC update (enable CCUpdate trigger TUSER Single Shot).
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -2161,7 +2173,7 @@ u32 XDfeMix_RemoveCC(XDfeMix *InstancePtr, s32 CCID)
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 
 	/* Read current CC configuration */
 	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
@@ -2185,10 +2197,10 @@ u32 XDfeMix_RemoveCC(XDfeMix *InstancePtr, s32 CCID)
 * Initiates CC update (enable CCUpdate trigger TUSER Single Shot).
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 * @param    Rate NCO rate value [1,2,4].
-* @param    FromNCO NCO value moving from.
-* @param    ToNCO NCO value moving to.
+* @param    FromNCO NCO value moving from, range [0-7].
+* @param    ToNCO NCO value moving to, range [0-7].
 *
 * @return
 *           - XST_SUCCESS if successful.
@@ -2211,7 +2223,7 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(Rate <= XDFEMIX_RATE_MAX);
 	Xil_AssertNonvoid(FromNCO <= XDFEMIX_NCO_MAX);
 	Xil_AssertNonvoid(ToNCO <= XDFEMIX_NCO_MAX);
@@ -2265,7 +2277,7 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 * an error.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 * @param    CarrierCfg CC configuration container.
 *
 * @return
@@ -2283,7 +2295,7 @@ u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
-	Xil_AssertNonvoid(CCID <= XDFEMIX_CC_NUM);
+	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
 
@@ -2324,7 +2336,7 @@ u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
 * Single Shot).
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    AntennaId Antenna ID.
+* @param    AntennaId Antenna ID, range [0-7].
 * @param    AntennaGain Antenna gain, 0 for -6dB and 1 for 0dB.
 *
 * @return
@@ -2353,7 +2365,7 @@ u32 XDfeMix_SetAntennaGain(XDfeMix *InstancePtr, u32 AntennaId, u32 AntennaGain)
 /****************************************************************************/
 /**
 *
-* Updates antenna cofiguration to all antennas.
+* Updates antenna configuration of all antennas.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    AntennaCfg Array of all antenna configurations.
@@ -2554,7 +2566,7 @@ void XDfeMix_SetTriggersCfg(const XDfeMix *InstancePtr,
 * Gets DUC/DDC status for a specified CCID.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 * @param    DUCDDCStatus DUC/DDC status container.
 *
 ****************************************************************************/
@@ -2587,7 +2599,7 @@ void XDfeMix_GetDUCDDCStatus(const XDfeMix *InstancePtr, s32 CCID,
 * Gets Mixer status  for a specified CCID.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID.
+* @param    CCID Channel ID, range [0-15].
 * @param    MixerStatus Mixer status container.
 *
 ****************************************************************************/
@@ -2658,7 +2670,7 @@ u32 XDfeMix_GetTUserDelay(const XDfeMix *InstancePtr)
 /****************************************************************************/
 /**
 *
-* Returns data latency + tap.
+* Returns sum of data latency and number of taps.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Tap Tap value.
@@ -2686,7 +2698,8 @@ u32 XDfeMix_GetTDataDelay(const XDfeMix *InstancePtr, u32 Tap, u32 *TDataDelay)
 /****************************************************************************/
 /**
 *
-* Returns predefined Central Tap value for chosen RATE.
+* Returns predefined Central Tap value for chosen RATE. This will determine
+* group delay.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Rate Interpolation/decimation rate index value [1-5].

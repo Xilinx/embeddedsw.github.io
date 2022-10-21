@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *****************************************************************************/
 
@@ -7,7 +7,7 @@
 /**
 *
 * @file xusbpsu_ephandler.c
-* @addtogroup Overview
+* @addtogroup usbpsu USBPSU v1.12
 * @{
 *
 *
@@ -18,6 +18,7 @@
 * ----- ---- -------- -------------------------------------------------------
 * 1.0   pm  03/23/20 First release
 * 1.8	pm  24/07/20 Fixed MISRA-C and Coverity warnings
+* 1.12	pm  10/08/22 Update doxygen tag and addtogroup version
 *
 * </pre>
 *
@@ -228,7 +229,7 @@ s32 XUsbPsu_EpBufferSend(struct XUsbPsu *InstancePtr, u8 UsbEp,
 	s32	RetVal;
 	struct XUsbPsu_Trb	*TrbPtr;
 	struct XUsbPsu_Ep *Ept;
-	struct XUsbPsu_EpParams *Params;
+	struct XUsbPsu_EpParams Params;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(UsbEp <= (u8)16U);
@@ -293,10 +294,9 @@ s32 XUsbPsu_EpBufferSend(struct XUsbPsu *InstancePtr, u8 UsbEp,
 		Xil_DCacheFlushRange((INTPTR)BufferPtr, BufferLen);
 	}
 
-	Params = XUsbPsu_GetEpParams(InstancePtr);
-	Xil_AssertNonvoid(Params != NULL);
-	Params->Param0 = 0U;
-	Params->Param1 = (UINTPTR)TrbPtr;
+	Params.Param0 = 0U;
+	Params.Param1 = (UINTPTR)TrbPtr;
+	Params.Param2 = 0U;
 
 	if ((Ept->EpStatus & XUSBPSU_EP_BUSY) != (u32)0U) {
 		cmd = XUSBPSU_DEPCMD_UPDATETRANSFER;
@@ -337,7 +337,7 @@ s32 XUsbPsu_EpBufferSend(struct XUsbPsu *InstancePtr, u8 UsbEp,
 	}
 
 	RetVal = XUsbPsu_SendEpCmd(InstancePtr, UsbEp, Ept->Direction,
-								cmd, Params);
+								cmd, &Params);
 	if (RetVal != (s32)XST_SUCCESS) {
 		return (s32)XST_FAILURE;
 	}
@@ -378,7 +378,7 @@ s32 XUsbPsu_EpBufferRecv(struct XUsbPsu *InstancePtr, u8 UsbEp,
 	s32	RetVal;
 	struct XUsbPsu_Trb	*TrbPtr;
 	struct XUsbPsu_Ep *Ept;
-	struct XUsbPsu_EpParams *Params;
+	struct XUsbPsu_EpParams Params;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(UsbEp <= (u8)16U);
@@ -455,10 +455,9 @@ s32 XUsbPsu_EpBufferRecv(struct XUsbPsu *InstancePtr, u8 UsbEp,
 		Xil_DCacheInvalidateRange((INTPTR)BufferPtr, Length);
 	}
 
-	Params = XUsbPsu_GetEpParams(InstancePtr);
-	Xil_AssertNonvoid(Params != NULL);
-	Params->Param0 = 0U;
-	Params->Param1 = (UINTPTR)TrbPtr;
+	Params.Param0 = 0U;
+	Params.Param1 = (UINTPTR)TrbPtr;
+	Params.Param2 = 0U;
 
 	if ((Ept->EpStatus & XUSBPSU_EP_BUSY) != (u32)0U) {
 		cmd = XUSBPSU_DEPCMD_UPDATETRANSFER;
@@ -498,7 +497,7 @@ s32 XUsbPsu_EpBufferRecv(struct XUsbPsu *InstancePtr, u8 UsbEp,
 	}
 
 	RetVal = XUsbPsu_SendEpCmd(InstancePtr, UsbEp, Ept->Direction,
-								cmd, Params);
+								cmd, &Params);
 	if (RetVal != XST_SUCCESS) {
 		return (s32)XST_FAILURE;
 	}

@@ -7,7 +7,7 @@
 /**
 *
 * @file xaxidma_bdring.h
-* @addtogroup axidma_v9_13
+* @addtogroup AXIDMA Overview
 * @{
 *
 * This file contains DMA channel related structure and constant definition
@@ -43,6 +43,7 @@
 *		       backward compatibility.
 * 9.2   vak  15/04/16  Fixed the compilation warnings in axidma driver
 * 9.7   rsp  01/11/18  Use UINTPTR instead of u32 for ChanBase CR#976392
+* 9.15  adk  08/16/22  Fix syntax error in the XAxiDma_BdRingGetCurrBd() API.
 *
 * </pre>
 *
@@ -208,28 +209,59 @@ typedef struct {
 *		This function is used only when system is configured as SG mode
 *
 *****************************************************************************/
-#define XAxiDma_BdRingSnapShotCurrBd(RingPtr)		  \
-	{								  \
-		if (!RingPtr->IsRxChannel) {				  \
-			(RingPtr)->BdaRestart = 			  \
-				(XAxiDma_Bd *)(UINTPTR)XAxiDma_ReadReg(		  \
-					(RingPtr)->ChanBase,  		  \
-					XAXIDMA_CDESC_OFFSET);		  \
-		} else {						  \
-			if (!RingPtr->RingIndex) {				  \
-				(RingPtr)->BdaRestart = 		  \
-				(XAxiDma_Bd *)(UINTPTR)XAxiDma_ReadReg(            \
-					(RingPtr)->ChanBase, 		  \
-					XAXIDMA_CDESC_OFFSET);		  \
-			} else {					  \
-				(RingPtr)->BdaRestart = 		  \
-				(XAxiDma_Bd *)(UINTPTR)XAxiDma_ReadReg( 		  \
-				(RingPtr)->ChanBase,                      \
-				(XAXIDMA_RX_CDESC0_OFFSET +		  \
-                                (RingPtr->RingIndex - 1) * 		  \
-					XAXIDMA_RX_NDESC_OFFSET)); 	  \
-			}						  \
-		}							  \
+#define XAxiDma_BdRingSnapShotCurrBd(RingPtr)		                       \
+	{								       \
+		if (!RingPtr->IsRxChannel) {				       \
+			if (!(RingPtr->Addr_ext)) {		               \
+				(RingPtr)->BdaRestart = (XAxiDma_Bd *)(        \
+				UINTPTR)XAxiDma_ReadReg((RingPtr)->ChanBase,   \
+				XAXIDMA_CDESC_OFFSET);                         \
+			} else {			                       \
+				(RingPtr)->BdaRestart  = (XAxiDma_Bd *)((      \
+				XAxiDma_ReadReg((RingPtr)->ChanBase,  	       \
+				XAXIDMA_CDESC_OFFSET)) |                       \
+				(LEFT_SHIFT_BY_32_BITS (XAxiDma_ReadReg(       \
+				(RingPtr)->ChanBase,                           \
+				XAXIDMA_CDESC_MSB_OFFSET))));                  \
+			}						       \
+		} else {						       \
+			if (!RingPtr->RingIndex) {			       \
+				if (!(RingPtr->Addr_ext)) {		       \
+					(RingPtr)->BdaRestart = 	       \
+					(XAxiDma_Bd *)(UINTPTR)	    	       \
+					XAxiDma_ReadReg((RingPtr)->ChanBase,   \
+					XAXIDMA_CDESC_OFFSET);		       \
+				} else {	                               \
+					(RingPtr)->BdaRestart  =               \
+					(XAxiDma_Bd *)((XAxiDma_ReadReg(       \
+					(RingPtr)->ChanBase,  		       \
+					XAXIDMA_CDESC_OFFSET)) |               \
+					(LEFT_SHIFT_BY_32_BITS                 \
+					(XAxiDma_ReadReg((RingPtr)->ChanBase,  \
+					XAXIDMA_CDESC_MSB_OFFSET))));          \
+				}					       \
+			} else {	             			       \
+				if (!(RingPtr->Addr_ext)) {		       \
+					(RingPtr)->BdaRestart = 	       \
+					(XAxiDma_Bd *)(UINTPTR)		       \
+					XAxiDma_ReadReg((RingPtr)->ChanBase,   \
+					(XAXIDMA_RX_CDESC0_OFFSET +	       \
+					(RingPtr->RingIndex - 1) * 	       \
+					XAXIDMA_RX_NDESC_OFFSET)); 	       \
+				} else {			               \
+					(RingPtr)->BdaRestart  =               \
+					(XAxiDma_Bd *)((XAxiDma_ReadReg(       \
+					(RingPtr)->ChanBase,  		       \
+					XAXIDMA_CDESC_OFFSET)) |               \
+					(LEFT_SHIFT_BY_32_BITS                 \
+					(XAxiDma_ReadReg(                      \
+					(RingPtr)->ChanBase,                   \
+					(XAXIDMA_RX_CDESC0_MSB_OFFSET +        \
+					(RingPtr->RingIndex - 1) *             \
+					XAXIDMA_RX_NDESC_OFFSET)))));          \
+				}					       \
+			}						       \
+		}							       \
 	}
 
 /****************************************************************************/
@@ -246,9 +278,13 @@ typedef struct {
 *		This function is used only when system is configured as SG mode
 *
 *****************************************************************************/
-#define XAxiDma_BdRingGetCurrBd(RingPtr)               \
-	(XAxiDma_Bd *)XAxiDma_ReadReg((RingPtr)->ChanBase, \
-					XAXIDMA_CDESC_OFFSET)              \
+#define XAxiDma_BdRingGetCurrBd(RingPtr)				       \
+	RingPtr->Addr_ext ? ((XAxiDma_Bd *)                                    \
+	((XAxiDma_ReadReg((RingPtr)->ChanBase,		                       \
+	XAXIDMA_CDESC_OFFSET)) | (LEFT_SHIFT_BY_32_BITS                        \
+	(XAxiDma_ReadReg((RingPtr)->ChanBase, XAXIDMA_CDESC_MSB_OFFSET))))) :  \
+	((XAxiDma_Bd *)XAxiDma_ReadReg((RingPtr)->ChanBase,                    \
+	XAXIDMA_CDESC_OFFSET));
 
 /****************************************************************************/
 /**

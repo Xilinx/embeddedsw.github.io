@@ -7,7 +7,9 @@ var xpciepsu_8h =
     [ "XPciePsu_LookupConfig", "xpciepsu_8h.html#acd35420aa1975d4b277d533e71be6187", null ],
     [ "XPciePsu_PrintAllCapabilites", "xpciepsu_8h.html#a95b11e3f3a7fc1ae339795b380fde121", null ],
     [ "XPciePsu_ReadConfigSpace", "xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be", null ],
+    [ "XPciePsu_ReadLocalConfigSpace", "xpciepsu_8h.html#ad974ca02c5108cc4d4afbfa809474c75", null ],
     [ "XPciePsu_ReadReg", "xpciepsu_8h.html#a0cfd7833187346f6f654d80a359951b0", null ],
     [ "XPciePsu_WriteConfigSpace", "xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57", null ],
+    [ "XPciePsu_WriteLocalConfigSpace", "xpciepsu_8h.html#a70154f924a73a1ee89b6b829bab05857", null ],
     [ "XPciePsu_WriteReg", "xpciepsu_8h.html#a558622766b2c01af123a216c1d682376", null ]
 ];
