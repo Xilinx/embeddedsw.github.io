@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xhwicap_sinit.c
-* @addtogroup hwicap_v11_4
+* @addtogroup hwicap Overview
 * @{
 *
 * This file contains the implementation of the XHwicap driver's static
@@ -22,6 +23,7 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -----------------------------------------------
 * 2.00a  sv  09/28/07 First release
+* 11.5  Nava 09/30/22 Added new IDCODE's as mentioned in the ug570 Doc.
 *
 * </pre>
 *

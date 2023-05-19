@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">iicps
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -71,6 +71,7 @@ $(document).ready(function(){initNavTree('xiicps__eeprom__polled__example_8c.htm
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>This file consists of a polled mode design example which uses the Xilinx PS IIC device and <a class="el" href="struct_x_iic_ps.html" title="The XIicPs driver instance data. ">XIicPs</a> driver to exercise the EEPROM. </p>
+<p>This example runs on zynqmp evaluation board (zcu102).</p>
 <p>The <a class="el" href="group__iicps.html#ga71584f1a7e675cde41cfd9d1bd4320b4" title="This function initiates a polled mode send in master mode. ">XIicPs_MasterSendPolled()</a> API is used to transmit the data and <a class="el" href="group__iicps.html#ga21bdb2f8a1f09e027aa8b0e9d6648d75" title="This function initiates a polled mode receive in master mode. ">XIicPs_MasterRecvPolled()</a> API is used to receive the data.</p>
 <p>The example is tested with a 2Kb/8Kb serial IIC EEPROM (ST M24C02/M24C08). The WP pin of this EEPROM is hardwired to ground in the HW in which this was tested.</p>
 <p>The AddressType should be u8 as the address pointer in the on-board EEPROM is 1 bytes.</p>
@@ -197,9 +198,8 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

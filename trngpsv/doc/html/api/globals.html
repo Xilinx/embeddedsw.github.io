@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">trngpsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -182,23 +182,20 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XTRNGPSV_BURST_SIZE
 : <a class="el" href="group___overview.html#gae698f09de78d4a85f18ceb4584290998">xtrngpsv.c</a>
 </li>
-<li>XTRNGPSV_BURST_SIZE_BITS
-: <a class="el" href="group___overview.html#ga419ce29ea934d1e7df31bd91af268484">xtrngpsv.c</a>
-</li>
 <li>XTRNGPSV_BYTES_PER_REG
 : <a class="el" href="group___overview.html#ga33ffb78c8affb44dce84e9992b98f5bf">xtrngpsv.c</a>
 </li>
 <li>XTRNGPSV_CATASTROPHIC
 : <a class="el" href="group___overview.html#gga09343136ce617c1b5f78773c5c76a65ca1ade1f44706d24f4ae27731f6af005d6">xtrngpsv.h</a>
 </li>
-<li>XTrngpsv_CfgInitialize()
-: <a class="el" href="group___overview.html#ga092381b1f5b73eed497579c6fce84b91">xtrngpsv.c</a>
-</li>
 <li>XTrngpsv_DF()
 : <a class="el" href="group___overview.html#ga385580225d449ba49c6425fc61836092">xtrngpsv.h</a>
 </li>
 <li>XTRNGPSV_DRNG
 : <a class="el" href="group___overview.html#gga700b9f07a7bacf41dad856461d65b412a8089d4a7ae40115f3d1bb0b09c3521b0">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_ENTROPY_SEED_LEN_BYTES
+: <a class="el" href="group___overview.html#ga71c506122d996ee33872997923bf27c8">xtrngpsv.c</a>
 </li>
 <li>XTRNGPSV_ERROR
 : <a class="el" href="group___overview.html#gga09343136ce617c1b5f78773c5c76a65ca496a2db26a91d4702ca899c18fdad767">xtrngpsv.h</a>
@@ -221,6 +218,15 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XTRNGPSV_ERROR_DF_CPY
 : <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a48f765dbeb3b2cc22af9a4f60a86d341">xtrngpsv.h</a>
 </li>
+<li>XTRNGPSV_ERROR_DF_MEMMOVE
+: <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a9eaa03d12dac772945e20716206a573d">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_ERROR_DF_MEMSET
+: <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a9d7ddd0ac9d32c8f849f4060cb38de51">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_ERROR_DF_SETUP_KEY_FAILED
+: <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56aab988ddcb8208fd7411ca353c3e47d6e">xtrngpsv.h</a>
+</li>
 <li>XTRNGPSV_ERROR_GENERATE_TIMEOUT
 : <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56af26064e8990fc29679943d0ba6c6d0db">xtrngpsv.h</a>
 </li>
@@ -238,6 +244,9 @@ $(document).ready(function(){initNavTree('globals.html','');});
 </li>
 <li>XTRNGPSV_ERROR_INVALID_PARAM
 : <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56aca3cf3a52adbdbb2d5827102e1c51db0">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_ERROR_INVALID_RANDBUF_ADDR
+: <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56ab3005478aff2a764777653ebf2c6b454">xtrngpsv.h</a>
 </li>
 <li>XTRNGPSV_ERROR_INVALID_RESEED_DFLENMUL
 : <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a669ab77676320e1d2b5a3980c4641d94">xtrngpsv.h</a>
@@ -341,8 +350,8 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XTRNGPSV_MAX_DFLENMUL
 : <a class="el" href="group___overview.html#ga2b6fa99d5fa0f5e63f0547fb7cbee39e">xtrngpsv.c</a>
 </li>
-<li>XTRNGPSV_MAX_QCNT
-: <a class="el" href="group___overview.html#ga23303f6c4f0940e8e3152c51d6cbe517">xtrngpsv.c</a>
+<li>XTRNGPSV_MAX_QCNT_MASK
+: <a class="el" href="group___overview.html#ga1adfaf24d66bdaa44b32782aa60dd52b">xtrngpsv.c</a>
 </li>
 <li>XTRNGPSV_MAX_SEEDLIFE
 : <a class="el" href="group___overview.html#gab7362c7d0aed7d4750953ee42bcefda8">xtrngpsv.c</a>
@@ -368,9 +377,6 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XTRNGPSV_PTRNG
 : <a class="el" href="group___overview.html#gga700b9f07a7bacf41dad856461d65b412aeafa8e3f86061ce02d33ed76ed1ec647">xtrngpsv.h</a>
 </li>
-<li>XTRNGPSV_REG_SIZE
-: <a class="el" href="group___overview.html#ga3d6e918667815c5c782c4c621a858fed">xtrngpsv.c</a>
-</li>
 <li>XTrngpsv_Reseed()
 : <a class="el" href="group___overview.html#ga7740e9622a48052d5ebb9ddf10165138">xtrngpsv.c</a>
 </li>
@@ -385,6 +391,12 @@ $(document).ready(function(){initNavTree('globals.html','');});
 </li>
 <li>XTRNGPSV_SEC_STRENGTH_BYTES
 : <a class="el" href="group___overview.html#gaea0612415ab8b736d7d97b4adc253221">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_SEC_STRENGTH_LEN
+: <a class="el" href="group___overview.html#gad0924776ee88fd25a5c0bece9c5b8f6f">xtrngpsv.h</a>
+</li>
+<li>XTRNGPSV_SEC_STRENGTH_SHIFT
+: <a class="el" href="group___overview.html#ga384cd70c07b942e5ff526389092d1d5c">xtrngpsv.c</a>
 </li>
 <li>XTRNGPSV_SEED_LEN
 : <a class="el" href="group___overview.html#ga41ff27942450a6d81e1f7d9c6191d9a8">xtrngpsv.h</a>
@@ -410,13 +422,15 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XTrngpsv_Uninstantiate()
 : <a class="el" href="group___overview.html#gad0c8b58adb37a766661ca12aa302ed53">xtrngpsv.c</a>
 </li>
+<li>XTRNGPSV_WORD_ALIGN_MASK
+: <a class="el" href="group___overview.html#ga2cc784a2d2b3207f518ea452784acfa4">xtrngpsv.c</a>
+</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

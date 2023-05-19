@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">qspipsu
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -61,6 +61,8 @@ $(document).ready(function(){initNavTree('xqspipsu__flash__config_8h.html','');}
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle">
 <div class="title">xqspipsu_flash_config.h File Reference</div>  </div>
 </div><!--header-->
@@ -80,12 +82,36 @@ $(document).ready(function(){initNavTree('xqspipsu__flash__config_8h.html','');}
                     and ISSI flash(IS25LP01G, IS25WP01G) parts.
  1.13  akm 12/10/20 Set Read command as per the qspi bus width.
  1.14  akm 07/16/21 Enable Quad Mode for Winbond flashes.
- 1.15  akm 11/19/21 Fix read/write failures on Spansion flash parts.</pre><pre></pre> </div></div><!-- contents -->
+ 1.15  akm 11/19/21 Fix read/write failures on Spansion flash parts.
+ 1.17  akm 10/31/22 Add support for Winbond flash w25q02nw.</pre><pre></pre> </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a284d71689ab3efacab01a43dc80d90c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xqspipsu__flash__config_8h.html#a284d71689ab3efacab01a43dc80d90c0">ISSI_ID_BYTE0</a>&#160;&#160;&#160;0x9D</td></tr>
+<tr class="memdesc:a284d71689ab3efacab01a43dc80d90c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum delay count.  <a href="#a284d71689ab3efacab01a43dc80d90c0">More...</a><br/></td></tr>
+<tr class="separator:a284d71689ab3efacab01a43dc80d90c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a284d71689ab3efacab01a43dc80d90c0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ISSI_ID_BYTE0&#160;&#160;&#160;0x9D</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum delay count. </p>
+
+<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, and <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

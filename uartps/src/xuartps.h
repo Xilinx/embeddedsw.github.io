@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xuartps.h
-* @addtogroup uartps_v3_11
+* @addtogroup uartps Overview
 * @{
 * @details
 *
@@ -147,6 +148,7 @@
 * 3.7   aru    08/17/18 Resolved MISRA-C:2012 compliance mandatory violations.
 * 3.9   rna    12/03/19 Modified the XUARTPS_MAX_RATE macro.
 * 3.9   sd     02/06/20 Added clock support
+* 3.12	gm     11/04/22 Added timeout support using Xil_WaitForEvent
 *
 * </pre>
 *
@@ -169,6 +171,7 @@ extern "C" {
 #if defined  (XCLOCKING)
 #include "xil_clocking.h"
 #endif
+#include "xil_util.h"
 
 /************************** Constant Definitions ****************************/
 
@@ -261,6 +264,7 @@ extern "C" {
 
 /*@}*/
 
+#define TIMEOUT_VAL				1000000U /**< Wait for 1 sec in worst case */
 
 /**************************** Type Definitions ******************************/
 

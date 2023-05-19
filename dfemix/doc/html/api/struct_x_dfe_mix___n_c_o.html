@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -86,8 +86,7 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a6ca3c2cbcb844332fdf75e3cf44839d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Phase configuration.  <a href="#a6ca3c2cbcb844332fdf75e3cf44839d9">More...</a><br/></td></tr>
 <tr class="separator:a6ca3c2cbcb844332fdf75e3cf44839d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8482f94fbc00e305c1eacd2e78e013ea"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___n_c_o.html#a8482f94fbc00e305c1eacd2e78e013ea">NCOGain</a></td></tr>
-<tr class="memdesc:a8482f94fbc00e305c1eacd2e78e013ea"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [0,1,2,3] Scaling of NCO output (0=0dB, 1=-3dB,
-</pre><p> 2=-6dB, 3=-9dB)  <a href="#a8482f94fbc00e305c1eacd2e78e013ea">More...</a><br/></td></tr>
+<tr class="memdesc:a8482f94fbc00e305c1eacd2e78e013ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1,2,3] Scaling of NCO output:  <a href="#a8482f94fbc00e305c1eacd2e78e013ea">More...</a><br/></td></tr>
 <tr class="separator:a8482f94fbc00e305c1eacd2e78e013ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -105,7 +104,7 @@ Data Fields</h2></td></tr>
 
 <p>Frequency configuration. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, and <a class="el" href="group__dfemix.html#ga027813492d6c87efa040e37dcc6cd777">XDfeMix_SetNextCCCfgAndTrigger()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
 
 </div>
 </div>
@@ -119,10 +118,15 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">      [0,1,2,3] Scaling of NCO output (0=0dB, 1=-3dB,
-</pre><p> 2=-6dB, 3=-9dB) </p>
+<p>[0,1,2,3] Scaling of NCO output: </p>
+<ul>
+<li>0 = 0dB</li>
+<li>1 = -3dB</li>
+<li>2 = -6dB</li>
+<li>3 =- 9dB </li>
+</ul>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, and <a class="el" href="group__dfemix.html#ga027813492d6c87efa040e37dcc6cd777">XDfeMix_SetNextCCCfgAndTrigger()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
 
 </div>
 </div>
@@ -138,16 +142,15 @@ Data Fields</h2></td></tr>
 
 <p>Phase configuration. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, and <a class="el" href="group__dfemix.html#ga027813492d6c87efa040e37dcc6cd777">XDfeMix_SetNextCCCfgAndTrigger()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

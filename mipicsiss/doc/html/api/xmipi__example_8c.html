@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">mipicsiss
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -126,7 +126,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a0d6479cb60c1d56d8f2b0bffd93dbe15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xmipi__example_8c.html#a0d6479cb60c1d56d8f2b0bffd93dbe15">config_csi_cap_path</a> ()</td></tr>
 <tr class="memdesc:a0d6479cb60c1d56d8f2b0bffd93dbe15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main function to initialize the video pipleline and process user input.  <a href="#a0d6479cb60c1d56d8f2b0bffd93dbe15">More...</a><br/></td></tr>
 <tr class="separator:a0d6479cb60c1d56d8f2b0bffd93dbe15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b0d2b849482971534222077f2949418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xmipi__example_8c.html#a9b0d2b849482971534222077f2949418">ReportStreamMode</a> (XV_HdmiTxSs *HdmiTxSsPtr, u8 <a class="el" href="xhdmi__menu_8c.html#a2d5525edd4cf0958da26f4eb70d24b85">IsPassThrough</a>)</td></tr>
+<tr class="memitem:a9b0d2b849482971534222077f2949418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xmipi__example_8c.html#a9b0d2b849482971534222077f2949418">ReportStreamMode</a> (XV_HdmiTxSs *HdmiTxSsPtr, u8 <a class="el" href="xmipi__menu_8c.html#a2d5525edd4cf0958da26f4eb70d24b85">IsPassThrough</a>)</td></tr>
 <tr class="memdesc:a9b0d2b849482971534222077f2949418"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports the stream mode.  <a href="#a9b0d2b849482971534222077f2949418">More...</a><br/></td></tr>
 <tr class="separator:a9b0d2b849482971534222077f2949418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac493d3aecd3ba27b1c359fac5403bcc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xmipi__example_8c.html#ac493d3aecd3ba27b1c359fac5403bcc4">TxConnectCallback</a> (void *CallbackRef)</td></tr>
@@ -188,7 +188,7 @@ Variables</h2></td></tr>
 
 <p>I2C Clk Address. </p>
 
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>, <a class="el" href="xhdmi__example_8h.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk()</a>, and <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
+<p>Referenced by <a class="el" href="xmipi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk()</a>, and <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
@@ -400,7 +400,9 @@ Variables</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>, <a class="el" href="xmipi__menu_8c.html#adc524e092889eb6825e874b8a94fa38b">EnableColorBar()</a>, and <a class="el" href="xmipi__example_8c.html#a09a07df362490e4ba97f77a9ce5edd74">StartTxAfterRx()</a>.</p>
+<p>References <a class="el" href="xmipi__example_8c.html#a71bd0b63917e21a117972939353bda39">I2C_CLK_ADDR</a>.</p>
+
+<p>Referenced by <a class="el" href="xmipi__menu_8c.html#adc524e092889eb6825e874b8a94fa38b">EnableColorBar()</a>, and <a class="el" href="xmipi__example_8c.html#a09a07df362490e4ba97f77a9ce5edd74">StartTxAfterRx()</a>.</p>
 
 </div>
 </div>
@@ -711,7 +713,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="xmipi__example_8c.html#a2d5525edd4cf0958da26f4eb70d24b85">IsPassThrough</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>, and <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
+<p>Referenced by <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
@@ -738,8 +740,6 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>.</p>
 
 </div>
 </div>
@@ -769,7 +769,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="xmipi__example_8c.html#a2d5525edd4cf0958da26f4eb70d24b85">IsPassThrough</a>, and <a class="el" href="xmipi__example_8c.html#a9b0d2b849482971534222077f2949418">ReportStreamMode()</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>, and <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
+<p>Referenced by <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
@@ -797,7 +797,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="xhdmi__example_8c.html#ab95c1e72946010427c5c708682b5ac81">config_hdmi()</a>, and <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
+<p>Referenced by <a class="el" href="xmipi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
@@ -962,9 +962,8 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

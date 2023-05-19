@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmiphy1
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -81,6 +81,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 1.0   gm   10/12/18 Initial release.
 1.1   ku   24/07/20 Program MMCM params based on max line rate
                     configured in IP GUI
+1.2   ssh  02/02/23 Added API for Clock Detector Accuracy Range
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -111,6 +112,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5a055146c6b3aa1da1991a0041dc11f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1__v2__4.html#ga5a055146c6b3aa1da1991a0041dc11f7">XHdmiphy1_ClkDetSetFreqLockThreshold</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u16 ThresholdVal)</td></tr>
 <tr class="memdesc:ga5a055146c6b3aa1da1991a0041dc11f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the clock detector frequency lock counter threshold value.  <a href="group__xhdmiphy1__v2__4.html#ga5a055146c6b3aa1da1991a0041dc11f7">More...</a><br/></td></tr>
 <tr class="separator:ga5a055146c6b3aa1da1991a0041dc11f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa113dd9ce96c346ef9b757947eb340fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1__v2__4.html#gaa113dd9ce96c346ef9b757947eb340fe">XHdmiphy1_ClkDetAccuracyRange</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u16 ThresholdVal)</td></tr>
+<tr class="memdesc:gaa113dd9ce96c346ef9b757947eb340fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the clock detector accuracy range value.  <a href="group__xhdmiphy1__v2__4.html#gaa113dd9ce96c346ef9b757947eb340fe">More...</a><br/></td></tr>
+<tr class="separator:gaa113dd9ce96c346ef9b757947eb340fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafaece55136a95db26cf37edcd53c96f8"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1__v2__4.html#gafaece55136a95db26cf37edcd53c96f8">XHdmiphy1_ClkDetCheckFreqZero</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, XHdmiphy1_DirectionType Dir)</td></tr>
 <tr class="memdesc:gafaece55136a95db26cf37edcd53c96f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks clock detector RX/TX frequency zero indicator bit.  <a href="group__xhdmiphy1__v2__4.html#gafaece55136a95db26cf37edcd53c96f8">More...</a><br/></td></tr>
 <tr class="separator:gafaece55136a95db26cf37edcd53c96f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -474,9 +478,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

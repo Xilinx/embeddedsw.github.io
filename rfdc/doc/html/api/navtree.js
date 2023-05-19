@@ -11,7 +11,7 @@ var NAVTREE =
       [ "Macros", "globals_defs.html", "globals_defs" ]
     ] ],
     [ "File List", "files.html", "files" ],
-    [ "README", "md__proj_xhdsswstaff_saddepal_github_embeddedsw__xilinx_processor_i_p_lib_drivers_rfdc_src__r_e_a_d_m_e.html", null ],
+    [ "README", "md__proj_xhdsswstaff_meenap_doxygen_github_git_embeddedsw__xilinx_processor_i_p_lib_drivers_rfdc_src__r_e_a_d_m_e.html", null ],
     [ "Examples", "example.html", [
       [ "xrfdc_selftest_example.c", "example.html#ex1", null ],
       [ "xrfdc_read_write_example.c", "example.html#ex2", null ],
@@ -23,9 +23,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xrfdc__dp_8c.html#gaad20bc6d1e5cbb724d6d7e66449a2926",
-"xrfdc__hw_8h.html#ga5dca150079590927aacc387663dfc9c5",
-"xrfdc__hw_8h.html#gac505119d79bfa1c67510e54ae0c7dd3a"
+"xrfdc__dp_8c.html#ga80cf3f7ec944010fea8a54c89d93093f",
+"xrfdc__hw_8h.html#ga5d84e90d9be8f94cfb18233a69eadf98",
+"xrfdc__hw_8h.html#gac41eb51de4b2f7d848082a07ba12641b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

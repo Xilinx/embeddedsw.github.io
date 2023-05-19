@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dp21
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -263,6 +263,15 @@ DP generic definitions: Link bandwith and lane count.</h2></td></tr>
 <tr class="memitem:ga7d795c501c8f38e5db735c82ac6b97e1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga7d795c501c8f38e5db735c82ac6b97e1">XDP_LINK_BW_SET_UHBR20</a>&#160;&#160;&#160;0x02</td></tr>
 <tr class="memdesc:ga7d795c501c8f38e5db735c82ac6b97e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">20Gbps link rate.  <a href="#ga7d795c501c8f38e5db735c82ac6b97e1">More...</a><br/></td></tr>
 <tr class="separator:ga7d795c501c8f38e5db735c82ac6b97e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b73f546f662b5c0939d880459d30f5c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga0b73f546f662b5c0939d880459d30f5c">XDP_TX_LINK_BW_SET_SW_UHBR10</a>&#160;&#160;&#160;0x20</td></tr>
+<tr class="memdesc:ga0b73f546f662b5c0939d880459d30f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">10Gbps link rate.  <a href="#ga0b73f546f662b5c0939d880459d30f5c">More...</a><br/></td></tr>
+<tr class="separator:ga0b73f546f662b5c0939d880459d30f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga489b5993d3520afa453be9ef4bf738bd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga489b5993d3520afa453be9ef4bf738bd">XDP_TX_LINK_BW_SET_SW_UHBR20</a>&#160;&#160;&#160;0x22</td></tr>
+<tr class="memdesc:ga489b5993d3520afa453be9ef4bf738bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">20Gbps link rate.  <a href="#ga489b5993d3520afa453be9ef4bf738bd">More...</a><br/></td></tr>
+<tr class="separator:ga489b5993d3520afa453be9ef4bf738bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga31a14a6d6127e3128e90bb3bbbea3cad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga31a14a6d6127e3128e90bb3bbbea3cad">XDP_TX_LINK_BW_SET_SW_UHBR135</a>&#160;&#160;&#160;0x24</td></tr>
+<tr class="memdesc:ga31a14a6d6127e3128e90bb3bbbea3cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">13.5Gbps link rate.  <a href="#ga31a14a6d6127e3128e90bb3bbbea3cad">More...</a><br/></td></tr>
+<tr class="separator:ga31a14a6d6127e3128e90bb3bbbea3cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga24dc311ae40949ba585cfd7a4a99de0d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga24dc311ae40949ba585cfd7a4a99de0d">XDP_LINK_BW_SET_UHBR135</a>&#160;&#160;&#160;0x04</td></tr>
 <tr class="memdesc:ga24dc311ae40949ba585cfd7a4a99de0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">13.5Gbps link rate.  <a href="#ga24dc311ae40949ba585cfd7a4a99de0d">More...</a><br/></td></tr>
 <tr class="separator:ga24dc311ae40949ba585cfd7a4a99de0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1456,6 +1465,12 @@ DisplayPort Configuration Data: Link/sink status field masks, shifts,</h2></td><
 <tr class="memitem:ga388f850ba2942ea957451a6696aaebe3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga388f850ba2942ea957451a6696aaebe3"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LANE_ALIGN_STATUS_UPDATED_LINK_STATUS_UPDATED_MASK</b>&#160;&#160;&#160;0x80</td></tr>
 <tr class="separator:ga388f850ba2942ea957451a6696aaebe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1abb5f4781d6a5b21b9b654e0d3ee3ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1abb5f4781d6a5b21b9b654e0d3ee3ab"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LANE_ALIGN_STATUS_128B_LT_FAILED</b>&#160;&#160;&#160;0x10</td></tr>
+<tr class="separator:ga1abb5f4781d6a5b21b9b654e0d3ee3ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga39e161568d7f7f1ba216ee5502ca23b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga39e161568d7f7f1ba216ee5502ca23b1"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LANE_ALIGN_STATUS_128B_CDS_INTERALIGN_DONE</b>&#160;&#160;&#160;0x08</td></tr>
+<tr class="separator:ga39e161568d7f7f1ba216ee5502ca23b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafd0a767cf7be9486de3af5313dd6d884"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafd0a767cf7be9486de3af5313dd6d884"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_SINK_STATUS_RX_PORT0_SYNC_STATUS_MASK</b>&#160;&#160;&#160;0x01</td></tr>
 <tr class="separator:gafd0a767cf7be9486de3af5313dd6d884"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1543,6 +1558,9 @@ DisplayPort Configuration Data: Link/sink status field masks, shifts,</h2></td><
 <tr class="memitem:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp__v7__6.html#ga99a3c266ccfa4ed4ac5ea6fa4964690d">XDP_TX_V2_0_CONFIG</a>&#160;&#160;&#160;0x6E0</td></tr>
 <tr class="memdesc:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="mdescLeft">&#160;</td><td class="mdescRight">DP v2.1 Config Params.  <a href="#ga99a3c266ccfa4ed4ac5ea6fa4964690d">More...</a><br/></td></tr>
 <tr class="separator:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4171c553988cd1764b79c4b913e82b72"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4171c553988cd1764b79c4b913e82b72"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_TX_V2_0_CONFIG_RESET_MASK</b>&#160;&#160;&#160;0x1003F</td></tr>
+<tr class="separator:ga4171c553988cd1764b79c4b913e82b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae4caabc5898203423c518fbafe1e9c73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae4caabc5898203423c518fbafe1e9c73"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_128B_132B_SUPPORTED_LINK_RATE</b>&#160;&#160;&#160;0x02215	/*&lt; 128B/132B Supported LinkRates.*/</td></tr>
 <tr class="separator:gae4caabc5898203423c518fbafe1e9c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1985,7 +2003,7 @@ Register access macro definitions.</h2></td></tr>
 
 <p>10Gbps link rate. </p>
 
-<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
 
 </div>
 </div>
@@ -2001,7 +2019,7 @@ Register access macro definitions.</h2></td></tr>
 
 <p>13.5Gbps link rate. </p>
 
-<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
 
 </div>
 </div>
@@ -2017,7 +2035,7 @@ Register access macro definitions.</h2></td></tr>
 
 <p>20Gbps link rate. </p>
 
-<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
 
 </div>
 </div>
@@ -2251,6 +2269,54 @@ Register access macro definitions.</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The number of I2C user- defined entries in the I2C map of each port. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga0b73f546f662b5c0939d880459d30f5c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_LINK_BW_SET_SW_UHBR10&#160;&#160;&#160;0x20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>10Gbps link rate. </p>
+
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga31a14a6d6127e3128e90bb3bbbea3cad"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_LINK_BW_SET_SW_UHBR135&#160;&#160;&#160;0x24</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>13.5Gbps link rate. </p>
+
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga489b5993d3520afa453be9ef4bf738bd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_LINK_BW_SET_SW_UHBR20&#160;&#160;&#160;0x22</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>20Gbps link rate. </p>
+
+<p>Referenced by <a class="el" href="group__dp__v7__6.html#ga99e89fe4b5550c32cef410fffab99318">XDp_CfgInitialize()</a>, and <a class="el" href="group__dp__v7__6.html#ga57017c66cf4d3bcf72d257368119e008">XDp_IsLinkRateValid()</a>.</p>
 
 </div>
 </div>
@@ -2566,7 +2632,7 @@ Register access macro definitions.</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Unexpected errors may occur if the address mapping is changed after this function is invoked. </dd></dl>
 
-<p>References <a class="el" href="struct_x_dp___config.html#a26db9b137de6560d3b2690f0d4acaed0">XDp_Config::BaseAddr</a>, <a class="el" href="struct_x_dp.html#aa45ebd510e1e83bc9ebdcd1178b33290">XDp::Config</a>, <a class="el" href="struct_x_dp___tx_link_config.html#a92a206b0bb0922f49168956f93930168">XDp_TxLinkConfig::cr_done_cnt</a>, <a class="el" href="struct_x_dp___tx_link_config.html#a546df44822abcea4958187d265971c2f">XDp_TxLinkConfig::cr_done_oldstate</a>, <a class="el" href="struct_x_dp.html#acd280866d275718d5ee5345d91f3770e">XDp::IsReady</a>, <a class="el" href="struct_x_dp___tx.html#ae63e057dfdae91215b4361fe98e0600d">XDp_Tx::LinkConfig</a>, <a class="el" href="struct_x_dp___tx_link_config.html#aa7ce05bdbb77f099987f327918c92e5a">XDp_TxLinkConfig::MaxLaneCount</a>, and <a class="el" href="group__dp__v7__6.html#gaa3afd37e5bb042c2a75443eaadb79998">XDp_GetCoreType</a>.</p>
+<p>References <a class="el" href="struct_x_dp___config.html#a26db9b137de6560d3b2690f0d4acaed0">XDp_Config::BaseAddr</a>, <a class="el" href="struct_x_dp.html#aa45ebd510e1e83bc9ebdcd1178b33290">XDp::Config</a>, <a class="el" href="struct_x_dp___tx_link_config.html#a92a206b0bb0922f49168956f93930168">XDp_TxLinkConfig::cr_done_cnt</a>, <a class="el" href="struct_x_dp___tx_link_config.html#a546df44822abcea4958187d265971c2f">XDp_TxLinkConfig::cr_done_oldstate</a>, <a class="el" href="struct_x_dp.html#acd280866d275718d5ee5345d91f3770e">XDp::IsReady</a>, <a class="el" href="struct_x_dp___tx.html#ae63e057dfdae91215b4361fe98e0600d">XDp_Tx::LinkConfig</a>, <a class="el" href="struct_x_dp___tx_link_config.html#aa7ce05bdbb77f099987f327918c92e5a">XDp_TxLinkConfig::MaxLaneCount</a>, <a class="el" href="struct_x_dp___config.html#a365f2d8d2631612e1946901662a64b0b">XDp_Config::MaxLinkRate</a>, <a class="el" href="group__dp__v7__6.html#gaa3afd37e5bb042c2a75443eaadb79998">XDp_GetCoreType</a>, <a class="el" href="group__dp__v7__6.html#ga04b96d56e09385015c09c2d57723bc48">XDP_LINK_BW_SET_UHBR10</a>, <a class="el" href="group__dp__v7__6.html#ga24dc311ae40949ba585cfd7a4a99de0d">XDP_LINK_BW_SET_UHBR135</a>, <a class="el" href="group__dp__v7__6.html#ga7d795c501c8f38e5db735c82ac6b97e1">XDP_LINK_BW_SET_UHBR20</a>, <a class="el" href="group__dp__v7__6.html#ga0b73f546f662b5c0939d880459d30f5c">XDP_TX_LINK_BW_SET_SW_UHBR10</a>, <a class="el" href="group__dp__v7__6.html#ga31a14a6d6127e3128e90bb3bbbea3cad">XDP_TX_LINK_BW_SET_SW_UHBR135</a>, and <a class="el" href="group__dp__v7__6.html#ga489b5993d3520afa453be9ef4bf738bd">XDP_TX_LINK_BW_SET_SW_UHBR20</a>.</p>
 
 </div>
 </div>
@@ -2713,7 +2779,7 @@ Register access macro definitions.</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_dp.html#aa45ebd510e1e83bc9ebdcd1178b33290">XDp::Config</a>, <a class="el" href="struct_x_dp___config.html#a365f2d8d2631612e1946901662a64b0b">XDp_Config::MaxLinkRate</a>, <a class="el" href="group__dp__v7__6.html#ga03d720681171dd41353c16d9082d6146">XDP_LINK_BW_SET_162GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga6be548e61b4abc5ee50c4bd2cc376931">XDP_LINK_BW_SET_270GBPS</a>, <a class="el" href="group__dp__v7__6.html#gaac63cee431718ac6f9ba14ee8878b878">XDP_LINK_BW_SET_540GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga2c2e6d836b27e1ac3c57f6abab866ead">XDP_LINK_BW_SET_810GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga04b96d56e09385015c09c2d57723bc48">XDP_LINK_BW_SET_UHBR10</a>, <a class="el" href="group__dp__v7__6.html#ga24dc311ae40949ba585cfd7a4a99de0d">XDP_LINK_BW_SET_UHBR135</a>, and <a class="el" href="group__dp__v7__6.html#ga7d795c501c8f38e5db735c82ac6b97e1">XDP_LINK_BW_SET_UHBR20</a>.</p>
+<p>References <a class="el" href="struct_x_dp.html#aa45ebd510e1e83bc9ebdcd1178b33290">XDp::Config</a>, <a class="el" href="struct_x_dp___config.html#a365f2d8d2631612e1946901662a64b0b">XDp_Config::MaxLinkRate</a>, <a class="el" href="group__dp__v7__6.html#ga03d720681171dd41353c16d9082d6146">XDP_LINK_BW_SET_162GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga6be548e61b4abc5ee50c4bd2cc376931">XDP_LINK_BW_SET_270GBPS</a>, <a class="el" href="group__dp__v7__6.html#gaac63cee431718ac6f9ba14ee8878b878">XDP_LINK_BW_SET_540GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga2c2e6d836b27e1ac3c57f6abab866ead">XDP_LINK_BW_SET_810GBPS</a>, <a class="el" href="group__dp__v7__6.html#ga04b96d56e09385015c09c2d57723bc48">XDP_LINK_BW_SET_UHBR10</a>, <a class="el" href="group__dp__v7__6.html#ga24dc311ae40949ba585cfd7a4a99de0d">XDP_LINK_BW_SET_UHBR135</a>, <a class="el" href="group__dp__v7__6.html#ga7d795c501c8f38e5db735c82ac6b97e1">XDP_LINK_BW_SET_UHBR20</a>, <a class="el" href="group__dp__v7__6.html#ga0b73f546f662b5c0939d880459d30f5c">XDP_TX_LINK_BW_SET_SW_UHBR10</a>, <a class="el" href="group__dp__v7__6.html#ga31a14a6d6127e3128e90bb3bbbea3cad">XDP_TX_LINK_BW_SET_SW_UHBR135</a>, and <a class="el" href="group__dp__v7__6.html#ga489b5993d3520afa453be9ef4bf738bd">XDP_TX_LINK_BW_SET_SW_UHBR20</a>.</p>
 
 </div>
 </div>
@@ -2895,9 +2961,8 @@ Register access macro definitions.</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

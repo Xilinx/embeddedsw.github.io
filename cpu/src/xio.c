@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2007 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xio.c
-* @addtogroup cpu_v2_15
+* @addtogroup cpu_v2_17
 * @{
 *
 * Contains I/O functions for memory-mapped or non-memory-mapped I/O

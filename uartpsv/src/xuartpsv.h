@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -132,6 +133,7 @@ extern "C" {
 #include "xstatus.h"
 #include "xuartpsv_hw.h"
 #include "xplatform_info.h"
+#include "xil_util.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -227,6 +229,8 @@ extern "C" {
 					/**< A receive parity, frame,break error detected */
 #define XUARTPSV_EVENT_RECV_ORERR	7U /**< A receive overrun error detected */
 /** @} */
+
+#define TIMEOUT_COUNTER			1000000U /* Wait for 1 sec */
 
 /**************************** Type Definitions *******************************/
 
@@ -429,7 +433,9 @@ s32 XUartPsv_SetBaudRate(XUartPsv *InstancePtr, u32 BaudRate);
 
 void XUartPsv_ProgramCtrlReg(XUartPsv *InstancePtr, u32 CtrlRegister);
 
-void XUartPsv_Cleanup(XUartPsv *InstancePtr);
+void XUartPsv_CleanupRx(XUartPsv *InstancePtr);
+
+void XUartPsv_CleanupTx(XUartPsv *InstancePtr);
 
 /* Options functions in xuartpsv_options.c */
 void XUartPsv_SetOptions(XUartPsv *InstancePtr, u16 Options);

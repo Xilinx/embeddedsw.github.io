@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,8 @@
 * 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
 *       dc     11/05/21 Align event handlers
 *       dc     11/19/21 Update doxygen documentation
+* 1.5   dc     09/12/22 Update handling overflow status
+*       dc     10/28/22 Switching Uplink/Downlink support
 *
 * </pre>
 * @addtogroup dfeccf Overview
@@ -37,17 +40,16 @@
 /************************** Variable Definitions ****************************/
 #define NUM_CARRIER 4
 #define NUM_COEFFICIENT 2
-static XDfeCcf_Init Init = {
-	{
-		8, /* [1-16] Sequence length. */
-		{ 0, 1, 2, 3 } /* [0-15] CCID sequence */
-	},
-	0 /* [0,1] Enable gain stage */
-};
+static XDfeCcf_Init Init = { {
+				     8, /* [1-16] Sequence length. */
+				     { 0, 1, 2, 3 } /* [0-15] CCID sequence */
+			     },
+			     0, /* [0,1] Enable gain stage */
+			     XDFECCF_TUSER_SEL_DOWNLINK };
 
 static XDfeCcf_Coefficients Coeffs0 = {
 	231, /* [0-(128|256)] Number of coefficients */
-	1, /* [0,1] Select symetric (1) or non-symetric (0) filter */
+	1, /* [0,1] Select symmetric (1) or non-symmetric (0) filter */
 
 	/* [Signed real numbers] Array of coefficients, when symmetric only
 	   the first (Num+1)/2 coefficients are provided */
@@ -158,7 +160,7 @@ int XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()
 	printf("Get current carrier configuration\n\r");
 	XDfeCcf_GetCurrentCCCfg(InstancePtr, &CCCfg);
 	/* Clear event status */
-	Status.OverflowCCID = XDFECCF_ISR_CLEAR;
+	Status.Overflow = XDFECCF_ISR_CLEAR;
 	Status.CCUpdate = XDFECCF_ISR_CLEAR;
 	Status.CCSequenceError = XDFECCF_ISR_CLEAR;
 

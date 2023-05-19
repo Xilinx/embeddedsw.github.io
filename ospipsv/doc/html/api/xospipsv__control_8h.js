@@ -14,6 +14,7 @@ var xospipsv__control_8h =
     [ "XOspiPsv_ExecuteRxTuning", "xospipsv__control_8h.html#ga3ac73304cb055f7184181eb4b176637e", null ],
     [ "XOspiPsv_FifoRead", "xospipsv__control_8h.html#ga621f2c47a2e8fdf59de28b2333d6da6f", null ],
     [ "XOspiPsv_FifoWrite", "xospipsv__control_8h.html#ga54d82d31820cd30d9c32055380e0ab04", null ],
+    [ "XOspiPsv_IDac_Write", "xospipsv__control_8h.html#ga8400388c80d471a4535fa7357104f07b", null ],
     [ "XOspiPsv_Setup_Dev_Read_Instr_Reg", "xospipsv__control_8h.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b", null ],
     [ "XOspiPsv_Setup_Dev_Write_Instr_Reg", "xospipsv__control_8h.html#gaa347217a72ad5240a86eb29dacec9270", null ],
     [ "XOspiPsv_Setup_Devsize", "xospipsv__control_8h.html#gab0a1fd4b1edb33eeb7f14588f09a8355", null ],

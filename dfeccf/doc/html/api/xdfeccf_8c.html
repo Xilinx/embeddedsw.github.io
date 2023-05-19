@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeccf
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -77,7 +77,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 <p>
 1.0   dc     10/29/20 Initial version
       dc     02/02/21 Remove hard coded device node name
-      dc     02/08/21 align driver to curent specification
+      dc     02/08/21 align driver to current specification
       dc     02/22/21 include HW in versioning
       dc     03/16/21 update activate &amp; deactivate api
       dc     03/25/21 Device tree item name change
@@ -107,7 +107,10 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
       dc     01/27/22 Get calculated TDataDelay
       dc     01/31/22 CCF IP MODEL_PARAM register change
       dc     03/21/22 Add prefix to global variables
-1.4   dc     04/08/22 Update documentation</pre><pre></pre> </div><table class="memberdecls">
+1.4   dc     04/08/22 Update documentation
+1.5   dc     10/28/22 Switching Uplink/Downlink support
+      dc     11/11/22 Align AddCC to switchable UL/DL algorithm
+      dc     11/25/22 Update macro of SW version Minor number</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:gaf1ffcef735a004f30f8dd892ec39c0eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaf1ffcef735a004f30f8dd892ec39c0eb">XDFECCF_ACTIVE_SET_NUM</a>&#160;&#160;&#160;(8U)</td></tr>
@@ -119,7 +122,7 @@ Macros</h2></td></tr>
 <tr class="memitem:gad31524f178963c8fcccf0686fee63fec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gad31524f178963c8fcccf0686fee63fec">XDFECCF_TAP_NUMBER_MAX</a>&#160;&#160;&#160;(256U)</td></tr>
 <tr class="memdesc:gad31524f178963c8fcccf0686fee63fec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum tap number.  <a href="group__dfeccf.html#gad31524f178963c8fcccf0686fee63fec">More...</a><br/></td></tr>
 <tr class="separator:gad31524f178963c8fcccf0686fee63fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">XDFECCF_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(4U)</td></tr>
+<tr class="memitem:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">XDFECCF_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(5U)</td></tr>
 <tr class="memdesc:gaa2f6335105623e17b2cc8a465d4319c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">More...</a><br/></td></tr>
 <tr class="separator:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae3d3aae158a4f739a39c87e623c410e3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gae3d3aae158a4f739a39c87e623c410e3">XDFECCF_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -153,8 +156,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:gac83eb8c8d423a12cc23f3a699e87ff4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a state machine state id.  <a href="group__dfeccf.html#gac83eb8c8d423a12cc23f3a699e87ff4f">More...</a><br/></td></tr>
 <tr class="separator:gac83eb8c8d423a12cc23f3a699e87ff4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga31a32e74a6fef543927f191eed1fbbb0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga31a32e74a6fef543927f191eed1fbbb0">XDfeCcf_GetCurrentCCCfg</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CurrCCCfg)</td></tr>
-<tr class="memdesc:ga31a32e74a6fef543927f191eed1fbbb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC configuration.  <a href="group__dfeccf.html#ga31a32e74a6fef543927f191eed1fbbb0">More...</a><br/></td></tr>
+<tr class="memdesc:ga31a32e74a6fef543927f191eed1fbbb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC configuration in non-switchable mode.  <a href="group__dfeccf.html#ga31a32e74a6fef543927f191eed1fbbb0">More...</a><br/></td></tr>
 <tr class="separator:ga31a32e74a6fef543927f191eed1fbbb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9dabb47e081bcecd0c865126daa6a92a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">XDfeCcf_GetCurrentCCCfgSwitchable</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgDownlink, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgUplink)</td></tr>
+<tr class="memdesc:ga9dabb47e081bcecd0c865126daa6a92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC and NCO configuration for Downlink and Uplink in switchable mode.  <a href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">More...</a><br/></td></tr>
+<tr class="separator:ga9dabb47e081bcecd0c865126daa6a92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga699c8f140720fcbf22543c7758ace5d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga699c8f140720fcbf22543c7758ace5d5">XDfeCcf_GetEmptyCCCfg</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg)</td></tr>
 <tr class="memdesc:ga699c8f140720fcbf22543c7758ace5d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns configuration structure CCCfg with CCCfg-&gt;Sequence.Length value set in <a class="el" href="group__dfeccf.html#ga59ba4de329a470946d9fc2a040d7a492" title="Reads configuration from device tree/xparameters.h and IP registers. ">XDfeCcf_Configure()</a>, array CCCfg-&gt;Sequence.CCID[] members are set to not used value (-1) and the other CCCfg members are set to 0.  <a href="group__dfeccf.html#ga699c8f140720fcbf22543c7758ace5d5">More...</a><br/></td></tr>
 <tr class="separator:ga699c8f140720fcbf22543c7758ace5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,24 +179,30 @@ Functions</h2></td></tr>
 <tr class="memitem:gabd6cdd5621c842a4d6a8a58a4eaf6235"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gabd6cdd5621c842a4d6a8a58a4eaf6235">XDfeCcf_UpdateCCinCCCfg</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg, s32 CCID, const <a class="el" href="struct_x_dfe_ccf___carrier_cfg.html">XDfeCcf_CarrierCfg</a> *CarrierCfg)</td></tr>
 <tr class="memdesc:gabd6cdd5621c842a4d6a8a58a4eaf6235"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates specified CCID, with specified configuration to a local CC configuration structure.  <a href="group__dfeccf.html#gabd6cdd5621c842a4d6a8a58a4eaf6235">More...</a><br/></td></tr>
 <tr class="separator:gabd6cdd5621c842a4d6a8a58a4eaf6235"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga100a171e09d4e735841e14743f48fcd4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga100a171e09d4e735841e14743f48fcd4">XDfeCcf_SetNextCCCfgAndTrigger</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg)</td></tr>
-<tr class="memdesc:ga100a171e09d4e735841e14743f48fcd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes local CC configuration to the shadow (NEXT) registers and triggers copying from shadow to operational (CURRENT) registers.  <a href="group__dfeccf.html#ga100a171e09d4e735841e14743f48fcd4">More...</a><br/></td></tr>
-<tr class="separator:ga100a171e09d4e735841e14743f48fcd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacd14259acee557613b0002ec6d187550"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gacd14259acee557613b0002ec6d187550">XDfeCcf_SetNextCCCfgAndTrigger</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg)</td></tr>
+<tr class="memdesc:gacd14259acee557613b0002ec6d187550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes local CC configuration to the shadow (NEXT) registers and triggers copying from shadow to operational (CURRENT) registers.  <a href="group__dfeccf.html#gacd14259acee557613b0002ec6d187550">More...</a><br/></td></tr>
+<tr class="separator:gacd14259acee557613b0002ec6d187550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga47f2c3d66e66518a7337906b5871e04d"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga47f2c3d66e66518a7337906b5871e04d">XDfeCcf_SetNextCCCfgAndTriggerSwitchable</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgDownlink, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgUplink)</td></tr>
+<tr class="memdesc:ga47f2c3d66e66518a7337906b5871e04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes local CC configuration to the shadow (NEXT) registers and triggers copying from shadow to operational (CURRENT) registers for both Downlink and Upling in switchable mode.  <a href="group__dfeccf.html#ga47f2c3d66e66518a7337906b5871e04d">More...</a><br/></td></tr>
+<tr class="separator:ga47f2c3d66e66518a7337906b5871e04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2bfa4131ce8d5857886eafa44a99f6bb"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga2bfa4131ce8d5857886eafa44a99f6bb">XDfeCcf_AddCC</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, s32 CCID, u32 CCSeqBitmap, const <a class="el" href="struct_x_dfe_ccf___carrier_cfg.html">XDfeCcf_CarrierCfg</a> *CarrierCfg)</td></tr>
 <tr class="memdesc:ga2bfa4131ce8d5857886eafa44a99f6bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds specified CCID, with specified configuration.  <a href="group__dfeccf.html#ga2bfa4131ce8d5857886eafa44a99f6bb">More...</a><br/></td></tr>
 <tr class="separator:ga2bfa4131ce8d5857886eafa44a99f6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab4eacc4f345b3e01db53abae16e997a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaab4eacc4f345b3e01db53abae16e997a">XDfeCcf_RemoveCC</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, s32 CCID)</td></tr>
 <tr class="memdesc:gaab4eacc4f345b3e01db53abae16e997a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes specified CCID.  <a href="group__dfeccf.html#gaab4eacc4f345b3e01db53abae16e997a">More...</a><br/></td></tr>
 <tr class="separator:gaab4eacc4f345b3e01db53abae16e997a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga13b3f3b54950278e98138d392a1a4292"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga13b3f3b54950278e98138d392a1a4292">XDfeCcf_UpdateCC</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, s32 CCID, const <a class="el" href="struct_x_dfe_ccf___carrier_cfg.html">XDfeCcf_CarrierCfg</a> *CarrierCfg)</td></tr>
-<tr class="memdesc:ga13b3f3b54950278e98138d392a1a4292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates specified CCID carrier configuration; change gain or filter coefficients set.  <a href="group__dfeccf.html#ga13b3f3b54950278e98138d392a1a4292">More...</a><br/></td></tr>
-<tr class="separator:ga13b3f3b54950278e98138d392a1a4292"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga00a3c06f18b61ece5c7f07ace0a86ed4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga00a3c06f18b61ece5c7f07ace0a86ed4">XDfeCcf_UpdateAntenna</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, u32 Ant, bool Enabled)</td></tr>
-<tr class="memdesc:ga00a3c06f18b61ece5c7f07ace0a86ed4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates specified antenna TDM slot enablement.  <a href="group__dfeccf.html#ga00a3c06f18b61ece5c7f07ace0a86ed4">More...</a><br/></td></tr>
-<tr class="separator:ga00a3c06f18b61ece5c7f07ace0a86ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabc93998a929eabcbe6b5845626cef210"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gabc93998a929eabcbe6b5845626cef210">XDfeCcf_UpdateCC</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, s32 CCID, const <a class="el" href="struct_x_dfe_ccf___carrier_cfg.html">XDfeCcf_CarrierCfg</a> *CarrierCfg)</td></tr>
+<tr class="memdesc:gabc93998a929eabcbe6b5845626cef210"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates specified CCID carrier configuration; change gain or filter coefficients set.  <a href="group__dfeccf.html#gabc93998a929eabcbe6b5845626cef210">More...</a><br/></td></tr>
+<tr class="separator:gabc93998a929eabcbe6b5845626cef210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga890dacc7d32bf591be36640065cfe414"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga890dacc7d32bf591be36640065cfe414">XDfeCcf_UpdateAntenna</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, u32 Ant, bool Enabled)</td></tr>
+<tr class="memdesc:ga890dacc7d32bf591be36640065cfe414"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates specified antenna TDM slot enablement.  <a href="group__dfeccf.html#ga890dacc7d32bf591be36640065cfe414">More...</a><br/></td></tr>
+<tr class="separator:ga890dacc7d32bf591be36640065cfe414"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga47f55600425550380b976828c7947ac2"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga47f55600425550380b976828c7947ac2">XDfeCcf_UpdateAntennaCfg</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___antenna_cfg.html">XDfeCcf_AntennaCfg</a> *AntennaCfg)</td></tr>
-<tr class="memdesc:ga47f55600425550380b976828c7947ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates antenna cofiguration to all antennas.  <a href="group__dfeccf.html#ga47f55600425550380b976828c7947ac2">More...</a><br/></td></tr>
+<tr class="memdesc:ga47f55600425550380b976828c7947ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates antenna configuration to all antennas.  <a href="group__dfeccf.html#ga47f55600425550380b976828c7947ac2">More...</a><br/></td></tr>
 <tr class="separator:ga47f55600425550380b976828c7947ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae0913ce20c92ecd4a35a59a19ad171af"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gae0913ce20c92ecd4a35a59a19ad171af">XDfeCcf_UpdateAntennaCfgSwitchable</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___antenna_cfg.html">XDfeCcf_AntennaCfg</a> *AntennaCfgDownlink, <a class="el" href="struct_x_dfe_ccf___antenna_cfg.html">XDfeCcf_AntennaCfg</a> *AntennaCfgUplink)</td></tr>
+<tr class="memdesc:gae0913ce20c92ecd4a35a59a19ad171af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates antenna configuration of all antennas.  <a href="group__dfeccf.html#gae0913ce20c92ecd4a35a59a19ad171af">More...</a><br/></td></tr>
+<tr class="separator:gae0913ce20c92ecd4a35a59a19ad171af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab972682f29380a36912ecb49a929f6d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gab972682f29380a36912ecb49a929f6d0">XDfeCcf_GetTriggersCfg</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___trigger_cfg.html">XDfeCcf_TriggerCfg</a> *TriggerCfg)</td></tr>
 <tr class="memdesc:gab972682f29380a36912ecb49a929f6d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns current trigger configuration.  <a href="group__dfeccf.html#gab972682f29380a36912ecb49a929f6d0">More...</a><br/></td></tr>
 <tr class="separator:gab972682f29380a36912ecb49a929f6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,6 +230,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3179eaabc10a956de802e38d8e7ff5cd"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga3179eaabc10a956de802e38d8e7ff5cd">XDfeCcf_GetTDataDelayFromCCCfg</a> (<a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, u32 Tap, s32 CCID, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg, u32 Symmetric, u32 Num, u32 *TDataDelay)</td></tr>
 <tr class="memdesc:ga3179eaabc10a956de802e38d8e7ff5cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets calculated TDataDelay value for CCID.  <a href="group__dfeccf.html#ga3179eaabc10a956de802e38d8e7ff5cd">More...</a><br/></td></tr>
 <tr class="separator:ga3179eaabc10a956de802e38d8e7ff5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga18d48134af3d084bb06f9267b671ff72"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga18d48134af3d084bb06f9267b671ff72">XDfeCcf_SetRegBank</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, u32 RegBank)</td></tr>
+<tr class="memdesc:ga18d48134af3d084bb06f9267b671ff72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets uplink/downlink register bank.  <a href="group__dfeccf.html#ga18d48134af3d084bb06f9267b671ff72">More...</a><br/></td></tr>
+<tr class="separator:ga18d48134af3d084bb06f9267b671ff72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaddc6102af25a271aedf00ec96b315f4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaddc6102af25a271aedf00ec96b315f4e">XDfeCcf_GetVersions</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___version.html">XDfeCcf_Version</a> *SwVersion, <a class="el" href="struct_x_dfe_ccf___version.html">XDfeCcf_Version</a> *HwVersion)</td></tr>
 <tr class="memdesc:gaddc6102af25a271aedf00ec96b315f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API is used to get the driver version.  <a href="group__dfeccf.html#gaddc6102af25a271aedf00ec96b315f4e">More...</a><br/></td></tr>
 <tr class="separator:gaddc6102af25a271aedf00ec96b315f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -225,9 +240,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

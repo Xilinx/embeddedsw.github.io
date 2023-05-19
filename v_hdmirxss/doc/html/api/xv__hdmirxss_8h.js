@@ -102,5 +102,6 @@ var xv__hdmirxss_8h =
     [ "XV_HdmiRxSs_Stop", "xv__hdmirxss_8h.html#a0fa499b01743a173ef1719c45cd40a79", null ],
     [ "XV_HdmiRxSs_SYSRST", "xv__hdmirxss_8h.html#a8276bf8d935c75400ca753b01ac4f3fd", null ],
     [ "XV_HdmiRxSs_ToggleHpd", "xv__hdmirxss_8h.html#a938e999c689d01ff3559e472f21c9757", null ],
-    [ "XV_HdmiRxSs_VRST", "xv__hdmirxss_8h.html#a2384155894295c0b4d52c448d3b1119b", null ]
+    [ "XV_HdmiRxSs_VRST", "xv__hdmirxss_8h.html#a2384155894295c0b4d52c448d3b1119b", null ],
+    [ "XV_HdmiRxSs_Write_ScdcRegister", "xv__hdmirxss_8h.html#ac7e11d2a14091bf0cf981ce6db18fc3f", null ]
 ];

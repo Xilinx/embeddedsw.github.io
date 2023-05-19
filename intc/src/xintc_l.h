@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xintc_l.h
-* @addtogroup intc_v3_15
+* @addtogroup intc Overview
 * @{
 *
 * This header file contains identifiers and low-level driver functions (or
@@ -55,6 +56,8 @@
 *                     XIntc_SetIntrSvcOption, XIntc_RegisterHandler APIs.
 * 3.15  mus  05/10/22 Included xil_exception.h to xintc_l.h to fix
 *                      compilation failures. It fixes CR#1128446.
+* 3.16  mus  10/04/22 Fixed warnings reported with "-Wundef" compiler flag.
+*                     It fixes CR#1142085.
 *
 * </pre>
 *
@@ -81,7 +84,7 @@ extern "C" {
  */
 #define XPAR_XINTC_USE_DCR_BRIDGE 0
 
-#if ((XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
+#if ((defined (XPAR_XINTC_USE_DCR) && XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
 #include "xio_dcr.h"
 #endif
 
@@ -90,7 +93,7 @@ extern "C" {
 /* define the offsets from the base address for all the registers of the
  * interrupt controller, some registers may be optional in the hardware device
  */
-#if ((XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
+#if ((defined (XPAR_XINTC_USE_DCR) && XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
 
 #define XIN_ISR_OFFSET      0	/* Interrupt Status Register */
 #define XIN_IPR_OFFSET      1	/* Interrupt Pending Register */
@@ -152,7 +155,7 @@ typedef void (*XFastInterruptHandler) (void);
 /*
  * Define the appropriate I/O access method to memory mapped I/O or DCR.
  */
-#if ((XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
+#if ((defined (XPAR_XINTC_USE_DCR) && XPAR_XINTC_USE_DCR != 0) || (XPAR_XINTC_USE_DCR_BRIDGE != 0))
 
 #define XIntc_In32  XIo_DcrIn
 #define XIntc_Out32 XIo_DcrOut

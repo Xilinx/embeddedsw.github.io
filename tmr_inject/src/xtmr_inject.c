@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtmr_inject.c
-* @addtogroup tmr_inject_v1_4
+* @addtogroup Overview
 * @{
 *
 * Contains required functions for the XTMR_Inject driver. See the xtmr_inject.h

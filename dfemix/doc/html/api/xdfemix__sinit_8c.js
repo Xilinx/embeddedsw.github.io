@@ -13,6 +13,7 @@ var xdfemix__sinit_8c =
     [ "XDFEMIX_MIXER_CPS_CFG", "xdfemix__sinit_8c.html#ga3511b0df0094b1961253ce8910f46368", null ],
     [ "XDFEMIX_MODE_CFG", "xdfemix__sinit_8c.html#ga58efb948419ea6c70b8d9129bcda91cc", null ],
     [ "XDFEMIX_NUM_ANTENNA_CFG", "xdfemix__sinit_8c.html#gacb6b666c2a95a33348605095e61f952d", null ],
+    [ "XDFEMIX_NUM_AUXILIARY", "xdfemix__sinit_8c.html#ga71bb4372e09002e3b4a7f0fb20c77117", null ],
     [ "XDFEMIX_PLATFORM_DEVICE_DIR", "xdfemix__sinit_8c.html#ga811170e7c9bd6d6f0afcfc7ebca1caeb", null ],
     [ "XDFEMIX_TUSER_WIDTH_CFG", "xdfemix__sinit_8c.html#ga47409b9d65a69f98909803be03de38a7", null ]
 ];

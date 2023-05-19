@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -208,6 +209,7 @@
 * 11.1  cog    11/16/21 Upversion.
 *       cog    01/18/22 Refactor connected data components.
 *       cog    01/18/22 Added safety checks.
+* 12.0  cog    09/01/22 Upversion.
 *
 * </pre>
 *
@@ -2491,5 +2493,5 @@ u8 XRFdc_GetTileLayout(XRFdc *InstancePtr)
 ******************************************************************************/
 double XRFdc_GetDriverVersion(void)
 {
-	return 11.1;
+	return 12.0;
 }

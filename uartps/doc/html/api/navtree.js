@@ -29,7 +29,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xuartps__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe"
+"xuartps__selftest__example_8c.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

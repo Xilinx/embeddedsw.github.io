@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">ospipsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -74,6 +74,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga02055aef4b0f9a801005ebdc7b556157"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>&#160;&#160;&#160;10000U</td></tr>
 <tr class="memdesc:ga02055aef4b0f9a801005ebdc7b556157"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum delay count  <a href="group__ospipsv.html#ga02055aef4b0f9a801005ebdc7b556157">More...</a><br/></td></tr>
 <tr class="separator:ga02055aef4b0f9a801005ebdc7b556157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2837097f3f203eeff26f5cfc61947bcf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga2837097f3f203eeff26f5cfc61947bcf">MAX_IDAC_DELAY_CNT</a>&#160;&#160;&#160;10000000U</td></tr>
+<tr class="memdesc:ga2837097f3f203eeff26f5cfc61947bcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max INDAC delay count.  <a href="group__ospipsv.html#ga2837097f3f203eeff26f5cfc61947bcf">More...</a><br/></td></tr>
+<tr class="separator:ga2837097f3f203eeff26f5cfc61947bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -101,13 +104,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga289baf1466add8dfa4a70a3952354cd7"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle</a> (const <a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga289baf1466add8dfa4a70a3952354cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for OSPI idle which means Serial interface and low level SPI pipeline is IDLE.  <a href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">More...</a><br/></td></tr>
 <tr class="separator:ga289baf1466add8dfa4a70a3952354cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8400388c80d471a4535fa7357104f07b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write</a> (const <a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, const <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga8400388c80d471a4535fa7357104f07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function Write the data in Non-DMA Indirect mode.  <a href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">More...</a><br/></td></tr>
+<tr class="separator:ga8400388c80d471a4535fa7357104f07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

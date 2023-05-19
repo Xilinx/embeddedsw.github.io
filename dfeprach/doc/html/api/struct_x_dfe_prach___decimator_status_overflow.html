@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeprach
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -80,15 +80,16 @@ $(document).ready(function(){initNavTree('struct_x_dfe_prach___decimator_status_
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:a2b55fe52f97e0aa0865526359845253a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_prach___decimator_status_overflow.html#a2b55fe52f97e0aa0865526359845253a">DecimatorOverflow</a></td></tr>
-<tr class="memdesc:a2b55fe52f97e0aa0865526359845253a"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0-1] Overflow occurred in the mixer.  <a href="#a2b55fe52f97e0aa0865526359845253a">More...</a><br/></td></tr>
+<tr class="memdesc:a2b55fe52f97e0aa0865526359845253a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                [0-1] Source of first occurrence of
+</pre><p> overflow as signalled in ISR.  <a href="#a2b55fe52f97e0aa0865526359845253a">More...</a><br/></td></tr>
 <tr class="separator:a2b55fe52f97e0aa0865526359845253a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87cae76d2672e9614f97e5ebb2a15013"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_prach___decimator_status_overflow.html#a87cae76d2672e9614f97e5ebb2a15013">FirstAntennaOverflowing</a></td></tr>
-<tr class="memdesc:a87cae76d2672e9614f97e5ebb2a15013"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                      [0-7] Lowest antenna in which
-</pre><p> overflow has occurred.  <a href="#a87cae76d2672e9614f97e5ebb2a15013">More...</a><br/></td></tr>
+<tr class="memdesc:a87cae76d2672e9614f97e5ebb2a15013"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                      [0-7] Lowest number antenna on which
+</pre><p> first overflow occurred.  <a href="#a87cae76d2672e9614f97e5ebb2a15013">More...</a><br/></td></tr>
 <tr class="separator:a87cae76d2672e9614f97e5ebb2a15013"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10bbd6773eb2911c6b003ba867d578d1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_prach___decimator_status_overflow.html#a10bbd6773eb2911c6b003ba867d578d1">FirstRCIdOverflowing</a></td></tr>
-<tr class="memdesc:a10bbd6773eb2911c6b003ba867d578d1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                   [0-15] Lowest RCID in which overflow has
-</pre><p> occurred.  <a href="#a10bbd6773eb2911c6b003ba867d578d1">More...</a><br/></td></tr>
+<tr class="memdesc:a10bbd6773eb2911c6b003ba867d578d1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                   [0-15] Lowest numbered Physical RACH
+</pre><p> channel on which first overrun occurred.  <a href="#a10bbd6773eb2911c6b003ba867d578d1">More...</a><br/></td></tr>
 <tr class="separator:a10bbd6773eb2911c6b003ba867d578d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -104,7 +105,9 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>[0-1] Overflow occurred in the mixer. </p>
+<p><pre class="fragment">                [0-1] Source of first occurrence of
+</pre><p> overflow as signalled in ISR. </p>
+<p>That is, register only updated when DECIMATOR_OVERFLOW flag is 0. </p>
 
 <p>Referenced by <a class="el" href="group__dfeprach.html#ga67d87d838df3a1d518499c94716316fe">XDfePrach_GetStatus()</a>.</p>
 
@@ -120,8 +123,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                      [0-7] Lowest antenna in which
-</pre><p> overflow has occurred. </p>
+<p><pre class="fragment">                      [0-7] Lowest number antenna on which
+</pre><p> first overflow occurred. </p>
 
 <p>Referenced by <a class="el" href="group__dfeprach.html#ga67d87d838df3a1d518499c94716316fe">XDfePrach_GetStatus()</a>.</p>
 
@@ -137,8 +140,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                   [0-15] Lowest RCID in which overflow has
-</pre><p> occurred. </p>
+<p><pre class="fragment">                   [0-15] Lowest numbered Physical RACH
+</pre><p> channel on which first overrun occurred. </p>
 
 <p>Referenced by <a class="el" href="group__dfeprach.html#ga67d87d838df3a1d518499c94716316fe">XDfePrach_GetStatus()</a>.</p>
 
@@ -147,9 +150,8 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

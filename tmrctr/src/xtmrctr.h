@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtmrctr.h
-* @addtogroup tmrctr_v4_9
+* @addtogroup Overview
 * @{
 * @details
 *
@@ -144,6 +145,7 @@
 *                     compilation time.
 * 4.8   dp   02/12/21 Fix compilation errors that arise when -Werror=conversion
 *                     is enabled in compilation flags.
+* 4.10  adk  27/12/22 Updated addtogroup tag.
 * </pre>
 *
 ******************************************************************************/

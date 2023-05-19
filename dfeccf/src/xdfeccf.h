@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -58,7 +59,7 @@
 * ----- ---    -------- -----------------------------------------------
 * 1.0   dc     09/03/20 Initial version
 *       dc     02/02/21 Remove hard coded device node name
-*       dc     02/08/21 align driver to curent specification
+*       dc     02/08/21 align driver to current specification
 *       dc     02/22/21 include HW in versioning
 *       dc     03/25/21 Device tree item name change
 *       dc     04/06/21 Register with full node name
@@ -80,6 +81,9 @@
 *       dc     01/27/22 Get calculated TDataDelay
 *       dc     03/21/22 Add prefix to global variables
 * 1.4   dc     04/08/22 Update documentation
+* 1.5   dc     09/12/22 Update handling overflow status
+*       dc     10/28/22 Switching Uplink/Downlink support
+*       dc     11/11/22 Align AddCC to switchable UL/DL algorithm
 *
 * </pre>
 * @endcond
@@ -134,7 +138,7 @@ extern "C" {
 #define XDFECCF_CC_NUM (16) /**< Maximum CC number */
 #define XDFECCF_ANT_NUM_MAX (8U) /**< Maximum anntena number */
 #define XDFECCF_SEQ_LENGTH_MAX (16U) /**< Maximum sequence length */
-#define XDFECCF_NUM_COEFF (128U) /**< Maximum number of coefficents */
+#define XDFECCF_NUM_COEFF (128U) /**< Maximum number of coefficients */
 
 /**************************** Type Definitions *******************************/
 /*********** start - common code to all Logiccores ************/
@@ -237,6 +241,8 @@ typedef struct {
 		and "Operational" state. */
 	XDfeCcf_Trigger CCUpdate; /**< Transition to next CC
 		configuration. Will initiate flush based on CC configuration. */
+	XDfeCcf_Trigger Switch; /**< Switch between Downlink and Uplink datapth
+		configuration. Will initiate flush based on CC configuration. */
 } XDfeCcf_TriggerCfg;
 
 /**
@@ -247,6 +253,7 @@ typedef struct {
 	s32 CCID[XDFECCF_SEQ_LENGTH_MAX]; /**< [0-15].Array of CCID's
 		arranged in the order the CCIDs are required to be processed
 		in the channel filter. */
+	s32 NotUsedCCID; /**< Lowest CCID number not allocated */
 } XDfeCcf_CCSequence;
 
 /*********** end - common code to all Logiccores ************/
@@ -258,6 +265,7 @@ typedef struct {
 	u32 NumAntenna; /**< [1-8] Number of antennas */
 	u32 NumCCPerAntenna; /**< [1-16] Number of CCs per antenna */
 	u32 AntennaInterleave; /**< [1-8] Number of Antenna slots */
+	u32 Switchable; /**< [0,1] If true DL/UL switching is supported */
 } XDfeCcf_ModelParameters;
 
 /**
@@ -275,6 +283,7 @@ typedef struct {
 typedef struct {
 	XDfeCcf_CCSequence Sequence; /**< CCID sequence. */
 	u32 GainStage; /**< [0,1] Enable gain stage */
+	u32 TuserSelect; /**< [0,1] Select DL or UL TUSER */
 } XDfeCcf_Init;
 
 /**
@@ -312,7 +321,7 @@ typedef struct {
 			configuration update - set by helper functions when
 			building the configuration channel_id? */
 	u32 MappedId; /**< [0-7] (Private) Defines the hardblock ID value to be
-			used for the CC. Used to map arbitary/system CCID
+			used for the CC. Used to map arbitrary/system CCID
 			values to available hard block TID values. Enumerated
 			incrementally from 0 to max supported CC for a given
 			IP configuration */
@@ -352,23 +361,30 @@ typedef struct {
 		the GAIN stage of the filter on the real channel */
 	u32 OverflowAfterGainImag; /**< [0,1] Overflow or underflow occurred in
 		the GAIN stage of the filter on the imaginary channel */
-	u32 OverflowAntenna; /**< [0,7] Lowest number antenna on which first
+	u32 OverflowAntenna; /**< [0,15] Lowest number antenna on which first
 		overflow, or underflow, occurred */
-	u32 OverflowCCID; /**< [0,7] CCID on which first overflow, or
+	u32 OverflowCCID; /**< [0,15] CCID on which first overflow, or
 		underflow, occurred */
-	u32 CCUpdate; /**< [0,1] CC update event has occurred */
-	u32 CCSequenceError; /**< [0, 1] CC sequence mismatch has been
-		detected */
-} XDfeCcf_Status;
+	u32 OverflowSwitch; /**< In SWITCHABLE mode the channel in which
+		overflow first occurred. This register is ignored in
+		NON-SWITCHABLE mode.
+		- 0 = DOWNLINK: Overflow occurred in the downlink channel.
+		- 1 = UPLINK: Overflow occurred in the uplink channel. */
+} XDfeCcf_OverflowStatus;
 
 /**
- * Interrupt mask.
+ * Event status and interrupt mask.
+ *
+ * @note The structure for XDfeCcf_InterruptMask is the same as that of
+ *       XDfeCcf_Status
  */
 typedef struct {
 	u32 Overflow; /**< [0,1] Mask overflow events */
 	u32 CCUpdate; /**< [0,1] Mask CC update events */
 	u32 CCSequenceError; /**< [0,1] Mask CC sequence mismatch events */
-} XDfeCcf_InterruptMask;
+} XDfeCcf_Status;
+
+typedef XDfeCcf_Status XDfeCcf_InterruptMask;
 
 /**
  * CCF Config Structure.
@@ -379,6 +395,7 @@ typedef struct {
 	u32 NumAntenna; /**< Number of antennas */
 	u32 NumCCPerAntenna; /**< Number of CCs per antenna */
 	u32 AntennaInterleave; /**< Number of Antenna slots */
+	u32 Switchable; /**< [0,1] If true DL/UL switching is supported */
 } XDfeCcf_Config;
 
 /**
@@ -387,7 +404,10 @@ typedef struct {
 typedef struct {
 	XDfeCcf_Config Config; /**< Config Structure */
 	XDfeCcf_StateId StateId; /**< StateId */
-	s32 NotUsedCCID; /**< Not used CCID */
+	s32 NotUsedCCID; /**< Lowest CCID number not allocated, in
+		non-switchable mode, also for DL in switchable mode */
+	s32 NotUsedCCID_UL; /**< Lowest CCID number not allocated for UL in
+		switchable mode */
 	u32 SequenceLength; /**< Exact sequence length */
 	char NodeName[XDFECCF_NODE_NAME_MAX_LENGTH]; /**< Node name */
 	struct metal_io_region *Io; /**< Libmetal IO structure */
@@ -419,6 +439,9 @@ XDfeCcf_StateId XDfeCcf_GetStateID(XDfeCcf *InstancePtr);
 
 /* User APIs */
 void XDfeCcf_GetCurrentCCCfg(const XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg);
+void XDfeCcf_GetCurrentCCCfgSwitchable(const XDfeCcf *InstancePtr,
+				       XDfeCcf_CCCfg *CCCfgDownlink,
+				       XDfeCcf_CCCfg *CCCfgUplink);
 void XDfeCcf_GetEmptyCCCfg(const XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg);
 void XDfeCcf_GetCarrierCfg(const XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg,
 			   s32 CCID, u32 *CCSeqBitmap,
@@ -432,16 +455,21 @@ void XDfeCcf_RemoveCCfromCCCfg(XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg,
 			       s32 CCID);
 void XDfeCcf_UpdateCCinCCCfg(const XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg,
 			     s32 CCID, const XDfeCcf_CarrierCfg *CarrierCfg);
-u32 XDfeCcf_SetNextCCCfgAndTrigger(const XDfeCcf *InstancePtr,
-				   XDfeCcf_CCCfg *CCCfg);
+u32 XDfeCcf_SetNextCCCfgAndTrigger(XDfeCcf *InstancePtr, XDfeCcf_CCCfg *CCCfg);
+u32 XDfeCcf_SetNextCCCfgAndTriggerSwitchable(XDfeCcf *InstancePtr,
+					     XDfeCcf_CCCfg *CCCfgDownlink,
+					     XDfeCcf_CCCfg *CCCfgUplink);
 u32 XDfeCcf_AddCC(XDfeCcf *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 		  const XDfeCcf_CarrierCfg *CarrierCfg);
 u32 XDfeCcf_RemoveCC(XDfeCcf *InstancePtr, s32 CCID);
-u32 XDfeCcf_UpdateCC(const XDfeCcf *InstancePtr, s32 CCID,
+u32 XDfeCcf_UpdateCC(XDfeCcf *InstancePtr, s32 CCID,
 		     const XDfeCcf_CarrierCfg *CarrierCfg);
-u32 XDfeCcf_UpdateAntenna(const XDfeCcf *InstancePtr, u32 Ant, bool Enabled);
+u32 XDfeCcf_UpdateAntenna(XDfeCcf *InstancePtr, u32 Ant, bool Enabled);
 u32 XDfeCcf_UpdateAntennaCfg(XDfeCcf *InstancePtr,
 			     XDfeCcf_AntennaCfg *AntennaCfg);
+u32 XDfeCcf_UpdateAntennaCfgSwitchable(XDfeCcf *InstancePtr,
+				       XDfeCcf_AntennaCfg *AntennaCfgDownlink,
+				       XDfeCcf_AntennaCfg *AntennaCfgUplink);
 void XDfeCcf_GetTriggersCfg(const XDfeCcf *InstancePtr,
 			    XDfeCcf_TriggerCfg *TriggerCfg);
 void XDfeCcf_SetTriggersCfg(const XDfeCcf *InstancePtr,
@@ -451,6 +479,8 @@ void XDfeCcf_GetCC(const XDfeCcf *InstancePtr, s32 CCID,
 void XDfeCcf_GetActiveSets(const XDfeCcf *InstancePtr, u32 *IsActive);
 void XDfeCcf_LoadCoefficients(XDfeCcf *InstancePtr, u32 Set, u32 Shift,
 			      const XDfeCcf_Coefficients *Coeffs);
+void XDfeCcf_GetOverflowStatus(const XDfeCcf *InstancePtr,
+			       XDfeCcf_OverflowStatus *Status);
 void XDfeCcf_GetEventStatus(const XDfeCcf *InstancePtr, XDfeCcf_Status *Status);
 void XDfeCcf_ClearEventStatus(const XDfeCcf *InstancePtr,
 			      const XDfeCcf_Status *Status);
@@ -465,6 +495,7 @@ u32 XDfeCcf_GetTDataDelay(XDfeCcf *InstancePtr, u32 Tap, s32 CCID,
 u32 XDfeCcf_GetTDataDelayFromCCCfg(XDfeCcf *InstancePtr, u32 Tap, s32 CCID,
 				   XDfeCcf_CCCfg *CCCfg, u32 Symmetric, u32 Num,
 				   u32 *TDataDelay);
+void XDfeCcf_SetRegBank(const XDfeCcf *InstancePtr, u32 RegBank);
 void XDfeCcf_GetVersions(const XDfeCcf *InstancePtr, XDfeCcf_Version *SwVersion,
 			 XDfeCcf_Version *HwVersion);
 

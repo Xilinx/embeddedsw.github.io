@@ -4,7 +4,9 @@ var xhdmi__example_8h =
     [ "_XHDMI_EXAMPLE_H_", "xhdmi__example_8h.html#acb740f5c5d507a6a06e2ee800acde420", null ],
     [ "FVA_FACTOR", "xhdmi__example_8h.html#a9dbe7366322193e35206718d1e0e74ac", null ],
     [ "I2C_CLK_ADDR", "xhdmi__example_8h.html#a71bd0b63917e21a117972939353bda39", null ],
+    [ "I2C_CLK_ADDR1", "xhdmi__example_8h.html#ac6103f02c31a61688e475e57b81ca2eb", null ],
     [ "I2C_MUX_ADDR", "xhdmi__example_8h.html#a9e3c02ccaf71eeda39e2524f2fb02a41", null ],
+    [ "RC21008A_ADDR", "xhdmi__example_8h.html#a237cda4b895b62ed3dab36dc63ddac4f", null ],
     [ "Exdes_Debug_Printf", "xhdmi__example_8h.html#a6f3b42498c5f531b949e0b795e2c03de", null ],
     [ "DynamicHDRType", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5", [
       [ "DYNAMIC_HDR_NOT_PRESENT", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5a116e2e027ddcfa8fd9c7d2039cc16ead", null ],

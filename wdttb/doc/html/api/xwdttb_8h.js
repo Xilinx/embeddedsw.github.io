@@ -19,6 +19,7 @@ var xwdttb_8h =
     [ "XWdtTb_EnableFailCounter", "xwdttb_8h.html#ga595c530371577b29e0a5e090d9967205", null ],
     [ "XWdtTb_EnablePsm", "xwdttb_8h.html#ga29cdd15b771748985524abd19a1aead0", null ],
     [ "XWdtTb_EnableSst", "xwdttb_8h.html#ga4c9f9d6df6c3c96c579ab7c2f1c350ec", null ],
+    [ "XWdtTb_GenAnswer", "xwdttb_8h.html#gaf06401c68588281006be77362aa8dbf4", null ],
     [ "XWdtTb_GetByteCount", "xwdttb_8h.html#ga8e3a836964ef56168668f3d26307dfc7", null ],
     [ "XWdtTb_GetByteSegment", "xwdttb_8h.html#ga2e1e6ee60443c503144572bd00fc8589", null ],
     [ "XWdtTb_Initialize", "xwdttb_8h.html#ga62df11d6ae0d6652fd3f79b71aebe9c7", null ],

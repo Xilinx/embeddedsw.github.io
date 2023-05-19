@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -48,6 +49,14 @@
 * 1.4   dc     04/04/22 Correct conversion rate calculation
 *       dc     04/06/22 Update documentation
 *       dc     08/19/22 Update register map
+* 1.5   dc     09/28/22 Auxiliary NCO support
+*       dc     10/24/22 Switching Uplink/Downlink support
+*       dc     11/08/22 NCO assignment in arch5 mode
+*       dc     11/10/22 Align AddCC to switchable UL/DL algorithm
+*       dc     11/11/22 Update get overflow status API
+*       dc     11/11/22 Update NCOIdx and CCID check
+*       dc     11/25/22 Update macro of SW version Minor number
+*       dc     02/21/23 Correct switch trigger register name
 *
 * </pre>
 * @addtogroup dfemix Overview
@@ -82,15 +91,25 @@
 #define XDFEMIX_TAP_MAX (24U) /**< Maximum tap value */
 #define XDFEMIX_IS_ARCH4_MODE                                                  \
 	((InstancePtr->Config.MaxUseableCcids == 8U) &&                        \
-	 (InstancePtr->Config.Lanes > 1U)) /* Arch4 mode logical statement */
-#define XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE (4U) /* NCO low sub-block size */
+	 (InstancePtr->Config.Lanes >                                          \
+	  1U)) /**< Arch4 mode logical statement */
+#define XDFEMIX_IS_ARCH5_MODE                                                  \
+	(InstancePtr->Config.MaxUseableCcids ==                                \
+	 16U) /* Arch5 mode logical statement */
+#define XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE (4U) /**< NCO low sub-block size */
+#define XDFEMIX_DOWNLINK 0U /**< Downlink flag used in switchable mode */
+#define XDFEMIX_UPLINK 1U /**< Uplink flag used in switchable mode */
 /**
 * @endcond
 */
-#define XDFEMIX_DRIVER_VERSION_MINOR (4U) /**< Driver's minor version number */
+#define XDFEMIX_DRIVER_VERSION_MINOR (5U) /**< Driver's minor version number */
 #define XDFEMIX_DRIVER_VERSION_MAJOR (1U) /**< Driver's major version number */
 
 /************************** Function Prototypes *****************************/
+static void XDfeMix_GetCurrentCCCfgLocal(const XDfeMix *InstancePtr,
+					 XDfeMix_CCCfg *CurrCCCfg);
+static void XDfeMix_SetNCORegisters(const XDfeMix *InstancePtr,
+				    const XDfeMix_CCCfg *CCCfg);
 
 /************************** Variable Definitions ****************************/
 /**
@@ -304,7 +323,6 @@ static u32 XDfeMix_CountOnesInBitmap(const XDfeMix *InstancePtr,
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
-* @param    NCOIdx New NCO Id.
 * @param    NCOLowSubBlockUsage.
 * @param    NCOHighSubBlockUsage.
 *
@@ -314,8 +332,7 @@ static u32 XDfeMix_CountOnesInBitmap(const XDfeMix *InstancePtr,
 *
 ****************************************************************************/
 static u32 XDfeMix_NCOArch4Mode(const XDfeMix *InstancePtr,
-				XDfeMix_CCCfg *CCCfg, u32 NCOIdx,
-				u32 *NCOLowSubBlockUsage,
+				XDfeMix_CCCfg *CCCfg, u32 *NCOLowSubBlockUsage,
 				u32 *NCOHighSubBlockUsage)
 {
 	u32 Index;
@@ -327,13 +344,6 @@ static u32 XDfeMix_NCOArch4Mode(const XDfeMix *InstancePtr,
 		/* Check is this CCID disabled */
 		if (CCCfg->DUCDDCCfg[Index].Rate == 0) {
 			continue;
-		}
-
-		/* Check is NCOIdx already used */
-		if (NCOIdx == CCCfg->DUCDDCCfg[Index].NCOIdx) {
-			metal_log(METAL_LOG_ERROR, "NCOIdx is already used%s\n",
-				  __func__);
-			return XST_FAILURE;
 		}
 
 		/* get CCSeqBitmapTmp for CCID=Index */
@@ -379,7 +389,7 @@ static u32 XDfeMix_NCOArch4ModeInAddCC(const XDfeMix *InstancePtr,
 	u32 NCOHighSubBlockUsage = 0;
 	u32 NCOSubBlockUsage = 0;
 
-	if (XST_FAILURE == XDfeMix_NCOArch4Mode(InstancePtr, CCCfg, NCOIdx,
+	if (XST_FAILURE == XDfeMix_NCOArch4Mode(InstancePtr, CCCfg,
 						&NCOLowSubBlockUsage,
 						&NCOHighSubBlockUsage)) {
 		return XST_FAILURE;
@@ -397,7 +407,7 @@ static u32 XDfeMix_NCOArch4ModeInAddCC(const XDfeMix *InstancePtr,
 	}
 
 	/* Check is usage over 50% for this NCO sub-block */
-	if (NCOSubBlockUsage * 2U > InstancePtr->SequenceLength) {
+	if ((NCOSubBlockUsage * 2U) > InstancePtr->SequenceLength) {
 		metal_log(METAL_LOG_ERROR,
 			  "NCO usage overflow 50%% of NCO sub-block for "
 			  "CCID=%d, NCOIdx=%d in %s\n",
@@ -434,7 +444,7 @@ static u32 XDfeMix_NCOArch4ModeInMoveOrUpdateCC(const XDfeMix *InstancePtr,
 	XDfeMix_CarrierCfg CarrierCfgTmp;
 	XDfeMix_NCO NCOTmp;
 
-	if (XST_FAILURE == XDfeMix_NCOArch4Mode(InstancePtr, CCCfg, NCOIdx,
+	if (XST_FAILURE == XDfeMix_NCOArch4Mode(InstancePtr, CCCfg,
 						&NCOLowSubBlockUsage,
 						&NCOHighSubBlockUsage)) {
 		return XST_FAILURE;
@@ -463,7 +473,7 @@ static u32 XDfeMix_NCOArch4ModeInMoveOrUpdateCC(const XDfeMix *InstancePtr,
 	}
 
 	/* Check is usage over 50% for this NCO sub-block */
-	if (NCOSubBlockUsage * 2U > InstancePtr->SequenceLength) {
+	if ((NCOSubBlockUsage * 2U) > InstancePtr->SequenceLength) {
 		metal_log(METAL_LOG_ERROR,
 			  "NCO usage overflow 50%% of NCO sub-block for "
 			  "CCID=%d, NCOIdx=%d in %s\n",
@@ -477,8 +487,215 @@ static u32 XDfeMix_NCOArch4ModeInMoveOrUpdateCC(const XDfeMix *InstancePtr,
 /****************************************************************************/
 /**
 *
+* Basic calculation for NCO sub-block in ARCH5 mode.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    NCOBank0SubBlockUsage.
+* @param    NCOBank1SubBlockUsage.
+* @param    NCOBank2SubBlockUsage.
+* @param    NCOBank3SubBlockUsage.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32
+XDfeMix_NCOArch5Mode(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
+		     u32 *NCOBank0SubBlockUsage, u32 *NCOBank1SubBlockUsage,
+		     u32 *NCOBank2SubBlockUsage, u32 *NCOBank3SubBlockUsage)
+{
+	u32 Index;
+	u32 CCSeqBitmapTmp;
+	XDfeMix_CarrierCfg CarrierCfgTmp;
+	XDfeMix_NCO NCOIdxTmp;
+
+	for (Index = 0U; Index < XDFEMIX_CC_NUM; Index++) {
+		/* Check is this CCID disabled */
+		if (CCCfg->DUCDDCCfg[Index].Rate == 0) {
+			continue;
+		}
+
+		/* get CCSeqBitmapTmp for CCID=Index */
+		XDfeMix_GetCarrierCfgAndNCO(InstancePtr, CCCfg, Index,
+					    &CCSeqBitmapTmp, &CarrierCfgTmp,
+					    &NCOIdxTmp);
+
+		/* Is NCOIdx for (0-3), (4-7), (8-11) or (12-15) sub-block */
+		if (CCCfg->DUCDDCCfg[Index].NCOIdx <
+		    (1 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+			*NCOBank0SubBlockUsage += XDfeMix_CountOnesInBitmap(
+				InstancePtr, CCSeqBitmapTmp);
+		} else if (CCCfg->DUCDDCCfg[Index].NCOIdx <
+			   (2 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+			*NCOBank1SubBlockUsage += XDfeMix_CountOnesInBitmap(
+				InstancePtr, CCSeqBitmapTmp);
+		} else if (CCCfg->DUCDDCCfg[Index].NCOIdx <
+			   (3 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+			*NCOBank2SubBlockUsage += XDfeMix_CountOnesInBitmap(
+				InstancePtr, CCSeqBitmapTmp);
+		} else {
+			*NCOBank3SubBlockUsage += XDfeMix_CountOnesInBitmap(
+				InstancePtr, CCSeqBitmapTmp);
+		}
+	}
+
+	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
+* ARCH5 check is NCO usage over 25% of maximum for NCO sub_block
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    CCID Channel ID.
+* @param    CCSeqBitmap CC slot position container.
+* @param    NCOIdx New NCO Id to be used from now on.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32 XDfeMix_NCOArch5ModeInAddCC(const XDfeMix *InstancePtr,
+				       XDfeMix_CCCfg *CCCfg, s32 CCID,
+				       u32 CCSeqBitmap, u32 NCOIdx)
+{
+	u32 NCOBank0SubBlockUsage = 0; /* 0-3 NCOs */
+	u32 NCOBank1SubBlockUsage = 0; /* 4-7 NCOs */
+	u32 NCOBank2SubBlockUsage = 0; /* 8-11 NCOs */
+	u32 NCOBank3SubBlockUsage = 0; /* 12-15 NCOs */
+	u32 NCOSubBlockUsage = 0;
+
+	if (XST_FAILURE ==
+	    XDfeMix_NCOArch5Mode(InstancePtr, CCCfg, &NCOBank0SubBlockUsage,
+				 &NCOBank1SubBlockUsage, &NCOBank2SubBlockUsage,
+				 &NCOBank3SubBlockUsage)) {
+		return XST_FAILURE;
+	}
+
+	/* Add new CCID usage to NCO sub-block usage */
+	if (NCOIdx < (1 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+		NCOSubBlockUsage =
+			NCOBank0SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmap);
+	} else if (NCOIdx < (2 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+		NCOSubBlockUsage =
+			NCOBank1SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmap);
+	} else if (NCOIdx < (3 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+		NCOSubBlockUsage =
+			NCOBank2SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmap);
+	} else {
+		NCOSubBlockUsage =
+			NCOBank3SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmap);
+	}
+
+	/* Check is usage over 25% for this NCO sub-block */
+	if ((NCOSubBlockUsage * 4U) > InstancePtr->SequenceLength) {
+		metal_log(
+			METAL_LOG_ERROR,
+			"NCO usage NCOSubBlockUsage=%d overflow 25%% of NCO sub-block for "
+			"CCID=%d, NCOIdx=%d\n",
+			NCOSubBlockUsage, CCID, NCOIdx);
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
+* ARCH5 check is NCO usage over 25% of maximum for NCO sub-block.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    CCID Channel ID.
+* @param    NCOIdx New NCO Id to be used from now on.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32 XDfeMix_NCOArch5ModeInMoveOrUpdateCC(const XDfeMix *InstancePtr,
+						XDfeMix_CCCfg *CCCfg, s32 CCID,
+						u32 NCOIdx)
+{
+	u32 Return;
+	u32 CCSeqBitmapTmp;
+	XDfeMix_CarrierCfg CarrierCfgTmp;
+	XDfeMix_NCO NCOTmp;
+	u32 NCOBank0SubBlockUsage = 0; /* 0-3 NCOs */
+	u32 NCOBank1SubBlockUsage = 0; /* 4-7 NCOs */
+	u32 NCOBank2SubBlockUsage = 0; /* 8-11 NCOs */
+	u32 NCOBank3SubBlockUsage = 0; /* 12-15 NCOs */
+	u32 NCOSubBlockUsage;
+
+	Return =
+		XDfeMix_NCOArch5Mode(InstancePtr, CCCfg, &NCOBank0SubBlockUsage,
+				     &NCOBank1SubBlockUsage,
+				     &NCOBank2SubBlockUsage,
+				     &NCOBank3SubBlockUsage);
+	if (Return == XST_FAILURE) {
+		return XST_FAILURE;
+	}
+
+	/* get CCSeqBitmapTmp for CCID */
+	XDfeMix_GetCarrierCfgAndNCO(InstancePtr, CCCfg, CCID, &CCSeqBitmapTmp,
+				    &CarrierCfgTmp, &NCOTmp);
+
+	/* Add new CCID usage to NCO sub-block usage */
+	if ((NCOIdx < (1 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) &&
+	    (CCCfg->DUCDDCCfg[CCID].NCOIdx >=
+	     (1 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE))) {
+		NCOSubBlockUsage =
+			NCOBank0SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmapTmp);
+	} else if ((NCOIdx < (2 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) &&
+		   (CCCfg->DUCDDCCfg[CCID].NCOIdx >=
+		    (2 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE))) {
+		NCOSubBlockUsage =
+			NCOBank1SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmapTmp);
+	} else if ((NCOIdx < (3 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) &&
+		   (CCCfg->DUCDDCCfg[CCID].NCOIdx >=
+		    (3 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE))) {
+		NCOSubBlockUsage =
+			NCOBank2SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmapTmp);
+	} else if (NCOIdx < (4 * XDFEMIX_NCO_LOW_SUB_BLOCK_SIZE)) {
+		NCOSubBlockUsage =
+			NCOBank3SubBlockUsage +
+			XDfeMix_CountOnesInBitmap(InstancePtr, CCSeqBitmapTmp);
+	} else {
+		return XST_SUCCESS;
+	}
+
+	/* Check is usage over 25% for this NCO sub-block */
+	if ((NCOSubBlockUsage * 4U) > InstancePtr->SequenceLength) {
+		metal_log(METAL_LOG_ERROR,
+			  "NCO usage overflow 25%% of NCO sub-block for "
+			  "CCID=%d, NCOIdx=%d in %s\n",
+			  CCID, NCOIdx, __func__);
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
 * Adds the specified CCID, to the CC sequence. The sequence is defined with
-* CCSeqBitmap where bit0 corresponds to CC[0], bit1 to CC[1], and so on.
+* CCSeqBitmap where bit0 corresponds to CC[0], bit1 to CC[1], and so on. Also
+* it saves the smallest not used CC Id.
 *
 * Sequence data that is returned in the CCIDSequence is not the same as what is
 * written in the registers. The translation is:
@@ -547,7 +764,7 @@ static u32 XDfeMix_AddCCIDAndTranslateSeq(XDfeMix *InstancePtr, s32 CCID,
 	}
 
 	/* Set not used CCID */
-	InstancePtr->NotUsedCCID = XDfeMix_GetNotUsedCCID(CCIDSequence);
+	CCIDSequence->NotUsedCCID = XDfeMix_GetNotUsedCCID(CCIDSequence);
 
 	return XST_SUCCESS;
 }
@@ -555,16 +772,14 @@ static u32 XDfeMix_AddCCIDAndTranslateSeq(XDfeMix *InstancePtr, s32 CCID,
 /****************************************************************************/
 /**
 *
-* Removes the specified CCID from the CC sequence and replaces the CCID
-* entries with null (8).
+* Removes the specified CCID from the CC sequence, replaces the CCID entries
+* with null (8) and saves the smallest not used CC Id.
 *
-* @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCID CC ID.
 * @param    CCIDSequence CC sequence array.
 *
 ****************************************************************************/
-static void XDfeMix_RemoveCCID(XDfeMix *InstancePtr, s32 CCID,
-			       XDfeMix_CCSequence *CCIDSequence)
+static void XDfeMix_RemoveCCID(s32 CCID, XDfeMix_CCSequence *CCIDSequence)
 {
 	u32 Index;
 
@@ -576,7 +791,7 @@ static void XDfeMix_RemoveCCID(XDfeMix *InstancePtr, s32 CCID,
 	}
 
 	/* Set not used CCID */
-	InstancePtr->NotUsedCCID = XDfeMix_GetNotUsedCCID(CCIDSequence);
+	CCIDSequence->NotUsedCCID = XDfeMix_GetNotUsedCCID(CCIDSequence);
 }
 
 /************************ Low Level Functions *******************************/
@@ -741,10 +956,67 @@ static u32 XDfeMix_UpdateCCDDC(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 /****************************************************************************/
 /**
 *
-* Writes NEXT CC configuration.
+* Writes NCO configuration for a given auxiliary NCO.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    AuxId [0,1,2,3] Auxiliary ID equivalent to NCO [16,17,18,19].
+* @param    AuxCfg Settings for auxiliary NCO.
+*
+****************************************************************************/
+static void XDfeMix_SetAuxiliaryCfg(const XDfeMix *InstancePtr, u32 AuxId,
+				    const XDfeMix_AuxiliaryCfg *AuxCfg)
+{
+	u32 Data = 0;
+
+	/* NCO enable and gain settings */
+	Data = XDfeMix_WrBitField(XDFEMIX_AUXILIARY_ENABLE_ENABLE_WIDTH,
+				  XDFEMIX_AUXILIARY_ENABLE_ENABLE_OFFSET, Data,
+				  AuxCfg->Enable);
+	Data = XDfeMix_WrBitField(XDFEMIX_AUXILIARY_ENABLE_GAIN_WIDTH,
+				  XDFEMIX_AUXILIARY_ENABLE_GAIN_OFFSET, Data,
+				  AuxCfg->AuxGain);
+	XDfeMix_WriteReg(InstancePtr,
+			 XDFEMIX_AUXILIARY_ENABLE_NEXT + (AuxId * sizeof(u32)),
+			 Data);
+}
+
+/****************************************************************************/
+/**
+*
+* Reads NCO configuration for a given auxiliary NCO.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    AuxId [0,1,2,3] Auxiliary ID equivalent to NCO [16,17,18,19].
+* @param    AuxCfg Container of for auxiliary NCO settings.
+*
+****************************************************************************/
+static void XDfeMix_GetAuxiliaryGain(const XDfeMix *InstancePtr, u32 AuxId,
+				     XDfeMix_AuxiliaryCfg *AuxCfg)
+{
+	u32 Data;
+
+	/* Get NCO enable and gain settings */
+	Data = XDfeMix_ReadReg(InstancePtr, XDFEMIX_AUXILIARY_ENABLE_CURRENT +
+						    (AuxId * sizeof(u32)));
+	AuxCfg->Enable =
+		XDfeMix_RdBitField(XDFEMIX_AUXILIARY_ENABLE_ENABLE_WIDTH,
+				   XDFEMIX_AUXILIARY_ENABLE_ENABLE_OFFSET,
+				   Data);
+	AuxCfg->AuxGain =
+		XDfeMix_RdBitField(XDFEMIX_AUXILIARY_ENABLE_GAIN_WIDTH,
+				   XDFEMIX_AUXILIARY_ENABLE_GAIN_OFFSET, Data);
+}
+
+/****************************************************************************/
+/**
+*
+* Writes NEXT CC and antenna configuration.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Configuration data container.
+*
+* @note     It does not write antenna configuration for uplink in switchable
+*           mode.
 *
 ****************************************************************************/
 static void XDfeMix_SetNextCCCfg(const XDfeMix *InstancePtr,
@@ -755,13 +1027,14 @@ static void XDfeMix_SetNextCCCfg(const XDfeMix *InstancePtr,
 	u32 Index;
 	u32 SeqLength;
 	s32 NextCCID[XDFEMIX_SEQ_LENGTH_MAX];
+	u32 RegBank;
 
 	/* Prepare NextCCID[] to be written to registers */
 	for (Index = 0U; Index < XDFEMIX_CC_NUM; Index++) {
 		if ((NextCCCfg->Sequence.CCID[Index] ==
 		     XDFEMIX_SEQUENCE_ENTRY_NULL) ||
 		    (Index >= InstancePtr->SequenceLength)) {
-			NextCCID[Index] = InstancePtr->NotUsedCCID;
+			NextCCID[Index] = NextCCCfg->Sequence.NotUsedCCID;
 		} else {
 			NextCCID[Index] = NextCCCfg->Sequence.CCID[Index];
 		}
@@ -805,6 +1078,24 @@ static void XDfeMix_SetNextCCCfg(const XDfeMix *InstancePtr,
 				 DucDdcConfig);
 	}
 
+	/* Set auxiliary's configuration */
+	for (Index = 0; Index < XDFEMIX_AUX_NCO_MAX; Index++) {
+		XDfeMix_SetAuxiliaryCfg(InstancePtr, Index,
+					&NextCCCfg->AuxiliaryCfg[Index]);
+	}
+
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		RegBank = XDfeMix_RdRegBitField(
+			InstancePtr, XDFEMIX_SWITCHABLE_CONTROL,
+			XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_WIDTH,
+			XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_OFFSET);
+
+		/* Skip antenna setting for uplink */
+		if (RegBank == XDFEMIX_SWITCHABLE_UPLINK) {
+			return;
+		}
+	}
+
 	/* Write Antenna configuration */
 	for (Index = 0; Index < XDFEMIX_ANT_NUM_MAX; Index++) {
 		AntennaCfg += (NextCCCfg->AntennaCfg.Gain[Index] << Index);
@@ -845,21 +1136,25 @@ static u32 XDfeMix_GetPhaccIndex(const XDfeMix *InstancePtr, bool Next,
 /****************************************************************************/
 /**
 *
-* Writes the frequency settings for a given CC's phase accumulator.
+* Writes the frequency settings for a given NCO Id (CC or Auxiliary)
 * The frequency settings for a given CC are shared across all antennas.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
-* @param    Freq Frequency setting for CC.
+* @param    NCOId NCO Id (CC or Auxiliary).
+* @param    Freq Frequency setting for CC or Auxiliary NCO.
 *
 ****************************************************************************/
-static void XDfeMix_SetCCFrequency(const XDfeMix *InstancePtr, bool Next,
-				   s32 CCID, const XDfeMix_Frequency *Freq)
+static void XDfeMix_SetNCOFrequency(const XDfeMix *InstancePtr, bool Next,
+				    s32 NCOId, const XDfeMix_Frequency *Freq)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_FREQ_CONTROL_WORD + Index,
 			 Freq->FrequencyControlWord);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_FREQ_SINGLE_MOD_COUNT + Index,
@@ -868,26 +1163,32 @@ static void XDfeMix_SetCCFrequency(const XDfeMix *InstancePtr, bool Next,
 			 Freq->DualModCount);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_FREQ_PHASE_OFFSET + Index,
 			 Freq->PhaseOffset.PhaseOffset);
-	XDfeMix_WriteReg(InstancePtr, XDFEMIX_FREQ_UPDATE + Index, 1U);
+	XDfeMix_WriteReg(InstancePtr, XDFEMIX_FREQ_UPDATE + Index,
+			 Freq->TriggerUpdateFlag);
 }
 
 /****************************************************************************/
 /**
 *
-* Reads back frequency for particular CCID.
+* Reads back frequency for particular NCO Id (CC or Auxiliary).
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
-* @param    Freq Frequency setting for CC.
+* @param    NCOId NCO Id (CC or Auxiliary).
+* @param    Freq Frequency setting for CC or Auxiliary NCO.
 *
 ****************************************************************************/
-static void XDfeMix_GetCCFrequency(const XDfeMix *InstancePtr, bool Next,
-				   s32 CCID, XDfeMix_Frequency *Freq)
+static void XDfeMix_GetNCOFrequency(const XDfeMix *InstancePtr, bool Next,
+				    s32 NCOId, XDfeMix_Frequency *Freq)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
+
 	Freq->FrequencyControlWord =
 		XDfeMix_ReadReg(InstancePtr, XDFEMIX_FREQ_CONTROL_WORD + Index);
 	Freq->SingleModCount = XDfeMix_ReadReg(
@@ -896,26 +1197,33 @@ static void XDfeMix_GetCCFrequency(const XDfeMix *InstancePtr, bool Next,
 		InstancePtr, XDFEMIX_FREQ_DUAL_MOD_COUNT + Index);
 	Freq->PhaseOffset.PhaseOffset =
 		XDfeMix_ReadReg(InstancePtr, XDFEMIX_FREQ_PHASE_OFFSET + Index);
+	Freq->TriggerUpdateFlag =
+		XDfeMix_ReadReg(InstancePtr, XDFEMIX_FREQ_UPDATE + Index);
 }
 
 /****************************************************************************/
 /**
 *
-* Writes the phase settings for a given CC's phase accumulator. The frequency
-* settings for a given CC are shared across all antennas.
+* Writes the phase settings for a given NCO Id (CC or Auxiliary) phase
+* accumulator. The frequency settings for CC are shared across all antennas.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
-* @param    Phase Phase setting for CC.
+* @param    NCOId NCO Id (CC or Auxiliary).
+* @param    Phase Phase setting for CC and Auxiliary NCO.
 *
 ****************************************************************************/
-static void XDfeMix_SetCCPhase(const XDfeMix *InstancePtr, bool Next, s32 CCID,
-			       const XDfeMix_Phase *Phase)
+static void XDfeMix_SetNCOPhase(const XDfeMix *InstancePtr, bool Next,
+				s32 NCOId, const XDfeMix_Phase *Phase)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
+
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_PHASE_UPDATE_ACC + Index,
 			 Phase->PhaseAcc);
 	XDfeMix_WriteReg(InstancePtr,
@@ -923,32 +1231,40 @@ static void XDfeMix_SetCCPhase(const XDfeMix *InstancePtr, bool Next, s32 CCID,
 			 Phase->DualModCount);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_PHASE_UPDATE_DUAL_MOD_SEL + Index,
 			 Phase->DualModSel);
-	XDfeMix_WriteReg(InstancePtr, XDFEMIX_PHASE_UPDATE + Index, 1U);
+	XDfeMix_WriteReg(InstancePtr, XDFEMIX_PHASE_UPDATE + Index,
+			 Phase->TriggerUpdateFlag);
 }
 
 /****************************************************************************/
 /**
 *
-* Reads back phase from AXI-lite registers for particular CCID.
+* Reads back phase from AXI-lite registers for particular NCOId.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
-* @param    Phase Phase setting for CC.
+* @param    NCOId NCO Id (CC or Auxiliary).
+* @param    Phase Phase setting for CC and Auxiliary NCO.
 *
 ****************************************************************************/
-static void XDfeMix_GetCCPhase(const XDfeMix *InstancePtr, bool Next, s32 CCID,
-			       XDfeMix_Phase *Phase)
+static void XDfeMix_GetNCOPhase(const XDfeMix *InstancePtr, bool Next,
+				s32 NCOId, XDfeMix_Phase *Phase)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
+
 	Phase->PhaseAcc =
 		XDfeMix_ReadReg(InstancePtr, XDFEMIX_PHASE_CAPTURE_ACC + Index);
 	Phase->DualModCount = XDfeMix_ReadReg(
 		InstancePtr, XDFEMIX_PHASE_CAPTURE_DUAL_MOD_COUNT + Index);
 	Phase->DualModSel = XDfeMix_ReadReg(
 		InstancePtr, XDFEMIX_PHASE_CAPTURE_DUAL_MOD_SEL + Index);
+	Phase->TriggerUpdateFlag =
+		XDfeMix_ReadReg(InstancePtr, XDFEMIX_PHASE_UPDATE + Index);
 }
 
 /****************************************************************************/
@@ -962,8 +1278,8 @@ static void XDfeMix_GetCCPhase(const XDfeMix *InstancePtr, bool Next, s32 CCID,
 * @param    Enable Flag that enables a phase accumulator.
 *
 ****************************************************************************/
-static void XDfeMix_SetCCPhaseAccumEnable(const XDfeMix *InstancePtr, bool Next,
-					  s32 CCID, bool Enable)
+static void XDfeMix_SetNCOPhaseAccumEnable(const XDfeMix *InstancePtr,
+					   bool Next, s32 CCID, bool Enable)
 {
 	u32 Index;
 	u32 Data = 0U;
@@ -1050,16 +1366,21 @@ static void XDfeMix_SetPhaseOffset(XDfeMix_Frequency *Frequency,
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
-* @param    NCOGain NCO attenuation.
+* @param    NCOId NCO Id (CC or Auxiliary).
+* @param    NCOGain NCO attenuation for CC or Auxiliary NCO.
 *
 ****************************************************************************/
-static void XDfeMix_SetCCNCOGain(const XDfeMix *InstancePtr, bool Next,
-				 s32 CCID, u32 NCOGain)
+static void XDfeMix_SetNCOGain(const XDfeMix *InstancePtr, bool Next, s32 NCOId,
+			       u32 NCOGain)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
+
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_NCO_GAIN + Index, NCOGain);
 }
 
@@ -1070,16 +1391,21 @@ static void XDfeMix_SetCCNCOGain(const XDfeMix *InstancePtr, bool Next,
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Next TRUE - read next config, FALSE - read current config.
-* @param    CCID Channel ID.
+* @param    NCOId NCO Id (CC or Auxiliary).
 *
 * @return   NCO attenuation.
 *
 ****************************************************************************/
-static u32 XDfeMix_GetCCNCOGain(const XDfeMix *InstancePtr, bool Next, s32 CCID)
+static u32 XDfeMix_GetNCOGain(const XDfeMix *InstancePtr, bool Next, s32 NCOId)
 {
 	u32 Index;
 
-	Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, CCID);
+	if (NCOId < XDFEMIX_CC_NUM) {
+		Index = XDfeMix_GetPhaccIndex(InstancePtr, Next, NCOId);
+	} else {
+		Index = NCOId * XDFEMIX_PHAC_CCID_ADDR_STEP;
+	}
+
 	return XDfeMix_ReadReg(InstancePtr, XDFEMIX_NCO_GAIN + Index);
 }
 
@@ -1216,6 +1542,177 @@ static void XDfeMix_DisableLowPowerTrigger(const XDfeMix *InstancePtr)
 				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Data,
 				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_DISABLED);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_LOW_POWER_OFFSET, Data);
+}
+
+/****************************************************************************/
+/**
+*
+* Enables the SWITCH triggers.
+*
+* @param    InstancePtr Pointer to the Channel Filter instance.
+*
+****************************************************************************/
+static void XDfeMix_EnableSwitchTrigger(const XDfeMix *InstancePtr)
+{
+	u32 Data;
+
+	Data = XDfeMix_ReadReg(InstancePtr, XDFEMIX_TRIGGERS_SWITCH_OFFSET);
+	Data = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Data,
+				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_ENABLED);
+	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_SWITCH_OFFSET, Data);
+}
+
+/****************************************************************************/
+/**
+*
+* Disables the SWITCH triggers.
+*
+* @param    InstancePtr Pointer to the Channel Filter instance.
+*
+****************************************************************************/
+static void XDfeMix_DisableSwitchTrigger(const XDfeMix *InstancePtr)
+{
+	u32 Data;
+
+	Data = XDfeMix_ReadReg(InstancePtr, XDFEMIX_TRIGGERS_SWITCH_OFFSET);
+	Data = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Data,
+				  XDFEMIX_TRIGGERS_TRIGGER_ENABLE_DISABLED);
+	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_SWITCH_OFFSET, Data);
+}
+
+/****************************************************************************/
+/**
+*
+* Checks are CCID or NCOIdx already used.
+* Checks ARCH4 and ARCH5 mode validity.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    NCOIdx New NCO Idx to be used.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32 XDfeMix_CheckCarrierCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
+				   u32 NCOIdx)
+{
+	u32 Index;
+
+	/* Check is NCOIdx valid */
+	if (NCOIdx >= InstancePtr->Config.MaxUseableCcids) {
+		metal_log(METAL_LOG_ERROR,
+			  "NCOIdx %d is greater than MaxUseableCcids %d\n",
+			  NCOIdx, InstancePtr->Config.MaxUseableCcids);
+		return XST_FAILURE;
+	}
+
+	/* Check is NCOId already used */
+	for (Index = 0; Index < InstancePtr->SequenceLength; Index++) {
+		if ((CCCfg->DUCDDCCfg[Index].NCOIdx == NCOIdx) &&
+		    (CCCfg->DUCDDCCfg[Index].Rate !=
+		     XDFEMIX_CC_CONFIG_DISABLED)) {
+			metal_log(METAL_LOG_ERROR,
+				  "NCOIdx %d is already used on CCID %d\n",
+				  NCOIdx, Index);
+			return XST_FAILURE;
+		}
+	}
+	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
+* Checks are CCID and NCOIdx already used when adding CC.
+* Checks ARCH4 and ARCH5 mode validity, as well.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    CCID Channel ID.
+* @param    CCSeqBitmap CC slot position container.
+* @param    NCOIdx New NCO Idx to be used.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32 XDfeMix_CheckCarrierCfginAddCC(XDfeMix *InstancePtr,
+					  XDfeMix_CCCfg *CCCfg, s32 CCID,
+					  u32 CCSeqBitmap, u32 NCOIdx)
+{
+	/* Check is CCID already used */
+	if (CCCfg->DUCDDCCfg[CCID].Rate != XDFEMIX_CC_CONFIG_DISABLED) {
+		metal_log(METAL_LOG_ERROR, "CCID %d is already used\n", CCID);
+		return XST_FAILURE;
+	}
+
+	if (XST_FAILURE ==
+	    XDfeMix_CheckCarrierCfg(InstancePtr, CCCfg, NCOIdx)) {
+		return XST_FAILURE;
+	}
+
+	/* Check ARCH4 and ARCH5 mode validity */
+	if (XDFEMIX_IS_ARCH4_MODE) {
+		if (XST_FAILURE ==
+		    XDfeMix_NCOArch4ModeInAddCC(InstancePtr, CCCfg, CCID,
+						CCSeqBitmap, NCOIdx)) {
+			return XST_FAILURE;
+		}
+	} else if (XDFEMIX_IS_ARCH5_MODE) {
+		if (XST_FAILURE ==
+		    XDfeMix_NCOArch5ModeInAddCC(InstancePtr, CCCfg, CCID,
+						CCSeqBitmap, NCOIdx)) {
+			return XST_FAILURE;
+		}
+	}
+
+	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
+* Checks are CCID and NCOIdx already used when updating CC.
+* Checks ARCH4 and ARCH5 mode validity, as well.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    CCID Channel ID.
+* @param    NCOIdx New NCO Idx to be used.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+static u32 XDfeMix_CheckCarrierCfgInUpdateCC(XDfeMix *InstancePtr,
+					     XDfeMix_CCCfg *CCCfg, s32 CCID,
+					     u32 NCOIdx)
+{
+	if (XST_FAILURE ==
+	    XDfeMix_CheckCarrierCfg(InstancePtr, CCCfg, NCOIdx)) {
+		return XST_FAILURE;
+	}
+
+	/* Check ARCH4 and ARCH5 mode validity */
+	if (XDFEMIX_IS_ARCH4_MODE) {
+		if (XST_FAILURE == XDfeMix_NCOArch4ModeInMoveOrUpdateCC(
+					   InstancePtr, CCCfg, CCID, NCOIdx)) {
+			return XST_FAILURE;
+		}
+	} else if (XDFEMIX_IS_ARCH5_MODE) {
+		if (XST_FAILURE == XDfeMix_NCOArch5ModeInMoveOrUpdateCC(
+					   InstancePtr, CCCfg, CCID, NCOIdx)) {
+			return XST_FAILURE;
+		}
+	}
+
+	return XST_SUCCESS;
 }
 
 /**
@@ -1481,11 +1978,48 @@ void XDfeMix_Configure(XDfeMix *InstancePtr, XDfeMix_Cfg *Cfg)
 	InstancePtr->StateId = XDFEMIX_STATE_CONFIGURED;
 }
 
+/**
+* @cond nocomments
+*/
 /****************************************************************************/
 /**
 *
-* DFE Mixer driver one time initialisation and moves the state machine to
-* a Initialised state.
+* Cleaning CC and AUX NEXT registers.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+*
+****************************************************************************/
+static void XDfeMix_CleanNextReg(XDfeMix *InstancePtr, u32 SequenceLength)
+{
+	u32 Index;
+	u32 Offset;
+
+	XDfeMix_WriteReg(InstancePtr, XDFEMIX_SEQUENCE_LENGTH_NEXT,
+			 SequenceLength);
+	for (Index = 0; Index < XDFEMIX_SEQ_LENGTH_MAX; Index++) {
+		Offset = XDFEMIX_SEQUENCE_NEXT + (sizeof(u32) * Index);
+		XDfeMix_WriteReg(InstancePtr, Offset,
+				 XDFEMIX_SEQUENCE_ENTRY_DEFAULT);
+	}
+	for (Index = 0; Index < XDFEMIX_CC_NUM; Index++) {
+		Offset = XDFEMIX_CC_CONFIG_NEXT + (sizeof(u32) * Index);
+		XDfeMix_WriteReg(InstancePtr, Offset, 0U);
+	}
+	for (Index = 0; Index < XDFEMIX_AUX_NCO_MAX; Index++) {
+		Offset = XDFEMIX_AUXILIARY_ENABLE_NEXT + (sizeof(u32) * Index);
+		XDfeMix_WriteReg(InstancePtr, Offset, 0U);
+	}
+}
+/**
+* @endcond
+*/
+
+/****************************************************************************/
+/**
+*
+* DFE Mixer driver one time initialisation which sets registers to
+* initialisation values, moves the state machine to Initialised state and
+* in switchable mode sets Uplink registers to initialisation value.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    Init Initialisation data container.
@@ -1495,8 +2029,6 @@ void XDfeMix_Initialize(XDfeMix *InstancePtr, XDfeMix_Init *Init)
 {
 	XDfeMix_Trigger CCUpdate;
 	u32 Data;
-	u32 Index;
-	u32 Offset;
 	u32 SequenceLength;
 
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1511,31 +2043,47 @@ void XDfeMix_Initialize(XDfeMix *InstancePtr, XDfeMix_Init *Init)
 
 	XDfeMix_SetPLMixerDelay(InstancePtr);
 
-	/* Write "one-time" Sequence length */
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		Xil_AssertVoid(Init->TuserSelect <=
+			       XDFEMIX_SWITCHABLE_CONTROL_TUSER_SEL_UPLINK);
+		/* Write "one-time" tuser select. If the core is configured for
+		   non-switchable mode override tuser select so that the default tuser
+		   channel is used */
+		XDfeMix_WrRegBitField(
+			InstancePtr, XDFEMIX_SWITCHABLE_CONTROL,
+			XDFEMIX_SWITCHABLE_CONTROL_TUSER_SEL_WIDTH,
+			XDFEMIX_SWITCHABLE_CONTROL_TUSER_SEL_OFFSET,
+			Init->TuserSelect);
+
+		/* Set register bank to DOWNLINK. */
+		XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_DOWNLINK);
+	} else {
+		Init->TuserSelect = 0U;
+	}
+
+	/* Not used CC index for DL (NotUsedCCID) and UL (NotUsedCCID_UL) in
+	   switchable mode otherwise just NotUsedCCID will be relevant */
 	InstancePtr->NotUsedCCID = 0;
+	InstancePtr->NotUsedCCID_UL = 0;
+	/* Write "one-time" Sequence length. InstancePtr->SequenceLength holds
+	   the exact sequence length value as register sequence length value 0
+	   can be understod as length 0 or 1 */
 	InstancePtr->SequenceLength = Init->Sequence.Length;
 	if (Init->Sequence.Length == 0) {
 		SequenceLength = 0U;
 	} else {
 		SequenceLength = Init->Sequence.Length - 1U;
 	}
-	XDfeMix_WriteReg(InstancePtr, XDFEMIX_SEQUENCE_LENGTH_NEXT,
-			 SequenceLength);
+	XDfeMix_CleanNextReg(InstancePtr, SequenceLength);
 
-	/* Set default sequence and ensure all CCs are disabled. Not all
-	   registers will be cleared by reset as they are implemented using
-	   DRAM. This step sets all CC_CONFIGURATION.CARRIER_CONFIGURATION.
-	   CURRENT[*]. ENABLE to 0 ensuring the Hardblock will remain disabled
-	   following the first call to XDFEMIXilterActivate. */
-	for (Index = 0; Index < XDFEMIX_SEQ_LENGTH_MAX; Index++) {
-		Offset = XDFEMIX_SEQUENCE_NEXT + (sizeof(u32) * Index);
-		XDfeMix_WriteReg(InstancePtr, Offset,
-				 XDFEMIX_SEQUENCE_ENTRY_DEFAULT);
-		Init->Sequence.CCID[Index] = XDFEMIX_SEQUENCE_ENTRY_NULL;
-	}
-	for (Index = 0; Index < XDFEMIX_CC_NUM; Index++) {
-		Offset = XDFEMIX_CC_CONFIG_NEXT + (sizeof(u32) * Index);
-		XDfeMix_WriteReg(InstancePtr, Offset, 0U);
+	/* Write to second bank if switchable */
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		/* Set default sequence and ensure all CCs are disabled for UPLINK. */
+		XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_UPLINK);
+		XDfeMix_CleanNextReg(InstancePtr, SequenceLength);
+
+		/* Set default sequence and ensure all CCs are disabled for DOWNLINK. */
+		XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_DOWNLINK);
 	}
 
 	/* Trigger CC_UPDATE immediately using Register source to update
@@ -1555,13 +2103,24 @@ void XDfeMix_Initialize(XDfeMix *InstancePtr, XDfeMix_Init *Init)
 				  CCUpdate.Mode);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_CC_UPDATE_OFFSET, Data);
 
+	XDfeMix_CleanNextReg(InstancePtr, SequenceLength);
+
+	/* Write to second bank if switchable */
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		/* Set default sequence and ensure all CCs are disabled for UPLINK. */
+		XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_UPLINK);
+
+		XDfeMix_CleanNextReg(InstancePtr, SequenceLength);
+		/* Set default sequence and ensure all CCs are disabled for DOWNLINK. */
+		XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_DOWNLINK);
+	}
 	InstancePtr->StateId = XDFEMIX_STATE_INITIALISED;
 }
 
 /*****************************************************************************/
 /**
 *
-* Activates Mixer and moves the state machine to an Activated state.
+* Enables triggers and moves the state machine to an Activated state.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    EnableLowPower Flag indicating low power.
@@ -1593,6 +2152,10 @@ void XDfeMix_Activate(XDfeMix *InstancePtr, bool EnableLowPower)
 		XDfeMix_EnableLowPowerTrigger(InstancePtr);
 	}
 
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		XDfeMix_EnableSwitchTrigger(InstancePtr);
+	}
+
 	/* Mixer is operational now, change a state */
 	InstancePtr->StateId = XDFEMIX_STATE_OPERATIONAL;
 }
@@ -1600,7 +2163,7 @@ void XDfeMix_Activate(XDfeMix *InstancePtr, bool EnableLowPower)
 /*****************************************************************************/
 /**
 *
-* Deactivates Mixer and moves the state machine to Initialised state.
+* Deactivates triggers and moves the state machine to Initialised state.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 *
@@ -1629,6 +2192,11 @@ void XDfeMix_Deactivate(XDfeMix *InstancePtr)
 	/* Enable Deactivate trigger */
 	XDfeMix_EnableDeactivateTrigger(InstancePtr);
 
+	/* Disable Switch trigger (may not be enabled) */
+	if (InstancePtr->Config.Mode == XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		XDfeMix_DisableSwitchTrigger(InstancePtr);
+	}
+
 	InstancePtr->StateId = XDFEMIX_STATE_INITIALISED;
 }
 
@@ -1653,7 +2221,7 @@ XDfeMix_StateId XDfeMix_GetStateID(XDfeMix *InstancePtr)
 /****************************************************************************/
 /**
 *
-* Returns the current CC configuration. Not used slot ID in a sequence
+* Returns the current CC and NCO configurations. Not used slot ID in a sequence
 * (Sequence.CCID[Index]) are represented as (-1), not the value in registers.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
@@ -1663,13 +2231,34 @@ XDfeMix_StateId XDfeMix_GetStateID(XDfeMix *InstancePtr)
 void XDfeMix_GetCurrentCCCfg(const XDfeMix *InstancePtr,
 			     XDfeMix_CCCfg *CurrCCCfg)
 {
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(CurrCCCfg != NULL);
+
+	CurrCCCfg->Sequence.NotUsedCCID = InstancePtr->NotUsedCCID;
+	XDfeMix_GetCurrentCCCfgLocal(InstancePtr, CurrCCCfg);
+}
+
+/**
+* @cond nocomments
+*/
+/****************************************************************************/
+/**
+*
+* Returns the current CC and NCO configurations. Not used slot ID in a sequence
+* (Sequence.CCID[Index]) are represented as (-1), not the value in registers.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CurrCCCfg CC configuration container.
+*
+****************************************************************************/
+static void XDfeMix_GetCurrentCCCfgLocal(const XDfeMix *InstancePtr,
+					 XDfeMix_CCCfg *CurrCCCfg)
+{
 	u32 SeqLen;
 	u32 AntennaCfg = 0U;
 	u32 Data;
 	u32 Offset;
 	u32 Index;
-	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(CurrCCCfg != NULL);
 
 	/* Read CCID sequence and carrier configurations */
 	for (Index = 0; Index < XDFEMIX_CC_NUM; Index++) {
@@ -1689,7 +2278,7 @@ void XDfeMix_GetCurrentCCCfg(const XDfeMix *InstancePtr,
 	/* Convert not used CC to -1 */
 	for (Index = 0; Index < XDFEMIX_CC_NUM; Index++) {
 		if ((CurrCCCfg->Sequence.CCID[Index] ==
-		     InstancePtr->NotUsedCCID) ||
+		     CurrCCCfg->Sequence.NotUsedCCID) ||
 		    (Index >= InstancePtr->SequenceLength)) {
 			CurrCCCfg->Sequence.CCID[Index] =
 				XDFEMIX_SEQUENCE_ENTRY_NULL;
@@ -1711,9 +2300,14 @@ void XDfeMix_GetCurrentCCCfg(const XDfeMix *InstancePtr,
 					   XDFEMIX_CC_CONFIG_CC_GAIN_OFFSET,
 					   Data);
 	}
+	/* Get auxiliary's gain */
+	for (Index = 0; Index < XDFEMIX_AUX_NCO_MAX; Index++) {
+		XDfeMix_GetAuxiliaryGain(InstancePtr, Index,
+					 &CurrCCCfg->AuxiliaryCfg[Index]);
+	}
 
 	/* Read NCO configurations */
-	for (Index = 0; Index <= XDFEMIX_NCO_MAX; Index++) {
+	for (Index = 0; Index < XDFEMIX_NCO_MAX; Index++) {
 		/* Get frequency configuration */
 		Offset = XDFEMIX_FREQ_CONTROL_WORD +
 			 (Index * XDFEMIX_PHAC_CCID_ADDR_STEP);
@@ -1757,6 +2351,51 @@ void XDfeMix_GetCurrentCCCfg(const XDfeMix *InstancePtr,
 		CurrCCCfg->AntennaCfg.Gain[Index] =
 			(AntennaCfg >> Index) & XDFEMIX_ONE_ANTENNA_GAIN_ZERODB;
 	}
+}
+/**
+* @endcond
+*/
+
+/****************************************************************************/
+/**
+*
+* Returns the current CC and NCO configuration for Downlink and Uplink in
+* switchable mode.  Not used slot ID in a sequence (Sequence.CCID[Index]) are
+* represented as (-1), not the value in registers.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfgDownlink Downlink CC configuration container.
+* @param    CCCfgUplink Uplink CC configuration container.
+*
+****************************************************************************/
+void XDfeMix_GetCurrentCCCfgSwitchable(const XDfeMix *InstancePtr,
+				       XDfeMix_CCCfg *CCCfgDownlink,
+				       XDfeMix_CCCfg *CCCfgUplink)
+{
+	u32 RegBank;
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(CCCfgDownlink != NULL);
+	Xil_AssertVoid(CCCfgUplink != NULL);
+	Xil_AssertVoid(InstancePtr->Config.Mode ==
+		       XDFEMIX_MODEL_PARAM_1_SWITCHABLE);
+
+	RegBank = XDfeMix_RdRegBitField(
+		InstancePtr, XDFEMIX_SWITCHABLE_CONTROL,
+		XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_WIDTH,
+		XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_OFFSET);
+
+	/* Set Downlink register bank */
+	XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_DOWNLINK);
+	CCCfgDownlink->Sequence.NotUsedCCID = InstancePtr->NotUsedCCID;
+	XDfeMix_GetCurrentCCCfgLocal(InstancePtr, CCCfgDownlink);
+
+	/* Set Uplink register bank */
+	XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_UPLINK);
+	CCCfgUplink->Sequence.NotUsedCCID = InstancePtr->NotUsedCCID_UL;
+	XDfeMix_GetCurrentCCCfgLocal(InstancePtr, CCCfgUplink);
+
+	/* Set to the current register bank */
+	XDfeMix_SetRegBank(InstancePtr, RegBank);
 }
 
 /****************************************************************************/
@@ -1872,6 +2511,12 @@ void XDfeMix_SetAntennaCfgInCCCfg(const XDfeMix *InstancePtr,
 * - CCIDSequence.CCID[i] = CCID  - if [i] is used slot
 * - a returned CCIDSequence->Length = length in register + 1
 *
+* The hardware is implemented in ARCH4 if MAX_USEABLE_CCIDS == 8 and LANES > 1
+* also, the hardware is implemented in ARCH5 if MAX_USEABLE_CCIDS == 16.
+* When ARCH4 or ARCH5 is implemented NCO to channel allocation will be
+* verified. Each sub-block (4 NCOs in width) can only be allocated a certain
+* percentage of the chosen sequence length, 50% for ARCH4 or 25% for ARCH5.
+*
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    CCCfg Component carrier (CC) configuration container.
 * @param    CCID Channel ID to be added to configuration, range [0-15].
@@ -1895,17 +2540,13 @@ u32 XDfeMix_AddCCtoCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg, s32 CCID,
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 	Xil_AssertNonvoid(NCO != NULL);
 
-	/* Check is Mixer in ARCH4 mode */
-	if (XDFEMIX_IS_ARCH4_MODE) {
-		if (XST_FAILURE ==
-		    XDfeMix_NCOArch4ModeInAddCC(InstancePtr, CCCfg, CCID,
-						CCSeqBitmap,
-						CarrierCfg->DUCDDCCfg.NCOIdx)) {
-			metal_log(METAL_LOG_ERROR,
-				  "NCO failure in ARCH4 mode in %s\n",
-				  __func__);
-			return XST_FAILURE;
-		}
+	if (XST_FAILURE == XDfeMix_CheckCarrierCfginAddCC(
+				   InstancePtr, CCCfg, CCID, CCSeqBitmap,
+				   CarrierCfg->DUCDDCCfg.NCOIdx)) {
+		metal_log(
+			METAL_LOG_ERROR,
+			"AddCCtoCCCfg failed on carrier configuration check\n");
+		return XST_FAILURE;
 	}
 
 	/* Try to add CC to sequence and update carrier configuration */
@@ -1921,7 +2562,7 @@ u32 XDfeMix_AddCCtoCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg, s32 CCID,
 	if (XST_FAILURE == XDfeMix_SetCCDDC(InstancePtr, CCCfg, CCID,
 					    CCSeqBitmap,
 					    &CarrierCfg->DUCDDCCfg)) {
-		metal_log(METAL_LOG_ERROR, "AddCC failed on SetCCDDC\n");
+		metal_log(METAL_LOG_ERROR, "AddCCtoCCCfg failed on SetCCDDC\n");
 		return XST_FAILURE;
 	}
 
@@ -1953,8 +2594,59 @@ void XDfeMix_RemoveCCfromCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 
 	/* Remove CCID from sequence and mark carrier configuration as
 	   disabled */
-	XDfeMix_RemoveCCID(InstancePtr, CCID, &CCCfg->Sequence);
+	XDfeMix_RemoveCCID(CCID, &CCCfg->Sequence);
 	CCCfg->DUCDDCCfg[CCID].Rate = 0U;
+}
+
+/****************************************************************************/
+/**
+*
+* Adds specified auxiliary NCO, with specified configuration, to a local CCCfg.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg CC and Auxiliry NCO configuration container.
+* @param    AuxId Auxiliary NCO ID to be disabled, range [0-3].
+* @param    NCO NCO configuration container.
+* @param    AuxCfg Auxiliary NCO configuration container.
+*
+****************************************************************************/
+void XDfeMix_AddAuxNCOtoCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
+			      const s32 AuxId, const XDfeMix_NCO *NCO,
+			      const XDfeMix_AuxiliaryCfg *AuxCfg)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(CCCfg != NULL);
+	Xil_AssertVoid(AuxId < XDFEMIX_AUX_NCO_MAX);
+	Xil_AssertVoid(NCO != NULL);
+	Xil_AssertVoid(AuxCfg != NULL);
+
+	/* Update NCO registers for CCID */
+	CCCfg->NCO[XDFEMIX_CC_NUM + AuxId] = *NCO;
+	/* copy auxiliary NCO */
+	CCCfg->AuxiliaryCfg[AuxId] = *AuxCfg;
+}
+
+/****************************************************************************/
+/**
+*
+* Disables specified auxiliary NCO configuration structure.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg Component carrier (CC) configuration container.
+* @param    AuxId Auxiliary NCO ID to be disabled, range [0-3].
+*
+* @note     For a sequence conversion see XDfeMix_AddCCtoCCCfg() comment.
+*
+****************************************************************************/
+void XDfeMix_RemoveAuxNCOfromCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
+				   const s32 AuxId)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(AuxId < XDFEMIX_AUX_NCO_MAX);
+	Xil_AssertVoid(CCCfg != NULL);
+
+	/* Disable auxiliary NCO */
+	CCCfg->AuxiliaryCfg[AuxId].Enable = XDFEMIX_AUXILIARY_ENABLE_DISABLED;
 }
 
 /****************************************************************************/
@@ -1974,8 +2666,10 @@ void XDfeMix_RemoveCCfromCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 *           - XST_SUCCESS if successful.
 *           - XST_FAILURE if error occurs.
 *
+* @note	    For ARCH4/5 mode see XDfeMix_AddCCtoCCCfg() comment.
+*
 ****************************************************************************/
-u32 XDfeMix_UpdateCCinCCCfg(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
+u32 XDfeMix_UpdateCCinCCCfg(XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 			    s32 CCID, const XDfeMix_CarrierCfg *CarrierCfg)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1983,16 +2677,13 @@ u32 XDfeMix_UpdateCCinCCCfg(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
 
-	/* Check is Mixer in ARCH4 mode */
-	if (XDFEMIX_IS_ARCH4_MODE) {
-		if (XST_FAILURE == XDfeMix_NCOArch4ModeInMoveOrUpdateCC(
-					   InstancePtr, CCCfg, CCID,
-					   CarrierCfg->DUCDDCCfg.NCOIdx)) {
-			metal_log(METAL_LOG_ERROR,
-				  "NCO failure in ARCH4 mode in %s\n",
-				  __func__);
-			return XST_FAILURE;
-		}
+	if (XST_FAILURE ==
+	    XDfeMix_CheckCarrierCfgInUpdateCC(InstancePtr, CCCfg, CCID,
+					      CarrierCfg->DUCDDCCfg.NCOIdx)) {
+		metal_log(
+			METAL_LOG_ERROR,
+			"UpdateCCtoCCCfg failed on carrier configuration check\n");
+		return XST_FAILURE;
 	}
 
 	/* Update carrier configuration NEXT registers */
@@ -2019,12 +2710,9 @@ u32 XDfeMix_UpdateCCinCCCfg(const XDfeMix *InstancePtr, XDfeMix_CCCfg *CCCfg,
 *           - XST_FAILURE if error occurs.
 *
 ****************************************************************************/
-u32 XDfeMix_SetNextCCCfgAndTrigger(const XDfeMix *InstancePtr,
+u32 XDfeMix_SetNextCCCfgAndTrigger(XDfeMix *InstancePtr,
 				   const XDfeMix_CCCfg *CCCfg)
 {
-	u32 Index;
-	u32 NCOIdx;
-
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(CCCfg != NULL);
 
@@ -2032,28 +2720,150 @@ u32 XDfeMix_SetNextCCCfgAndTrigger(const XDfeMix *InstancePtr,
 	XDfeMix_SetNextCCCfg(InstancePtr, CCCfg);
 
 	/* Update all NCO registers */
-	for (Index = 0U; Index < XDFEMIX_CC_NUM; Index++) {
-		if (CCCfg->DUCDDCCfg[Index].Rate ==
-		    XDFEMIX_CC_CONFIG_RATE_DISABLED) {
-			continue;
-		}
-		NCOIdx = CCCfg->DUCDDCCfg[Index].NCOIdx;
-		if (NCOIdx >= InstancePtr->Config.MaxUseableCcids) {
-			metal_log(METAL_LOG_ERROR,
-				  "NCOIdx %d is greater than %d\n", NCOIdx,
-				  InstancePtr->Config.MaxUseableCcids);
-			continue;
-		}
-		XDfeMix_SetCCFrequency(InstancePtr, XDFEMIXER_NEXT, Index,
-				       &CCCfg->NCO[NCOIdx].FrequencyCfg);
-		XDfeMix_SetCCPhase(InstancePtr, XDFEMIXER_NEXT, Index,
-				   &CCCfg->NCO[NCOIdx].PhaseCfg);
-		XDfeMix_SetCCNCOGain(InstancePtr, XDFEMIXER_NEXT, Index,
-				     CCCfg->NCO[NCOIdx].NCOGain);
-	}
+	XDfeMix_SetNCORegisters(InstancePtr, CCCfg);
 
 	/* Trigger the update */
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfg->Sequence.NotUsedCCID;
+		return XST_SUCCESS;
+	}
+	metal_log(METAL_LOG_ERROR,
+		  "CC Update Trigger failed in %s. Restart the system\n",
+		  __func__);
+	return XST_FAILURE;
+}
+
+/**
+* @cond nocomments
+*/
+/****************************************************************************/
+/**
+*
+* Writes local CC configuration to both CC and AUX NCO registers.
+*
+* @param    InstancePtr Pointer to the Mixer instance.
+* @param    CCCfg CC configuration container.
+*
+****************************************************************************/
+static void XDfeMix_SetNCORegisters(const XDfeMix *InstancePtr,
+				    const XDfeMix_CCCfg *CCCfg)
+{
+	u32 Index;
+	u32 NCOIdx;
+	u32 Data;
+	for (Index = 0U; Index < XDFEMIX_NCO_MAX; Index++) {
+		if (Index < XDFEMIX_CC_NUM) {
+			if (CCCfg->DUCDDCCfg[Index].Rate ==
+			    XDFEMIX_CC_CONFIG_DISABLED) {
+				continue;
+			}
+			NCOIdx = CCCfg->DUCDDCCfg[Index].NCOIdx;
+			if (NCOIdx >= InstancePtr->Config.MaxUseableCcids) {
+				metal_log(METAL_LOG_ERROR,
+					  "NCOIdx %d is greater than %d\n",
+					  NCOIdx,
+					  InstancePtr->Config.MaxUseableCcids);
+				continue;
+			}
+		} else {
+			/* Write auxiliary NCO configurations */
+			Data = XDfeMix_WrBitField(
+				XDFEMIX_AUXILIARY_ENABLE_ENABLE_WIDTH,
+				XDFEMIX_AUXILIARY_ENABLE_ENABLE_OFFSET, Data,
+				CCCfg->AuxiliaryCfg[Index - XDFEMIX_CC_NUM]
+					.Enable);
+			Data = XDfeMix_WrBitField(
+				XDFEMIX_AUXILIARY_ENABLE_GAIN_WIDTH,
+				XDFEMIX_AUXILIARY_ENABLE_GAIN_OFFSET, Data,
+				CCCfg->AuxiliaryCfg[Index - XDFEMIX_CC_NUM]
+					.AuxGain);
+			XDfeMix_WriteReg(InstancePtr,
+					 XDFEMIX_AUXILIARY_ENABLE_NEXT, Data);
+
+			if (CCCfg->AuxiliaryCfg[Index - XDFEMIX_CC_NUM].Enable ==
+			    XDFEMIX_AUXILIARY_ENABLE_DISABLED) {
+				continue;
+			}
+			NCOIdx = Index;
+		}
+		XDfeMix_SetNCOFrequency(InstancePtr, XDFEMIXER_NEXT, Index,
+					&CCCfg->NCO[NCOIdx].FrequencyCfg);
+		XDfeMix_SetNCOPhase(InstancePtr, XDFEMIXER_NEXT, Index,
+				    &CCCfg->NCO[NCOIdx].PhaseCfg);
+		XDfeMix_SetNCOGain(InstancePtr, XDFEMIXER_NEXT, Index,
+				   CCCfg->NCO[NCOIdx].NCOGain);
+	}
+}
+/**
+* @endcond
+*/
+
+/****************************************************************************/
+/**
+*
+* Writes local CC configuration to the shadow (NEXT) registers and triggers
+* copying from shadow to operational (CURRENT) registers for both Downlink
+* and Upling in switchable mode.
+*
+* @param    InstancePtr Pointer to the Ccf instance.
+* @param    CCCfgDownlink Downlink CC configuration container.
+* @param    CCCfgUplink Uplink CC configuration container.
+*
+* @return
+*           - XST_SUCCESS if successful.
+*           - XST_FAILURE if error occurs.
+*
+****************************************************************************/
+u32 XDfeMix_SetNextCCCfgAndTriggerSwitchable(XDfeMix *InstancePtr,
+					     XDfeMix_CCCfg *CCCfgDownlink,
+					     XDfeMix_CCCfg *CCCfgUplink)
+{
+	u32 RegBank;
+	u32 Return;
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(CCCfgDownlink != NULL);
+	Xil_AssertNonvoid(CCCfgUplink != NULL);
+	Xil_AssertNonvoid(InstancePtr->Config.Mode ==
+			  XDFEMIX_MODEL_PARAM_1_SWITCHABLE);
+
+	RegBank = XDfeMix_RdRegBitField(
+		InstancePtr, XDFEMIX_SWITCHABLE_CONTROL,
+		XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_WIDTH,
+		XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_OFFSET);
+
+	/* Write CCCfg into DOWNLINK registers */
+	/* Set Downlink register bank */
+	XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_DOWNLINK);
+	/* Update carrier configuration NEXT registers */
+	XDfeMix_SetNextCCCfg(InstancePtr, CCCfgDownlink);
+	/* Update all NCO registers */
+	XDfeMix_SetNCORegisters(InstancePtr, CCCfgDownlink);
+
+	/* Set CCCfg into UPLINK registers */
+	/* Set Uplink register bank */
+	XDfeMix_SetRegBank(InstancePtr, XDFEMIX_SWITCHABLE_UPLINK);
+	/* Update carrier configuration NEXT registers */
+	XDfeMix_SetNextCCCfg(InstancePtr, CCCfgUplink);
+	/* Update all NCO registers */
+	XDfeMix_SetNCORegisters(InstancePtr, CCCfgUplink);
+
+	/* Trigger update */
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfgDownlink->Sequence.NotUsedCCID;
+		InstancePtr->NotUsedCCID_UL = CCCfgUplink->Sequence.NotUsedCCID;
+		Return = XST_SUCCESS;
+	} else {
+		metal_log(
+			METAL_LOG_ERROR,
+			"CC Update Trigger failed in %s. Restart the system\n",
+			__func__);
+		Return = XST_FAILURE;
+	}
+
+	/* Set to the current register bank */
+	XDfeMix_SetRegBank(InstancePtr, RegBank);
+
+	return Return;
 }
 
 /****************************************************************************/
@@ -2082,6 +2892,7 @@ u32 XDfeMix_SetNextCCCfgAndTrigger(const XDfeMix *InstancePtr,
 *
 * @note     Clear event status with XDfeMix_ClearEventStatus() before
 *           running this API.
+* @note	    For ARCH4/5 mode see XDfeMix_AddCCtoCCCfg() comment.
 *
 ****************************************************************************/
 u32 XDfeMix_AddCC(XDfeMix *InstancePtr, s32 CCID, u32 CCSeqBitmap,
@@ -2094,33 +2905,21 @@ u32 XDfeMix_AddCC(XDfeMix *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
 	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(CarrierCfg != NULL);
-	Xil_AssertNonvoid(CarrierCfg->DUCDDCCfg.NCOIdx <= XDFEMIX_NCO_MAX);
+	Xil_AssertNonvoid(CarrierCfg->DUCDDCCfg.NCOIdx < XDFEMIX_NCO_MAX);
 	Xil_AssertNonvoid(CarrierCfg->DUCDDCCfg.CCGain <= XDFEMIX_CC_GAIN_MAX);
 	Xil_AssertNonvoid(NCO != NULL);
-
-	if (CarrierCfg->DUCDDCCfg.NCOIdx >=
-	    InstancePtr->Config.MaxUseableCcids) {
-		metal_log(METAL_LOG_ERROR, "NCOIdx %d is greater than %d\n",
-			  CarrierCfg->DUCDDCCfg.NCOIdx,
-			  InstancePtr->Config.MaxUseableCcids);
-		return XST_FAILURE;
-	}
 
 	/* Read current CC configuration. Note that XDfeMix_Initialise writes
 	   a NULL CC sequence to H/W */
 	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
 
-	/* Check is Mixer in ARCH4 mode */
-	if (XDFEMIX_IS_ARCH4_MODE) {
-		if (XST_FAILURE ==
-		    XDfeMix_NCOArch4ModeInAddCC(InstancePtr, &CCCfg, CCID,
-						CCSeqBitmap,
-						CarrierCfg->DUCDDCCfg.NCOIdx)) {
-			metal_log(METAL_LOG_ERROR,
-				  "NCO failure in ARCH4 mode in %s\n",
-				  __func__);
-			return XST_FAILURE;
-		}
+	if (XST_FAILURE == XDfeMix_CheckCarrierCfginAddCC(
+				   InstancePtr, &CCCfg, CCID, CCSeqBitmap,
+				   CarrierCfg->DUCDDCCfg.NCOIdx)) {
+		metal_log(
+			METAL_LOG_ERROR,
+			"AddCCtoCCCfg failed on carrier configuration check\n");
+		return XST_FAILURE;
 	}
 
 	/* Try to add CC to sequence and update carrier configuration */
@@ -2133,21 +2932,33 @@ u32 XDfeMix_AddCC(XDfeMix *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 	}
 
 	/* Set DUCDDCCfg in CCCfg */
-	XDfeMix_SetCCDDC(InstancePtr, &CCCfg, CCID, CCSeqBitmap,
-			 &CarrierCfg->DUCDDCCfg);
+	if (XST_FAILURE == XDfeMix_SetCCDDC(InstancePtr, &CCCfg, CCID,
+					    CCSeqBitmap,
+					    &CarrierCfg->DUCDDCCfg)) {
+		metal_log(METAL_LOG_ERROR, "AddCC failed on SetCCDDC\n");
+		return XST_FAILURE;
+	}
 
 	/* Update registers and trigger update */
 	XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
-	XDfeMix_SetCCFrequency(InstancePtr, XDFEMIXER_NEXT, CCID,
-			       &NCO->FrequencyCfg);
-	XDfeMix_SetCCPhase(InstancePtr, XDFEMIXER_NEXT, CCID, &NCO->PhaseCfg);
-	XDfeMix_SetCCNCOGain(InstancePtr, XDFEMIXER_NEXT, CCID, NCO->NCOGain);
+	XDfeMix_SetNCOFrequency(InstancePtr, XDFEMIXER_NEXT, CCID,
+				&NCO->FrequencyCfg);
+	XDfeMix_SetNCOPhase(InstancePtr, XDFEMIXER_NEXT, CCID, &NCO->PhaseCfg);
+	XDfeMix_SetNCOGain(InstancePtr, XDFEMIXER_NEXT, CCID, NCO->NCOGain);
 	/*
 	 *  PHACCs configured, but not running.
 	 *  NCOs not running.
 	 *  Antenna contribution disabled.
 	 */
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	/* Trigger the update */
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfg.Sequence.NotUsedCCID;
+		return XST_SUCCESS;
+	}
+	metal_log(METAL_LOG_ERROR,
+		  "CC Update Trigger failed in %s. Restart the system\n",
+		  __func__);
+	return XST_FAILURE;
 }
 
 /****************************************************************************/
@@ -2180,13 +2991,21 @@ u32 XDfeMix_RemoveCC(XDfeMix *InstancePtr, s32 CCID)
 
 	/* Remove CCID from sequence and mark carrier configuration as
 	   disabled */
-	XDfeMix_RemoveCCID(InstancePtr, CCID, &CCCfg.Sequence);
+	XDfeMix_RemoveCCID(CCID, &CCCfg.Sequence);
 
 	CCCfg.DUCDDCCfg[CCID].Rate = 0U;
 
 	/* Update next configuration and trigger update */
 	XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	/* Trigger the update */
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfg.Sequence.NotUsedCCID;
+		return XST_SUCCESS;
+	}
+	metal_log(METAL_LOG_ERROR,
+		  "CC Update Trigger failed in %s. Restart the system\n",
+		  __func__);
+	return XST_FAILURE;
 }
 
 /****************************************************************************/
@@ -2208,6 +3027,7 @@ u32 XDfeMix_RemoveCC(XDfeMix *InstancePtr, s32 CCID)
 *
 * @note     Clear event status with XDfeMix_ClearEventStatus() before
 *           running this API.
+* @note	    For ARCH4/5 mode see XDfeMix_AddCCtoCCCfg() comment.
 *
 ****************************************************************************/
 u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
@@ -2225,8 +3045,8 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 	Xil_AssertNonvoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
 	Xil_AssertNonvoid(CCID < XDFEMIX_CC_NUM);
 	Xil_AssertNonvoid(Rate <= XDFEMIX_RATE_MAX);
-	Xil_AssertNonvoid(FromNCO <= XDFEMIX_NCO_MAX);
-	Xil_AssertNonvoid(ToNCO <= XDFEMIX_NCO_MAX);
+	Xil_AssertNonvoid(FromNCO < XDFEMIX_NCO_MAX);
+	Xil_AssertNonvoid(ToNCO < XDFEMIX_NCO_MAX);
 
 	if (FromNCO >= InstancePtr->Config.MaxUseableCcids) {
 		metal_log(METAL_LOG_ERROR, "FromNCO %d is greater than %d\n",
@@ -2239,8 +3059,8 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 		return XST_FAILURE;
 	}
 	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
-	/* Check is Mixer in ARCH4 mode */
 	if (XDFEMIX_IS_ARCH4_MODE) {
+		/* Mixer is in ARCH4 mode */
 		if (XST_FAILURE == XDfeMix_NCOArch4ModeInMoveOrUpdateCC(
 					   InstancePtr, &CCCfg, CCID, ToNCO)) {
 			metal_log(METAL_LOG_ERROR,
@@ -2248,24 +3068,43 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 				  __func__);
 			return XST_FAILURE;
 		}
+	} else if (XDFEMIX_IS_ARCH5_MODE) {
+		/* Mixer is in ARCH5 mode */
+		if (XST_FAILURE == XDfeMix_NCOArch5ModeInMoveOrUpdateCC(
+					   InstancePtr, &CCCfg, CCID, ToNCO)) {
+			metal_log(METAL_LOG_ERROR,
+				  "NCO failure in ARCH5 mode in %s\n",
+				  __func__);
+			return XST_FAILURE;
+		}
 	}
+
 	XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
 	/* Copy NCO */
-	NCOGain = XDfeMix_GetCCNCOGain(InstancePtr, XDFEMIXER_CURRENT, CCID);
-	XDfeMix_SetCCNCOGain(InstancePtr, XDFEMIXER_NEXT, CCID, NCOGain);
-	XDfeMix_GetCCFrequency(InstancePtr, XDFEMIXER_CURRENT, CCID, &Freq);
-	XDfeMix_SetCCFrequency(InstancePtr, XDFEMIXER_NEXT, CCID, &Freq);
-	XDfeMix_SetCCPhaseAccumEnable(InstancePtr, XDFEMIXER_NEXT, CCID,
-				      XDFEMIXER_PHACC_ENABLE);
+	NCOGain = XDfeMix_GetNCOGain(InstancePtr, XDFEMIXER_CURRENT, CCID);
+	XDfeMix_SetNCOGain(InstancePtr, XDFEMIXER_NEXT, CCID, NCOGain);
+	XDfeMix_GetNCOFrequency(InstancePtr, XDFEMIXER_CURRENT, CCID, &Freq);
+	XDfeMix_SetNCOFrequency(InstancePtr, XDFEMIXER_NEXT, CCID, &Freq);
+	XDfeMix_SetNCOPhaseAccumEnable(InstancePtr, XDFEMIXER_NEXT, CCID,
+				       XDFEMIXER_PHACC_ENABLE);
 	/* Align phase */
 	XDfeMix_CapturePhase(InstancePtr);
-	XDfeMix_GetCCPhase(InstancePtr, XDFEMIXER_CURRENT, CCID, &PhaseCurrent);
-	XDfeMix_GetCCPhase(InstancePtr, XDFEMIXER_NEXT, CCID, &PhaseNext);
+	XDfeMix_GetNCOPhase(InstancePtr, XDFEMIXER_CURRENT, CCID,
+			    &PhaseCurrent);
+	XDfeMix_GetNCOPhase(InstancePtr, XDFEMIXER_NEXT, CCID, &PhaseNext);
 	XDfeMix_DerivePhaseOffset(&PhaseCurrent, &PhaseNext, &PhaseOffset);
 	XDfeMix_SetPhaseOffset(&Freq, &PhaseDiff);
-	XDfeMix_SetCCFrequency(InstancePtr, XDFEMIXER_NEXT, CCID, &Freq);
+	XDfeMix_SetNCOFrequency(InstancePtr, XDFEMIXER_NEXT, CCID, &Freq);
 
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	/* Trigger the update */
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfg.Sequence.NotUsedCCID;
+		return XST_SUCCESS;
+	}
+	metal_log(METAL_LOG_ERROR,
+		  "CC Update Trigger failed in %s. Restart the system\n",
+		  __func__);
+	return XST_FAILURE;
 }
 
 /****************************************************************************/
@@ -2286,9 +3125,10 @@ u32 XDfeMix_MoveCC(XDfeMix *InstancePtr, s32 CCID, u32 Rate, u32 FromNCO,
 *
 * @note     Clear event status with XDfeMix_ClearEventStatus() before
 *           running this API.
+* @note	    For ARCH4/5 mode see XDfeMix_AddCCtoCCCfg() comment.
 *
 ****************************************************************************/
-u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
+u32 XDfeMix_UpdateCC(XDfeMix *InstancePtr, s32 CCID,
 		     const XDfeMix_CarrierCfg *CarrierCfg)
 {
 	XDfeMix_CCCfg CCCfg;
@@ -2303,16 +3143,13 @@ u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
 	   a NULL CC sequence to H/W */
 	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
 
-	/* Check is Mixer in ARCH4 mode */
-	if (XDFEMIX_IS_ARCH4_MODE) {
-		if (XST_FAILURE == XDfeMix_NCOArch4ModeInMoveOrUpdateCC(
-					   InstancePtr, &CCCfg, CCID,
-					   CarrierCfg->DUCDDCCfg.NCOIdx)) {
-			metal_log(METAL_LOG_ERROR,
-				  "NCO failure in ARCH4 mode in %s\n",
-				  __func__);
-			return XST_FAILURE;
-		}
+	if (XST_FAILURE ==
+	    XDfeMix_CheckCarrierCfgInUpdateCC(InstancePtr, &CCCfg, CCID,
+					      CarrierCfg->DUCDDCCfg.NCOIdx)) {
+		metal_log(
+			METAL_LOG_ERROR,
+			"UpdateCCtoCCCfg failed on carrier configuration check\n");
+		return XST_FAILURE;
 	}
 
 	/* Update carrier configuration */
@@ -2326,14 +3163,23 @@ u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
 	 *  NCOs not running.
 	 *  Antenna contribution disabled.
 	 */
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+
+	/* Trigger the update */
+	if (XST_SUCCESS == XDfeMix_EnableCCUpdateTrigger(InstancePtr)) {
+		InstancePtr->NotUsedCCID = CCCfg.Sequence.NotUsedCCID;
+		return XST_SUCCESS;
+	}
+	metal_log(METAL_LOG_ERROR,
+		  "CC Update Trigger failed in %s. Restart the system\n",
+		  __func__);
+	return XST_FAILURE;
 }
 
 /****************************************************************************/
 /**
 *
-* Sets antenna gain. Initiate CC update (enable CCUpdate trigger TUSER
-* Single Shot).
+* Sets antenna gain. Initiates CC update (enable CCUpdate trigger TUSER
+* Single Shot). Applies gain to downlink only in switchable mode.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    AntennaId Antenna ID, range [0-7].
@@ -2350,22 +3196,34 @@ u32 XDfeMix_UpdateCC(const XDfeMix *InstancePtr, s32 CCID,
 u32 XDfeMix_SetAntennaGain(XDfeMix *InstancePtr, u32 AntennaId, u32 AntennaGain)
 {
 	XDfeMix_CCCfg CCCfg;
+	XDfeMix_CCCfg CCCfgUL;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(AntennaGain <= 1U);
 	Xil_AssertNonvoid(AntennaId <= XDFEMIX_ANT_NUM_MAX);
 
-	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
-	CCCfg.AntennaCfg.Gain[AntennaId] = AntennaGain;
-	/* Update next configuration and trigger update */
-	XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	if (InstancePtr->Config.Mode != XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
+		CCCfg.AntennaCfg.Gain[AntennaId] = AntennaGain;
+		/* Update next configuration and trigger update */
+		XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
+		return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	} else {
+		XDfeMix_GetCurrentCCCfgSwitchable(InstancePtr, &CCCfg,
+						  &CCCfgUL);
+		/* Antenna gain is relevant to Downlink only */
+		CCCfg.AntennaCfg.Gain[AntennaId] = AntennaGain;
+		/* Update next configuration and trigger update */
+		return XDfeMix_SetNextCCCfgAndTriggerSwitchable(
+			InstancePtr, &CCCfg, &CCCfgUL);
+	}
 }
 
 /****************************************************************************/
 /**
 *
-* Updates antenna configuration of all antennas.
+* Updates antenna configuration of all antennas. Applies gain to downlink only
+* in switchable mode.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    AntennaCfg Array of all antenna configurations.
@@ -2382,21 +3240,33 @@ u32 XDfeMix_UpdateAntennaCfg(XDfeMix *InstancePtr,
 			     XDfeMix_AntennaCfg *AntennaCfg)
 {
 	XDfeMix_CCCfg CCCfg;
+	XDfeMix_CCCfg CCCfgUL;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(AntennaCfg != NULL);
 
-	XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
-	CCCfg.AntennaCfg = *AntennaCfg;
-	/* Update next configuration and trigger update */
-	XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
-	return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	if (InstancePtr->Config.Mode != XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		XDfeMix_GetCurrentCCCfg(InstancePtr, &CCCfg);
+		CCCfg.AntennaCfg = *AntennaCfg;
+		/* Update next configuration and trigger update */
+		XDfeMix_SetNextCCCfg(InstancePtr, &CCCfg);
+		return XDfeMix_EnableCCUpdateTrigger(InstancePtr);
+	} else {
+		XDfeMix_GetCurrentCCCfgSwitchable(InstancePtr, &CCCfg,
+						  &CCCfgUL);
+		CCCfg.AntennaCfg = *AntennaCfg;
+		CCCfgUL.AntennaCfg = *AntennaCfg;
+		/* Update next configuration and trigger update */
+		return XDfeMix_SetNextCCCfgAndTriggerSwitchable(
+			InstancePtr, &CCCfg, &CCCfgUL);
+	}
 }
 
 /****************************************************************************/
 /**
 *
-* Returns current trigger configuration.
+* Returns current trigger configuration. In switchable mode ignors LOW_POWER
+* triggers as they are not used, instead reads SWITCH trigger configurations.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    TriggerCfg Trigger configuration container.
@@ -2429,23 +3299,49 @@ void XDfeMix_GetTriggersCfg(const XDfeMix *InstancePtr,
 		XDfeMix_RdBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
 				   XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET, Val);
 
-	/* Read LOW_POWER triggers */
-	Val = XDfeMix_ReadReg(InstancePtr, XDFEMIX_TRIGGERS_LOW_POWER_OFFSET);
-	TriggerCfg->LowPower.TriggerEnable =
-		XDfeMix_RdBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
-				   XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Val);
-	TriggerCfg->LowPower.Mode = XDfeMix_RdBitField(
-		XDFEMIX_TRIGGERS_MODE_WIDTH, XDFEMIX_TRIGGERS_MODE_OFFSET, Val);
-	TriggerCfg->LowPower.TUSERBit =
-		XDfeMix_RdBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
-				   XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET, Val);
-	TriggerCfg->LowPower.TuserEdgeLevel =
-		XDfeMix_RdBitField(XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
-				   XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET,
-				   Val);
-	TriggerCfg->LowPower.StateOutput =
-		XDfeMix_RdBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
-				   XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET, Val);
+	if (InstancePtr->Config.Mode != XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		/* Read LOW_POWER triggers */
+		Val = XDfeMix_ReadReg(InstancePtr,
+				      XDFEMIX_TRIGGERS_LOW_POWER_OFFSET);
+		TriggerCfg->LowPower.TriggerEnable = XDfeMix_RdBitField(
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Val);
+		TriggerCfg->LowPower.Mode =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_MODE_WIDTH,
+					   XDFEMIX_TRIGGERS_MODE_OFFSET, Val);
+		TriggerCfg->LowPower.TUSERBit =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
+					   XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET,
+					   Val);
+		TriggerCfg->LowPower.TuserEdgeLevel = XDfeMix_RdBitField(
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET, Val);
+		TriggerCfg->LowPower.StateOutput =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
+					   XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET,
+					   Val);
+	} else {
+		/* Read SWITCH triggers */
+		Val = XDfeMix_ReadReg(InstancePtr,
+				      XDFEMIX_TRIGGERS_SWITCH_OFFSET);
+		TriggerCfg->Switch.TriggerEnable = XDfeMix_RdBitField(
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Val);
+		TriggerCfg->Switch.Mode =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_MODE_WIDTH,
+					   XDFEMIX_TRIGGERS_MODE_OFFSET, Val);
+		TriggerCfg->Switch.TUSERBit =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
+					   XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET,
+					   Val);
+		TriggerCfg->Switch.TuserEdgeLevel = XDfeMix_RdBitField(
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET, Val);
+		TriggerCfg->Switch.StateOutput =
+			XDfeMix_RdBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
+					   XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET,
+					   Val);
+	}
 
 	/* Read CC_UPDATE triggers */
 	Val = XDfeMix_ReadReg(InstancePtr, XDFEMIX_TRIGGERS_CC_UPDATE_OFFSET);
@@ -2469,7 +3365,8 @@ void XDfeMix_GetTriggersCfg(const XDfeMix *InstancePtr,
 /****************************************************************************/
 /**
 *
-* Sets trigger configuration.
+* Sets trigger configuration. In switchable mode ignors LOW_POWER triggers
+* as they are not used, instead sets SWITCH trigger configurations.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
 * @param    TriggerCfg Trigger configuration container.
@@ -2513,28 +3410,62 @@ void XDfeMix_SetTriggersCfg(const XDfeMix *InstancePtr,
 				 TriggerCfg->Activate.StateOutput);
 	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_ACTIVATE_OFFSET, Val);
 
-	/* LowPower defined as Continuous */
-	TriggerCfg->LowPower.TriggerEnable =
-		XDFEMIX_TRIGGERS_TRIGGER_ENABLE_DISABLED;
-	TriggerCfg->LowPower.Mode = XDFEMIX_TRIGGERS_MODE_TUSER_CONTINUOUS;
-	/* Read/set/write LOW_POWER triggers */
-	Val = XDfeMix_ReadReg(InstancePtr, XDFEMIX_TRIGGERS_LOW_POWER_OFFSET);
-	Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
-				 XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET, Val,
-				 TriggerCfg->LowPower.TriggerEnable);
-	Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_MODE_WIDTH,
-				 XDFEMIX_TRIGGERS_MODE_OFFSET, Val,
-				 TriggerCfg->LowPower.Mode);
-	Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
-				 XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET, Val,
-				 TriggerCfg->LowPower.TuserEdgeLevel);
-	Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
-				 XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET, Val,
-				 TriggerCfg->LowPower.TUSERBit);
-	Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
-				 XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET, Val,
-				 TriggerCfg->LowPower.StateOutput);
-	XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_LOW_POWER_OFFSET, Val);
+	if (InstancePtr->Config.Mode != XDFEMIX_MODEL_PARAM_1_SWITCHABLE) {
+		/* LowPower defined as Continuous */
+		TriggerCfg->LowPower.TriggerEnable =
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_DISABLED;
+		TriggerCfg->LowPower.Mode =
+			XDFEMIX_TRIGGERS_MODE_TUSER_CONTINUOUS;
+		/* Read/set/write LOW_POWER triggers */
+		Val = XDfeMix_ReadReg(InstancePtr,
+				      XDFEMIX_TRIGGERS_LOW_POWER_OFFSET);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+					 XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET,
+					 Val,
+					 TriggerCfg->LowPower.TriggerEnable);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_MODE_WIDTH,
+					 XDFEMIX_TRIGGERS_MODE_OFFSET, Val,
+					 TriggerCfg->LowPower.Mode);
+		Val = XDfeMix_WrBitField(
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET, Val,
+			TriggerCfg->LowPower.TuserEdgeLevel);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
+					 XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET, Val,
+					 TriggerCfg->LowPower.TUSERBit);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
+					 XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET,
+					 Val, TriggerCfg->LowPower.StateOutput);
+		XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_LOW_POWER_OFFSET,
+				 Val);
+	} else {
+		/* Switch defined as Continuous */
+		TriggerCfg->Switch.TriggerEnable =
+			XDFEMIX_TRIGGERS_TRIGGER_ENABLE_DISABLED;
+		TriggerCfg->Switch.Mode =
+			XDFEMIX_TRIGGERS_MODE_TUSER_CONTINUOUS;
+		/* Read SWITCH triggers */
+		Val = XDfeMix_ReadReg(InstancePtr,
+				      XDFEMIX_TRIGGERS_SWITCH_OFFSET);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TRIGGER_ENABLE_WIDTH,
+					 XDFEMIX_TRIGGERS_TRIGGER_ENABLE_OFFSET,
+					 Val, TriggerCfg->Switch.TriggerEnable);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_MODE_WIDTH,
+					 XDFEMIX_TRIGGERS_MODE_OFFSET, Val,
+					 TriggerCfg->Switch.Mode);
+		Val = XDfeMix_WrBitField(
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_WIDTH,
+			XDFEMIX_TRIGGERS_TUSER_EDGE_LEVEL_OFFSET, Val,
+			TriggerCfg->Switch.TuserEdgeLevel);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_TUSER_BIT_WIDTH,
+					 XDFEMIX_TRIGGERS_TUSER_BIT_OFFSET, Val,
+					 TriggerCfg->Switch.TUSERBit);
+		Val = XDfeMix_WrBitField(XDFEMIX_TRIGGERS_STATE_OUTPUT_WIDTH,
+					 XDFEMIX_TRIGGERS_STATE_OUTPUT_OFFSET,
+					 Val, TriggerCfg->Switch.StateOutput);
+		XDfeMix_WriteReg(InstancePtr, XDFEMIX_TRIGGERS_SWITCH_OFFSET,
+				 Val);
+	}
 
 	/* CCUpdate defined as Single Shot/Immediate */
 	TriggerCfg->CCUpdate.TriggerEnable =
@@ -2563,17 +3494,15 @@ void XDfeMix_SetTriggersCfg(const XDfeMix *InstancePtr,
 /****************************************************************************/
 /**
 *
-* Gets DUC/DDC status for a specified CCID.
+* Gets DUC/DDC overflow status.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID, range [0-15].
 * @param    DUCDDCStatus DUC/DDC status container.
 *
 ****************************************************************************/
-void XDfeMix_GetDUCDDCStatus(const XDfeMix *InstancePtr, s32 CCID,
+void XDfeMix_GetDUCDDCStatus(const XDfeMix *InstancePtr,
 			     XDfeMix_DUCDDCStatus *DUCDDCStatus)
 {
-	(void)CCID;
 	u32 Val;
 
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -2581,32 +3510,33 @@ void XDfeMix_GetDUCDDCStatus(const XDfeMix *InstancePtr, s32 CCID,
 	Xil_AssertVoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
 
 	Val = XDfeMix_ReadReg(InstancePtr, XDFEMIX_MIXER_STATUS_OVERFLOW);
-	DUCDDCStatus->RealOverflowStage =
+	DUCDDCStatus->Stage =
 		XDfeMix_RdBitField(XDFEMIX_DUC_DDC_STATUS_OVERFLOW_STAGE_WIDTH,
 				   XDFEMIX_DUC_DDC_STATUS_OVERFLOW_STAGE_OFFSET,
 				   Val);
-	DUCDDCStatus->FirstAntennaOverflowing = XDfeMix_RdBitField(
+	DUCDDCStatus->Antenna = XDfeMix_RdBitField(
 		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ANTENNA_WIDTH,
 		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ANTENNA_OFFSET, Val);
-	DUCDDCStatus->FirstCCIDOverflowing = XDfeMix_RdBitField(
+	DUCDDCStatus->NcoId = XDfeMix_RdBitField(
 		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ASSOCIATED_NCO_WIDTH,
 		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ASSOCIATED_NCO_OFFSET, Val);
+	DUCDDCStatus->Mode = XDfeMix_RdBitField(
+		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ASSOCIATED_MODE_WIDTH,
+		XDFEMIX_DUC_DDC_STATUS_OVERFLOW_ASSOCIATED_MODE_OFFSET, Val);
 }
 
 /****************************************************************************/
 /**
 *
-* Gets Mixer status  for a specified CCID.
+* Gets Mixer overflow status.
 *
 * @param    InstancePtr Pointer to the Mixer instance.
-* @param    CCID Channel ID, range [0-15].
 * @param    MixerStatus Mixer status container.
 *
 ****************************************************************************/
-void XDfeMix_GetMixerStatus(const XDfeMix *InstancePtr, s32 CCID,
+void XDfeMix_GetMixerStatus(const XDfeMix *InstancePtr,
 			    XDfeMix_MixerStatus *MixerStatus)
 {
-	(void)CCID;
 	u32 Val;
 
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -2614,18 +3544,21 @@ void XDfeMix_GetMixerStatus(const XDfeMix *InstancePtr, s32 CCID,
 	Xil_AssertVoid(InstancePtr->StateId == XDFEMIX_STATE_OPERATIONAL);
 
 	Val = XDfeMix_ReadReg(InstancePtr, XDFEMIX_MIXER_STATUS_OVERFLOW);
-	MixerStatus->AdderStage =
+	MixerStatus->Stage =
 		XDfeMix_RdBitField(XDFEMIX_MIXER_STATUS_OVERFLOW_STAGE_WIDTH,
 				   XDFEMIX_MIXER_STATUS_OVERFLOW_STAGE_OFFSET,
 				   Val);
-	MixerStatus->AdderAntenna =
+	MixerStatus->Antenna =
 		XDfeMix_RdBitField(XDFEMIX_MIXER_STATUS_OVERFLOW_ANTENNA_WIDTH,
 				   XDFEMIX_MIXER_STATUS_OVERFLOW_ANTENNA_OFFSET,
 				   Val);
-	MixerStatus->MixAntenna =
+	MixerStatus->NcoId =
 		XDfeMix_RdBitField(XDFEMIX_MIXER_STATUS_OVERFLOW_NCO_WIDTH,
 				   XDFEMIX_MIXER_STATUS_OVERFLOW_NCO_OFFSET,
 				   Val);
+	MixerStatus->Mode = XDfeMix_RdBitField(
+		XDFEMIX_MIXER_STATUS_OVERFLOW_ASSOCIATED_MODE_WIDTH,
+		XDFEMIX_MIXER_STATUS_OVERFLOW_ASSOCIATED_MODE_OFFSET, Val);
 }
 
 /****************************************************************************/
@@ -2723,6 +3656,25 @@ u32 XDfeMix_GetCenterTap(const XDfeMix *InstancePtr, u32 Rate, u32 *CenterTap)
 	*CenterTap = XDfeMix_CentralTap[Rate - 1U];
 
 	return XST_SUCCESS;
+}
+
+/****************************************************************************/
+/**
+*
+* Enables uplink or downlink register bank.
+*
+* @param    InstancePtr Pointer to the Channel Filter instance.
+* @param    RegBank Register bank value to be set.
+*
+****************************************************************************/
+void XDfeMix_SetRegBank(const XDfeMix *InstancePtr, u32 RegBank)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(RegBank <= XDFEMIX_SWITCHABLE_UPLINK);
+	XDfeMix_WrRegBitField(InstancePtr, XDFEMIX_SWITCHABLE_CONTROL,
+			      XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_WIDTH,
+			      XDFEMIX_SWITCHABLE_CONTROL_REG_BANK_OFFSET,
+			      RegBank);
 }
 
 /*****************************************************************************/

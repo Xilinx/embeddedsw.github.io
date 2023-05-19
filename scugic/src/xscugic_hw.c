@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscugic_hw.c
-* @addtogroup scugic_v5_0
+* @addtogroup scugic Overview
 * @{
 *
 * This file contains low-level driver functions that can be used to access the
@@ -83,6 +84,15 @@
 * 		      when (Int_Id >= XSCUGIC_SPI_INT_ID_START).
 * 5.0   dp   04/25/22 Update XScuGic_GetPriTrigTypeByDistAddr() to read and
 *                     update priority and triggerproperly for GICv3.
+* 5.1   mus  02/09/23 Updated DistInit function to skip enablement
+*                     of group0 interrupts when processor is running at
+*                     EL1 NS. This is required to avoid abort, since access
+*                     to ICC_IGRPEN0_EL1 is resulting into sync abort.
+*                     It fixes CR#1152445.
+* 5.1   mus  02/15/23 Added support for VERSAL_NET APU and RPU GIC.
+* 5.1   mus  03/07/23 Fix XScuGic_InterruptMapFromCpuByDistAddr and
+*                     XScuGic_InterruptUnmapFromCpuByDistAddr for GICv3.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -94,7 +104,9 @@
 #include "xil_assert.h"
 #include "xscugic.h"
 #include "xparameters.h"
-
+#if defined (VERSAL_NET)
+#include "xplatform_info.h"
+#endif
 /************************** Constant Definitions *****************************/
 
 /**************************** Type Definitions *******************************/
@@ -148,11 +160,16 @@ static void DistInit(const XScuGic_Config *Config)
 #if defined (GICv3)
 	u32 Temp;
 	u32 Waker_State;
+	UINTPTR RedistBaseAddr;
 
-	Waker_State = XScuGic_ReadReg((Config->DistBaseAddress) +
-			XSCUGIC_RDIST_OFFSET,XSCUGIC_RDIST_WAKER_OFFSET);
-	XScuGic_WriteReg((Config->DistBaseAddress) +
-			XSCUGIC_RDIST_OFFSET,XSCUGIC_RDIST_WAKER_OFFSET,
+	RedistBaseAddr = XScuGic_GetRedistBaseAddr();
+	#if defined (GIC600)
+	XScuGic_WriteReg(RedistBaseAddr,XSCUGIC_RDIST_PWRR_OFFSET,
+                        (XScuGic_ReadReg(RedistBaseAddr, XSCUGIC_RDIST_PWRR_OFFSET) &
+                        (~XSCUGIC_RDIST_PWRR_RDPD_MASK)));
+	#endif
+	Waker_State = XScuGic_ReadReg(RedistBaseAddr,XSCUGIC_RDIST_WAKER_OFFSET);
+	XScuGic_WriteReg(RedistBaseAddr,XSCUGIC_RDIST_WAKER_OFFSET,
 			Waker_State & (~ XSCUGIC_RDIST_WAKER_LOW_POWER_STATE_MASK));
 	/* Enable system reg interface through ICC_SRE_EL1 */
 #if EL3
@@ -219,7 +236,7 @@ static void DistInit(const XScuGic_Config *Config)
 	 * Set security for SGI/PPI
 	 *
 	 */
-	XScuGic_WriteReg( Config->DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+	XScuGic_WriteReg( RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_IGROUPR_OFFSET, XSCUGIC_DEFAULT_SECURITY);
 #endif
 
@@ -241,7 +258,9 @@ static void DistInit(const XScuGic_Config *Config)
 	Temp |= XSCUGIC_EN_INT_MASK;
 	XScuGic_WriteReg(Config->DistBaseAddress, XSCUGIC_DIST_EN_OFFSET, Temp);
 	XScuGic_Enable_Group1_Interrupts();
+	#if defined (ARMR52) || (defined (__aarch64__) && (EL1_NONSECURE == 0))
 	XScuGic_Enable_Group0_Interrupts();
+	#endif
 	XScuGic_set_priority_filter(0xff);
 #else
 
@@ -528,6 +547,7 @@ void XScuGic_SetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,
 #if defined (GICv3)
 	u32 Temp;
 	u32 Index;
+	UINTPTR RedistBaseAddr;
 #endif
 	u8 LocalPriority = Priority;
 
@@ -537,13 +557,14 @@ void XScuGic_SetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START )
 	{
-		XScuGic_WriteReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		RedistBaseAddr = XScuGic_GetRedistBaseAddr();
+		XScuGic_WriteReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC(Int_Id),Priority);
-		Temp = XScuGic_ReadReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		Temp = XScuGic_ReadReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC(Int_Id));
 		Index = XScuGic_Get_Rdist_Int_Trigger_Index(Int_Id);
 		Temp |= (Trigger << Index);
-		XScuGic_WriteReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		XScuGic_WriteReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC(Int_Id),Temp);
 		return;
 	}
@@ -629,6 +650,9 @@ void XScuGic_GetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,
 					u8 *Priority, u8 *Trigger)
 {
 	u32 RegValue;
+#if defined (GICv3)
+	UINTPTR RedistBaseAddr;
+#endif
 
 	Xil_AssertVoid(Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS);
 	Xil_AssertVoid(Priority != NULL);
@@ -636,9 +660,10 @@ void XScuGic_GetPriTrigTypeByDistAddr(u32 DistBaseAddress, u32 Int_Id,
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START )
 	{
-		*Priority = XScuGic_ReadReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		RedistBaseAddr = XScuGic_GetRedistBaseAddr();
+		*Priority = XScuGic_ReadReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 					    XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC(Int_Id));
-		RegValue = XScuGic_ReadReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		RegValue = XScuGic_ReadReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 					   XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC(Int_Id));
 		RegValue = RegValue >> ((Int_Id%16U)*2U);
 		*Trigger = (u8)(RegValue & XSCUGIC_INT_CFG_MASK);
@@ -701,10 +726,22 @@ void XScuGic_InterruptMapFromCpuByDistAddr(u32 DistBaseAddress,
 if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
 	u32 Temp;
-	Temp = Int_Id - 32;
+	Temp = Int_Id;
+
+	#if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        RegValue = (Cpu_Id & XSCUGIC_COREID_MASK);
+        #else
+        RegValue = ((Cpu_Id & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+        RegValue = (RegValue << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+        RegValue |= ((Cpu_Id & XSCUGIC_COREID_MASK) << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+        #endif
+        #else
 	RegValue = XScuGic_ReadReg(DistBaseAddress,
 			XSCUGIC_IROUTER_OFFSET_CALC(Temp));
 	RegValue |= (Cpu_Id);
+	#endif
+
 	XScuGic_WriteReg(DistBaseAddress, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
 		RegValue);
 #else
@@ -763,10 +800,22 @@ void XScuGic_InterruptUnmapFromCpuByDistAddr(u32 DistBaseAddress,
 if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
 	u32 Temp;
-	Temp = Int_Id - 32;
+	Temp = Int_Id;
+
 	RegValue = XScuGic_ReadReg(DistBaseAddress,
-			XSCUGIC_IROUTER_OFFSET_CALC(Temp));
+                        XSCUGIC_IROUTER_OFFSET_CALC(Temp));
+	#if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        Temp = (Cpu_Id & XSCUGIC_COREID_MASK);
+        #else
+        Temp = ((Cpu_Id & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+        Temp = (Temp << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+        Temp |= ((Cpu_Id & XSCUGIC_COREID_MASK) << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+        #endif
+        RegValue &= ~Temp;
+        #else
 	RegValue &= ~(Cpu_Id);
+	#endif
 	XScuGic_WriteReg(DistBaseAddress, XSCUGIC_IROUTER_OFFSET_CALC(Temp),
 		RegValue);
 #else
@@ -868,23 +917,33 @@ void XScuGic_EnableIntr (u32 DistBaseAddress, u32 Int_Id)
 	u8 Cpu_Id = (u8)XScuGic_GetCpuID();
 #if defined (GICv3)
 	u32 Temp;
+	UINTPTR RedistBaseAddr;
 #endif
 	Xil_AssertVoid(Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS);
 
 #if defined (GICv3)
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
+		RedistBaseAddr = XScuGic_GetRedistBaseAddr();
 
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
 
-		Temp = XScuGic_ReadReg(DistBaseAddress +
+		Temp = XScuGic_ReadReg(RedistBaseAddr +
 			XSCUGIC_RDIST_SGI_PPI_OFFSET, XSCUGIC_RDIST_ISENABLE_OFFSET);
 		Temp |= Int_Id;
-		XScuGic_WriteReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		XScuGic_WriteReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
 		return;
 	}
 #endif
+        #if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        Cpu_Id = XGetCoreId();
+        #else
+        Cpu_Id = XGetCoreId();
+        Cpu_Id |= (XGetClusterId() << XSCUGIC_CLUSTERID_SHIFT);
+        #endif
+        #endif
 
 	XScuGic_InterruptMapFromCpuByDistAddr(DistBaseAddress, Cpu_Id, Int_Id);
 	/*
@@ -927,20 +986,32 @@ void XScuGic_DisableIntr (u32 DistBaseAddress, u32 Int_Id)
 
 #if defined (GICv3)
 	u32 Temp;
+	UINTPTR RedistBaseAddr;
 
 	if (Int_Id < XSCUGIC_SPI_INT_ID_START) {
 
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
 
-		Temp = XScuGic_ReadReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		RedistBaseAddr = XScuGic_GetRedistBaseAddr();
+
+		Temp = XScuGic_ReadReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_ISENABLE_OFFSET);
 		Temp &= ~Int_Id;
-		XScuGic_WriteReg(DistBaseAddress + XSCUGIC_RDIST_SGI_PPI_OFFSET,
+		XScuGic_WriteReg(RedistBaseAddr + XSCUGIC_RDIST_SGI_PPI_OFFSET,
 			XSCUGIC_RDIST_ISENABLE_OFFSET,Temp);
 		return;
 	}
 #endif
+        #if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        Cpu_Id = XGetCoreId();
+        #else
+        Cpu_Id = XGetCoreId();
+        Cpu_Id |= (XGetClusterId() << XSCUGIC_CLUSTERID_SHIFT);
+        #endif
+        #endif
+
 	XScuGic_InterruptUnmapFromCpuByDistAddr(DistBaseAddress, Cpu_Id, Int_Id);
 	/*
 	 * Call spinlock to protect multiple applications running at separate
@@ -958,4 +1029,51 @@ void XScuGic_DisableIntr (u32 DistBaseAddress, u32 Int_Id)
 	XIL_SPINUNLOCK();
 }
 
+#if defined (GICv3)
+/*****************************************************************************/
+/**
+*
+* Find redistributor base address for CPU core on which API is executed
+*
+* @return       Redistributor base address or NULL if the device was
+*               not found.
+*
+* @note         None.
+*
+******************************************************************************/
+UINTPTR XScuGic_GetRedistBaseAddr(void) {
+        u32 Cpu_Affinity;
+        u64 Gicr_Typer;
+        UINTPTR BaseAddr = 0, Addr;
+
+	/*
+	 * Find redistributor for CPU core on which this API is executed.
+	 * Redistributor is found by comparing affinity bits of each
+	 * redistributor present in SoC against affinity of CPU core. Affinity
+	 * bits of redistributor are specified in GICR_TYPER register.
+	 * CortexR52 GIC redistributor always reads cluster number (affinity1)
+	 * as 0, that is why for CortexR52 case, affinity read from GICR_TYPER
+	 * is compared with affinity0 (core number) read from CPU register.
+	 */
+        #if defined (ARMR52)
+        Cpu_Affinity = (mfcp(XREG_CP15_MULTI_PROC_AFFINITY) & XREG_MPIDR_AFFINITY0_MASK);
+        #else
+        Cpu_Affinity = (mfcp(MPIDR_EL1) & XREG_MPIDR_MASK);
+        #endif
+
+        for (Addr = XSCUGIC_RDIST_START_ADDR; Addr < XSCUGIC_RDIST_END_ADDR;
+                        Addr += XSCUGIC_RDIST_OFFSET) {
+
+                Gicr_Typer = XScuGic_ReadReg64(Addr, XSCUGIC_RDIST_TYPER_OFFSET);
+                Gicr_Typer &= XSCUGIC_GICR_TYPER_AFFINITY_MASK;
+                Gicr_Typer >>= XSCUGIC_GICR_TYPER_AFFINITY_SHIFT;
+                if (Cpu_Affinity == Gicr_Typer) {
+                        BaseAddr = Addr;
+                        break;
+                }
+        }
+
+        return BaseAddr;
+}
+#endif
 /** @} */

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xuartps_selftest.c
-* @addtogroup uartps_v3_11
+* @addtogroup uartps Overview
 * @{
 *
 * This file contains the self-test functions for the XUartPs driver.
@@ -20,6 +21,7 @@
 * 1.00	drg/jz 01/13/10 First Release
 * 3.00  kvn    02/13/15 Modified code for MISRA-C:2012 compliance.
 * 3.9   sd     02/06/20 Added clock support
+* 3.12	gm     11/04/22 Added timeout support using Xil_WaitForEvent
 * </pre>
 *
 ******************************************************************************/
@@ -75,7 +77,6 @@ s32 XUartPs_SelfTest(XUartPs *InstancePtr)
 	u32 IntrRegister;
 	u32 ModeRegister;
 	u8 Index;
-	u32 ReceiveDataResult;
 
 	/* Assert validates the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -106,14 +107,13 @@ s32 XUartPs_SelfTest(XUartPs *InstancePtr)
 		(void)XUartPs_Send(InstancePtr, &TestString[Index], 1U);
 
 		/*
-		 * Wait until the byte is received. This can hang if the HW
-		 * is broken. Watch for the FIFO empty flag to be false.
+		 * Wait until the byte is received with timeout.
 		 */
-		ReceiveDataResult = Xil_In32((InstancePtr->Config.BaseAddress) + XUARTPS_SR_OFFSET) &
-				XUARTPS_SR_RXEMPTY;
-		while (ReceiveDataResult == XUARTPS_SR_RXEMPTY ) {
-			ReceiveDataResult = Xil_In32((InstancePtr->Config.BaseAddress) + XUARTPS_SR_OFFSET) &
-					XUARTPS_SR_RXEMPTY;
+		Status = (int)Xil_WaitForEvent(((InstancePtr->Config.BaseAddress)
+					+ XUARTPS_SR_OFFSET), XUARTPS_SR_RXEMPTY,
+					0, TIMEOUT_VAL);
+		if (Status != XST_SUCCESS) {
+			return XST_UART_TEST_FAIL;
 		}
 
 		/* Receive the byte */

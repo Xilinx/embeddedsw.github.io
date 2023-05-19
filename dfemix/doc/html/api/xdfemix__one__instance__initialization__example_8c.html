@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -73,7 +73,8 @@ $(document).ready(function(){initNavTree('xdfemix__one__instance__initialization
 </p>
 <hr/>
 <p>
-1.1   dc     07/21/21 Add and reorganise examples</pre><pre></pre> </div><table class="memberdecls">
+1.1   dc     07/21/21 Add and reorganise examples
+1.5   dc     10/24/22 Switching Uplink/Downlink support</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae2eee6e23955bad5e7f92fa005b0089a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdfemix__one__instance__initialization__example_8c.html#ae2eee6e23955bad5e7f92fa005b0089a">XDfeMix_SelfTestExample</a> ()</td></tr>
@@ -111,7 +112,7 @@ Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_mix___version.html#abec5de931ad531370d0aace44ffd2018">XDfeMix_Version::Major</a>, <a class="el" href="struct_x_dfe_mix___version.html#ab02bb9024d1186e4fa657020be59a6ed">XDfeMix_Version::Minor</a>, <a class="el" href="struct_x_dfe_mix___version.html#a3e008974f46642083bd193fb40e4d7e0">XDfeMix_Version::Patch</a>, <a class="el" href="struct_x_dfe_mix___version.html#a9aa720deae91fc110ba6c393c9652283">XDfeMix_Version::Revision</a>, <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#ga499409b4675bb141d962a2c15ad3dc61">XDfeMix_GetVersions()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga01627e33029344d87e1dce02269309d2">XDfeMix_InstanceClose()</a>, <a class="el" href="group__dfemix.html#ga1e844159630d803dcc724e998b3d560d">XDfeMix_InstanceInit()</a>, <a class="el" href="group__dfemix.html#ga8d63f4fc15bb4344b6fb33d382468c35">XDfeMix_Reset()</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_mix___version.html#abec5de931ad531370d0aace44ffd2018">XDfeMix_Version::Major</a>, <a class="el" href="struct_x_dfe_mix___version.html#ab02bb9024d1186e4fa657020be59a6ed">XDfeMix_Version::Minor</a>, <a class="el" href="struct_x_dfe_mix___version.html#a3e008974f46642083bd193fb40e4d7e0">XDfeMix_Version::Patch</a>, <a class="el" href="struct_x_dfe_mix___version.html#a9aa720deae91fc110ba6c393c9652283">XDfeMix_Version::Revision</a>, <a class="el" href="struct_x_dfe_mix___init.html#af9aaa5104c75ff98b732d397fe844f21">XDfeMix_Init::TuserSelect</a>, <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#ga499409b4675bb141d962a2c15ad3dc61">XDfeMix_GetVersions()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga01627e33029344d87e1dce02269309d2">XDfeMix_InstanceClose()</a>, <a class="el" href="group__dfemix.html#ga1e844159630d803dcc724e998b3d560d">XDfeMix_InstanceInit()</a>, <a class="el" href="group__dfemix.html#ga8d63f4fc15bb4344b6fb33d382468c35">XDfeMix_Reset()</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="xdfemix__examples_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -120,9 +121,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -81,6 +82,8 @@
 *       sk   02/07/22 Added driver details to Overview section.
 *       sk   02/07/22 Restructured the XOspiPsv_ExecuteRxTuning() API to meet
 *                     safety guidelines for CCM metric.
+* 1.8   sk   11/11/22 Enable Master DLL mode by default for Versal Net.
+*       sk   11/29/22 Added support for Indirect Non-Dma write.
 *
 * </pre>
 *

@@ -2,6 +2,7 @@ var annotated =
 [
     [ "XDfeMix", "struct_x_dfe_mix.html", "struct_x_dfe_mix" ],
     [ "XDfeMix_AntennaCfg", "struct_x_dfe_mix___antenna_cfg.html", "struct_x_dfe_mix___antenna_cfg" ],
+    [ "XDfeMix_AuxiliaryCfg", "struct_x_dfe_mix___auxiliary_cfg.html", "struct_x_dfe_mix___auxiliary_cfg" ],
     [ "XDfeMix_CarrierCfg", "struct_x_dfe_mix___carrier_cfg.html", "struct_x_dfe_mix___carrier_cfg" ],
     [ "XDfeMix_CCCfg", "struct_x_dfe_mix___c_c_cfg.html", "struct_x_dfe_mix___c_c_cfg" ],
     [ "XDfeMix_CCSequence", "struct_x_dfe_mix___c_c_sequence.html", "struct_x_dfe_mix___c_c_sequence" ],

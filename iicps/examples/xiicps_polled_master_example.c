@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,9 @@
 /**
 * @file xiicps_polled_master_example.c
 *
-* A design example of using the device in polled mode as master.
+* This example can run on zynqmp / versal platform evaluation board and
+* IIC controller configured master in polled mode and Aardvark Analyzer used as
+* slave.
 *
 * The example uses buffer size 132. Please set the send buffer of the
 * Aardvark device to be continuous 64 bytes from 0x00 to 0x3F.

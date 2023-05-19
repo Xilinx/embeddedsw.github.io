@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmirx
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -667,6 +667,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a3b2aba60044d1ec3e9ddfc0172f77141"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirx__hw_8h.html#a3b2aba60044d1ec3e9ddfc0172f77141">XV_HDMIRX_PIO_ID</a>&#160;&#160;&#160;0x2200</td></tr>
 <tr class="memdesc:a3b2aba60044d1ec3e9ddfc0172f77141"><td class="mdescLeft">&#160;</td><td class="mdescRight">PIO ID.  <a href="#a3b2aba60044d1ec3e9ddfc0172f77141">More...</a><br/></td></tr>
 <tr class="separator:a3b2aba60044d1ec3e9ddfc0172f77141"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a332d931d6e1f46b32ecd1e4ef6229dae"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirx__hw_8h.html#a332d931d6e1f46b32ecd1e4ef6229dae">XV_HDMIRX_SCDC_BRAM_OFFSET</a>&#160;&#160;&#160;0x138</td></tr>
+<tr class="memdesc:a332d931d6e1f46b32ecd1e4ef6229dae"><td class="mdescLeft">&#160;</td><td class="mdescRight">SCDC BRAM Offset.  <a href="#a332d931d6e1f46b32ecd1e4ef6229dae">More...</a><br/></td></tr>
+<tr class="separator:a332d931d6e1f46b32ecd1e4ef6229dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Register access macro definition</div></td></tr>
 <tr class="memitem:ac1f9ae7bd366a3fe5db4faa53b58e4af"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirx__hw_8h.html#ac1f9ae7bd366a3fe5db4faa53b58e4af">XV_HdmiRx_In32</a>&#160;&#160;&#160;Xil_In32</td></tr>
 <tr class="memdesc:ac1f9ae7bd366a3fe5db4faa53b58e4af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input Operations.  <a href="#ac1f9ae7bd366a3fe5db4faa53b58e4af">More...</a><br/></td></tr>
@@ -2996,6 +2999,22 @@ Macros</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a332d931d6e1f46b32ecd1e4ef6229dae"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XV_HDMIRX_SCDC_BRAM_OFFSET&#160;&#160;&#160;0x138</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>SCDC BRAM Offset. </p>
+
+<p>Referenced by <a class="el" href="xv__hdmirx_8h.html#a35f897045a59a453923ce248b1eb8183">XV_HdmiRx_CfgInitialize()</a>, and <a class="el" href="xv__hdmirx_8h.html#a1f3aba5c534ac78d74315a5f8bd6fa62">XV_HdmiRx_WriteScdcRegister()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a58ff62ffa6d07e198733b7ef576f2ac3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3635,16 +3654,15 @@ Macros</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-style signature: void <a class="el" href="xv__hdmirx__hw_8h.html#a407dbf36f2752c30d265e3a8a25d29fe" title="This macro writes a value to a HDMI RX register. ">XV_HdmiRx_WriteReg(UINTPTR BaseAddress, u32 RegOffset, u32 Data)</a> </dd></dl>
 
-<p>Referenced by <a class="el" href="xv__hdmirx_8h.html#a35f897045a59a453923ce248b1eb8183">XV_HdmiRx_CfgInitialize()</a>, <a class="el" href="xv__hdmirx_8h.html#ac1b7e27bd3874e33114b2e0210f54d4c">XV_HdmiRx_ClearLinkStatus()</a>, <a class="el" href="xv__hdmirx_8h.html#a7d5ad8989577d890a1df04c252daa478">XV_HdmiRx_DdcHdcpSetAddress()</a>, <a class="el" href="xv__hdmirx_8h.html#a7cc9095feabfbd561eeb22c90f793a7b">XV_HdmiRx_DdcHdcpWriteData()</a>, <a class="el" href="xv__hdmirx_8h.html#a15aff8e40535d72186c05dcdd2e5aa93">XV_HdmiRx_DdcLoadEdid()</a>, <a class="el" href="xv__hdmirx_8h.html#ac7e573a18cc3fce40df684e53433ac3b">XV_HdmiRx_EXT_SYSRST()</a>, <a class="el" href="xv__hdmirx_8h.html#aee47f6ad9b1b97962b16b90ccd7ee851">XV_HdmiRx_EXT_VRST()</a>, <a class="el" href="xv__hdmirx_8h.html#ae24d729d135dccfda7ff0c9757e36181">XV_HdmiRx_INT_LRST()</a>, <a class="el" href="xv__hdmirx_8h.html#a9075952d1ee753ba1bf92ea8643359f5">XV_HdmiRx_INT_VRST()</a>, <a class="el" href="xv__hdmirx_8h.html#a72457c11b43becc2fd5bffc1b748bf30">XV_HdmiRx_SetColorFormat()</a>, <a class="el" href="xv__hdmirx_8h.html#a8601d159dffdd4fd77d05d248b366a54">XV_HdmiRx_SetHpd()</a>, and <a class="el" href="xv__hdmirx_8h.html#ab48ac8ab5eeddd6197c6220db1ac8ee5">XV_HdmiRx_SetPixelRate()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmirx_8h.html#a35f897045a59a453923ce248b1eb8183">XV_HdmiRx_CfgInitialize()</a>, <a class="el" href="xv__hdmirx_8h.html#ac1b7e27bd3874e33114b2e0210f54d4c">XV_HdmiRx_ClearLinkStatus()</a>, <a class="el" href="xv__hdmirx_8h.html#a7d5ad8989577d890a1df04c252daa478">XV_HdmiRx_DdcHdcpSetAddress()</a>, <a class="el" href="xv__hdmirx_8h.html#a7cc9095feabfbd561eeb22c90f793a7b">XV_HdmiRx_DdcHdcpWriteData()</a>, <a class="el" href="xv__hdmirx_8h.html#a15aff8e40535d72186c05dcdd2e5aa93">XV_HdmiRx_DdcLoadEdid()</a>, <a class="el" href="xv__hdmirx_8h.html#ac7e573a18cc3fce40df684e53433ac3b">XV_HdmiRx_EXT_SYSRST()</a>, <a class="el" href="xv__hdmirx_8h.html#aee47f6ad9b1b97962b16b90ccd7ee851">XV_HdmiRx_EXT_VRST()</a>, <a class="el" href="xv__hdmirx_8h.html#ae24d729d135dccfda7ff0c9757e36181">XV_HdmiRx_INT_LRST()</a>, <a class="el" href="xv__hdmirx_8h.html#a9075952d1ee753ba1bf92ea8643359f5">XV_HdmiRx_INT_VRST()</a>, <a class="el" href="xv__hdmirx_8h.html#a72457c11b43becc2fd5bffc1b748bf30">XV_HdmiRx_SetColorFormat()</a>, <a class="el" href="xv__hdmirx_8h.html#a8601d159dffdd4fd77d05d248b366a54">XV_HdmiRx_SetHpd()</a>, <a class="el" href="xv__hdmirx_8h.html#ab48ac8ab5eeddd6197c6220db1ac8ee5">XV_HdmiRx_SetPixelRate()</a>, and <a class="el" href="xv__hdmirx_8h.html#a1f3aba5c534ac78d74315a5f8bd6fa62">XV_HdmiRx_WriteScdcRegister()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

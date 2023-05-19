@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">qspipsu
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -84,7 +84,8 @@ $(document).ready(function(){initNavTree('xqspipsu__generic__flash__non__blockin
  1.14   akm  07/16/21 Enable Quad Mode for Winbond flashes.
  1.15   akm  11/19/21 Fix read/write failures on Spansion flash parts.
  1.15   akm  12/22/21 Initialize variables before use.
- 1.16   akm  08/16/22 Fix logical error in NumSect calculation.</pre><pre></pre> </div><table class="memberdecls">
+ 1.16   akm  08/16/22 Fix logical error in NumSect calculation.
+ 1.17   akm  12/16/22 Add timeout in QSPIPSU driver examples.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a653eb600a5672ee9c7664f2720a05258"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a653eb600a5672ee9c7664f2720a05258">QspiPsuFlashNonBlockingReadExample</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *QspiPsuInstancePtr, u16 QspiPsuDeviceId)</td></tr>
@@ -552,7 +553,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, else XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This API can only be used for one flash at a time. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___msg.html#ae4dae8ba728f7da9b6f31bb39c62b81f">XQspiPsu_Msg::BusWidth</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a420a0720c6eb8d77aae09c829185b160">XQspiPsu_Msg::ByteCount</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a1fb697c64fd14580822f4baf50f26df1">XQspiPsu_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a09fc20d95cb26f29a649207d0b495f58">XQspiPsu_Msg::TxBfrPtr</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga185ba58041ded76c03bb18ad69e783af">XQSPIPSU_SELECT_MODE_SPI</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___msg.html#ae4dae8ba728f7da9b6f31bb39c62b81f">XQspiPsu_Msg::BusWidth</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a420a0720c6eb8d77aae09c829185b160">XQspiPsu_Msg::ByteCount</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a1fb697c64fd14580822f4baf50f26df1">XQspiPsu_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a09fc20d95cb26f29a649207d0b495f58">XQspiPsu_Msg::TxBfrPtr</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga185ba58041ded76c03bb18ad69e783af">XQSPIPSU_SELECT_MODE_SPI</a>.</p>
 
 </div>
 </div>
@@ -785,9 +786,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

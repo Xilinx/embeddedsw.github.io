@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">trngpsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -74,6 +74,9 @@ Macros</h2></td></tr>
 <tr class="memitem:gaea0612415ab8b736d7d97b4adc253221"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gaea0612415ab8b736d7d97b4adc253221">XTRNGPSV_SEC_STRENGTH_BYTES</a>&#160;&#160;&#160;32U</td></tr>
 <tr class="memdesc:gaea0612415ab8b736d7d97b4adc253221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Security strength in bytes.  <a href="group___overview.html#gaea0612415ab8b736d7d97b4adc253221">More...</a><br/></td></tr>
 <tr class="separator:gaea0612415ab8b736d7d97b4adc253221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad0924776ee88fd25a5c0bece9c5b8f6f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gad0924776ee88fd25a5c0bece9c5b8f6f">XTRNGPSV_SEC_STRENGTH_LEN</a>&#160;&#160;&#160;8U</td></tr>
+<tr class="memdesc:gad0924776ee88fd25a5c0bece9c5b8f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Security strength in Words.  <a href="group___overview.html#gad0924776ee88fd25a5c0bece9c5b8f6f">More...</a><br/></td></tr>
+<tr class="separator:gad0924776ee88fd25a5c0bece9c5b8f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa1b89d45919b2e725a614cf1d809fea1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gaa1b89d45919b2e725a614cf1d809fea1">XTRNGPSV_PERS_STR_LEN</a>&#160;&#160;&#160;12U</td></tr>
 <tr class="memdesc:gaa1b89d45919b2e725a614cf1d809fea1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Personalization string length in dwords.  <a href="group___overview.html#gaa1b89d45919b2e725a614cf1d809fea1">More...</a><br/></td></tr>
 <tr class="separator:gaa1b89d45919b2e725a614cf1d809fea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,7 +173,12 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56ad273a41fe8e545b3c112ac6d3977b8a0">XTRNGPSV_ERROR_CATASTROPHIC_DTF</a>, 
 <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a7fcd167c763a1c8aec791bb1112ad33b">XTRNGPSV_ERROR_CATASTROPHIC_DTF_SW</a>, 
 <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56af26064e8990fc29679943d0ba6c6d0db">XTRNGPSV_ERROR_GENERATE_TIMEOUT</a>, 
-<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a48f765dbeb3b2cc22af9a4f60a86d341">XTRNGPSV_ERROR_DF_CPY</a> = 0x50, 
+<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56ab3005478aff2a764777653ebf2c6b454">XTRNGPSV_ERROR_INVALID_RANDBUF_ADDR</a>, 
+<br/>
+&#160;&#160;<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a48f765dbeb3b2cc22af9a4f60a86d341">XTRNGPSV_ERROR_DF_CPY</a> = 0x50, 
+<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56aab988ddcb8208fd7411ca353c3e47d6e">XTRNGPSV_ERROR_DF_SETUP_KEY_FAILED</a>, 
+<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a9d7ddd0ac9d32c8f849f4060cb38de51">XTRNGPSV_ERROR_DF_MEMSET</a>, 
+<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56a9eaa03d12dac772945e20716206a573d">XTRNGPSV_ERROR_DF_MEMMOVE</a>, 
 <br/>
 &#160;&#160;<a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56ad765117a164b076aa61cbc9636d5f21f">XTRNGPSV_ERROR_HEALTHTEST_INVALID_MODE</a> = 0x60, 
 <a class="el" href="group___overview.html#gga9f1b86469104145ec6c6065cf0259f56af5ddb9c12755bee6731676ee834956c8">XTRNGPSV_ERROR_KAT_MISMATCH</a>, 
@@ -195,9 +203,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9b06ac326694fa3a8cf6407ff99c644f"><td class="memItemLeft" align="right" valign="top">XTrngpsv_Config *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga9b06ac326694fa3a8cf6407ff99c644f">XTrngpsv_LookupConfig</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:ga9b06ac326694fa3a8cf6407ff99c644f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns a reference to an XTrng_Config structure based on the DeviceId.  <a href="group___overview.html#ga9b06ac326694fa3a8cf6407ff99c644f">More...</a><br/></td></tr>
 <tr class="separator:ga9b06ac326694fa3a8cf6407ff99c644f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga092381b1f5b73eed497579c6fce84b91"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga092381b1f5b73eed497579c6fce84b91">XTrngpsv_CfgInitialize</a> (XTrngpsv *InstancePtr, const XTrngpsv_Config *CfgPtr, UINTPTR EffectiveAddr)</td></tr>
-<tr class="memdesc:ga092381b1f5b73eed497579c6fce84b91"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the TRNGPSV instance/driver.  <a href="group___overview.html#ga092381b1f5b73eed497579c6fce84b91">More...</a><br/></td></tr>
-<tr class="separator:ga092381b1f5b73eed497579c6fce84b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7b6a82053b11bedbd37a2a82dd0ba14d"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga7b6a82053b11bedbd37a2a82dd0ba14d">XTrngpsv_Instantiate</a> (XTrngpsv *InstancePtr, const XTrngpsv_UsrCfg *ConfigurValues)</td></tr>
 <tr class="memdesc:ga7b6a82053b11bedbd37a2a82dd0ba14d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function further initializes i.e.  <a href="group___overview.html#ga7b6a82053b11bedbd37a2a82dd0ba14d">More...</a><br/></td></tr>
 <tr class="separator:ga7b6a82053b11bedbd37a2a82dd0ba14d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,9 +228,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

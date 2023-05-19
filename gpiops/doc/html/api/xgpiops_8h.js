@@ -4,6 +4,8 @@ var xgpiops_8h =
     [ "XGPIOPS_BANK1", "xgpiops_8h.html#ga88ebd56b0defc49ebd308951df1eaf0e", null ],
     [ "XGPIOPS_BANK2", "xgpiops_8h.html#gae57e0fee992d409f0ff32d35e68f6fbc", null ],
     [ "XGPIOPS_BANK3", "xgpiops_8h.html#gac994de03aa64e2b6b3c6b6da9d76e020", null ],
+    [ "XGPIOPS_BANK4", "xgpiops_8h.html#ga7dae320aafb3cb94ac932b34910c7aca", null ],
+    [ "XGPIOPS_BANK5", "xgpiops_8h.html#ga1a534b60d76cf75ff1fc781d23f4229c", null ],
     [ "XGPIOPS_BANK_MAX_PINS", "xgpiops_8h.html#ga1e440e05bbea534ebf6939e88eb1455f", null ],
     [ "XGPIOPS_DEVICE_MAX_PIN_NUM", "xgpiops_8h.html#ga6d70822b76e1dd3fda458ed693a082af", null ],
     [ "XGPIOPS_DEVICE_MAX_PIN_NUM_ZYNQMP", "xgpiops_8h.html#ga8f80173cb28cbac5bab53c4fc7c7dd96", null ],

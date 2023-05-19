@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +8,12 @@
 /**
  * @file xiicps_intr_master_example.c
  *
- * Design example to use the IIC device as master in interrupt-driven mode.
+ * This example can run on zynqmp / versal platform evaluation board and
+ * IIC controller configured master in interrupt-driven mode and Aardvark
+ * Analyzer used as slave.
  *
- * It continuously sends 18 buffers to slave.
+ * It sends 18 buffers of data to slave and expects to receive the
+ * same data through the IIC using the Aardvark test hardware.
  *
  * <pre> MODIFICATION HISTORY:
  *

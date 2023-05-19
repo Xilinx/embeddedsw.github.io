@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,8 +8,8 @@
 /**
  * @file xiicps_selftest_example.c
  *
- * This file contains a example for using the IIC hardware device and
- * XIicPs driver.
+ * This example runs on zynqmp / versal evaluation boards using the IIC hardware
+ * device and XIicPs driver.
  *
  *
  * <pre> MODIFICATION HISTORY:

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -40,6 +41,8 @@
 * 1.11	sk	03/03/22 Replace driver version in addtogroup with Overview.
 * 1.11	sk	03/03/22 Update Overview section based on review comments.
 * 1.11	sk	03/03/22 Update XCsuDma_GetSize return type description.
+* 1.14	ab	01/16/23 Added Xil_WaitForEvent() to XcsuDma_WaitForDoneTimeout.
+* 1.14	ab	01/18/23 Added byte-aligned transfer API for VERSAL_NET devices.
 * </pre>
 *
 ******************************************************************************/
@@ -50,7 +53,8 @@
 #include <stdbool.h>
 
 /************************** Constant Definitions *****************************/
-#define XCSUDMA_WORD_SIZE	(4U)
+#define XCSUDMA_WORD_SIZE	(4U)	/**< Transfer size conversion to
+					 * bytes for Versal Net */
 /************************** Function Prototypes ******************************/
 
 
@@ -109,7 +113,7 @@ s32 XCsuDma_CfgInitialize(XCsuDma *InstancePtr, XCsuDma_Config *CfgPtr,
 /**
 *
 * This function sets the starting address and amount(size) of the data to be
-* transfered from/to the memory through the AXI interface.
+* transferred from/to the memory through the AXI interface.
 *
 * @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
 * @param	Channel represents the type of channel either it is Source or
@@ -120,7 +124,7 @@ s32 XCsuDma_CfgInitialize(XCsuDma *InstancePtr, XCsuDma_Config *CfgPtr,
 * 		data which needs to write into the memory(DST) (or read	from
 * 		the memory(SRC)).
 * @param	Size is a 32 bit variable which represents the number of 4 byte
-* 		words needs to be transfered from starting address.
+* 		words needs to be transferred from starting address.
 * @param	EnDataLast is to trigger an end of message. It will enable or
 * 		disable data_inp_last signal to stream interface when current
 * 		command is completed. It is applicable only to source channel
@@ -209,7 +213,7 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 /**
 *
 * This function sets the starting address and amount(size) of the data to be
-* transfered from/to the memory through the AXI interface.
+* transferred from/to the memory through the AXI interface.
 * This function is useful for pmu processor when it wishes to do
 * a 64-bit DMA transfer.
 *
@@ -223,9 +227,9 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 * 		the memory(SRC)).
 * @param    AddrHigh is a 32 bit variable which holds the higher address of data
 * 			which needs to write into the memory(DST) (or read from
-* 			the memroy(SRC)).
+* 			the memoroy(SRC)).
 * @param	Size is a 32 bit variable which represents the number of 4 byte
-* 		words needs to be transfered from starting address.
+* 		words needs to be transferred from starting address.
 * @param	EnDataLast is to trigger an end of message. It will enable or
 * 		disable data_inp_last signal to stream interface when current
 * 		command is completed. It is applicable only to source channel
@@ -239,7 +243,7 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 * 		data_inp_valid signal associated with the final 32-bit word
 *		transfer
 *		This API won't do flush/invalidation for the DMA buffer.
-*		It is recommened to call this API only through PMU processor.
+*		It is recommended to call this API only through PMU processor.
 *
 ******************************************************************************/
 void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
@@ -328,7 +332,7 @@ u64 XCsuDma_GetAddr(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 /*****************************************************************************/
 /**
 *
-* This function returns the size of the data yet to be transfered from memory
+* This function returns the size of the data yet to be transferred from memory
 * to CSU_DMA or CSU_DMA to memory based on the channel selection.
 *
 * @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
@@ -362,7 +366,7 @@ u32 XCsuDma_GetSize(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 /*****************************************************************************/
 /**
 *
-* This function pause the Channel data tranfer to/from memory or to/from stream
+* This function pause the Channel data transfer to/from memory or to/from stream
 * based on pause type.
 *
 * @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
@@ -609,17 +613,14 @@ void XCsuDma_ClearCheckSum(XCsuDma *InstancePtr)
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
-* @return	XST_SUCCESS - Incase of Success
-*		XST_FAILURE - Incase of Timeout.
+* @return	XST_SUCCESS - In case of Success
+*		XST_FAILURE - In case of Timeout.
 *
 * @note		None.
 *
 ******************************************************************************/
 u32 XCsuDma_WaitForDoneTimeout(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 {
-	volatile u32 Regval;
-	u32 Timeout = XCSUDMA_DONE_TIMEOUT_VAL;
-	u32 status;
 	UINTPTR Addr;
 	u32 TimeoutFlag = (u32)XST_FAILURE;
 
@@ -631,23 +632,14 @@ u32 XCsuDma_WaitForDoneTimeout(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 			(u32)XCSUDMA_I_STS_OFFSET +
 			 ((u32)Channel * (u32)XCSUDMA_OFFSET_DIFF);
 
-	while(Timeout != 0U) {
-		Regval = Xil_In32(Addr);
-		status = Regval;
-		if ((status & XCSUDMA_IXR_DONE_MASK) == XCSUDMA_IXR_DONE_MASK) {
-			TimeoutFlag = (u32)XST_SUCCESS;
-			goto done;
-		}
-		usleep(1U);
-		Timeout--;
-	}
+	TimeoutFlag = Xil_WaitForEvent(Addr, XCSUDMA_IXR_DONE_MASK,
+			XCSUDMA_IXR_DONE_MASK, XCSUDMA_DONE_TIMEOUT_VAL);
 
-done:
 	return TimeoutFlag;
 }
 /*****************************************************************************/
 /**
-* This function cofigures all the values of CSU_DMA's Channels with the values
+* This function configures all the values of CSU_DMA's Channels with the values
 * of updated XCsuDma_Configure structure.
 *
 * @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
@@ -786,7 +778,7 @@ void XCsuDma_SetConfig(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 /*****************************************************************************/
 /**
 *
-* This function updates XCsuDma_Configure structure members with the cofigured
+* This function updates XCsuDma_Configure structure members with the configured
 * values of CSU_DMA's Channel.
 *
 * @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
@@ -915,4 +907,95 @@ void XCsuDma_GetConfig(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			(u8)((Data & (u32)(XCSUDMA_CTRL2_MAXCMDS_MASK)));
 
 }
+
+#ifdef VERSAL_NET
+/*****************************************************************************/
+/**
+*
+* This function sets the starting address and amount(size) of the data to be
+* transferred from/to the memory through the AXI interface in VERSAL NET.
+*
+* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
+* @param	Channel represents the type of channel either it is Source or
+* 		Destination.
+*		Source channel      - XCSUDMA_SRC_CHANNEL
+*		Destination Channel - XCSUDMA_DST_CHANNEL
+* @param	Addr is a 64 bit variable which holds the starting address of
+* 		data which needs to write into the memory(DST) (or read	from
+* 		the memory(SRC)).
+* @param	Size is a 32 bit variable which represents the number of bytes
+* 		needs to be transferred from starting address.
+* @param	EnDataLast is to trigger an end of message. It will enable or
+* 		disable data_inp_last signal to stream interface when current
+* 		command is completed. It is applicable only to source channel
+* 		and neglected for destination channel.
+* 		-	1 - Asserts data_inp_last signal.
+* 		-	0 - data_inp_last will not be asserted.
+*
+* @return	None.
+*
+* @note		Data_inp_last signal is asserted simultaneously with the
+* 		data_inp_valid signal associated with the final 32-bit word
+*		transfer.
+*
+******************************************************************************/
+void XCsuDma_ByteAlignedTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
+					u64 Addr, u32 Size, u8 EnDataLast)
+{
+	/* Verify arguments */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(Addr != 0x0UL);
+	Xil_AssertVoid((Channel == (XCSUDMA_SRC_CHANNEL)) ||
+					(Channel == (XCSUDMA_DST_CHANNEL)));
+	Xil_AssertVoid(Size <= (u32)(XCSUDMA_SIZE_MAX));
+	Xil_AssertVoid(InstancePtr->IsReady == (u32)(XIL_COMPONENT_IS_READY));
+
+#if defined(ARMR5)
+	/* No action if 64 bit address is used when this code is running on R5.
+	 * Flush if 32 bit addressing is used.
+	 */
+	if ((Addr >> XCSUDMA_MSB_ADDR_SHIFT) == 0U) {
+		Xil_DCacheFlushRange((INTPTR)Addr, Size << XCSUDMA_SIZE_SHIFT);
+	}
+#else
+	/* No action required for PSU_PMU.
+	 * Perform cache operations on ARM64 (either 32 bit and 64 bit address)
+	 */
+	#if defined(__aarch64__)
+		if (Channel == (XCSUDMA_SRC_CHANNEL)) {
+			Xil_DCacheFlushRange((INTPTR)Addr,
+					(INTPTR)(Size << XCSUDMA_SIZE_SHIFT));
+		} else {
+			Xil_DCacheInvalidateRange((INTPTR)Addr,
+					(INTPTR)(Size << XCSUDMA_SIZE_SHIFT));
+		}
+	#endif
+#endif
+
+	XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
+		((u32)(XCSUDMA_ADDR_OFFSET) +
+		((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
+				((u32)(Addr) & (u32)(XCSUDMA_ADDR_MASK)));
+
+	XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
+		(u32)(XCSUDMA_ADDR_MSB_OFFSET +
+			((u32)Channel * XCSUDMA_OFFSET_DIFF)),
+			((u32)((Addr & ULONG64_HI_MASK) >> XCSUDMA_MSB_ADDR_SHIFT) &
+					(u32)(XCSUDMA_MSB_ADDR_MASK)));
+
+	if (EnDataLast == (u8)1U) {
+		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
+			((u32)(XCSUDMA_SIZE_OFFSET) +
+				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
+			((Size << (u32)(XCSUDMA_SIZE_SHIFT)) |
+					(u32)(XCSUDMA_LAST_WORD_MASK)));
+	}
+	else {
+		XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
+			((u32)(XCSUDMA_SIZE_OFFSET) +
+				((u32)Channel * (u32)(XCSUDMA_OFFSET_DIFF))),
+				(Size << (u32)(XCSUDMA_SIZE_SHIFT)));
+	}
+}
+#endif
 /** @} */

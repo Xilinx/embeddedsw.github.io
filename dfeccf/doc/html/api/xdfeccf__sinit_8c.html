@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeccf
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -86,7 +86,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 1.2   dc     10/29/21 Update doxygen comments
       dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
       dc     11/19/21 Update doxygen documentation
-1.4   dc     08/18/22 Update IP version number</pre><pre></pre> </div><table class="memberdecls">
+1.4   dc     08/18/22 Update IP version number
+1.5   dc     10/28/22 Switching Uplink/Downlink support</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:gae385befee6451f719f1bd650e6cea867"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gae385befee6451f719f1bd650e6cea867">XDFECCF_COMPATIBLE_STRING</a>&#160;&#160;&#160;&quot;xlnx,xdfe-cc-filter-1.1&quot;</td></tr>
@@ -107,24 +108,18 @@ Macros</h2></td></tr>
 <tr class="memitem:ga8f23d47e76e900e3b0be5b58d04a96ba"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga8f23d47e76e900e3b0be5b58d04a96ba">XDFECCF_BASEADDR_SIZE</a>&#160;&#160;&#160;8U</td></tr>
 <tr class="memdesc:ga8f23d47e76e900e3b0be5b58d04a96ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base address bit-size.  <a href="group__dfeccf.html#ga8f23d47e76e900e3b0be5b58d04a96ba">More...</a><br/></td></tr>
 <tr class="separator:ga8f23d47e76e900e3b0be5b58d04a96ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga163dfee107057ec2f37206e3d7ab6ca2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga163dfee107057ec2f37206e3d7ab6ca2">XDFECCF_DATA_IWIDTH_CFG</a>&#160;&#160;&#160;&quot;xlnx,data-iwidth&quot;</td></tr>
-<tr class="memdesc:ga163dfee107057ec2f37206e3d7ab6ca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data IWIDTH property.  <a href="group__dfeccf.html#ga163dfee107057ec2f37206e3d7ab6ca2">More...</a><br/></td></tr>
-<tr class="separator:ga163dfee107057ec2f37206e3d7ab6ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaed380a741e59bc7e8bc3406e6f02a636"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaed380a741e59bc7e8bc3406e6f02a636">XDFECCF_DATA_OWIDTH_CFG</a>&#160;&#160;&#160;&quot;xlnx,data-owidth&quot;</td></tr>
-<tr class="memdesc:gaed380a741e59bc7e8bc3406e6f02a636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data OWIDTH property.  <a href="group__dfeccf.html#gaed380a741e59bc7e8bc3406e6f02a636">More...</a><br/></td></tr>
-<tr class="separator:gaed380a741e59bc7e8bc3406e6f02a636"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaefa9270fd5df08ed3d152000f164c473"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaefa9270fd5df08ed3d152000f164c473">XDFECCF_NUM_ANTENNA_CFG</a>&#160;&#160;&#160;&quot;xlnx,num-antenna&quot;</td></tr>
 <tr class="memdesc:gaefa9270fd5df08ed3d152000f164c473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of antenna property.  <a href="group__dfeccf.html#gaefa9270fd5df08ed3d152000f164c473">More...</a><br/></td></tr>
 <tr class="separator:gaefa9270fd5df08ed3d152000f164c473"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1710adae7e81e9b4c923393586750777"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga1710adae7e81e9b4c923393586750777">XDFECCF_NUM_CC_PER_ANTENNA_CFG</a>&#160;&#160;&#160;&quot;xlnx,num-cc-per-antenna&quot;</td></tr>
 <tr class="memdesc:ga1710adae7e81e9b4c923393586750777"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of CC's per antenna.  <a href="group__dfeccf.html#ga1710adae7e81e9b4c923393586750777">More...</a><br/></td></tr>
 <tr class="separator:ga1710adae7e81e9b4c923393586750777"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga260204ede3198b96988be3b7fab483d9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga260204ede3198b96988be3b7fab483d9">XDFECCF_NUM_SLOT_CHANNELS_CFG</a>&#160;&#160;&#160;&quot;xlnx,num-slot-channels&quot;</td></tr>
-<tr class="memdesc:ga260204ede3198b96988be3b7fab483d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of slot channels property.  <a href="group__dfeccf.html#ga260204ede3198b96988be3b7fab483d9">More...</a><br/></td></tr>
-<tr class="separator:ga260204ede3198b96988be3b7fab483d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5b6e59e458ddbdc6c3ac3d4e9406f9cf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga5b6e59e458ddbdc6c3ac3d4e9406f9cf">XDFECCF_ANTENNA_INTERLEAVE_CFG</a>&#160;&#160;&#160;&quot;xlnx,antenna-interleave&quot;</td></tr>
 <tr class="memdesc:ga5b6e59e458ddbdc6c3ac3d4e9406f9cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of Antenna TDM slots, per CC.  <a href="group__dfeccf.html#ga5b6e59e458ddbdc6c3ac3d4e9406f9cf">More...</a><br/></td></tr>
 <tr class="separator:ga5b6e59e458ddbdc6c3ac3d4e9406f9cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga88f0cfbdb353f95d39faed2227735312"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga88f0cfbdb353f95d39faed2227735312">XDFECCF_SWITCHABLE_CFG</a>&#160;&#160;&#160;&quot;xlnx,switchable&quot;</td></tr>
+<tr class="memdesc:ga88f0cfbdb353f95d39faed2227735312"><td class="mdescLeft">&#160;</td><td class="mdescRight">DL/UL switching support.  <a href="group__dfeccf.html#ga88f0cfbdb353f95d39faed2227735312">More...</a><br/></td></tr>
+<tr class="separator:ga88f0cfbdb353f95d39faed2227735312"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga85e59a23d1fc6d7fd612a815c4f254b1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga85e59a23d1fc6d7fd612a815c4f254b1">XDFECCF_TUSER_WIDTH_CFG</a>&#160;&#160;&#160;&quot;xlnx,tuser-width&quot;</td></tr>
 <tr class="memdesc:ga85e59a23d1fc6d7fd612a815c4f254b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">TUSER width property.  <a href="group__dfeccf.html#ga85e59a23d1fc6d7fd612a815c4f254b1">More...</a><br/></td></tr>
 <tr class="separator:ga85e59a23d1fc6d7fd612a815c4f254b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,9 +127,8 @@ Macros</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

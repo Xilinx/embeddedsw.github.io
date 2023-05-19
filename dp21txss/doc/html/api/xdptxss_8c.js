@@ -9,6 +9,7 @@ var xdptxss_8c =
     [ "XDpTxss_EnableVscColorimetry", "xdptxss_8c.html#ga8b49899ee70890ac856017d9fdc8a321", null ],
     [ "XDpTxSs_GetEdid", "xdptxss_8c.html#ga67a126cda8e59ab3a9622bc2ba2e900d", null ],
     [ "XDpTxSs_GetEncryption", "xdptxss_8c.html#ga03ef0be1a1c5373699422c985ffb07c1", null ],
+    [ "XDpTxSs_GetLinkRate", "xdptxss_8c.html#ga9bf347c0c107d5bf9a33389b326d34c2", null ],
     [ "XDpTxSs_GetNumOfMstStreams", "xdptxss_8c.html#ga86f60203836c66b3c3fa87c7dce3d2b3", null ],
     [ "XDpTxSs_GetRemoteEdid", "xdptxss_8c.html#ga882a24d1900a5530bac270beca25d173", null ],
     [ "XDpTxSs_GetRxCapabilities", "xdptxss_8c.html#ga1a8026694798f9f8b6c8e43fcccd15ec", null ],

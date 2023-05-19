@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -164,6 +165,13 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 			}
 		}
 		XDp_TxEnableMainLink(InstancePtr);
+		Status = XDp_TxCheckLinkStatus(InstancePtr,
+				InstancePtr->TxInstance.LinkConfig.LaneCount);
+		if (Status == XST_SUCCESS)
+			xdbg_printf(XDBG_DEBUG_GENERAL, "SS INFO:MST:Link "
+				    "is up !\n\r\n\r");
+		else
+			return Status;
 		/* Enable MST mode in both the RX and TX. */
 		Status = XDp_TxMstEnable(InstancePtr);
 		if (Status != XST_SUCCESS)
@@ -458,14 +466,6 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 				"resolution or BPC.\n\r");
 			return XST_DATA_LOST;
 		}
-
-		Status = XDp_TxCheckLinkStatus(InstancePtr,
-				InstancePtr->TxInstance.LinkConfig.LaneCount);
-		if (Status == XST_SUCCESS)
-			xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO:MST:Link "
-				"is up after allocate payload!\n\r\n\r");
-		else
-			return Status;
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO:MST:Config done!"
 			"\n\r\n\r");
 		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_SOFT_RESET,
@@ -746,6 +746,8 @@ u32 XDpTxSs_DpTxStartLink(XDp *InstancePtr, u8 TrainMaxCap)
 	LinkRate = InstancePtr->TxInstance.LinkConfig.LinkRate;
 	LaneCount = InstancePtr->TxInstance.LinkConfig.LaneCount;
 
+	XDp_TxSetLinkRate(InstancePtr, LinkRate);
+
 	/* Establish link after training process */
 	Status = XDp_TxEstablishLink(InstancePtr);
 	if (Status != XST_SUCCESS) {
@@ -815,9 +817,10 @@ static u32 Dp_CheckBandwidth(XDp *InstancePtr, u8 Bpc, XVidC_VideoMode VidMode)
 	u32 MstCapable;
 	u32 LinkBw;
 	u8 BitsPerPixel;
+	u8 LinkRate;
 
-	LinkBw = (InstancePtr->TxInstance.LinkConfig.LaneCount *
-		  InstancePtr->TxInstance.LinkConfig.LinkRate * 27);
+	LinkRate = XDp_Tx_DecodeLinkBandwidth(InstancePtr);
+	LinkBw = (InstancePtr->TxInstance.LinkConfig.LaneCount * LinkRate * 27);
 	if (InstancePtr->TxInstance.MsaConfig[0].ComponentFormat ==
 	    XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422) {
 		/* YCbCr 4:2:2 color component format. */
@@ -833,37 +836,41 @@ static u32 Dp_CheckBandwidth(XDp *InstancePtr, u8 Bpc, XVidC_VideoMode VidMode)
 
 	/* Check for maximum link rate supported */
 	if (InstancePtr->TxInstance.LinkConfig.MaxLinkRate <
-				InstancePtr->TxInstance.LinkConfig.LinkRate) {
+			LinkRate) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS:INFO:Requested link rate "
 			"exceeds maximum capabilities.\n\rMaximum link "
 				"rate = ");
-
 		/* Report maximum link rate supported */
 		switch (InstancePtr->TxInstance.LinkConfig.MaxLinkRate) {
-			case XDP_TX_LINK_BW_SET_540GBPS:
-				xdbg_printf(XDBG_DEBUG_GENERAL,"5.40 Gbps."
-					"\n\r");
-				break;
-
-			case XDP_TX_LINK_BW_SET_270GBPS:
-				xdbg_printf(XDBG_DEBUG_GENERAL,"2.70 Gbps."
-					"\n\r");
-				break;
-
-			case XDP_TX_LINK_BW_SET_162GBPS:
-				xdbg_printf(XDBG_DEBUG_GENERAL,"1.62 Gbps."
-					"\n\r");
-				break;
+		case XDP_TX_LINK_BW_SET_SW_UHBR20:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "20 Gbps.\n\r");
+		break;
+		case XDP_TX_LINK_BW_SET_SW_UHBR10:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "10 Gbps.\n\r");
+			break;
+		case XDP_TX_LINK_BW_SET_SW_UHBR135:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "13.5 Gbps.\n\r");
+			break;
+		case XDP_TX_LINK_BW_SET_810GBPS:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "8.10 Gbps.\n\r");
+			break;
+		case XDP_TX_LINK_BW_SET_540GBPS:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "5.40 Gbps.\n\r");
+			break;
+		case XDP_TX_LINK_BW_SET_270GBPS:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "2.70 Gbps.\n\r");
+			break;
+		case XDP_TX_LINK_BW_SET_162GBPS:
+			xdbg_printf(XDBG_DEBUG_GENERAL, "1.62 Gbps.\n\r");
+			break;
 		}
-
 		return XST_FAILURE;
-	}
-	else if (InstancePtr->TxInstance.LinkConfig.MaxLaneCount <
-				InstancePtr->TxInstance.LinkConfig.LaneCount) {
-		xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:Requested lane count "
-			"exceeds maximum capabilities.\n\tMaximum lane count "
-				"= %d.\n\r",
-			InstancePtr->TxInstance.LinkConfig.MaxLaneCount);
+	} else if (InstancePtr->TxInstance.LinkConfig.MaxLaneCount <
+		   InstancePtr->TxInstance.LinkConfig.LaneCount) {
+		xdbg_printf(XDBG_DEBUG_GENERAL, "SS ERR:Requested lane count "
+			    "exceeds maximum capabilities.\n\tMaximum lane count"
+			    "= %d.\n\r",
+		InstancePtr->TxInstance.LinkConfig.MaxLaneCount);
 		return XST_BUFFER_TOO_SMALL;
 	}
 
@@ -981,12 +988,14 @@ static u32 Dp_CheckBandwidth(XDp *InstancePtr, u8 Bpc, XVidC_VideoMode VidMode)
 		if (TsFrac != 0) {
 			TimeSlots++;
 		}
-		if ((InstancePtr->Config.PayloadDataWidth == 4) &&
-							(TimeSlots % 4) != 0) {
-			TimeSlots += (4 - (TimeSlots % 4));
-		}
-		else if ((TimeSlots % 2) != 0) {
-			TimeSlots++;
+		if (InstancePtr->TxInstance.LinkConfig.TrainingMode !=
+		    XDP_TX_TRAINING_MODE_DP21) {
+			if (InstancePtr->Config.PayloadDataWidth == 4 &&
+			    (TimeSlots % 4) != 0) {
+				TimeSlots += (4 - (TimeSlots % 4));
+			} else if ((TimeSlots % 2) != 0) {
+				TimeSlots++;
+			}
 		}
 
 		/* Add up all the timeslots. */
@@ -1176,8 +1185,10 @@ static void Dp_ConfigVideoPackingClockControl(XDp *InstancePtr, u8 Bpc)
 			 InstancePtr->TxInstance.MsaConfig[0].UserPixelWidth);
 		u32 LinkClk;
 		long long DpLinkRateHz;
+		u8 LinkRate;
 
-		switch (InstancePtr->TxInstance.LinkConfig.LinkRate) {
+		LinkRate = XDp_Tx_DecodeLinkBandwidth(InstancePtr);
+		switch (LinkRate) {
 		case XDP_TX_LINK_BW_SET_540GBPS:
 			DpLinkRateHz = DP_LINK_RATE_HZ_540GBPS;
 			break;

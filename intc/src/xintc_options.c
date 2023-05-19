@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xintc_options.c
-* @addtogroup intc_v3_15
+* @addtogroup intc Overview
 * @{
 *
 * Contains option functions for the XIntc driver. These functions allow the

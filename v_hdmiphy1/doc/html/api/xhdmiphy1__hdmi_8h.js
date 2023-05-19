@@ -1,5 +1,6 @@
 var xhdmiphy1__hdmi_8h =
 [
+    [ "XHdmiphy1_ClkDetAccuracyRange", "xhdmiphy1__hdmi_8h.html#gaa113dd9ce96c346ef9b757947eb340fe", null ],
     [ "XHdmiphy1_ClkDetCheckFreqZero", "xhdmiphy1__hdmi_8h.html#gafaece55136a95db26cf37edcd53c96f8", null ],
     [ "XHdmiphy1_ClkDetEnable", "xhdmiphy1__hdmi_8h.html#gab2369998b0e4635bced93881e51cc8fe", null ],
     [ "XHdmiphy1_ClkDetSetFreqLockThreshold", "xhdmiphy1__hdmi_8h.html#ga5a055146c6b3aa1da1991a0041dc11f7", null ],

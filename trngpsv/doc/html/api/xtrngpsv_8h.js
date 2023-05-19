@@ -14,6 +14,7 @@ var xtrngpsv_8h =
     [ "XTRNGPSV_PERS_STR_LEN", "xtrngpsv_8h.html#gaa1b89d45919b2e725a614cf1d809fea1", null ],
     [ "XTRNGPSV_PERS_STR_LEN_BYTES", "xtrngpsv_8h.html#gaf6b15aac7d60522637fb0611001e947a", null ],
     [ "XTRNGPSV_SEC_STRENGTH_BYTES", "xtrngpsv_8h.html#gaea0612415ab8b736d7d97b4adc253221", null ],
+    [ "XTRNGPSV_SEC_STRENGTH_LEN", "xtrngpsv_8h.html#gad0924776ee88fd25a5c0bece9c5b8f6f", null ],
     [ "XTRNGPSV_SEED_LEN", "xtrngpsv_8h.html#ga41ff27942450a6d81e1f7d9c6191d9a8", null ],
     [ "XTRNGPSV_SEED_LEN_BYTES", "xtrngpsv_8h.html#ga40bd9343969e36296c9aba88c3292d27", null ],
     [ "XTRNGPSV_SUCCESS", "xtrngpsv_8h.html#ga7ccdabd4af3a88410a98cdd43d9ad077", null ],
@@ -51,7 +52,11 @@ var xtrngpsv_8h =
       [ "XTRNGPSV_ERROR_CATASTROPHIC_DTF", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56ad273a41fe8e545b3c112ac6d3977b8a0", null ],
       [ "XTRNGPSV_ERROR_CATASTROPHIC_DTF_SW", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56a7fcd167c763a1c8aec791bb1112ad33b", null ],
       [ "XTRNGPSV_ERROR_GENERATE_TIMEOUT", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56af26064e8990fc29679943d0ba6c6d0db", null ],
+      [ "XTRNGPSV_ERROR_INVALID_RANDBUF_ADDR", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56ab3005478aff2a764777653ebf2c6b454", null ],
       [ "XTRNGPSV_ERROR_DF_CPY", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56a48f765dbeb3b2cc22af9a4f60a86d341", null ],
+      [ "XTRNGPSV_ERROR_DF_SETUP_KEY_FAILED", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56aab988ddcb8208fd7411ca353c3e47d6e", null ],
+      [ "XTRNGPSV_ERROR_DF_MEMSET", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56a9d7ddd0ac9d32c8f849f4060cb38de51", null ],
+      [ "XTRNGPSV_ERROR_DF_MEMMOVE", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56a9eaa03d12dac772945e20716206a573d", null ],
       [ "XTRNGPSV_ERROR_HEALTHTEST_INVALID_MODE", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56ad765117a164b076aa61cbc9636d5f21f", null ],
       [ "XTRNGPSV_ERROR_KAT_MISMATCH", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56af5ddb9c12755bee6731676ee834956c8", null ],
       [ "XTRNGPSV_ERROR_USRCFG_CPY_KAT", "xtrngpsv_8h.html#gga9f1b86469104145ec6c6065cf0259f56a6f3e935a71ffe247d551eb75964b3d0c", null ]
@@ -67,7 +72,6 @@ var xtrngpsv_8h =
       [ "XTRNGPSV_ERROR", "xtrngpsv_8h.html#gga09343136ce617c1b5f78773c5c76a65ca496a2db26a91d4702ca899c18fdad767", null ],
       [ "XTRNGPSV_CATASTROPHIC", "xtrngpsv_8h.html#gga09343136ce617c1b5f78773c5c76a65ca1ade1f44706d24f4ae27731f6af005d6", null ]
     ] ],
-    [ "XTrngpsv_CfgInitialize", "xtrngpsv_8h.html#ga092381b1f5b73eed497579c6fce84b91", null ],
     [ "XTrngpsv_DF", "xtrngpsv_8h.html#ga385580225d449ba49c6425fc61836092", null ],
     [ "XTrngpsv_Generate", "xtrngpsv_8h.html#ga2d5b1c7182c8de3767e0345a3435ffe5", null ],
     [ "XTrngpsv_Instantiate", "xtrngpsv_8h.html#ga7b6a82053b11bedbd37a2a82dd0ba14d", null ],

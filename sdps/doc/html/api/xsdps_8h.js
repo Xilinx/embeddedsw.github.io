@@ -2,6 +2,7 @@ var xsdps_8h =
 [
     [ "ADDRESS_BEYOND_32BIT", "xsdps_8h.html#gaad1398373adf6de2322bf721948b891e", null ],
     [ "CSD_SPEC_VER_3", "xsdps_8h.html#gabe76c4b7e5469e21fee99adcc183d663", null ],
+    [ "ENABLE_HS400_MODE", "xsdps_8h.html#ga98b954d28a6cea0c477bbd189ce48ddb", null ],
     [ "EXT_CSD_DEVICE_TYPE_BYTE", "xsdps_8h.html#ga52d080f8ba1068e8190d52806e5a57c0", null ],
     [ "EXT_CSD_DEVICE_TYPE_DDR_1V2_HIGH_SPEED", "xsdps_8h.html#gab9c4b83ddf8471ff2fa8a4988ba01423", null ],
     [ "EXT_CSD_DEVICE_TYPE_DDR_1V2_HS400", "xsdps_8h.html#gad9c2fb1320f91077acfa8b78450c3863", null ],

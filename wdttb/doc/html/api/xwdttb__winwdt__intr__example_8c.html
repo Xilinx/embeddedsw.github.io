@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">wdttb
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -70,6 +70,7 @@ $(document).ready(function(){initNavTree('xwdttb__winwdt__intr__example_8c.html'
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>This file contains a design example using the TimeBase Watchdog Timer Device (WdtTb) driver and hardware device using interrupt mode (for the WDT interrupt). </p>
+<p>This file contains an example that demonstrates Q&amp;A functionality of the Window Watchdog.</p>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This example assumes that the reset output of the WdtTb device is not connected to the reset of the processor. This example will not return if the interrupts are not working.</p>
 <p>MODIFICATION HISTORY:</p>
@@ -80,7 +81,15 @@ Ver   Who  Date     Changes
 <p>
 4.0   sha  02/04/16 First release
 5.0     sne  03/26/20 Updated example to support versal platform.
-</pre> </div><table class="memberdecls">
+</pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
+<p>This example assumes that the reset output of the WdtTb device is not connected to the reset of the processor. This example will not return if the interrupts are not working.</p>
+<p>MODIFICATION HISTORY:</p>
+<pre>
+Ver   Who  Date     Changes
+</p>
+<hr/>
+<p>
+5.6   asa  01/13/23 First release of Q&amp;A mode example.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:abcca4fac23cabb6f0a7a684a08c3a90a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xwdttb__winwdt__intr__example_8c.html#abcca4fac23cabb6f0a7a684a08c3a90a">WIN_WDT_SW_COUNT</a>&#160;&#160;&#160;0xF00000</td></tr>
@@ -242,9 +251,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -39,6 +40,8 @@
 *       sk   05/07/21 Fixed MISRAC violations.
 * 1.5   sk   08/17/21 Added DCache invalidate after non-blocking DMA read.
 * 1.6   sk   02/07/22 Replaced driver version in addtogroup with Overview.
+* 1.8   sk   11/11/22 Enable Master DLL mode by default for Versal Net.
+*       sk   11/29/22 Added support for Indirect Non-Dma write.
 *
 * </pre>
 *
@@ -128,14 +131,18 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->DllMode = XOSPIPSV_DLL_BYPASS_MODE;
 		InstancePtr->DualByteOpcodeEn = 0U;
 
+#if defined (versal) && !defined (VERSAL_NET)
 		if (XGetPSVersion_Info() != SILICON_VERSION_1) {
+#endif
 			InstancePtr->DllMode = XOSPIPSV_DLL_MASTER_MODE;
 			if (InstancePtr->Config.InputClockHz >=
 							XOSPIPSV_TAP_GRAN_SEL_MIN_FREQ) {
 				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 						XOSPIPSV_ECO_REG, 0x1);
 			}
+#if defined (versal) && !defined (VERSAL_NET)
 		}
+#endif
 
 		/*
 		 * Reset the OSPIPSV device to get it into its initial state. It is
@@ -386,7 +393,13 @@ u32 XOspiPsv_PollTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 				(InstancePtr->TxBytes != 0U)) {
 			Status = XOspiPsv_Dac_Write(InstancePtr, Msg);
 		} else {
-			Status = XOspiPsv_Stig_Write(InstancePtr, Msg);
+			if (InstancePtr->TxBytes > 8U) {
+				XOspiPsv_ConfigureMux_Linear(InstancePtr);
+				Status = XOspiPsv_IDac_Write(InstancePtr, Msg);
+				XOspiPsv_ConfigureMux_Dma(InstancePtr);
+			} else {
+				Status = XOspiPsv_Stig_Write(InstancePtr, Msg);
+			}
 		}
 	}
 

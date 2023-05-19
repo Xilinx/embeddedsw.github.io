@@ -1,5 +1,6 @@
 /*******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -64,6 +65,9 @@ extern "C" {
 #define XVPHY_HDMI_GTHE4_DRU_REFCLK			156250000LL
 #define XVPHY_HDMI_GTHE4_DRU_REFCLK_MIN		156240000LL
 #define XVPHY_HDMI_GTHE4_DRU_REFCLK_MAX		156260000LL
+#define XVPHY_HDMI_GTHE4_DRU_REFCLK1		400000000LL
+#define XVPHY_HDMI_GTHE4_DRU_REFCLK1_MIN	399990000LL
+#define XVPHY_HDMI_GTHE4_DRU_REFCLK1_MAX	400010000LL
 #define XVPHY_HDMI_GTHE4_PLL_SCALE			1000
 #define XVPHY_HDMI_GTHE4_QPLL0_REFCLK_MIN	61250000LL
 #define XVPHY_HDMI_GTHE4_QPLL1_REFCLK_MIN	50000000LL
@@ -146,6 +150,7 @@ void XVphy_ClkDetEnable(XVphy *InstancePtr, u8 Enable);
 void XVphy_ClkDetTimerClear(XVphy *InstancePtr, u8 QuadId,
 		XVphy_DirectionType Dir);
 void XVphy_ClkDetSetFreqLockThreshold(XVphy *InstancePtr, u16 ThresholdVal);
+void XVphy_ClkDetAccuracyRange(XVphy *InstancePtr, u16 ThresholdVal);
 u8 XVphy_ClkDetCheckFreqZero(XVphy *InstancePtr, XVphy_DirectionType Dir);
 void XVphy_ClkDetSetFreqTimeout(XVphy *InstancePtr, u32 TimeoutVal);
 void XVphy_ClkDetTimerLoad(XVphy *InstancePtr, u8 QuadId,

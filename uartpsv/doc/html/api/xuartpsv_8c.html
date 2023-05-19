@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">uartpsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -82,6 +82,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga71a962de4963e15f1c38e7831e825f7c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga71a962de4963e15f1c38e7831e825f7c">XUartPsv_Send</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
 <tr class="memdesc:ga71a962de4963e15f1c38e7831e825f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This functions sends the specified buffer using the device in either polled or interrupt driven mode.  <a href="group__uartpsv.html#ga71a962de4963e15f1c38e7831e825f7c">More...</a><br/></td></tr>
 <tr class="separator:ga71a962de4963e15f1c38e7831e825f7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac551c919a38424e6d23298256a9d1141"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gac551c919a38424e6d23298256a9d1141">XUartPsv_Send_NoWait</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
+<tr class="memdesc:gac551c919a38424e6d23298256a9d1141"><td class="mdescLeft">&#160;</td><td class="mdescRight"><ul>
+<li></li>
+</ul>
+ <a href="group__uartpsv.html#gac551c919a38424e6d23298256a9d1141">More...</a><br/></td></tr>
+<tr class="separator:gac551c919a38424e6d23298256a9d1141"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga4d4d20bbcedb1de2adbe2644b821d12d">XUartPsv_Recv</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
 <tr class="memdesc:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function attempts to receive a specified number of bytes of data from the device and store it into the specified buffer.  <a href="group__uartpsv.html#ga4d4d20bbcedb1de2adbe2644b821d12d">More...</a><br/></td></tr>
 <tr class="separator:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -97,16 +103,18 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa19ed118438249d9c56cd3afcfa8898c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gaa19ed118438249d9c56cd3afcfa8898c">XUartPsv_ProgramCtrlReg</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u32 CtrlRegister)</td></tr>
 <tr class="memdesc:gaa19ed118438249d9c56cd3afcfa8898c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reprograms the control register according to the following sequence mentioned in the TRM.  <a href="group__uartpsv.html#gaa19ed118438249d9c56cd3afcfa8898c">More...</a><br/></td></tr>
 <tr class="separator:gaa19ed118438249d9c56cd3afcfa8898c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1344d64394e0af7cf3abe12336900098"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga1344d64394e0af7cf3abe12336900098">XUartPsv_Cleanup</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga1344d64394e0af7cf3abe12336900098"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting NextBytePtr, RemainingBytes and RequestedBytes.  <a href="group__uartpsv.html#ga1344d64394e0af7cf3abe12336900098">More...</a><br/></td></tr>
-<tr class="separator:ga1344d64394e0af7cf3abe12336900098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga048adc3a5ea0979d28266476fa3960db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga048adc3a5ea0979d28266476fa3960db">XUartPsv_CleanupRx</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga048adc3a5ea0979d28266476fa3960db"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting Rx NextBytePtr, RemainingBytes and RequestedBytes.  <a href="group__uartpsv.html#ga048adc3a5ea0979d28266476fa3960db">More...</a><br/></td></tr>
+<tr class="separator:ga048adc3a5ea0979d28266476fa3960db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gaf1cde67fba29b14f65e5abe2dd7d2066">XUartPsv_CleanupTx</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting Tx NextBytePtr, RemainingBytes and RequestedBytes.  <a href="group__uartpsv.html#gaf1cde67fba29b14f65e5abe2dd7d2066">More...</a><br/></td></tr>
+<tr class="separator:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

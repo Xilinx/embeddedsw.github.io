@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -79,101 +79,82 @@ $(document).ready(function(){initNavTree('struct_x_dfe_mix___mixer_status.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:aefe0f9a157e7320c42622eca5dbad590"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#aefe0f9a157e7320c42622eca5dbad590">AdderStage</a></td></tr>
-<tr class="memdesc:aefe0f9a157e7320c42622eca5dbad590"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] Earliest stage in which overflow occurred.  <a href="#aefe0f9a157e7320c42622eca5dbad590">More...</a><br/></td></tr>
-<tr class="separator:aefe0f9a157e7320c42622eca5dbad590"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14b21b8a61144872f45e1ea1395cd895"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a14b21b8a61144872f45e1ea1395cd895">AdderAntenna</a></td></tr>
-<tr class="memdesc:a14b21b8a61144872f45e1ea1395cd895"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">           [0-7] Lowest antenna in which overflow has
-</pre><p> occurred.  <a href="#a14b21b8a61144872f45e1ea1395cd895">More...</a><br/></td></tr>
-<tr class="separator:a14b21b8a61144872f45e1ea1395cd895"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a570e3ee93a79d66078fdd76efb30e1e0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a570e3ee93a79d66078fdd76efb30e1e0">MixCCID</a></td></tr>
-<tr class="memdesc:a570e3ee93a79d66078fdd76efb30e1e0"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [0-15] Lowest CCID on which overflow has occurred
-</pre><p> in mixer.  <a href="#a570e3ee93a79d66078fdd76efb30e1e0">More...</a><br/></td></tr>
-<tr class="separator:a570e3ee93a79d66078fdd76efb30e1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a6d3cb2fe6f90ef016c5ec0a4151161"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a6a6d3cb2fe6f90ef016c5ec0a4151161">MixAntenna</a></td></tr>
-<tr class="memdesc:a6a6d3cb2fe6f90ef016c5ec0a4151161"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">         [0-7] Lowest antenna in which overflow has
-</pre><p> occurred.  <a href="#a6a6d3cb2fe6f90ef016c5ec0a4151161">More...</a><br/></td></tr>
-<tr class="separator:a6a6d3cb2fe6f90ef016c5ec0a4151161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3db666bd974f78bf0c3ae724dc48263e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a3db666bd974f78bf0c3ae724dc48263e">Stage</a></td></tr>
+<tr class="memdesc:a3db666bd974f78bf0c3ae724dc48263e"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0-3] Earliest stage in which overflow occurred.  <a href="#a3db666bd974f78bf0c3ae724dc48263e">More...</a><br/></td></tr>
+<tr class="separator:a3db666bd974f78bf0c3ae724dc48263e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea50126700f9438bb4c7ee5923d00ca"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a9ea50126700f9438bb4c7ee5923d00ca">Antenna</a></td></tr>
+<tr class="memdesc:a9ea50126700f9438bb4c7ee5923d00ca"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [0-7] Lowest numbered antenna in which overflow
+</pre><p> occurred.  <a href="#a9ea50126700f9438bb4c7ee5923d00ca">More...</a><br/></td></tr>
+<tr class="separator:a9ea50126700f9438bb4c7ee5923d00ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fba6ea15b8339aeb3509e31314a68cc"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___mixer_status.html#a5fba6ea15b8339aeb3509e31314a68cc">NcoId</a></td></tr>
+<tr class="memdesc:a5fba6ea15b8339aeb3509e31314a68cc"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">    [0-15] NCO on which overflow occured, with lowest
+</pre><p> antenna taking priority (only relevant to overflow in COMPLEX_MULT stage).  <a href="#a5fba6ea15b8339aeb3509e31314a68cc">More...</a><br/></td></tr>
+<tr class="separator:a5fba6ea15b8339aeb3509e31314a68cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mixer status. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="a14b21b8a61144872f45e1ea1395cd895"></a>
+<a class="anchor" id="a9ea50126700f9438bb4c7ee5923d00ca"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeMix_MixerStatus::AdderAntenna</td>
+          <td class="memname">u32 XDfeMix_MixerStatus::Antenna</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">           [0-7] Lowest antenna in which overflow has
+<p><pre class="fragment">      [0-7] Lowest numbered antenna in which overflow
 </pre><p> occurred. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga88d1ef6d743401342ea5a04b08e976dd">XDfeMix_GetMixerStatus()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga234e33372e58ae0665ae2988a73a5b3c">XDfeMix_GetMixerStatus()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aefe0f9a157e7320c42622eca5dbad590"></a>
+<a class="anchor" id="a5fba6ea15b8339aeb3509e31314a68cc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeMix_MixerStatus::AdderStage</td>
+          <td class="memname">u32 XDfeMix_MixerStatus::NcoId</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>[0,1] Earliest stage in which overflow occurred. </p>
+<p><pre class="fragment">    [0-15] NCO on which overflow occured, with lowest
+</pre><p> antenna taking priority (only relevant to overflow in COMPLEX_MULT stage). </p>
+
+<p>Referenced by <a class="el" href="group__dfemix.html#ga234e33372e58ae0665ae2988a73a5b3c">XDfeMix_GetMixerStatus()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3db666bd974f78bf0c3ae724dc48263e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XDfeMix_MixerStatus::Stage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>[0-3] Earliest stage in which overflow occurred. </p>
 <ul>
 <li>0 = COMPLEX_MULT: Complex multiplier output overflowed and has been saturated.</li>
-<li>1 = FIRST_ADDER: First antenna adder output overflowed and has been saturated.</li>
-<li>2 = SECOND_ADDER: Second antenna adder output overflowed and has been saturated. </li>
+<li>1 = FIRST_ADDER: First antenna adder output overflowed and has been saturated. Downlink Only.</li>
+<li>2 = SECOND_ADDER: Second antenna adder output overflowed and has been saturated. Downlink MAX_CCIDs &gt; 4 Only.</li>
+<li>3 = THIRD_ADDER: Third antenna adder output overflowed and has been saturated. Downlink MAX_CCIDs &gt; 8 Only. </li>
 </ul>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga88d1ef6d743401342ea5a04b08e976dd">XDfeMix_GetMixerStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6a6d3cb2fe6f90ef016c5ec0a4151161"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeMix_MixerStatus::MixAntenna</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">         [0-7] Lowest antenna in which overflow has
-</pre><p> occurred. </p>
-
-<p>Referenced by <a class="el" href="group__dfemix.html#ga88d1ef6d743401342ea5a04b08e976dd">XDfeMix_GetMixerStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a570e3ee93a79d66078fdd76efb30e1e0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeMix_MixerStatus::MixCCID</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">      [0-15] Lowest CCID on which overflow has occurred
-</pre><p> in mixer. </p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga234e33372e58ae0665ae2988a73a5b3c">XDfeMix_GetMixerStatus()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

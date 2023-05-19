@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xuartlite_selftest.c
-* @addtogroup uartlite_v3_7
+* @addtogroup uartlite Overview
 * @{
 *
 * This file contains the self-test functions for the UART Lite component
@@ -26,6 +27,8 @@
 *		      the status register We don't know the status of the Status
 * 		      Register in case of if there is more than one uartlite IP
 *		      instance in the h/w design.
+* 3.8	gm   09/25/22 Use XUartLite_GetSR instead of accessing status register
+*                     directly.
 * </pre>
 *
 *****************************************************************************/
@@ -95,8 +98,7 @@ int XUartLite_SelfTest(XUartLite *InstancePtr)
 	 * Read the Status register value to check if it is the correct value
 	 * after a reset
 	 */
-	StatusRegister = XUartLite_ReadReg(InstancePtr->RegBaseAddress,
-					XUL_STATUS_REG_OFFSET);
+	StatusRegister = XUartLite_GetSR(InstancePtr);
 
 	/*
 	 * If the status register is any other value other than

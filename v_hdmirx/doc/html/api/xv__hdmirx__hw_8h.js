@@ -154,6 +154,7 @@ var xv__hdmirx__hw_8h =
     [ "XV_HDMIRX_PIO_STA_IRQ_MASK", "xv__hdmirx__hw_8h.html#abd3c33cf8c70cbeb50a95f7d58556579", null ],
     [ "XV_HDMIRX_PIO_STA_OFFSET", "xv__hdmirx__hw_8h.html#af1fe9c13a0a5c613a4ca868c82c6f969", null ],
     [ "XV_HdmiRx_ReadReg", "xv__hdmirx__hw_8h.html#ab1245a8a62b2b5611cc4cbb2aa4af75b", null ],
+    [ "XV_HDMIRX_SCDC_BRAM_OFFSET", "xv__hdmirx__hw_8h.html#a332d931d6e1f46b32ecd1e4ef6229dae", null ],
     [ "XV_HDMIRX_SHIFT_16", "xv__hdmirx__hw_8h.html#a58ff62ffa6d07e198733b7ef576f2ac3", null ],
     [ "XV_HDMIRX_TMR_CNT_OFFSET", "xv__hdmirx__hw_8h.html#acc84ec76d1d4480d32bfcc0a6d36c9cf", null ],
     [ "XV_HDMIRX_TMR_CTRL_CLR_OFFSET", "xv__hdmirx__hw_8h.html#a418a4e82c61dfecb6fba2ae6fa645cc5", null ],

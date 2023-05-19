@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2001 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2001 - 2023 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xspi_l.h
-* @addtogroup spi_v4_8
+* @addtogroup spi Overview
 * @{
 *
 * This header file contains identifiers, Register Definitions and  basic driver

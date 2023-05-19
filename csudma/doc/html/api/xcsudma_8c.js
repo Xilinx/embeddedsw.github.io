@@ -1,5 +1,6 @@
 var xcsudma_8c =
 [
+    [ "XCSUDMA_WORD_SIZE", "xcsudma_8c.html#gaf448568bb484f8b80052682f399f194d", null ],
     [ "XCsuDma_64BitTransfer", "xcsudma_8c.html#ga83a1043112b6067b1901d2bdcb29563d", null ],
     [ "XCsuDma_CfgInitialize", "xcsudma_8c.html#gad0f7217bd295de82623179efb34adb96", null ],
     [ "XCsuDma_ClearCheckSum", "xcsudma_8c.html#ga78bdd79674e2b5c92b9701cacfde1fe1", null ],

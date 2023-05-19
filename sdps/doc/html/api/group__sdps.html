@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">sdps
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -199,6 +199,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga141c6ee970bedfb72b987c201844dcde"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__sdps.html#ga141c6ee970bedfb72b987c201844dcde">XSDPS_VERSAL_SD1_BASE</a>&#160;&#160;&#160;0xF1050000U</td></tr>
 <tr class="memdesc:ga141c6ee970bedfb72b987c201844dcde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versal SD1 Baseaddress.  <a href="#ga141c6ee970bedfb72b987c201844dcde">More...</a><br/></td></tr>
 <tr class="separator:ga141c6ee970bedfb72b987c201844dcde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga98b954d28a6cea0c477bbd189ce48ddb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__sdps.html#ga98b954d28a6cea0c477bbd189ce48ddb">ENABLE_HS400_MODE</a></td></tr>
+<tr class="memdesc:ga98b954d28a6cea0c477bbd189ce48ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable eMMC HS400 mode for Versal Net platform.  <a href="#ga98b954d28a6cea0c477bbd189ce48ddb">More...</a><br/></td></tr>
+<tr class="separator:ga98b954d28a6cea0c477bbd189ce48ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -514,6 +517,20 @@ SD High Speed mode configuration options</h2></td></tr>
 <p>CSD card spec ver 3. </p>
 
 <p>Referenced by <a class="el" href="group__sdps.html#gae55b1aa663629e99a9da94619c7487c5">XSdPs_MmcCardInitialize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga98b954d28a6cea0c477bbd189ce48ddb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ENABLE_HS400_MODE</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable eMMC HS400 mode for Versal Net platform. </p>
 
 </div>
 </div>
@@ -1529,7 +1546,7 @@ SD High Speed mode configuration options</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This API will change clock frequency to the value less than or equal to the given value using the permissible dividors. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sd_ps.html#a11d4222e3ecae1a01aa4c3e34a00ef35">XSdPs::HC_Version</a>, <a class="el" href="struct_x_sd_ps.html#ab0fec7949e73bc680a138fbf644bd692">XSdPs::IsReady</a>, <a class="el" href="group__sdps.html#ga45d325b142a6526ec0468d1fbc34c471">XSdPs_SetClock()</a>, and <a class="el" href="group__sdps.html#ga172c91b6b33e2e94ded0c3d58797411d">XSdPs_SetTapDelay()</a>.</p>
+<p>References <a class="el" href="struct_x_sd_ps___config.html#a1292694414923fdc17e1f6a0e00db2f6">XSdPs_Config::BaseAddress</a>, <a class="el" href="struct_x_sd_ps.html#ace9a2dd34b39f3100f97fcd50883f833">XSdPs::CardType</a>, <a class="el" href="struct_x_sd_ps.html#a9ab6ed4e7a1155a0708152ca2f27d650">XSdPs::Config</a>, <a class="el" href="struct_x_sd_ps.html#a11d4222e3ecae1a01aa4c3e34a00ef35">XSdPs::HC_Version</a>, <a class="el" href="struct_x_sd_ps.html#ab0fec7949e73bc680a138fbf644bd692">XSdPs::IsReady</a>, <a class="el" href="struct_x_sd_ps.html#ace5e3ce5b40302079652d5244fc26461">XSdPs::ITapDelay</a>, <a class="el" href="struct_x_sd_ps.html#a2958388759de8ad51b37dcd814f96be3">XSdPs::Mode</a>, <a class="el" href="struct_x_sd_ps.html#a5c05548361b08986315685d826851c3c">XSdPs::OTapDelay</a>, <a class="el" href="group__sdps.html#ga45d325b142a6526ec0468d1fbc34c471">XSdPs_SetClock()</a>, and <a class="el" href="group__sdps.html#ga172c91b6b33e2e94ded0c3d58797411d">XSdPs_SetTapDelay()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__sdps.html#ga3c3ab46b98e997b8439af4b149445811">XSdPs_CardInitialize()</a>, <a class="el" href="group__sdps.html#ga6bc000fb4ce51502058f2e351c90fc19">XSdPs_Change_BusSpeed()</a>, <a class="el" href="group__sdps.html#ga8683eac6348837f171e31b10d27c8f13">XSdPs_MmcCardEnum()</a>, and <a class="el" href="group__sdps.html#gabb269de0a2001e73f252206fa07ce1e7">XSdPs_SdCardEnum()</a>.</p>
 
@@ -3504,7 +3521,7 @@ SD High Speed mode configuration options</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_sd_ps___config.html#a1292694414923fdc17e1f6a0e00db2f6">XSdPs_Config::BaseAddress</a>, <a class="el" href="struct_x_sd_ps.html#ace9a2dd34b39f3100f97fcd50883f833">XSdPs::CardType</a>, <a class="el" href="struct_x_sd_ps.html#a9ab6ed4e7a1155a0708152ca2f27d650">XSdPs::Config</a>, <a class="el" href="struct_x_sd_ps___config.html#a0f3c5d739bd1567d28b1ef827aedc75b">XSdPs_Config::InputClockHz</a>, <a class="el" href="struct_x_sd_ps.html#a2958388759de8ad51b37dcd814f96be3">XSdPs::Mode</a>, <a class="el" href="group__sdps.html#gacd492dfefb8a2fe67964993032250bd4">XSdPs_CalcClock()</a>, and <a class="el" href="group__sdps.html#gad6793165c476a72b093f179766ab176f">XSdPs_EnableClock()</a>.</p>
+<p>References <a class="el" href="struct_x_sd_ps___config.html#a1292694414923fdc17e1f6a0e00db2f6">XSdPs_Config::BaseAddress</a>, <a class="el" href="struct_x_sd_ps.html#ace9a2dd34b39f3100f97fcd50883f833">XSdPs::CardType</a>, <a class="el" href="struct_x_sd_ps.html#a9ab6ed4e7a1155a0708152ca2f27d650">XSdPs::Config</a>, <a class="el" href="struct_x_sd_ps.html#a2958388759de8ad51b37dcd814f96be3">XSdPs::Mode</a>, <a class="el" href="group__sdps.html#gacd492dfefb8a2fe67964993032250bd4">XSdPs_CalcClock()</a>, and <a class="el" href="group__sdps.html#gad6793165c476a72b093f179766ab176f">XSdPs_EnableClock()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__sdps.html#ga1f8661e4ae53a7c29b3fd44cc56a3673">XSdPs_Change_ClkFreq()</a>.</p>
 
@@ -4409,9 +4426,8 @@ SD High Speed mode configuration options</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

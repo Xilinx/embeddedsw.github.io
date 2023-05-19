@@ -24,6 +24,7 @@ var xrfdc_8h =
     [ "XRFdc_GetConnectedIData", "xrfdc_8h.html#ga889649376447bce7933939a22330b6a2", null ],
     [ "XRFdc_GetConnectedIQData", "xrfdc_8h.html#gad2d6653ec718b7101f71a1b83d396353", null ],
     [ "XRFdc_GetConnectedQData", "xrfdc_8h.html#ga3504998d8ceb2fa3c0af7c2805c2c175", null ],
+    [ "XRFdc_GetCoupling", "xrfdc_8h.html#ga8088952096ccd13370fb1cfc2b6cf87a", null ],
     [ "XRFdc_GetDACCompMode", "xrfdc_8h.html#gac1180594017f7487eb745ff32c1948de", null ],
     [ "XRFdc_GetDACDataScaler", "xrfdc_8h.html#ga262e01795db999740a717d1392f9a458", null ],
     [ "XRFdc_GetDataPathMode", "xrfdc_8h.html#gad0ee4a76a0f85109a41af7ef74f351f3", null ],

@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -1508,59 +1509,59 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		  (Rate == 0x0A) ||
 		  (Rate == 0x06) ) {
           //write '1' to [bit 31] of x200; DP1.4 select /40 from MMCM
-    	if (!Dir) {
+	if (!Dir) {
           XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
-        		  RegVal | 0x80000000);
+			  RegVal | 0x80000000);
           XVphy_SetRxLpm(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX,
-      			1);
-    	} else {
+			1);
+	} else {
             XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
-          		  RegVal | 0x40000000);
-    	}
+			  RegVal | 0x40000000);
+	}
       } else {
           //write '0' to bit[31] x200; DP2.0 select /32 from GT
-      	if (!Dir) {
+	if (!Dir) {
           XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
-        		  RegVal & 0x7FFFFFFF);
+			  RegVal & 0x7FFFFFFF);
           XVphy_SetRxLpm(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX,
-      			0);
-      	} else {
+			0);
+	} else {
             XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
-          		  RegVal & 0xBFFFFFFF);
-      	}
+			  RegVal & 0xBFFFFFFF);
+	}
       }
 
-  	if (!Dir) {
-  		InstancePtr->Quads[QuadId].RxMmcm.dp20rate = Rate;
+	if (!Dir) {
+		InstancePtr->Quads[QuadId].RxMmcm.dp20rate = Rate;
         XVphy_MmcmWriteParameters (InstancePtr, 0, XVPHY_DIR_RX);
         XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_RX, TRUE);
         if (PllSelect == XVPHY_PLL_TYPE_CPLL) {
-    		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
-    				XVPHY_CHANNEL_ID_CHA, RefClkSel);
+		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
+				XVPHY_CHANNEL_ID_CHA, RefClkSel);
         } else {
-    		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
-    				XVPHY_CHANNEL_ID_CMNA, RefClkSel);
+		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
+				XVPHY_CHANNEL_ID_CMNA, RefClkSel);
         }
-  	} else {
-  		InstancePtr->Quads[QuadId].TxMmcm.dp20rate = Rate;
-  		XVphy_MmcmWriteParameters (InstancePtr, 0, XVPHY_DIR_TX);
-  		XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_TX, TRUE);
+	} else {
+		InstancePtr->Quads[QuadId].TxMmcm.dp20rate = Rate;
+		XVphy_MmcmWriteParameters (InstancePtr, 0, XVPHY_DIR_TX);
+		XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_TX, TRUE);
         if (PllSelect == XVPHY_PLL_TYPE_CPLL) {
-    		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
-    				XVPHY_CHANNEL_ID_CHA, RefClkSel);
+		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
+				XVPHY_CHANNEL_ID_CHA, RefClkSel);
         } else {
-    		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
-    				XVPHY_CHANNEL_ID_CMNA, RefClkSel);
+		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
+				XVPHY_CHANNEL_ID_CMNA, RefClkSel);
         }
-  	}
-  	XVphy_WriteCfgRefClkSelReg(InstancePtr, QuadId);
+	}
+	XVphy_WriteCfgRefClkSelReg(InstancePtr, QuadId);
 
-  	//forcing CPLL for RX, QPLL for TX as of now for 10G
-  	if (!Dir) {
-  		XVphy_ClkInitialize(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX);
-  	} else {
-  		XVphy_ClkInitialize(InstancePtr, 0, XVPHY_CHANNEL_ID_CMN1, XVPHY_DIR_TX);
-  	}
+	//forcing CPLL for RX, QPLL for TX as of now for 10G
+	if (!Dir) {
+		XVphy_ClkInitialize(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX);
+	} else {
+		XVphy_ClkInitialize(InstancePtr, 0, XVPHY_CHANNEL_ID_CMN1, XVPHY_DIR_TX);
+	}
 }
 
 

@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmirxss
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -174,6 +174,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aaf2419b376d0b737a59d86da1ef67bcf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8h.html#aaf2419b376d0b737a59d86da1ef67bcf">XV_HdmiRxSs_CfgInitialize</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr, <a class="el" href="struct_x_v___hdmi_rx_ss___config.html">XV_HdmiRxSs_Config</a> *CfgPtr, UINTPTR EffectiveAddr)</td></tr>
 <tr class="memdesc:aaf2419b376d0b737a59d86da1ef67bcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the video subsystem and included sub-cores.  <a href="#aaf2419b376d0b737a59d86da1ef67bcf">More...</a><br/></td></tr>
 <tr class="separator:aaf2419b376d0b737a59d86da1ef67bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8h.html#ac7e11d2a14091bf0cf981ce6db18fc3f">XV_HdmiRxSs_Write_ScdcRegister</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr, u8 address, u8 data)</td></tr>
+<tr class="memdesc:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes to SCDC registers.  <a href="#ac7e11d2a14091bf0cf981ce6db18fc3f">More...</a><br/></td></tr>
+<tr class="separator:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c8f4247ffd9a6540e8aed78e23699a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8h.html#a3c8f4247ffd9a6540e8aed78e23699a7">XV_HdmiRxSS_SetAppVersion</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr, u8 maj, u8 min)</td></tr>
 <tr class="memdesc:a3c8f4247ffd9a6540e8aed78e23699a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the major and minor application version in RXSs struct.  <a href="#a3c8f4247ffd9a6540e8aed78e23699a7">More...</a><br/></td></tr>
 <tr class="separator:a3c8f4247ffd9a6540e8aed78e23699a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1978,12 +1981,53 @@ HandlerType                     Callback Function Type
 
 </div>
 </div>
+<a class="anchor" id="ac7e11d2a14091bf0cf981ce6db18fc3f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiRxSs_Write_ScdcRegister </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function writes to SCDC registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

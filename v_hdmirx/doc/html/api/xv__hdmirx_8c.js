@@ -35,5 +35,6 @@ var xv__hdmirx_8c =
     [ "XV_HdmiRx_SetColorFormat", "xv__hdmirx_8c.html#a72457c11b43becc2fd5bffc1b748bf30", null ],
     [ "XV_HdmiRx_SetHpd", "xv__hdmirx_8c.html#a8601d159dffdd4fd77d05d248b366a54", null ],
     [ "XV_HdmiRx_SetPixelRate", "xv__hdmirx_8c.html#ab48ac8ab5eeddd6197c6220db1ac8ee5", null ],
-    [ "XV_HdmiRx_SetStream", "xv__hdmirx_8c.html#a903b465cb41a9a040ba40eefa3109929", null ]
+    [ "XV_HdmiRx_SetStream", "xv__hdmirx_8c.html#a903b465cb41a9a040ba40eefa3109929", null ],
+    [ "XV_HdmiRx_WriteScdcRegister", "xv__hdmirx_8c.html#a1f3aba5c534ac78d74315a5f8bd6fa62", null ]
 ];

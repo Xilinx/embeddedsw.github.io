@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeccf
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -74,45 +74,24 @@ $(document).ready(function(){initNavTree('struct_x_dfe_ccf___status.html','');})
 </div><!--header-->
 <div class="contents">
 
-<p>Channel Filter Status.  
+<p>Event status and interrupt mask.  
  <a href="struct_x_dfe_ccf___status.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:abf53fa27b6e2fe133a56ac209185b122"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#abf53fa27b6e2fe133a56ac209185b122">OverflowBeforeGainReal</a></td></tr>
-<tr class="memdesc:abf53fa27b6e2fe133a56ac209185b122"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                     [0,1] Overflow or underflow occurred
-</pre><p> in the FIR stage of the filter on the real channel  <a href="#abf53fa27b6e2fe133a56ac209185b122">More...</a><br/></td></tr>
-<tr class="separator:abf53fa27b6e2fe133a56ac209185b122"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ead66d344466815de519139e9685006"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a1ead66d344466815de519139e9685006">OverflowBeforeGainImag</a></td></tr>
-<tr class="memdesc:a1ead66d344466815de519139e9685006"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                     [0,1] Overflow or underflow occurred
-</pre><p> in the FIR stage of the filter on the imaginary channel  <a href="#a1ead66d344466815de519139e9685006">More...</a><br/></td></tr>
-<tr class="separator:a1ead66d344466815de519139e9685006"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c24953b3dc377ca31b8c43ad393e6b3"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a1c24953b3dc377ca31b8c43ad393e6b3">OverflowAfterGainReal</a></td></tr>
-<tr class="memdesc:a1c24953b3dc377ca31b8c43ad393e6b3"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                    [0,1] Overflow or underflow occurred in
-</pre><p> the GAIN stage of the filter on the real channel  <a href="#a1c24953b3dc377ca31b8c43ad393e6b3">More...</a><br/></td></tr>
-<tr class="separator:a1c24953b3dc377ca31b8c43ad393e6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a414f24d97113ab639554520805415f3f"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a414f24d97113ab639554520805415f3f">OverflowAfterGainImag</a></td></tr>
-<tr class="memdesc:a414f24d97113ab639554520805415f3f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                    [0,1] Overflow or underflow occurred in
-</pre><p> the GAIN stage of the filter on the imaginary channel  <a href="#a414f24d97113ab639554520805415f3f">More...</a><br/></td></tr>
-<tr class="separator:a414f24d97113ab639554520805415f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a709f85f16ac0a4a1222d255610955bc5"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a709f85f16ac0a4a1222d255610955bc5">OverflowAntenna</a></td></tr>
-<tr class="memdesc:a709f85f16ac0a4a1222d255610955bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">              [0,7] Lowest number antenna on which first
-</pre><p> overflow, or underflow, occurred  <a href="#a709f85f16ac0a4a1222d255610955bc5">More...</a><br/></td></tr>
-<tr class="separator:a709f85f16ac0a4a1222d255610955bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3c3b5aeabd41bccf3b5199ee160fd93"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#ab3c3b5aeabd41bccf3b5199ee160fd93">OverflowCCID</a></td></tr>
-<tr class="memdesc:ab3c3b5aeabd41bccf3b5199ee160fd93"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">           [0,7] CCID on which first overflow, or
-</pre><p> underflow, occurred  <a href="#ab3c3b5aeabd41bccf3b5199ee160fd93">More...</a><br/></td></tr>
-<tr class="separator:ab3c3b5aeabd41bccf3b5199ee160fd93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab78ac3eb12e3ea828f6dde34c258e8c1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#ab78ac3eb12e3ea828f6dde34c258e8c1">Overflow</a></td></tr>
+<tr class="memdesc:ab78ac3eb12e3ea828f6dde34c258e8c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] Mask overflow events  <a href="#ab78ac3eb12e3ea828f6dde34c258e8c1">More...</a><br/></td></tr>
+<tr class="separator:ab78ac3eb12e3ea828f6dde34c258e8c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64f494d148062c29e4bdfd2eee5a5897"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a64f494d148062c29e4bdfd2eee5a5897">CCUpdate</a></td></tr>
-<tr class="memdesc:a64f494d148062c29e4bdfd2eee5a5897"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] CC update event has occurred  <a href="#a64f494d148062c29e4bdfd2eee5a5897">More...</a><br/></td></tr>
+<tr class="memdesc:a64f494d148062c29e4bdfd2eee5a5897"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] Mask CC update events  <a href="#a64f494d148062c29e4bdfd2eee5a5897">More...</a><br/></td></tr>
 <tr class="separator:a64f494d148062c29e4bdfd2eee5a5897"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18b5b8ebcd0324b23abdda08a124f4b1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_ccf___status.html#a18b5b8ebcd0324b23abdda08a124f4b1">CCSequenceError</a></td></tr>
-<tr class="memdesc:a18b5b8ebcd0324b23abdda08a124f4b1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">              [0, 1] CC sequence mismatch has been
-</pre><p> detected  <a href="#a18b5b8ebcd0324b23abdda08a124f4b1">More...</a><br/></td></tr>
+<tr class="memdesc:a18b5b8ebcd0324b23abdda08a124f4b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] Mask CC sequence mismatch events  <a href="#a18b5b8ebcd0324b23abdda08a124f4b1">More...</a><br/></td></tr>
 <tr class="separator:a18b5b8ebcd0324b23abdda08a124f4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Channel Filter Status. </p>
+<div class="textblock"><p>Event status and interrupt mask. </p>
+<dl class="section note"><dt>Note</dt><dd>The structure for XDfeCcf_InterruptMask is the same as that of <a class="el" href="struct_x_dfe_ccf___status.html" title="Event status and interrupt mask. ">XDfeCcf_Status</a> </dd></dl>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="a18b5b8ebcd0324b23abdda08a124f4b1"></a>
 <div class="memitem">
@@ -124,10 +103,9 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">              [0, 1] CC sequence mismatch has been
-</pre><p> detected </p>
+<p>[0,1] Mask CC sequence mismatch events </p>
 
-<p>Referenced by <a class="el" href="group__dfeccf.html#gaad2bcaaf09d748e2f8ca79f6671281da">XDfeCcf_1xNR100_3xNR20_Example()</a>, <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, and <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#gab4d92a6803379d258e013f46b5be16a0">XDfeCcf_GetInterruptMask()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>, and <a class="el" href="group__dfeccf.html#gaad3c846e9293c67f7b80fd933da9ce77">XDfeCcf_SetInterruptMask()</a>.</p>
 
 </div>
 </div>
@@ -141,120 +119,33 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>[0,1] CC update event has occurred </p>
+<p>[0,1] Mask CC update events </p>
 
-<p>Referenced by <a class="el" href="group__dfeccf.html#gaad2bcaaf09d748e2f8ca79f6671281da">XDfeCcf_1xNR100_3xNR20_Example()</a>, <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, and <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#gab4d92a6803379d258e013f46b5be16a0">XDfeCcf_GetInterruptMask()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>, and <a class="el" href="group__dfeccf.html#gaad3c846e9293c67f7b80fd933da9ce77">XDfeCcf_SetInterruptMask()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a414f24d97113ab639554520805415f3f"></a>
+<a class="anchor" id="ab78ac3eb12e3ea828f6dde34c258e8c1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowAfterGainImag</td>
+          <td class="memname">u32 XDfeCcf_Status::Overflow</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                    [0,1] Overflow or underflow occurred in
-</pre><p> the GAIN stage of the filter on the imaginary channel </p>
+<p>[0,1] Mask overflow events </p>
 
-<p>Referenced by <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1c24953b3dc377ca31b8c43ad393e6b3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowAfterGainReal</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">                    [0,1] Overflow or underflow occurred in
-</pre><p> the GAIN stage of the filter on the real channel </p>
-
-<p>Referenced by <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a709f85f16ac0a4a1222d255610955bc5"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowAntenna</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">              [0,7] Lowest number antenna on which first
-</pre><p> overflow, or underflow, occurred </p>
-
-<p>Referenced by <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1ead66d344466815de519139e9685006"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowBeforeGainImag</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">                     [0,1] Overflow or underflow occurred
-</pre><p> in the FIR stage of the filter on the imaginary channel </p>
-
-<p>Referenced by <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="abf53fa27b6e2fe133a56ac209185b122"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowBeforeGainReal</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">                     [0,1] Overflow or underflow occurred
-</pre><p> in the FIR stage of the filter on the real channel </p>
-
-<p>Referenced by <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab3c3b5aeabd41bccf3b5199ee160fd93"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeCcf_Status::OverflowCCID</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">           [0,7] CCID on which first overflow, or
-</pre><p> underflow, occurred </p>
-
-<p>Referenced by <a class="el" href="group__dfeccf.html#gaad2bcaaf09d748e2f8ca79f6671281da">XDfeCcf_1xNR100_3xNR20_Example()</a>, <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, and <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeccf.html#ga6ced5736831794879ad88390a58e6a3e">XDfeCcf_ClearEventStatus()</a>, <a class="el" href="group__dfeccf.html#ga5a08588a90ca50aca0e8667e8692618b">XDfeCcf_GetEventStatus()</a>, <a class="el" href="group__dfeccf.html#gab4d92a6803379d258e013f46b5be16a0">XDfeCcf_GetInterruptMask()</a>, <a class="el" href="group__dfeccf.html#ga23a4ce2ee3c9bf313b65a3b932c0278b">XDfeCcf_multiAddCC_1xNR100_3xNR20_Example()</a>, <a class="el" href="xdfeccf__pass__through__example_8c.html#a6e4a59a64bb3ee3a50a0ea8802942969">XDfeCcf_PassThroughExample()</a>, and <a class="el" href="group__dfeccf.html#gaad3c846e9293c67f7b80fd933da9ce77">XDfeCcf_SetInterruptMask()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

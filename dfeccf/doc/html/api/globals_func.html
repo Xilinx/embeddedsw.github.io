@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeccf
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -86,10 +86,6 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 
 
 <h3><a class="anchor" id="index_x"></a>- x -</h3><ul>
-<li>XDfeCcf_1xNR100_3xNR20_Example()
-: <a class="el" href="group__dfeccf.html#gaad2bcaaf09d748e2f8ca79f6671281da">xdfeccf_1xNR100_3xNR20_example.c</a>
-, <a class="el" href="group__dfeccf.html#gaad2bcaaf09d748e2f8ca79f6671281da">xdfeccf_examples.c</a>
-</li>
 <li>XDfeCcf_Activate()
 : <a class="el" href="group__dfeccf.html#ga6fec5800f070fd68474f513b9d95aad7">xdfeccf.c</a>
 </li>
@@ -120,6 +116,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <li>XDfeCcf_GetCurrentCCCfg()
 : <a class="el" href="group__dfeccf.html#ga31a32e74a6fef543927f191eed1fbbb0">xdfeccf.c</a>
 </li>
+<li>XDfeCcf_GetCurrentCCCfgSwitchable()
+: <a class="el" href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">xdfeccf.c</a>
+</li>
 <li>XDfeCcf_GetEmptyCCCfg()
 : <a class="el" href="group__dfeccf.html#ga699c8f140720fcbf22543c7758ace5d5">xdfeccf.c</a>
 </li>
@@ -128,6 +127,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 </li>
 <li>XDfeCcf_GetInterruptMask()
 : <a class="el" href="group__dfeccf.html#gab4d92a6803379d258e013f46b5be16a0">xdfeccf.h</a>
+</li>
+<li>XDfeCcf_GetOverflowStatus()
+: <a class="el" href="group__dfeccf.html#ga4e155714de12813abe240aad00f33f46">xdfeccf.h</a>
 </li>
 <li>XDfeCcf_GetStateID()
 : <a class="el" href="group__dfeccf.html#gac83eb8c8d423a12cc23f3a699e87ff4f">xdfeccf.c</a>
@@ -187,7 +189,13 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__dfeccf.html#gaad3c846e9293c67f7b80fd933da9ce77">xdfeccf.h</a>
 </li>
 <li>XDfeCcf_SetNextCCCfgAndTrigger()
-: <a class="el" href="group__dfeccf.html#ga100a171e09d4e735841e14743f48fcd4">xdfeccf.c</a>
+: <a class="el" href="group__dfeccf.html#gacd14259acee557613b0002ec6d187550">xdfeccf.c</a>
+</li>
+<li>XDfeCcf_SetNextCCCfgAndTriggerSwitchable()
+: <a class="el" href="group__dfeccf.html#ga47f2c3d66e66518a7337906b5871e04d">xdfeccf.c</a>
+</li>
+<li>XDfeCcf_SetRegBank()
+: <a class="el" href="group__dfeccf.html#ga18d48134af3d084bb06f9267b671ff72">xdfeccf.c</a>
 </li>
 <li>XDfeCcf_SetTriggersCfg()
 : <a class="el" href="group__dfeccf.html#ga7b3d2fde4403c86dc13478fadb4665ab">xdfeccf.c</a>
@@ -196,13 +204,16 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__dfeccf.html#ga131a7d12a37de928a5929ec29ea78a8a">xdfeccf.c</a>
 </li>
 <li>XDfeCcf_UpdateAntenna()
-: <a class="el" href="group__dfeccf.html#ga00a3c06f18b61ece5c7f07ace0a86ed4">xdfeccf.c</a>
+: <a class="el" href="group__dfeccf.html#ga890dacc7d32bf591be36640065cfe414">xdfeccf.c</a>
 </li>
 <li>XDfeCcf_UpdateAntennaCfg()
 : <a class="el" href="group__dfeccf.html#ga47f55600425550380b976828c7947ac2">xdfeccf.c</a>
 </li>
+<li>XDfeCcf_UpdateAntennaCfgSwitchable()
+: <a class="el" href="group__dfeccf.html#gae0913ce20c92ecd4a35a59a19ad171af">xdfeccf.c</a>
+</li>
 <li>XDfeCcf_UpdateCC()
-: <a class="el" href="group__dfeccf.html#ga13b3f3b54950278e98138d392a1a4292">xdfeccf.c</a>
+: <a class="el" href="group__dfeccf.html#gabc93998a929eabcbe6b5845626cef210">xdfeccf.c</a>
 </li>
 <li>XDfeCcf_UpdateCCinCCCfg()
 : <a class="el" href="group__dfeccf.html#gabd6cdd5621c842a4d6a8a58a4eaf6235">xdfeccf.c</a>
@@ -214,9 +225,8 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

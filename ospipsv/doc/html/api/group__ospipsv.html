@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">ospipsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -104,6 +104,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga02055aef4b0f9a801005ebdc7b556157"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>&#160;&#160;&#160;10000U</td></tr>
 <tr class="memdesc:ga02055aef4b0f9a801005ebdc7b556157"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Maximum delay count  <a href="#ga02055aef4b0f9a801005ebdc7b556157">More...</a><br/></td></tr>
 <tr class="separator:ga02055aef4b0f9a801005ebdc7b556157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2837097f3f203eeff26f5cfc61947bcf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga2837097f3f203eeff26f5cfc61947bcf">MAX_IDAC_DELAY_CNT</a>&#160;&#160;&#160;10000000U</td></tr>
+<tr class="memdesc:ga2837097f3f203eeff26f5cfc61947bcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max INDAC delay count.  <a href="#ga2837097f3f203eeff26f5cfc61947bcf">More...</a><br/></td></tr>
+<tr class="separator:ga2837097f3f203eeff26f5cfc61947bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5d4884f3757c314991e0d72bf344c59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#gad5d4884f3757c314991e0d72bf344c59">XOSPIPSV_LOWLEVEL_H_</a></td></tr>
 <tr class="memdesc:gad5d4884f3757c314991e0d72bf344c59"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; prevent circular inclusions  <a href="#gad5d4884f3757c314991e0d72bf344c59">More...</a><br/></td></tr>
 <tr class="separator:gad5d4884f3757c314991e0d72bf344c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,6 +215,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga289baf1466add8dfa4a70a3952354cd7"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle</a> (const <a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga289baf1466add8dfa4a70a3952354cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for OSPI idle which means Serial interface and low level SPI pipeline is IDLE.  <a href="#ga289baf1466add8dfa4a70a3952354cd7">More...</a><br/></td></tr>
 <tr class="separator:ga289baf1466add8dfa4a70a3952354cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8400388c80d471a4535fa7357104f07b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write</a> (const <a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, const <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga8400388c80d471a4535fa7357104f07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function Write the data in Non-DMA Indirect mode.  <a href="#ga8400388c80d471a4535fa7357104f07b">More...</a><br/></td></tr>
+<tr class="separator:ga8400388c80d471a4535fa7357104f07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga621f2c47a2e8fdf59de28b2333d6da6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
 <tr class="memdesc:ga621f2c47a2e8fdf59de28b2333d6da6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the data from RX FIFO.  <a href="#ga621f2c47a2e8fdf59de28b2333d6da6f">More...</a><br/></td></tr>
 <tr class="separator:ga621f2c47a2e8fdf59de28b2333d6da6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -574,6 +580,22 @@ Dual Byte opcode selection</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga2837097f3f203eeff26f5cfc61947bcf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_IDAC_DELAY_CNT&#160;&#160;&#160;10000000U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max INDAC delay count. </p>
+
+<p>Referenced by <a class="el" href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga0107e147ea67ea49c4a858a8df7812e5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -882,7 +904,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>Low level macros to read/write memory. </p>
 
-<p>Referenced by <a class="el" href="group__ospipsv.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>, <a class="el" href="group__ospipsv.html#ga816c6bf2a419d38bd2e4d51a266a6d3b">XOspiPsv_CheckDmaDone()</a>, <a class="el" href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv.html#gabba4009ea62fb0b8c856a8582ed9f77b">XOspiPsv_ConfigDualByteOpcode()</a>, <a class="el" href="group__ospipsv.html#gaec5aab7a4cee335804494e31429b53ec">XOspiPsv_ConfigureAutoPolling()</a>, <a class="el" href="group__ospipsv.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv.html#gaa2f584dfcca76360b59188e58c60b770">XOspiPsv_Exec_Dma()</a>, <a class="el" href="group__ospipsv.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead()</a>, <a class="el" href="group__ospipsv.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv.html#ga70d2c317de32d39ddab3b585c9da5d69">XOspiPsv_Idle()</a>, <a class="el" href="group__ospipsv.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, <a class="el" href="group__ospipsv.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>, <a class="el" href="group__ospipsv.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>, <a class="el" href="group__ospipsv.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>, <a class="el" href="group__ospipsv.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, <a class="el" href="group__ospipsv.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>, and <a class="el" href="group__ospipsv.html#ga943852604b61a80a53f42a143bf87241">XOspiPsv_WaitForLock()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>, <a class="el" href="group__ospipsv.html#ga816c6bf2a419d38bd2e4d51a266a6d3b">XOspiPsv_CheckDmaDone()</a>, <a class="el" href="group__ospipsv.html#gabba4009ea62fb0b8c856a8582ed9f77b">XOspiPsv_ConfigDualByteOpcode()</a>, <a class="el" href="group__ospipsv.html#gaec5aab7a4cee335804494e31429b53ec">XOspiPsv_ConfigureAutoPolling()</a>, <a class="el" href="group__ospipsv.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv.html#gaa2f584dfcca76360b59188e58c60b770">XOspiPsv_Exec_Dma()</a>, <a class="el" href="group__ospipsv.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead()</a>, <a class="el" href="group__ospipsv.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv.html#ga70d2c317de32d39ddab3b585c9da5d69">XOspiPsv_Idle()</a>, <a class="el" href="group__ospipsv.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, <a class="el" href="group__ospipsv.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>, <a class="el" href="group__ospipsv.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>, <a class="el" href="group__ospipsv.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>, <a class="el" href="group__ospipsv.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
 
 </div>
 </div>
@@ -1148,7 +1170,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="group__ospipsv.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, and <a class="el" href="group__ospipsv.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, and <a class="el" href="group__ospipsv.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>.</p>
 
 <p>Referenced by <a class="el" href="group__ospipsv.html#ga816c6bf2a419d38bd2e4d51a266a6d3b">XOspiPsv_CheckDmaDone()</a>, <a class="el" href="group__ospipsv.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv.html#ga3946ea37da6d9ce478f29eca239b597b">XOspiPsv_SetDllDelay()</a>, and <a class="el" href="group__ospipsv.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
 
@@ -1780,6 +1802,49 @@ Dual Byte opcode selection</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga8400388c80d471a4535fa7357104f07b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XOspiPsv_IDac_Write </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function Write the data in Non-DMA Indirect mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_ospi_psv.html" title="The XOspiPsv driver instance data. ">XOspiPsv</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>is a pointer to the structure containing transfer data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>- XST_SUCCESS if successful.<ul>
+<li>XST_FAILURE if fails. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="group__ospipsv.html#ga2837097f3f203eeff26f5cfc61947bcf">MAX_IDAC_DELAY_CNT</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, and <a class="el" href="group__ospipsv.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ospipsv.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga70d2c317de32d39ddab3b585c9da5d69"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1953,7 +2018,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv.html#ga9f70d70b4dcd8a325a7dacc3aa31a5ef">XOspiPsv_Dac_Read()</a>, <a class="el" href="group__ospipsv.html#gadb1ae4f737c07e890039cdaf3a006b26">XOspiPsv_Dac_Write()</a>, <a class="el" href="group__ospipsv.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv.html#gad90cde53aa1c59a7a9a8450c8b109782">XOSPIPSV_IDAC_MODE</a>, <a class="el" href="group__ospipsv.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv.html#ga9f70d70b4dcd8a325a7dacc3aa31a5ef">XOspiPsv_Dac_Read()</a>, <a class="el" href="group__ospipsv.html#gadb1ae4f737c07e890039cdaf3a006b26">XOspiPsv_Dac_Write()</a>, <a class="el" href="group__ospipsv.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv.html#gad90cde53aa1c59a7a9a8450c8b109782">XOSPIPSV_IDAC_MODE</a>, <a class="el" href="group__ospipsv.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
 
 <p>Referenced by <a class="el" href="xospipsv__flash__polled__example_8c.html#a6fff73aa13d90cd15521ab1f7de503dc">FlashLinearWrite()</a>, <a class="el" href="xospipsv__flash__polled__example_8c.html#a48b07e8e007e2da190edcfc0cc1d389b">SetBlockProtect()</a>, and <a class="el" href="group__ospipsv.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>.</p>
 
@@ -2687,7 +2752,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="group__ospipsv.html#gacc22319a6b88d36c8eb490a567b618cb">LOCK_MAX_DELAY_CNT</a>, and <a class="el" href="group__ospipsv.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, and <a class="el" href="group__ospipsv.html#gacc22319a6b88d36c8eb490a567b618cb">LOCK_MAX_DELAY_CNT</a>.</p>
 
 <p>Referenced by <a class="el" href="group__ospipsv.html#gacb2c9597040e54b985ddf380365af639">XOspiPsv_ConfigureTaps()</a>, <a class="el" href="group__ospipsv.html#ga3ac73304cb055f7184181eb4b176637e">XOspiPsv_ExecuteRxTuning()</a>, and <a class="el" href="group__ospipsv.html#ga3946ea37da6d9ce478f29eca239b597b">XOspiPsv_SetDllDelay()</a>.</p>
 
@@ -2739,9 +2804,8 @@ Dual Byte opcode selection</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

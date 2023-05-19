@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,9 @@
 *       dc     11/05/21 Align event handlers
 *       dc     11/19/21 Update doxygen documentation
 * 1.4   dc     08/19/22 Update register map
+* 1.5   dc     10/24/22 Switching Uplink/Downlink support
+*       dc     11/08/22 NCO assignment in arch5 mode
+*       dc     02/21/23 Correct switch trigger register name
 *
 * </pre>
 * @addtogroup dfemix Overview
@@ -69,7 +73,7 @@ int XDfeMix_MultiAddCCExample()
 	XDfeMix *InstancePtr = NULL;
 	XDfeMix_Init Init;
 	u32 CCID;
-	u32 CCSeqBitmap = 0xffff;
+	u32 CCSeqBitmap;
 	u32 AntennaId;
 	u32 AntennaGain;
 	double FreqMhz;
@@ -109,6 +113,7 @@ int XDfeMix_MultiAddCCExample()
 	XDfeMix_Configure(InstancePtr, &Cfg);
 	/* Initialise */
 	Init.Sequence.Length = 16;
+	Init.TuserSelect = XDFEMIX_SWITCHABLE_CONTROL_TUSER_SEL_DOWNLINK;
 	XDfeMix_Initialize(InstancePtr, &Init);
 
 	/* Set trigger */
@@ -154,6 +159,15 @@ int XDfeMix_MultiAddCCExample()
 	XDfeMix_ClearEventStatus(InstancePtr, &Status);
 	/* Add CC */
 	CCID = 0;
+
+	if (InstancePtr->Config.MaxUseableCcids == 8U) {
+		CCSeqBitmap = 0xff; /* 50% occupataion max. in ARCH4 mode */
+	} else if (InstancePtr->Config.MaxUseableCcids == 16U) {
+		CCSeqBitmap = 0xf; /* 25% occupataion max. in ARCH5 mode */
+	} else {
+		CCSeqBitmap = 0xffff;
+	}
+
 	CarrierCfg.DUCDDCCfg.NCOIdx = 0;
 	CarrierCfg.DUCDDCCfg.CCGain = 3U;
 	NCO.NCOGain = 0;
@@ -161,6 +175,7 @@ int XDfeMix_MultiAddCCExample()
 	NcoFreqMhz = 491.52;
 	FrequencyControlWord = floor((FreqMhz / NcoFreqMhz) * 0x100000000);
 	NCO.FrequencyCfg.FrequencyControlWord = FrequencyControlWord;
+	NCO.FrequencyCfg.TriggerUpdateFlag = XDFEMIX_IMMEDIATE_UPDATE;
 
 	XDfeMix_GetCurrentCCCfg(InstancePtr, &CurrentCCCfg);
 	Return = XDfeMix_AddCCtoCCCfg(InstancePtr, &CurrentCCCfg, CCID,

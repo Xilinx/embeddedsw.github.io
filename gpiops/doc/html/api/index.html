@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">gpiops
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -68,12 +68,15 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="textblock"><p>The Xilinx PS GPIO driver. This driver supports the Xilinx PS GPIO Controller.</p>
 <p>The GPIO Controller supports the following features:</p>
 <ul>
-<li>4 banks</li>
+<li>6 banks</li>
 <li>Masked writes (There are no masked reads)</li>
 <li>Bypass mode</li>
 <li>Configurable Interrupts (Level/Edge)</li>
 </ul>
 <p>This driver is intended to be RTOS and processor independent. Any needs for dynamic memory management, threads or thread mutual exclusion, virtual memory, or cache control must be satisfied by the layer above this driver.</p>
+<p>Here is GPIO Bank and Pin mapping information for different platforms. Zynq: PS GPIO contain 4 banks and 118 pins Bank 0 MIO pins 0 - 31 Bank 1 MIO pins 32 - 53 Bank 2 MIO pins 54 - 85 Bank 3 EMIO signals 86 - 117</p>
+<p>Zynq Ultrascale+ MP: PS GPIO contain 6 banks and 174 pins Bank 0 MIO pins 0 - 25 Bank 1 MIO pins 26 - 51 Bank 2 MIO pins 52 - 77 Bank 3 EMIO signals 78 - 109 Bank 4 EMIO signals 110 - 141 Bank 5 EMIO signals 142 - 173</p>
+<p>Versal: Two GPIOPS instances PMC GPIO and PS GPIO PMC GPIO contain 4 banks and 116 pins Bank 0 MIO pins 0 - 25 Bank 1 MIO pins 26 - 51 Bank 3 EMIO signals 52 - 83 Bank 4 EMIO signals 84 - 115 PS GPIO contains 2 banks and 58 pins Bank 0 MIO pins 0 - 25 Bank 3 EMIO signals 26-57</p>
 <p>This driver supports all the features listed above, if applicable.</p>
 <p><b>Driver Description</b></p>
 <p>The device driver enables higher layer software (e.g., an application) to communicate to the GPIO.</p>
@@ -126,12 +129,12 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 3.7     sne  12/04/19 Reverted versal examples support.
 3.8   sne  08/28/20 Modify Makefile to support parallel make execution.
 3.8     sne  09/17/20 Added description for Versal PS and PMC GPIO pins.
-3.9     sne  03/15/21 Fixed MISRA-C violations.</pre><pre></pre> </div></div><!-- contents -->
+3.9     sne  03/15/21 Fixed MISRA-C violations.
+3.11  sg   02/23/23 Update bank and pin mapping information.</pre><pre></pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

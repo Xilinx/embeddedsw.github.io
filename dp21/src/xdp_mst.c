@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022-2023, Advanced Micro Devices, Inc. All Rights
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -1510,8 +1511,10 @@ u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts, u8 StartTs)
 	u32 Status;
 	u8 AuxData[3];
 	u8 Index;
+	u8 payloadIndex = 0;
 	u8 TimeoutCount = 0;
 	u8 PayloadCount = 0;
+	u8 vic_id = 0;
 	XDp_TxMainStreamAttributes *MsaConfig;
 
 	/* Verify arguments. */
@@ -1547,12 +1550,14 @@ u32 XDp_TxAllocatePayloadVcIdTable(XDp *InstancePtr, u8 VcId, u8 Ts, u8 StartTs)
 			PayloadCount++;
 		}
 	}
-	if (VcId != 0) {
-		for (int i = PayloadCount + 1; i < XDP_TX_NUM_PAYLOAD_TIMESLOTS; i++) {
-			int vicid = 0;
 
+	if (VcId != 0) {
+		for (payloadIndex =
+		     MsaConfig->StartTs + MsaConfig->TransferUnitSize;
+		     payloadIndex < XDP_TX_NUM_PAYLOAD_TIMESLOTS + 1;
+		     payloadIndex++) {
 			XDp_WriteReg(InstancePtr->Config.BaseAddr,
-				     (XDP_TX_VC_PAYLOAD_BUFFER_ADDR + (4 * i)), vicid);
+				(XDP_TX_VC_PAYLOAD_BUFFER_ADDR + (4 * payloadIndex)), vic_id);
 		}
 	}
 
@@ -3604,6 +3609,9 @@ static u32 XDp_TxSendActTrigger(XDp *InstancePtr)
 
 		/* Error out if timed out. */
 		if (TimeoutCount > XDP_TX_VCP_TABLE_MAX_TIMEOUT_COUNT) {
+			XDp_WriteReg(InstancePtr->Config.BaseAddr,
+				     XDP_TX_V2_0_CONFIG,
+				     XDP_TX_V2_0_CONFIG_RESET_MASK);
 			return XST_ERROR_COUNT_MAX;
 		}
 

@@ -26,6 +26,7 @@ var xv__hdmirx_8h =
     [ "XV_HdmiRx_DdcIntrEnable", "xv__hdmirx_8h.html#afeba70cfe9cafb29489d7c83b9af4a12", null ],
     [ "XV_HdmiRx_DdcScdcClear", "xv__hdmirx_8h.html#a7c7b81c4b9eccd58e4b1664d6aeb25d1", null ],
     [ "XV_HdmiRx_DdcScdcEnable", "xv__hdmirx_8h.html#a467c3aee47dd7313aea13d6a6ac173ed", null ],
+    [ "XV_HdmiRx_DdcScdcSet", "xv__hdmirx_8h.html#ac701d2be907b7ddf7d1443ab8d6c3805", null ],
     [ "XV_HdmiRx_GetAudioChannels", "xv__hdmirx_8h.html#a417c9c99d829658f6f5614398692432c", null ],
     [ "XV_HdmiRx_GetTime10Ms", "xv__hdmirx_8h.html#a17849b6428cc8a3c781311f57dafcfc6", null ],
     [ "XV_HdmiRx_GetTime16Ms", "xv__hdmirx_8h.html#a2a1036430ba351ea963563db4535da4b", null ],
@@ -136,5 +137,6 @@ var xv__hdmirx_8h =
     [ "XV_HdmiRx_VSIF_3DSampPosToString", "xv__hdmirx_8h.html#a8d2c97bd586ab1892be713a307d5acf4", null ],
     [ "XV_HdmiRx_VSIF_3DStructToString", "xv__hdmirx_8h.html#af4461c6b8453ac87517226cc7afbb5c6", null ],
     [ "XV_HdmiRx_VSIF_DisplayInfo", "xv__hdmirx_8h.html#a5a55c2e6ac024e6c5e2e164b7d8eb0f0", null ],
-    [ "XV_HdmiRx_VSIF_ParsePacket", "xv__hdmirx_8h.html#a0a8f0bf42fc0d27cdd42c29ef10e2f93", null ]
+    [ "XV_HdmiRx_VSIF_ParsePacket", "xv__hdmirx_8h.html#a0a8f0bf42fc0d27cdd42c29ef10e2f93", null ],
+    [ "XV_HdmiRx_WriteScdcRegister", "xv__hdmirx_8h.html#a1f3aba5c534ac78d74315a5f8bd6fa62", null ]
 ];

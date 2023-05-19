@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -16,7 +17,7 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------
 * 3.0   cog    03/25/21 Driver Restructure
-*
+* 4.0   se     10/04/22 Update return value definitions
 * </pre>
 *
 ******************************************************************************/
@@ -31,9 +32,6 @@ extern "C" {
 #include "xsysmonpsv_supplylist.h"
 
 /************************** Constant Definitions *****************************/
-
-#define XSYSMONPSV_SUCCESS 0 /**< Success value return for functions */
-#define XSYSMONPSV_EINVAL 1 /**< Invalid value return for functions */
 #define XSYSMONPSV_INTR_OFFSET 0xCU /**< Interrupt Offset */
 #define XSYSMONPSV_LOCK_CODE 0xF9E8D7C6 /**< Lock code value */
 #define XSYSMONPSV_INTR_0_ID (144U + 32U) /**< Interrupt unique ID */

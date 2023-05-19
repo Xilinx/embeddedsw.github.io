@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -13,7 +14,11 @@
  * XIicPs_MasterRecv() API is used to receive the data.
  * This example tested on ZCU102 board and slave address needs to be
  * changed based on board design
- * It continuously sends 18 buffers of different length to the slave.
+ *
+ * This example can run on zynqmp / versal IIC device as master and Aardvark
+ * test hardware used as slave.
+ * It sends 18 buffers of data to slave and expects to receive the same data
+ * through the IIC.
  *
  * <pre> MODIFICATION HISTORY:
  *

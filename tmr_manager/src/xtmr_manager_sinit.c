@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtmr_manager_sinit.c
-* @addtogroup tmr_manager_v1_3
+* @addtogroup Overview
 * @{
 *
 * The implementation of the XTMR_Manager component's static initialzation

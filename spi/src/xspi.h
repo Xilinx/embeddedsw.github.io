@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2001 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2001 - 2023 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xspi.h
-* @addtogroup spi_v4_9
+* @addtogroup spi Overview
 * @{
 * @details
 *
@@ -285,6 +286,8 @@
 *                     disabled.
 * 4.9	adk  31/01/22 Fix interrupt controller name in SMP designs, Changes are
 * 		      made in the interrupt app tcl file.
+* 4.10  akm  02/21/23 Avoid data loss in interrupt mode with TX HALF EMPTY
+*                     Interrupt enabled.
 * </pre>
 *
 ******************************************************************************/

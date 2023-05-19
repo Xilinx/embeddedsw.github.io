@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">uartpsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -160,6 +160,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga71a962de4963e15f1c38e7831e825f7c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga71a962de4963e15f1c38e7831e825f7c">XUartPsv_Send</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
 <tr class="memdesc:ga71a962de4963e15f1c38e7831e825f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This functions sends the specified buffer using the device in either polled or interrupt driven mode.  <a href="#ga71a962de4963e15f1c38e7831e825f7c">More...</a><br/></td></tr>
 <tr class="separator:ga71a962de4963e15f1c38e7831e825f7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac551c919a38424e6d23298256a9d1141"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gac551c919a38424e6d23298256a9d1141">XUartPsv_Send_NoWait</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
+<tr class="memdesc:gac551c919a38424e6d23298256a9d1141"><td class="mdescLeft">&#160;</td><td class="mdescRight"><ul>
+<li></li>
+</ul>
+ <a href="#gac551c919a38424e6d23298256a9d1141">More...</a><br/></td></tr>
+<tr class="separator:gac551c919a38424e6d23298256a9d1141"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga4d4d20bbcedb1de2adbe2644b821d12d">XUartPsv_Recv</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u8 *BufferPtr, u32 NumBytes)</td></tr>
 <tr class="memdesc:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function attempts to receive a specified number of bytes of data from the device and store it into the specified buffer.  <a href="#ga4d4d20bbcedb1de2adbe2644b821d12d">More...</a><br/></td></tr>
 <tr class="separator:ga4d4d20bbcedb1de2adbe2644b821d12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,9 +181,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa19ed118438249d9c56cd3afcfa8898c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gaa19ed118438249d9c56cd3afcfa8898c">XUartPsv_ProgramCtrlReg</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr, u32 CtrlRegister)</td></tr>
 <tr class="memdesc:gaa19ed118438249d9c56cd3afcfa8898c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reprograms the control register according to the following sequence mentioned in the TRM.  <a href="#gaa19ed118438249d9c56cd3afcfa8898c">More...</a><br/></td></tr>
 <tr class="separator:gaa19ed118438249d9c56cd3afcfa8898c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1344d64394e0af7cf3abe12336900098"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga1344d64394e0af7cf3abe12336900098">XUartPsv_Cleanup</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga1344d64394e0af7cf3abe12336900098"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting NextBytePtr, RemainingBytes and RequestedBytes.  <a href="#ga1344d64394e0af7cf3abe12336900098">More...</a><br/></td></tr>
-<tr class="separator:ga1344d64394e0af7cf3abe12336900098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga048adc3a5ea0979d28266476fa3960db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga048adc3a5ea0979d28266476fa3960db">XUartPsv_CleanupRx</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga048adc3a5ea0979d28266476fa3960db"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting Rx NextBytePtr, RemainingBytes and RequestedBytes.  <a href="#ga048adc3a5ea0979d28266476fa3960db">More...</a><br/></td></tr>
+<tr class="separator:ga048adc3a5ea0979d28266476fa3960db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#gaf1cde67fba29b14f65e5abe2dd7d2066">XUartPsv_CleanupTx</a> (<a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is a cleanup function to allow reseting Tx NextBytePtr, RemainingBytes and RequestedBytes.  <a href="#gaf1cde67fba29b14f65e5abe2dd7d2066">More...</a><br/></td></tr>
+<tr class="separator:gaf1cde67fba29b14f65e5abe2dd7d2066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7477291ed48190c1ef632c2086e013e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_uart_psv___config.html">XUartPsv_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartpsv.html#ga7477291ed48190c1ef632c2086e013e9">XUartPsv_LookupConfig</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:ga7477291ed48190c1ef632c2086e013e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up the device configuration based on the unique device ID.  <a href="#ga7477291ed48190c1ef632c2086e013e9">More...</a><br/></td></tr>
 <tr class="separator:ga7477291ed48190c1ef632c2086e013e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -995,8 +1004,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <div class="line">                        (Xil_In32((InstancePtr)-&gt;Config. \</div>
 <div class="line">                        BaseAddress + (u32)XUARTPSV_UARTCR_OFFSET) &amp; \</div>
 <div class="line">                        ~(u32)<a class="code" href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a>))</div>
-<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:54</div></div>
-<div class="ttc" id="group__uartpsv_html_gad2f1a7f666dec76a2673c6c7dbb2be2f"><div class="ttname"><a href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_UARTEN</div><div class="ttdoc">UART enable. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:148</div></div>
+<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:55</div></div>
+<div class="ttc" id="group__uartpsv_html_gad2f1a7f666dec76a2673c6c7dbb2be2f"><div class="ttname"><a href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_UARTEN</div><div class="ttdoc">UART enable. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:149</div></div>
 </div><!-- fragment -->
 <p>Disable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1030,8 +1039,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <div class="line">                        (Xil_In32((InstancePtr)-&gt;Config. \</div>
 <div class="line">                        BaseAddress + (u32)XUARTPSV_UARTCR_OFFSET) | \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a>))</div>
-<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:54</div></div>
-<div class="ttc" id="group__uartpsv_html_gad2f1a7f666dec76a2673c6c7dbb2be2f"><div class="ttname"><a href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_UARTEN</div><div class="ttdoc">UART enable. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:148</div></div>
+<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:55</div></div>
+<div class="ttc" id="group__uartpsv_html_gad2f1a7f666dec76a2673c6c7dbb2be2f"><div class="ttname"><a href="group__uartpsv.html#gad2f1a7f666dec76a2673c6c7dbb2be2f">XUARTPSV_UARTCR_UARTEN</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_UARTEN</div><div class="ttdoc">UART enable. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:149</div></div>
 </div><!-- fragment -->
 <p>Enable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1412,7 +1421,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">Xil_In32(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:49</div></div>
+<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:50</div></div>
 </div><!-- fragment -->
 <p>Get the UART Channel Status Register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1441,7 +1450,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">Xil_In32(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:54</div></div>
+<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:55</div></div>
 </div><!-- fragment -->
 <p>Get the UART Mode Control Register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1500,8 +1509,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <div class="line">                        <a class="code" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>) &amp; \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga52d6f333914d8bde4a32dff6022edcf7">XUARTPSV_UARTFR_RXFE</a>) == \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga52d6f333914d8bde4a32dff6022edcf7">XUARTPSV_UARTFR_RXFE</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:49</div></div>
-<div class="ttc" id="group__uartpsv_html_ga52d6f333914d8bde4a32dff6022edcf7"><div class="ttname"><a href="group__uartpsv.html#ga52d6f333914d8bde4a32dff6022edcf7">XUARTPSV_UARTFR_RXFE</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_RXFE</div><div class="ttdoc">Receive FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:85</div></div>
+<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:50</div></div>
+<div class="ttc" id="group__uartpsv_html_ga52d6f333914d8bde4a32dff6022edcf7"><div class="ttname"><a href="group__uartpsv.html#ga52d6f333914d8bde4a32dff6022edcf7">XUARTPSV_UARTFR_RXFE</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_RXFE</div><div class="ttdoc">Receive FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:86</div></div>
 </div><!-- fragment -->
 <p>Determine if there is receive data in the receiver and/or FIFO. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1533,8 +1542,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>) &amp; \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga9ad13f5d5d544fb2ba1df04f5b02d2b5">XUARTPSV_UARTFR_BUSY</a>) == \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga9ad13f5d5d544fb2ba1df04f5b02d2b5">XUARTPSV_UARTFR_BUSY</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:49</div></div>
-<div class="ttc" id="group__uartpsv_html_ga9ad13f5d5d544fb2ba1df04f5b02d2b5"><div class="ttname"><a href="group__uartpsv.html#ga9ad13f5d5d544fb2ba1df04f5b02d2b5">XUARTPSV_UARTFR_BUSY</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_BUSY</div><div class="ttdoc">UART Busy. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:86</div></div>
+<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:50</div></div>
+<div class="ttc" id="group__uartpsv_html_ga9ad13f5d5d544fb2ba1df04f5b02d2b5"><div class="ttname"><a href="group__uartpsv.html#ga9ad13f5d5d544fb2ba1df04f5b02d2b5">XUARTPSV_UARTFR_BUSY</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_BUSY</div><div class="ttdoc">UART Busy. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:87</div></div>
 </div><!-- fragment -->
 <p>Determine if a byte of data can be sent with the transmitter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1546,7 +1555,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>TRUE if the TX is busy, FALSE if a byte can be put in the FIFO.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__uartpsv.html#ga04b62e0a1ad868d0a75238356c973336" title="Determine if a byte of data can be sent with the transmitter. ">XUartPsv_IsTransmitFull(UINTPTR BaseAddress)</a> </dd></dl>
 
-<p>Referenced by <a class="el" href="xuartpsv__polled__example_8c.html#a34f772e363fbce111f8c84bf2be97750">UartPsvPolledExample()</a>, <a class="el" href="group__uartpsv.html#gaa19ed118438249d9c56cd3afcfa8898c">XUartPsv_ProgramCtrlReg()</a>, and <a class="el" href="group__uartpsv.html#ga2236ec3fe4acd721566be3025554826b">XUartPsv_SendBuffer()</a>.</p>
+<p>Referenced by <a class="el" href="xuartpsv__polled__example_8c.html#a34f772e363fbce111f8c84bf2be97750">UartPsvPolledExample()</a>, <a class="el" href="group__uartpsv.html#gaa19ed118438249d9c56cd3afcfa8898c">XUartPsv_ProgramCtrlReg()</a>, and <a class="el" href="group__uartpsv.html#gac551c919a38424e6d23298256a9d1141">XUartPsv_Send_NoWait()</a>.</p>
 
 </div>
 </div>
@@ -1566,8 +1575,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
 <div class="line">                (u32)<a class="code" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>) &amp; (u32)<a class="code" href="group__uartpsv.html#gac52469fbe1e3bb8ce53bf2c61833389d">XUARTPSV_UARTFR_TXFE</a>) \</div>
 <div class="line">                == (u32)<a class="code" href="group__uartpsv.html#gac52469fbe1e3bb8ce53bf2c61833389d">XUARTPSV_UARTFR_TXFE</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:49</div></div>
-<div class="ttc" id="group__uartpsv_html_gac52469fbe1e3bb8ce53bf2c61833389d"><div class="ttname"><a href="group__uartpsv.html#gac52469fbe1e3bb8ce53bf2c61833389d">XUARTPSV_UARTFR_TXFE</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_TXFE</div><div class="ttdoc">Transmit FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:82</div></div>
+<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:50</div></div>
+<div class="ttc" id="group__uartpsv_html_gac52469fbe1e3bb8ce53bf2c61833389d"><div class="ttname"><a href="group__uartpsv.html#gac52469fbe1e3bb8ce53bf2c61833389d">XUARTPSV_UARTFR_TXFE</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_TXFE</div><div class="ttdoc">Transmit FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:83</div></div>
 </div><!-- fragment -->
 <p>Determine if the transmitter FIFO is empty. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1601,8 +1610,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>) &amp; \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga41a86bcc1a37151cff70ef6d9c8779c1">XUARTPSV_UARTFR_TXFF</a>) == \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga41a86bcc1a37151cff70ef6d9c8779c1">XUARTPSV_UARTFR_TXFF</a>)</div>
-<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:49</div></div>
-<div class="ttc" id="group__uartpsv_html_ga41a86bcc1a37151cff70ef6d9c8779c1"><div class="ttname"><a href="group__uartpsv.html#ga41a86bcc1a37151cff70ef6d9c8779c1">XUARTPSV_UARTFR_TXFF</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_TXFF</div><div class="ttdoc">Transmit FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:84</div></div>
+<div class="ttc" id="group__uartpsv_html_ga3f04dd68cd110b79baf2076b0564eadd"><div class="ttname"><a href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_OFFSET</div><div class="ttdoc">Flag Register. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:50</div></div>
+<div class="ttc" id="group__uartpsv_html_ga41a86bcc1a37151cff70ef6d9c8779c1"><div class="ttname"><a href="group__uartpsv.html#ga41a86bcc1a37151cff70ef6d9c8779c1">XUARTPSV_UARTFR_TXFF</a></div><div class="ttdeci">#define XUARTPSV_UARTFR_TXFF</div><div class="ttdoc">Transmit FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:85</div></div>
 </div><!-- fragment -->
 <p>Determine if a byte of data can be sent with the transmitter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -2312,7 +2321,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
 <div class="line">                        (u32)<a class="code" href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a>, (u32)(RegisterValue))</div>
-<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:54</div></div>
+<div class="ttc" id="group__uartpsv_html_ga107036ece577d1e34edf6c01eb83305e"><div class="ttname"><a href="group__uartpsv.html#ga107036ece577d1e34edf6c01eb83305e">XUARTPSV_UARTCR_OFFSET</a></div><div class="ttdeci">#define XUARTPSV_UARTCR_OFFSET</div><div class="ttdoc">Control. </div><div class="ttdef"><b>Definition:</b> xuartpsv_hw.h:55</div></div>
 </div><!-- fragment -->
 <p>Set the UART Mode Control Register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -2736,7 +2745,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 
 <p>UART Busy. </p>
 
-<p>Referenced by <a class="el" href="group__uartpsv.html#gaa335aef95c763728b0d179ddc3e8b209">XUartPsv_IsSending()</a>.</p>
+<p>Referenced by <a class="el" href="group__uartpsv.html#gaa335aef95c763728b0d179ddc3e8b209">XUartPsv_IsSending()</a>, and <a class="el" href="group__uartpsv.html#ga2236ec3fe4acd721566be3025554826b">XUartPsv_SendBuffer()</a>.</p>
 
 </div>
 </div>
@@ -2794,7 +2803,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 
 <p>Flag Register. </p>
 
-<p>Referenced by <a class="el" href="group__uartpsv.html#gaa335aef95c763728b0d179ddc3e8b209">XUartPsv_IsSending()</a>, <a class="el" href="group__uartpsv.html#gab7c628a4fd29e1f9d1d4cb9cbe672279">XUartPsv_ReceiveBuffer()</a>, and <a class="el" href="group__uartpsv.html#ga5dba5d9d345ab578b8410113968ffaa6">XUartPsv_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__uartpsv.html#gaa335aef95c763728b0d179ddc3e8b209">XUartPsv_IsSending()</a>, <a class="el" href="group__uartpsv.html#gab7c628a4fd29e1f9d1d4cb9cbe672279">XUartPsv_ReceiveBuffer()</a>, <a class="el" href="group__uartpsv.html#ga5dba5d9d345ab578b8410113968ffaa6">XUartPsv_SelfTest()</a>, and <a class="el" href="group__uartpsv.html#ga2236ec3fe4acd721566be3025554826b">XUartPsv_SendBuffer()</a>.</p>
 
 </div>
 </div>
@@ -4374,12 +4383,12 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga1344d64394e0af7cf3abe12336900098"></a>
+<a class="anchor" id="ga048adc3a5ea0979d28266476fa3960db"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void XUartPsv_Cleanup </td>
+          <td class="memname">void XUartPsv_CleanupRx </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em></td><td>)</td>
@@ -4388,7 +4397,29 @@ Receiver FIFO Byte Status Register</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function is a cleanup function to allow reseting NextBytePtr, RemainingBytes and RequestedBytes. </p>
+<p>This function is a cleanup function to allow reseting Rx NextBytePtr, RemainingBytes and RequestedBytes. </p>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_uart_psv_buffer.html#ae6466922ee28d721351afc83bc8b84f4">XUartPsvBuffer::NextBytePtr</a>, <a class="el" href="struct_x_uart_psv.html#aeee14c65e38a5fa3dc2eeaf6d60281ab">XUartPsv::ReceiveBuffer</a>, <a class="el" href="struct_x_uart_psv_buffer.html#a606a38ec3c1bb6656084bb1c106ad895">XUartPsvBuffer::RemainingBytes</a>, and <a class="el" href="struct_x_uart_psv_buffer.html#a4d70a13255d768fc2f870aa6eac05f5f">XUartPsvBuffer::RequestedBytes</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf1cde67fba29b14f65e5abe2dd7d2066"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XUartPsv_CleanupTx </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function is a cleanup function to allow reseting Tx NextBytePtr, RemainingBytes and RequestedBytes. </p>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -4954,6 +4985,95 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gac551c919a38424e6d23298256a9d1141"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUartPsv_Send_NoWait </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_uart_psv.html">XUartPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>BufferPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>NumBytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><ul>
+<li></li>
+</ul>
+</p>
+<ul>
+<li>This functions sends the specified buffer using the device in polled mode.</li>
+<li>This function is non-blocking, if the device is busy sending data, it will</li>
+<li>return and indicate zero bytes were sent. Otherwise, it fills the TX FIFO</li>
+<li>as much as it can, and return the number of bytes sent. The application may</li>
+<li>need to call it repeatedly to send the entire buffer.</li>
+<li></li>
+<li>This function implemented for RTOS environment, it will check status and</li>
+<li>return without waiting. The caller of XUartPsv_Send_NoWait can wait</li>
+<li>based on return value.</li>
+<li></li>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_uart_psv.html" title="The XUartPsv driver instance data structure. ">XUartPsv</a> instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">BufferPtr</td><td>is pointer to a buffer of data to be sent.</td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">NumBytes</td><td>contains the number of bytes to be sent. A value of</td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+<li>zero will stop a previous send operation that is in progress</li>
+<li>in interrupt mode. Any data that was already put into the</li>
+<li>transmit FIFO will be sent.</li>
+<li></li>
+<li><dl class="section return"><dt>Returns</dt><dd>- The number of bytes actually sent, if data successfully sent</dd></dl>
+</li>
+<li>- 0, if TX is busy. The caller of XUartPsv_Send_NoWait can</li>
+<li>wait if return 0.</li>
+<li></li>
+<li><dl class="section note"><dt>Note</dt><dd></dd></dl>
+</li>
+<li>The number of bytes is not asserted so that this function may be called with</li>
+<li>a value of zero to stop an operation that is already in progress.</li>
+<li><br/>
+<br/>
+</li>
+<li></li>
+</ul>
+
+<p>References <a class="el" href="struct_x_uart_psv___config.html#ad3fc1852bc0fda04d7db7887d20f3ce2">XUartPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_uart_psv.html#a28f121775b342f18caae6f39331d1079">XUartPsv::Config</a>, <a class="el" href="struct_x_uart_psv.html#a4dd385478a1d6f6dcbff3d0642ac1904">XUartPsv::IsReady</a>, <a class="el" href="struct_x_uart_psv_buffer.html#ae6466922ee28d721351afc83bc8b84f4">XUartPsvBuffer::NextBytePtr</a>, <a class="el" href="struct_x_uart_psv_buffer.html#a606a38ec3c1bb6656084bb1c106ad895">XUartPsvBuffer::RemainingBytes</a>, <a class="el" href="struct_x_uart_psv_buffer.html#a4d70a13255d768fc2f870aa6eac05f5f">XUartPsvBuffer::RequestedBytes</a>, <a class="el" href="struct_x_uart_psv.html#a52503eea4d30a82b0036bf8ee40980a2">XUartPsv::SendBuffer</a>, and <a class="el" href="group__uartpsv.html#ga9ff4c2f51e7f3e9a5d0b017c841a7ab3">XUartPsv_IsTransmitbusy</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga2236ec3fe4acd721566be3025554826b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -4982,7 +5102,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The number of bytes actually sent</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_uart_psv___config.html#ad3fc1852bc0fda04d7db7887d20f3ce2">XUartPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_uart_psv.html#a28f121775b342f18caae6f39331d1079">XUartPsv::Config</a>, <a class="el" href="struct_x_uart_psv_buffer.html#ae6466922ee28d721351afc83bc8b84f4">XUartPsvBuffer::NextBytePtr</a>, <a class="el" href="struct_x_uart_psv_buffer.html#a606a38ec3c1bb6656084bb1c106ad895">XUartPsvBuffer::RemainingBytes</a>, <a class="el" href="struct_x_uart_psv.html#a52503eea4d30a82b0036bf8ee40980a2">XUartPsv::SendBuffer</a>, <a class="el" href="group__uartpsv.html#ga9ff4c2f51e7f3e9a5d0b017c841a7ab3">XUartPsv_IsTransmitbusy</a>, <a class="el" href="group__uartpsv.html#ga04b62e0a1ad868d0a75238356c973336">XUartPsv_IsTransmitFull</a>, <a class="el" href="group__uartpsv.html#ga101fd40e38eabc4ac374e9f332a71b46">XUARTPSV_UARTDR_OFFSET</a>, and <a class="el" href="group__uartpsv.html#ga1fcbc3ad3fd4949b016ae362929ee344">XUartPsv_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_uart_psv___config.html#ad3fc1852bc0fda04d7db7887d20f3ce2">XUartPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_uart_psv.html#a28f121775b342f18caae6f39331d1079">XUartPsv::Config</a>, <a class="el" href="struct_x_uart_psv_buffer.html#ae6466922ee28d721351afc83bc8b84f4">XUartPsvBuffer::NextBytePtr</a>, <a class="el" href="struct_x_uart_psv_buffer.html#a606a38ec3c1bb6656084bb1c106ad895">XUartPsvBuffer::RemainingBytes</a>, <a class="el" href="struct_x_uart_psv.html#a52503eea4d30a82b0036bf8ee40980a2">XUartPsv::SendBuffer</a>, <a class="el" href="group__uartpsv.html#ga04b62e0a1ad868d0a75238356c973336">XUartPsv_IsTransmitFull</a>, <a class="el" href="group__uartpsv.html#ga101fd40e38eabc4ac374e9f332a71b46">XUARTPSV_UARTDR_OFFSET</a>, <a class="el" href="group__uartpsv.html#ga9ad13f5d5d544fb2ba1df04f5b02d2b5">XUARTPSV_UARTFR_BUSY</a>, <a class="el" href="group__uartpsv.html#ga3f04dd68cd110b79baf2076b0564eadd">XUARTPSV_UARTFR_OFFSET</a>, and <a class="el" href="group__uartpsv.html#ga1fcbc3ad3fd4949b016ae362929ee344">XUartPsv_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__uartpsv.html#ga71a962de4963e15f1c38e7831e825f7c">XUartPsv_Send()</a>.</p>
 
@@ -5437,9 +5557,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2001 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2001 - 2023 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xspi.c
-* @addtogroup spi_v4_9
+* @addtogroup spi Overview
 * @{
 *
 * Contains required functions of the XSpi driver component.  See xspi.h for
@@ -80,6 +81,8 @@
 *		      in between multiple transfers.
 * 4.8   akm  01/19/21 Fix multiple byte transfer hang issue, when FIFOs are
 *                     disabled.
+* 4.10  akm  02/21/23 Avoid data loss in interrupt mode with TX HALF EMPTY
+*                     Interrupt enabled.
 * </pre>
 *
 ******************************************************************************/
@@ -655,16 +658,6 @@ int XSpi_Transfer(XSpi *InstancePtr, u8 *SendBufPtr,
 				InstancePtr->SlaveSelectReg);
 				
 	/*
-	 * Start the transfer by no longer inhibiting the transmitter and
-	 * enabling the device. For a master, this will in fact start the
-	 * transfer, but for a slave it only prepares the device for a transfer
-	 * that must be initiated by a master.
-	 */
-	ControlReg = XSpi_GetControlReg(InstancePtr);
-	ControlReg &= ~XSP_CR_TRANS_INHIBIT_MASK;
-	XSpi_SetControlReg(InstancePtr, ControlReg);
-
-	/*
 	 * If the interrupts are enabled as indicated by Global Interrupt
 	 * Enable Register, then enable the transmit empty interrupt to operate
 	 * in Interrupt mode of operation.
@@ -681,8 +674,24 @@ int XSpi_Transfer(XSpi *InstancePtr, u8 *SendBufPtr,
 		 * End critical section.
 		 */
 		XSpi_IntrGlobalEnable(InstancePtr);
+	}
 
-	} else { /* Polled mode of operation */
+	/*
+	 * Start the transfer by no longer inhibiting the transmitter and
+	 * enabling the device. For a master, this will in fact start the
+	 * transfer, but for a slave it only prepares the device for a transfer
+	 * that must be initiated by a master.
+	 */
+	ControlReg = XSpi_GetControlReg(InstancePtr);
+	ControlReg &= ~XSP_CR_TRANS_INHIBIT_MASK;
+	XSpi_SetControlReg(InstancePtr, ControlReg);
+
+	/*
+	 * If the interrupts are enabled as indicated by Global Interrupt
+	 * Enable Register, then enable the transmit empty interrupt to operate
+	 * in Interrupt mode of operation.
+	 */
+	if (GlobalIntrReg != TRUE) { /* Poll Mode of operation */
 
 		/*
 		 * If interrupts are not enabled, poll the status register to
@@ -754,15 +763,13 @@ int XSpi_Transfer(XSpi *InstancePtr, u8 *SendBufPtr,
 			if (InstancePtr->RemainingBytes > 0) {
 
 				/*
-				 * Fill the DTR/FIFO with as many bytes as it
-				 * will take (or as many as we have to send).
-				 * We use the Tx full status bit to know if the
-				 * device can take more data.
-				 * By doing this, the driver does not need to
-				 * know the size of the FIFO or that there even
-				 * is a FIFO.
-				 * The downside is that the status must be read
-				 * each loop iteration.
+				 * As master transaction inhibit is not set while filling
+				 * the DTR/FIFO, as soon as the data is written to the
+				 * DTR/FIFO, it gets pushed out on to the lines and the
+				 * TX_FULL never gets set. If we depend on TX_FULL flag
+				 * for filling the DTR/FIFO, this will lead to RXFIFO
+				 * overrun error. So, fill the DTR/FIFO with TXFIFO_DEPTH
+				 * length or remaining length of data, whichever is less.
 				 */
 				if ((InstancePtr->RemainingBytes > InstancePtr->FifosDepth) &&
 				    (InstancePtr->FifosDepth != 0)) {
@@ -1182,16 +1189,24 @@ void XSpi_InterruptHandler(void *InstancePtr)
 		 */
 		if (SpiPtr->RemainingBytes > 0) {
 			/*
-			 * Fill the DTR/FIFO with as many bytes as it will take
-			 * (or as many as we have to send). We use the full
-			 * status bit to know if the device can take more data.
-			 * By doing this, the driver does not need to know the
-			 * size of the FIFO or that there even is a FIFO.
-			 * The downside is that the status must be read each
-			 * loop iteration.
+			 * As master transaction inhibit is not set while filling
+			 * the DTR/FIFO in the interrupt handler, so as soon as
+			 * the data is written to the DTR/FIFO, it gets pushed
+			 * out on to the lines and the TX_FULL never gets set.
+			 * If we depend on TX_FULL flag for filling the DTR/FIFO
+			 * then it will lead to RXFIFO overrun error. For filling
+			 * DTR/FIFO check if TX_HALF_EMPTY is set then fill the
+			 * DTR/FIFO with (TXFIFO_DEPTH/2) length or remaining length
+			 * of data, whichever is less. If TX_HALF_EMPTY is not set
+			 * then fill the DTR/FIFO with TXFIFO_DEPTH length or
+			 * remaining length of data, whichever is less.
 			 */
-			if ((SpiPtr->RemainingBytes > SpiPtr->FifosDepth) &&
+			if ((IntrStatus & XSP_INTR_TX_HALF_EMPTY_MASK) &&
+			    (SpiPtr->RemainingBytes > (SpiPtr->FifosDepth / 2)) &&
 			    (SpiPtr->FifosDepth != 0)) {
+				DataLen = SpiPtr->FifosDepth / 2;
+			} else if ((SpiPtr->RemainingBytes > SpiPtr->FifosDepth) &&
+				   (SpiPtr->FifosDepth != 0)) {
 				DataLen = SpiPtr->FifosDepth;
 			} else {
 				DataLen =SpiPtr->RemainingBytes;

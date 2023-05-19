@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"xrfdc__hw_8h.html#gac41eb51de4b2f7d848082a07ba12641b":[2,9,222],
+"xrfdc__hw_8h.html#gac433e22cac64099fccb17d6e6f61d7a1":[2,9,543],
 "xrfdc__hw_8h.html#gac505119d79bfa1c67510e54ae0c7dd3a":[2,9,495],
 "xrfdc__hw_8h.html#gac5bfb9bb3f007c86cf52e2d935d9b0f9":[2,9,485],
 "xrfdc__hw_8h.html#gac5cd37568b27e481f154240b6af805ee":[2,9,69],

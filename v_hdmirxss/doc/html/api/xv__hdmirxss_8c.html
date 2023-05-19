@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmirxss
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -215,6 +215,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a461c8c44a3dc58685afd72b911047ec4"><td class="memItemLeft" align="right" valign="top">XHdmiC_Aux *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8c.html#a461c8c44a3dc58685afd72b911047ec4">XV_HdmiRxSs_GetAuxiliary</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a461c8c44a3dc58685afd72b911047ec4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the pointer to HDMI RX SS Aux structure.  <a href="#a461c8c44a3dc58685afd72b911047ec4">More...</a><br/></td></tr>
 <tr class="separator:a461c8c44a3dc58685afd72b911047ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8c.html#ac7e11d2a14091bf0cf981ce6db18fc3f">XV_HdmiRxSs_Write_ScdcRegister</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr, u8 address, u8 data)</td></tr>
+<tr class="memdesc:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes to SCDC registers.  <a href="#ac7e11d2a14091bf0cf981ce6db18fc3f">More...</a><br/></td></tr>
+<tr class="separator:ac7e11d2a14091bf0cf981ce6db18fc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa671579897f973e1ad154ef39309a218"><td class="memItemLeft" align="right" valign="top">XHdmiC_AVI_InfoFrame *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss_8c.html#aa671579897f973e1ad154ef39309a218">XV_HdmiRxSs_GetAviInfoframe</a> (<a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *InstancePtr)</td></tr>
 <tr class="memdesc:aa671579897f973e1ad154ef39309a218"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the pointer to HDMI RX SS AVI InfoFrame structure.  <a href="#aa671579897f973e1ad154ef39309a218">More...</a><br/></td></tr>
 <tr class="separator:aa671579897f973e1ad154ef39309a218"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1589,6 +1592,48 @@ HandlerType                     Callback Function Type
 
 </div>
 </div>
+<a class="anchor" id="ac7e11d2a14091bf0cf981ce6db18fc3f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiRxSs_Write_ScdcRegister </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_rx_ss.html">XV_HdmiRxSs</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function writes to SCDC registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a class="anchor" id="a39a18defddd74705ecd2b99d651db86c"></a>
 <div class="memitem">
@@ -1607,9 +1652,8 @@ HandlerType                     Callback Function Type
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

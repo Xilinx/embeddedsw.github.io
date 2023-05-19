@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">cpu
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -93,14 +93,16 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 2.13  mus  05/23/21 Added -fno-tree-loop-distribute-patterns to prevent for loops
                     to memset conversions. It fixes CR#1090083.
 2.14  mus  08/23/21 Removed fsl.h, it is duplicate of standalone/src/microblaze/fsl.h.
-                    It fixes CR#1108558.</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
+                    It fixes CR#1108558.
+2.17  adk  30/09/22 Updated tcl to copy proper libraries when fpu is enabled
+              (C_USE_FPU &gt; 0) and when processor is configured with
+              MUL64 support(C_USE_HW_MUL = 2).</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This file may contain architecture-dependent items (memory-mapped or non-memory-mapped I/O). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmitxss1
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -97,9 +97,15 @@ Macros</h2></td></tr>
 <tr class="memitem:a71bd0b63917e21a117972939353bda39"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8h.html#a71bd0b63917e21a117972939353bda39">I2C_CLK_ADDR</a>&#160;&#160;&#160;0x7C</td></tr>
 <tr class="memdesc:a71bd0b63917e21a117972939353bda39"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2C Clk Address IDT_8T49N241.  <a href="#a71bd0b63917e21a117972939353bda39">More...</a><br/></td></tr>
 <tr class="separator:a71bd0b63917e21a117972939353bda39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6103f02c31a61688e475e57b81ca2eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8h.html#ac6103f02c31a61688e475e57b81ca2eb">I2C_CLK_ADDR1</a>&#160;&#160;&#160;0x6C</td></tr>
+<tr class="memdesc:ac6103f02c31a61688e475e57b81ca2eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2C Clk Address IDT_8T49N241.  <a href="#ac6103f02c31a61688e475e57b81ca2eb">More...</a><br/></td></tr>
+<tr class="separator:ac6103f02c31a61688e475e57b81ca2eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dbe7366322193e35206718d1e0e74ac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8h.html#a9dbe7366322193e35206718d1e0e74ac">FVA_FACTOR</a>&#160;&#160;&#160;1</td></tr>
 <tr class="memdesc:a9dbe7366322193e35206718d1e0e74ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Note : In Auto Stretch Mode, Enable/Disable VRR is not supported.  <a href="#a9dbe7366322193e35206718d1e0e74ac">More...</a><br/></td></tr>
 <tr class="separator:a9dbe7366322193e35206718d1e0e74ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a237cda4b895b62ed3dab36dc63ddac4f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xhdmi__example_8h.html#a237cda4b895b62ed3dab36dc63ddac4f">RC21008A_ADDR</a>&#160;&#160;&#160;0x09</td></tr>
+<tr class="memdesc:a237cda4b895b62ed3dab36dc63ddac4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2C RC21008A Address.  <a href="#a237cda4b895b62ed3dab36dc63ddac4f">More...</a><br/></td></tr>
+<tr class="separator:a237cda4b895b62ed3dab36dc63ddac4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -162,6 +168,22 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac6103f02c31a61688e475e57b81ca2eb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define I2C_CLK_ADDR1&#160;&#160;&#160;0x6C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2C Clk Address IDT_8T49N241. </p>
+
+<p>Referenced by <a class="el" href="xhdmi__example_8c.html#a13f636ef2d93d7ee10e421e5f604a510">I2cClk()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a9e3c02ccaf71eeda39e2524f2fb02a41"></a>
 <div class="memitem">
 <div class="memproto">
@@ -173,6 +195,22 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 
 <p>I2C Mux Address. </p>
+
+</div>
+</div>
+<a class="anchor" id="a237cda4b895b62ed3dab36dc63ddac4f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define RC21008A_ADDR&#160;&#160;&#160;0x09</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2C RC21008A Address. </p>
+
+<p>Referenced by <a class="el" href="xhdmi__example_8c.html#a34f9e975538c969562e4d93ddf5a5f63">Exdes_SetupClkSrc()</a>.</p>
 
 </div>
 </div>
@@ -223,9 +261,8 @@ Enumerations</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

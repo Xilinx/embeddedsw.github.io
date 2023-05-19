@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">iicps
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -69,7 +69,8 @@ $(document).ready(function(){initNavTree('xiicps__intr__multi__master__example_8
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>Design example is to demonstrate multi-master support in interrupt mode. </p>
-<p>In case of arbitration lost interrupt there will be retry in example. The <a class="el" href="group__iicps.html#ga3027c1eb6ece3193a978a2da8e06c011" title="Functions for device as master, in xiicps_master.c. ">XIicPs_MasterSend()</a> API is used to transmit the data and the <a class="el" href="group__iicps.html#ga4817f45c28341cea4ab8960dc1203acb" title="This function initiates an interrupt-driven receive in master mode. ">XIicPs_MasterRecv()</a> API is used to receive the data. This example tested on ZCU102 board and slave address needs to be changed based on board design It continuously sends 18 buffers of different length to the slave.</p>
+<p>In case of arbitration lost interrupt there will be retry in example. The <a class="el" href="group__iicps.html#ga3027c1eb6ece3193a978a2da8e06c011" title="Functions for device as master, in xiicps_master.c. ">XIicPs_MasterSend()</a> API is used to transmit the data and the <a class="el" href="group__iicps.html#ga4817f45c28341cea4ab8960dc1203acb" title="This function initiates an interrupt-driven receive in master mode. ">XIicPs_MasterRecv()</a> API is used to receive the data. This example tested on ZCU102 board and slave address needs to be changed based on board design</p>
+<p>This example can run on zynqmp / versal IIC device as master and Aardvark test hardware used as slave. It sends 18 buffers of data to slave and expects to receive the same data through the IIC.</p>
 <pre> MODIFICATION HISTORY:</pre><pre>Ver   Who Date     Changes
 </p>
 <hr/>
@@ -186,9 +187,8 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

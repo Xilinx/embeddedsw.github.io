@@ -131,6 +131,8 @@ var xemacps__hw_8h =
     [ "XEMACPS_OCTRXL_OFFSET", "xemacps__hw_8h.html#ga9245d4dabbc4654ba31d92545877db78", null ],
     [ "XEMACPS_OCTTXH_OFFSET", "xemacps__hw_8h.html#gaa77ac141494a9485a7dc10d616804280", null ],
     [ "XEMACPS_OCTTXL_OFFSET", "xemacps__hw_8h.html#ga5e17824c75c20df303d837c1aa43e9f0", null ],
+    [ "XEMACPS_PCS_CON_AUTO_NEG_MASK", "xemacps__hw_8h.html#ga1904bc0daf2ed1d914d5167b2ded0f8a", null ],
+    [ "XEMACPS_PCS_STATUS_LINK_STATUS_MASK", "xemacps__hw_8h.html#ga6fbb4b05558951c99debdb7035c7dc7c", null ],
     [ "XEMACPS_PHYMNTNC_ADDR_MASK", "xemacps__hw_8h.html#ga1cca70da2c8f8b58ed207a83d1621aba", null ],
     [ "XEMACPS_PHYMNTNC_DATA_MASK", "xemacps__hw_8h.html#ga4935c8df1da65959f8e2d81cbe6d1924", null ],
     [ "XEMACPS_PHYMNTNC_OFFSET", "xemacps__hw_8h.html#ga82aaa9f74100a4c205acd315468b27bd", null ],

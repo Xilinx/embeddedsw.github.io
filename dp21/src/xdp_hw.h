@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022-2023, Advanced Micro Devices, Inc. All Rights
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -71,6 +72,11 @@
 /* Definitions for DP2.1 */
 #define XDP_LINK_BW_SET_UHBR10	0x01	/**< 10Gbps link rate. */
 #define XDP_LINK_BW_SET_UHBR20	0x02	/**< 20Gbps link rate. */
+/*Link rate*/
+#define XDP_TX_LINK_BW_SET_SW_UHBR10	0x20	/**< 10Gbps link rate. */
+#define XDP_TX_LINK_BW_SET_SW_UHBR20	0x22	/**< 20Gbps link rate. */
+#define XDP_TX_LINK_BW_SET_SW_UHBR135	0x24	/**< 13.5Gbps link rate. */
+
 #define XDP_LINK_BW_SET_UHBR135	0x04	/**< 13.5Gbps link rate. */
 /* DP2.1 definitions end */
 
@@ -398,7 +404,6 @@
 #define XDP_TX_LINK_BW_SET_UHBR10	0x01	/**< 10Gbps link rate. */
 #define XDP_TX_LINK_BW_SET_UHBR20	0x02	/**< 20Gbps link rate. */
 #define XDP_TX_LINK_BW_SET_UHBR135	0x04	/**< 13.5Gbps link rate. */
-
 /* 0x001: LANE_COUNT_SET */
 #define XDP_TX_LANE_COUNT_SET_1		0x01	/**< Lane count of 1. */
 #define XDP_TX_LANE_COUNT_SET_2		0x02	/**< Lane count of 2. */
@@ -716,6 +721,11 @@
 							attribute. */
 #define XDP_TX_MAIN_STREAMX_MISC1_Y_ONLY_EN_MASK \
 				0x00000080	/* Y-only enable. */
+#define XDP_TX_MAX_NUM_OF_TIMESLOTS \
+				64	/**< Maximum number of time slots. */
+#define XDP_TX_MAX_NUM_OF_USER_DATA_LANES	\
+				4	/**< Maximum user data per lane. */
+
 /* 0x200: PHY_CONFIG */
 #define XDP_TX_PHY_CONFIG_PHY_RESET_ENABLE_MASK \
 				0x0000000	/**< Release reset. */
@@ -2913,6 +2923,11 @@
 								0x40
 #define XDP_DPCD_LANE_ALIGN_STATUS_UPDATED_LINK_STATUS_UPDATED_MASK \
 								0x80
+
+#define XDP_DPCD_LANE_ALIGN_STATUS_128B_LT_FAILED \
+								0x10
+#define XDP_DPCD_LANE_ALIGN_STATUS_128B_CDS_INTERALIGN_DONE \
+								0x08
 /* 0x00205: SINK_STATUS */
 #define XDP_DPCD_SINK_STATUS_RX_PORT0_SYNC_STATUS_MASK		0x01
 #define XDP_DPCD_SINK_STATUS_RX_PORT1_SYNC_STATUS_MASK		0x02
@@ -2956,6 +2971,7 @@
 #define XDP_TX_VFREQ_STREAM4 0x6DC	/**< Vfreq for MST stream4. */
 
 #define XDP_TX_V2_0_CONFIG 0x6E0	/**< DP v2.1 Config Params */
+#define XDP_TX_V2_0_CONFIG_RESET_MASK	0x1003F
 
 #define XDP_DPCD_128B_132B_SUPPORTED_LINK_RATE		0x02215	/*< 128B/132B Supported LinkRates.*/
 #define XDP_DPCD_TRAINING_AUX_RD_INTERVAL		0x02216	/*< AUX Read Interval Set. */

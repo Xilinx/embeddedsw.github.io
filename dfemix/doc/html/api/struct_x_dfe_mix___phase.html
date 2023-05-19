@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -88,6 +88,10 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a853e0b3a99f9735f1bae2800bd020b2a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___phase.html#a853e0b3a99f9735f1bae2800bd020b2a">DualModSel</a></td></tr>
 <tr class="memdesc:a853e0b3a99f9735f1bae2800bd020b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] Dual modulus select value  <a href="#a853e0b3a99f9735f1bae2800bd020b2a">More...</a><br/></td></tr>
 <tr class="separator:a853e0b3a99f9735f1bae2800bd020b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dca3570e590eb1a5d36a87bc2245e94"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___phase.html#a8dca3570e590eb1a5d36a87bc2245e94">TriggerUpdateFlag</a></td></tr>
+<tr class="memdesc:a8dca3570e590eb1a5d36a87bc2245e94"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                Update the associated accumulator from
+</pre><p> the PHASE registers:  <a href="#a8dca3570e590eb1a5d36a87bc2245e94">More...</a><br/></td></tr>
+<tr class="separator:a8dca3570e590eb1a5d36a87bc2245e94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defined phase for single CC's NCO. </p>
@@ -104,8 +108,6 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^32-1] Dual modulus count value (T-S) </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a853e0b3a99f9735f1bae2800bd020b2a"></a>
@@ -119,8 +121,6 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>[0,1] Dual modulus select value </p>
-
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -136,16 +136,33 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^32-1] Phase accumulator value </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a8dca3570e590eb1a5d36a87bc2245e94"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XDfeMix_Phase::TriggerUpdateFlag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><pre class="fragment">                Update the associated accumulator from
+</pre><p> the PHASE registers: </p>
+<ul>
+<li>0 = NO_UPDATE: Do not update</li>
+<li>1 = IMMEDIATE_UPDATE: Apply an immediate update</li>
+<li>2 = TRIGGER_UPDATE: Apply an update on the next CC_UPDATE trigger </li>
+</ul>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

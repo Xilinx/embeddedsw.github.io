@@ -2,7 +2,6 @@ var files =
 [
     [ "xdfeccf.c", "xdfeccf_8c.html", "xdfeccf_8c" ],
     [ "xdfeccf.h", "xdfeccf_8h.html", "xdfeccf_8h" ],
-    [ "xdfeccf_1xNR100_3xNR20_example.c", "xdfeccf__1x_n_r100__3x_n_r20__example_8c.html", "xdfeccf__1x_n_r100__3x_n_r20__example_8c" ],
     [ "xdfeccf_examples.c", "xdfeccf__examples_8c.html", "xdfeccf__examples_8c" ],
     [ "xdfeccf_examples.h", "xdfeccf__examples_8h.html", null ],
     [ "xdfeccf_hw.h", "xdfeccf__hw_8h.html", null ],

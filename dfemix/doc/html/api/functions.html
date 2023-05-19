@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -63,6 +63,7 @@
       <li><a href="#index_b"><span>b</span></a></li>
       <li><a href="#index_c"><span>c</span></a></li>
       <li><a href="#index_d"><span>d</span></a></li>
+      <li><a href="#index_e"><span>e</span></a></li>
       <li><a href="#index_f"><span>f</span></a></li>
       <li><a href="#index_g"><span>g</span></a></li>
       <li><a href="#index_i"><span>i</span></a></li>
@@ -98,11 +99,9 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>Activate
 : <a class="el" href="struct_x_dfe_mix___trigger_cfg.html#a43fff3e50b5af64abfaa006ba3f0c5b2">XDfeMix_TriggerCfg</a>
 </li>
-<li>AdderAntenna
-: <a class="el" href="struct_x_dfe_mix___mixer_status.html#a14b21b8a61144872f45e1ea1395cd895">XDfeMix_MixerStatus</a>
-</li>
-<li>AdderStage
-: <a class="el" href="struct_x_dfe_mix___mixer_status.html#aefe0f9a157e7320c42622eca5dbad590">XDfeMix_MixerStatus</a>
+<li>Antenna
+: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a53c0d8d7bde81d5d6c5e3bb7c74817eb">XDfeMix_DUCDDCStatus</a>
+, <a class="el" href="struct_x_dfe_mix___mixer_status.html#a9ea50126700f9438bb4c7ee5923d00ca">XDfeMix_MixerStatus</a>
 </li>
 <li>AntennaCfg
 : <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a7d5ad0330bbb6a6dff7bfbce0615e1d5">XDfeMix_CCCfg</a>
@@ -110,6 +109,12 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>AntennaInterleave
 : <a class="el" href="struct_x_dfe_mix___model_parameters.html#a24d3ec4a70f4231788196c53f6b08934">XDfeMix_ModelParameters</a>
 , <a class="el" href="struct_x_dfe_mix___config.html#a18ce0b66614121521575ce1af31f26e1">XDfeMix_Config</a>
+</li>
+<li>AuxGain
+: <a class="el" href="struct_x_dfe_mix___auxiliary_cfg.html#a0e75d62af6eaddb45adc7fc33312bb99">XDfeMix_AuxiliaryCfg</a>
+</li>
+<li>AuxiliaryCfg
+: <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a4a10266aa4d88c160966242236d164e8">XDfeMix_CCCfg</a>
 </li>
 </ul>
 
@@ -168,7 +173,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 : <a class="el" href="struct_x_dfe_mix___phase.html#a853e0b3a99f9735f1bae2800bd020b2a">XDfeMix_Phase</a>
 </li>
 <li>DUCDDCCfg
-: <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a546c5b56f7f2aa7f11d987be1fab30ff">XDfeMix_CCCfg</a>
+: <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#accf21aaf93f66c4e0abd1efcbec676be">XDfeMix_CCCfg</a>
 , <a class="el" href="struct_x_dfe_mix___carrier_cfg.html#a51f0c310e1f598ab568f5b0c9980d330">XDfeMix_CarrierCfg</a>
 </li>
 <li>DUCDDCOverflow
@@ -177,13 +182,14 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </ul>
 
 
+<h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
+<li>Enable
+: <a class="el" href="struct_x_dfe_mix___auxiliary_cfg.html#a520362c9974cbd2985e2a8adcefda2e3">XDfeMix_AuxiliaryCfg</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_f"></a>- f -</h3><ul>
-<li>FirstAntennaOverflowing
-: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#abe23a25c46ed6870d6685c5a508d27af">XDfeMix_DUCDDCStatus</a>
-</li>
-<li>FirstCCIDOverflowing
-: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a85c9eb8cd738d35967f7804138343bf5">XDfeMix_DUCDDCStatus</a>
-</li>
 <li>FrequencyCfg
 : <a class="el" href="struct_x_dfe_mix___n_c_o.html#a68be3477a3fd9cb875234ce4ad916225">XDfeMix_NCO</a>
 </li>
@@ -201,9 +207,6 @@ $(document).ready(function(){initNavTree('functions.html','');});
 
 
 <h3><a class="anchor" id="index_i"></a>- i -</h3><ul>
-<li>ImagOverflowStage
-: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#af66eea8ec3c889ad5c26fe3f42a3a425">XDfeMix_DUCDDCStatus</a>
-</li>
 <li>Io
 : <a class="el" href="struct_x_dfe_mix.html#aa7c1d87716039193dcb047d348ca519a">XDfeMix</a>
 </li>
@@ -239,23 +242,17 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>Minor
 : <a class="el" href="struct_x_dfe_mix___version.html#ab02bb9024d1186e4fa657020be59a6ed">XDfeMix_Version</a>
 </li>
-<li>MixAntenna
-: <a class="el" href="struct_x_dfe_mix___mixer_status.html#a6a6d3cb2fe6f90ef016c5ec0a4151161">XDfeMix_MixerStatus</a>
-</li>
-<li>MixCCID
-: <a class="el" href="struct_x_dfe_mix___mixer_status.html#a570e3ee93a79d66078fdd76efb30e1e0">XDfeMix_MixerStatus</a>
-</li>
 <li>MixerCps
-: <a class="el" href="struct_x_dfe_mix___config.html#a36c9efa0e75c5935865d10fa1359ed73">XDfeMix_Config</a>
-, <a class="el" href="struct_x_dfe_mix___model_parameters.html#a80372d574b3b698b67971f68904363d1">XDfeMix_ModelParameters</a>
+: <a class="el" href="struct_x_dfe_mix___model_parameters.html#a80372d574b3b698b67971f68904363d1">XDfeMix_ModelParameters</a>
+, <a class="el" href="struct_x_dfe_mix___config.html#a36c9efa0e75c5935865d10fa1359ed73">XDfeMix_Config</a>
 </li>
 <li>MixerOverflow
 : <a class="el" href="struct_x_dfe_mix___status.html#a79e07a218d9473c17fc0f6da7772be5c">XDfeMix_Status</a>
 </li>
 <li>Mode
 : <a class="el" href="struct_x_dfe_mix___model_parameters.html#a1f6d1782979aab44c0d3f30e230c7686">XDfeMix_ModelParameters</a>
-, <a class="el" href="struct_x_dfe_mix___config.html#a91d1290d298a08c340450429e9f4ffda">XDfeMix_Config</a>
 , <a class="el" href="struct_x_dfe_mix___trigger.html#a9abab2731f4977a10ab9c9c5ed6df74c">XDfeMix_Trigger</a>
+, <a class="el" href="struct_x_dfe_mix___config.html#a91d1290d298a08c340450429e9f4ffda">XDfeMix_Config</a>
 </li>
 <li>ModelParams
 : <a class="el" href="struct_x_dfe_mix___cfg.html#ac355352fefb3803a5e48944491042db7">XDfeMix_Cfg</a>
@@ -265,24 +262,32 @@ $(document).ready(function(){initNavTree('functions.html','');});
 
 <h3><a class="anchor" id="index_n"></a>- n -</h3><ul>
 <li>NCO
-: <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a6853b09616a990a70135089cdc213ba1">XDfeMix_CCCfg</a>
+: <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a4b590739c81d44f11bc8ddc66192e5b3">XDfeMix_CCCfg</a>
 </li>
 <li>NCOGain
 : <a class="el" href="struct_x_dfe_mix___n_c_o.html#a8482f94fbc00e305c1eacd2e78e013ea">XDfeMix_NCO</a>
 </li>
+<li>NcoId
+: <a class="el" href="struct_x_dfe_mix___mixer_status.html#a5fba6ea15b8339aeb3509e31314a68cc">XDfeMix_MixerStatus</a>
+, <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#abcf3d2f3a21825c19be9c5cbb54a36a5">XDfeMix_DUCDDCStatus</a>
+</li>
 <li>NCOIdx
-: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a725d2046d45ee60e61083b1465434308">XDfeMix_DUCDDCCfg</a>
-, <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#a87ab8e6957391c4623caf25aa31bb2f5">XDfeMix_InternalDUCDDCCfg</a>
+: <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#a87ab8e6957391c4623caf25aa31bb2f5">XDfeMix_InternalDUCDDCCfg</a>
+, <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a725d2046d45ee60e61083b1465434308">XDfeMix_DUCDDCCfg</a>
 </li>
 <li>NodeName
 : <a class="el" href="struct_x_dfe_mix.html#a2cb71b0f5ee30bad73933cec8e57b4cc">XDfeMix</a>
 </li>
 <li>NotUsedCCID
-: <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix</a>
+: <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a69719f8556d558f91461ecbd6d5251d4">XDfeMix_CCSequence</a>
+, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix</a>
+</li>
+<li>NotUsedCCID_UL
+: <a class="el" href="struct_x_dfe_mix.html#a854b6f09f9d327bffe80905bc7b73ce0">XDfeMix</a>
 </li>
 <li>NumAntenna
-: <a class="el" href="struct_x_dfe_mix___model_parameters.html#a1c34bd4bbecf1a7b4b13a68376ce7123">XDfeMix_ModelParameters</a>
-, <a class="el" href="struct_x_dfe_mix___config.html#ab1c39264f19ac3afd6ef4b9e166095d4">XDfeMix_Config</a>
+: <a class="el" href="struct_x_dfe_mix___config.html#ab1c39264f19ac3afd6ef4b9e166095d4">XDfeMix_Config</a>
+, <a class="el" href="struct_x_dfe_mix___model_parameters.html#a1c34bd4bbecf1a7b4b13a68376ce7123">XDfeMix_ModelParameters</a>
 </li>
 <li>NumAuxiliary
 : <a class="el" href="struct_x_dfe_mix___config.html#a123a90676172a9356251cc595c17033e">XDfeMix_Config</a>
@@ -312,9 +317,6 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>Rate
 : <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#aff86ddad939180301220559424eb5c7f">XDfeMix_InternalDUCDDCCfg</a>
 </li>
-<li>RealOverflowStage
-: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a790b2024384c6e80055b1fa973d04ed0">XDfeMix_DUCDDCStatus</a>
-</li>
 <li>Revision
 : <a class="el" href="struct_x_dfe_mix___version.html#a9aa720deae91fc110ba6c393c9652283">XDfeMix_Version</a>
 </li>
@@ -332,11 +334,18 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>SingleModCount
 : <a class="el" href="struct_x_dfe_mix___frequency.html#ac9f5fc8fac195931701b6ebb1c47aa9c">XDfeMix_Frequency</a>
 </li>
+<li>Stage
+: <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#ae952e07837e2b3f93f88290e6dd1644b">XDfeMix_DUCDDCStatus</a>
+, <a class="el" href="struct_x_dfe_mix___mixer_status.html#a3db666bd974f78bf0c3ae724dc48263e">XDfeMix_MixerStatus</a>
+</li>
 <li>StateId
 : <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix</a>
 </li>
 <li>StateOutput
 : <a class="el" href="struct_x_dfe_mix___trigger.html#ace6decffeaedce99afe3f3e840570b35">XDfeMix_Trigger</a>
+</li>
+<li>Switch
+: <a class="el" href="struct_x_dfe_mix___trigger_cfg.html#ab1cd788fc706f64f29e27c1362976078">XDfeMix_TriggerCfg</a>
 </li>
 <li>Switchable
 : <a class="el" href="struct_x_dfe_mix___status.html#a277d17fcceaf902ef1d0d951fa2b31e6">XDfeMix_Status</a>
@@ -351,15 +360,22 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>TriggerEnable
 : <a class="el" href="struct_x_dfe_mix___trigger.html#a4314a176214eb6bda57120963ee0285b">XDfeMix_Trigger</a>
 </li>
+<li>TriggerUpdateFlag
+: <a class="el" href="struct_x_dfe_mix___frequency.html#ae609c50c31c270e9b4aee65d53d40b0f">XDfeMix_Frequency</a>
+, <a class="el" href="struct_x_dfe_mix___phase.html#a8dca3570e590eb1a5d36a87bc2245e94">XDfeMix_Phase</a>
+</li>
 <li>TUSERBit
 : <a class="el" href="struct_x_dfe_mix___trigger.html#aed06b1a3a476a35cb8c497ac0567756d">XDfeMix_Trigger</a>
 </li>
 <li>TuserEdgeLevel
 : <a class="el" href="struct_x_dfe_mix___trigger.html#aa4ef6ca987cb82638685f1f751d8c450">XDfeMix_Trigger</a>
 </li>
+<li>TuserSelect
+: <a class="el" href="struct_x_dfe_mix___init.html#af9aaa5104c75ff98b732d397fe844f21">XDfeMix_Init</a>
+</li>
 <li>TUserWidth
-: <a class="el" href="struct_x_dfe_mix___model_parameters.html#ae3933e33997f60c45a133438e54d63bc">XDfeMix_ModelParameters</a>
-, <a class="el" href="struct_x_dfe_mix___config.html#ab554cb0ac8cd0782a5c1fcd99b5b49a6">XDfeMix_Config</a>
+: <a class="el" href="struct_x_dfe_mix___config.html#ab554cb0ac8cd0782a5c1fcd99b5b49a6">XDfeMix_Config</a>
+, <a class="el" href="struct_x_dfe_mix___model_parameters.html#ae3933e33997f60c45a133438e54d63bc">XDfeMix_ModelParameters</a>
 </li>
 </ul>
 
@@ -372,9 +388,8 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

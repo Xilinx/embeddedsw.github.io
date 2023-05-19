@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtmr_manager_i.h
-* @addtogroup tmr_manager_v1_3
+* @addtogroup Overview
 * @{
 *
 * Contains data which is shared between the files of the XTMR_Manager component.

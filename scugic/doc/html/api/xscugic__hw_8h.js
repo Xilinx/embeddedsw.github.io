@@ -71,6 +71,7 @@ var xscugic__hw_8h =
     [ "XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC", "xscugic__hw_8h.html#a53759eec986eab489c00e26a566d2b00", null ],
     [ "XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC", "xscugic__hw_8h.html#a93135e195fabc65c81e26163c8aabcdb", null ],
     [ "XScuGic_ReadReg", "xscugic__hw_8h.html#af5fb346faf5dff7820e4ce87c86f8eca", null ],
+    [ "XScuGic_ReadReg64", "xscugic__hw_8h.html#ad67ce957524b208789b863ed9a5c8b44", null ],
     [ "XSCUGIC_REV_MASK", "xscugic__hw_8h.html#ga0e4e42f499ef03373095daf342ffa988", null ],
     [ "XSCUGIC_RUN_PRIOR_OFFSET", "xscugic__hw_8h.html#ga9032b8ad311f376fd5d8fc046e4032f4", null ],
     [ "XSCUGIC_RUN_PRIORITY_MASK", "xscugic__hw_8h.html#ga8ac1ba33bfaefe69aacd6221b0375f1c", null ],

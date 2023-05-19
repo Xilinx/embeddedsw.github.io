@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">mipicsiss
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -82,9 +82,15 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a5a53ccfb6d566b7f2f35687ff68c1521"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_hdmi___menu_config.html">XHdmi_MenuConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmi___menu.html#a5a53ccfb6d566b7f2f35687ff68c1521">Config</a></td></tr>
 <tr class="memdesc:a5a53ccfb6d566b7f2f35687ff68c1521"><td class="mdescLeft">&#160;</td><td class="mdescRight">HDMI menu configuration data.  <a href="#a5a53ccfb6d566b7f2f35687ff68c1521">More...</a><br/></td></tr>
 <tr class="separator:a5a53ccfb6d566b7f2f35687ff68c1521"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a638ef2416724847ef77c5f624b1eb160"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xhdmi__menu_8h.html#a8425d7c3a20915745a94c5b552376d4a">XHdmi_MenuType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmi___menu.html#a638ef2416724847ef77c5f624b1eb160">CurrentMenu</a></td></tr>
+<tr class="memitem:a638ef2416724847ef77c5f624b1eb160"><td class="memItemLeft" align="right" valign="top">XHdmi_MenuType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmi___menu.html#a638ef2416724847ef77c5f624b1eb160">CurrentMenu</a></td></tr>
 <tr class="memdesc:a638ef2416724847ef77c5f624b1eb160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current menu.  <a href="#a638ef2416724847ef77c5f624b1eb160">More...</a><br/></td></tr>
 <tr class="separator:a638ef2416724847ef77c5f624b1eb160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3afec6a5e8194f75f7c5972a2ab5e883"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmi___menu.html#a3afec6a5e8194f75f7c5972a2ab5e883">UartBaseAddress</a></td></tr>
+<tr class="memdesc:a3afec6a5e8194f75f7c5972a2ab5e883"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uart base address.  <a href="#a3afec6a5e8194f75f7c5972a2ab5e883">More...</a><br/></td></tr>
+<tr class="separator:a3afec6a5e8194f75f7c5972a2ab5e883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab8ef085202660c5ff4fd1148fefc6ce"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmi___menu.html#aab8ef085202660c5ff4fd1148fefc6ce">Value</a></td></tr>
+<tr class="memdesc:aab8ef085202660c5ff4fd1148fefc6ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sub menu value.  <a href="#aab8ef085202660c5ff4fd1148fefc6ce">More...</a><br/></td></tr>
+<tr class="separator:aab8ef085202660c5ff4fd1148fefc6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The HDMI menu instance data. </p>
@@ -108,23 +114,48 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="xhdmi__menu_8h.html#a8425d7c3a20915745a94c5b552376d4a">XHdmi_MenuType</a> XHdmi_Menu::CurrentMenu</td>
+          <td class="memname">XHdmi_MenuType XHdmi_Menu::CurrentMenu</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Current menu. </p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8h.html#ab58fedfa2d83d72245cd759ff53c2c3b">XHdmi_MenuInitialize()</a>, <a class="el" href="xhdmi__menu_8h.html#a6d5275f81a5e4353687df46fd1bedb88">XHdmi_MenuProcess()</a>, and <a class="el" href="xhdmi__menu_8h.html#a8507711886833ab068231566550c677e">XHdmi_MenuReset()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a3afec6a5e8194f75f7c5972a2ab5e883"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XHdmi_Menu::UartBaseAddress</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uart base address. </p>
+
+</div>
+</div>
+<a class="anchor" id="aab8ef085202660c5ff4fd1148fefc6ce"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XHdmi_Menu::Value</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sub menu value. </p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

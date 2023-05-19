@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +7,10 @@
 /**
  * @file xiicps_smbus_polled_slave_example.c
  *
- * A design example of using the device as slave for SMBus transfers in polled mode.
+ * This example can run on zynqmp / versal platform evaluation board and
+ * IIC controller configured slave in polled mode and loopback setup used for
+ * master.
+ * It sends and receives the data using IIC device as slave for SMBus transfers.
  *
  * <pre> MODIFICATION HISTORY:
  *

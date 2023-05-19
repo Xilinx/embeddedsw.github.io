@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtmrctr_selftest.c
-* @addtogroup tmrctr_v4_9
+* @addtogroup Overview
 * @{
 *
 * Contains diagnostic/self-test functions for the XTmrCtr component.

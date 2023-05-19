@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -91,6 +91,10 @@ Data Fields</h2></td></tr>
 <tr class="memitem:acfa9943f40526d4724b095a0f322a322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_dfe_mix___phase_offset.html">XDfeMix_PhaseOffset</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___frequency.html#acfa9943f40526d4724b095a0f322a322">PhaseOffset</a></td></tr>
 <tr class="memdesc:acfa9943f40526d4724b095a0f322a322"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0-2^17-1] Phase offset  <a href="#acfa9943f40526d4724b095a0f322a322">More...</a><br/></td></tr>
 <tr class="separator:acfa9943f40526d4724b095a0f322a322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae609c50c31c270e9b4aee65d53d40b0f"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___frequency.html#ae609c50c31c270e9b4aee65d53d40b0f">TriggerUpdateFlag</a></td></tr>
+<tr class="memdesc:ae609c50c31c270e9b4aee65d53d40b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                Update the associated accumulator from
+</pre><p> the FREQUENCY registers:  <a href="#ae609c50c31c270e9b4aee65d53d40b0f">More...</a><br/></td></tr>
+<tr class="separator:ae609c50c31c270e9b4aee65d53d40b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines frequency for single CC's NCO. </p>
@@ -107,8 +111,6 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^32-1] Dual modulus cycle count (T-S) </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a7a1488c7bb977b513f5b38036d6a7674"></a>
@@ -123,7 +125,7 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^32-1] Phase increment </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
 
 </div>
 </div>
@@ -139,8 +141,6 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^17-1] Phase offset </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ac9f5fc8fac195931701b6ebb1c47aa9c"></a>
@@ -155,16 +155,35 @@ Data Fields</h2></td></tr>
 
 <p>[0-2^32-1] Single modulus cycle count (S) </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="ae609c50c31c270e9b4aee65d53d40b0f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XDfeMix_Frequency::TriggerUpdateFlag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><pre class="fragment">                Update the associated accumulator from
+</pre><p> the FREQUENCY registers: </p>
+<ul>
+<li>0 = NO_UPDATE: Do not update</li>
+<li>1 = IMMEDIATE_UPDATE: Apply an immediate update</li>
+<li>2 = TRIGGER_UPDATE: Apply an update on the next CC_UPDATE trigger </li>
+</ul>
+
+<p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -79,98 +79,76 @@ $(document).ready(function(){initNavTree('struct_x_dfe_mix___d_u_c_d_d_c_status.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a790b2024384c6e80055b1fa973d04ed0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a790b2024384c6e80055b1fa973d04ed0">RealOverflowStage</a></td></tr>
-<tr class="memdesc:a790b2024384c6e80055b1fa973d04ed0"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                [0-3] First stage in which overflow
-</pre><p> in real data has occurred.  <a href="#a790b2024384c6e80055b1fa973d04ed0">More...</a><br/></td></tr>
-<tr class="separator:a790b2024384c6e80055b1fa973d04ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af66eea8ec3c889ad5c26fe3f42a3a425"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#af66eea8ec3c889ad5c26fe3f42a3a425">ImagOverflowStage</a></td></tr>
-<tr class="memdesc:af66eea8ec3c889ad5c26fe3f42a3a425"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                [0-3] First stage in which overflow
-</pre><p> in imaginary data has occurred.  <a href="#af66eea8ec3c889ad5c26fe3f42a3a425">More...</a><br/></td></tr>
-<tr class="separator:af66eea8ec3c889ad5c26fe3f42a3a425"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe23a25c46ed6870d6685c5a508d27af"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#abe23a25c46ed6870d6685c5a508d27af">FirstAntennaOverflowing</a></td></tr>
-<tr class="memdesc:abe23a25c46ed6870d6685c5a508d27af"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                      [0-7] Lowest antenna in which
-</pre><p> overflow has occurred.  <a href="#abe23a25c46ed6870d6685c5a508d27af">More...</a><br/></td></tr>
-<tr class="separator:abe23a25c46ed6870d6685c5a508d27af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85c9eb8cd738d35967f7804138343bf5"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a85c9eb8cd738d35967f7804138343bf5">FirstCCIDOverflowing</a></td></tr>
-<tr class="memdesc:a85c9eb8cd738d35967f7804138343bf5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">                   [0-15] Lowest CCID in which overflow has
-</pre><p> occurred.  <a href="#a85c9eb8cd738d35967f7804138343bf5">More...</a><br/></td></tr>
-<tr class="separator:a85c9eb8cd738d35967f7804138343bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae952e07837e2b3f93f88290e6dd1644b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#ae952e07837e2b3f93f88290e6dd1644b">Stage</a></td></tr>
+<tr class="memdesc:ae952e07837e2b3f93f88290e6dd1644b"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0-3] Earliest stage in which overflow occurred.  <a href="#ae952e07837e2b3f93f88290e6dd1644b">More...</a><br/></td></tr>
+<tr class="separator:ae952e07837e2b3f93f88290e6dd1644b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53c0d8d7bde81d5d6c5e3bb7c74817eb"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#a53c0d8d7bde81d5d6c5e3bb7c74817eb">Antenna</a></td></tr>
+<tr class="memdesc:a53c0d8d7bde81d5d6c5e3bb7c74817eb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">      [0-7] Antenna on which overflow occured, with lowest
+</pre><p> antenna taking priority.  <a href="#a53c0d8d7bde81d5d6c5e3bb7c74817eb">More...</a><br/></td></tr>
+<tr class="separator:a53c0d8d7bde81d5d6c5e3bb7c74817eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcf3d2f3a21825c19be9c5cbb54a36a5"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_status.html#abcf3d2f3a21825c19be9c5cbb54a36a5">NcoId</a></td></tr>
+<tr class="memdesc:abcf3d2f3a21825c19be9c5cbb54a36a5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">    [0-15] Number of NCO associated with overflowing channel,
+</pre><p> with lowest taking priority.  <a href="#abcf3d2f3a21825c19be9c5cbb54a36a5">More...</a><br/></td></tr>
+<tr class="separator:abcf3d2f3a21825c19be9c5cbb54a36a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>DUC/DDC status. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="abe23a25c46ed6870d6685c5a508d27af"></a>
+<a class="anchor" id="a53c0d8d7bde81d5d6c5e3bb7c74817eb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeMix_DUCDDCStatus::FirstAntennaOverflowing</td>
+          <td class="memname">u32 XDfeMix_DUCDDCStatus::Antenna</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                      [0-7] Lowest antenna in which
-</pre><p> overflow has occurred. </p>
+<p><pre class="fragment">      [0-7] Antenna on which overflow occured, with lowest
+</pre><p> antenna taking priority. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#gaaac29dcfbeab7cd0e78192083e83db52">XDfeMix_GetDUCDDCStatus()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga33030e76902b46e8b159da6410e037f4">XDfeMix_GetDUCDDCStatus()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a85c9eb8cd738d35967f7804138343bf5"></a>
+<a class="anchor" id="abcf3d2f3a21825c19be9c5cbb54a36a5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeMix_DUCDDCStatus::FirstCCIDOverflowing</td>
+          <td class="memname">u32 XDfeMix_DUCDDCStatus::NcoId</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                   [0-15] Lowest CCID in which overflow has
-</pre><p> occurred. </p>
+<p><pre class="fragment">    [0-15] Number of NCO associated with overflowing channel,
+</pre><p> with lowest taking priority. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#gaaac29dcfbeab7cd0e78192083e83db52">XDfeMix_GetDUCDDCStatus()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga33030e76902b46e8b159da6410e037f4">XDfeMix_GetDUCDDCStatus()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af66eea8ec3c889ad5c26fe3f42a3a425"></a>
+<a class="anchor" id="ae952e07837e2b3f93f88290e6dd1644b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u32 XDfeMix_DUCDDCStatus::ImagOverflowStage</td>
+          <td class="memname">u32 XDfeMix_DUCDDCStatus::Stage</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><pre class="fragment">                [0-3] First stage in which overflow
-</pre><p> in imaginary data has occurred. </p>
+<p>[0-3] Earliest stage in which overflow occurred. </p>
 
-</div>
-</div>
-<a class="anchor" id="a790b2024384c6e80055b1fa973d04ed0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfeMix_DUCDDCStatus::RealOverflowStage</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">                [0-3] First stage in which overflow
-</pre><p> in real data has occurred. </p>
-
-<p>Referenced by <a class="el" href="group__dfemix.html#gaaac29dcfbeab7cd0e78192083e83db52">XDfeMix_GetDUCDDCStatus()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga33030e76902b46e8b159da6410e037f4">XDfeMix_GetDUCDDCStatus()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

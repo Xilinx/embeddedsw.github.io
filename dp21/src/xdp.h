@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -601,6 +602,7 @@ typedef struct {
 						clock recovery */
 	u8 cr_done_oldstate;		/**< Restores the number of lanes done
 						with clock recovery. */
+	u8 LinkTraining2x;		/**< indicates link training in DP 2.1 mode. */
 	u8 Downstream2xSupported;	/**< indicates dp2.1 capability from downstream receiver. */
 	u8 ProtocolSwitch;		/*switch from Dp21. to Dp1.4 */
 	u8 Downstream1xSupported;	/**< indicates dp1.4 capability from downstream receiver */
@@ -1491,6 +1493,7 @@ void XDp_CfgInitialize(XDp *InstancePtr, XDp_Config *ConfigPtr,
 							UINTPTR EffectiveAddr);
 u32 XDp_Initialize(XDp *InstancePtr);
 u32 XDp_TxGetRxCapabilities(XDp *InstancePtr);
+u8 XDp_Tx_DecodeLinkBandwidth(XDp *InstancePtr);
 /* Defined for DP 1.4 */
 u32 XDp_TxTp4Capable(XDp *InstancePtr);
 
@@ -1729,6 +1732,7 @@ void XDp_TxHdcp22Disable(XDp *InstancePtr);
 #if XPAR_XDPTXSS_NUM_INSTANCES
 void XDp_Tx_2x_ChannelCodingSet(XDp *InstancePtr, u8 dp_protocol);
 u32 XDp_Tx_2x_SetLinkRate(XDp *InstancePtr, u8 LinkRate);
+u32 XDp_TxGetLinkRate(XDp *InstancePtr);
 #endif
 /******************* Macros (Inline Functions) Definitions ********************/
 

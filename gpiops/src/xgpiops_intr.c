@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xgpiops_intr.c
-* @addtogroup gpiops_v3_9
+* @addtogroup gpiops Overview
 * @{
 *
 * This file contains functions related to GPIO interrupt handling.
@@ -61,7 +62,6 @@
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 * @param	Mask is the bit mask of the pins for which interrupts are to
 *		be enabled. Bit positions of 1 will be enabled. Bit positions
 *		of 0 will keep the previous setting.
@@ -96,7 +96,6 @@ void XGpioPs_IntrEnable(const XGpioPs *InstancePtr, u8 Bank, u32 Mask)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Pin is the pin number for which the interrupt is to be enabled.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 *
 * @return	None.
 *
@@ -134,7 +133,6 @@ void XGpioPs_IntrEnablePin(const XGpioPs *InstancePtr, u32 Pin)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 * @param	Mask is the bit mask of the pins for which interrupts are
 *		to be disabled. Bit positions of 1 will be disabled. Bit
 *		positions of 0 will keep the previous setting.
@@ -169,7 +167,6 @@ void XGpioPs_IntrDisable(const XGpioPs *InstancePtr, u8 Bank, u32 Mask)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Pin is the pin number for which the interrupt is to be disabled.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 *
 * @return	None.
 *
@@ -206,7 +203,6 @@ void XGpioPs_IntrDisablePin(const XGpioPs *InstancePtr, u32 Pin)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 *
 * @return	Enabled interrupt(s) in a 32-bit format. Bit positions with 1
 *		indicate that the interrupt for that pin is enabled, bit
@@ -245,7 +241,6 @@ u32 XGpioPs_IntrGetEnabled(const XGpioPs *InstancePtr, u8 Bank)
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Pin is the pin number for which the interrupt enable status
 *		is to be known.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 *
 * @return
 *		- TRUE if the interrupt is enabled.
@@ -285,7 +280,6 @@ u32 XGpioPs_IntrGetEnabledPin(const XGpioPs *InstancePtr, u32 Pin)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 *
 * @return	The value read from Interrupt Status Register.
 *
@@ -318,7 +312,6 @@ u32 XGpioPs_IntrGetStatus(const XGpioPs *InstancePtr, u8 Bank)
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Pin is the pin number for which the interrupt enable status
 *		is to be known.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 *
 * @return
 *		- TRUE if the interrupt has occurred.
@@ -360,7 +353,6 @@ u32 XGpioPs_IntrGetStatusPin(const XGpioPs *InstancePtr, u32 Pin)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 * @param	Mask is the mask of the interrupts to be cleared. Bit positions
 *		of 1 will be cleared. Bit positions of 0 will not change the
 *		previous interrupt status.
@@ -395,7 +387,7 @@ void XGpioPs_IntrClear(const XGpioPs *InstancePtr, u8 Bank, u32 Mask)
 *
 * @param	InstancePtr is a pointer to the XGpioPs instance.
 * @param	Pin is the pin number for which the interrupt status is to be
-*		cleared. Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
+*		cleared.
 *
 * @note		None.
 *
@@ -436,7 +428,6 @@ void XGpioPs_IntrClearPin(const XGpioPs *InstancePtr, u32 Pin)
 *
 * @param	InstancePtr is a pointer to an XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 * @param	IntrType is the 32 bit mask of the interrupt type.
 *		0 means Level Sensitive and 1 means Edge Sensitive.
 * @param	IntrPolarity is the 32 bit mask of the interrupt polarity.
@@ -491,7 +482,6 @@ void XGpioPs_SetIntrType(const XGpioPs *InstancePtr, u8 Bank, u32 IntrType,
 *
 * @param	InstancePtr is a pointer to an XGpioPs instance.
 * @param	Bank is the bank number of the GPIO to operate on.
-*		Valid values are 0-3 in Zynq and 0-5 in Zynq Ultrascale+ MP.
 * @param	IntrType returns the 32 bit mask of the interrupt type.
 *		0 means Level Sensitive and 1 means Edge Sensitive.
 * @param	IntrPolarity returns the 32 bit mask of the interrupt
@@ -542,7 +532,6 @@ void XGpioPs_GetIntrType(const XGpioPs *InstancePtr, u8 Bank, u32 *IntrType,
 *
 * @param	InstancePtr is a pointer to an XGpioPs instance.
 * @param	Pin is the pin number whose IRQ type is to be set.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 * @param	IrqType is the IRQ type for GPIO Pin. Use XGPIOPS_IRQ_TYPE_*
 *		defined in xgpiops.h to specify the IRQ type.
 *
@@ -631,7 +620,6 @@ void XGpioPs_SetIntrTypePin(const XGpioPs *InstancePtr, u32 Pin, u8 IrqType)
 *
 * @param	InstancePtr is a pointer to an XGpioPs instance.
 * @param	Pin is the pin number whose IRQ type is to be obtained.
-*		Valid values are 0-117 in Zynq and 0-173 in Zynq Ultrascale+ MP.
 *
 * @return	None.
 *

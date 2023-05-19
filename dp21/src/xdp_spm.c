@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -100,7 +101,9 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	u32 VideoBw;
 	u32 LinkBw;
 	u32 WordsPerLine;
+	u8 LinkRate;
 	u8 BitsPerPixel;
+	u8 LaneCount;
 	XDp_TxMainStreamAttributes *MsaConfig;
 	XDp_TxLinkConfig *LinkConfig;
 
@@ -113,9 +116,13 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 
 	MsaConfig = &InstancePtr->TxInstance.MsaConfig[Stream - 1];
 	LinkConfig = &InstancePtr->TxInstance.LinkConfig;
+	LaneCount = (InstancePtr->TxInstance.MstEnable) ?
+		     XDP_TX_MAX_NUM_OF_USER_DATA_LANES : LinkConfig->LaneCount;
+
+	LinkRate = XDp_Tx_DecodeLinkBandwidth(InstancePtr);
 
 	/* Verify the rest of the values used. */
-	Xil_AssertVoid(XDp_IsLinkRateValid(InstancePtr, LinkConfig->LinkRate));
+	Xil_AssertVoid(XDp_IsLinkRateValid(InstancePtr, LinkRate));
 	Xil_AssertVoid(XDp_IsLaneCountValid(InstancePtr,
 				LinkConfig->LaneCount));
 	Xil_AssertVoid((MsaConfig->SynchronousClockMode == 0) ||
@@ -149,7 +156,7 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	}
 
 	/* Compute the rest of the MSA values. */
-	MsaConfig->NVid = 27 * 1000 * LinkConfig->LinkRate;
+	MsaConfig->NVid = 27 * 1000 * LinkRate;
 	MsaConfig->HStart = MsaConfig->Vtm.Timing.HSyncWidth +
 					MsaConfig->Vtm.Timing.HBackPorch;
 	MsaConfig->VStart = MsaConfig->Vtm.Timing.F0PVSyncWidth +
@@ -208,10 +215,10 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	}
 	WordsPerLine /= 16;
 
-	MsaConfig->DataPerLane = WordsPerLine - LinkConfig->LaneCount;
-	if ((WordsPerLine % LinkConfig->LaneCount) != 0) {
+	MsaConfig->DataPerLane = WordsPerLine - LaneCount;
+	if ((WordsPerLine % LaneCount) != 0) {
 		MsaConfig->DataPerLane +=
-					(WordsPerLine % LinkConfig->LaneCount);
+					(WordsPerLine % LaneCount);
 	}
 
 	if (InstancePtr->TxInstance.MstEnable == 1) {
@@ -224,14 +231,14 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	else {
 		/* Allocate a fixed size for single-stream transport (SST)
 		 * operation. */
-		MsaConfig->TransferUnitSize = 64;
+		MsaConfig->TransferUnitSize = XDP_TX_MAX_NUM_OF_TIMESLOTS;
 		MsaConfig->StartTs = 1;
 
 		/* Calculate the average number of bytes per transfer unit.
 		 * Note: Both the integer and the fractional part is stored in
 		 * AvgBytesPerTU. */
 		VideoBw = ((MsaConfig->PixelClockHz / 1000) * BitsPerPixel) / 8;
-		LinkBw = (LinkConfig->LaneCount * LinkConfig->LinkRate * 27);
+		LinkBw = (LinkConfig->LaneCount * LinkRate * 27);
 		MsaConfig->AvgBytesPerTU = (VideoBw *
 					MsaConfig->TransferUnitSize) / LinkBw;
 
@@ -242,7 +249,7 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 		MsaConfig->InitWait = MsaConfig->TransferUnitSize -
 				      MinBytesPerTu;
 		if (MinBytesPerTu <= 4) {
-			MsaConfig->InitWait = 64;
+			MsaConfig->InitWait = XDP_TX_MAX_NUM_OF_TIMESLOTS;
 		}
 		/* Y-only color component format. */
 		else if (XDP_TX_MAIN_STREAMX_MISC1_Y_ONLY_EN_MASK &
@@ -956,7 +963,7 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
                         (MsaConfig->AvgBytesPerTU % 1000));
         }
 	XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_TU_SIZE +
-			StreamOffset[Stream - 1], MsaConfig->TransferUnitSize);
+			StreamOffset[Stream - 1], XDP_TX_MAX_NUM_OF_TIMESLOTS);
 	XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MIN_BYTES_PER_TU +
 		StreamOffset[Stream - 1], MsaConfig->AvgBytesPerTU / 1000);
 	XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_FRAC_BYTES_PER_TU +
@@ -1414,14 +1421,14 @@ double XDp_TxGetPBN_Values(XDp *InstancePtr)
 	XDp_TxLinkConfig *LinkConfig = &InstancePtr->TxInstance.LinkConfig;
 	double Dp2xLinkBW;
 
-	if (LinkConfig->LinkRate == XDP_TX_LINK_BW_SET_UHBR10) {
+	if (LinkConfig->LinkRate == XDP_TX_LINK_BW_SET_SW_UHBR10) {
 		if (LinkConfig->LaneCount == XDP_DPCD_LANE_COUNT_SET_1)
 			Dp2xLinkBW = 1208.9;
 		else if (LinkConfig->LaneCount == XDP_DPCD_LANE_COUNT_SET_2)
 			Dp2xLinkBW = 2417.8;
 		else
 			Dp2xLinkBW = 4835.5;
-	} else if (LinkConfig->LinkRate == XDP_TX_LINK_BW_SET_UHBR20) {
+	} else if (LinkConfig->LinkRate == XDP_TX_LINK_BW_SET_SW_UHBR20) {
 		if (LinkConfig->LaneCount == XDP_DPCD_LANE_COUNT_SET_1)
 			Dp2xLinkBW = 2417.8;
 		else if (LinkConfig->LaneCount == XDP_DPCD_LANE_COUNT_SET_2)
@@ -1471,10 +1478,12 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 	double TsFrac;
 	double pbn;
 	double Dp2xLinkBW;
+	u8 LinkRate;
 
 	PeakPixelBw = ((double)MsaConfig->PixelClockHz / 1000000) *
 						((double)BitsPerPixel / 8);
-	LinkBw = (LinkConfig->LaneCount * LinkConfig->LinkRate * 27);
+	LinkRate = XDp_Tx_DecodeLinkBandwidth(InstancePtr);
+	LinkBw = (LinkConfig->LaneCount * LinkRate * 27);
 
 	/*PBN Value Calculation by a Source Device Payload Bandwidth Manager,
 	 * The PBN value has the unit of 54/64MBps.
@@ -1524,7 +1533,7 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 	Target_Average_StreamSymbolTimeSlotsPerMTP =
 				(u32)Average_StreamSymbolTimeSlotsPerMTP;
 	/* Find the greatest multiple that is less than the maximum. */
-	Target_Average_StreamSymbolTimeSlotsPerMTP += ((1.0 / 8.0) * (u32)(8.0 *
+	Target_Average_StreamSymbolTimeSlotsPerMTP += ((1.0 / 8.0) * (8.0 *
 			(MaximumTarget_Average_StreamSymbolTimeSlotsPerMTP -
 			Target_Average_StreamSymbolTimeSlotsPerMTP)));
 
@@ -1532,14 +1541,10 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 	 * slots that will be allocated for the stream. */
 
 	TsInt = Target_Average_StreamSymbolTimeSlotsPerMTP;
-	TsFrac = (((double)(Target_Average_StreamSymbolTimeSlotsPerMTP * 1000)) -
-								(TsInt * 1000));
-
-	/* Store TsInt and TsFrac in AvgBytesPerTU. */
-	MsaConfig->AvgBytesPerTU = TsInt * 1000 + TsFrac;
-
 	/* Set the number of time slots to allocate for this stream. */
 	MsaConfig->TransferUnitSize = TsInt;
+	TsFrac = (((double)(Target_Average_StreamSymbolTimeSlotsPerMTP * 1000)) -
+								(TsInt * 1000));
 	if (TsFrac != 0) {
 		/* Round up. */
 		MsaConfig->TransferUnitSize++;
@@ -1555,6 +1560,9 @@ static void XDp_TxCalculateTs(XDp *InstancePtr, u8 Stream, u8 BitsPerPixel)
 			MsaConfig->TransferUnitSize++;
 		}
 	}
+	/* Store TsInt and TsFrac in AvgBytesPerTU. */
+	MsaConfig->AvgBytesPerTU = TsInt * 1000 + TsFrac;
+
 }
 
 /******************************************************************************/

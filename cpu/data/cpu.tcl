@@ -1,5 +1,6 @@
 ###############################################################################
 # Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 #
 ##############################################################################
@@ -65,6 +66,10 @@
 ##                     platform. Fix for CR#1116189
 ## 2.16  bm   02/21/21 Add support for psxl_pmc and psxl_psm processors in
 ##                     versal_net devices
+## 2.17  adk  30/09/22 Updated tcl to copy proper libraries when fpu is enabled
+##		       (C_USE_FPU > 0) and when processor is configured with
+##		       MUL64 support(C_USE_HW_MUL = 2).
+##      bm    01/25/22 Update mcpu version of versal_net microblaze to v11
 # uses xillib.tcl
 
 ########################################
@@ -217,6 +222,9 @@ proc generate {drv_handle} {
 	} elseif {[string compare -nocase "1" $multiply] == 0 } {
 	    set multiplier "_m"
             set libxil_multiplier "m"
+	} elseif {[string compare -nocase "2" $multiply] == 0 } {
+	    set multiplier "_m"
+            set libxil_multiplier "m"
 	}
 
         set data_size [common::get_property CONFIG.C_DATA_SIZE $periph]
@@ -260,10 +268,10 @@ proc generate {drv_handle} {
         set libm "libm.a"
 
         #construct lib path
-        set libc_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libc]
-        set libm_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libm]
-        set libxil_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libxil]
-        set libgcc_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier]
+        set libc_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libxil_fpu $libc]
+        set libm_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libxil_fpu $libm]
+        set libxil_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libxil_fpu $libxil]
+        set libgcc_path [file join $library_new_dir $libxil_endian $libxil_m64 $libxil_shifter $libxil_pattern $libxil_multiplier $libxil_fpu]
         file copy -force $libxil_path $libxilfilename
         make_writable $osname $libxilfilename
         if { [string compare -nocase "1" $little_endian] == 0 } {
@@ -303,8 +311,8 @@ proc generate {drv_handle} {
            set libxil_path [file join $library_dir $libxil_shifter $libxil_multiplier $libxil_endian $libxil]
            set libgcc_path [file join $libgcc_dir $libxil_shifter $libxil_multiplier $libxil_endian $libgcc]
         } else {
-           set libxil_path [file join $library_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libxil]
-           set libgcc_path [file join $libgcc_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libgcc]
+           set libxil_path [file join $library_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libxil_fpu $libxil]
+           set libgcc_path [file join $libgcc_dir $flag_m64 $libxil_shifter $libxil_endian $libxil_multiplier $libxil_fpu $libgcc]
         }
         set symlink [file type $libxil_path]
         if { ![file exists $libxil_path] || $symlink == "link"} {
@@ -444,8 +452,10 @@ proc generate {drv_handle} {
 	}
     }
 
-    if {[string compare "psu_pmc" $proctype] == 0 || [string compare "psv_pmc" $proctype] == 0 || [string compare "psxl_pmc" $proctype] == 0 || [string compare "psx_pmc" $proctype] == 0} {
+    if {[string compare "psu_pmc" $proctype] == 0 || [string compare "psv_pmc" $proctype] == 0} {
         append compiler_flags " -mcpu=v10.0"
+    } elseif {[string compare "psxl_pmc" $proctype] == 0 || [string compare "psx_pmc" $proctype] == 0} {
+        append compiler_flags " -mcpu=v11.0"
     } else {
         append compiler_flags " -mcpu=v" $cpu_version
     }

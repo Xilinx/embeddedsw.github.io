@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,6 +20,8 @@
 * 1.1   dc     07/21/21 Add and reorganise examples
 * 1.2   dc     11/01/21 Add multi AddCC, RemoveCC and UpdateCC
 *       dc     11/05/21 Align event handlers
+* 1.5   dc     09/12/22 Update handling overflow status
+*       dc     10/28/22 Switching Uplink/Downlink support
 *
 * </pre>
 *
@@ -100,6 +103,7 @@ int XDfeCcf_PassThroughExample()
 	/* Initialise */
 	Init.GainStage = 1;
 	Init.Sequence.Length = 16;
+	Init.TuserSelect = XDFECCF_TUSER_SEL_DOWNLINK;
 	XDfeCcf_Initialize(InstancePtr, &Init);
 
 	/* Set trigger */
@@ -114,7 +118,7 @@ int XDfeCcf_PassThroughExample()
 	/* Activate - disable low power */
 	XDfeCcf_Activate(InstancePtr, false);
 
-	/* Set coefficents */
+	/* Set coefficients */
 	Shift = 5;
 	Coeffs.Num = 7U;
 	Coeffs.Symmetric = 1U;
@@ -123,7 +127,7 @@ int XDfeCcf_PassThroughExample()
 	XDfeCcf_LoadCoefficients(InstancePtr, 1, Shift, &Coeffs);
 
 	/* Clear event status */
-	Status.OverflowCCID = XDFECCF_ISR_CLEAR;
+	Status.Overflow = XDFECCF_ISR_CLEAR;
 	Status.CCUpdate = XDFECCF_ISR_CLEAR;
 	Status.CCSequenceError = XDFECCF_ISR_CLEAR;
 	XDfeCcf_ClearEventStatus(InstancePtr, &Status);

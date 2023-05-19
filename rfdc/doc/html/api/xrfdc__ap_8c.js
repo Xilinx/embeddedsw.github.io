@@ -6,6 +6,7 @@ var xrfdc__ap_8c =
     [ "XRFdc_GetCalFreeze", "xrfdc__ap_8c.html#gae6e2aadc0f82e6a454d06e5e324974e5", null ],
     [ "XRFdc_GetCalibrationMode", "xrfdc__ap_8c.html#gaab11b20e3aadaf71a627350a447e6f98", null ],
     [ "XRFdc_GetCoarseDelaySettings", "xrfdc__ap_8c.html#ga4d2d3b2f00ceb30d72b3ab1ece00be82", null ],
+    [ "XRFdc_GetCoupling", "xrfdc__ap_8c.html#ga8088952096ccd13370fb1cfc2b6cf87a", null ],
     [ "XRFdc_GetDACCompMode", "xrfdc__ap_8c.html#gac1180594017f7487eb745ff32c1948de", null ],
     [ "XRFdc_GetDACDataScaler", "xrfdc__ap_8c.html#ga262e01795db999740a717d1392f9a458", null ],
     [ "XRFdc_GetDecoderMode", "xrfdc__ap_8c.html#ga4500f06757536e8ffb71de32e7df9b9c", null ],

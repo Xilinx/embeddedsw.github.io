@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">sysmonpsv
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -5183,12 +5183,12 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The user needs to first call the <a class="el" href="group__sysmonpsv__v2__3.html#ga00b971717cc516fac2e07b91bedfcd4b" title="This function looks for the device configuration based on the unique device ID. ">XSysMonPsv_LookupConfig()</a> API which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="group___overview.html#ga6aec1b9759a733a3efa72ccc9a872006" title="This function initializes XSysMonPsv device/instance. ">XSysMonPsv_CfgInitialize()</a> API. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psv___config.html#a633d0f7cb706ecb1a0b17aa229b49298">XSysMonPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv.html#afc8dbd1c93e2f311970d45e465c66770">XSysMonPsv::IsReady</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="xsysmonpsv__driver_8h.html#a16eec4745af4af2aaee82607ad4ba2e3">XSYSMONPSV_MAX_SUPPLIES</a>, and <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psv___config.html#a633d0f7cb706ecb1a0b17aa229b49298">XSysMonPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv.html#afc8dbd1c93e2f311970d45e465c66770">XSysMonPsv::IsReady</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, and <a class="el" href="xsysmonpsv__driver_8h.html#a16eec4745af4af2aaee82607ad4ba2e3">XSYSMONPSV_MAX_SUPPLIES</a>.</p>
 
 </div>
 </div>
@@ -5270,13 +5270,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86a71cd3a59169306ff3485c45e7b1d9efa">XSYSMONPSV_EV_DIR_FALLING</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86a71cd3a59169306ff3485c45e7b1d9efa">XSYSMONPSV_EV_DIR_FALLING</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -5321,13 +5321,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86ae4d5137bc186658234bb91118e87637c">XSYSMONPSV_EV_DIR_RISING</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86ae4d5137bc186658234bb91118e87637c">XSYSMONPSV_EV_DIR_RISING</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -5372,13 +5372,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>.</p>
+<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -5423,13 +5423,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>.</p>
+<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -5862,7 +5862,7 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Temperature value requested XSYSMONPSV_EINVAL if invalid value requested</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Temperature value requested XSYSMONPSV_INVALID if invalid value requested</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>XSYSMONPSV_VAL_VREF_MIN and XSYSMONPSV_VAL_VREF_MAX are only supported for ES1 silicon to get min and max temperature values. XSYSMONPSV_VAL_VREF_MIN and XSYSMONPSV_VAL_VREF_MAX are not supported on production silicon. Use XSYSMONPSV_VAL to get the current temperature value on production silicon. XSYSMONPSV_VAL is not supported on ES1 silicon. </dd></dl>
 
 <p>References <a class="el" href="group___overview.html#ga03224481cdc9d26f1e2e6bf50b2b719e">XSYSMONPSV_DEVICE_TEMP</a>, <a class="el" href="group___overview.html#gaf0370703ede011a34abca3fe003a9fd3">XSYSMONPSV_DEVICE_TEMP_MAX</a>, <a class="el" href="group___overview.html#gace21addbb92c3b2f249745f6fbfe6c02">XSYSMONPSV_DEVICE_TEMP_MIN</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv_8h.html#aa1e85ec17384eefd9610c431f3fa2505a56a91826917510fcc752511fdd4b52b8">XSYSMONPSV_VAL</a>, <a class="el" href="xsysmonpsv_8h.html#aa1e85ec17384eefd9610c431f3fa2505acb23f67288c8437be6cb93270f826722">XSYSMONPSV_VAL_MAX</a>, <a class="el" href="xsysmonpsv_8h.html#aa1e85ec17384eefd9610c431f3fa2505a1bfbb3f9141e8cceba6b562c4cfd7156">XSYSMONPSV_VAL_MIN</a>, <a class="el" href="xsysmonpsv_8h.html#aa1e85ec17384eefd9610c431f3fa2505a6e437e7da0fd20cee019bda131c97b8a">XSYSMONPSV_VAL_VREF_MAX</a>, and <a class="el" href="xsysmonpsv_8h.html#aa1e85ec17384eefd9610c431f3fa2505a57998cc0e9c0fd1158e979bc97b3e249">XSYSMONPSV_VAL_VREF_MIN</a>.</p>
@@ -5986,13 +5986,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="xsysmonpsv__common_8c.html#a6198b0ca31176e635868334bd2ccaba2">XSysMonPsv_SupplyOffset()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#aca75f045ad9bd684a8604c4b00934acd">XSysMonPsv_SupplyRawToProcessed()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8c.html#a6198b0ca31176e635868334bd2ccaba2">XSysMonPsv_SupplyOffset()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#aca75f045ad9bd684a8604c4b00934acd">XSysMonPsv_SupplyRawToProcessed()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>, and <a class="el" href="xsysmonpsv__polled__example_8c.html#a2a85002146b9f72b8f0f12efaa00d802">SysMonPsvPolledExample()</a>.</p>
 
@@ -6037,13 +6037,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6198b0ca31176e635868334bd2ccaba2">XSysMonPsv_SupplyOffset()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6198b0ca31176e635868334bd2ccaba2">XSysMonPsv_SupplyOffset()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -6180,13 +6180,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8c.html#adbec82431fdcf7cbea444f04bc165417">XSysMonPsv_Q8P7ToCelsius()</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6a12e8784552b16f6284da99b9ebf222">XSysMonPsv_TempOffset()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8c.html#adbec82431fdcf7cbea444f04bc165417">XSysMonPsv_Q8P7ToCelsius()</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6a12e8784552b16f6284da99b9ebf222">XSysMonPsv_TempOffset()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>, and <a class="el" href="xsysmonpsv__polled__example_8c.html#a2a85002146b9f72b8f0f12efaa00d802">SysMonPsvPolledExample()</a>.</p>
 
@@ -6231,13 +6231,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8c.html#adbec82431fdcf7cbea444f04bc165417">XSysMonPsv_Q8P7ToCelsius()</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="group___overview.html#ga3fc72c1647c5cb582c99f645ecc20766">XSYSMONPSV_TEMP_SAT</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8c.html#adbec82431fdcf7cbea444f04bc165417">XSysMonPsv_Q8P7ToCelsius()</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="group___overview.html#ga3fc72c1647c5cb582c99f645ecc20766">XSYSMONPSV_TEMP_SAT</a>.</p>
 
 </div>
 </div>
@@ -6280,13 +6280,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6a12e8784552b16f6284da99b9ebf222">XSysMonPsv_TempOffset()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__common_8c.html#a6a12e8784552b16f6284da99b9ebf222">XSysMonPsv_TempOffset()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -6331,13 +6331,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="group___overview.html#ga3fc72c1647c5cb582c99f645ecc20766">XSYSMONPSV_TEMP_SAT</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="group___overview.html#ga3fc72c1647c5cb582c99f645ecc20766">XSYSMONPSV_TEMP_SAT</a>.</p>
 
 </div>
 </div>
@@ -6419,10 +6419,10 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XSYSMONPSV_SUCCESS if successful XSYSMONPSV_INVALID if invalid SupplyValue</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful XSYSMONPSV_INVALID if invalid SupplyValue</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9113de15440d133d50790fe91a6d45c0">XSYSMONPSV_ALARM_REG0</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9113de15440d133d50790fe91a6d45c0">XSYSMONPSV_ALARM_REG0</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 </div>
 </div>
@@ -6681,10 +6681,10 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XSYSMONPSV_INVALID if the Supply hasn't been configured XSYSMONPSV_SUCCESS otherwise</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>XSYSMONPSV_INVALID if the Supply hasn't been configured XST_SUCCESS otherwise</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="group___overview.html#gaa118f452e9166fa0d8862b396311462f">XSYSMONPSV_SUPPLY_TH_LOWER</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="group___overview.html#gaa118f452e9166fa0d8862b396311462f">XSYSMONPSV_SUPPLY_TH_LOWER</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 </div>
 </div>
@@ -6727,13 +6727,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86a71cd3a59169306ff3485c45e7b1d9efa">XSYSMONPSV_EV_DIR_FALLING</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86a71cd3a59169306ff3485c45e7b1d9efa">XSYSMONPSV_EV_DIR_FALLING</a>, <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -6778,13 +6778,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful.</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86ae4d5137bc186658234bb91118e87637c">XSYSMONPSV_EV_DIR_RISING</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86ae4d5137bc186658234bb91118e87637c">XSYSMONPSV_EV_DIR_RISING</a>, <a class="el" href="xsysmonpsv__common_8c.html#adde53ad4ac2dfe9a1bdc4a62bb7dd1a2">XSysMonPsv_SupplyThreshOffset()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -6829,10 +6829,10 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XSYSMONPSV_INVALID if the Supply hasn't been configured XSYSMONPSV_SUCCESS otherwise</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>XSYSMONPSV_INVALID if the Supply hasn't been configured XST_SUCCESS otherwise</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="group___overview.html#ga7ee33c6423739a515a684980176551e0">XSYSMONPSV_SUPPLY_TH_UPPER</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="group___overview.html#ga7ee33c6423739a515a684980176551e0">XSYSMONPSV_SUPPLY_TH_UPPER</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 </div>
 </div>
@@ -6916,13 +6916,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -6967,13 +6967,13 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>- -XSYSMONPSV_EINVAL if error<ul>
-<li>XSYSMONPSV_SUCCESS if successful..</li>
+<dl class="section return"><dt>Returns</dt><dd>- -XST_FAILURE if error<ul>
+<li>XST_SUCCESS if successful..</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#ae55e6e3bfd147e15ee637d33cafd4277">XSYSMONPSV_EINVAL</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#af7567f02857d4c2df0f36355918628f2">XSYSMONPSV_SUCCESS</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+<p>References <a class="el" href="group___overview.html#gaac05d015664e75023a8e6109b2cdc44a">XSYSMONPSV_DEVICE_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91bea311033c65e024c7db57d9f2acecd1c3e">XSYSMONPSV_OT_EVENT</a>, <a class="el" href="group___overview.html#ga500d95cba9f8ed4024ce1a243c7581dd">XSYSMONPSV_OT_TEMP_TH</a>, <a class="el" href="xsysmonpsv__common_8h.html#a121b9e0621d3f6c2a9b70e2081bb91beab55778d23fd3e17972e5f218cea9a7e8">XSYSMONPSV_TEMP_EVENT</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsv__intr__example_8c.html#a08f29d1a3ede32c28ff1b454b3b68a28">SysMonPsvIntrExample()</a>.</p>
 
@@ -7056,9 +7056,8 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

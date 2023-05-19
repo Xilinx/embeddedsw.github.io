@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2007 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xio.h
-* @addtogroup cpu_v2_15
+* @addtogroup cpu_v2_17
 * @{
 * @details
 *
@@ -47,6 +48,9 @@
 *                     to memset conversions. It fixes CR#1090083.
 * 2.14  mus  08/23/21 Removed fsl.h, it is duplicate of standalone/src/microblaze/fsl.h.
 *                     It fixes CR#1108558.
+* 2.17  adk  30/09/22 Updated tcl to copy proper libraries when fpu is enabled
+*		      (C_USE_FPU > 0) and when processor is configured with
+*		      MUL64 support(C_USE_HW_MUL = 2).
 *
 * </pre>
 *

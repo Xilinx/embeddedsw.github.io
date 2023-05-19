@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -86,8 +86,13 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a5b2016a2954bac4e922af9d1939d7215"><td class="mdescLeft">&#160;</td><td class="mdescRight">StateId.  <a href="#a5b2016a2954bac4e922af9d1939d7215">More...</a><br/></td></tr>
 <tr class="separator:a5b2016a2954bac4e922af9d1939d7215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d583eebea2812c3d98f5de53dcbc940"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">NotUsedCCID</a></td></tr>
-<tr class="memdesc:a7d583eebea2812c3d98f5de53dcbc940"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lowest CCID number not allocated.  <a href="#a7d583eebea2812c3d98f5de53dcbc940">More...</a><br/></td></tr>
+<tr class="memdesc:a7d583eebea2812c3d98f5de53dcbc940"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">          Lowest CCID number not allocated, in
+</pre><p> non-switchable mode, also for DL in switchable mode  <a href="#a7d583eebea2812c3d98f5de53dcbc940">More...</a><br/></td></tr>
 <tr class="separator:a7d583eebea2812c3d98f5de53dcbc940"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a854b6f09f9d327bffe80905bc7b73ce0"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix.html#a854b6f09f9d327bffe80905bc7b73ce0">NotUsedCCID_UL</a></td></tr>
+<tr class="memdesc:a854b6f09f9d327bffe80905bc7b73ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">             Lowest CCID number not allocated for UL in
+</pre><p> switchable mode  <a href="#a854b6f09f9d327bffe80905bc7b73ce0">More...</a><br/></td></tr>
+<tr class="separator:a854b6f09f9d327bffe80905bc7b73ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a949baeb8c68db2aa82e27b708b3fe92e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix.html#a949baeb8c68db2aa82e27b708b3fe92e">SequenceLength</a></td></tr>
 <tr class="memdesc:a949baeb8c68db2aa82e27b708b3fe92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exact sequence length.  <a href="#a949baeb8c68db2aa82e27b708b3fe92e">More...</a><br/></td></tr>
 <tr class="separator:a949baeb8c68db2aa82e27b708b3fe92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,7 +121,7 @@ Data Fields</h2></td></tr>
 
 <p>Config Structure. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, and <a class="el" href="group__dfemix.html#ga027813492d6c87efa040e37dcc6cd777">XDfeMix_SetNextCCCfgAndTrigger()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#gafe3362f64442004a66fe7d081d7cb556">XDfeMix_GetCurrentCCCfgSwitchable()</a>, <a class="el" href="group__dfemix.html#gace396f6630605798c654ddbff69c75ba">XDfeMix_GetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, <a class="el" href="group__dfemix.html#gae0a135411942e1b9a7c8b0f564b8fee9">XDfeMix_SetAntennaGain()</a>, <a class="el" href="group__dfemix.html#ga97dede152c6db53539bb7e3d1f0b9ca9">XDfeMix_SetNextCCCfgAndTriggerSwitchable()</a>, <a class="el" href="group__dfemix.html#ga5a9e206d3191e92986737d8e2b0b8625">XDfeMix_SetTriggersCfg()</a>, and <a class="el" href="group__dfemix.html#gaae9fc185dcc63dc0256b5e7ec802764b">XDfeMix_UpdateAntennaCfg()</a>.</p>
 
 </div>
 </div>
@@ -176,9 +181,27 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Lowest CCID number not allocated. </p>
+<p><pre class="fragment">          Lowest CCID number not allocated, in
+</pre><p> non-switchable mode, also for DL in switchable mode </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, and <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#gafe3362f64442004a66fe7d081d7cb556">XDfeMix_GetCurrentCCCfgSwitchable()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, <a class="el" href="group__dfemix.html#gae90385e9162730111e9f19d29c18e68a">XDfeMix_RemoveCC()</a>, <a class="el" href="group__dfemix.html#ga3fc0d6657fbed9b7f1baf1552c6ae316">XDfeMix_SetNextCCCfgAndTrigger()</a>, <a class="el" href="group__dfemix.html#ga97dede152c6db53539bb7e3d1f0b9ca9">XDfeMix_SetNextCCCfgAndTriggerSwitchable()</a>, and <a class="el" href="group__dfemix.html#ga5a3170046f6a8e1669f14053119569a2">XDfeMix_UpdateCC()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a854b6f09f9d327bffe80905bc7b73ce0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XDfeMix::NotUsedCCID_UL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><pre class="fragment">             Lowest CCID number not allocated for UL in
+</pre><p> switchable mode </p>
+
+<p>Referenced by <a class="el" href="group__dfemix.html#gafe3362f64442004a66fe7d081d7cb556">XDfeMix_GetCurrentCCCfgSwitchable()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, and <a class="el" href="group__dfemix.html#ga97dede152c6db53539bb7e3d1f0b9ca9">XDfeMix_SetNextCCCfgAndTriggerSwitchable()</a>.</p>
 
 </div>
 </div>
@@ -194,7 +217,7 @@ Data Fields</h2></td></tr>
 
 <p>Exact sequence length. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#gad22be272891dfb491c35e4ee7d6f543b">XDfeMix_GetEmptyCCCfg()</a>, and <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#gad22be272891dfb491c35e4ee7d6f543b">XDfeMix_GetEmptyCCCfg()</a>, and <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>.</p>
 
 </div>
 </div>
@@ -210,16 +233,15 @@ Data Fields</h2></td></tr>
 
 <p>StateId. </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#gaaac29dcfbeab7cd0e78192083e83db52">XDfeMix_GetDUCDDCStatus()</a>, <a class="el" href="group__dfemix.html#ga88d1ef6d743401342ea5a04b08e976dd">XDfeMix_GetMixerStatus()</a>, <a class="el" href="group__dfemix.html#ga530ee11233ef87c8932545e5b5902c15">XDfeMix_GetStateID()</a>, <a class="el" href="group__dfemix.html#gace396f6630605798c654ddbff69c75ba">XDfeMix_GetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga499409b4675bb141d962a2c15ad3dc61">XDfeMix_GetVersions()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga01627e33029344d87e1dce02269309d2">XDfeMix_InstanceClose()</a>, <a class="el" href="group__dfemix.html#ga1e844159630d803dcc724e998b3d560d">XDfeMix_InstanceInit()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, <a class="el" href="group__dfemix.html#gae90385e9162730111e9f19d29c18e68a">XDfeMix_RemoveCC()</a>, <a class="el" href="group__dfemix.html#ga8d63f4fc15bb4344b6fb33d382468c35">XDfeMix_Reset()</a>, <a class="el" href="group__dfemix.html#ga5a9e206d3191e92986737d8e2b0b8625">XDfeMix_SetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga92d9bb5aef65adb32b1d27a650d218ff">XDfeMix_SetTUserDelay()</a>, and <a class="el" href="group__dfemix.html#gad218c037a2da132f77b19abd326edbbd">XDfeMix_UpdateCC()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#ga33030e76902b46e8b159da6410e037f4">XDfeMix_GetDUCDDCStatus()</a>, <a class="el" href="group__dfemix.html#ga234e33372e58ae0665ae2988a73a5b3c">XDfeMix_GetMixerStatus()</a>, <a class="el" href="group__dfemix.html#ga530ee11233ef87c8932545e5b5902c15">XDfeMix_GetStateID()</a>, <a class="el" href="group__dfemix.html#gace396f6630605798c654ddbff69c75ba">XDfeMix_GetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga499409b4675bb141d962a2c15ad3dc61">XDfeMix_GetVersions()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#ga01627e33029344d87e1dce02269309d2">XDfeMix_InstanceClose()</a>, <a class="el" href="group__dfemix.html#ga1e844159630d803dcc724e998b3d560d">XDfeMix_InstanceInit()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, <a class="el" href="group__dfemix.html#gae90385e9162730111e9f19d29c18e68a">XDfeMix_RemoveCC()</a>, <a class="el" href="group__dfemix.html#ga8d63f4fc15bb4344b6fb33d382468c35">XDfeMix_Reset()</a>, <a class="el" href="group__dfemix.html#ga5a9e206d3191e92986737d8e2b0b8625">XDfeMix_SetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga92d9bb5aef65adb32b1d27a650d218ff">XDfeMix_SetTUserDelay()</a>, and <a class="el" href="group__dfemix.html#ga5a3170046f6a8e1669f14053119569a2">XDfeMix_UpdateCC()</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

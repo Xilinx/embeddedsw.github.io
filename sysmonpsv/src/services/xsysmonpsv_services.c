@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -22,7 +23,8 @@
 * 3.0   cog    03/25/21 Driver Restructure
 * 3.1   cog    04/09/22 Remove GIC standalone related functionality for
 *                       arch64 architecture
-*
+* 4.0   se     10/04/22 Update return value definitions
+*		se	   11/10/22 Secure and Non-Secure mode integration
 * </pre>
 *
 ******************************************************************************/
@@ -32,6 +34,7 @@
 #include "xsysmonpsv_common.h"
 #include "xsysmonpsv_services.h"
 #include "xsysmonpsv_hw.h"
+#include "xstatus.h"
 
 /******************************************************************************/
 /**
@@ -41,8 +44,8 @@
  * @param	Supply is an enum from the XSysMonPsv_Supply.
   * @param	IntrNum is interrupt Offset.
  *
- * @return	- -XSYSMONPSV_EINVAL if error.
- *		- XSYSMONPSV_SUCCESS if successful.
+ * @return	- -XST_FAILURE if error.
+ *			- XST_SUCCESS if successful.
  *
 *******************************************************************************/
 int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
@@ -53,7 +56,7 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
 	u32 SupplyReg, Ier;
 
 	if (InstancePtr == NULL) {
-		return -XSYSMONPSV_EINVAL;
+		return -XST_FAILURE;
 	}
 
 	SupplyReg = InstancePtr->Config.Supply_List[Supply];
@@ -67,7 +70,7 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
 	XSysMonPsv_InterruptEnable(InstancePtr, Ier, IntrNum);
 	XSysMonPsv_WriteReg32(InstancePtr, AlarmRegOffset, Val);
 
-	return XSYSMONPSV_SUCCESS;
+	return XST_SUCCESS;
 }
 
 /******************************************************************************/
@@ -77,8 +80,8 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
  * @param	InstancePtr is a pointer to the driver instance.
  * @param	Supply is an enum from the XSysMonPsv_Supply.
  *
- * @return	- -XSYSMONPSV_EINVAL if error
- *		- XSYSMONPSV_SUCCESS if successful.
+ * @return	- -XST_FAILURE if error
+ *			- XST_SUCCESS if successful.
  *
 *******************************************************************************/
 int XSysMonPsv_DisableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply)
@@ -88,7 +91,7 @@ int XSysMonPsv_DisableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply)
 	u32 SupplyReg;
 
 	if (InstancePtr == NULL) {
-		return -XSYSMONPSV_EINVAL;
+		return -XST_FAILURE;
 	}
 
 	SupplyReg = InstancePtr->Config.Supply_List[Supply];
@@ -101,7 +104,7 @@ int XSysMonPsv_DisableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply)
 
 	XSysMonPsv_WriteReg32(InstancePtr, AlarmRegOffset, Val);
 
-	return XSYSMONPSV_SUCCESS;
+	return XST_SUCCESS;
 }
 
 #if defined (ARMR5) || defined (__aarch64__)
@@ -338,7 +341,8 @@ void XSysMonPsv_IntrHandler(XSysMonPsv *InstancePtr)
 * @param	InstancePtr is a pointer to the driver instance.
 * @param	IntrId is Interrupt unique ID.
 *
-* @return	None.
+* @return	- XST_FAILURE if error
+*			- XST_SUCCESS if successful.
 *
 ***************************************************************************/
 int XSysMonPsv_SetupInterrupts(XScuGic *IntcInstancePtr,
@@ -350,13 +354,13 @@ int XSysMonPsv_SetupInterrupts(XScuGic *IntcInstancePtr,
 	/* Initialize the interrupt controller driver */
 	IntcConfig = XScuGic_LookupConfig(0);
 	if (NULL == IntcConfig) {
-		return XSYSMONPSV_EINVAL;
+		return XST_FAILURE;
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
 				       IntcConfig->CpuBaseAddress);
-	if (Status != XSYSMONPSV_SUCCESS) {
-		return XSYSMONPSV_EINVAL;
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
 	}
 
 	/*
@@ -377,8 +381,8 @@ int XSysMonPsv_SetupInterrupts(XScuGic *IntcInstancePtr,
 				 (Xil_ExceptionHandler)XSysMonPsv_IntrHandler,
 				 (void *)InstancePtr);
 
-	if (Status != XSYSMONPSV_SUCCESS) {
-		return XSYSMONPSV_EINVAL;
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
 	}
 
 	/* Enable the interrupt for the device */
@@ -389,6 +393,6 @@ int XSysMonPsv_SetupInterrupts(XScuGic *IntcInstancePtr,
 	 */
 	Xil_ExceptionEnable();
 
-	return XSYSMONPSV_SUCCESS;
+	return XST_SUCCESS;
 }
 #endif

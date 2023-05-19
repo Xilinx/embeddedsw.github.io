@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -86,7 +86,7 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a8a17cec5166756669f156516d9a84dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device base address.  <a href="#a8a17cec5166756669f156516d9a84dd0">More...</a><br/></td></tr>
 <tr class="separator:a8a17cec5166756669f156516d9a84dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91d1290d298a08c340450429e9f4ffda"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___config.html#a91d1290d298a08c340450429e9f4ffda">Mode</a></td></tr>
-<tr class="memdesc:a91d1290d298a08c340450429e9f4ffda"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] 0=downlink, 1=uplink  <a href="#a91d1290d298a08c340450429e9f4ffda">More...</a><br/></td></tr>
+<tr class="memdesc:a91d1290d298a08c340450429e9f4ffda"><td class="mdescLeft">&#160;</td><td class="mdescRight">[0,1] 0=downlink, 1=uplink, 2=switchable  <a href="#a91d1290d298a08c340450429e9f4ffda">More...</a><br/></td></tr>
 <tr class="separator:a91d1290d298a08c340450429e9f4ffda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1c39264f19ac3afd6ef4b9e166095d4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dfe_mix___config.html#ab1c39264f19ac3afd6ef4b9e166095d4">NumAntenna</a></td></tr>
 <tr class="memdesc:ab1c39264f19ac3afd6ef4b9e166095d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">[1,2,4,8]  <a href="#ab1c39264f19ac3afd6ef4b9e166095d4">More...</a><br/></td></tr>
@@ -227,7 +227,7 @@ Data Fields</h2></td></tr>
 
 <p>[2,4,8] </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#ga85f60b156f5de8fd8b2ef6b182966d70">XDfeMix_AddCC()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, and <a class="el" href="group__dfemix.html#ga027813492d6c87efa040e37dcc6cd777">XDfeMix_SetNextCCCfgAndTrigger()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga75ed6eb3b9b4e21b150473f09f8f0283">XDfeMix_MoveCC()</a>, and <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>.</p>
 
 </div>
 </div>
@@ -257,9 +257,9 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>[0,1] 0=downlink, 1=uplink </p>
+<p>[0,1] 0=downlink, 1=uplink, 2=switchable </p>
 
-<p>Referenced by <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfemix.html#gac304b90aa0961397e33041aaf9ea7af4">XDfeMix_Activate()</a>, <a class="el" href="group__dfemix.html#gaa2cf38486d8a775970d6fa1c77c0f4a7">XDfeMix_Configure()</a>, <a class="el" href="group__dfemix.html#ga039c8a5929a26a9af72ef137817c6767">XDfeMix_Deactivate()</a>, <a class="el" href="group__dfemix.html#gafe3362f64442004a66fe7d081d7cb556">XDfeMix_GetCurrentCCCfgSwitchable()</a>, <a class="el" href="group__dfemix.html#gace396f6630605798c654ddbff69c75ba">XDfeMix_GetTriggersCfg()</a>, <a class="el" href="group__dfemix.html#ga789426bf0d0065ad899ef44cab1d1a45">XDfeMix_Initialize()</a>, <a class="el" href="group__dfemix.html#gae0a135411942e1b9a7c8b0f564b8fee9">XDfeMix_SetAntennaGain()</a>, <a class="el" href="group__dfemix.html#ga97dede152c6db53539bb7e3d1f0b9ca9">XDfeMix_SetNextCCCfgAndTriggerSwitchable()</a>, <a class="el" href="group__dfemix.html#ga5a9e206d3191e92986737d8e2b0b8625">XDfeMix_SetTriggersCfg()</a>, and <a class="el" href="group__dfemix.html#gaae9fc185dcc63dc0256b5e7ec802764b">XDfeMix_UpdateAntennaCfg()</a>.</p>
 
 </div>
 </div>
@@ -314,9 +314,8 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>

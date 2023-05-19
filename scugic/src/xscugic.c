@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscugic.c
-* @addtogroup scugic_v5_0
+* @addtogroup scugic Overview
 * @{
 *
 * Contains required functions for the XScuGic driver for the Interrupt
@@ -144,6 +145,26 @@
 *                     This is fixed with this change.
 * 5.0   dp   04/25/22 Update XScuGic_GetPriorityTriggerType() to read and
 *                     update priority and trigger properly for GICv3.
+* 5.1   mus  02/09/23 Updated DoDistributorInit function to skip enablement
+*                     of group0 interrupts when processor is running at
+*                     EL1 NS. This is required to avoid abort, since access
+*                     to ICC_IGRPEN0_EL1 is resulting into sync abort.
+*                     It fixes CR#1152445.
+* 5.1   mus  02/13/23 Updated XScuGic_CfgInitialize, XScuGic_Enable and
+*                     XScuGic_Disable to support interrupts on each core
+*                     of all CortexA78/CortexR52 clusters in VERSAL NET SoC.
+*                     While at it, modified interrupt routing logic to make
+*                     use of CPU affinity register instead of XPAR_CPU_ID macro.
+*                     Also, XScuGic_CfgInitialize has been updated to find
+*                     redistributor base address of core on which API is
+*                     executed, redistributor address will be stored in newly
+*                     added member of XScuGic data structure "RedistBaseAddr".
+*                     It fixes CR#1150432.
+* 5.1   mus  02/27/23 Updated XScuGic_Stop for GICv3, to check routing register for
+*                     detecting targeted cores for specific interrupt id.
+*                     Also, DoDistributorInit has been modified to move CPU
+*                     interface specific register writes to XScuGic_CfgInitialize.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -152,7 +173,9 @@
 #include "xil_types.h"
 #include "xil_assert.h"
 #include "xscugic.h"
-
+#if defined (VERSAL_NET)
+#include "xplatform_info.h"
+#endif
 /************************** Constant Definitions *****************************/
 
 
@@ -269,8 +292,6 @@ static void DoDistributorInit(const XScuGic *InstancePtr)
 	Temp = XScuGic_DistReadReg(InstancePtr, XSCUGIC_DIST_EN_OFFSET);
 	Temp |= XSCUGIC_EN_INT_MASK;
 	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_DIST_EN_OFFSET, Temp);
-	XScuGic_Enable_Group1_Interrupts();
-	XScuGic_Enable_Group0_Interrupts();
 #else
 	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_DIST_EN_OFFSET,
 					XSCUGIC_EN_INT_MASK);
@@ -437,6 +458,9 @@ s32  XScuGic_CfgInitialize(XScuGic *InstancePtr,
 		}
 #if defined (GICv3)
 	u32 Waker_State;
+
+        InstancePtr->RedistBaseAddr = XScuGic_GetRedistBaseAddr();
+
 	#if defined (GIC600)
 	XScuGic_ReDistWriteReg(InstancePtr,XSCUGIC_RDIST_PWRR_OFFSET,
 			(XScuGic_ReDistReadReg(InstancePtr, XSCUGIC_RDIST_PWRR_OFFSET) &
@@ -456,6 +480,10 @@ s32  XScuGic_CfgInitialize(XScuGic *InstancePtr,
 		XScuGic_Stop(InstancePtr);
 		DistributorInit(InstancePtr);
 #if defined (GICv3)
+		XScuGic_Enable_Group1_Interrupts();
+		#if defined (ARMR52) || (defined (__aarch64__) && (EL1_NONSECURE == 0))
+		XScuGic_Enable_Group0_Interrupts();
+		#endif
 		XScuGic_set_priority_filter(0xff);
 #else
 		CPUInitialize(InstancePtr);
@@ -619,6 +647,14 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 		return;
 	}
 #endif
+        #if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        Cpu_Identifier = XGetCoreId();
+        #else
+        Cpu_Identifier = XGetCoreId();
+        Cpu_Identifier |= (XGetClusterId() << XSCUGIC_CLUSTERID_SHIFT);
+        #endif
+        #endif
 	XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
 	/*
 	 * Call spinlock to protect multiple applications running at separate
@@ -691,6 +727,15 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 		return;
 	}
 #endif
+        #if defined (VERSAL_NET)
+        #if defined (ARMR52)
+        Cpu_Identifier = XGetCoreId();
+        #else
+        Cpu_Identifier = XGetCoreId();
+        Cpu_Identifier |= (XGetClusterId() << XSCUGIC_CLUSTERID_SHIFT);
+        #endif
+        #endif
+
 	XScuGic_InterruptUnmapFromCpu(InstancePtr, Cpu_Identifier, Int_Id);
 
 	/*
@@ -732,6 +777,8 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 * @param	InstancePtr is a pointer to the XScuGic instance.
 * @param	Int_Id is the software interrupt ID to simulate an interrupt.
 * @param	Cpu_Identifier is the list of CPUs to send the interrupt.
+*               For VERSAL_NET bits 0-7 specifies core id to send the interrupt.
+*               bits 8-15 specifies the cluster id.
 *
 * @return
 *
@@ -743,7 +790,11 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 ******************************************************************************/
 s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier)
 {
+#if defined (GICv3)
+	u64 Mask;
+#else
 	u32 Mask;
+#endif
 
 	/*
 	 * Assert the arguments
@@ -751,10 +802,28 @@ s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(Int_Id <= 15U);
+#if ! defined (VERSAL_NET)
 	Xil_AssertNonvoid(Cpu_Identifier <= 255U);
+#endif
 
 #if defined (GICv3)
+	#if defined (VERSAL_NET)
+	#if defined (ARMR52)
+	Mask = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+	Mask =	( Mask << XSCUGIC_SGI1R_AFFINITY1_SHIFT);
+	Mask |= (Cpu_Identifier & XSCUGIC_COREID_MASK);
+	#else
+	Mask = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+	Mask =  ( Mask << XSCUGIC_SGI1R_AFFINITY2_SHIFT);
+
+	Mask |= ((Cpu_Identifier & XSCUGIC_COREID_MASK) << XSCUGIC_SGI1R_AFFINITY1_SHIFT);
+	Mask |= 0x1;
+	#endif
+
+	Mask |= (Int_Id << XSCUGIC_SGIR_EL1_INITID_SHIFT);
+	#else
 	Mask = (Cpu_Identifier | (Int_Id << XSCUGIC_SGIR_EL1_INITID_SHIFT));
+	#endif
 #if EL3
 	XScuGic_WriteICC_SGI0R_EL1(Mask);
 #else
@@ -1002,6 +1071,8 @@ void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 *
 * @param	InstancePtr is a pointer to the instance to be worked on.
 * @param	Cpu_Identifier is a CPU number for which the interrupt has to be targeted
+*               For VERSAL_NET APU: 0 t0 3 bits sepcifies core id and 4 to 7 bits specifies
+*               cluster id of the targeted core.
 * @param	Int_Id is the IRQ source number to modify
 *
 * @return	None.
@@ -1016,9 +1087,21 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_
 if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
 	Xil_AssertVoid(InstancePtr != NULL);
+
+	#if defined (VERSAL_NET)
+	#if defined (ARMR52)
+	RegValue = (Cpu_Identifier & XSCUGIC_COREID_MASK);
+	#else
+	RegValue = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+	RegValue = (RegValue << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+	RegValue |= ((Cpu_Identifier & XSCUGIC_COREID_MASK) << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+	#endif
+	#else
 	RegValue = XScuGic_DistReadReg(InstancePtr,
 			XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
 	RegValue |= Cpu_Identifier;
+	#endif
+
 	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Int_Id),
 					  RegValue);
 #else
@@ -1059,6 +1142,8 @@ if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 * @param	InstancePtr is a pointer to the instance to be worked on.
 * @param	Cpu_Identifier is a CPU number from which the interrupt has to be
 *			unmapped
+*               For VERSAL_NET APU: 0 t0 3 bits sepcifies core id and 4 to 7
+*               bits specifies cluster id of the targeted core.
 * @param	Int_Id is the IRQ source number to modify
 *
 * @return	None.
@@ -1069,13 +1154,30 @@ if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 void XScuGic_InterruptUnmapFromCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_Id)
 {
 	u32 RegValue;
+#if defined (VERSAL_NET)
+	u32 Temp;
+#endif
 
 if (Int_Id >= XSCUGIC_SPI_INT_ID_START) {
 #if defined (GICv3)
 	Xil_AssertVoid(InstancePtr != NULL);
+
 	RegValue = XScuGic_DistReadReg(InstancePtr,
 			XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
+
+	#if defined (VERSAL_NET)
+	#if defined (ARMR52)
+	Temp = (Cpu_Identifier & XSCUGIC_COREID_MASK);
+	#else
+	Temp = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+	Temp = (Temp << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+	Temp |= ((Cpu_Identifier & XSCUGIC_COREID_MASK) << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+        #endif
+	RegValue &= ~Temp;
+	#else
 	RegValue &= ~Cpu_Identifier;
+	#endif
+
 	XScuGic_DistWriteReg(InstancePtr, XSCUGIC_IROUTER_OFFSET_CALC(Int_Id),
 						  RegValue);
 #else
@@ -1189,6 +1291,7 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 
 	Xil_AssertVoid(InstancePtr != NULL);
 
+
 	/* If distributor is already disabled, no need to do anything */
 	RegValue = XScuGic_DistReadReg(InstancePtr, XSCUGIC_DIST_EN_OFFSET);
 	if ((RegValue & XSCUGIC_EN_INT_MASK) == 0U) {
@@ -1202,7 +1305,47 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 	 * user.
 	 */
 	XIL_SPINLOCK();
+#if defined (GICv3)
+	#if defined (VERSAL_NET)
+	#if defined (ARMR52)
+	LocalCpuID = XGetCoreId();
+	#else
+	/* VERSAL_NET CortexA78 case */
+	LocalCpuID = XGetClusterId();
+	LocalCpuID = (LocalCpuID << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+	LocalCpuID |= ((u32)XGetCoreId() << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+	#endif /*#if defined (ARMR52)*/
+	#else
+	/* Versal CortexA72 case */
+	LocalCpuID = CpuId;
+	#endif /*#if defined (VERSAL_NET)*/
 
+	/*
+         * Check if the interrupt are targeted to current cpu only or not.
+         * Also remove current cpu from interrupt target register for all
+         * interrupts.
+         */
+        for (Int_Id = 32U; Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS;
+                        Int_Id++) {
+
+                Target_Cpu = XScuGic_DistReadReg(InstancePtr,
+                                        XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
+                if ((Target_Cpu != LocalCpuID)) {
+                        /*
+                         * If any other CPU is also programmed for interrupts
+                         * GIC distributor can not be disabled.
+                         */
+                        DistDisable = 0;
+                }
+
+                /* Remove current CPU from interrupt target register */
+                Target_Cpu &= (~LocalCpuID);
+                XScuGic_DistWriteReg(InstancePtr,
+                        XSCUGIC_IROUTER_OFFSET_CALC(Int_Id), Target_Cpu);
+
+        }
+
+#else
 	LocalCpuID |= LocalCpuID << 8U;
 	LocalCpuID |= LocalCpuID << 16U;
 
@@ -1230,7 +1373,7 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 			XSCUGIC_SPI_TARGET_OFFSET_CALC(Int_Id), Target_Cpu);
 
 	}
-
+#endif
 	/*
 	 * If GIC distributor is safe to be disabled, disable all the interrupt
 	 * and then disable distributor.

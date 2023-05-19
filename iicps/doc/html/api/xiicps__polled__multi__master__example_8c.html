@@ -28,7 +28,7 @@
   <td style="padding-left: 0.5em;">
    <div id="projectname">iicps
    </div>
-   <div id="projectbrief">Xilinx Vitis Drivers API Documentation</div>
+   <div id="projectbrief">Vitis Drivers API Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -71,10 +71,9 @@ $(document).ready(function(){initNavTree('xiicps__polled__multi__master__example
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>Design example is to demonstrate multi-master support in polled mode. </p>
 <p>In case arbitration lost there will be retry..</p>
-<ul>
-<li>The <a class="el" href="group__iicps.html#ga71584f1a7e675cde41cfd9d1bd4320b4" title="This function initiates a polled mode send in master mode. ">XIicPs_MasterSendPolled()</a> API is used to transmit the data and the <a class="el" href="group__iicps.html#ga21bdb2f8a1f09e027aa8b0e9d6648d75" title="This function initiates a polled mode receive in master mode. ">XIicPs_MasterRecvPolled()</a> API is used to receive the data. This example tested on ZCU102 board and slave address needs to be changed based on board design</li>
-</ul>
-<p>The example uses buffer size 132. Please set the send buffer of the Aardvark device to be continuous 64 bytes from 0x00 to 0x3F.</p>
+<p>The <a class="el" href="group__iicps.html#ga71584f1a7e675cde41cfd9d1bd4320b4" title="This function initiates a polled mode send in master mode. ">XIicPs_MasterSendPolled()</a> API is used to transmit the data and the <a class="el" href="group__iicps.html#ga21bdb2f8a1f09e027aa8b0e9d6648d75" title="This function initiates a polled mode receive in master mode. ">XIicPs_MasterRecvPolled()</a> API is used to receive the data. This example tested on ZCU102 board and slave address needs to be changed based on board design</p>
+<p>This example can run on zynqmp / versal IIC device as master in polled mode and Aardvark test hardware used as slave.</p>
+<p>It uses buffer size 132. Please set the send buffer of the Aardvark device to be continuous 64 bytes from 0x00 to 0x3F.</p>
 <pre> MODIFICATION HISTORY:</pre><pre> Ver   Who Date     Changes
 </p>
 <hr/>
@@ -202,9 +201,8 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Copyright &copy; 2015 Xilinx Inc. All rights reserved.</li>
-  </ul>
+	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>
+	<p class="footer">&copy; Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.</p>
 </div>
 </body>
 </html>
