@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xqspips_hw.h
-* @addtogroup qspips_v3_10
+* @addtogroup qspips Overview
 * @{
 *
 * This header file contains the identifiers and basic HW access driver
@@ -117,18 +118,18 @@ extern "C" {
 
 /* Deselect the Slave select line and set the transfer size to 32 at reset */
 #define XQSPIPS_CR_RESET_MASK_SET  XQSPIPS_CR_IFMODE_MASK | \
-				   XQSPIPS_CR_SSCTRL_MASK | \
-				   XQSPIPS_CR_DATA_SZ_MASK | \
-				   XQSPIPS_CR_MSTREN_MASK | \
-				   XQSPIPS_CR_SSFORCE_MASK | \
-				   XQSPIPS_CR_HOLD_B_MASK
+	XQSPIPS_CR_SSCTRL_MASK | \
+	XQSPIPS_CR_DATA_SZ_MASK | \
+	XQSPIPS_CR_MSTREN_MASK | \
+	XQSPIPS_CR_SSFORCE_MASK | \
+	XQSPIPS_CR_HOLD_B_MASK
 #define XQSPIPS_CR_RESET_MASK_CLR  XQSPIPS_CR_CPOL_MASK | \
-				   XQSPIPS_CR_CPHA_MASK | \
-				   XQSPIPS_CR_PRESC_MASK | \
-				   XQSPIPS_CR_MANSTRTEN_MASK | \
-				   XQSPIPS_CR_MANSTRT_MASK | \
-				   XQSPIPS_CR_ENDIAN_MASK | \
-				   XQSPIPS_CR_REF_CLK_MASK
+	XQSPIPS_CR_CPHA_MASK | \
+	XQSPIPS_CR_PRESC_MASK | \
+	XQSPIPS_CR_MANSTRTEN_MASK | \
+	XQSPIPS_CR_MANSTRT_MASK | \
+	XQSPIPS_CR_ENDIAN_MASK | \
+	XQSPIPS_CR_REF_CLK_MASK
 /* @} */
 
 

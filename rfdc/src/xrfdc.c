@@ -210,6 +210,8 @@
 *       cog    01/18/22 Refactor connected data components.
 *       cog    01/18/22 Added safety checks.
 * 12.0  cog    09/01/22 Upversion.
+* 12.1  cog    07/04/23 Add support for SDT.
+*       cog    07/27/23 Add NCO frequency to config structures.
 *
 * </pre>
 *
@@ -325,6 +327,7 @@ static void XRFdc_ADCInitialize(XRFdc *InstancePtr)
 	u32 Tile_Id;
 	u32 Block_Id;
 	u8 MixerType;
+	double NCOFreq;
 
 	for (Tile_Id = XRFDC_TILE_ID0; Tile_Id < XRFDC_TILE_ID4; Tile_Id++) {
 		InstancePtr->ADC_Tile[Tile_Id].NumOfADCBlocks = 0U;
@@ -353,6 +356,12 @@ static void XRFdc_ADCInitialize(XRFdc *InstancePtr)
 					    .MixerType;
 			InstancePtr->ADC_Tile[Tile_Id].ADCBlock_Digital_Datapath[Block_Id].Mixer_Settings.MixerType =
 				MixerType;
+			/* Initialize NCO Freq */
+			NCOFreq = InstancePtr->RFdc_Config.ADCTile_Config[Tile_Id]
+					    .ADCBlock_Digital_Config[Block_Id]
+					    .NCOFreq;
+			InstancePtr->ADC_Tile[Tile_Id].ADCBlock_Digital_Datapath[Block_Id].Mixer_Settings.Freq =
+				NCOFreq;
 
 			InstancePtr->ADC_Tile[Tile_Id].ADCBlock_Digital_Datapath[Block_Id].ConnectedIData =
 				XRFDC_BLK_ID_NONE;
@@ -394,6 +403,7 @@ static void XRFdc_DACInitialize(XRFdc *InstancePtr)
 	u32 Tile_Id;
 	u32 Block_Id;
 	u8 MixerType;
+	double NCOFreq;
 
 	for (Tile_Id = XRFDC_TILE_ID0; Tile_Id < XRFDC_TILE_ID4; Tile_Id++) {
 		InstancePtr->DAC_Tile[Tile_Id].NumOfDACBlocks = 0U;
@@ -420,6 +430,12 @@ static void XRFdc_DACInitialize(XRFdc *InstancePtr)
 					    .MixerType;
 			InstancePtr->DAC_Tile[Tile_Id].DACBlock_Digital_Datapath[Block_Id].Mixer_Settings.MixerType =
 				MixerType;
+			/* Initialize NCO Freq */
+			NCOFreq = InstancePtr->RFdc_Config.DACTile_Config[Tile_Id]
+					    .DACBlock_Digital_Config[Block_Id]
+					    .MixerType;
+			InstancePtr->DAC_Tile[Tile_Id].DACBlock_Digital_Datapath[Block_Id].Mixer_Settings.Freq =
+				NCOFreq;
 
 			InstancePtr->DAC_Tile[Tile_Id].DACBlock_Digital_Datapath[Block_Id].ConnectedIData =
 				XRFDC_BLK_ID_NONE;
@@ -2493,5 +2509,5 @@ u8 XRFdc_GetTileLayout(XRFdc *InstancePtr)
 ******************************************************************************/
 double XRFdc_GetDriverVersion(void)
 {
-	return 12.0;
+	return 12.1;
 }

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
  *
  * @file xusbps_g.c
-* @addtogroup usbps_v2_7
+* @addtogroup usbps Overview
 * @{
  * This file contains a configuration table where each entry is a configuration
  * structure for an XUsbPs device in the system.
@@ -41,13 +42,13 @@
 
 XUsbPs_Config XUsbPs_ConfigTable[] = {
 	{
-            0,
-	    XPAR_XUSBPS_0_BASEADDR
+		0,
+		XPAR_XUSBPS_0_BASEADDR
 	},
 #ifdef XPAR_XUSBPS_1_BASEADDR
 	{
-            1,
-	    XPAR_XUSBPS_1_BASEADDR
+		1,
+		XPAR_XUSBPS_1_BASEADDR
 	}
 #endif
 };

@@ -41,6 +41,7 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
+* 4.11  sb   07/11/23 Added support for system device-tree flow.
 *
 *</pre>
 *******************************************************************************/
@@ -59,7 +60,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_BASEADDR		XPAR_SPI_0_BASEADDR
+#else
+#define SPI_BASEADDR		XPAR_XSPI_0_BASEADDR
+#endif
 
 /**************************** Type Definitions ********************************/
 
@@ -152,9 +157,9 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	 * the same amount of data.
 	 */
 	while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) &
-			XSP_SR_TX_FULL_MASK) == 0) {
+		XSP_SR_TX_FULL_MASK) == 0) {
 		XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET,
-				Buffer[NumBytesSent++]);
+			      Buffer[NumBytesSent++]);
 	}
 
 	/*
@@ -179,16 +184,16 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	 * receive FIFO as empty
 	 */
 	while (!(XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) &
-					XSP_SR_TX_EMPTY_MASK));
+		 XSP_SR_TX_EMPTY_MASK));
 
 	/*
 	 * Transmitter is full, now receive the data just looped back until
 	 * the receiver is empty.
 	 */
 	while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) &
-			XSP_SR_RX_EMPTY_MASK) == 0) {
+		XSP_SR_RX_EMPTY_MASK) == 0) {
 		Buffer[NumBytesRcvd++] = XSpi_ReadReg((BaseAddress),
-						XSP_DRR_OFFSET);
+						      XSP_DRR_OFFSET);
 	}
 
 	/*

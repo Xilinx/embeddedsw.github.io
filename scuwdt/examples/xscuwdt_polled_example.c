@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,9 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- ---------------------------------------------
 * 1.00a sdm  01/15/10 First release
+* 2.5   asa  07/18/23 Added support for workflow decouplig flow.
+*                     Interrupt wrapper support has also been added.
+* 2.5   dp   09/08/23 Update example to stop wdt at end of the test
 *</pre>
 ******************************************************************************/
 
@@ -28,7 +32,7 @@
 #include "xparameters.h"
 #include "xscuwdt.h"
 #include "xil_printf.h"
-#include <sleep.h>
+#include "sleep.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -37,7 +41,11 @@
  * xparameters.h file. They are only defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define WDT_DEVICE_ID		XPAR_SCUWDT_0_DEVICE_ID
+#else
+#define SCUWDT_BASEADDRESS  XPAR_XSCUWDT_0_BASEADDR
+#endif
 
 #define WDT_LOAD_VALUE		0xFFFF0000
 
@@ -47,7 +55,11 @@
 
 /************************** Function Prototypes ******************************/
 
-int ScuWdtPolledExample(XScuWdt * WdtInstancePtr, u16 DeviceId);
+#ifndef SDT
+int ScuWdtPolledExample(XScuWdt *WdtInstancePtr, u16 DeviceId);
+#else
+int ScuWdtPolledExample(XScuWdt *WdtInstancePtr, UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -64,6 +76,7 @@ XScuWdt Watchdog;		/* Cortex SCU Private WatchDog Timer Instance */
 * @note		None.
 *
 ******************************************************************************/
+#ifndef TESTAPP_GEN
 int main(void)
 {
 	int Status;
@@ -74,7 +87,13 @@ int main(void)
 	 * Call the example , specify the device ID that is generated in
 	 * xparameters.h.
 	 */
+#ifndef SDT
 	Status = ScuWdtPolledExample(&Watchdog, WDT_DEVICE_ID);
+#else
+	Status = ScuWdtPolledExample(&Watchdog, SCUWDT_BASEADDRESS);
+
+#endif
+
 	if (Status != XST_SUCCESS) {
 		xil_printf("SCU WDT Polled Mode Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -83,6 +102,7 @@ int main(void)
 	xil_printf("Successfully ran SCU WDT Polled Mode Example Test\r\n");
 	return XST_SUCCESS;
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -97,7 +117,11 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
-int ScuWdtPolledExample(XScuWdt * WdtInstancePtr, u16 DeviceId)
+#ifndef SDT
+int ScuWdtPolledExample(XScuWdt *WdtInstancePtr, u16 DeviceId)
+#else
+int ScuWdtPolledExample(XScuWdt *WdtInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XScuWdt_Config *ConfigPtr;
@@ -106,14 +130,18 @@ int ScuWdtPolledExample(XScuWdt * WdtInstancePtr, u16 DeviceId)
 	/*
 	 * Initialize the SCU Private Wdt driver so that it is ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XScuWdt_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XScuWdt_LookupConfig(BaseAddress);
+#endif
 
 	/*
 	 * This is where the virtual address would be used, this example
 	 * uses physical address.
 	 */
 	Status = XScuWdt_CfgInitialize(WdtInstancePtr, ConfigPtr,
-					ConfigPtr->BaseAddr);
+				       ConfigPtr->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -147,6 +175,8 @@ int ScuWdtPolledExample(XScuWdt * WdtInstancePtr, u16 DeviceId)
 		Count++;
 		XScuWdt_RestartWdt(WdtInstancePtr);
 	}
+
+   XScuWdt_Stop(WdtInstancePtr);
 
 	return XST_SUCCESS;
 }

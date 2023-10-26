@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_hdmitxss1
    </div>
@@ -150,9 +150,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae100e4069b27039da84d2b229ddd770d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#ae100e4069b27039da84d2b229ddd770d">XV_HdmiTxSs1_SendCvtemAuxPackets</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, XHdmiC_Aux *DscAuxFifo)</td></tr>
 <tr class="memdesc:ae100e4069b27039da84d2b229ddd770d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is used to Send CVTEM Packet.  <a href="#ae100e4069b27039da84d2b229ddd770d">More...</a><br/></td></tr>
 <tr class="separator:ae100e4069b27039da84d2b229ddd770d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9745e2044a0959fb4aac4b42c051c99c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#a9745e2044a0959fb4aac4b42c051c99c">XV_HdmiTxSs1_ReadEdid</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, u8 *Buffer)</td></tr>
-<tr class="memdesc:a9745e2044a0959fb4aac4b42c051c99c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the HDMI Sink EDID.  <a href="#a9745e2044a0959fb4aac4b42c051c99c">More...</a><br/></td></tr>
-<tr class="separator:a9745e2044a0959fb4aac4b42c051c99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62786f5afe8608f97b0ff9da3ca33963"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#a62786f5afe8608f97b0ff9da3ca33963">XV_HdmiTxSs1_ReadEdid</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, u8 *Buffer, u32 BufferSize)</td></tr>
+<tr class="memdesc:a62786f5afe8608f97b0ff9da3ca33963"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the HDMI Sink EDID.  <a href="#a62786f5afe8608f97b0ff9da3ca33963">More...</a><br/></td></tr>
+<tr class="separator:a62786f5afe8608f97b0ff9da3ca33963"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb2671202f109b367734299d387fc582"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#abb2671202f109b367734299d387fc582">XV_HdmiTxSs1_ReadEdidSegment</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, u8 *Buffer, u8 segment)</td></tr>
 <tr class="memdesc:abb2671202f109b367734299d387fc582"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads one block from the HDMI Sink EDID.  <a href="#abb2671202f109b367734299d387fc582">More...</a><br/></td></tr>
 <tr class="separator:abb2671202f109b367734299d387fc582"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -330,6 +330,9 @@ Functions</h2></td></tr>
 <tr class="memitem:acc060fa8776b4f0cc3bbfa774e0647c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#acc060fa8776b4f0cc3bbfa774e0647c9">XV_HdmiTxSs1_SetVrrIf</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, XV_HdmiC_VrrInfoFrame *VrrIF)</td></tr>
 <tr class="memdesc:acc060fa8776b4f0cc3bbfa774e0647c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function allows setting VRR meta in core.  <a href="#acc060fa8776b4f0cc3bbfa774e0647c9">More...</a><br/></td></tr>
 <tr class="separator:acc060fa8776b4f0cc3bbfa774e0647c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f62e33836a75169b74a8602208105ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#a7f62e33836a75169b74a8602208105ee">XV_HdmiTxSs1_SetCustomVrrIf</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr, XV_HdmiC_VrrInfoFrame *VrrIF, u16 Sync, u16 DataSetLen)</td></tr>
+<tr class="memdesc:a7f62e33836a75169b74a8602208105ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function allows setting Custom VRR meta in core.  <a href="#a7f62e33836a75169b74a8602208105ee">More...</a><br/></td></tr>
+<tr class="separator:a7f62e33836a75169b74a8602208105ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a521c0bfc8e68845052abeefcf9268fbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1_8c.html#a521c0bfc8e68845052abeefcf9268fbe">XV_HdmiTxSS1_StopFRLStream</a> (<a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a521c0bfc8e68845052abeefcf9268fbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will Stop the FRL stream.  <a href="#a521c0bfc8e68845052abeefcf9268fbe">More...</a><br/></td></tr>
 <tr class="separator:a521c0bfc8e68845052abeefcf9268fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -514,7 +517,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if initialization is successful else XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a808629d14dfae7c9bd88d913f2edb10c">XV_HdmiTxSs1::AppMajVer</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a4263fa09490325e5de092ed3064d06b4">XV_HdmiTxSs1::AppMinVer</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#aa22ed177b1befed86e1de71e2639f11c">XV_HdmiTxSs1::AudioInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ae69bdb8fe123a9b6c8d0dc955ccb7e6d">XV_HdmiTxSs1::AVIInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#aa8205c90494b16611fb959bb27b10304">XV_HdmiTxSs1_Config::AxiLiteClkFreq</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#a2fad82bc5ec410236e8995be3b421baf">XV_HdmiTxSs1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a0af4e590d235b7ed72a2f32c2f1313c4">XV_HdmiTxSs1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#acfe7283fe422114877f8a4df825c0889">XV_HdmiTxSs1_Config::DeviceId</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a3b9c5eb76f25fab0049e4283e67df67d">XV_HdmiTxSs1::DrmInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a754343b6aa4b6dc0f9c6eb8fcb729b70">XV_HdmiTxSs1::EnableHDCPLogging</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ad5186619e28ce571972f0628785b3e2d">XV_HdmiTxSs1::EnableHDMILogging</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a76fd7262ee33c7a44e80c05975e09891">XV_HdmiTxSs1::HdcpProtocol</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a95aed35d91b25679cf9616b9e3d9be4e">XV_HdmiTxSs1::IsReady</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ad2d23f1bf5e2abda055dfea721a38e9a">XV_HdmiTxSs1::VSIF</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#aec5ea5b9de3421ff6542da966c26995a">XV_HdmiTxSs1::VtcPtr</a>, <a class="el" href="xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470adef791b14ca92a3aa971e6427a17d5b6">XV_HDMITXSS1_HDCP_BOTH</a>, <a class="el" href="xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470a01f677d86577b9fe8b731a7854d4be3e">XV_HDMITXSS1_HDCP_NONE</a>, <a class="el" href="xv__hdmitxss1_8c.html#a793b1339e8400d44c8bed3a3a578728f">XV_HdmiTxSs1_Reset()</a>, <a class="el" href="group__v__hdmitxss1__v3__1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>, and <a class="el" href="group__v__hdmitxss1__v3__1.html#ga64a794defc59694de323c4b239088906">XV_HdmiTxSs1_SubcoreInitVtc()</a>.</p>
+<p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a808629d14dfae7c9bd88d913f2edb10c">XV_HdmiTxSs1::AppMajVer</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a4263fa09490325e5de092ed3064d06b4">XV_HdmiTxSs1::AppMinVer</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#aa22ed177b1befed86e1de71e2639f11c">XV_HdmiTxSs1::AudioInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ae69bdb8fe123a9b6c8d0dc955ccb7e6d">XV_HdmiTxSs1::AVIInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#aa8205c90494b16611fb959bb27b10304">XV_HdmiTxSs1_Config::AxiLiteClkFreq</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#a2fad82bc5ec410236e8995be3b421baf">XV_HdmiTxSs1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a0af4e590d235b7ed72a2f32c2f1313c4">XV_HdmiTxSs1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1___config.html#acfe7283fe422114877f8a4df825c0889">XV_HdmiTxSs1_Config::DeviceId</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a3b9c5eb76f25fab0049e4283e67df67d">XV_HdmiTxSs1::DrmInfoframe</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a754343b6aa4b6dc0f9c6eb8fcb729b70">XV_HdmiTxSs1::EnableHDCPLogging</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ad5186619e28ce571972f0628785b3e2d">XV_HdmiTxSs1::EnableHDMILogging</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a76fd7262ee33c7a44e80c05975e09891">XV_HdmiTxSs1::HdcpProtocol</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a95aed35d91b25679cf9616b9e3d9be4e">XV_HdmiTxSs1::IsReady</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#ad2d23f1bf5e2abda055dfea721a38e9a">XV_HdmiTxSs1::VSIF</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#aec5ea5b9de3421ff6542da966c26995a">XV_HdmiTxSs1::VtcPtr</a>, <a class="el" href="xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470adef791b14ca92a3aa971e6427a17d5b6">XV_HDMITXSS1_HDCP_BOTH</a>, <a class="el" href="xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470a01f677d86577b9fe8b731a7854d4be3e">XV_HDMITXSS1_HDCP_NONE</a>, <a class="el" href="xv__hdmitxss1_8c.html#a793b1339e8400d44c8bed3a3a578728f">XV_HdmiTxSs1_Reset()</a>, <a class="el" href="group__v__hdmitxss1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>, and <a class="el" href="group__v__hdmitxss1.html#ga64a794defc59694de323c4b239088906">XV_HdmiTxSs1_SubcoreInitVtc()</a>.</p>
 
 </div>
 </div>
@@ -1575,7 +1578,7 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9745e2044a0959fb4aac4b42c051c99c"></a>
+<a class="anchor" id="a62786f5afe8608f97b0ff9da3ca33963"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1589,7 +1592,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">u8 *&#160;</td>
-          <td class="paramname"><em>Buffer</em>&#160;</td>
+          <td class="paramname"><em>Buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>BufferSize</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1603,7 +1612,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>, and <a class="el" href="struct_x_v___hdmi_tx_ss1.html#af3cc9590374417d5b4b3eeabf73134bf">XV_HdmiTxSs1::IsStreamConnected</a>.</p>
+<p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>, <a class="el" href="struct_x_v___hdmi_tx_ss1.html#af3cc9590374417d5b4b3eeabf73134bf">XV_HdmiTxSs1::IsStreamConnected</a>, and <a class="el" href="xv__hdmitxss1_8c.html#abb2671202f109b367734299d387fc582">XV_HdmiTxSs1_ReadEdidSegment()</a>.</p>
 
 </div>
 </div>
@@ -1643,7 +1652,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>, and <a class="el" href="struct_x_v___hdmi_tx_ss1.html#af3cc9590374417d5b4b3eeabf73134bf">XV_HdmiTxSs1::IsStreamConnected</a>.</p>
 
-<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#af493391980674593fbc4ed0e8acb1ebc">XV_HdmiTxSs1_ShowEdid()</a>.</p>
+<p>Referenced by <a class="el" href="xv__hdmitxss1_8h.html#ab9ebe1b56d24f5ccb66e73d57c488778">XV_HdmiTxSs1_ReadEdid()</a>, and <a class="el" href="xv__hdmitxss1_8h.html#af493391980674593fbc4ed0e8acb1ebc">XV_HdmiTxSs1_ShowEdid()</a>.</p>
 
 </div>
 </div>
@@ -2266,6 +2275,59 @@ HandlerType                     Callback Function Type
 
 </div>
 </div>
+<a class="anchor" id="a7f62e33836a75169b74a8602208105ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiTxSs1_SetCustomVrrIf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx_ss1.html">XV_HdmiTxSs1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XV_HdmiC_VrrInfoFrame *&#160;</td>
+          <td class="paramname"><em>VrrIF</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>Sync</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>DataSetLen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function allows setting Custom VRR meta in core. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_tx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiTxSs1</a> instance. </td></tr>
+    <tr><td class="paramname">VrrIF</td><td>is a pointer to the XV_HdmiC_VrrInfoFrame structure </td></tr>
+    <tr><td class="paramname">Value</td><td>of sync in Vrr packet </td></tr>
+    <tr><td class="paramname">Value</td><td>of data set length</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a4026c5f96125675de1e423a0c1374923"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2464,7 +2526,7 @@ HandlerType                     Callback Function Type
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx_ss1.html#a20364540787ca3b61a22e2138cd03369">XV_HdmiTxSs1::HdmiTx1Ptr</a>.</p>
 
-<p>Referenced by <a class="el" href="group__v__hdmitxss1__v3__1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
+<p>Referenced by <a class="el" href="group__v__hdmitxss1.html#gac555201d618cc9e05b73a417f77701b2">XV_HdmiTxSs1_SubcoreInitHdmiTx1()</a>.</p>
 
 </div>
 </div>

@@ -76,6 +76,8 @@
 *		      XWdtTb_SetGenericWdtWindow function.
 * 5.0  sne   02/27/20 Reorganize the driver source and Fixed doxygen warnings.
 * 5.0  sne   03/09/20 Fixed MISRA-C violations.
+* 5.7  sb    07/12/23 Added support for system device-tree flow.
+* 5.7  sb    09/13/23 Fix MISRA-C violation 12.1.
 *
 * </pre>
 *
@@ -205,7 +207,7 @@ static inline s32 XWdtTb_DisableGenericWdt(XWdtTb *InstancePtr)
 *
 ******************************************************************************/
 s32 XWdtTb_CfgInitialize(XWdtTb *InstancePtr, const XWdtTb_Config *CfgPtr,
-				UINTPTR EffectiveAddr)
+			 UINTPTR EffectiveAddr)
 {
 	s32 Status;
 
@@ -222,31 +224,40 @@ s32 XWdtTb_CfgInitialize(XWdtTb *InstancePtr, const XWdtTb_Config *CfgPtr,
 	 */
 	if (InstancePtr->IsStarted == XIL_COMPONENT_IS_STARTED) {
 		Status = (s32)XST_DEVICE_IS_STARTED;
-	}
-        else {
-       InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
-	InstancePtr->Config.EnableWinWdt = CfgPtr->EnableWinWdt;
-	InstancePtr->Config.MaxCountWidth = CfgPtr->MaxCountWidth;
-	InstancePtr->Config.SstCountWidth = CfgPtr->SstCountWidth;
-	InstancePtr->Config.IsPl = CfgPtr->IsPl;
-	InstancePtr->Config.Clock = CfgPtr->Clock;
-	if(InstancePtr->Config.EnableWinWdt == 1U) {
-		InstancePtr->Config.BaseAddr = EffectiveAddr + 0xCU;
 	} else {
-		InstancePtr->Config.BaseAddr = EffectiveAddr;
+#ifndef SDT
+		InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+#else
+		InstancePtr->Config.Name = CfgPtr->Name;
+#endif
+		InstancePtr->Config.EnableWinWdt = CfgPtr->EnableWinWdt;
+#ifndef SDT
+		InstancePtr->Config.MaxCountWidth = CfgPtr->MaxCountWidth;
+		InstancePtr->Config.SstCountWidth = CfgPtr->SstCountWidth;
+		InstancePtr->Config.IsPl = CfgPtr->IsPl;
+#endif
+		InstancePtr->Config.Clock = CfgPtr->Clock;
+		if (InstancePtr->Config.EnableWinWdt == 1U) {
+			InstancePtr->Config.BaseAddr = EffectiveAddr + 0xCU;
+		} else {
+			InstancePtr->Config.BaseAddr = EffectiveAddr;
+		}
+		InstancePtr->IsStarted = (u32)0;
+		InstancePtr->EnableFailCounter = (u32)0;
+#ifndef SDT
+		if (InstancePtr->Config.IsPl == (u32)0) {
+#else
+		if (!(strcmp(InstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
+			InstancePtr->EnableWinMode = (u32)0U;
+			/* Reset all the Generic WDT Registers */
+			XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GW_WR_OFFSET, XWT_GW_WR_MASK);
+		} else {
+			InstancePtr->EnableWinMode = CfgPtr->EnableWinWdt;
+		}
+		InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
+		Status = (s32)XST_SUCCESS;
 	}
-	InstancePtr->IsStarted = (u32)0;
-	InstancePtr->EnableFailCounter = (u32)0;
-	if (InstancePtr->Config.IsPl == (u32)0) {
-		InstancePtr->EnableWinMode = (u32)0U;
-		/* Reset all the Generic WDT Registers */
-		XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GW_WR_OFFSET,XWT_GW_WR_MASK);
-	} else {
-		InstancePtr->EnableWinMode = CfgPtr->EnableWinWdt;
-	}
-	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
-	Status = (s32)XST_SUCCESS;
-        }
 	return Status;
 }
 
@@ -301,7 +312,7 @@ s32 XWdtTb_Initialize(XWdtTb *InstancePtr, u16 DeviceId)
 	InstancePtr->Config = *ConfigPtr;
 	InstancePtr->IsStarted = (u32)0;
 	InstancePtr->EnableFailCounter = (u32)0;
-        InstancePtr->EnableWinMode = (u32)0U;
+	InstancePtr->EnableWinMode = (u32)0U;
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 	Status = (s32)XST_SUCCESS;
 End:
@@ -333,20 +344,24 @@ void XWdtTb_Start(XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-        /* Check whether Window Mode is enabled */
-        if(InstancePtr->EnableWinMode == (u32)TRUE) {
-                /* Enable Window WDT */
-                XWdtTb_EnableWinWdt(InstancePtr);
-        } else {
+	/* Check whether Window Mode is enabled */
+	if (InstancePtr->EnableWinMode == (u32)TRUE) {
+		/* Enable Window WDT */
+		XWdtTb_EnableWinWdt(InstancePtr);
+	} else {
+#ifndef SDT
 		if (InstancePtr->Config.IsPl == (u32)0) {
-                /* WWDT supports Generic watchdog timer & Window WDT features*/
-                /* Enable Generic Watchdog Timer */
-                XWdtTb_EnableGenericWdt(InstancePtr);
+#else
+		if (!(strcmp(InstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
+			/* WWDT supports Generic watchdog timer & Window WDT features*/
+			/* Enable Generic Watchdog Timer */
+			XWdtTb_EnableGenericWdt(InstancePtr);
 		} else {
-                /* Enable Timebase Watchdog Timer */
-                XWdtTb_EnableTimebaseWdt(InstancePtr);
+			/* Enable Timebase Watchdog Timer */
+			XWdtTb_EnableTimebaseWdt(InstancePtr);
 		}
-        }
+	}
 }
 
 /*****************************************************************************/
@@ -383,20 +398,23 @@ s32 XWdtTb_Stop(XWdtTb *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-        /* Check whether Window Mode is enabled */
-        if(InstancePtr->EnableWinMode == (u32)TRUE) {
-                /* Disable Window WDT */
-                Status = XWdtTb_DisableWinWdt(InstancePtr);
-        }
-        else {
+	/* Check whether Window Mode is enabled */
+	if (InstancePtr->EnableWinMode == (u32)TRUE) {
+		/* Disable Window WDT */
+		Status = XWdtTb_DisableWinWdt(InstancePtr);
+	} else {
+#ifndef SDT
 		if (InstancePtr->Config.IsPl == (u32)0) {
-                /* Disable Generic Watchdog Timer */
-                Status = XWdtTb_DisableGenericWdt(InstancePtr);
+#else
+		if (!(strcmp(InstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
+			/* Disable Generic Watchdog Timer */
+			Status = XWdtTb_DisableGenericWdt(InstancePtr);
 		} else {
-                /* Disable Timebase Watchdog timer */
-                Status = XWdtTb_DisableTimebaseWdt(InstancePtr);
+			/* Disable Timebase Watchdog timer */
+			Status = XWdtTb_DisableTimebaseWdt(InstancePtr);
 		}
-        }
+	}
 	return Status;
 }
 
@@ -423,52 +441,52 @@ s32 XWdtTb_Stop(XWdtTb *InstancePtr)
 u32 XWdtTb_IsWdtExpired(const XWdtTb *InstancePtr)
 {
 	u32 ControlStatusRegister0;
-        u32 Status;
+	u32 Status;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-        /* Check Whether is Window WDT Mode enabled */
-        if(InstancePtr->EnableWinMode == (u32)TRUE) {
+	/* Check Whether is Window WDT Mode enabled */
+	if (InstancePtr->EnableWinMode == (u32)TRUE) {
 		/* Read status control register and get second window value */
 		ControlStatusRegister0 =
 			(XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-				XWT_ESR_OFFSET) & XWT_ESR_WSW_MASK) >>
-					XWT_ESR_WSW_SHIFT;
+					XWT_ESR_OFFSET) & XWT_ESR_WSW_MASK) >>
+			XWT_ESR_WSW_SHIFT;
 		if (ControlStatusRegister0 == (u32)TRUE) {
 			Status = (u32)FALSE;
 		} else {
 			Status = (u32)TRUE;
 		}
-        }
-        else {
+	} else {
+#ifndef SDT
 		if (InstancePtr->Config.IsPl == (u32)0) {
-               /* Read the current contents */
-                ControlStatusRegister0 =XWdtTb_ReadReg (InstancePtr->Config.BaseAddr,XWT_GWCSR_OFFSET);
-                /* Check whether state and reset status */
-                if ((ControlStatusRegister0 & XWT_GWCSR_GWS2_MASK) != (u32)FALSE)
-                {
-                        Status = (u32)TRUE;
-                }
-                else {
-                        Status = (u32)FALSE;
-                }
+#else
+		if (!(strcmp(InstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
+			/* Read the current contents */
+			ControlStatusRegister0 = XWdtTb_ReadReg (InstancePtr->Config.BaseAddr, XWT_GWCSR_OFFSET);
+			/* Check whether state and reset status */
+			if ((ControlStatusRegister0 & XWT_GWCSR_GWS2_MASK) != (u32)FALSE) {
+				Status = (u32)TRUE;
+			} else {
+				Status = (u32)FALSE;
+			}
 		} else {
-		/* Read the current contents */
-		ControlStatusRegister0 =
-			XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-				XWT_TWCSR0_OFFSET);
-		/* The watchdog has expired if either of the bits are set */
-		/* Check whether state and reset status */
-		if ((ControlStatusRegister0 & (XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK)) != (u32)FALSE) {
-			Status = (u32)TRUE;
+			/* Read the current contents */
+			ControlStatusRegister0 =
+				XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
+					       XWT_TWCSR0_OFFSET);
+			/* The watchdog has expired if either of the bits are set */
+			/* Check whether state and reset status */
+			if ((ControlStatusRegister0 & (XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK)) != (u32)FALSE) {
+				Status = (u32)TRUE;
+			} else {
+				Status = (u32)FALSE;
+			}
 		}
-		else {
-			Status = (u32)FALSE;
-		}
-		}
-        }
+	}
 	return Status;
 }
 /*****************************************************************************/
@@ -491,23 +509,20 @@ u32 XWdtTb_IsWdtExpired(const XWdtTb *InstancePtr)
 ******************************************************************************/
 u32 XWdtTb_IsGenericWdtFWExpired(const XWdtTb *InstancePtr)
 {
-        u32 Status;
-        u32 ControlStatusRegister0;
+	u32 Status;
+	u32 ControlStatusRegister0;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
-        /* Read the current contents */
-        ControlStatusRegister0 =XWdtTb_ReadReg (InstancePtr->Config.BaseAddr,XWT_GWCSR_OFFSET);
-        /* Check whether state and reset status */
-        if ((ControlStatusRegister0 & XWT_GWCSR_GWS1_MASK) != (u32)FALSE)
-        {
-                Status = (u32)TRUE;
-        }
-        else
-        {
-                Status = (u32)FALSE;
-        }
-        return Status;
+	/* Read the current contents */
+	ControlStatusRegister0 = XWdtTb_ReadReg (InstancePtr->Config.BaseAddr, XWT_GWCSR_OFFSET);
+	/* Check whether state and reset status */
+	if ((ControlStatusRegister0 & XWT_GWCSR_GWS1_MASK) != (u32)FALSE) {
+		Status = (u32)TRUE;
+	} else {
+		Status = (u32)FALSE;
+	}
+	return Status;
 }
 
 /*****************************************************************************/
@@ -534,46 +549,49 @@ void XWdtTb_RestartWdt(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-        /* Check whether is Window WDT Mode enabled */
-        if(InstancePtr->EnableWinMode == (u32)TRUE) {
+	/* Check whether is Window WDT Mode enabled */
+	if (InstancePtr->EnableWinMode == (u32)TRUE) {
 		/* Read enable status register and update second window bit */
 		ControlStatusRegister0 =
 			XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-				XWT_ESR_OFFSET) | (u32)XWT_ESR_WSW_MASK;
+				       XWT_ESR_OFFSET) | (u32)XWT_ESR_WSW_MASK;
 
 		/* Write control status register to restart the timer */
 		XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET,
-			ControlStatusRegister0);
-	}
-        else {
-		if (InstancePtr->Config.IsPl == (u32)0) {
-		/*  Read enable status register and update Refresh Register  bit */
-		ControlStatusRegister0 =
-				XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-						XWT_GWRR_OFFSET) | (u32)XWT_GWRR_MASK;
-		/* Write control status register to restart the timer */
-		XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GWRR_OFFSET,
 				ControlStatusRegister0);
+	} else {
+#ifndef SDT
+		if (InstancePtr->Config.IsPl == (u32)0) {
+#else
+		if (!(strcmp(InstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
+			/*  Read enable status register and update Refresh Register  bit */
+			ControlStatusRegister0 =
+				XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
+					       XWT_GWRR_OFFSET) | (u32)XWT_GWRR_MASK;
+			/* Write control status register to restart the timer */
+			XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GWRR_OFFSET,
+					ControlStatusRegister0);
 		} else {
-		/*
-		 * Read the current contents of TCSR0 so that subsequent writes
-		 * won't destroy any other bits.
-		 */
-		ControlStatusRegister0 =
-			XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-				XWT_TWCSR0_OFFSET);
-		/*
-		 * Clear the bit that indicates the reason for the last
-		 * system reset, WRS and the WDS bit, if set, by writing
-		 * 1's to TCSR0
-		 */
-		ControlStatusRegister0 |= ((u32)XWT_CSR0_WRS_MASK |
-			(u32)XWT_CSR0_WDS_MASK);
+			/*
+			 * Read the current contents of TCSR0 so that subsequent writes
+			 * won't destroy any other bits.
+			 */
+			ControlStatusRegister0 =
+				XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
+					       XWT_TWCSR0_OFFSET);
+			/*
+			 * Clear the bit that indicates the reason for the last
+			 * system reset, WRS and the WDS bit, if set, by writing
+			 * 1's to TCSR0
+			 */
+			ControlStatusRegister0 |= ((u32)XWT_CSR0_WRS_MASK |
+						   (u32)XWT_CSR0_WDS_MASK);
 
-		XWdtTb_WriteReg(InstancePtr->Config.BaseAddr,
-			XWT_TWCSR0_OFFSET, ControlStatusRegister0);
+			XWdtTb_WriteReg(InstancePtr->Config.BaseAddr,
+					XWT_TWCSR0_OFFSET, ControlStatusRegister0);
 		}
-        }
+	}
 }
 /*****************************************************************************/
 /**
@@ -600,11 +618,11 @@ void XWdtTb_AlwaysEnable(const XWdtTb *InstancePtr)
 
 	/* Read master write control register and update always enable */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-		XWT_MWR_OFFSET) | XWT_MWR_AEN_MASK;
+				  XWT_MWR_OFFSET) | XWT_MWR_AEN_MASK;
 
 	/* Write master write control register to enable once feature */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_MWR_OFFSET,
-		RegValue);
+			RegValue);
 }
 /*****************************************************************************/
 /**
@@ -630,9 +648,9 @@ void XWdtTb_ClearLastEvent(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read enable status register and update last bad event bits */
+	/* Read enable status register and update last bad event bits */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_ESR_OFFSET) | XWT_ESR_LBE_MASK;
+				  XWT_ESR_OFFSET) | XWT_ESR_LBE_MASK;
 
 	SecWindow = (RegValue & XWT_ESR_WSW_MASK) >> XWT_ESR_WSW_SHIFT;
 
@@ -646,7 +664,7 @@ void XWdtTb_ClearLastEvent(const XWdtTb *InstancePtr)
 
 	/* Write enable status register with updated events and WSW bit */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -671,13 +689,13 @@ void XWdtTb_ClearResetPending(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read enable status register and update reset bit */
+	/* Read enable status register and update reset bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_ESR_OFFSET) | XWT_ESR_WRP_MASK;
+				  XWT_ESR_OFFSET) | XWT_ESR_WRP_MASK;
 
 	/* Write enable status register with updated reset bit */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -704,14 +722,14 @@ void XWdtTb_IntrClear(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-    /* Read enable status register and update WINT bit */
+	/* Read enable status register and update WINT bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-		XWT_ESR_OFFSET) | XWT_ESR_WINT_MASK;
+				  XWT_ESR_OFFSET) | XWT_ESR_WINT_MASK;
 
 	/* Find if the WWDT is in Q&A mode */
-	RegValue1 = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,XWT_FCR_OFFSET)
-			& XWT_FCR_WM_MASK;
-	if (RegValue1 == 0x0) { /* Only if in Basic mode, worry about WSW bit */
+	RegValue1 = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET)
+		    & XWT_FCR_WM_MASK;
+	if (RegValue1 == 0x0U) { /* Only if in Basic mode, worry about WSW bit */
 		SecWindow = (RegValue & XWT_ESR_WSW_MASK) >> XWT_ESR_WSW_SHIFT;
 
 		/*
@@ -726,7 +744,7 @@ void XWdtTb_IntrClear(const XWdtTb *InstancePtr)
 
 	/* Write enable status register with updated WINT and WSW bit */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -758,8 +776,8 @@ void XWdtTb_SetByteCount(const XWdtTb *InstancePtr, u32 ByteCount)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET);
+	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
+				  XWT_FCR_OFFSET);
 
 	/* Reposition byte count */
 	Count = (ByteCount << XWT_FCR_SBC_SHIFT) & XWT_FCR_SBC_MASK;
@@ -767,7 +785,7 @@ void XWdtTb_SetByteCount(const XWdtTb *InstancePtr, u32 ByteCount)
 
 	/* Write function control register with selected byte count */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -792,9 +810,9 @@ u32 XWdtTb_GetByteCount(const XWdtTb *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and return selected byte count */
+	/* Read function control register and return selected byte count */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET) &
-		XWT_FCR_SBC_MASK) >> XWT_FCR_SBC_SHIFT);
+		 XWT_FCR_SBC_MASK) >> XWT_FCR_SBC_SHIFT);
 }
 
 /*****************************************************************************/
@@ -828,10 +846,10 @@ void XWdtTb_SetByteSegment(const XWdtTb *InstancePtr, u32 ByteSegment)
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
-        Xil_AssertVoid(ByteSegment < (u32)XWT_MAX_BYTE_SEGMENT);
+	Xil_AssertVoid(ByteSegment < (u32)XWT_MAX_BYTE_SEGMENT);
 
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET);
+				  XWT_FCR_OFFSET);
 
 	/* Reposition byte segment selection */
 	SegmentNum = (ByteSegment << XWT_FCR_BSS_SHIFT) & XWT_FCR_BSS_MASK;
@@ -839,7 +857,7 @@ void XWdtTb_SetByteSegment(const XWdtTb *InstancePtr, u32 ByteSegment)
 
 	/* Write function control register with selected byte segment */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -867,9 +885,9 @@ u32 XWdtTb_GetByteSegment(const XWdtTb *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and return selected byte segment */
+	/* Read function control register and return selected byte segment */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET) &
-		XWT_FCR_BSS_MASK) >> XWT_FCR_BSS_SHIFT);
+		 XWT_FCR_BSS_MASK) >> XWT_FCR_BSS_SHIFT);
 }
 
 /*****************************************************************************/
@@ -900,13 +918,13 @@ void XWdtTb_EnableSst(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update SSTE bit */
+	/* Read function control register and update SSTE bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET) | XWT_FCR_SSTE_MASK;
+				  XWT_FCR_OFFSET) | XWT_FCR_SSTE_MASK;
 
 	/* Write function control register with updated SSTE value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -932,13 +950,13 @@ void XWdtTb_DisableSst(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update SSTE bit */
+	/* Read function control register and update SSTE bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-		XWT_FCR_OFFSET) & (~XWT_FCR_SSTE_MASK);
+				  XWT_FCR_OFFSET) & (~XWT_FCR_SSTE_MASK);
 
 	/* Write function control register with updated SSTE value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -971,13 +989,13 @@ void XWdtTb_EnablePsm(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update PSME bit */
+	/* Read function control register and update PSME bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET) | XWT_FCR_PSME_MASK;
+				  XWT_FCR_OFFSET) | XWT_FCR_PSME_MASK;
 
 	/* Write function control register with updated PSME value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -1003,13 +1021,13 @@ void XWdtTb_DisablePsm(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update PSME bit */
+	/* Read function control register and update PSME bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-		XWT_FCR_OFFSET) & (~XWT_FCR_PSME_MASK);
+				  XWT_FCR_OFFSET) & (~XWT_FCR_PSME_MASK);
 
 	/* Write function control register with updated PSME value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -1041,13 +1059,13 @@ void XWdtTb_EnableFailCounter(XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update FCE bit */
+	/* Read function control register and update FCE bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET) | XWT_FCR_FCE_MASK;
+				  XWT_FCR_OFFSET) | XWT_FCR_FCE_MASK;
 
 	/* Write function control register with updated FCE value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 
 	InstancePtr->EnableFailCounter = (u32)1;
 }
@@ -1075,13 +1093,13 @@ void XWdtTb_DisableFailCounter(XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update FCE bit */
+	/* Read function control register and update FCE bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-		XWT_FCR_OFFSET) & (~XWT_FCR_FCE_MASK);
+				  XWT_FCR_OFFSET) & (~XWT_FCR_FCE_MASK);
 
 	/* Write function control register with updated FCE value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 
 	InstancePtr->EnableFailCounter = (u32)0;
 }
@@ -1110,13 +1128,13 @@ void XWdtTb_EnableExtraProtection(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update WDP bit */
+	/* Read function control register and update WDP bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET) | XWT_FCR_WDP_MASK;
+				  XWT_FCR_OFFSET) | XWT_FCR_WDP_MASK;
 
 	/* Write function control register with updated WDP value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -1142,13 +1160,13 @@ void XWdtTb_DisableExtraProtection(const XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Read function control register and update WDP bit */
+	/* Read function control register and update WDP bit */
 	RegValue = XWdtTb_ReadReg(InstancePtr->Config.BaseAddr,
-			XWT_FCR_OFFSET) & (~XWT_FCR_WDP_MASK);
+				  XWT_FCR_OFFSET) & (~XWT_FCR_WDP_MASK);
 
 	/* Write function control register with updated WDP value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		RegValue);
+			RegValue);
 }
 
 /*****************************************************************************/
@@ -1178,19 +1196,19 @@ void XWdtTb_DisableExtraProtection(const XWdtTb *InstancePtr)
 *
 ******************************************************************************/
 void XWdtTb_SetWindowCount(const XWdtTb *InstancePtr, u32 FirstWinCount,
-				u32 SecondWinCount)
+			   u32 SecondWinCount)
 {
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /* Write first window count value */
+	/* Write first window count value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FWR_OFFSET,
-		FirstWinCount);
+			FirstWinCount);
 
 	/* Write second window count value */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_SWR_OFFSET,
-		SecondWinCount);
+			SecondWinCount);
 }
 /*****************************************************************************/
 /**
@@ -1214,7 +1232,7 @@ void XWdtTb_SetGenericWdtWindow(const XWdtTb *InstancePtr, u32 GWOR_config)
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	/* Write GWDT_Offset_reg count value*/
-	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr,XWT_GWOR_OFFSET,GWOR_config);
+	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GWOR_OFFSET, GWOR_config);
 }
 
 /*****************************************************************************/
@@ -1243,7 +1261,7 @@ void XWdtTb_SetGenericWdtWindowTimeOut(const XWdtTb *InstancePtr, u32 MilliSecon
 	/* Write GWDT_Offset_reg count value*/
 	Reg_count = (u32)(((u64)MilliSeconds * InstancePtr->Config.Clock) / (u32)XWT_KILO_HZ);
 
-	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr,XWT_GWOR_OFFSET,Reg_count);
+	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_GWOR_OFFSET, Reg_count);
 }
 
 /*****************************************************************************/
@@ -1272,20 +1290,18 @@ void XWdtTb_SetGenericWdtWindowTimeOut(const XWdtTb *InstancePtr, u32 MilliSecon
 ******************************************************************************/
 u32 XWdtTb_ProgramWDTWidth(const XWdtTb *InstancePtr, u32 width)
 {
-        u32 Status;
+	u32 Status;
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
-        /* Programming width of the Watchdog Timer, width values in between 8 to 31*/
-	if((InstancePtr->EnableWinMode == ((u32)FALSE)) && ((width>=(u32)XWT_START_VALUE) && (width<=(u32)XWT_END_VALUE)))
-	{
+	/* Programming width of the Watchdog Timer, width values in between 8 to 31*/
+	if ((InstancePtr->EnableWinMode == ((u32)FALSE)) && ((width >= (u32)XWT_START_VALUE)
+			&& (width <= (u32)XWT_END_VALUE))) {
 		XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_MWR_OFFSET, width);
-                Status =(u32)XST_SUCCESS;
+		Status = (u32)XST_SUCCESS;
+	} else {
+		Status = (u32)XST_FAILURE;
 	}
-	else
-        {
-                Status =(u32)XST_FAILURE;
-        }
-        return Status;
+	return Status;
 }
 
 /*****************************************************************************/
@@ -1296,7 +1312,7 @@ u32 XWdtTb_ProgramWDTWidth(const XWdtTb *InstancePtr, u32 width)
 *
 * @param	TokenVal : Token value read from TVAL
 * @param	AnsByteCnt : Byte on which response is generated
-* @param	TokenFdbkVal: Token feedback value read from TFR
+* @param	TokenFdbk: Token feedback value read from TFR
 *
 * @return	Response byte (calculated based on logic given WWDT architecture)
 *
@@ -1306,7 +1322,7 @@ u32 XWdtTb_ProgramWDTWidth(const XWdtTb *InstancePtr, u32 width)
 u8 XWdtTb_GenAnswer(u8 TokenVal, u8 AnsByteCnt, u8 TokenFdbk)
 {
 	u8 Val = 0U;
-	u8 Token[4] = {0,0,0,0};
+	u8 Token[4] = {0, 0, 0, 0};
 	u8 AnsCnt[2] = {0, 0};
 	u8 Pos;
 	u8 Temp;
@@ -1314,9 +1330,9 @@ u8 XWdtTb_GenAnswer(u8 TokenVal, u8 AnsByteCnt, u8 TokenFdbk)
 	/* Extract Token bits */
 	Temp = TokenVal;
 	Pos = 0U;
-	while((Temp != 0U) && (Pos < 4U)) {
-		if((Temp & 0x01U) != 0U) {
-			Token[Pos]= 0x01U;
+	while ((Temp != 0U) && (Pos < 4U)) {
+		if ((Temp & 0x01U) != 0U) {
+			Token[Pos] = 0x01U;
 		}
 		Pos++;
 		Temp >>= 1U;
@@ -1325,51 +1341,49 @@ u8 XWdtTb_GenAnswer(u8 TokenVal, u8 AnsByteCnt, u8 TokenFdbk)
 	/* Extract Answer byte count bits */
 	Temp = AnsByteCnt;
 	Pos = 0U;
-	while((Temp != 0U) && (Pos < 2U)) {
-		if((Temp & 0x01U) != 0U) {
-			AnsCnt[Pos]= 0x01U;
+	while ((Temp != 0U) && (Pos < 2U)) {
+		if ((Temp & 0x01U) != 0U) {
+			AnsCnt[Pos] = 0x01U;
 		}
 		Pos++;
 		Temp >>= 1U;
 	}
-	if(TokenFdbk == 0x00U) {
-		Val = ((Token[2] ^ AnsCnt[0]) << 7 |
-			  (Token[0] ^ AnsCnt[0]) << 6 |
-			  (Token[3] ^ AnsCnt[0]) << 5 |
-			  (Token[1] ^ AnsCnt[0]) << 4 |
-			  (Token[2] ^ AnsCnt[1] ^ Token[0] ^ Token[3]) << 3 |
-			  (Token[0] ^ AnsCnt[1] ^ Token[3] ^ Token[1]) << 2 |
-			  (Token[0] ^ AnsCnt[1] ^ Token[2] ^ Token[1]) << 1 |
-			  (Token[0] ^ AnsCnt[1] ^ Token[3]));
-	}
-	else if (TokenFdbk == 0x01U) {
-		Val = ((Token[0] ^ AnsCnt[0]) << 7 |
-			  (Token[1] ^ AnsCnt[0]) << 6 |
-			  (Token[0] ^ AnsCnt[0]) << 5 |
-			  (Token[0] ^ AnsCnt[0]) << 4 |
-			  (Token[0] ^ AnsCnt[1] ^ Token[1] ^ Token[3]) << 3 |
-			  (Token[1] ^ AnsCnt[1] ^ Token[0] ^ Token[1]) << 2 |
-			  (Token[1] ^ AnsCnt[1] ^ Token[0] ^ Token[1]) << 1 |
-			  (Token[0] ^ AnsCnt[1] ^ Token[1]));
-	}
-	else if (TokenFdbk == 0x02U) {
-		Val = ((Token[1] ^ AnsCnt[0]) << 7 |
-			  (Token[2] ^ AnsCnt[0]) << 6 |
-			  (Token[1] ^ AnsCnt[0]) << 5 |
-			  (Token[2] ^ AnsCnt[0]) << 4 |
-			  (Token[1] ^ AnsCnt[1] ^ Token[2] ^ Token[3]) << 3 |
-			  (Token[2] ^ AnsCnt[1] ^ Token[1] ^ Token[1]) << 2 |
-			  (Token[2] ^ AnsCnt[1] ^ Token[1] ^ Token[1]) << 1 |
-			  (Token[2] ^ AnsCnt[1] ^ Token[1]));
+	if (TokenFdbk == 0x00U) {
+		Val = (((Token[2] ^ AnsCnt[0]) << 7) |
+		       ((Token[0] ^ AnsCnt[0]) << 6) |
+		       ((Token[3] ^ AnsCnt[0]) << 5) |
+		       ((Token[1] ^ AnsCnt[0]) << 4) |
+		       ((Token[2] ^ AnsCnt[1] ^ Token[0] ^ Token[3]) << 3) |
+		       ((Token[0] ^ AnsCnt[1] ^ Token[3] ^ Token[1]) << 2) |
+		       ((Token[0] ^ AnsCnt[1] ^ Token[2] ^ Token[1]) << 1) |
+		       ((Token[0] ^ AnsCnt[1] ^ Token[3])));
+	} else if (TokenFdbk == 0x01U) {
+		Val = (((Token[0] ^ AnsCnt[0]) << 7) |
+		       ((Token[1] ^ AnsCnt[0]) << 6) |
+		       ((Token[0] ^ AnsCnt[0]) << 5) |
+		       ((Token[0] ^ AnsCnt[0]) << 4) |
+		       ((Token[0] ^ AnsCnt[1] ^ Token[1] ^ Token[3]) << 3) |
+		       ((Token[1] ^ AnsCnt[1] ^ Token[0] ^ Token[1]) << 2) |
+		       ((Token[1] ^ AnsCnt[1] ^ Token[0] ^ Token[1]) << 1) |
+		       ((Token[0] ^ AnsCnt[1] ^ Token[1])));
+	} else if (TokenFdbk == 0x02U) {
+		Val = (((Token[1] ^ AnsCnt[0]) << 7) |
+		       ((Token[2] ^ AnsCnt[0]) << 6) |
+		       ((Token[1] ^ AnsCnt[0]) << 5) |
+		       ((Token[2] ^ AnsCnt[0]) << 4) |
+		       ((Token[1] ^ AnsCnt[1] ^ Token[2] ^ Token[3]) << 3) |
+		       ((Token[2] ^ AnsCnt[1] ^ Token[1] ^ Token[1]) << 2) |
+		       ((Token[2] ^ AnsCnt[1] ^ Token[1] ^ Token[1]) << 1) |
+		       ((Token[2] ^ AnsCnt[1] ^ Token[1])));
 	} else {
-		Val = ((Token[2] ^ AnsCnt[0]) << 7 |
-			  (Token[3] ^ AnsCnt[0]) << 6 |
-			  (Token[2] ^ AnsCnt[0]) << 5 |
-			  (Token[3] ^ AnsCnt[0]) << 4 |
-			  (Token[3] ^ AnsCnt[1] ^ Token[3] ^ Token[3]) << 3 |
-			  (Token[3] ^ AnsCnt[1] ^ Token[2] ^ Token[1]) << 2 |
-			  (Token[3] ^ AnsCnt[1] ^ Token[3] ^ Token[1]) << 1 |
-			  (Token[3] ^ AnsCnt[1] ^ Token[2]));
+		Val = (((Token[2] ^ AnsCnt[0]) << 7) |
+		       ((Token[3] ^ AnsCnt[0]) << 6) |
+		       ((Token[2] ^ AnsCnt[0]) << 5) |
+		       ((Token[3] ^ AnsCnt[0]) << 4) |
+		       ((Token[3] ^ AnsCnt[1] ^ Token[3] ^ Token[3]) << 3) |
+		       ((Token[3] ^ AnsCnt[1] ^ Token[2] ^ Token[1]) << 2) |
+		       ((Token[3] ^ AnsCnt[1] ^ Token[3] ^ Token[1]) << 1) |
+		       ((Token[3] ^ AnsCnt[1] ^ Token[2])));
 	}
 	return Val;
 }

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2021 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xdfxasm.c
-* @addtogroup dfxasm_v1_1
+* @addtogroup dfxasm Overview
 * @{
 *
 * This file contains the implementation of the interface functions for the
@@ -20,7 +21,7 @@
 * Ver  Who    Date          Changes
 * --- ----- ----------  -----------------------------------------------
 * 1.0  dp    07/14/2020     First release
-*
+* 1.2  Nava  06/22/2023     Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -71,8 +72,9 @@ s32 XDfxasm_CfgInitialize(XDfxasm *InstancePtr, XDfxasm_Config *ConfigPtr,
 	 * successfully.
 	 */
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
+#ifndef SDT
 	InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
-
+#endif
 	/* Indicate the component is now ready to use */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 
@@ -103,10 +105,10 @@ void XDfxasm_SetState(XDfxasm *InstancePtr, XDfxasm_State ShutdownValue)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid((ShutdownValue == XDFX_ASM_SHUTDOWN_MODE) ||
-			(ShutdownValue == XDFX_ASM_PASSTHROUGH_MODE));
+		       (ShutdownValue == XDFX_ASM_PASSTHROUGH_MODE));
 
 	XDfxasm_WriteReg(((InstancePtr->Config.BaseAddress) + XDFX_ASM_CTRL_OFFSET),
-			ShutdownValue);
+			 ShutdownValue);
 }
 
 /*****************************************************************************/
@@ -140,7 +142,7 @@ u32 XDfxasm_GetState(XDfxasm *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	Data = XDfxasm_ReadReg((InstancePtr->Config.BaseAddress) +
-			XDFX_ASM_CTRL_OFFSET) & XDFX_ASM_CTRL_SHUTDOWN_MASK;
+			       XDFX_ASM_CTRL_OFFSET) & XDFX_ASM_CTRL_SHUTDOWN_MASK;
 
 	return Data;
 }

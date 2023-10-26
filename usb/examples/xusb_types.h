@@ -1,6 +1,7 @@
 /******************************************************************************
 * Copyright (C) 2006 Vreelin Engineering, Inc.  All Rights Reserved.
-* Copyright (C) 2007 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,7 @@
  * ----- ---- ------------------------------------------------------------------
  * 1.00a hvm  2/22/07 First release
  * 4.00a hvm  12/20/10 Updated with the Audio device definitions.
+ * 5.6   pm   07/05/23 Added support for system device-tree flow.
  *
  * </pre>
  *****************************************************************************/
@@ -27,6 +29,7 @@
 #ifndef __XUSBTYPES_H__
 #define __XUSBTYPES_H__
 #ifdef __cplusplus
+#include "xusb.h"
 extern "C" {
 #endif
 
@@ -287,7 +290,7 @@ typedef struct {
 	u8 bInCollection;
 	u8 baInterfaceNr;
 
-}USB_CLASS_SPECIFIC_AC_IF_HEADER_DESC;
+} USB_CLASS_SPECIFIC_AC_IF_HEADER_DESC;
 
 /*
  * USB class specific audio Input terminal descriptor
@@ -306,7 +309,7 @@ typedef struct {
 	u8 iChannelNames;
 	u8 iTerminal;
 
-}USB_INPUT_TERMINAL_DESC;
+} USB_INPUT_TERMINAL_DESC;
 
 /*
  * USB class specific audio Output terminal descriptor
@@ -322,7 +325,7 @@ typedef struct {
 	u8 bSourceId;
 	u8 iTerminal;
 
-}USB_OUTPUT_TERMINAL_DESC;
+} USB_OUTPUT_TERMINAL_DESC;
 
 /*
  * USB class specific audio feature unit descriptor
@@ -339,7 +342,7 @@ typedef struct {
 	u8 bmaControls2;
 	u8 iFeature;
 
-}USB_FEATURE_UNIT_DESC;
+} USB_FEATURE_UNIT_DESC;
 
 /*
  * USB class specific audio class specific AS General Inerface descriptor
@@ -353,7 +356,7 @@ typedef struct {
 	u8 wFormatTagL;
 	u8 wFormatTagH;
 
-}USB_CLASS_SPECIFIC_AS_IF_DESC;
+} USB_CLASS_SPECIFIC_AS_IF_DESC;
 
 /*
  * USB audio Type I Format descriptor
@@ -371,7 +374,7 @@ typedef struct {
 	u8 tSamFreByteTwo;
 	u8 tSamFreByteThreeH;/* MSB of the three bytes data */
 
-}USB_AUDIO_TYPE_I_FORMAT_DESC;
+} USB_AUDIO_TYPE_I_FORMAT_DESC;
 
 /*
  * USB Standard Audio Endpoint descriptor
@@ -387,7 +390,7 @@ typedef struct {
 	u8 bRefresh;
 	u8 bSyncAddress;
 
-}USB_STD_AUDIO_EP_DESC;
+} USB_STD_AUDIO_EP_DESC;
 
 /*
  * USB Class Specific Audio Data Endpoint descriptor
@@ -401,7 +404,7 @@ typedef struct {
 	u8 wLockDelayL;
 	u8 wLockDelayH;
 
-}USB_CLASS_SPECIFIC_AUDIO_DATA_EP_DESC;
+} USB_CLASS_SPECIFIC_AUDIO_DATA_EP_DESC;
 
 /*
  * The standard USB structures as per USB 2.0 specification.

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemacps.c
-* @addtogroup emacps_v3_16
+* @addtogroup emacps Overview
 * @{
 *
 * The XEmacPs driver. Functions in this file are the minimum required functions
@@ -85,9 +86,15 @@ LONG XEmacPs_CfgInitialize(XEmacPs *InstancePtr, XEmacPs_Config * CfgPtr,
 	Xil_AssertNonvoid(CfgPtr != NULL);
 
 	/* Set device base address and ID */
+#ifndef SDT
 	InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+#endif
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
 	InstancePtr->Config.IsCacheCoherent = CfgPtr->IsCacheCoherent;
+#ifdef SDT
+	InstancePtr->Config.IntrId = CfgPtr->IntrId;
+	InstancePtr->Config.IntrParent = CfgPtr->IntrParent;
+#endif
 #if defined  (XCLOCKING)
 	InstancePtr->Config.RefClk = CfgPtr->RefClk;
 #endif

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -40,11 +41,15 @@ extern "C" {
 #endif /* _ASMLANGUAGE */
 
 /************************** Constant Definitions *****************************/
-#ifdef XPAR_QDMA_0_DEVICE_ID
+#if defined(XPAR_QDMA_0_DEVICE_ID) || defined(XPAR_QDMA_0_COMPATIBLE)
 #define QDMA_PCIE_BRIDGE
 #endif
 
-#ifdef XPAR_XDMA_0_DEVICE_ID
+#if defined XPAR_VERSAL_CIPS_0_PSPMC_0_PSV_NOC_PCIE_1_COMPATIBLE
+#define versal
+#endif
+
+#if defined(XPAR_XDMA_0_DEVICE_ID) || defined(XPAR_XDMA_0_COMPATIBLE)
 #define XDMA_PCIE_BRIDGE
 #endif
 

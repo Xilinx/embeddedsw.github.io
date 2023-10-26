@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xtrafgen_g.c
-* @addtogroup trafgen_v4_4
+* @addtogroup trafgen Overview
 * @{
 *
 * Provide a template for user to define their own hardware settings.
@@ -34,8 +35,7 @@
 
 /************************** Constant Definitions *****************************/
 
-XTrafGen_Config XTrafGen_ConfigTable[] =
-{
+XTrafGen_Config XTrafGen_ConfigTable[] = {
 	{
 		XPAR_XTRAFGEN_0_DEVICE_ID,
 		XPAR_XTRAFGEN_0_BASEADDR,

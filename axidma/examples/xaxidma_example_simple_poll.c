@@ -72,6 +72,7 @@
  * Device hardware build related constants.
  */
 
+#ifndef SDT
 #define DMA_DEV_ID		XPAR_AXIDMA_0_DEVICE_ID
 
 #ifdef XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
@@ -84,9 +85,16 @@
 #define DDR_BASE_ADDR	XPAR_PSU_DDR_0_S_AXI_BASEADDR
 #endif
 
+#else
+
+#ifdef XPAR_MEM0_BASEADDRESS
+#define DDR_BASE_ADDR		XPAR_MEM0_BASEADDRESS
+#endif
+#endif
+
 #ifndef DDR_BASE_ADDR
 #warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-		 DEFAULT SET TO 0x01000000
+DEFAULT SET TO 0x01000000
 #define MEM_BASE_ADDR		0x01000000
 #else
 #define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x1000000)
@@ -115,7 +123,11 @@
 extern void xil_printf(const char *format, ...);
 #endif
 
+#ifndef SDT
 int XAxiDma_SimplePollExample(u16 DeviceId);
+#else
+int XAxiDma_SimplePollExample(UINTPTR BaseAddress);
+#endif
 static int CheckData(void);
 
 /************************** Variable Definitions *****************************/
@@ -146,7 +158,11 @@ int main()
 	xil_printf("\r\n--- Entering main() --- \r\n");
 
 	/* Run the poll example for simple transfer */
+#ifndef SDT
 	Status = XAxiDma_SimplePollExample(DMA_DEV_ID);
+#else
+	Status = XAxiDma_SimplePollExample(XPAR_XAXIDMA_0_BASEADDR);
+#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("XAxiDma_SimplePoll Example Failed\r\n");
@@ -180,10 +196,10 @@ static void Uart550_Setup(void)
 	/* Set the baudrate to be predictable
 	 */
 	XUartNs550_SetBaud(XPAR_UARTNS550_0_BASEADDR,
-			XPAR_XUARTNS550_CLOCK_HZ, 9600);
+			   XPAR_XUARTNS550_CLOCK_HZ, 9600);
 
 	XUartNs550_SetLineControlReg(XPAR_UARTNS550_0_BASEADDR,
-			XUN_LCR_8_DATA_BITS);
+				     XUN_LCR_8_DATA_BITS);
 
 }
 #endif
@@ -203,7 +219,11 @@ static void Uart550_Setup(void)
 *
 *
 ******************************************************************************/
+#ifndef SDT
 int XAxiDma_SimplePollExample(u16 DeviceId)
+#else
+int XAxiDma_SimplePollExample(UINTPTR BaseAddress)
+#endif
 {
 	XAxiDma_Config *CfgPtr;
 	int Status;
@@ -219,11 +239,19 @@ int XAxiDma_SimplePollExample(u16 DeviceId)
 
 	/* Initialize the XAxiDma device.
 	 */
+#ifndef SDT
 	CfgPtr = XAxiDma_LookupConfig(DeviceId);
 	if (!CfgPtr) {
 		xil_printf("No config found for %d\r\n", DeviceId);
 		return XST_FAILURE;
 	}
+#else
+	CfgPtr = XAxiDma_LookupConfig(BaseAddress);
+	if (!CfgPtr) {
+		xil_printf("No config found for %d\r\n", BaseAddress);
+		return XST_FAILURE;
+	}
+#endif
 
 	Status = XAxiDma_CfgInitialize(&AxiDma, CfgPtr);
 	if (Status != XST_SUCCESS) {
@@ -231,7 +259,7 @@ int XAxiDma_SimplePollExample(u16 DeviceId)
 		return XST_FAILURE;
 	}
 
-	if(XAxiDma_HasSg(&AxiDma)){
+	if (XAxiDma_HasSg(&AxiDma)) {
 		xil_printf("Device configured as SG mode \r\n");
 		return XST_FAILURE;
 	}
@@ -239,16 +267,16 @@ int XAxiDma_SimplePollExample(u16 DeviceId)
 	/* Disable interrupts, we use polling mode
 	 */
 	XAxiDma_IntrDisable(&AxiDma, XAXIDMA_IRQ_ALL_MASK,
-						XAXIDMA_DEVICE_TO_DMA);
+			    XAXIDMA_DEVICE_TO_DMA);
 	XAxiDma_IntrDisable(&AxiDma, XAXIDMA_IRQ_ALL_MASK,
-						XAXIDMA_DMA_TO_DEVICE);
+			    XAXIDMA_DMA_TO_DEVICE);
 
 	Value = TEST_START_VALUE;
 
-	for(Index = 0; Index < MAX_PKT_LEN; Index ++) {
-			TxBufferPtr[Index] = Value;
+	for (Index = 0; Index < MAX_PKT_LEN; Index ++) {
+		TxBufferPtr[Index] = Value;
 
-			Value = (Value + 1) & 0xFF;
+		Value = (Value + 1) & 0xFF;
 	}
 	/* Flush the buffers before the DMA transfer, in case the Data Cache
 	 * is enabled
@@ -256,18 +284,18 @@ int XAxiDma_SimplePollExample(u16 DeviceId)
 	Xil_DCacheFlushRange((UINTPTR)TxBufferPtr, MAX_PKT_LEN);
 	Xil_DCacheFlushRange((UINTPTR)RxBufferPtr, MAX_PKT_LEN);
 
-	for(Index = 0; Index < Tries; Index ++) {
+	for (Index = 0; Index < Tries; Index ++) {
 
 
-		Status = XAxiDma_SimpleTransfer(&AxiDma,(UINTPTR) RxBufferPtr,
-					MAX_PKT_LEN, XAXIDMA_DEVICE_TO_DMA);
+		Status = XAxiDma_SimpleTransfer(&AxiDma, (UINTPTR) RxBufferPtr,
+						MAX_PKT_LEN, XAXIDMA_DEVICE_TO_DMA);
 
 		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
 		}
 
-		Status = XAxiDma_SimpleTransfer(&AxiDma,(UINTPTR) TxBufferPtr,
-					MAX_PKT_LEN, XAXIDMA_DMA_TO_DEVICE);
+		Status = XAxiDma_SimpleTransfer(&AxiDma, (UINTPTR) TxBufferPtr,
+						MAX_PKT_LEN, XAXIDMA_DMA_TO_DEVICE);
 
 		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
@@ -275,9 +303,10 @@ int XAxiDma_SimplePollExample(u16 DeviceId)
 
 		/*Wait till tranfer is done or 1usec * 10^6 iterations of timeout occurs*/
 		while (TimeOut) {
-			if (!(XAxiDma_Busy(&AxiDma,XAXIDMA_DEVICE_TO_DMA)) &&
-			!(XAxiDma_Busy(&AxiDma,XAXIDMA_DMA_TO_DEVICE)))
+			if (!(XAxiDma_Busy(&AxiDma, XAXIDMA_DEVICE_TO_DMA)) &&
+			    !(XAxiDma_Busy(&AxiDma, XAXIDMA_DMA_TO_DEVICE))) {
 				break;
+			}
 			TimeOut--;
 			usleep(1U);
 		}
@@ -324,11 +353,11 @@ static int CheckData(void)
 	 */
 	Xil_DCacheInvalidateRange((UINTPTR)RxPacket, MAX_PKT_LEN);
 
-	for(Index = 0; Index < MAX_PKT_LEN; Index++) {
+	for (Index = 0; Index < MAX_PKT_LEN; Index++) {
 		if (RxPacket[Index] != Value) {
 			xil_printf("Data error %d: %x/%x\r\n",
-			Index, (unsigned int)RxPacket[Index],
-				(unsigned int)Value);
+				   Index, (unsigned int)RxPacket[Index],
+				   (unsigned int)Value);
 
 			return XST_FAILURE;
 		}

@@ -1,0 +1,51 @@
+# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for UARTPSV controller
+
+maintainers:
+  - Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - arm,pl011
+          - arm,sbsa-uart
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,clock-freq:
+    description: Input clock frequency
+  ModemPinsConnected:
+    description: Specifies whether modem pins are connected to MIO or EMIO
+
+config:
+    - XUartPsv_Config
+
+required:
+    - compatible
+    - reg
+    - xlnx,clock-freq
+    - ModemPinsConnected
+    - xlnx,baudrate
+    - interrupts
+    - interrupt-parent
+
+examples:
+    xuartpsv_hello_world_example.c:
+        - reg
+    xuartpsv_intr_example.c:
+        - interrupts
+    xuartpsv_polled_example.c:
+        - reg
+    xuartpsv_selftest_example.c:
+        - reg
+
+tapp:
+   xuartpsv_polled_example.c:
+        declaration: UartPsvPolledExample
+...

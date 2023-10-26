@@ -1,5 +1,7 @@
 var struct_x_sd_ps =
 [
+    [ "__attribute__", "struct_x_sd_ps.html#a46bd77db73e5ffae57507df23842f78a", null ],
+    [ "__attribute__", "struct_x_sd_ps.html#a9ebf5b4e77d380d5246dd2f1f72b9e3b", null ],
     [ "BlkSize", "struct_x_sd_ps.html#a9f2cc68e1e0155d5a70c6d7323fe39c9", null ],
     [ "BusSpeed", "struct_x_sd_ps.html#aa22055804ffd9cbe6885b2abe40fee86", null ],
     [ "BusWidth", "struct_x_sd_ps.html#a069e352a2e02b9a9c0f61787549817db", null ],

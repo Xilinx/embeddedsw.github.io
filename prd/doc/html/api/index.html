@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">prd
    </div>
@@ -78,7 +78,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <p><b> Initialization and Configuration </b></p>
 <ul>
 <li>XPrd_LookupConfig(DeviceId) - Use the device identifier to find the static configuration structure defined in xprd_g.c. This is setup by the tools. For some operating systems the config structure will be initialized by the software and this call is not needed.</li>
-<li><a class="el" href="group__prd__v2__1.html#ga424f5c8b2cad657a5aea953ba959be55" title="This function initializes a XPrd instance/driver. ">XPrd_CfgInitialize()</a> is used for initialisation. The user needs to first call the <a class="el" href="group__prd__v2__1.html#ga7a83aa6940de765c091dfd07df308ac2" title="This function looks for the device configuration based on the unique device ID. ">XPrd_LookupConfig()</a> which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="group__prd__v2__1.html#ga424f5c8b2cad657a5aea953ba959be55" title="This function initializes a XPrd instance/driver. ">XPrd_CfgInitialize()</a>.</li>
+<li><a class="el" href="group__prd.html#ga424f5c8b2cad657a5aea953ba959be55" title="This function initializes a XPrd instance/driver. ">XPrd_CfgInitialize()</a> is used for initialisation. The user needs to first call the <a class="el" href="group__prd.html#ga7a83aa6940de765c091dfd07df308ac2" title="This function looks for the device configuration based on the unique device ID. ">XPrd_LookupConfig()</a> which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="group__prd.html#ga424f5c8b2cad657a5aea953ba959be55" title="This function initializes a XPrd instance/driver. ">XPrd_CfgInitialize()</a>.</li>
 </ul>
 <p><b> Threads </b></p>
 <p>This driver is not thread safe. Any needs for threads or thread mutual exclusion must be satisfied by the layer above this driver.</p>
@@ -103,7 +103,9 @@ $(document).ready(function(){initNavTree('index.html','');});
                            doxygen generation.
       ms     04/05/2017    Modified comment lines notation in functions
                            of prd examples to avoid unnecessary description
-                           which was displayed while generating doxygen.</pre><pre></pre> </div></div><!-- contents -->
+                           which was displayed while generating doxygen.
+2.2   Nava   06/22/2023    Added support for system device-tree flow.
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>

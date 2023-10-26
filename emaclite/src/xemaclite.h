@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite.h
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 * @details
 *
@@ -221,12 +222,20 @@ extern "C" {
  * This typedef contains configuration information for a device.
  */
 typedef struct {
+#ifdef SDT
+	char *Name;
+#else
 	u16 DeviceId;	 /**< Unique ID  of device */
+#endif
 	UINTPTR BaseAddress; /**< Device base address */
 	u8 TxPingPong;	 /**< 1 if TX Pong buffer configured, 0 otherwise */
 	u8 RxPingPong;	 /**< 1 if RX Pong buffer configured, 0 otherwise */
 	u8 MdioInclude;  /**< 1 if MDIO is enabled, 0 otherwise */
 	u8 Loopback;     /**< 1 if internal loopback is enabled, 0 otherwise */
+#ifdef SDT
+	u16 IntrId;
+	UINTPTR IntrParent;
+#endif
 } XEmacLite_Config;
 
 
@@ -279,7 +288,7 @@ typedef struct {
 *****************************************************************************/
 #define XEmacLite_NextTransmitAddr(InstancePtr) 			\
 	((InstancePtr)->EmacLiteConfig.BaseAddress + 			\
-		(InstancePtr)->NextTxBufferToUse) + XEL_TXBUFF_OFFSET
+	 (InstancePtr)->NextTxBufferToUse) + XEL_TXBUFF_OFFSET
 
 /****************************************************************************/
 /**
@@ -298,7 +307,7 @@ typedef struct {
 *****************************************************************************/
 #define XEmacLite_NextReceiveAddr(InstancePtr)				\
 	((InstancePtr)->EmacLiteConfig.BaseAddress + 			\
-	(InstancePtr)->NextRxBufferToUse)
+	 (InstancePtr)->NextRxBufferToUse)
 
 /*****************************************************************************/
 /**
@@ -337,7 +346,7 @@ typedef struct {
 *
 ******************************************************************************/
 #define XEmacLite_IsLoopbackConfigured(InstancePtr) 			\
-            ((InstancePtr)->EmacLiteConfig.Loopback == 1)
+	((InstancePtr)->EmacLiteConfig.Loopback == 1)
 
 /************************** Variable Definitions *****************************/
 
@@ -347,8 +356,8 @@ typedef struct {
  * Functions in xemaclite.c
  */
 int XEmacLite_CfgInitialize(XEmacLite *InstancePtr,
-				XEmacLite_Config *EmacLiteConfigPtr,
-				UINTPTR EffectiveAddr);
+			    XEmacLite_Config *EmacLiteConfigPtr,
+			    UINTPTR EffectiveAddr);
 void XEmacLite_SetMacAddress(XEmacLite *InstancePtr, u8 *AddressPtr);
 int XEmacLite_TxBufferAvailable(XEmacLite *InstancePtr);
 void XEmacLite_FlushReceive(XEmacLite *InstancePtr);
@@ -357,9 +366,9 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount);
 u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr);
 
 int XEmacLite_PhyRead(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
-			u16 *PhyDataPtr);
+		      u16 *PhyDataPtr);
 int XEmacLite_PhyWrite(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
-			u16 PhyData);
+		       u16 PhyData);
 
 void XEmacLite_EnableLoopBack(XEmacLite *InstancePtr);
 void XEmacLite_DisableLoopBack(XEmacLite *InstancePtr);
@@ -367,8 +376,13 @@ void XEmacLite_DisableLoopBack(XEmacLite *InstancePtr);
 /*
  * Initialization functions in xemaclite_sinit.c
  */
+#ifdef SDT
+XEmacLite_Config *XEmacLite_LookupConfig(UINTPTR BaseAddress);
+int XEmacLite_Initialize(XEmacLite *InstancePtr, UINTPTR BaseAddress);
+#else
 XEmacLite_Config *XEmacLite_LookupConfig(u16 DeviceId);
 int XEmacLite_Initialize(XEmacLite *InstancePtr, u16 DeviceId);
+#endif
 
 /*
  * Interrupt driven functions in xemaclite_intr.c

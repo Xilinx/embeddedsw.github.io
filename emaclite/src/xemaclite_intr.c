@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite_intr.c
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 *
 * Functions in this file are for the interrupt driven processing functionality.
@@ -209,8 +210,8 @@ void XEmacLite_InterruptHandler(void *InstancePtr)
 	BaseAddress = EmacLitePtr->EmacLiteConfig.BaseAddress;
 
 	if ((XEmacLite_IsRxEmpty(BaseAddress) != TRUE) ||
-		(XEmacLite_IsRxEmpty(BaseAddress +
-			XEL_BUFFER_OFFSET) != TRUE)) {
+	    (XEmacLite_IsRxEmpty(BaseAddress +
+				 XEL_BUFFER_OFFSET) != TRUE)) {
 		/*
 		 * Call the RX callback.
 		 */
@@ -220,7 +221,7 @@ void XEmacLite_InterruptHandler(void *InstancePtr)
 
 	TxStatus = XEmacLite_GetTxStatus(BaseAddress);
 	if (((TxStatus & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
-		(TxStatus & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
+	    (TxStatus & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
 
 		/*
 		 * Clear the Tx Active bit in the Tx Status Register.
@@ -237,14 +238,14 @@ void XEmacLite_InterruptHandler(void *InstancePtr)
 
 	TxStatus = XEmacLite_GetTxStatus(BaseAddress + XEL_BUFFER_OFFSET);
 	if (((TxStatus & XEL_TSR_XMIT_BUSY_MASK) == 0) &&
-		(TxStatus & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
+	    (TxStatus & XEL_TSR_XMIT_ACTIVE_MASK) != 0) {
 
 		/*
 		 * Clear the Tx Active bit in the Tx Status Register.
 		 */
 		TxStatus &= ~XEL_TSR_XMIT_ACTIVE_MASK;
 		XEmacLite_SetTxStatus(BaseAddress + XEL_BUFFER_OFFSET,
-					TxStatus);
+				      TxStatus);
 		/*
 		 * Update the flag indicating that there was a Tx Interrupt.
 		 */

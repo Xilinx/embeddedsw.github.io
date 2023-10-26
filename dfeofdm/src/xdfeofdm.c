@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,7 +17,13 @@
 * Ver   Who    Date     Changes
 * ----- ---    -------- -----------------------------------------------
 * 1.0   dc     11/21/22 Initial version
-*
+* 1.1   dc     05/22/23 State and status upgrades
+*       dc     06/20/23 Deprecate obsolete APIs
+*       dc     06/28/23 Add phase compensation calculation
+*       cog    07/04/23 Add support for SDT
+*       dc     07/27/23 Output delay in ccid slots
+*       dc     07/31/23 Antenna interleave delay reorder
+*       dc     08/28/23 Remove immediate trigger
 * </pre>
 * @addtogroup dfeofdm Overview
 * @{
@@ -44,12 +50,16 @@
 #define XDFEOFDM_NO_EMPTY_CCID_FLAG (0xFFFFU) /**< Not Empty CCID flag */
 #define XDFEOFDM_COEFF_LOAD_TIMEOUT (100U) /**< Units of 10us */
 #define XDFEOFDM_COEFF_UNIT_SIZE (4U) /**< Coefficient unit size */
+#define XDFEOFDM_U32_NUM_BITS (32U) /**< Number of bits in register */
 /**
 * @endcond
 */
-#define XDFEOFDM_U32_NUM_BITS (32U) /**< Number of bits in register */
-#define XDFEOFDM_DRIVER_VERSION_MINOR (0U) /**< Driver's minor version number */
+#define XDFEOFDM_DRIVER_VERSION_MINOR (1U) /**< Driver's minor version number */
 #define XDFEOFDM_DRIVER_VERSION_MAJOR (1U) /**< Driver's major version number */
+
+#define XDFEOFDM_PHASE_COMPENSATION_REG_STEP                                   \
+	8U /** Address space step between
+	space for phase compensation on one carrier */
 
 /************************** Function Prototypes *****************************/
 
@@ -63,6 +73,7 @@ extern metal_phys_addr_t XDfeOfdm_metal_phys[XDFEOFDM_MAX_NUM_INSTANCES];
 #endif
 extern XDfeOfdm XDfeOfdm_Ofdm[XDFEOFDM_MAX_NUM_INSTANCES];
 static u32 XDfeOfdm_DriverHasBeenRegisteredOnce = 0U;
+static const u32 XDfeOfdm_SymbolNumberRanges[4] = { 14, 28, 56, 112 };
 
 /************************** Function Definitions ****************************/
 extern s32 XDfeOfdm_RegisterMetal(XDfeOfdm *InstancePtr,
@@ -263,8 +274,8 @@ static u32 XDfeOfdm_CountOnesInBitmap(const XDfeOfdm *InstancePtr,
 /**
 *
 * Adds the specified CCID, to the CC sequence. The sequence is defined with
-* CCSeqBitmap where bit0 coresponds to CC[0], bit1 to CC[1], bit2 to CC[2], and
-* so on.
+* CCSeqBitmap where bit0 corresponds to CC[0], bit1 to CC[1], bit2 to CC[2],
+* and so on.
 *
 * Sequence data that is returned in the CCIDSequence is not the same as what is
 * written in the registers. The translation is:
@@ -444,11 +455,13 @@ XDfeOfdm_GetInternalCarrierCfg(const XDfeOfdm *InstancePtr, s32 CCID,
 *
 * Sets the next FT sequence configuration.
 *
-* @param    InstancePtr Pointer to the OFDM instance.
+* @param    CCCfg CC configuration container.
 * @param    NextFtSeq Next FT sequence configuration container.
 *
+* @warning  FT sequence length does not support size 16.
+*
 ****************************************************************************/
-static void XDfeOfdm_SetNextFTSequence(const XDfeOfdm *InstancePtr,
+static void XDfeOfdm_SetNextFTSequence(XDfeOfdm_CCCfg *CCCfg,
 				       const XDfeOfdm_FTSequence *NextFtSeq)
 {
 	u32 Index;
@@ -457,16 +470,17 @@ static void XDfeOfdm_SetNextFTSequence(const XDfeOfdm *InstancePtr,
 		metal_log(METAL_LOG_ERROR, "FT sequence length is 0 in %s\n",
 			  __func__);
 	}
+	if (NextFtSeq->Length == XDFEOFDM_FT_SEQ_LENGTH_MAX) {
+		metal_log(METAL_LOG_ERROR, "FT sequence length is 16 in %s\n",
+			  __func__);
+	}
 
 	/* Sequence Length */
-	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET,
-			  NextFtSeq->Length - 1U);
+	CCCfg->FTSequence.Length = NextFtSeq->Length;
 
 	/* Write CCID sequence and carrier configurations */
 	for (Index = 0; Index < XDFEOFDM_FT_NUM; Index++) {
-		XDfeOfdm_WriteReg(InstancePtr,
-				  XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET(Index),
-				  NextFtSeq->CCID[Index]);
+		CCCfg->FTSequence.CCID[Index] = NextFtSeq->CCID[Index];
 	}
 }
 
@@ -630,6 +644,226 @@ static void XDfeOfdm_DisableLowPowerTrigger(const XDfeOfdm *InstancePtr)
 			  Data);
 }
 
+/****************************************************************************/
+/**
+*
+* Gets PhaseCompensationRates and allocate it in corresponding CCID position
+* in XDfeOfdm_InternalCarrierCfg.
+*
+* @param    InstancePtr Pointer to the Ofdm instance.
+* @param    CCCfg CC configuration container.
+*
+****************************************************************************/
+static void XDfeOfdm_GetPhaseCompensation(const XDfeOfdm *InstancePtr,
+					  XDfeOfdm_CCCfg *CCCfg)
+{
+	u32 SeqIndex;
+	u32 Index;
+	u32 SeqLen;
+	u32 UniqueId[XDFEOFDM_FT_SEQ_LENGTH_MAX];
+	u32 UniqueIdIndex = 0;
+	u32 CCID;
+	u32 Offset;
+	u32 Range;
+	u32 Numerology;
+	u32 ContinueFlag;
+
+	if (InstancePtr->Config.PhaseCompensation ==
+	    XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_DISABLED) {
+		return;
+	}
+
+	SeqLen = CCCfg->FTSequence.Length;
+	for (SeqIndex = 0; SeqIndex < SeqLen; SeqIndex++) {
+		/* Get next ccid from FT sequence */
+		CCID = CCCfg->FTSequence.CCID[SeqIndex];
+		/* Find is it already used */
+		ContinueFlag = 0;
+		for (Index = 0; Index < UniqueIdIndex; Index++) {
+			if (UniqueId[Index] == CCID) {
+				/* Already used ccid */
+				ContinueFlag = 1;
+				break;
+			}
+		}
+		if (ContinueFlag == 1) {
+			continue;
+		}
+		/* This CCID is used first time now, put it in UniqueId array
+		   for the future searches */
+		UniqueId[UniqueIdIndex] = CCID;
+
+		/* Read phase compensations from registers. Number is defined
+		   by Numerology of this CCID */
+		Numerology = XDfeOfdm_RdRegBitField(
+			InstancePtr,
+			XDFEOFDM_CARRIER_CONFIGURATION1_CURRENT_OFFSET(CCID),
+			XDFEOFDM_CARRIER_CONFIGURATION1_NUMEROLOGY_WIDTH,
+			XDFEOFDM_CARRIER_CONFIGURATION1_NUMEROLOGY_OFFSET);
+
+		/* Finally read compensation data */
+		Range = XDfeOfdm_SymbolNumberRanges[Numerology];
+		for (Index = 0; Index < Range; Index++) {
+			Offset = UniqueIdIndex +
+				 (Index * XDFEOFDM_PHASE_COMPENSATION_REG_STEP);
+			CCCfg->CarrierCfg[CCID]
+				.PhaseCompensation[Index] = XDfeOfdm_ReadReg(
+				InstancePtr,
+				XDFEOFDM_PHASE_COMPENSATION_CURRENT_OFFSET(
+					Offset));
+		}
+		UniqueIdIndex++;
+	}
+}
+
+/****************************************************************************/
+/**
+*
+* Sets PhaseCompensationRates.
+*
+* @param    InstancePtr Pointer to the Ofdm instance.
+* @param    CCCfg CC configuration container.
+*
+****************************************************************************/
+static void XDfeOfdm_SetPhaseCompensation(const XDfeOfdm *InstancePtr,
+					  const XDfeOfdm_CCCfg *CCCfg)
+{
+	u32 SeqIndex;
+	u32 Index;
+	u32 SeqLen;
+	u32 UniqueId[XDFEOFDM_FT_SEQ_LENGTH_MAX];
+	u32 UniqueIdIndex = 0;
+	u32 CCID;
+	u32 Offset;
+	u32 Range;
+	u32 Numerology;
+	u32 ContinueFlag;
+
+	if (InstancePtr->Config.PhaseCompensation ==
+	    XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_DISABLED) {
+		return;
+	}
+
+	SeqLen = CCCfg->FTSequence.Length;
+	for (SeqIndex = 0; SeqIndex < SeqLen; SeqIndex++) {
+		/* Get next ccid from FT sequence */
+		CCID = CCCfg->FTSequence.CCID[SeqIndex];
+		/* Find is it already used */
+		ContinueFlag = 0;
+		for (Index = 0; Index < UniqueIdIndex; Index++) {
+			if (UniqueId[Index] == CCID) {
+				/* Already used ccid */
+				ContinueFlag = 1;
+				break;
+			}
+		}
+		if (ContinueFlag == 1) {
+			continue;
+		}
+
+		/* This CCID is used first time now, put it in UniqueId array
+		   for the future searches */
+		UniqueId[UniqueIdIndex] = CCID;
+
+		/* Get phase compensations from registers. Number is defined
+		   by Numerology of this CCID */
+		Numerology = CCCfg->CarrierCfg[CCID].Numerology;
+
+		/* Finally write compensation data */
+		Range = XDfeOfdm_SymbolNumberRanges[Numerology];
+		for (Index = 0; Index < Range; Index++) {
+			Offset = UniqueIdIndex +
+				 (Index * XDFEOFDM_PHASE_COMPENSATION_REG_STEP);
+			XDfeOfdm_WriteReg(
+				InstancePtr,
+				XDFEOFDM_PHASE_COMPENSATION_NEXT_OFFSET(Offset),
+				CCCfg->CarrierCfg[CCID]
+					.PhaseCompensation[Index]);
+		}
+		UniqueIdIndex++;
+	}
+}
+
+/****************************************************************************/
+/**
+*
+* Sets output delay for CCID.
+*
+* @param    InstancePtr Pointer to the Ofdm instance.
+* @param    CCCfg CC configuration container.
+* @param    CCID CC ID.
+* @param    OutputDelay Delay which should be written for this CCID
+*
+****************************************************************************/
+static void XDfeOfdm_SetOutputDelay(const XDfeOfdm *InstancePtr,
+				    XDfeOfdm_CCCfg *CCCfg, const s32 CCID,
+				    const u32 OutputDelay)
+{
+	Xil_AssertVoid((InstancePtr->Config.AntennaInterleave == 1U) ||
+		       (InstancePtr->Config.AntennaInterleave == 2U) ||
+		       (InstancePtr->Config.AntennaInterleave == 4U));
+	u32 Ail = InstancePtr->Config.AntennaInterleave;
+	u32 Index;
+	for (Index = 0; Index < XDFEOFDM_CC_SEQ_LENGTH_MAX / Ail; Index++) {
+		if (CCCfg->CCSequence.CCID[Index] == CCID) {
+			if (Ail == 1U) {
+				CCCfg->CarrierCfg[Index].OutputDelay =
+					OutputDelay;
+			} else if (Ail == 2U) {
+				CCCfg->CarrierCfg[Index * 2].OutputDelay =
+					OutputDelay;
+				CCCfg->CarrierCfg[Index * 2 + 1].OutputDelay =
+					OutputDelay;
+			} else if (Ail == 4U) {
+				CCCfg->CarrierCfg[Index * 4].OutputDelay =
+					OutputDelay;
+				CCCfg->CarrierCfg[Index * 4 + 1].OutputDelay =
+					OutputDelay;
+				CCCfg->CarrierCfg[Index * 4 + 2].OutputDelay =
+					OutputDelay;
+				CCCfg->CarrierCfg[Index * 4 + 3].OutputDelay =
+					OutputDelay;
+			}
+		}
+	}
+}
+
+/****************************************************************************/
+/**
+*
+* Gets output delay allocated for CCID.
+*
+* @param    InstancePtr Pointer to the Ofdm instance.
+* @param    CCCfg CC configuration container.
+* @param    CCID CC ID.
+
+* @return   Output delay allocated for this CCID, 0 if not allocated.
+*
+****************************************************************************/
+static u32 XDfeOfdm_GetOutputDelay(const XDfeOfdm *InstancePtr,
+				   const XDfeOfdm_CCCfg *CCCfg, s32 CCID)
+{
+	Xil_AssertVoid((InstancePtr->Config.AntennaInterleave == 1U) ||
+		       (InstancePtr->Config.AntennaInterleave == 2U) ||
+		       (InstancePtr->Config.AntennaInterleave == 4U));
+	u32 Ail = InstancePtr->Config.AntennaInterleave;
+	u32 Index;
+	for (Index = 0; Index < XDFEOFDM_CC_SEQ_LENGTH_MAX; Index++) {
+		if (CCCfg->CCSequence.CCID[Index] == CCID) {
+			if (Ail == 1U) {
+				return CCCfg->CarrierCfg[Index].OutputDelay;
+			} else if (Ail == 2U) {
+				return CCCfg->CarrierCfg[Index * 2].OutputDelay;
+			} else if (Ail == 4U) {
+				return CCCfg->CarrierCfg[Index * 4].OutputDelay;
+			}
+		}
+	}
+	metal_log(METAL_LOG_ERROR, "Error, CCID=%d is in sequence: %s\n", CCID,
+		  __func__);
+	return 0;
+}
+
 /**
 * @endcond
 */
@@ -670,7 +904,7 @@ XDfeOfdm *XDfeOfdm_InstanceInit(const char *DeviceNodeName)
 	/* Is this first OFDM initialisation ever? */
 	if (0U == XDfeOfdm_DriverHasBeenRegisteredOnce) {
 		/* Set up environment to non-initialized */
-		for (Index = 0; Index < XDFEOFDM_MAX_NUM_INSTANCES; Index++) {
+		for (Index = 0; XDFEOFDM_INSTANCE_EXISTS(Index); Index++) {
 			XDfeOfdm_Ofdm[Index].StateId = XDFEOFDM_STATE_NOT_READY;
 			XDfeOfdm_Ofdm[Index].NodeName[0] = '\0';
 		}
@@ -682,7 +916,7 @@ XDfeOfdm *XDfeOfdm_InstanceInit(const char *DeviceNodeName)
 	 * a) if no, do full initialization
 	 * b) if yes, skip initialization and return the object pointer
 	 */
-	for (Index = 0; Index < XDFEOFDM_MAX_NUM_INSTANCES; Index++) {
+	for (Index = 0; XDFEOFDM_INSTANCE_EXISTS(Index); Index++) {
 		if (0U == strncmp(XDfeOfdm_Ofdm[Index].NodeName, DeviceNodeName,
 				  strlen(DeviceNodeName))) {
 			XDfeOfdm_Ofdm[Index].StateId = XDFEOFDM_STATE_READY;
@@ -693,7 +927,7 @@ XDfeOfdm *XDfeOfdm_InstanceInit(const char *DeviceNodeName)
 	/*
 	 * Find the available slot for this instance.
 	 */
-	for (Index = 0; Index < XDFEOFDM_MAX_NUM_INSTANCES; Index++) {
+	for (Index = 0; XDFEOFDM_INSTANCE_EXISTS(Index); Index++) {
 		if (XDfeOfdm_Ofdm[Index].NodeName[0] == '\0') {
 			strncpy(XDfeOfdm_Ofdm[Index].NodeName, DeviceNodeName,
 				XDFEOFDM_NODE_NAME_MAX_LENGTH);
@@ -710,7 +944,7 @@ register_metal:
 	memcpy(Str, InstancePtr->NodeName, XDFEOFDM_NODE_NAME_MAX_LENGTH);
 	AddrStr = strtok(Str, ".");
 	Addr = strtoul(AddrStr, NULL, 16);
-	for (Index = 0; Index < XDFEOFDM_MAX_NUM_INSTANCES; Index++) {
+	for (Index = 0; XDFEOFDM_INSTANCE_EXISTS(Index); Index++) {
 		if (Addr == XDfeOfdm_metal_phys[Index]) {
 			InstancePtr->Device = &XDfeOfdm_CustomDevice[Index];
 			goto bm_register_metal;
@@ -763,7 +997,7 @@ void XDfeOfdm_InstanceClose(XDfeOfdm *InstancePtr)
 	u32 Index;
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	for (Index = 0; Index < XDFEOFDM_MAX_NUM_INSTANCES; Index++) {
+	for (Index = 0; XDFEOFDM_INSTANCE_EXISTS(Index); Index++) {
 		/* Find the instance in XDfeOfdm_Ofdm array */
 		if (&XDfeOfdm_Ofdm[Index] == InstancePtr) {
 			/* Release libmetal */
@@ -840,11 +1074,16 @@ void XDfeOfdm_Configure(XDfeOfdm *InstancePtr, XDfeOfdm_Cfg *Cfg)
 	InstancePtr->Config.AntennaInterleave = XDfeOfdm_RdBitField(
 		XDFEOFDM_MODEL_PARAM_ANTENNA_INTERLEAVE_WIDTH,
 		XDFEOFDM_MODEL_PARAM_ANTENNA_INTERLEAVE_OFFSET, ModelParam);
+	InstancePtr->Config.PhaseCompensation = XDfeOfdm_RdBitField(
+		XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_WIDTH,
+		XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_OFFSET, ModelParam);
 
 	/* Copy configs model parameters from InstancePtr */
 	Cfg->ModelParams.NumAntenna = InstancePtr->Config.NumAntenna;
 	Cfg->ModelParams.AntennaInterleave =
 		InstancePtr->Config.AntennaInterleave;
+	Cfg->ModelParams.PhaseCompensation =
+		InstancePtr->Config.PhaseCompensation;
 
 	/* Release RESET */
 	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_RESET_OFFSET,
@@ -864,79 +1103,23 @@ void XDfeOfdm_Configure(XDfeOfdm *InstancePtr, XDfeOfdm_Cfg *Cfg)
 ****************************************************************************/
 void XDfeOfdm_Initialize(XDfeOfdm *InstancePtr, XDfeOfdm_Init *Init)
 {
-	XDfeOfdm_Trigger CCUpdate;
-	u32 Data;
-	u32 Index;
-	u32 CCSequenceLength;
-
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->StateId == XDFEOFDM_STATE_CONFIGURED);
 	Xil_AssertVoid(Init != NULL);
+
+	/* Enable OFDM */
+	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_STATE_OFDM_ENABLE_OFFSET,
+			  XDFEOFDM_STATE_OFDM_ENABLE_BF_ENABLED);
 
 	/* Write "one-time" CC Sequence length. InstancePtr->CCSequenceLength holds
 	   the exact sequence length value as register sequence length value 0
 	   can be understood as length 0 or 1 */
 	InstancePtr->NotUsedCCID = 0;
 	InstancePtr->CCSequenceLength = Init->CCSequenceLength;
-	if (Init->CCSequenceLength == 0) {
-		CCSequenceLength = 0U;
-	} else {
-		CCSequenceLength = Init->CCSequenceLength - 1U;
-	}
-	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET,
-			  CCSequenceLength);
 
 	/* Write 0 to FT Sequence length */
 	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET,
 			  0);
-
-	/* Set default sequence and ensure all CCs are disabled. Not all
-	   registers will be cleared by reset as they are implemented using
-	   DRAM. This step sets all CC_CONFIGURATION.CARRIER_CONFIGURATION.
-	   CURRENT[*]. ENABLE to 0 ensuring the Hardblock will remain disabled
-	   following the first call to XDFEOfdm_Activate. */
-	for (Index = 0; Index < XDFEOFDM_CC_SEQ_LENGTH_MAX; Index++) {
-		XDfeOfdm_WriteReg(InstancePtr,
-				  XDFEOFDM_CC_SEQUENCE_NEXT_OFFSET(Index),
-				  XDFEOFDM_SEQUENCE_ENTRY_DEFAULT);
-	}
-
-	for (Index = 0; Index < XDFEOFDM_FT_SEQ_LENGTH_MAX; Index++) {
-		XDfeOfdm_WriteReg(InstancePtr,
-				  XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET(Index),
-				  XDFEOFDM_SEQUENCE_ENTRY_DEFAULT);
-	}
-
-	/* Set all CC_CONFIGURATION.CARRIER_CONFIGURATION.CURRENT[*]. ENABLE
-	   to 0 ensuring the Hardblock will remain disabled following the first
-	   call to XDFEOfdm_Activate. */
-	for (Index = 0; Index < XDFEOFDM_CC_NUM; Index++) {
-		XDfeOfdm_WrRegBitField(
-			InstancePtr,
-			XDFEOFDM_CARRIER_CONFIGURATION1_NEXT_OFFSET(Index),
-			XDFEOFDM_CARRIER_CONFIGURATION1_ENABLE_WIDTH,
-			XDFEOFDM_CARRIER_CONFIGURATION1_ENABLE_OFFSET,
-			XDFEOFDM_CARRIER_CONFIGURATION1_ENABLE_DISABLED);
-	}
-
-	/* Trigger CC_UPDATE immediately using Register source to update
-	   CURRENT from NEXT */
-	CCUpdate.TriggerEnable = XDFEOFDM_TRIGGERS_TRIGGER_ENABLE_ENABLED;
-	CCUpdate.Mode = XDFEOFDM_TRIGGERS_MODE_IMMEDIATE;
-	CCUpdate.StateOutput = XDFEOFDM_TRIGGERS_STATE_OUTPUT_ENABLED;
-	Data = XDfeOfdm_ReadReg(InstancePtr,
-				XDFEOFDM_TRIGGERS_CC_UPDATE_OFFSET);
-	Data = XDfeOfdm_WrBitField(XDFEOFDM_TRIGGERS_STATE_OUTPUT_WIDTH,
-				   XDFEOFDM_TRIGGERS_STATE_OUTPUT_OFFSET, Data,
-				   CCUpdate.StateOutput);
-	Data = XDfeOfdm_WrBitField(XDFEOFDM_TRIGGERS_TRIGGER_ENABLE_WIDTH,
-				   XDFEOFDM_TRIGGERS_TRIGGER_ENABLE_OFFSET,
-				   Data, CCUpdate.TriggerEnable);
-	Data = XDfeOfdm_WrBitField(XDFEOFDM_TRIGGERS_MODE_WIDTH,
-				   XDFEOFDM_TRIGGERS_MODE_OFFSET, Data,
-				   CCUpdate.Mode);
-	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_TRIGGERS_CC_UPDATE_OFFSET,
-			  Data);
 
 	InstancePtr->StateId = XDFEOFDM_STATE_INITIALISED;
 }
@@ -1066,15 +1249,10 @@ void XDfeOfdm_GetCurrentCCCfg(const XDfeOfdm *InstancePtr,
 	}
 
 	/* Read sequence length */
-	SeqLen = XDfeOfdm_ReadReg(InstancePtr,
-				  XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET);
-	if (SeqLen == 0U) {
-		CurrCCCfg->CCSequence.Length = InstancePtr->CCSequenceLength;
-	} else {
-		CurrCCCfg->CCSequence.Length = SeqLen + 1U;
-	}
+	CurrCCCfg->CCSequence.Length = InstancePtr->CCSequenceLength;
 	SeqLen = XDfeOfdm_ReadReg(InstancePtr,
 				  XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET);
+	CurrCCCfg->FTSequence.Length = SeqLen + 1U;
 
 	/* Convert not used CC to -1 */
 	for (Index = 0U; Index < XDFEOFDM_CC_NUM; Index++) {
@@ -1085,6 +1263,10 @@ void XDfeOfdm_GetCurrentCCCfg(const XDfeOfdm *InstancePtr,
 				XDFEOFDM_SEQUENCE_ENTRY_NULL;
 		}
 	}
+
+	/* Read PhaseCompensationRates and allocate it in corresponding CCID
+	   position in XDfeOfdm_InternalCarrierCfg */
+	XDfeOfdm_GetPhaseCompensation(InstancePtr, CurrCCCfg);
 }
 
 /****************************************************************************/
@@ -1101,7 +1283,6 @@ void XDfeOfdm_GetCurrentCCCfg(const XDfeOfdm *InstancePtr,
 void XDfeOfdm_GetEmptyCCCfg(const XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg)
 {
 	u32 Index;
-	u32 SeqLen;
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(CCCfg != NULL);
 
@@ -1110,23 +1291,11 @@ void XDfeOfdm_GetEmptyCCCfg(const XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg)
 	/* Convert CC to -1 meaning not used */
 	for (Index = 0U; Index < XDFEOFDM_CC_NUM; Index++) {
 		CCCfg->CCSequence.CCID[Index] = XDFEOFDM_SEQUENCE_ENTRY_NULL;
-		CCCfg->FTSequence.CCID[Index] = XDFEOFDM_SEQUENCE_ENTRY_NULL;
+		CCCfg->FTSequence.CCID[Index] = 0;
 	}
 	/* Read sequence length */
-	SeqLen = XDfeOfdm_ReadReg(InstancePtr,
-				  XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET);
-	if (SeqLen == 0U) {
-		CCCfg->CCSequence.Length = InstancePtr->CCSequenceLength;
-	} else {
-		CCCfg->CCSequence.Length = SeqLen + 1U;
-	}
-	SeqLen = XDfeOfdm_ReadReg(InstancePtr,
-				  XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET);
-	if (SeqLen == 0U) {
-		CCCfg->FTSequence.Length = InstancePtr->CCSequenceLength;
-	} else {
-		CCCfg->FTSequence.Length = SeqLen + 1U;
-	}
+	CCCfg->CCSequence.Length = InstancePtr->CCSequenceLength;
+	CCCfg->FTSequence.Length = 0;
 }
 
 /****************************************************************************/
@@ -1138,7 +1307,7 @@ void XDfeOfdm_GetEmptyCCCfg(const XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg)
 * an error.
 * Initiates CC update (enable CCUpdate trigger TUSER Single Shot).
 *
-* The returned CCCfg.CCSequence is transleted as there is no explicite indication that
+* The returned CCCfg.CCSequence is transleted as there is no explicit indication that
 * SEQUENCE[i] is not used - 0 can define the slot as either used or not used.
 * Sequence data that is returned in the CCIDSequence is not the same as what is
 * written in the registers. The translation is:
@@ -1212,7 +1381,11 @@ u32 XDfeOfdm_AddCCtoCCCfg(XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 		CCCfg->CarrierCfg[CCID].ScaleFactor = CarrierCfg->ScaleFactor;
 		CCCfg->CarrierCfg[CCID].CommsStandard =
 			CarrierCfg->CommsStandard;
-		CCCfg->CarrierCfg[CCID].OutputDelay = CarrierCfg->OutputDelay;
+		XDfeOfdm_SetOutputDelay(InstancePtr, CCCfg, CCID,
+					CarrierCfg->OutputDelay);
+		memcpy(CCCfg->CarrierCfg[CCID].PhaseCompensation,
+		       CarrierCfg->PhaseCompensation,
+		       sizeof(u32) * XDFEOFDM_PHASE_COMPENSATION_MAX);
 	} else {
 		metal_log(METAL_LOG_ERROR, "CC not added to a sequence in %s\n",
 			  __func__);
@@ -1232,7 +1405,7 @@ u32 XDfeOfdm_AddCCtoCCCfg(XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(CCCfg, FTSeq);
 
 	return XST_SUCCESS;
 }
@@ -1289,7 +1462,8 @@ void XDfeOfdm_GetCarrierCfg(const XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 	CarrierCfg->NumSubcarriers = CCCfg->CarrierCfg[CCID].NumSubcarriers;
 	CarrierCfg->ScaleFactor = CCCfg->CarrierCfg[CCID].ScaleFactor;
 	CarrierCfg->CommsStandard = CCCfg->CarrierCfg[CCID].CommsStandard;
-	CarrierCfg->OutputDelay = CCCfg->CarrierCfg[CCID].OutputDelay;
+	CarrierCfg->OutputDelay =
+		XDfeOfdm_GetOutputDelay(InstancePtr, CCCfg, CCID);
 
 	*CCSeqBitmap = 0;
 	for (Index = 0; Index < CCCfg->CCSequence.Length; Index++) {
@@ -1338,7 +1512,7 @@ u32 XDfeOfdm_RemoveCCfromCCCfg(XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(CCCfg, FTSeq);
 	return XST_SUCCESS;
 }
 
@@ -1401,7 +1575,12 @@ u32 XDfeOfdm_UpdateCCinCCCfg(XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 	CCCfg->CarrierCfg[CCID].NumSubcarriers = CarrierCfg->NumSubcarriers;
 	CCCfg->CarrierCfg[CCID].ScaleFactor = CarrierCfg->ScaleFactor;
 	CCCfg->CarrierCfg[CCID].CommsStandard = CarrierCfg->CommsStandard;
-	CCCfg->CarrierCfg[CCID].OutputDelay = CarrierCfg->OutputDelay;
+	XDfeOfdm_SetOutputDelay(InstancePtr, CCCfg, CCID,
+				CarrierCfg->OutputDelay);
+
+	memcpy(CCCfg->CarrierCfg[CCID].PhaseCompensation,
+	       CarrierCfg->PhaseCompensation,
+	       sizeof(u32) * XDFEOFDM_PHASE_COMPENSATION_MAX);
 
 	/* Check FT sequence length */
 	if (XST_FAILURE ==
@@ -1412,7 +1591,7 @@ u32 XDfeOfdm_UpdateCCinCCCfg(XDfeOfdm *InstancePtr, XDfeOfdm_CCCfg *CCCfg,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(CCCfg, FTSeq);
 	return XST_SUCCESS;
 }
 
@@ -1437,12 +1616,16 @@ void XDfeOfdm_SetNextCCCfg(const XDfeOfdm *InstancePtr,
 	XDfeOfdm_TranslateSeq(InstancePtr, NextCCCfg->CCSequence.CCID,
 			      NextCCID);
 
-	/* Sequence Length should remain the same, so copy the sequence length
-	   from CURRENT to NEXT, does not take from NextCCCfg. The reason
-	   is that NextCCCfg->CCSequence.SeqLength can be 0 or 1 for the value 0
-	   in the CURRENT seqLength register */
-	SeqLength = XDfeOfdm_ReadReg(
-		InstancePtr, XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET);
+	/* Sequence Length should remain the same, so take the sequence length
+	   from InstancePtr->SequenceLength and decrement for 1. The following
+	   if statement is to distinguish how to calculate length in case
+	   InstancePtr->SequenceLength = 0 or 1 whih both will put 0 in the
+	   CURRENT seqLength register */
+	if (InstancePtr->CCSequenceLength == 0) {
+		SeqLength = 0U;
+	} else {
+		SeqLength = InstancePtr->CCSequenceLength - 1U;
+	}
 	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET,
 			  SeqLength);
 
@@ -1498,6 +1681,28 @@ void XDfeOfdm_SetNextCCCfg(const XDfeOfdm *InstancePtr,
 			InstancePtr,
 			XDFEOFDM_CARRIER_CONFIGURATION2_NEXT_OFFSET(Index),
 			NextCCCfg->CarrierCfg[Index].OutputDelay);
+	}
+
+	/* Set PhaseCompensationRates and allocate it in corresponding CCID
+	   position in PHASE_COMPENSATION_WEIGHTS */
+	XDfeOfdm_SetPhaseCompensation(InstancePtr, NextCCCfg);
+
+	/* Set FT sequence data */
+	/* Sequence Length */
+	if (NextCCCfg->FTSequence.Length == 0) {
+		XDfeOfdm_WriteReg(InstancePtr,
+				  XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET, 0);
+	} else {
+		XDfeOfdm_WriteReg(InstancePtr,
+				  XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET,
+				  NextCCCfg->FTSequence.Length - 1U);
+	}
+
+	/* Write CCID sequence and carrier configurations */
+	for (Index = 0; Index < XDFEOFDM_FT_NUM; Index++) {
+		XDfeOfdm_WriteReg(InstancePtr,
+				  XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET(Index),
+				  NextCCCfg->FTSequence.CCID[Index]);
 	}
 }
 
@@ -1592,6 +1797,14 @@ u32 XDfeOfdm_SetNextCCCfgAndTrigger(const XDfeOfdm *InstancePtr,
 * @note     Clear event status with XDfeOfdm_ClearEventStatus() before
 *           running this API.
 *
+* @attention:  This API is deprecated in the release 2023.2. Source code will
+*              be removed from in the release 2024.1 release. The functionality
+*              of this API can be reproduced with the following API sequence:
+*                  XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg);
+*                  XDfeOfdm_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap,
+*                      CarrierCfg, FTseq);
+*                  XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg);
+*
 ****************************************************************************/
 u32 XDfeOfdm_AddCC(XDfeOfdm *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 		   const XDfeOfdm_CarrierCfg *CarrierCfg,
@@ -1667,7 +1880,7 @@ u32 XDfeOfdm_AddCC(XDfeOfdm *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(&CCCfg, FTSeq);
 
 	/* If add is successful update next configuration and trigger update */
 	XDfeOfdm_SetNextCCCfg(InstancePtr, &CCCfg);
@@ -1689,6 +1902,13 @@ u32 XDfeOfdm_AddCC(XDfeOfdm *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 *
 * @note     Clear event status with XDfeOfdm_ClearEventStatus() before
 *           running this API.
+*
+* @attention:  This API is deprecated in the release 2023.2. Source code will
+*              be removed from in the release 2024.1 release. The functionality
+*              of this API can be reproduced with the following API sequence:
+*                  XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg);
+*                  XDfeOfdm_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID, FTseq);
+*                  XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg);
 *
 ****************************************************************************/
 u32 XDfeOfdm_RemoveCC(XDfeOfdm *InstancePtr, s32 CCID,
@@ -1718,7 +1938,7 @@ u32 XDfeOfdm_RemoveCC(XDfeOfdm *InstancePtr, s32 CCID,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(&CCCfg, FTSeq);
 
 	/* Update next configuration and trigger update */
 	XDfeOfdm_SetNextCCCfg(InstancePtr, &CCCfg);
@@ -1742,6 +1962,14 @@ u32 XDfeOfdm_RemoveCC(XDfeOfdm *InstancePtr, s32 CCID,
 *
 * @note     Clear event status with XDfeOfdm_ClearEventStatus() before
 *           running this API.
+*
+* @attention:  This API is deprecated in the release 2023.2. Source code will
+*              be removed from in the release 2024.1 release. The functionality
+*              of this API can be reproduced with the following API sequence:
+*                  XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg);
+*                  XDfeOfdm_UpdateCCinCCCfg(InstancePtr, CCCfg, CCID,
+*                      CarrierCfg, FTseq);
+*                  XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg);
 *
 ****************************************************************************/
 u32 XDfeOfdm_UpdateCC(XDfeOfdm *InstancePtr, s32 CCID,
@@ -1801,7 +2029,7 @@ u32 XDfeOfdm_UpdateCC(XDfeOfdm *InstancePtr, s32 CCID,
 	}
 
 	/* Set FT sequence */
-	XDfeOfdm_SetNextFTSequence(InstancePtr, FTSeq);
+	XDfeOfdm_SetNextFTSequence(&CCCfg, FTSeq);
 
 	/* Update next configuration and trigger update */
 	XDfeOfdm_SetNextCCCfg(InstancePtr, &CCCfg);
@@ -1979,6 +2207,55 @@ void XDfeOfdm_SetTriggersCfg(const XDfeOfdm *InstancePtr,
 				  XDFEOFDM_TRIGGERS_STATE_OUTPUT_OFFSET, Val,
 				  TriggerCfg->CCUpdate.StateOutput);
 	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_TRIGGERS_CC_UPDATE_OFFSET, Val);
+}
+
+/****************************************************************************/
+/**
+*
+* Sets TUSER Framing bit Location register where bit location indicates which
+* bit to be used for sending framing information on DL_DOUT IF and
+* M_AXIS_TBASE IF.
+* TUSER bit width is fixed to its default value of 8. Therefore, legal values
+* of FRAME_BIT are 0 to 7.
+*
+* @param    InstancePtr Pointer to the OFDM instance.
+* @param    TuserOutFrameLocation Requested TUSER OutFrame Location.
+*
+****************************************************************************/
+void XDfeOfdm_SetTuserOutFrameLocation(const XDfeOfdm *InstancePtr,
+				       u32 TuserOutFrameLocation)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(TuserOutFrameLocation <
+		       (1 << XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_WIDTH));
+	Xil_AssertVoid(InstancePtr->StateId == XDFEOFDM_STATE_OPERATIONAL);
+
+	XDfeOfdm_WriteReg(InstancePtr, XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET,
+			  TuserOutFrameLocation);
+}
+
+/****************************************************************************/
+/**
+*
+* Gets TUSER Framing bit Location register where bit location indicates which
+* bit to be used for sending framing information on DL_DOUT IF and
+* M_AXIS_TBASE IF.
+* TUSER bit width is fixed to its default value of 8. Therefore, legal values
+* of FRAME_BIT are 0 to 7.
+*
+* @param    InstancePtr Pointer to the OFDM instance.
+*
+* @return   TUSER OutFrame Location
+*
+****************************************************************************/
+u32 XDfeOfdm_GetTuserOutFrameLocation(const XDfeOfdm *InstancePtr)
+{
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	return XDfeOfdm_RdRegBitField(
+		InstancePtr, XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET,
+		XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_WIDTH,
+		XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_OFFSET);
 }
 
 /****************************************************************************/

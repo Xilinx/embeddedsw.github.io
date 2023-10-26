@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -1738,28 +1739,54 @@ int XV_HdmiTxSs1_SendCvtemAuxPackets(XV_HdmiTxSs1 *InstancePtr, XHdmiC_Aux *DscA
 * @note   None.
 *
 ******************************************************************************/
-int XV_HdmiTxSs1_ReadEdid(XV_HdmiTxSs1 *InstancePtr, u8 *Buffer)
+int XV_HdmiTxSs1_ReadEdid(XV_HdmiTxSs1 *InstancePtr, u8 *Buffer, u32 BufferSize)
 {
-    u32 Status;
+	u32 Status, Index;
+	u8 ExtensionFlag = 0;
+	u8 Segment = 1;
 
-    /* Default*/
-    Status = (XST_FAILURE);
+	/* Verify argument. */
+	Xil_AssertNonvoid((BufferSize >= XV_HDMITXSS1_DDC_EDID_LENGTH) &&
+			  (BufferSize %XV_HDMITXSS1_DDC_EDID_LENGTH == 0));
 
-    /* Check if a sink is connected*/
-    if (InstancePtr->IsStreamConnected == (TRUE)) {
+	/* Default*/
+	Status = (XST_FAILURE);
 
-      *Buffer = 0x00;   /* Offset zero*/
-      Status = XV_HdmiTx1_DdcWrite(InstancePtr->HdmiTx1Ptr, 0x50, 1, Buffer,
-        (FALSE));
+	/* Check if a sink is connected*/
+	if (InstancePtr->IsStreamConnected == (TRUE)) {
+		*Buffer = 0x00;   /* Offset zero*/
+		Status = XV_HdmiTx1_DdcWrite(InstancePtr->HdmiTx1Ptr, 0x50, 1,
+					     Buffer, (FALSE));
+		/* Check if write was successful*/
+		if (Status == (XST_SUCCESS)) {
+			/* Read edid*/
+			Status = XV_HdmiTx1_DdcRead(InstancePtr->HdmiTx1Ptr,
+						    0x50, 256, Buffer, (TRUE));
+		}
 
-      /* Check if write was successful*/
-      if (Status == (XST_SUCCESS)) {
-        /* Read edid*/
-        Status = XV_HdmiTx1_DdcRead(InstancePtr->HdmiTx1Ptr, 0x50, 256, Buffer,
-            (TRUE));
-      }
-    }
-  return Status;
+		/* Read if more than 2 Blocks of EDID present */
+		if (Status == (XST_SUCCESS)) {
+			ExtensionFlag = Buffer[126];
+			ExtensionFlag = ExtensionFlag >> 1;
+			if ((BufferSize / XV_HDMITXSS1_DDC_EDID_LENGTH) <
+			    (ExtensionFlag + 1)) {
+				xil_printf(ANSI_COLOR_YELLOW "Buffer size is small. Pass input buffer of size %d\r\n",
+					   (ExtensionFlag + 1) *
+					   XV_HDMITXSS1_DDC_EDID_LENGTH,
+					   ANSI_COLOR_RESET);
+				return XST_FAILURE;
+			}
+			while (Segment <= ExtensionFlag) {
+				Index = (XV_HDMITXSS1_DDC_EDID_LENGTH + (Segment-1) *
+				XV_HDMITXSS1_DDC_EDID_LENGTH);
+				Status = XV_HdmiTxSs1_ReadEdidSegment(InstancePtr,
+								      &Buffer[Index],
+								      Segment);
+								      Segment++;
+			}
+		}
+	}
+	return Status;
 }
 
 /*****************************************************************************/
@@ -3591,6 +3618,34 @@ void XV_HdmiTxSs1_SetVrrIf(XV_HdmiTxSs1 *InstancePtr,
 	} else if (VrrIF->VrrIfType == XV_HDMIC_VRRINFO_TYPE_SPDIF) {
 		XV_HdmiTx1_GenerateSrcProdDescInfoframe(
 				InstancePtr->HdmiTx1Ptr, &VrrIF->SrcProdDescIF);
+	} else {
+		xil_printf("No valid VRR infoframe type\n");
+	}
+}
+
+/*****************************************************************************/
+/**
+*
+* This function allows setting Custom VRR meta in core
+*
+* @param	InstancePtr is a pointer to the XV_HdmiTxSs1 instance.
+* @param	VrrIF is a pointer to the XV_HdmiC_VrrInfoFrame structure
+* @param	Value of sync in Vrr packet
+* @param	Value of data set length
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void XV_HdmiTxSs1_SetCustomVrrIf(XV_HdmiTxSs1 *InstancePtr,
+				 XV_HdmiC_VrrInfoFrame *VrrIF, u16 Sync,
+				 u16 DataSetLen)
+{
+	if (VrrIF->VrrIfType == XV_HDMIC_VRRINFO_TYPE_VTEM) {
+		XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF(
+			InstancePtr->HdmiTx1Ptr, &VrrIF->VidTimingExtMeta, Sync,
+			DataSetLen);
 	} else {
 		xil_printf("No valid VRR infoframe type\n");
 	}

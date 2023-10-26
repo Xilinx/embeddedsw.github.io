@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
  *
  * @file xusbps_sinit.c
-* @addtogroup usbps_v2_7
+* @addtogroup usbps Overview
 * @{
  *
  * The implementation of the XUsbPs driver's static initialization
@@ -19,6 +20,7 @@
  * Ver   Who  Date     Changes
  * ----- ---- -------- -----------------------------------------------
  * 1.00a wgr  10/10/10 First release
+ * 2.8   pm   07/07/23 Added support for system device-tree flow.
  * </pre>
  *
  *****************************************************************************/
@@ -55,6 +57,7 @@ extern XUsbPs_Config XUsbPs_ConfigTable[];
 *		controller ID was not found.
 *
 ******************************************************************************/
+#ifndef SDT
 XUsbPs_Config *XUsbPs_LookupConfig(u16 DeviceID)
 {
 	XUsbPs_Config *CfgPtr = NULL;
@@ -70,4 +73,22 @@ XUsbPs_Config *XUsbPs_LookupConfig(u16 DeviceID)
 
 	return CfgPtr;
 }
+#else
+XUsbPs_Config *XUsbPs_LookupConfig(u32 BaseAddress)
+{
+	XUsbPs_Config *CfgPtr = NULL;
+
+	int Index;
+
+	for (Index = 0U; XUsbPs_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XUsbPs_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XUsbPs_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /** @} */

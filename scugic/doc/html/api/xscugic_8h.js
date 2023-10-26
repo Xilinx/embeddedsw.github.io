@@ -1,9 +1,11 @@
 var xscugic_8h =
 [
+    [ "ARMA9", "xscugic_8h.html#ga3dde6ae31d569b01dc88903a5340d744", null ],
     [ "XScuGic_CPUReadReg", "xscugic_8h.html#ga2f3bba7c5247812158ef4fde7a0e7dfe", null ],
     [ "XScuGic_CPUWriteReg", "xscugic_8h.html#ga2a4ba236ff7bfeab20b5ca81082f2b13", null ],
     [ "XScuGic_DistReadReg", "xscugic_8h.html#ga3d639fe1851f9d833367fb4322390eeb", null ],
     [ "XScuGic_DistWriteReg", "xscugic_8h.html#ga22e9f81ed00f7cc39df1c6e76988fdb1", null ],
+    [ "XSCUGIC_H", "xscugic_8h.html#ga9f2c28f54da589ba1000235cfb0929ba", null ],
     [ "XScuGic_CfgInitialize", "xscugic_8h.html#gaf8e0bfe31c0fa2ca654c36715a3c13f8", null ],
     [ "XScuGic_Connect", "xscugic_8h.html#ga48f9dd531aa861a74e6bd627943573ea", null ],
     [ "XScuGic_Disable", "xscugic_8h.html#gaafd153e16238a1189c513846675e096a", null ],
@@ -16,6 +18,7 @@ var xscugic_8h =
     [ "XScuGic_InterruptUnmapFromCpu", "xscugic_8h.html#ga04f8ea74458251784b293e4ad98f2d74", null ],
     [ "XScuGic_IsInitialized", "xscugic_8h.html#ga72b9aec992716861e5f0929e4d0d9f7c", null ],
     [ "XScuGic_LookupConfig", "xscugic_8h.html#gab2c0554b809121cc91a96fcd8c749c25", null ],
+    [ "XScuGic_LookupConfigBaseAddr", "xscugic_8h.html#ga805a47295123177a48b07fccfe037702", null ],
     [ "XScuGic_SelfTest", "xscugic_8h.html#ga081a9a62546b413d94e609894282a575", null ],
     [ "XScuGic_SetCpuID", "xscugic_8h.html#ga945e029b4356be809020c81745c4a23b", null ],
     [ "XScuGic_SetPriorityTriggerType", "xscugic_8h.html#ga79abd6248cb578142e9c475f20dbeb06", null ],

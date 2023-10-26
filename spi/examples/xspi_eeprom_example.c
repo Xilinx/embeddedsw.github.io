@@ -37,6 +37,7 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 *       ms   04/05/17 Modified Comment lines to follow doxygen rules.
+* 4.11  sb   07/11/23 Added support for system device-tree flow.
 *</pre>
 *
 ******************************************************************************/
@@ -45,7 +46,11 @@
 
 #include "xparameters.h"        /* EDK generated parameters */
 #include "xspi.h"               /* SPI device driver */
+#ifndef SDT
 #include "xintc.h"              /* Interrupt controller device driver */
+#else
+#include "xinterrupt_wrap.h"
+#endif
 #include "xil_exception.h"
 #include "xil_printf.h"
 
@@ -57,9 +62,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_DEVICE_ID		XPAR_SPI_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
 #define SPI_INTR_ID		XPAR_INTC_0_SPI_0_VEC_ID
+#endif
 
 
 /*
@@ -132,7 +139,9 @@ typedef u8 EepromBuffer[BUFFER_SIZE];
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr);
+#endif
 
 void SpiHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
 
@@ -147,7 +156,9 @@ void EepromWrite(XSpi *SpiPtr, u16 Address, u8 ByteCount, EepromBuffer Buffer);
  * are initialized to zero each time the program runs.  They could be local
  * but should at least be static so they are zeroed.
  */
+#ifndef SDT
 XIntc InterruptController;
+#endif
 XSpi Spi;
 
 /*
@@ -206,12 +217,16 @@ int main(void)
 	/*
 	 * Initialize the SPI driver so that it is  ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XSpi_LookupConfig(SPI_DEVICE_ID);
+#else
+	ConfigPtr = XSpi_LookupConfig(XPAR_XSPI_0_BASEADDR);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
 	Status = XSpi_CfgInitialize(&Spi, ConfigPtr,
-				  ConfigPtr->BaseAddress);
+				    ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -220,7 +235,14 @@ int main(void)
 	 * Connect the SPI driver to the interrupt subsystem such that
 	 * interrupts can occur.  This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Spi);
+#else
+	Status = XSetupInterruptSystem(&Spi, &XSpi_InterruptHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -239,7 +261,7 @@ int main(void)
 	 * transfer, this must be done before the slave select is set
 	 */
 	Status = XSpi_SetOptions(&Spi, XSP_MASTER_OPTION |
-					XSP_MANUAL_SSELECT_OPTION);
+				 XSP_MANUAL_SSELECT_OPTION);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -265,9 +287,9 @@ int main(void)
 	 * changed in a debug environment to guarantee
 	 */
 	for (UniqueValue = 10, Count = 0; Count < MAX_DATA;
-					Count++, UniqueValue++) {
+	     Count++, UniqueValue++) {
 		WriteBuffer[WRITE_DATA_OFFSET + Count] =
-					(u8)(UniqueValue + Test);
+			(u8)(UniqueValue + Test);
 		ReadBuffer[READ_DATA_OFFSET + Count] = 0;
 	}
 
@@ -277,7 +299,7 @@ int main(void)
 	 */
 	for (Page = 0; Page < PAGE_COUNT; Page++) {
 		EepromWrite(&Spi, Page * PAGE_SIZE, PAGE_SIZE,
-				&WriteBuffer[Page * PAGE_SIZE]);
+			    &WriteBuffer[Page * PAGE_SIZE]);
 	}
 
 	/*
@@ -294,7 +316,7 @@ int main(void)
 	BufferPtr = &ReadBuffer[READ_DATA_OFFSET];
 
 	for (UniqueValue = 10, Count = 0; Count < MAX_DATA;
-					Count++, UniqueValue++) {
+	     Count++, UniqueValue++) {
 		if (BufferPtr[Count] != (u8)(UniqueValue + Test)) {
 			return XST_FAILURE;
 		}
@@ -375,7 +397,7 @@ void EepromRead(XSpi *SpiPtr, u16 Address, int ByteCount, EepromBuffer Buffer)
 	TransferInProgress = TRUE;
 
 	XSpi_Transfer(SpiPtr, Buffer, &Buffer[DATA_OFFSET],
-				ByteCount + OVERHEAD_SIZE);
+		      ByteCount + OVERHEAD_SIZE);
 
 	/*
 	 * Wait for the transfer on the SPI bus to be complete before proceeding
@@ -465,7 +487,7 @@ void EepromWrite(XSpi *SpiPtr, u16 Address, u8 ByteCount, EepromBuffer Buffer)
 		TransferInProgress = TRUE;
 
 		XSpi_Transfer(SpiPtr, ReadStatusCmd, EepromStatus,
-					sizeof(ReadStatusCmd));
+			      sizeof(ReadStatusCmd));
 
 		/*
 		 * Wait for the transfer on the SPI bus to be complete before
@@ -503,6 +525,7 @@ void EepromWrite(XSpi *SpiPtr, u16 Address, u8 ByteCount, EepromBuffer Buffer)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr)
 {
 
@@ -526,9 +549,9 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * specific interrupt processing for the device
 	 */
 	Status = XIntc_Connect(&InterruptController,
-			   SPI_INTR_ID,
-			   (XInterruptHandler)XSpi_InterruptHandler,
-			   (void *)SpiPtr);
+			       SPI_INTR_ID,
+			       (XInterruptHandler)XSpi_InterruptHandler,
+			       (void *)SpiPtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -559,8 +582,8 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * Register the interrupt controller handler with the exception table
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)XIntc_InterruptHandler,
-			 &InterruptController);
+				     (Xil_ExceptionHandler)XIntc_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Enable non-critical exceptions
@@ -569,4 +592,5 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 
 	return XST_SUCCESS;
 }
+#endif
 

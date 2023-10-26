@@ -2,6 +2,7 @@ var files =
 [
     [ "xtrngpsv.c", "xtrngpsv_8c.html", "xtrngpsv_8c" ],
     [ "xtrngpsv.h", "xtrngpsv_8h.html", "xtrngpsv_8h" ],
+    [ "xtrngpsv_alginfo.h", "xtrngpsv__alginfo_8h.html", "xtrngpsv__alginfo_8h" ],
     [ "xtrngpsv_df.c", "xtrngpsv__df_8c.html", "xtrngpsv__df_8c" ],
     [ "xtrngpsv_drng_df_example.c", "xtrngpsv__drng__df__example_8c.html", "xtrngpsv__drng__df__example_8c" ],
     [ "xtrngpsv_drng_example.c", "xtrngpsv__drng__example_8c.html", "xtrngpsv__drng__example_8c" ],

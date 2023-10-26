@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
  *
  * @file xllfifo.c
-* @addtogroup llfifo_v5_5
+* @addtogroup llfifo Overview
 * @{
  *
  * The Xilinx local link FIFO driver component. This driver supports the
@@ -33,6 +34,7 @@
  *                     XLlFifo_Initialize APIs.
  * 5.5   sk   06/15/20 In XLlFifo_iRead_Aligned and XLlFifo_iWrite_Aligned add
  *		       type casting to fix gcc warnings.
+ * 5.6   sd   07/7/23  Add system devicetree support.
  * </pre>
  ******************************************************************************/
 
@@ -334,6 +336,11 @@ int XLlFifo_CfgInitialize(XLlFifo *InstancePtr,
 	InstancePtr->Axi4BaseAddress = Config->Axi4BaseAddress;
 	if (InstancePtr->Datainterface == 0)
 		InstancePtr->Axi4BaseAddress = EffectiveAddress;
+
+#ifdef SDT
+	InstancePtr->IntId = Config->IntId;
+	InstancePtr->IntrParent = Config->IntrParent;
+#endif
 
 	XLlFifo_TxReset(InstancePtr);
 	XLlFifo_RxReset(InstancePtr);

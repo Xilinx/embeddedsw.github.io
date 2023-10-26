@@ -21,6 +21,7 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- -----------------------------------------------
 * 1.0   sne   02/04/19 Initial release
+* 5.7   sb    07/12/23 Added support for system device-tree flow.
 * </pre>
 *
 *****************************************************************************/
@@ -36,7 +37,9 @@
  * xparameters.h file. They are only defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define WDTTB_DEVICE_ID         XPAR_WDTTB_0_DEVICE_ID
+#endif
 /**************************** Type Definitions *******************************/
 
 
@@ -44,7 +47,11 @@
 
 
 /************************** Function Prototypes ******************************/
+#ifndef SDT
 int GWdtTbSelfTestExample(u16 DeviceId);
+#else
+int GWdtTbSelfTestExample(UINTPTR BaseAddress);
+#endif
 /************************** Variable Definitions *****************************/
 
 XWdtTb GWatchdog; /* The instance of the WatchDog Timer  */
@@ -64,20 +71,24 @@ XWdtTb GWatchdog; /* The instance of the WatchDog Timer  */
 #ifndef TESTAPP_GEN
 int main(void)
 {
-        int Status;
+	int Status;
 
-        /*
-         * Run the GWDT Self Test example , specify the device ID that is generated in
-         * xparameters.h
-         */
-        Status = GWdtTbSelfTestExample(WDTTB_DEVICE_ID);
-        if (Status != XST_SUCCESS){
-                xil_printf("GWDT self test example failed\n\r");
-                return XST_FAILURE;
-        }
-        xil_printf("Successfully ran GWDT self test example\n\r");
+	/*
+	 * Run the GWDT Self Test example , specify the device ID that is generated in
+	 * xparameters.h
+	 */
+#ifndef SDT
+	Status = GWdtTbSelfTestExample(WDTTB_DEVICE_ID);
+#else
+	Status = GWdtTbSelfTestExample(XPAR_XWDTTB_0_BASEADDR);
+#endif
+	if (Status != XST_SUCCESS) {
+		xil_printf("GWDT self test example failed\n\r");
+		return XST_FAILURE;
+	}
+	xil_printf("Successfully ran GWDT self test example\n\r");
 
-        return XST_SUCCESS;
+	return XST_SUCCESS;
 }
 #endif
 /*****************************************************************************/
@@ -97,45 +108,49 @@ int main(void)
  *
  ****************************************************************************/
 
+#ifndef SDT
 int GWdtTbSelfTestExample(u16 DeviceId)
+#else
+int GWdtTbSelfTestExample(UINTPTR BaseAddress)
+#endif
 {
-        int Status;
-        XWdtTb_Config *Config;
+	int Status;
+	XWdtTb_Config *Config;
 
-        /*
-         * Initialize the WDTTB driver so that it's ready to use look up
-         * configuration in the config table, then initialize it.
-         */
-        Config = XWdtTb_LookupConfig(DeviceId);
-        if (NULL == Config)
-        {
-                return XST_FAILURE;
-        }
-        /*
-         * Initialize the watchdog timer and window WDT driver so that
-         * it is ready to use.
-         */
-        Status = XWdtTb_CfgInitialize(&GWatchdog, Config,
-                        Config->BaseAddr);
-        if (Status != XST_SUCCESS)
-        {
-                return XST_FAILURE;
-        }
-        /*
-         * Perform a self-test to ensure that the hardware was built
-         * correctly
-         */
-        Status = XWdtTb_SelfTest(&GWatchdog);
-        if (Status != XST_SUCCESS)
-        {
-                return XST_FAILURE;
-        }
-        /* Reset all the Register of GWDT */
-        Status =XWdtTb_Stop(&GWatchdog);
-        if (Status != XST_SUCCESS)
-        {
-                return XST_FAILURE;
-        }
+	/*
+	 * Initialize the WDTTB driver so that it's ready to use look up
+	 * configuration in the config table, then initialize it.
+	 */
+#ifndef SDT
+	Config = XWdtTb_LookupConfig(DeviceId);
+#else
+	Config = XWdtTb_LookupConfig(BaseAddress);
+#endif
+	if (NULL == Config) {
+		return XST_FAILURE;
+	}
+	/*
+	 * Initialize the watchdog timer and window WDT driver so that
+	 * it is ready to use.
+	 */
+	Status = XWdtTb_CfgInitialize(&GWatchdog, Config,
+				      Config->BaseAddr);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+	/*
+	 * Perform a self-test to ensure that the hardware was built
+	 * correctly
+	 */
+	Status = XWdtTb_SelfTest(&GWatchdog);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+	/* Reset all the Register of GWDT */
+	Status = XWdtTb_Stop(&GWatchdog);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
-        return XST_SUCCESS;
+	return XST_SUCCESS;
 }

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -24,6 +25,7 @@
 * 1.6	tjs 09/17/18 Fixed compilation warnings
 * 1.8   sg  07/17/19 Update example sequence for finding
 *			new calibration values
+* 1.13	ht  06/21/23 Added support for system device-tree flow.
 *
 * </pre>
 ******************************************************************************/
@@ -43,15 +45,20 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define RTC_DEVICE_ID              XPAR_XRTCPSU_0_DEVICE_ID
+#endif
 
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Function Prototypes ******************************/
-
+#ifndef SDT
 int RtcPsuSetCalibrationExample(u16 DeviceId);
+#else
+int RtcPsuSetCalibrationExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -78,7 +85,11 @@ int main(void)
 	 * Run the Rtc_Psu set calibration example , specify the the Device ID
 	 * that is generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = RtcPsuSetCalibrationExample(RTC_DEVICE_ID);
+#else
+	Status = RtcPsuSetCalibrationExample(XPAR_XRTCPSU_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("RTC Set Calibration Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -103,7 +114,11 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 int RtcPsuSetCalibrationExample(u16 DeviceId)
+#else
+int RtcPsuSetCalibrationExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	u32 NetworkTime;
@@ -114,7 +129,11 @@ int RtcPsuSetCalibrationExample(u16 DeviceId)
 	 * Initialize the RTC driver so that it's ready to use.
 	 * Look up the configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XRtcPsu_LookupConfig(DeviceId);
+#else
+	Config = XRtcPsu_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -140,20 +159,20 @@ int RtcPsuSetCalibrationExample(u16 DeviceId)
 	xil_printf("\n\rEnter Internet / Network Time YEAR:MM:DD HR:MM:SS : ");
 #if defined(__aarch64__)
 	scanf("%d %d %d %d %d %d", &dt1.Year, &dt1.Month, &dt1.Day,
-			&dt1.Hour, &dt1.Min, &dt1.Sec);
+	      &dt1.Hour, &dt1.Min, &dt1.Sec);
 #else
 	scanf("%ld %ld %ld %ld %ld %ld", &dt1.Year, &dt1.Month, &dt1.Day,
-			&dt1.Hour, &dt1.Min, &dt1.Sec);
+	      &dt1.Hour, &dt1.Min, &dt1.Sec);
 #endif
-	xil_printf("%d %d %d %d %d %d\n\r",dt1.Year,dt1.Month,dt1.Day,dt1.Hour,dt1.Min,dt1.Sec);
+	xil_printf("%d %d %d %d %d %d\n\r", dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Min, dt1.Sec);
 
 	NetworkTime = XRtcPsu_DateTimeToSec(&dt1);
 
 	xil_printf("\n\rOld Calibration value : %08x\tCrystal Frequency : %08x\n\r",
-			Rtc_Psu.CalibrationValue,Rtc_Psu.OscillatorFreq);
+		   Rtc_Psu.CalibrationValue, Rtc_Psu.OscillatorFreq);
 
 	/* Set RTC time to user input time */
-	XRtcPsu_SetTime(&Rtc_Psu,NetworkTime);
+	XRtcPsu_SetTime(&Rtc_Psu, NetworkTime);
 
 	/*
 	 * For time accuracy RTC module need to be calibrated at regular interval,
@@ -162,9 +181,9 @@ int RtcPsuSetCalibrationExample(u16 DeviceId)
 	 * used for finding new calibration values.
 	 */
 	sleep(10);
-	NetworkTime = NetworkTime+10;
+	NetworkTime = NetworkTime + 10;
 
-	XRtcPsu_CalculateCalibration(&Rtc_Psu,NetworkTime,OscillatorFreq);
+	XRtcPsu_CalculateCalibration(&Rtc_Psu, NetworkTime, OscillatorFreq);
 
 	Status = XRtcPsu_CfgInitialize(&Rtc_Psu, Config, Config->BaseAddr);
 	if (Status != XST_SUCCESS) {
@@ -172,7 +191,7 @@ int RtcPsuSetCalibrationExample(u16 DeviceId)
 	}
 
 	xil_printf("New Calibration value : %08x\tCrystal Frequency : %08x\n\r",
-			Rtc_Psu.CalibrationValue,Rtc_Psu.OscillatorFreq);
+		   Rtc_Psu.CalibrationValue, Rtc_Psu.OscillatorFreq);
 
 	return XST_SUCCESS;
 }

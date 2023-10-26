@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">qspipsu
    </div>
@@ -323,6 +323,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga7270573aac2e897d40123dcb0a181aac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga7270573aac2e897d40123dcb0a181aac">XQSPIPSU_NUM_OPTIONS</a>&#160;&#160;&#160;(sizeof(OptionsTable) / sizeof(OptionsMap))</td></tr>
 <tr class="memdesc:ga7270573aac2e897d40123dcb0a181aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of options in option table.  <a href="#ga7270573aac2e897d40123dcb0a181aac">More...</a><br/></td></tr>
 <tr class="separator:ga7270573aac2e897d40123dcb0a181aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga02055aef4b0f9a801005ebdc7b556157"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>&#160;&#160;&#160;1000000000U</td></tr>
+<tr class="memdesc:ga02055aef4b0f9a801005ebdc7b556157"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max delay count.  <a href="#ga02055aef4b0f9a801005ebdc7b556157">More...</a><br/></td></tr>
+<tr class="separator:ga02055aef4b0f9a801005ebdc7b556157"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -398,6 +401,15 @@ Functions</h2></td></tr>
 <tr class="memitem:gae55fa60e803534f990c0493b67eb02f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *FlashMsg)</td></tr>
 <tr class="memdesc:gae55fa60e803534f990c0493b67eb02f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the polling functionality of controller.  <a href="#gae55fa60e803534f990c0493b67eb02f1">More...</a><br/></td></tr>
 <tr class="separator:gae55fa60e803534f990c0493b67eb02f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga83a88b04245b12857557e1d443cd3689"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *Msg, u32 NumMsg)</td></tr>
+<tr class="memdesc:ga83a88b04245b12857557e1d443cd3689"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a transfer on the bus in polled mode.  <a href="#ga83a88b04245b12857557e1d443cd3689">More...</a><br/></td></tr>
+<tr class="separator:ga83a88b04245b12857557e1d443cd3689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5cca9a4c8ba075e4d9855a789cecc40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, u32 *QspiPsuStatusReg, u8 *DeltaMsgCnt)</td></tr>
+<tr class="memdesc:gaf5cca9a4c8ba075e4d9855a789cecc40"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function transfers Tx and Rx data.  <a href="#gaf5cca9a4c8ba075e4d9855a789cecc40">More...</a><br/></td></tr>
+<tr class="separator:gaf5cca9a4c8ba075e4d9855a789cecc40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga73c0f0aa6fe6f1818b7ec15cdac0e7ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, u32 QspiPsuStatusReg, u8 DeltaMsgCnt)</td></tr>
+<tr class="memdesc:ga73c0f0aa6fe6f1818b7ec15cdac0e7ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function transfers Dummy byte.  <a href="#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">More...</a><br/></td></tr>
+<tr class="separator:ga73c0f0aa6fe6f1818b7ec15cdac0e7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf5c0853d67052b9b05af03946e51c4c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *Msg, u32 Size)</td></tr>
 <tr class="memdesc:gaf5c0853d67052b9b05af03946e51c4c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fills the TX FIFO as long as there is room in the FIFO or the bytes required to be transmitted.  <a href="#gaf5c0853d67052b9b05af03946e51c4c2">More...</a><br/></td></tr>
 <tr class="separator:gaf5c0853d67052b9b05af03946e51c4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -437,6 +449,18 @@ Functions</h2></td></tr>
 <tr class="memitem:gae7900ea73e245de8f091d4d4c201fe76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *Msg, u32 StatusReg)</td></tr>
 <tr class="memdesc:gae7900ea73e245de8f091d4d4c201fe76"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads data from RXFifo in IO mode.  <a href="#gae7900ea73e245de8f091d4d4c201fe76">More...</a><br/></td></tr>
 <tr class="separator:gae7900ea73e245de8f091d4d4c201fe76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad8adcb1fd07106bb0add26e24a4c0084"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gad8adcb1fd07106bb0add26e24a4c0084">XQspiPsu_PolledSendData</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *Msg, s32 Index)</td></tr>
+<tr class="memdesc:gad8adcb1fd07106bb0add26e24a4c0084"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function transfers Tx data on the bus in polled mode.  <a href="#gad8adcb1fd07106bb0add26e24a4c0084">More...</a><br/></td></tr>
+<tr class="separator:gad8adcb1fd07106bb0add26e24a4c0084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga18829cabd2b37c4cf9fb2efa0632c398"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, <a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *Msg, s32 Index, u32 *IOPending)</td></tr>
+<tr class="memdesc:ga18829cabd2b37c4cf9fb2efa0632c398"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function transfers Rx data on the bus in polled mode.  <a href="#ga18829cabd2b37c4cf9fb2efa0632c398">More...</a><br/></td></tr>
+<tr class="separator:ga18829cabd2b37c4cf9fb2efa0632c398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa77c471d9c50c3671a2f2a7c28707f4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#gaa77c471d9c50c3671a2f2a7c28707f4d">XQspiPsu_IntrSendData</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, u32 QspiPsuStatusReg, u8 *DeltaMsgCnt)</td></tr>
+<tr class="memdesc:gaa77c471d9c50c3671a2f2a7c28707f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a transfer of Tx data on the bus in interrupt mode.  <a href="#gaa77c471d9c50c3671a2f2a7c28707f4d">More...</a><br/></td></tr>
+<tr class="separator:gaa77c471d9c50c3671a2f2a7c28707f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga872f5fe8dbac27ca8867387e2185069d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *InstancePtr, u32 QspiPsuStatusReg, u32 DmaIntrStatusReg, u8 *DeltaMsgCnt)</td></tr>
+<tr class="memdesc:ga872f5fe8dbac27ca8867387e2185069d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a transfer of Rx data on the busin interrupt mode.  <a href="#ga872f5fe8dbac27ca8867387e2185069d">More...</a><br/></td></tr>
+<tr class="separator:ga872f5fe8dbac27ca8867387e2185069d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -2052,6 +2076,22 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Max delay count. </p>
 
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, and <a class="el" href="group__qspipsu.html#gad8adcb1fd07106bb0add26e24a4c0084">XQspiPsu_PolledSendData()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga02055aef4b0f9a801005ebdc7b556157"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_DELAY_CNT&#160;&#160;&#160;1000000000U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max delay count. </p>
+
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>, <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
@@ -2468,7 +2508,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Register: XQSPIPSU_CFG. </p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab0d4072d9dfe0949c8e099342c2270f6">XQspiPsu_GetOptions()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab0d4072d9dfe0949c8e099342c2270f6">XQspiPsu_GetOptions()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -2706,7 +2746,7 @@ TAPDLY Bypass register information</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a>(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
-<div class="line">                        <a class="code" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, 0x0U)</div>
+<div class="line">                       <a class="code" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, 0x0U)</div>
 <div class="ttc" id="group__qspipsu_html_ga5b7b95790bfeb5bfb3dfd63e4a5e76cc"><div class="ttname"><a href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a></div><div class="ttdeci">#define XQSPIPSU_EN_OFFSET</div><div class="ttdoc">Register: XQSPIPSU_EN_REG. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:380</div></div>
 <div class="ttc" id="group__qspipsu_html_gaf9672b4f2ec43ccf15204998ff3df728"><div class="ttname"><a href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a></div><div class="ttdeci">#define XQspiPsu_Out32</div><div class="ttdoc">Write the 32 bit register value. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:965</div></div>
 </div><!-- fragment -->
@@ -2760,7 +2800,7 @@ TAPDLY Bypass register information</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a>(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
-<div class="line">                        <a class="code" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, XQSPIPSU_EN_MASK)</div>
+<div class="line">                       <a class="code" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, XQSPIPSU_EN_MASK)</div>
 <div class="ttc" id="group__qspipsu_html_ga5b7b95790bfeb5bfb3dfd63e4a5e76cc"><div class="ttname"><a href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a></div><div class="ttdeci">#define XQSPIPSU_EN_OFFSET</div><div class="ttdoc">Register: XQSPIPSU_EN_REG. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:380</div></div>
 <div class="ttc" id="group__qspipsu_html_gaf9672b4f2ec43ccf15204998ff3df728"><div class="ttname"><a href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a></div><div class="ttdeci">#define XQspiPsu_Out32</div><div class="ttdoc">Write the 32 bit register value. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:965</div></div>
 </div><!-- fragment -->
@@ -2825,6 +2865,8 @@ TAPDLY Bypass register information</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Frequency 375 Mhz. </p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>.</p>
 
 </div>
 </div>
@@ -2932,7 +2974,7 @@ TAPDLY Bypass register information</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__qspipsu.html#gac15438de9bb521c5731be71e6bc31ebb">XQspiPsu_In32</a>((<a class="code" href="group__qspipsu.html#ga49734e127e6359b15c1ce7f117748c36">XQSPIPS_BASEADDR</a>) + \</div>
-<div class="line">                        <a class="code" href="group__qspipsu.html#ga02a2df38913ec3616e70351637cbbb50">XQSPIPSU_LQSPI_CR_OFFSET</a>)</div>
+<div class="line">                      <a class="code" href="group__qspipsu.html#ga02a2df38913ec3616e70351637cbbb50">XQSPIPSU_LQSPI_CR_OFFSET</a>)</div>
 <div class="ttc" id="group__qspipsu_html_ga02a2df38913ec3616e70351637cbbb50"><div class="ttname"><a href="group__qspipsu.html#ga02a2df38913ec3616e70351637cbbb50">XQSPIPSU_LQSPI_CR_OFFSET</a></div><div class="ttdeci">#define XQSPIPSU_LQSPI_CR_OFFSET</div><div class="ttdoc">Register: XQSPIPSU_LQSPI. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:146</div></div>
 <div class="ttc" id="group__qspipsu_html_gac15438de9bb521c5731be71e6bc31ebb"><div class="ttname"><a href="group__qspipsu.html#gac15438de9bb521c5731be71e6bc31ebb">XQspiPsu_In32</a></div><div class="ttdeci">#define XQspiPsu_In32</div><div class="ttdoc">Read the 32 bit register value. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:964</div></div>
 <div class="ttc" id="group__qspipsu_html_ga49734e127e6359b15c1ce7f117748c36"><div class="ttname"><a href="group__qspipsu.html#ga49734e127e6359b15c1ce7f117748c36">XQSPIPS_BASEADDR</a></div><div class="ttdeci">#define XQSPIPS_BASEADDR</div><div class="ttdoc">QSPI Base Address. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:64</div></div>
@@ -3031,7 +3073,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Register: XQSPIPSU_IDR. </p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, and <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>.</p>
 
 </div>
 </div>
@@ -3091,7 +3133,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Register: XQSPIPSU_ISR. </p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, <a class="el" href="group__qspipsu.html#gad8adcb1fd07106bb0add26e24a4c0084">XQspiPsu_PolledSendData()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -3331,7 +3373,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Rx Msg flag. </p>
 
-<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5e40a81a572bfacbf4d7a39af7905cea">FlashRegisterRead()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga8b201a022bb63afbaaf9afad23064761">XQspiPsu_TXRXSetup()</a>.</p>
+<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5e40a81a572bfacbf4d7a39af7905cea">FlashRegisterRead()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#gaa77c471d9c50c3671a2f2a7c28707f4d">XQspiPsu_IntrSendData()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga8b201a022bb63afbaaf9afad23064761">XQspiPsu_TXRXSetup()</a>.</p>
 
 </div>
 </div>
@@ -3363,7 +3405,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Tx Msg flag. </p>
 
-<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5e40a81a572bfacbf4d7a39af7905cea">FlashRegisterRead()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga8b201a022bb63afbaaf9afad23064761">XQspiPsu_TXRXSetup()</a>.</p>
+<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5e40a81a572bfacbf4d7a39af7905cea">FlashRegisterRead()</a>, <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga8b201a022bb63afbaaf9afad23064761">XQspiPsu_TXRXSetup()</a>.</p>
 
 </div>
 </div>
@@ -3441,7 +3483,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>DMA read mode. </p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga803eccd67d1dfde416b54488865c1e9d">XQspiPsu_CfgInitialize()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#gad77b041e10c03756bd0e3c197a63a2e3">XQspiPsu_RXSetup()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga803eccd67d1dfde416b54488865c1e9d">XQspiPsu_CfgInitialize()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, <a class="el" href="group__qspipsu.html#gad77b041e10c03756bd0e3c197a63a2e3">XQspiPsu_RXSetup()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -3496,7 +3538,7 @@ TAPDLY Bypass register information</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The value read from the register.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 XQspiPsu_ReadReg(u32 BaseAddress. s32 RegOffset) </dd></dl>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab0d4072d9dfe0949c8e099342c2270f6">XQspiPsu_GetOptions()</a>, <a class="el" href="group__qspipsu.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5">XQspiPsu_Idle()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#gaa04d433c594d66417be2c4f83c092203">XQspiPsu_ReadRxFifo()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab0d4072d9dfe0949c8e099342c2270f6">XQspiPsu_GetOptions()</a>, <a class="el" href="group__qspipsu.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5">XQspiPsu_Idle()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, <a class="el" href="group__qspipsu.html#gaa04d433c594d66417be2c4f83c092203">XQspiPsu_ReadRxFifo()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -3526,7 +3568,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>Rx address over 32 bit. </p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#gad77b041e10c03756bd0e3c197a63a2e3">XQspiPsu_RXSetup()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, and <a class="el" href="group__qspipsu.html#gad77b041e10c03756bd0e3c197a63a2e3">XQspiPsu_RXSetup()</a>.</p>
 
 </div>
 </div>
@@ -3584,7 +3626,7 @@ TAPDLY Bypass register information</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a>(((InstancePtr)-&gt;Config.BaseAddress) + \</div>
-<div class="line">                        <a class="code" href="group__qspipsu.html#ga84156abbc51d17b988b1e82c584be10d">XQSPIPSU_SEL_OFFSET</a>, (Mask))</div>
+<div class="line">                       <a class="code" href="group__qspipsu.html#ga84156abbc51d17b988b1e82c584be10d">XQSPIPSU_SEL_OFFSET</a>, (Mask))</div>
 <div class="ttc" id="group__qspipsu_html_ga84156abbc51d17b988b1e82c584be10d"><div class="ttname"><a href="group__qspipsu.html#ga84156abbc51d17b988b1e82c584be10d">XQSPIPSU_SEL_OFFSET</a></div><div class="ttdeci">#define XQSPIPSU_SEL_OFFSET</div><div class="ttdoc">Register: XQSPIPSU_SEL. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:504</div></div>
 <div class="ttc" id="group__qspipsu_html_gaf9672b4f2ec43ccf15204998ff3df728"><div class="ttname"><a href="group__qspipsu.html#gaf9672b4f2ec43ccf15204998ff3df728">XQspiPsu_Out32</a></div><div class="ttdeci">#define XQspiPsu_Out32</div><div class="ttdoc">Write the 32 bit register value. </div><div class="ttdef"><b>Definition:</b> xqspipsu_hw.h:965</div></div>
 </div><!-- fragment -->
@@ -3828,7 +3870,7 @@ TAPDLY Bypass register information</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: void XQspiPsu_WriteReg(u32 BaseAddress, s32 RegOffset, u32 RegisterValue)XQSPIPSU_H </dd></dl>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#ga7fc4cdebc35bb7b5d3ca9128917c131c">XQspiPsu_GenFifoEntryDataLen()</a>, <a class="el" href="group__qspipsu.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5">XQspiPsu_Idle()</a>, <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga03fb04c8187cf51d256a9196430c6224">XQspiPsu_Setup64BRxDma()</a>, <a class="el" href="group__qspipsu.html#ga0467a9580fe9018adfd4302fbd91e404">XQspiPsu_SetupRxDma()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga0ec97b3d7c6cb24544f0bfa8114b56d7">XQspiPsu_WriteProtectToggle()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaaa69ec6da90deb760954ea3dcfd55d7f">XQspiPsu_Abort()</a>, <a class="el" href="group__qspipsu.html#ga6be41fd692a96516b0ce22591510c73d">XQspiPsu_CheckDmaDone()</a>, <a class="el" href="group__qspipsu.html#ga0948cd1e33a60561c808e681306bcc65">XQspiPsu_ClearOptions()</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#ga7fc4cdebc35bb7b5d3ca9128917c131c">XQspiPsu_GenFifoEntryDataLen()</a>, <a class="el" href="group__qspipsu.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5">XQspiPsu_Idle()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, <a class="el" href="group__qspipsu.html#ga9b86ec1c50d3af19b922698fa9ba7dfb">XQspiPsu_SetClkPrescaler()</a>, <a class="el" href="group__qspipsu.html#gae720bdee9a521b160e1e364053b66b61">XQspiPsu_SetDefaultConfig()</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, <a class="el" href="group__qspipsu.html#gad0fea713a1ec2a4ce6159439e30f7cd7">XQspiPsu_SetOptions()</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, <a class="el" href="group__qspipsu.html#ga03fb04c8187cf51d256a9196430c6224">XQspiPsu_Setup64BRxDma()</a>, <a class="el" href="group__qspipsu.html#ga0467a9580fe9018adfd4302fbd91e404">XQspiPsu_SetupRxDma()</a>, <a class="el" href="group__qspipsu.html#ga54cce449d0bda6133fe2c254a164e08e">XQspiPsu_SetWP()</a>, <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga0ec97b3d7c6cb24544f0bfa8114b56d7">XQspiPsu_WriteProtectToggle()</a>.</p>
 
 </div>
 </div>
@@ -3895,7 +3937,7 @@ TAPDLY Bypass register information</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ac08fabd6f7822d5aeffe328e45266196">XQspiPsu::GenFifoEntries</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gac14f429fa7d15b5c4bf2808ed08e7120">XQSPIPSU_FIFO_CTRL_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ac08fabd6f7822d5aeffe328e45266196">XQspiPsu::GenFifoEntries</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gac14f429fa7d15b5c4bf2808ed08e7120">XQSPIPSU_FIFO_CTRL_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__qspipsu.html#ga799b60ee7157ed46b84475677aa0dc03">XQspiPsu_Reset()</a>.</p>
 
@@ -3947,7 +3989,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu___config.html#afb9b153a78b4112212d7850efd1c6add">XQspiPsu_Config::BusWidth</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___config.html#aa771e1e018426eb1f68fe5241ed45e71">XQspiPsu_Config::ConnectionMode</a>, <a class="el" href="struct_x_qspi_psu.html#adc71282aafc4eb9a8f37e672bf3bec51">XQspiPsu::GenFifoBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#a04675183fe2c3b312d0866a2a2f9b906">XQspiPsu::GenFifoBus</a>, <a class="el" href="struct_x_qspi_psu.html#adbe5c279e1de1f98d3f63bc30cd2d2a4">XQspiPsu::GenFifoCS</a>, <a class="el" href="struct_x_qspi_psu.html#ac08fabd6f7822d5aeffe328e45266196">XQspiPsu::GenFifoEntries</a>, <a class="el" href="struct_x_qspi_psu___config.html#a630de071c5c249ec4bf502fff7f8daaa">XQspiPsu_Config::InputClockHz</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a5464cdad6cf047e5228f13cb3a761c3f">XQspiPsu::RecvBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a2a11cb56ad7d4b388a4669359156ab0b">XQspiPsu::SendBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#gaa44815f385a69052a3f637f57428f506">XQspiPsu_Enable</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#ga799b60ee7157ed46b84475677aa0dc03">XQspiPsu_Reset()</a>, and <a class="el" href="group__qspipsu.html#ga389021b0119ed0e51648c4d4b984b98a">XQspiPsu_Select</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu___config.html#afb9b153a78b4112212d7850efd1c6add">XQspiPsu_Config::BusWidth</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___config.html#aa771e1e018426eb1f68fe5241ed45e71">XQspiPsu_Config::ConnectionMode</a>, <a class="el" href="struct_x_qspi_psu.html#adc71282aafc4eb9a8f37e672bf3bec51">XQspiPsu::GenFifoBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#a04675183fe2c3b312d0866a2a2f9b906">XQspiPsu::GenFifoBus</a>, <a class="el" href="struct_x_qspi_psu.html#adbe5c279e1de1f98d3f63bc30cd2d2a4">XQspiPsu::GenFifoCS</a>, <a class="el" href="struct_x_qspi_psu.html#ac08fabd6f7822d5aeffe328e45266196">XQspiPsu::GenFifoEntries</a>, <a class="el" href="struct_x_qspi_psu___config.html#a630de071c5c249ec4bf502fff7f8daaa">XQspiPsu_Config::InputClockHz</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu___config.html#ab141b30f1c3f753a9805200c580bf716">XQspiPsu_Config::IsFbClock</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a5464cdad6cf047e5228f13cb3a761c3f">XQspiPsu::RecvBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a2a11cb56ad7d4b388a4669359156ab0b">XQspiPsu::SendBufferPtr</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#gaa44815f385a69052a3f637f57428f506">XQspiPsu_Enable</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#ga799b60ee7157ed46b84475677aa0dc03">XQspiPsu_Reset()</a>, and <a class="el" href="group__qspipsu.html#ga389021b0119ed0e51648c4d4b984b98a">XQspiPsu_Select</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a653eb600a5672ee9c7664f2720a05258">QspiPsuFlashNonBlockingReadExample()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee">QspiPsuInterruptFlashExample()</a>, <a class="el" href="xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726">QspiPsuPolledFlashExample()</a>, and <a class="el" href="xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331">QspiPsuWriteProtectFlashExample()</a>.</p>
 
@@ -3981,7 +4023,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a95b9e43bb920ea5055db6b1971d7f780">XQspiPsu_Msg::RxAddr64bit</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a1fb697c64fd14580822f4baf50f26df1">XQspiPsu_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu___msg.html#ac9a904e6a2fa8d5668e554615a59bbb5">XQspiPsu_Msg::Xfer64bit</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a95b9e43bb920ea5055db6b1971d7f780">XQspiPsu_Msg::RxAddr64bit</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a1fb697c64fd14580822f4baf50f26df1">XQspiPsu_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu___msg.html#ac9a904e6a2fa8d5668e554615a59bbb5">XQspiPsu_Msg::Xfer64bit</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 </div>
 </div>
@@ -4025,7 +4067,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function is not thread-safe. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga47c246bab4c5d4f6c8ff84e44049adc9">XQSPIPSU_MANUAL_START_OPTION</a>, <a class="el" href="group__qspipsu.html#ga7270573aac2e897d40123dcb0a181aac">XQSPIPSU_NUM_OPTIONS</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga47c246bab4c5d4f6c8ff84e44049adc9">XQSPIPSU_MANUAL_START_OPTION</a>, <a class="el" href="group__qspipsu.html#ga7270573aac2e897d40123dcb0a181aac">XQSPIPSU_NUM_OPTIONS</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 </div>
 </div>
@@ -4114,7 +4156,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a09fc20d95cb26f29a649207d0b495f58">XQspiPsu_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga4884f0160746c6696598ef6dda1fc9ff">XQSPIPSU_TXD_OFFSET</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga58406ccb7e182a93cd3a47c060de091e">XQspiPsu_TXSetup()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaa77c471d9c50c3671a2f2a7c28707f4d">XQspiPsu_IntrSendData()</a>, <a class="el" href="group__qspipsu.html#gad8adcb1fd07106bb0add26e24a4c0084">XQspiPsu_PolledSendData()</a>, and <a class="el" href="group__qspipsu.html#ga58406ccb7e182a93cd3a47c060de091e">XQspiPsu_TXSetup()</a>.</p>
 
 </div>
 </div>
@@ -4160,7 +4202,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu___msg.html#ae4dae8ba728f7da9b6f31bb39c62b81f">XQspiPsu_Msg::BusWidth</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a420a0720c6eb8d77aae09c829185b160">XQspiPsu_Msg::ByteCount</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#a04675183fe2c3b312d0866a2a2f9b906">XQspiPsu::GenFifoBus</a>, <a class="el" href="struct_x_qspi_psu.html#adbe5c279e1de1f98d3f63bc30cd2d2a4">XQspiPsu::GenFifoCS</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga3bfe2023b6a6ce56e9d13f130bd1c86d">XQSPIPSU_GEN_FIFO_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga7fc4cdebc35bb7b5d3ca9128917c131c">XQspiPsu_GenFifoEntryDataLen()</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#ga767a4572b5fe31cd9ff390c44d25e968">XQSPIPSU_MSG_FLAG_STRIPE</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gae7bfe0aff5a064a01b0f822f46b26deb">XQspiPsu_SelectSpiMode()</a>, <a class="el" href="group__qspipsu.html#ga8b201a022bb63afbaaf9afad23064761">XQspiPsu_TXRXSetup()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga6ae727534cf55b878b9b1974dc72a625">XQspiPsu_InterruptTransfer()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>, and <a class="el" href="group__qspipsu.html#ga769969b43f91def18f7501555ec35b11">XQspiPsu_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -4304,7 +4346,9 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#aaf2ea17aa1aae667ccc6190222e218f7">XQspiPsu::StatusRef</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gad4bd22b7d06c85885fafdae994e1c86a">XQSPIPSU_MSG_FLAG_POLL</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>, <a class="el" href="group__qspipsu.html#ga73c0f0aa6fe6f1818b7ec15cdac0e7ed">XQspiPsu_IntrDummyDataTransfer()</a>, <a class="el" href="group__qspipsu.html#gad4bd22b7d06c85885fafdae994e1c86a">XQSPIPSU_MSG_FLAG_POLL</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, and <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>.</p>
+
+<p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee">QspiPsuInterruptFlashExample()</a>, and <a class="el" href="xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331">QspiPsuWriteProtectFlashExample()</a>.</p>
 
 </div>
 </div>
@@ -4356,9 +4400,208 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab8e3a4621239cb556fc8acdd0a6d10b6">XQSPIPSU_IER_OFFSET</a>, <a class="el" href="group__qspipsu.html#gad4bd22b7d06c85885fafdae994e1c86a">XQSPIPSU_MSG_FLAG_POLL</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gab8e3a4621239cb556fc8acdd0a6d10b6">XQSPIPSU_IER_OFFSET</a>, <a class="el" href="group__qspipsu.html#gad4bd22b7d06c85885fafdae994e1c86a">XQSPIPSU_MSG_FLAG_POLL</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae55fa60e803534f990c0493b67eb02f1">XQspiPsu_PollDataConfig()</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a4f09bf044ed26b11fc5489cb7b7ca1e6">BulkErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a97d8ab88e6002a97c30b95b66db231ea">DieErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a83a78784f5ba39b5e76b17a7e4a5ecad">FlashEnableQuadMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ae8d1767607b58391ccb2d0103c2fd456">FlashEnterExit4BAddMode()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a8c7c38172a5258ee7cdfaef5a1a9af82">FlashErase()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aaaad34739d0ad6d1fb5436c1d6428463">FlashRead()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#ac7c0194bd58d158581c699b8c07c309d">FlashReadID()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53">FlashWrite()</a>, and <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#aa6007218826af36e0df62b747de40de5">MultiDieRead()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf5cca9a4c8ba075e4d9855a789cecc40"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XQspiPsu_IntrDataTransfer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32 *&#160;</td>
+          <td class="paramname"><em>QspiPsuStatusReg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>DeltaMsgCnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function transfers Tx and Rx data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">QspiPsuStatusReg</td><td>is the status of QSPI status register. </td></tr>
+    <tr><td class="paramname">DeltaMsgCnt</td><td>is the message count flag.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#aaf2ea17aa1aae667ccc6190222e218f7">XQspiPsu::StatusRef</a>, <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, <a class="el" href="group__qspipsu.html#gaa77c471d9c50c3671a2f2a7c28707f4d">XQspiPsu_IntrSendData()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga73c0f0aa6fe6f1818b7ec15cdac0e7ed"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XQspiPsu_IntrDummyDataTransfer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>QspiPsuStatusReg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>DeltaMsgCnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function transfers Dummy byte. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">QspiPsuStatusReg</td><td>is the status of QSPI status register. </td></tr>
+    <tr><td class="paramname">DeltaMsgCnt</td><td>is the message count flag.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#af6710ef68edf3ff0a833c088207ba227">XQspiPsu::NumMsg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#aaf2ea17aa1aae667ccc6190222e218f7">XQspiPsu::StatusRef</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga872f5fe8dbac27ca8867387e2185069d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XQspiPsu_IntrRecvData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>QspiPsuStatusReg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>DmaIntrStatusReg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>DeltaMsgCnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs a transfer of Rx data on the busin interrupt mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">QspiPsuStatusReg</td><td>is the status QSPI status register. </td></tr>
+    <tr><td class="paramname">DmaIntrStatusReg</td><td>is the status DMA interrupt register. </td></tr>
+    <tr><td class="paramname">DeltaMsgCnt</td><td>is the message count flag.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, and <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaa77c471d9c50c3671a2f2a7c28707f4d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XQspiPsu_IntrSendData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>QspiPsuStatusReg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>DeltaMsgCnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs a transfer of Tx data on the bus in interrupt mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">QspiPsuStatusReg</td><td>is the status QSPI status register. </td></tr>
+    <tr><td class="paramname">DeltaMsgCnt</td><td>is the message count flag.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#ad39fab4f939983f961777ae33212f14c">XQspiPsu::MsgCnt</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, and <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#gaf5cca9a4c8ba075e4d9855a789cecc40">XQspiPsu_IntrDataTransfer()</a>.</p>
 
 </div>
 </div>
@@ -4406,7 +4649,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#gaa04d433c594d66417be2c4f83c092203">XQspiPsu_ReadRxFifo()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, and <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, and <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>.</p>
 
 </div>
 </div>
@@ -4518,9 +4761,173 @@ TAPDLY Bypass register information</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#aaf2ea17aa1aae667ccc6190222e218f7">XQspiPsu::StatusRef</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#ga68b0b4316693414546980dea7baaf0a4">XQSPIPSU_RXD_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a2ebf04ce847da29d6069795db26fbccc">XQspiPsu::StatusHandler</a>, <a class="el" href="struct_x_qspi_psu.html#aaf2ea17aa1aae667ccc6190222e218f7">XQspiPsu::StatusRef</a>, <a class="el" href="group__qspipsu.html#ga5eb684785dfb0a249b18126089624b91">XQSPIPSU_IDR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#ga68b0b4316693414546980dea7baaf0a4">XQSPIPSU_RXD_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga3a37a08570be55ea07945a18a80306f3">XQspiPsu_SetReadMode()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga83a88b04245b12857557e1d443cd3689"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XQspiPsu_PolledMessageTransfer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>NumMsg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs a transfer on the bus in polled mode. </p>
+<p>The messages passed are all transferred on the bus between one CS assert and de-assert.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>is a pointer to the structure containing transfer data. </td></tr>
+    <tr><td class="paramname">NumMsg</td><td>is the number of messages to be transferred.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE if transfer fails.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>, <a class="el" href="group__qspipsu.html#gad8adcb1fd07106bb0add26e24a4c0084">XQspiPsu_PolledSendData()</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga18829cabd2b37c4cf9fb2efa0632c398"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XQspiPsu_PolledRecvData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">s32&#160;</td>
+          <td class="paramname"><em>Index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32 *&#160;</td>
+          <td class="paramname"><em>IOPending</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function transfers Rx data on the bus in polled mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>is a pointer to the structure containing transfer data. </td></tr>
+    <tr><td class="paramname">Index</td><td>is the Msg index to transfer. </td></tr>
+    <tr><td class="paramname">IOPending</td><td>is the .</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE if transfer fails.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gad8adcb1fd07106bb0add26e24a4c0084"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XQspiPsu_PolledSendData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_qspi_psu___msg.html">XQspiPsu_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">s32&#160;</td>
+          <td class="paramname"><em>Index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function transfers Tx data on the bus in polled mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_qspi_psu.html" title="The XQspiPsu driver instance data. ">XQspiPsu</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>is a pointer to the structure containing transfer data. </td></tr>
+    <tr><td class="paramname">Index</td><td>is the Msg index to transfer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE if transfer fails.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, and <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>.</p>
+
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>.</p>
 
 </div>
 </div>
@@ -4572,7 +4979,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#a400769b796e581c883c34c63320c51b3">XQspiPsu_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#gaf5c0853d67052b9b05af03946e51c4c2">XQspiPsu_FillTxFifo()</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gae7900ea73e245de8f091d4d4c201fe76">XQspiPsu_IORead()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#gae82f60c2162c93b8e302125914d8aab6">XQSPIPSU_MSG_FLAG_TX</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, <a class="el" href="group__qspipsu.html#gad6a88bdae8e13bd8cd48bb9e6d565610">XQSPIPSU_RXADDR_OVER_32BIT</a>, <a class="el" href="group__qspipsu.html#ga02f2ea05785dff6887625c5ef088a73b">XQspiPsu_SetIOMode()</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, and <a class="el" href="group__qspipsu.html#ga83a88b04245b12857557e1d443cd3689">XQspiPsu_PolledMessageTransfer()</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5e40a81a572bfacbf4d7a39af7905cea">FlashRegisterRead()</a>, and <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a5b70ac0045f51c4babd8709e1c030752">FlashRegisterWrite()</a>.</p>
 
@@ -4818,11 +5225,12 @@ TAPDLY Bypass register information</h2></td></tr>
 <li>XST_SUCCESS if successful.</li>
 <li>XST_DEVICE_IS_STARTED if the device is already started.</li>
 <li>XST_DEVICE_BUSY if the device is currently transferring data. It must be stopped to re-initialize.</li>
+<li>XST_FAILURE if Prescaler value is less than FreqDiv when feedback clock is not enabled.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gae53e5d9f18e5fe950d0ce0165880bb7f">XQSPIPSU_CR_PRESC_MAXIMUM</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___config.html#a630de071c5c249ec4bf502fff7f8daaa">XQspiPsu_Config::InputClockHz</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu___config.html#ab141b30f1c3f753a9805200c580bf716">XQspiPsu_Config::IsFbClock</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gae53e5d9f18e5fe950d0ce0165880bb7f">XQSPIPSU_CR_PRESC_MAXIMUM</a>, <a class="el" href="group__qspipsu.html#gacb92bc4c932f3cb76254d29c165422ad">XQSPIPSU_FREQ_37_5MHZ</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a653eb600a5672ee9c7664f2720a05258">QspiPsuFlashNonBlockingReadExample()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee">QspiPsuInterruptFlashExample()</a>, <a class="el" href="xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726">QspiPsuPolledFlashExample()</a>, and <a class="el" href="xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331">QspiPsuWriteProtectFlashExample()</a>.</p>
 
@@ -4900,7 +5308,7 @@ TAPDLY Bypass register information</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a420a0720c6eb8d77aae09c829185b160">XQspiPsu_Msg::ByteCount</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263">XQspiPsu::IsUnaligned</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a1fb697c64fd14580822f4baf50f26df1">XQspiPsu_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_qspi_psu.html#ac45ddbc82ca891a58fbc9f25150fce30">XQspiPsu::RxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__qspipsu.html#gaa345ea3ab3694a94a60e6217cb8d5e59">XQspiPsu_InterruptHandler()</a>, and <a class="el" href="group__qspipsu.html#ga61de390e2bc4af0ce77448a46763ea39">XQspiPsu_PolledTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__qspipsu.html#ga872f5fe8dbac27ca8867387e2185069d">XQspiPsu_IntrRecvData()</a>, and <a class="el" href="group__qspipsu.html#ga18829cabd2b37c4cf9fb2efa0632c398">XQspiPsu_PolledRecvData()</a>.</p>
 
 </div>
 </div>
@@ -4944,7 +5352,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function is not thread-safe. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga49734e127e6359b15c1ce7f117748c36">XQSPIPS_BASEADDR</a>, <a class="el" href="group__qspipsu.html#ga3c05a7421b8aea31df3d026189282cce">XQSPIPS_LQSPI_CFG_RST_STATE</a>, <a class="el" href="group__qspipsu.html#ga2b4818a62cb0d5671e7dee6130165b09">XQSPIPS_LQSPI_CR_4_BYTE_STATE</a>, <a class="el" href="group__qspipsu.html#ga6f187c067994aa193d43051cb5fef0db">XQSPIPS_LQSPI_CR_RST_STATE</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, <a class="el" href="group__qspipsu.html#gac5bfff58ddca187becec7c533cf355fe">XQSPIPSU_LQSPI_CR_LINEAR_MASK</a>, <a class="el" href="group__qspipsu.html#ga02a2df38913ec3616e70351637cbbb50">XQSPIPSU_LQSPI_CR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga9e5fb7239c5d7fbadc688e29c3fb087d">XQSPIPSU_LQSPI_LESS_THEN_SIXTEENMB</a>, <a class="el" href="group__qspipsu.html#gaf4dde3aacf0091e9d1748b1b915648a0">XQSPIPSU_LQSPI_MODE_OPTION</a>, <a class="el" href="group__qspipsu.html#ga47c246bab4c5d4f6c8ff84e44049adc9">XQSPIPSU_MANUAL_START_OPTION</a>, <a class="el" href="group__qspipsu.html#ga7270573aac2e897d40123dcb0a181aac">XQSPIPSU_NUM_OPTIONS</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga49734e127e6359b15c1ce7f117748c36">XQSPIPS_BASEADDR</a>, <a class="el" href="group__qspipsu.html#ga3c05a7421b8aea31df3d026189282cce">XQSPIPS_LQSPI_CFG_RST_STATE</a>, <a class="el" href="group__qspipsu.html#ga2b4818a62cb0d5671e7dee6130165b09">XQSPIPS_LQSPI_CR_4_BYTE_STATE</a>, <a class="el" href="group__qspipsu.html#ga6f187c067994aa193d43051cb5fef0db">XQSPIPS_LQSPI_CR_RST_STATE</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga5b7b95790bfeb5bfb3dfd63e4a5e76cc">XQSPIPSU_EN_OFFSET</a>, <a class="el" href="group__qspipsu.html#gac5bfff58ddca187becec7c533cf355fe">XQSPIPSU_LQSPI_CR_LINEAR_MASK</a>, <a class="el" href="group__qspipsu.html#ga02a2df38913ec3616e70351637cbbb50">XQSPIPSU_LQSPI_CR_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga9e5fb7239c5d7fbadc688e29c3fb087d">XQSPIPSU_LQSPI_LESS_THEN_SIXTEENMB</a>, <a class="el" href="group__qspipsu.html#gaf4dde3aacf0091e9d1748b1b915648a0">XQSPIPSU_LQSPI_MODE_OPTION</a>, <a class="el" href="group__qspipsu.html#ga47c246bab4c5d4f6c8ff84e44049adc9">XQSPIPSU_MANUAL_START_OPTION</a>, <a class="el" href="group__qspipsu.html#ga7270573aac2e897d40123dcb0a181aac">XQSPIPSU_NUM_OPTIONS</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__generic__flash__non__blocking__read__example_8c.html#a653eb600a5672ee9c7664f2720a05258">QspiPsuFlashNonBlockingReadExample()</a>, <a class="el" href="xqspipsu__generic__flash__interrupt__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee">QspiPsuInterruptFlashExample()</a>, <a class="el" href="xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726">QspiPsuPolledFlashExample()</a>, and <a class="el" href="xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331">QspiPsuWriteProtectFlashExample()</a>.</p>
 
@@ -4989,7 +5397,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function is not thread-safe. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__qspipsu.html#ga5f083afb4ec79c542a7c7098a519d771">XQspiPsu_PollDataHandler()</a>.</p>
 
@@ -5168,7 +5576,7 @@ TAPDLY Bypass register information</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function is not thread-safe. This function can only be used with single flash configuration and x1/x2 data mode. This function cannot be used with x4 data mode and dual parallel and stacked flash configuration. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331">QspiPsuWriteProtectFlashExample()</a>.</p>
 
@@ -5221,7 +5629,7 @@ TAPDLY Bypass register information</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu___config.html#a4048264c3ac6b3455c0295eeacac874b">XQspiPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_qspi_psu.html#a9b3aa272eb335fecaaa8f47fd2ed9241">XQspiPsu::Config</a>, <a class="el" href="struct_x_qspi_psu___msg.html#a2c11ea724a05dd7d68b8e4adcb7ac46e">XQspiPsu_Msg::Flags</a>, <a class="el" href="struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c">XQspiPsu::IsBusy</a>, <a class="el" href="struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2">XQspiPsu::IsManualstart</a>, <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga02055aef4b0f9a801005ebdc7b556157">MAX_DELAY_CNT</a>, <a class="el" href="struct_x_qspi_psu.html#a29f89d26e8b2046a17065912e1a7b365">XQspiPsu::Msg</a>, <a class="el" href="struct_x_qspi_psu.html#abcf49b02b0b90a7eecf9fb5ba40ac0b3">XQspiPsu::ReadMode</a>, <a class="el" href="struct_x_qspi_psu.html#a489eab59d93d119fe5776f8d440ec2bd">XQspiPsu::TxBytes</a>, <a class="el" href="group__qspipsu.html#ga1d76a2f706f3988da79345132e484303">XQSPIPSU_CFG_OFFSET</a>, <a class="el" href="group__qspipsu.html#gafa633d08d4bcacadc20f2696665edb75">XQSPIPSU_DMA_BYTES_MAX</a>, <a class="el" href="group__qspipsu.html#ga08036c2fa8996e246d9d529fd2302af9">XQspiPsu_GenFifoEntryData()</a>, <a class="el" href="group__qspipsu.html#gadae24d033fb12577e3e4eda5427a950a">XQSPIPSU_ISR_OFFSET</a>, <a class="el" href="group__qspipsu.html#gacdde904168f5899e4ba6ccd59c360849">XQSPIPSU_MSG_FLAG_RX</a>, <a class="el" href="group__qspipsu.html#ga6e5ef224ee243dc64228ad60155a3f8b">XQSPIPSU_READMODE_DMA</a>, <a class="el" href="group__qspipsu.html#gafd11c8b8f44530c3670d2ac7497fb2fc">XQSPIPSU_READMODE_IO</a>, <a class="el" href="group__qspipsu.html#gab88bcdb0f53b21b79cd0805cfd14cb89">XQspiPsu_ReadReg</a>, and <a class="el" href="group__qspipsu.html#ga584ee0482b95d3f49353438ca58fb180">XQspiPsu_WriteReg</a>.</p>
 
 </div>
 </div>

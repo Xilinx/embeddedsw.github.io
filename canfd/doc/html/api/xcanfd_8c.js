@@ -29,5 +29,6 @@ var xcanfd_8c =
     [ "XCanFd_Send_Queue", "xcanfd_8c.html#gadf9d0eebaa9263e44f4d384a778f0d7d", null ],
     [ "XCanFd_Set_MailBox_IdMask", "xcanfd_8c.html#ga79f6caa236d0d46a4ec82664b3ff2da1", null ],
     [ "XCanFd_Set_Tranceiver_Delay_Compensation", "xcanfd_8c.html#ga9f4be15afb5c90abbde9ad4c0d4a6708", null ],
+    [ "XCanFd_stop", "xcanfd_8c.html#gadb3b0ba459b2c4dd17bc9ae471f766ad", null ],
     [ "XCanFd_TxBuffer_Cancel_Request", "xcanfd_8c.html#ga1fe72efb3ab8437545ac8df29dff89f5", null ]
 ];

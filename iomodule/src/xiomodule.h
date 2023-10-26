@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -235,6 +236,9 @@
 * 2.13	sk   10/30/21  Add function declaration for XIOModule_Intc_SelfTest.
 * 2.14  dp   08/08/22  Fix doxygen warnings.
 * 2.14  dp   08/30/22  Add missing declaration for Get and Clear Stats.
+* 2.15  ml   02/27/23  converted signed macros into unsigned macros to fix
+*                      misra-c violations.
+* 2.15  adk  04/14/23  Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -253,8 +257,10 @@ extern "C" {
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xstatus.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 #include "xiomodule_l.h"
 #include "xil_types.h"
 
@@ -308,19 +314,23 @@ extern "C" {
  * XTC_PRESCALER_*	Define the prescaler configured in hardware.
  * </pre>
  */
-#define XTC_PRESCALER_NONE		0
-#define XTC_PRESCALER_FIT1		1
-#define XTC_PRESCALER_FIT2		2
-#define XTC_PRESCALER_FIT3		3
-#define XTC_PRESCALER_FIT4		4
-#define XTC_PRESCALER_PIT1		5
-#define XTC_PRESCALER_PIT2		6
-#define XTC_PRESCALER_PIT3		7
-#define XTC_PRESCALER_PIT4		8
-#define XTC_PRESCALER_EXTERNAL		9
+#define XTC_PRESCALER_NONE		0U
+#define XTC_PRESCALER_FIT1		1U
+#define XTC_PRESCALER_FIT2		2U
+#define XTC_PRESCALER_FIT3		3U
+#define XTC_PRESCALER_FIT4		4U
+#define XTC_PRESCALER_PIT1		5U
+#define XTC_PRESCALER_PIT2		6U
+#define XTC_PRESCALER_PIT3		7U
+#define XTC_PRESCALER_PIT4		8U
+#define XTC_PRESCALER_EXTERNAL		9U
 /*@}*/
 
 #define XIOMODULE_STANDARD_VECTOR_ADDRESS_WIDTH	32U
+
+#ifdef SDT
+#define XPAR_IOMODULE_INTC_MAX_INTR_SIZE  32U
+#endif
 /**
  *@endcond
  */
@@ -340,7 +350,11 @@ typedef void (*XIOModule_Handler)(void *CallBackRef,
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;			     /**< Unique ID  of device       */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;		     /**< Unique identifier          */
 	UINTPTR IoBaseAddress;		     /**< IO Bus Base Address        */
 	u32 FastIntr;			     /**< Fast Interrupt enabled     */
@@ -452,8 +466,13 @@ typedef struct {
 /*
  * Required functions in xiomodule.c
  */
+#ifndef SDT
 s32 XIOModule_Initialize(XIOModule * InstancePtr, u16 DeviceId);
 s32 XIOModule_Timer_Initialize(XIOModule * InstancePtr, u16 DeviceId);
+#else
+s32 XIOModule_Initialize(XIOModule * InstancePtr, u32 BaseAddress);
+s32 XIOModule_Timer_Initialize(XIOModule * InstancePtr, u32 BaseAddress);
+#endif
 
 s32 XIOModule_Start(XIOModule * InstancePtr);
 void XIOModule_Stop(XIOModule * InstancePtr);
@@ -467,7 +486,11 @@ void XIOModule_Disable(XIOModule * InstancePtr, u8 Id);
 
 void XIOModule_Acknowledge(XIOModule * InstancePtr, u8 Id);
 
+#ifndef SDT
 XIOModule_Config *XIOModule_LookupConfig(u16 DeviceId);
+#else
+XIOModule_Config *XIOModule_LookupConfig(u32 BaseAddress);
+#endif
 
 s32 XIOModule_ConnectFastHandler(XIOModule *InstancePtr, u8 Id,
 				 XFastInterruptHandler Handler);

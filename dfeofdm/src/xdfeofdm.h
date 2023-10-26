@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -14,7 +14,7 @@
 * @cond nocomments
 * The RFSoC DFE Orthogonal Frequency Division Multiplexing IP performs
 * translation between frequency domain to the time domain and vice versa using
-* the hardened FFT IP in Maxwell. Each instance of the IP supports up to eight
+* the hardened FFT IP. Each instance of the IP supports up to eight
 * antennas in 1, 2, 4 and 8 combinations and up to 4 ANTENNA INTERLEAVE in
 * combinations of 1, 2 and 4. Each instance can also support up to 8 component
 * carriers (CC) to be aggregated on a particular antenna. The block performs
@@ -45,6 +45,9 @@
 * Ver   Who    Date     Changes
 * ----- ---    -------- -----------------------------------------------
 * 1.0   dc     11/21/22 Initial version
+* 1.1   dc     04/05/23 Update documentation
+*       dc     05/22/23 State and status upgrades
+*       dc     06/28/23 Add phase compensation calculation
 *
 * </pre>
 * @endcond
@@ -59,7 +62,9 @@ extern "C" {
 /**************************** Includes ***************************************/
 #ifdef __BAREMETAL__
 #include "xil_types.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 #include "xstatus.h"
 #else
 #include <linux/types.h>
@@ -73,6 +78,7 @@ extern "C" {
 #ifndef __BAREMETAL__
 #define XDFEOFDM_MAX_NUM_INSTANCES                                             \
 	(10U) /**< Maximum number of driver instances running at the same time. */
+#define XDFEOFDM_INSTANCE_EXISTS(X) (X < XDFEOFDM_MAX_NUM_INSTANCES)
 /**
 * @cond nocomments
 */
@@ -91,7 +97,14 @@ extern "C" {
 #define XST_FAILURE (1U) /**< Failure flag */
 #endif
 #else
+#ifndef SDT
 #define XDFEOFDM_MAX_NUM_INSTANCES XPAR_XDFEOFDM_NUM_INSTANCES
+#define XDFEOFDM_INSTANCE_EXISTS(X) (X < XDFEOFDM_MAX_NUM_INSTANCES)
+#else
+#define XDFEOFDM_MAX_NUM_INSTANCES                                              \
+	(10U) /**< Maximum number of driver instances running at the same time. */
+#define XDFEOFDM_INSTANCE_EXISTS(X) (XDfeOfdm_ConfigTable[X].Name != NULL)
+#endif
 #endif
 
 #define XDFEOFDM_NODE_NAME_MAX_LENGTH (50U) /**< Node name maximum length */
@@ -101,6 +114,8 @@ extern "C" {
 #define XDFEOFDM_CC_SEQ_LENGTH_MAX (16U) /**< Maximum sequence length */
 #define XDFEOFDM_FT_SEQ_LENGTH_MAX                                             \
 	(16U) /**< Maximum Fourier transform sequence length */
+#define XDFEOFDM_PHASE_COMPENSATION_MAX                                        \
+	(112U) /**< Maximum phase compensation weight */
 
 /**************************** Type Definitions *******************************/
 /*********** start - common code to all Logiccores ************/
@@ -231,6 +246,9 @@ typedef struct {
 typedef struct {
 	u32 NumAntenna; /**< [1-8] Number of antenas */
 	u32 AntennaInterleave; /**< [1-8] Antenna interleave */
+	u32 PhaseCompensation; /**< [0,1] Phase compesation
+				0 - Phase compesation disabled
+				1 - Phase compesation enabled */
 } XDfeOfdm_ModelParameters;
 
 /**
@@ -279,6 +297,9 @@ typedef struct {
 	/* CC slot delay */
 	u32 OutputDelay; /** [0-2047] Delay required before outputting CC
 		in order to balance CC Filter group delay. */
+	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /** Phase weight is
+		a complex number with 0 to 15 bits providing the I and 16 to 31
+		bits the Q part of the weight. */
 } XDfeOfdm_CarrierCfg;
 
 /**
@@ -315,6 +336,9 @@ typedef struct {
 	/* CC slot delay */
 	u32 OutputDelay; /** [0-2047] Delay required before outputting CC
 		in order to balance CC Filter group delay. */
+	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /** Phase weight is
+		a complex number with 0 to 15 bits providing the I and 16 to 31
+		bits the Q part of the weight. */
 } XDfeOfdm_InternalCarrierCfg;
 
 /**
@@ -341,6 +365,8 @@ typedef struct {
 		triggered. */
 	u32 Saturation; /**< [0,1] A difference between CC_CONFIGURATION.
 		SEQUENCE and DIN TID has been detected. */
+	u32 Overflow; /**< [0,1] UL OFDM receives tready low during packet
+		transaction */
 } XDfeOfdm_Status;
 
 /**
@@ -350,16 +376,24 @@ typedef struct {
 	u32 CCUpdate; /**< [0,1] Mask CC update events */
 	u32 FTCCSequenceError; /**< [0,1] Mask sequence mismatch events */
 	u32 Saturation; /**< [0,1] Mask Saturation events */
+	u32 Overflow; /**< [0,1] Mask Overflow events */
 } XDfeOfdm_InterruptMask;
 
 /**
  * OFDM Config Structure.
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId; /**< The component instance Id */
+#else
+	char *Name; /**< Unique name of the device */
+#endif
 	metal_phys_addr_t BaseAddr; /**< Instance base address */
 	u32 NumAntenna; /**< Number of antenas */
 	u32 AntennaInterleave; /**< Antenna interleave */
+	u32 PhaseCompensation; /**< [0,1] Phase compesation
+				0 - Phase compesation disabled
+				1 - Phase compesation enabled */
 } XDfeOfdm_Config;
 
 /**
@@ -374,6 +408,11 @@ typedef struct {
 	struct metal_io_region *Io; /**< Libmetal IO structure */
 	struct metal_device *Device; /**< Libmetal device structure */
 } XDfeOfdm;
+
+/************************** Variable Definitions *****************************/
+#ifdef __BAREMETAL__
+extern XDfeOfdm_Config XDfeOfdm_ConfigTable[XDFEOFDM_MAX_NUM_INSTANCES];
+#endif
 
 /**************************** API declarations *******************************/
 /* System initialization API */
@@ -435,6 +474,10 @@ void XDfeOfdm_GetTriggersCfg(const XDfeOfdm *InstancePtr,
 			     XDfeOfdm_TriggerCfg *TriggerCfg);
 void XDfeOfdm_SetTriggersCfg(const XDfeOfdm *InstancePtr,
 			     XDfeOfdm_TriggerCfg *TriggerCfg);
+
+void XDfeOfdm_SetTuserOutFrameLocation(const XDfeOfdm *InstancePtr,
+				       u32 TuserOutFrameLocation);
+u32 XDfeOfdm_GetTuserOutFrameLocation(const XDfeOfdm *InstancePtr);
 
 void XDfeOfdm_GetEventStatus(const XDfeOfdm *InstancePtr,
 			     XDfeOfdm_Status *Status);

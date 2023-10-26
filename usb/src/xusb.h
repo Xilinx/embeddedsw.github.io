@@ -1,6 +1,7 @@
 /******************************************************************************
 * Copyright (C) 2006 Vreelin Engineering, Inc.  All Rights Reserved.
 * Copyright (C) 2007 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +9,7 @@
 /**
 *
 * @file xusb.h
-* @addtogroup usb_v5_5
+* @addtogroup usb Overview
 * @{
 * @details
 *
@@ -164,6 +165,7 @@
 *                     generation.
 * 5.3   asa  02/05/19 Added dependencies.props in data folder for
 *                     importing examples in SDK.
+* 5.6   pm   07/05/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -314,10 +316,20 @@ typedef struct {
  * XUsb_ConfigureDevice() function call.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID of device. */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;	/**< Core register base address. */
 	u8 DmaEnabled;		/**< DMA support Enabled */
 	u8 AddrWidth;		/**< DMA Address Width */
+#ifdef SDT
+	u16 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12] trigger
+				     type and level flags */
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
+				     Parent base address */
+#endif
 } XUsb_Config;
 
 
@@ -349,13 +361,13 @@ typedef struct {
 	void *HandlerRef;
 
 	XUsb_IntrHandlerFunc ErrHandlerFunc;
-	void * ErrHandlerRef;
+	void *ErrHandlerRef;
 
 	XUsb_IntrHandlerFunc DmaHandlerFunc;
-	void * DmaHandlerRef;
+	void *DmaHandlerRef;
 
 	XUsb_IntrHandlerFunc UlpiHandlerFunc;
-	void * UlpiHandlerRef;
+	void *UlpiHandlerRef;
 
 } XUsb;
 
@@ -371,7 +383,7 @@ typedef struct {
  * Implemented in the file xusb.c
  */
 int XUsb_CfgInitialize(XUsb *InstancePtr, XUsb_Config *ConfigPtr,
-			UINTPTR EffectiveAddr);
+		       UINTPTR EffectiveAddr);
 
 int XUsb_ConfigureDevice(XUsb *InstancePtr, XUsb_DeviceConfig *CfgPtr);
 
@@ -387,15 +399,15 @@ void XUsb_SetTestMode(XUsb *InstancePtr, u8 TestMode, u8 *BufPtr);
 void XUsb_DmaReset(XUsb *InstancePtr);
 
 void XUsb_DmaTransfer(XUsb *InstancePtr, UINTPTR *SrcAddr, UINTPTR *DstAddr,
-				u16 Length);
+		      u16 Length);
 
 void XUsb_ReadErrorCounters(XUsb *InstancePtr, u8 *BitStuffErrors,
-				u8 *PidErrors, u8 *CrcErrors);
+			    u8 *PidErrors, u8 *CrcErrors);
 
 u8 XUsb_UlpiPhyReadRegister(XUsb *InstancePtr, u8 RegAddr);
 
 int XUsb_UlpiPhyWriteRegister(XUsb *InstancePtr, u8 RegAddr,
-				u8 UlpiPhyRegData);
+			      u8 UlpiPhyRegData);
 
 void XUsb_SieReset(XUsb *InstancePtr);
 
@@ -432,16 +444,16 @@ void XUsb_IntrHandler(void *InstancePtr);
 void XUsb_IntrSetHandler(XUsb *InstancePtr, void *CallBackFunc,
 			 void *CallBackRef);
 void XUsb_EpSetHandler(XUsb *InstancePtr, u8 EpNum,
-			XUsb_EpHandlerFunc *CallBackFunc, void *CallBackRef);
+		       XUsb_EpHandlerFunc *CallBackFunc, void *CallBackRef);
 
 void XUsb_ErrIntrSetHandler(XUsb *InstancePtr, void *CallBackFunc,
-			 void *CallBackRef);
+			    void *CallBackRef);
 
 void XUsb_DmaIntrSetHandler(XUsb *InstancePtr, void *CallBackFunc,
-			 void *CallBackRef);
+			    void *CallBackRef);
 
 void XUsb_UlpiIntrSetHandler(XUsb *InstancePtr, void *CallBackFunc,
-			 void *CallBackRef);
+			     void *CallBackRef);
 
 /*
  * Static configuration helper function.
@@ -452,7 +464,11 @@ void XUsb_UlpiIntrSetHandler(XUsb *InstancePtr, void *CallBackFunc,
  * Implemented in xusb_sinit.c
  */
 
+#ifndef SDT
 XUsb_Config *XUsb_LookupConfig(u16 DeviceId);
+#else
+XUsb_Config *XUsb_LookupConfig(u32 BaseAddress);
+#endif
 
 #ifdef __cplusplus
 }

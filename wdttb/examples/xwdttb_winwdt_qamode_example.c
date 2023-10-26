@@ -22,6 +22,8 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- ---------------------------------------------------------
 * 5.6   asa  01/13/23 First release of Q&A mode example.
+* 5.7   sb   06/27/23 Correct the interrupt ID for Versal-net platform.
+* 5.7   sb   07/12/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -38,6 +40,9 @@
 #include "xscugic.h"
 #include "xil_printf.h"
 #endif
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
 
 /************************** Constant Definitions *****************************/
@@ -48,20 +53,24 @@
  * change all the needed parameters in one place.
  */
 
+#ifndef SDT
 #define WDTTB_DEVICE_ID         XPAR_WDTTB_0_DEVICE_ID
 
 
 #ifdef XPAR_INTC_0_DEVICE_ID
- #define INTC_DEVICE_ID         XPAR_INTC_0_DEVICE_ID
- #define WDTTB_IRPT_INTR         XPAR_INTC_0_WDTTB_0_VEC_ID
+#define INTC_DEVICE_ID         XPAR_INTC_0_DEVICE_ID
+#define WDTTB_IRPT_INTR         XPAR_INTC_0_WDTTB_0_VEC_ID
 #else
- #define INTC_DEVICE_ID         XPAR_SCUGIC_SINGLE_DEVICE_ID
- #ifdef versal
-  #define WDTTB_IRPT_INTR       XPAR_XWWDT_0_INTR
- #else
-  #define WDTTB_IRPT_INTR       XPAR_FABRIC_WDTTB_0_VEC_ID
- #endif
+#define INTC_DEVICE_ID         XPAR_SCUGIC_SINGLE_DEVICE_ID
+#ifdef VERSAL_NET
+#define WDTTB_IRPT_INTR       XPS_FPD_WWDT_2_INT_ID
+#elif defined(versal)
+#define WDTTB_IRPT_INTR       XPS_LPD_WWDT_0_INT_ID
+#else
+#define WDTTB_IRPT_INTR       XPAR_FABRIC_WDTTB_0_VEC_ID
+#endif
 #endif /* XPAR_INTC_0_DEVICE_ID */
+#endif
 
 /*
  * First window clock cycles count should be high enough to ensure
@@ -85,6 +94,7 @@
 
 /**************************** Type Definitions *******************************/
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #define INTC			XIntc
 #define INTC_HANDLER		XIntc_InterruptHandler
@@ -92,6 +102,7 @@
 #define INTC			XScuGic
 #define INTC_HANDLER		XScuGic_InterruptHandler
 #endif /* XPAR_INTC_0_DEVICE_ID */
+#endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -99,22 +110,30 @@
 /************************** Function Prototypes ******************************/
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int WinWdtQAModeExample(INTC *IntcInstancePtr,
 			XWdtTb *WdtTbInstancePtr,
 			u16 WdtTbDeviceId,
 			u16 WdtTbIntrId);
+#else
+int WdtTbIntrExample(XWdtTb *WdtTbInstancePtr, UINTPTR BaseAddress);
+#endif
 
 static void WinWdtQAModeIntrHandler(void *CallBackRef);
+#ifndef SDT
 static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
-				XWdtTb *WdtTbInstancePtr,
-				u16 WdtTbIntrId);
+				       XWdtTb *WdtTbInstancePtr,
+				       u16 WdtTbIntrId);
 static void WinWdtQAModeDisableIntrSystem(INTC *IntcInstancePtr,
-				u16 WdtTbIntrId);
+		u16 WdtTbIntrId);
+#endif
 
 /************************** Variable Definitions *****************************/
 
 XWdtTb WdtTbInstance;	/* Instance of Time Base WatchDog Timer */
+#ifndef SDT
 INTC IntcInstance;	/* Instance of the Interrupt Controller */
+#endif
 
 static volatile int WdtExpired;
 
@@ -140,10 +159,14 @@ int main(void)
 	 * Call the WdtTb (Window Watchdog) QA Mode, specify the parameters
 	 * generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = WinWdtQAModeExample(&IntcInstance,
-				&WdtTbInstance,
-				WDTTB_DEVICE_ID,
-				WDTTB_IRPT_INTR);
+				     &WdtTbInstance,
+				     WDTTB_DEVICE_ID,
+				     WDTTB_IRPT_INTR);
+#else
+	Status = WdtTbIntrExample(&WdtTbInstance, XPAR_XWDTTB_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("\n\rWindow WDT QA Mode example failed.\n\r");
 		return XST_FAILURE;
@@ -188,10 +211,14 @@ int main(void)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int WinWdtQAModeExample(INTC *IntcInstancePtr,
 			XWdtTb *WdtTbInstancePtr,
 			u16 WdtTbDeviceId,
 			u16 WdtTbIntrId)
+#else
+int WdtTbIntrExample(XWdtTb *WdtTbInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	volatile u32 ClosedWindowQAOver;
 	XWdtTb_Config *Config;
@@ -206,7 +233,11 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 	 * Initialize the WDTTB driver so that it's ready to use look up
 	 * configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XWdtTb_LookupConfig(WdtTbDeviceId);
+#else
+	Config = XWdtTb_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -217,7 +248,11 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 		return XST_FAILURE;
 	}
 
-	if(!WdtTbInstancePtr->Config.IsPl) {
+#ifndef SDT
+	if (!WdtTbInstancePtr->Config.IsPl) {
+#else
+	if (!(strcmp(WdtTbInstancePtr->Config.Name, "xlnx,versal-wwdt-1.0"))) {
+#endif
 		/*Enable Window Watchdog Feature in WWDT */
 		XWdtTb_ConfigureWDTMode(WdtTbInstancePtr, XWT_WWDT);
 	}
@@ -236,9 +271,16 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 	 * can occur
 	 */
 
+#ifndef SDT
 	Status = WinWdtQAModeSetupIntrSystem(IntcInstancePtr,
-					WdtTbInstancePtr,
-					WdtTbIntrId);
+					     WdtTbInstancePtr,
+					     WdtTbIntrId);
+#else
+	Status = XSetupInterruptSystem(WdtTbInstancePtr, &WinWdtQAModeIntrHandler,
+				       Config->IntrId[0],
+				       Config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -251,7 +293,7 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 
 	/* Configure first and second window */
 	XWdtTb_SetWindowCount(WdtTbInstancePtr, WIN_WDT_FW_COUNT,
-			WIN_WDT_SW_COUNT);
+			      WIN_WDT_SW_COUNT);
 
 	/* Set interrupt position in second window*/
 	XWdtTb_SetByteCount(WdtTbInstancePtr, WIN_WDT_SBC_COUNT);
@@ -300,7 +342,7 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 		while (WdtExpired != TRUE) {
 			if (ClosedWindowQAOver == FALSE) {
 				/* First 3 Answers are written in closed/first window */
-				for(ByteCount = 0U; ByteCount < 3U; ByteCount++){
+				for (ByteCount = 0U; ByteCount < 3U; ByteCount++) {
 					if (XWdtTb_InSecondWindow(WdtTbInstancePtr) == FALSE) {
 						TokenVal = XWdtTb_GetTokenVal(WdtTbInstancePtr);
 						Feedback = XWdtTb_GetFeedbackVal(WdtTbInstancePtr);
@@ -312,7 +354,7 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 			}
 		}
 
-		if (XWdtTb_InSecondWindow(WdtTbInstancePtr) == TRUE){
+		if (XWdtTb_InSecondWindow(WdtTbInstancePtr) == TRUE) {
 			/*
 			 * In second window in Q&A mode, the ACNT (Answer Count)
 			 * value in ESR register must have a value of 2 before the
@@ -332,7 +374,11 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 	}
 
 	/* Disable and disconnect the interrupt system */
+#ifndef SDT
 	WinWdtQAModeDisableIntrSystem(IntcInstancePtr, WdtTbIntrId);
+#else
+	XDisconnectInterruptCntrl(Config->IntrId[0], Config->IntrParent);
+#endif
 	/* Stop the timer */
 	Status = XWdtTb_Stop(WdtTbInstancePtr);
 	if (Status != XST_SUCCESS) {
@@ -374,9 +420,10 @@ int WinWdtQAModeExample(INTC *IntcInstancePtr,
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
-				XWdtTb *WdtTbInstancePtr,
-				u16 WdtTbIntrId)
+				       XWdtTb *WdtTbInstancePtr,
+				       u16 WdtTbIntrId)
 {
 	int Status;
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -387,7 +434,7 @@ static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
 	 * xparameters.h
 	 */
 	Status = XIntc_Initialize(IntcInstancePtr, INTC_DEVICE_ID);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -397,9 +444,9 @@ static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
 	 * the specific interrupt processing for the device
 	 */
 	Status = XIntc_Connect(IntcInstancePtr, WdtTbIntrId,
-			(XInterruptHandler)WinWdtQAModeIntrHandler,
-			(void *)WdtTbInstancePtr);
-	if(Status != XST_SUCCESS) {
+			       (XInterruptHandler)WinWdtQAModeIntrHandler,
+			       (void *)WdtTbInstancePtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -408,7 +455,7 @@ static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
 	 * all devices that cause interrupts
 	 */
 	Status = XIntc_Start(IntcInstancePtr, XIN_REAL_MODE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -429,22 +476,22 @@ static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 
 	XScuGic_SetPriorityTriggerType(IntcInstancePtr, WdtTbIntrId,
-					0xA0, 0x3);
+				       0xA0, 0x3);
 
 	/*
 	 * Connect the interrupt handler that will be called when an
 	 * interrupt occurs for the device.
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, WdtTbIntrId,
-				(Xil_ExceptionHandler)WinWdtQAModeIntrHandler,
-				WdtTbInstancePtr);
+				 (Xil_ExceptionHandler)WinWdtQAModeIntrHandler,
+				 WdtTbInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -459,14 +506,15 @@ static int WinWdtQAModeSetupIntrSystem(INTC *IntcInstancePtr,
 	 * Register the interrupt controller handler with the exception table
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)INTC_HANDLER,
-			IntcInstancePtr);
+				     (Xil_ExceptionHandler)INTC_HANDLER,
+				     IntcInstancePtr);
 
 	/* Enable non-critical exceptions */
 	Xil_ExceptionEnable();
 
 	return XST_SUCCESS;
 }
+#endif
 
 
 /*****************************************************************************/
@@ -507,8 +555,9 @@ static void WinWdtQAModeIntrHandler(void *CallBackRef)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 static void WinWdtQAModeDisableIntrSystem(INTC *IntcInstancePtr,
-															u16 WdtTbIntrId)
+		u16 WdtTbIntrId)
 {
 	/* Disconnect and disable the interrupt for the WdtTb */
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -520,3 +569,4 @@ static void WinWdtQAModeDisableIntrSystem(INTC *IntcInstancePtr,
 
 #endif
 }
+#endif

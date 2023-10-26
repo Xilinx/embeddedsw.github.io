@@ -88,7 +88,7 @@ u32 XIntc_BitPosMask[XIN_CONTROLLER_MAX_INTRS];
 /************************** Function Prototypes ******************************/
 
 static void StubHandler(void *CallBackRef);
-static void XIntc_InitializeSlaves(XIntc * InstancePtr);
+static void XIntc_InitializeSlaves(XIntc *InstancePtr);
 
 /*****************************************************************************/
 /**
@@ -117,7 +117,11 @@ static void XIntc_InitializeSlaves(XIntc * InstancePtr);
 *	        initialize Slave Interrupt controllers.
 *
 ******************************************************************************/
-int XIntc_Initialize(XIntc * InstancePtr, u16 DeviceId)
+#ifndef SDT
+int XIntc_Initialize(XIntc *InstancePtr, u16 DeviceId)
+#else
+int XIntc_Initialize(XIntc *InstancePtr, UINTPTR BaseAddr)
+#endif
 {
 	u8 Id;
 	XIntc_Config *CfgPtr;
@@ -138,7 +142,11 @@ int XIntc_Initialize(XIntc * InstancePtr, u16 DeviceId)
 	 * Lookup the device configuration in the CROM table. Use this
 	 * configuration info down below when initializing this component.
 	 */
+#ifndef SDT
 	CfgPtr = XIntc_LookupConfig(DeviceId);
+#else
+	CfgPtr = XIntc_LookupConfig(BaseAddr);
+#endif
 	if (CfgPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -208,35 +216,35 @@ int XIntc_Initialize(XIntc * InstancePtr, u16 DeviceId)
 	 * If the fast Interrupt mode is enabled then set all the
 	 * interrupts as normal mode.
 	 */
-	if(InstancePtr->CfgPtr->FastIntr == TRUE) {
+	if (InstancePtr->CfgPtr->FastIntr == TRUE) {
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IMR_OFFSET, 0);
 
 #ifdef XPAR_MICROBLAZE_BASE_VECTORS
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
-				+ (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
-				+ 0x10);
+					    + (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		} else {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-					+ (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
-					+ 0x10);
+					    + (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		}
 #else
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
-			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
-				+ (Id * 8), 0x10);
+					    + (Id * 8), 0x10);
 			}
 		} else {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-								+ (Id * 4), 0x10);
+					    + (Id * 4), 0x10);
 			}
 		}
 #endif
@@ -285,7 +293,7 @@ int XIntc_Initialize(XIntc * InstancePtr, u16 DeviceId)
 * @note 	Must be called after XIntc initialization is completed.
 *
 ******************************************************************************/
-int XIntc_Start(XIntc * InstancePtr, u8 Mode)
+int XIntc_Start(XIntc *InstancePtr, u8 Mode)
 {
 	u32 MasterEnable = XIN_INT_MASTER_ENABLE_MASK;
 	XIntc_Config *CfgPtr;
@@ -296,7 +304,7 @@ int XIntc_Start(XIntc * InstancePtr, u8 Mode)
 	 */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid((Mode == XIN_SIMULATION_MODE) ||
-			(Mode == XIN_REAL_MODE))
+			  (Mode == XIN_REAL_MODE))
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	/*
@@ -314,11 +322,15 @@ int XIntc_Start(XIntc * InstancePtr, u8 Mode)
 
 	/* Start the Slaves for Cascade Mode */
 	if (InstancePtr->CfgPtr->IntcType != XIN_INTC_NOCASCADE) {
+#ifndef SDT
 		for (Index = 1; Index <= XPAR_XINTC_NUM_INSTANCES - 1; Index++)
+#else
+		for (Index = 1; XIntc_ConfigTable[Index].Name != NULL; Index++)
+#endif
 		{
 			CfgPtr = XIntc_LookupConfig(Index);
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_MER_OFFSET,
-					MasterEnable);
+				    MasterEnable);
 		}
 	}
 
@@ -341,7 +353,7 @@ int XIntc_Start(XIntc * InstancePtr, u8 Mode)
 * @note		None.
 *
 ******************************************************************************/
-void XIntc_Stop(XIntc * InstancePtr)
+void XIntc_Stop(XIntc *InstancePtr)
 {
 	/*
 	 * Assert the arguments
@@ -385,7 +397,7 @@ void XIntc_Stop(XIntc * InstancePtr)
 * that was previously connected.
 *
 ****************************************************************************/
-int XIntc_Connect(XIntc * InstancePtr, u8 Id,
+int XIntc_Connect(XIntc *InstancePtr, u8 Id,
 		  XInterruptHandler Handler, void *CallBackRef)
 {
 	XIntc_Config *CfgPtr;
@@ -400,13 +412,13 @@ int XIntc_Connect(XIntc * InstancePtr, u8 Id,
 	/* Connect Handlers for Slave controllers in Cascade Mode */
 	if (Id > 31) {
 
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return XST_FAILURE;
 		}
 
-		CfgPtr->HandlerTable[Id%32].Handler = Handler;
-		CfgPtr->HandlerTable[Id%32].CallBackRef = CallBackRef;
+		CfgPtr->HandlerTable[Id % 32].Handler = Handler;
+		CfgPtr->HandlerTable[Id % 32].CallBackRef = CallBackRef;
 	}
 	/* Connect Handlers for Master/primary controller */
 	else {
@@ -416,7 +428,7 @@ int XIntc_Connect(XIntc * InstancePtr, u8 Id,
 		 */
 		InstancePtr->CfgPtr->HandlerTable[Id].Handler = Handler;
 		InstancePtr->CfgPtr->HandlerTable[Id].CallBackRef =
-								CallBackRef;
+			CallBackRef;
 	}
 
 	return XST_SUCCESS;
@@ -441,7 +453,7 @@ int XIntc_Connect(XIntc * InstancePtr, u8 Id,
 * @note		None.
 *
 ****************************************************************************/
-void XIntc_Disconnect(XIntc * InstancePtr, u8 Id)
+void XIntc_Disconnect(XIntc *InstancePtr, u8 Id)
 {
 	u32 CurrentIER;
 	u32 Mask;
@@ -463,7 +475,7 @@ void XIntc_Disconnect(XIntc * InstancePtr, u8 Id)
 	/* Disconnect Handlers for Slave controllers in Cascade Mode */
 	if (Id > 31) {
 
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
@@ -471,32 +483,32 @@ void XIntc_Disconnect(XIntc * InstancePtr, u8 Id)
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-					(CurrentIER & ~Mask));
+			    (CurrentIER & ~Mask));
 		/*
 		 * Disconnect the handler and connect a stub, the callback
 		 * reference must be set to this instance to allow unhandled
 		 * interrupts to be tracked
 		 */
-		CfgPtr->HandlerTable[Id%32].Handler = StubHandler;
-		CfgPtr->HandlerTable[Id%32].CallBackRef = InstancePtr;
+		CfgPtr->HandlerTable[Id % 32].Handler = StubHandler;
+		CfgPtr->HandlerTable[Id % 32].CallBackRef = InstancePtr;
 	}
 	/* Disconnect Handlers for Master/primary controller */
 	else {
 		CurrentIER = XIntc_In32(InstancePtr->BaseAddress +
-							XIN_IER_OFFSET);
+					XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
 		Mask = XIntc_BitPosMask[Id];
 
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IER_OFFSET,
-					(CurrentIER & ~Mask));
-		InstancePtr->CfgPtr->HandlerTable[Id%32].Handler =
-								StubHandler;
-		InstancePtr->CfgPtr->HandlerTable[Id%32].CallBackRef =
-								InstancePtr;
+			    (CurrentIER & ~Mask));
+		InstancePtr->CfgPtr->HandlerTable[Id % 32].Handler =
+			StubHandler;
+		InstancePtr->CfgPtr->HandlerTable[Id % 32].CallBackRef =
+			InstancePtr;
 	}
 
 }
@@ -519,7 +531,7 @@ void XIntc_Disconnect(XIntc * InstancePtr, u8 Id)
 * @note		None.
 *
 ****************************************************************************/
-void XIntc_Enable(XIntc * InstancePtr, u8 Id)
+void XIntc_Enable(XIntc *InstancePtr, u8 Id)
 {
 	u32 CurrentIER;
 	u32 Mask;
@@ -535,7 +547,7 @@ void XIntc_Enable(XIntc * InstancePtr, u8 Id)
 	if (Id > 31) {
 
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
@@ -543,12 +555,11 @@ void XIntc_Enable(XIntc * InstancePtr, u8 Id)
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-						(CurrentIER | Mask));
-	}
-	else {
+			    (CurrentIER | Mask));
+	} else {
 		/*
 		 * The Id is used to create the appropriate mask for the
 		 * desired bit position.
@@ -561,9 +572,9 @@ void XIntc_Enable(XIntc * InstancePtr, u8 Id)
 		 * specified interrupt id enable
 		 */
 		CurrentIER = XIntc_In32(InstancePtr->BaseAddress +
-							XIN_IER_OFFSET);
+					XIN_IER_OFFSET);
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IER_OFFSET,
-		    (CurrentIER | Mask));
+			    (CurrentIER | Mask));
 	}
 }
 
@@ -586,7 +597,7 @@ void XIntc_Enable(XIntc * InstancePtr, u8 Id)
 * @note		None.
 *
 ****************************************************************************/
-void XIntc_Disable(XIntc * InstancePtr, u8 Id)
+void XIntc_Disable(XIntc *InstancePtr, u8 Id)
 {
 	u32 CurrentIER;
 	u32 Mask;
@@ -601,7 +612,7 @@ void XIntc_Disable(XIntc * InstancePtr, u8 Id)
 
 	if (Id > 31) {
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
@@ -609,10 +620,10 @@ void XIntc_Disable(XIntc * InstancePtr, u8 Id)
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-							(CurrentIER & ~Mask));
+			    (CurrentIER & ~Mask));
 	} else {
 		/*
 		 * The Id is used to create the appropriate mask for the
@@ -626,9 +637,9 @@ void XIntc_Disable(XIntc * InstancePtr, u8 Id)
 		 * specified interrupt id
 		 */
 		CurrentIER = XIntc_In32(InstancePtr->BaseAddress +
-							XIN_IER_OFFSET);
+					XIN_IER_OFFSET);
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IER_OFFSET,
-							(CurrentIER & ~Mask));
+			    (CurrentIER & ~Mask));
 	}
 }
 
@@ -650,7 +661,7 @@ void XIntc_Disable(XIntc * InstancePtr, u8 Id)
 * @note		None.
 *
 ****************************************************************************/
-void XIntc_Acknowledge(XIntc * InstancePtr, u8 Id)
+void XIntc_Acknowledge(XIntc *InstancePtr, u8 Id)
 {
 	u32 Mask;
 	XIntc_Config *CfgPtr;
@@ -664,13 +675,13 @@ void XIntc_Acknowledge(XIntc * InstancePtr, u8 Id)
 
 	if (Id > 31) {
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_IAR_OFFSET, Mask);
 	} else {
@@ -729,6 +740,7 @@ static void StubHandler(void *CallBackRef)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XIntc_Config *XIntc_LookupConfig(u16 DeviceId)
 {
 	XIntc_Config *CfgPtr = NULL;
@@ -746,7 +758,33 @@ XIntc_Config *XIntc_LookupConfig(u16 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XIntc_Config *XIntc_LookupConfig(UINTPTR BaseAddr)
+{
+	XIntc_Config *CfgPtr = NULL;
+	int Index;
 
+	for (Index = 0; XIntc_ConfigTable[Index].Name != NULL; Index++) {
+		/*
+		 * If BaseAddress is 0, return Configuration for 0th instance of
+		 * AXI INTC device.
+		 * As AXI INTC instance base address varies based on designs,
+		 * driver examples can pass base address as 0 , to use available
+		 * instance of AXI INTC.
+		 */
+		if ((XIntc_ConfigTable[Index].BaseAddress == BaseAddr) ||
+		    !BaseAddr) {
+			CfgPtr = &XIntc_ConfigTable[Index];
+			if (CfgPtr == NULL) {
+				return NULL;
+			}
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /*****************************************************************************/
 /**
 *
@@ -777,7 +815,7 @@ XIntc_Config *XIntc_LookupConfig(u16 DeviceId)
 *
 ****************************************************************************/
 int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
-				XFastInterruptHandler Handler)
+			     XFastInterruptHandler Handler)
 {
 	u32 Imr;
 	u32 CurrentIER;
@@ -796,7 +834,7 @@ int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
 
 	if (Id > 31) {
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return XST_FAILURE;
 		}
@@ -810,7 +848,7 @@ int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		/* Disable the Interrupt if it was enabled before calling
 		 * this function
@@ -820,12 +858,12 @@ int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
 		}
 
 		if (CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			XIntc_Out64(CfgPtr->BaseAddress + XIN_IVEAR_OFFSET +
-					((Id%32) * 8), (UINTPTR) Handler);
+				    ((Id % 32) * 8), (UINTPTR) Handler);
 		} else {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET +
-					((Id%32) * 4), (UINTPTR) Handler);
+				    ((Id % 32) * 4), (UINTPTR) Handler);
 		}
 
 		/* Slave controllers in Cascade Mode should have all as Fast
@@ -840,11 +878,10 @@ int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
 		if (CurrentIER & Mask) {
 			XIntc_Enable(InstancePtr, Id);
 		}
-	}
-	else {
+	} else {
 		/* Get the Enabled Interrupts */
 		CurrentIER = XIntc_In32(InstancePtr->BaseAddress +
-							 XIN_IER_OFFSET);
+					XIN_IER_OFFSET);
 		/* Convert from integer id to bit mask */
 		Mask = XIntc_BitPosMask[Id];
 
@@ -856,17 +893,17 @@ int XIntc_ConnectFastHandler(XIntc *InstancePtr, u8 Id,
 		}
 
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			XIntc_Out64(InstancePtr->BaseAddress +
-				XIN_IVEAR_OFFSET + (Id * 8), (UINTPTR) Handler);
+				    XIN_IVEAR_OFFSET + (Id * 8), (UINTPTR) Handler);
 		} else {
 			XIntc_Out32(InstancePtr->BaseAddress +
-				XIN_IVAR_OFFSET + (Id * 4), (UINTPTR) Handler);
+				    XIN_IVAR_OFFSET + (Id * 4), (UINTPTR) Handler);
 		}
 
 		Imr = XIntc_In32(InstancePtr->BaseAddress + XIN_IMR_OFFSET);
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IMR_OFFSET,
-							Imr | Mask);
+			    Imr | Mask);
 
 		/* Enable the Interrupt if it was enabled before
 		 * calling this function
@@ -919,7 +956,7 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 
 	if (Id > 31) {
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
@@ -928,7 +965,7 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		/* Disable the Interrupt if it was enabled before calling
 		 * this function
@@ -945,34 +982,30 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 
 #ifdef XPAR_MICROBLAZE_BASE_VECTORS
 		if (CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(CfgPtr->BaseAddress + XIN_IVEAR_OFFSET
-					+ (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
-					+ 0x10);
+					    + (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		} else {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET
-					+ (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
-					+ 0x10);
+					    + (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		}
 #else
 		if (CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(CfgPtr->BaseAddress + XIN_IVEAR_OFFSET
-							+ (Id * 8), 0x10);
+					    + (Id * 8), 0x10);
 			}
 		} else {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET
-							+ (Id * 4), 0x10);
+					    + (Id * 4), 0x10);
 			}
 		}
 #endif
@@ -984,8 +1017,7 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 			XIntc_Enable(InstancePtr, Id);
 		}
 
-	}
-	else {
+	} else {
 
 		/* Get the Enabled Interrupts */
 		CurrentIER = XIntc_In32(InstancePtr->BaseAddress + XIN_IER_OFFSET);
@@ -1006,38 +1038,34 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 		 */
 		Imr = XIntc_In32(InstancePtr->BaseAddress + XIN_IMR_OFFSET);
 		XIntc_Out32(InstancePtr->BaseAddress + XIN_IMR_OFFSET,
-						    Imr & ~Mask);
+			    Imr & ~Mask);
 
 #ifdef XPAR_MICROBLAZE_BASE_VECTORS
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
-					+ (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
-					+ 0x10);
+					    + (Id * 8), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		} else {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-					+ (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
-					+ 0x10);
+					    + (Id * 4), XPAR_MICROBLAZE_BASE_VECTORS
+					    + 0x10);
 			}
 		}
 #else
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
-								+ (Id * 8), 0x10);
+					    + (Id * 8), 0x10);
 			}
 		} else {
-			for (Id = 0; Id < 32 ; Id++)
-			{
+			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-								+ (Id * 4), 0x10);
+					    + (Id * 4), 0x10);
 			}
 		}
 #endif
@@ -1067,7 +1095,7 @@ void XIntc_SetNormalIntrMode(XIntc *InstancePtr, u8 Id)
 * @note		None.
 *
 ******************************************************************************/
-static void XIntc_InitializeSlaves(XIntc * InstancePtr)
+static void XIntc_InitializeSlaves(XIntc *InstancePtr)
 {
 	int Index;
 	u32 Mask;
@@ -1081,21 +1109,26 @@ static void XIntc_InitializeSlaves(XIntc * InstancePtr)
 	 */
 	XIntc_Out32(InstancePtr->CfgPtr->BaseAddress + XIN_IER_OFFSET, Mask);
 
+#ifndef SDT
 	for (Index = 1; Index <= XPAR_XINTC_NUM_INSTANCES - 1; Index++) {
 		CfgPtr = XIntc_LookupConfig(Index);
+#else
+	for (Index = 1; XIntc_ConfigTable[Index].Name != NULL; Index++) {
+		CfgPtr = XIntc_LookupConfig(XIntc_ConfigTable[Index].BaseAddress);
+#endif
 		if (CfgPtr == NULL) {
 			return;
 		}
 
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_IAR_OFFSET,
-							0xFFFFFFFF);
+			    0xFFFFFFFF);
 		if (CfgPtr->IntcType != XIN_INTC_LAST) {
 
 			/* Enable interrupt ids with 31 for secondary
 			 * interrupt controllers
 			 */
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-									Mask);
+				    Mask);
 		} else {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET, 0x0);
 		}
@@ -1106,39 +1139,35 @@ static void XIntc_InitializeSlaves(XIntc * InstancePtr)
 		/* Set all interrupts as normal mode if Fast Interrupts
 		 * are enabled
 		 */
-		if(CfgPtr->FastIntr == TRUE) {
+		if (CfgPtr->FastIntr == TRUE) {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IMR_OFFSET, 0);
 
 #ifdef XPAR_MICROBLAZE_BASE_VECTORS
 			if (CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-				for (Id = 0; Id < 32 ; Id++)
-				{
+			    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+				for (Id = 0; Id < 32 ; Id++) {
 					XIntc_Out64(CfgPtr->BaseAddress +
-						XIN_IVEAR_OFFSET + (Id * 8),
-						XPAR_MICROBLAZE_BASE_VECTORS + 0x10);
+						    XIN_IVEAR_OFFSET + (Id * 8),
+						    XPAR_MICROBLAZE_BASE_VECTORS + 0x10);
 				}
 			} else {
-				for (Id = 0; Id < 32 ; Id++)
-				{
+				for (Id = 0; Id < 32 ; Id++) {
 					XIntc_Out32(CfgPtr->BaseAddress +
-						XIN_IVAR_OFFSET + (Id * 4),
-						XPAR_MICROBLAZE_BASE_VECTORS + 0x10);
+						    XIN_IVAR_OFFSET + (Id * 4),
+						    XPAR_MICROBLAZE_BASE_VECTORS + 0x10);
 				}
 			}
 #else
 			if (CfgPtr->VectorAddrWidth >
-				XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
-				for (Id = 0; Id < 32 ; Id++)
-				{
+			    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+				for (Id = 0; Id < 32 ; Id++) {
 					XIntc_Out64(CfgPtr->BaseAddress +
-						XIN_IVEAR_OFFSET + (Id * 8), 0x10);
+						    XIN_IVEAR_OFFSET + (Id * 8), 0x10);
 				}
 			} else {
-				for (Id = 0; Id < 32 ; Id++)
-				{
+				for (Id = 0; Id < 32 ; Id++) {
 					XIntc_Out32(CfgPtr->BaseAddress +
-						XIN_IVAR_OFFSET + (Id * 4), 0x10);
+						    XIN_IVAR_OFFSET + (Id * 4), 0x10);
 				}
 			}
 #endif
@@ -1160,8 +1189,8 @@ static void XIntc_InitializeSlaves(XIntc * InstancePtr)
 			 * interrupts can be tracked.
 			 */
 			if ((CfgPtr->HandlerTable[Id].Handler == 0) ||
-				    (CfgPtr->HandlerTable[Id].Handler ==
-				     XNullHandler)) {
+			    (CfgPtr->HandlerTable[Id].Handler ==
+			     XNullHandler)) {
 				CfgPtr->HandlerTable[Id].Handler = StubHandler;
 			}
 			CfgPtr->HandlerTable[Id].CallBackRef = InstancePtr;
@@ -1189,7 +1218,7 @@ static void XIntc_InitializeSlaves(XIntc * InstancePtr)
 *			interrupts for specific HW design can be found in xparameters.h file.
 *
 ******************************************************************************/
-int XIntc_TriggerSwIntr(XIntc * InstancePtr, u8 Id)
+int XIntc_TriggerSwIntr(XIntc *InstancePtr, u8 Id)
 {
 	u32 Mask;
 	XIntc_Config *CfgPtr;
@@ -1207,16 +1236,16 @@ int XIntc_TriggerSwIntr(XIntc * InstancePtr, u8 Id)
 	}
 
 	if (Id > 31) {
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return XST_FAILURE;
 		}
 		/* Check if interrupt id belongs to software interrupts */
-		if ( (Id%32) < CfgPtr->NumberofIntrs ) {
+		if ( (Id % 32) < CfgPtr->NumberofIntrs ) {
 			return XST_FAILURE;
 		}
 
-		Mask = XIntc_BitPosMask[Id%32];
+		Mask = XIntc_BitPosMask[Id % 32];
 		XIntc_Out32(CfgPtr->BaseAddress + XIN_ISR_OFFSET, Mask);
 
 	} else {

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -23,6 +24,7 @@
  *			 UsbEnableEvent API's
  *	 vak	02/07/19 Modified the code to issue XUsbPsu_Ep0StallRestart()
  *			 for Endpoint Zero
+ * 1.14  pm     21/06/23 Added support for system device-tree flow.
  *
  * </pre>
  *
@@ -36,10 +38,17 @@
 struct XUsbPsu PrivateData;
 
 /************************** Function Prototypes ******************************/
-Usb_Config* LookupConfig(u16 DeviceId)
+#ifndef SDT
+Usb_Config *LookupConfig(u16 DeviceId)
 {
 	return XUsbPsu_LookupConfig(DeviceId);
 }
+#else
+Usb_Config *LookupConfig(UINTPTR BaseAddress)
+{
+	return XUsbPsu_LookupConfig(BaseAddress);
+}
+#endif
 
 void CacheInit(void)
 {
@@ -47,18 +56,18 @@ void CacheInit(void)
 }
 
 s32 CfgInitialize(struct Usb_DevData *InstancePtr,
-			Usb_Config *ConfigPtr, u32 BaseAddress)
+		  Usb_Config *ConfigPtr, u32 BaseAddress)
 {
 	PrivateData.AppData = InstancePtr;
 	InstancePtr->PrivateData = (void *)&PrivateData;
 
 	return XUsbPsu_CfgInitialize((struct XUsbPsu *)InstancePtr->PrivateData,
-			ConfigPtr, BaseAddress);
+				     ConfigPtr, BaseAddress);
 }
 
 void Set_Ch9Handler(
-		void *InstancePtr,
-		void (*func)(struct Usb_DevData *, SetupPacket *))
+	void *InstancePtr,
+	void (*func)(struct Usb_DevData *, SetupPacket *))
 {
 	XUsbPsu_set_ch9handler((struct XUsbPsu *)InstancePtr, func);
 }
@@ -90,7 +99,7 @@ s32 ConfigureDevice(void *UsbInstance, u8 *MemPtr, u32 memSize)
 }
 
 void SetEpHandler(void *InstancePtr, u8 Epnum,
-			u8 Dir, void (*Handler)(void *, u32, u32))
+		  u8 Dir, void (*Handler)(void *, u32, u32))
 {
 	XUsbPsu_SetEpHandler((struct XUsbPsu *)InstancePtr, Epnum, Dir, Handler);
 }
@@ -121,21 +130,21 @@ void EpClearStall(void *InstancePtr, u8 Epnum, u8 Dir)
 }
 
 s32 EpBufferSend(void *InstancePtr, u8 UsbEp,
-			u8 *BufferPtr, u32 BufferLen)
+		 u8 *BufferPtr, u32 BufferLen)
 {
-	if (UsbEp == 0 && BufferLen == 0)
+	if (UsbEp == 0 && BufferLen == 0) {
 		return XST_SUCCESS;
-	else
+	} else
 		return XUsbPsu_EpBufferSend((struct XUsbPsu *)InstancePtr,
-						UsbEp, BufferPtr, BufferLen);
+					    UsbEp, BufferPtr, BufferLen);
 
 }
 
 s32 EpBufferRecv(void *InstancePtr, u8 UsbEp,
-				u8 *BufferPtr, u32 Length)
+		 u8 *BufferPtr, u32 Length)
 {
 	return XUsbPsu_EpBufferRecv((struct XUsbPsu *)InstancePtr, UsbEp,
-			BufferPtr, Length);
+				    BufferPtr, Length);
 }
 
 void EpSetStall(void *InstancePtr, u8 Epnum, u8 Dir)
@@ -197,7 +206,7 @@ s32 U2SleepDisable(void *InstancePtr)
 s32 EpEnable(void *InstancePtr, u8 UsbEpNum, u8 Dir, u16 Maxsize, u8 Type)
 {
 	return XUsbPsu_EpEnable((struct XUsbPsu *)InstancePtr, UsbEpNum, Dir,
-			Maxsize, Type, FALSE);
+				Maxsize, Type, FALSE);
 }
 
 s32 EpDisable(void *InstancePtr, u8 UsbEpNum, u8 Dir)

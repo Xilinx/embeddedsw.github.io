@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">rtcpsu
    </div>
@@ -81,6 +81,7 @@ Ver   Who    Date     Changes
       ms  04/10/17 Modified filename tag to include the file in doxygen
                    examples.
 1.12  sne 04/25/22 Added volatile keyword for IsAlarmGen variable.
+1.13  ht  06/22/23  Added support for system device-tree flow.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -132,7 +133,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__rtcpsu__v1__11.html#gad594fbf58a112754966cb4ed07a93fa2">XRTCPSU_EVENT_ALARM_GEN</a>.</p>
+<p>References <a class="el" href="group__rtcpsu.html#gad594fbf58a112754966cb4ed07a93fa2">XRTCPSU_EVENT_ALARM_GEN</a>.</p>
 
 <p>Referenced by <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#aca7489498f1a9a10779073aae78c335e">RtcPsuAlarmIntrExample()</a>, <a class="el" href="xrtcpsu__periodic__alarm__interrupt__example_8c.html#a0c2c2ab4797fdf2b3b74ea1779613740">RtcPsuPeriodicAlarmIntrExample()</a>, and <a class="el" href="xrtcpsu__seconds__interrupt__example_8c.html#aecfd61f6d79958df4da34ea62ab534f9">RtcPsuSecondsIntrExample()</a>.</p>
 
@@ -212,7 +213,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This function contains an infinite loop such that if interrupts are not working it may never return. </p>
 
-<p>References <a class="el" href="struct_x_rtc_psu___config.html#a0bc4fef50a1edc589aaa4f9fed0a50c2">XRtcPsu_Config::BaseAddr</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a0d91fe193b2ace3bec1c253d9d4651b0">XRtcPsu_DT::Day</a>, <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a5217abcfa19b6ee79441c80593233410">XRtcPsu_DT::Hour</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a985ad2e22c16c13787bad0bc5a6252d3">XRtcPsu_DT::Min</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a17e3941ee44e1c60d8702e5ea9a6b658">XRtcPsu_DT::Month</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a2a4a6d1fc2f482c69610be4c46681ee0">XRtcPsu_DT::Sec</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a768d292f62468b17e36dce098f8c7d49">XRtcPsu_DT::WeekDay</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga04fcc0a1ae6b27f2a3e0f1ba723c48e3">XRtcPsu_CfgInitialize()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gaefced00316539320411829b4d701fe3c">XRtcPsu_ClearInterruptMask()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gad47ac1cadbbe8dd0e67588d1fc658cc2">XRtcPsu_GetCurrentTime()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga665fbe64a08c5b13b838ab7b69188e3e">XRtcPsu_LookupConfig()</a>, <a class="el" href="group__rtcpsu__v1__11.html#gaac3d95ea1a75533a1fd3cd95d62a9914">XRtcPsu_SecToDateTime()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga1c969c089715ea9a86cec887c09f9b92">XRtcPsu_SelfTest()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga201537801ac896c73018a8719e8637d8">XRtcPsu_SetAlarm()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga40b45bedf590e3e65eb525f1827768e4">XRtcPsu_SetHandler()</a>, <a class="el" href="group__rtcpsu__v1__11.html#ga645920d3519722e8dc815d07db527367">XRtcPsu_SetInterruptMask()</a>, and <a class="el" href="struct_x_rtc_psu___d_t.html#a422474627fadc62823e8ff87e0bf1863">XRtcPsu_DT::Year</a>.</p>
+<p>References <a class="el" href="struct_x_rtc_psu___config.html#a0bc4fef50a1edc589aaa4f9fed0a50c2">XRtcPsu_Config::BaseAddr</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a0d91fe193b2ace3bec1c253d9d4651b0">XRtcPsu_DT::Day</a>, <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a5217abcfa19b6ee79441c80593233410">XRtcPsu_DT::Hour</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a985ad2e22c16c13787bad0bc5a6252d3">XRtcPsu_DT::Min</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a17e3941ee44e1c60d8702e5ea9a6b658">XRtcPsu_DT::Month</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a2a4a6d1fc2f482c69610be4c46681ee0">XRtcPsu_DT::Sec</a>, <a class="el" href="struct_x_rtc_psu___d_t.html#a768d292f62468b17e36dce098f8c7d49">XRtcPsu_DT::WeekDay</a>, <a class="el" href="group__rtcpsu.html#ga04fcc0a1ae6b27f2a3e0f1ba723c48e3">XRtcPsu_CfgInitialize()</a>, <a class="el" href="group__rtcpsu.html#gaefced00316539320411829b4d701fe3c">XRtcPsu_ClearInterruptMask()</a>, <a class="el" href="group__rtcpsu.html#gad47ac1cadbbe8dd0e67588d1fc658cc2">XRtcPsu_GetCurrentTime()</a>, <a class="el" href="group__rtcpsu.html#ga01ca03d23194687c8026dc2f38da6ff7">XRtcPsu_InterruptHandler()</a>, <a class="el" href="group__rtcpsu.html#ga665fbe64a08c5b13b838ab7b69188e3e">XRtcPsu_LookupConfig()</a>, <a class="el" href="group__rtcpsu.html#gaac3d95ea1a75533a1fd3cd95d62a9914">XRtcPsu_SecToDateTime()</a>, <a class="el" href="group__rtcpsu.html#ga1c969c089715ea9a86cec887c09f9b92">XRtcPsu_SelfTest()</a>, <a class="el" href="group__rtcpsu.html#ga201537801ac896c73018a8719e8637d8">XRtcPsu_SetAlarm()</a>, <a class="el" href="group__rtcpsu.html#ga40b45bedf590e3e65eb525f1827768e4">XRtcPsu_SetHandler()</a>, <a class="el" href="group__rtcpsu.html#ga645920d3519722e8dc815d07db527367">XRtcPsu_SetInterruptMask()</a>, and <a class="el" href="struct_x_rtc_psu___d_t.html#a422474627fadc62823e8ff87e0bf1863">XRtcPsu_DT::Year</a>.</p>
 
 <p>Referenced by <a class="el" href="xrtcpsu__alarm__interrupt__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

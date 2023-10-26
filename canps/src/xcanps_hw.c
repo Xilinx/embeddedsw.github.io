@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xcanps_hw.c
-* @addtogroup canps_v3_6
+* @addtogroup canps Overview
 * @{
 *
 * This file contains the implementation of the canps interface reset sequence
@@ -20,6 +21,7 @@
 * 1.02a adk  08/08/13 First release
 * 3.00  kvn  02/13/15 Modified code for MISRA-C:2012 compliance.
 * 3.5	sne  07/01/20 Fixed MISRAC warnings.
+* 3.7	ht   06/28/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -27,7 +29,10 @@
 /***************************** Include Files *********************************/
 
 #include "xcanps_hw.h"
+#include "xstatus.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -63,6 +68,6 @@
 void XCanPs_ResetHw(UINTPTR BaseAddr)
 {
 	XCanPs_WriteReg(BaseAddr, XCANPS_SRR_OFFSET, \
-			   XCANPS_SRR_SRST_MASK);
+			XCANPS_SRR_SRST_MASK);
 }
 /** @} */

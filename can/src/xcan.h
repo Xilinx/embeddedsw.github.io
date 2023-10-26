@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xcan.h
-* @addtogroup can_v3_6
+* @addtogroup can Overview
 * @{
 * @details
 *
@@ -173,7 +174,7 @@ exclusion
 *                     generation.
 * 3.3   ask  08/01/18 Fixed Cppcheck and GCC warnings in can driver
 * 3.5	sne  08/28/20 Modify Makefile to support parallel make execution.
-*
+* 3.7	ht   07/04/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -216,9 +217,17 @@ extern "C" {
  * This typedef contains configuration information for a device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;		/**< Unique name of the device */
+#endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	u8 NumOfAcceptFilters;	/**< Number of Acceptance Filters */
+#ifdef SDT
+	u16 IntrId; /**< Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
+	UINTPTR IntrParent; /**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
 } XCan_Config;
 
 /******************************************************************************/
@@ -316,7 +325,7 @@ typedef struct {
 *****************************************************************************/
 #define XCan_IsTxDone(InstancePtr) \
 	((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_ISR_OFFSET) & \
-		XCAN_IXR_TXOK_MASK) ? TRUE : FALSE)
+	  XCAN_IXR_TXOK_MASK) ? TRUE : FALSE)
 
 
 /****************************************************************************/
@@ -336,7 +345,7 @@ typedef struct {
 *****************************************************************************/
 #define XCan_IsTxFifoFull(InstancePtr) \
 	((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_SR_OFFSET) & \
-		XCAN_SR_TXFLL_MASK) ? TRUE : FALSE)
+	  XCAN_SR_TXFLL_MASK) ? TRUE : FALSE)
 
 
 /****************************************************************************/
@@ -356,7 +365,7 @@ typedef struct {
 *****************************************************************************/
 #define XCan_IsHighPriorityBufFull(InstancePtr) \
 	((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_SR_OFFSET) & \
-	XCAN_SR_TXBFLL_MASK) ? TRUE : FALSE)
+	  XCAN_SR_TXBFLL_MASK) ? TRUE : FALSE)
 
 
 /****************************************************************************/
@@ -376,7 +385,7 @@ typedef struct {
 *****************************************************************************/
 #define XCan_IsRxEmpty(InstancePtr) \
 	((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_ISR_OFFSET) & \
-		XCAN_IXR_RXNEMP_MASK) ? FALSE : TRUE)
+	  XCAN_IXR_RXNEMP_MASK) ? FALSE : TRUE)
 
 
 /****************************************************************************/
@@ -402,8 +411,8 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCan_IsAcceptFilterBusy(InstancePtr) \
-		((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_SR_OFFSET) & \
-		XCAN_SR_ACFBSY_MASK) ? TRUE : FALSE)
+	((XCan_ReadReg(((InstancePtr)->BaseAddress), XCAN_SR_OFFSET) & \
+	  XCAN_SR_ACFBSY_MASK) ? TRUE : FALSE)
 
 
 /****************************************************************************/
@@ -430,12 +439,12 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCan_CreateIdValue(StandardId, SubRemoteTransReq, IdExtension, \
-		ExtendedId, RemoteTransReq) \
-	((((StandardId) << XCAN_IDR_ID1_SHIFT) & XCAN_IDR_ID1_MASK) | \
-	(((SubRemoteTransReq) << XCAN_IDR_SRR_SHIFT) & XCAN_IDR_SRR_MASK) | \
-	(((IdExtension) << XCAN_IDR_IDE_SHIFT) & XCAN_IDR_IDE_MASK) | \
-	(((ExtendedId) << XCAN_IDR_ID2_SHIFT) & XCAN_IDR_ID2_MASK) | \
-	((RemoteTransReq) & XCAN_IDR_RTR_MASK))
+			   ExtendedId, RemoteTransReq) \
+((((StandardId) << XCAN_IDR_ID1_SHIFT) & XCAN_IDR_ID1_MASK) | \
+ (((SubRemoteTransReq) << XCAN_IDR_SRR_SHIFT) & XCAN_IDR_SRR_MASK) | \
+ (((IdExtension) << XCAN_IDR_IDE_SHIFT) & XCAN_IDR_IDE_MASK) | \
+ (((ExtendedId) << XCAN_IDR_ID2_SHIFT) & XCAN_IDR_ID2_MASK) | \
+ ((RemoteTransReq) & XCAN_IDR_RTR_MASK))
 
 /****************************************************************************/
 /**
@@ -461,8 +470,13 @@ typedef struct {
 /*
  * Functions in xcan.c
  */
+#ifndef SDT
 int XCan_Initialize(XCan *InstancePtr, u16 DeviceId);
 int XCan_VmInitialize(XCan *InstancePtr, u16 DeviceId, UINTPTR VirtAddr);
+#else
+int XCan_Initialize(XCan *InstancePtr, UINTPTR BaseAddress);
+int XCan_VmInitialize(XCan *InstancePtr, UINTPTR BaseAddress, UINTPTR VirtAddr);
+#endif
 void XCan_Reset(XCan *InstancePtr);
 u8 XCan_GetMode(XCan *InstancePtr);
 void XCan_EnterMode(XCan *InstancePtr, u8 OperationMode);
@@ -481,7 +495,11 @@ int XCan_AcceptFilterSet(XCan *InstancePtr, u32 FilterIndex,
 			 u32 MaskValue, u32 IdValue);
 void XCan_AcceptFilterGet(XCan *InstancePtr, u32 FilterIndex,
 			  u32 *MaskValue, u32 *IdValue);
+#ifndef SDT
 XCan_Config *XCan_LookupConfig(u16 DeviceId);
+#else
+XCan_Config *XCan_LookupConfig(UINTPTR BaseAddress);
+#endif
 XCan_Config *XCan_GetConfig(unsigned int InstanceIndex);
 
 /*

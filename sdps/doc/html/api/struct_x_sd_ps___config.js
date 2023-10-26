@@ -1,7 +1,7 @@
 var struct_x_sd_ps___config =
 [
     [ "BankNumber", "struct_x_sd_ps___config.html#a7fe36b608a4251f5b93c9c74cfb85e08", null ],
-    [ "BaseAddress", "struct_x_sd_ps___config.html#a1292694414923fdc17e1f6a0e00db2f6", null ],
+    [ "BaseAddress", "struct_x_sd_ps___config.html#a18fc4a81c465a70686b9a3c038e3dbc0", null ],
     [ "BusWidth", "struct_x_sd_ps___config.html#aea317a5fc926ce97c26cd7deeecb0c0f", null ],
     [ "CardDetect", "struct_x_sd_ps___config.html#a494f4186575a737efe3f8b3b9848c3c7", null ],
     [ "DeviceId", "struct_x_sd_ps___config.html#a02ef7758fed8299c73c8dff376c7a166", null ],

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xnandps_g.c
-* @addtogroup nandps_v2_7
+* @addtogroup nandps Overview
 * @{
 *
 * This file contains a configuration table that specifies the configuration
@@ -47,8 +48,7 @@
  * This table contains configuration information for each System Monitor/ADC
  * device in the system.
  */
-XNandPs_Config XNandPs_ConfigTable[XPAR_XNANDPS_NUM_INSTANCES] =
-{
+XNandPs_Config XNandPs_ConfigTable[XPAR_XNANDPS_NUM_INSTANCES] = {
 	{
 		XPAR_XNANDPS_0_DEVICE_ID,	/**< Device ID of device */
 		XPAR_XPARPORTPS_CTRL_BASEADDR,	/**< SMC Base address

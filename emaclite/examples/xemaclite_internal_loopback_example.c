@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2003 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2003 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -45,7 +46,11 @@
 /***************************** Include Files *********************************/
 
 #include "xemaclite_example.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#else
 #include "xintc.h"
+#endif
 #include "xil_exception.h"
 #include "xil_io.h"
 #include "xil_printf.h"
@@ -57,8 +62,10 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
 #define INTC_EMACLITE_ID	XPAR_INTC_0_EMACLITE_0_VEC_ID
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -66,27 +73,34 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifdef SDT
+int EmacLiteIntrLoopbackExample(UINTPTR BaseAddr);
+#else
 int EmacLiteIntrLoopbackExample(u16 DeviceId);
+#endif
 
 static int EmacLiteSendFrame(XEmacLite *InstancePtr, u32 PayloadSize);
 static int EmacLiteRecvFrame(u32 PayloadSize);
 static void EmacLiteRecvHandler(void *CallBackRef);
 static void EmacLiteSendHandler(void *CallBackRef);
+#ifndef SDT
 static void EmacLiteDisableIntrSystem(XIntc *IntcInstancePtr,
-						u16 EmacLiteIntrId);
+				      u16 EmacLiteIntrId);
 static int EmacLiteSetupIntrSystem(XIntc *IntcInstancePtr,
-			 XEmacLite *EmacLiteInstPtr, u16 EmacLiteIntrId);
+				   XEmacLite *EmacLiteInstPtr, u16 EmacLiteIntrId);
+#endif
 
 /************************** Variable Definitions ****************************/
 
+#ifndef SDT
 XIntc IntcInstance;		/* Instance of the Interrupt Controller */
+#endif
 
 /*
  * Set up valid local MAC addresses. This loop back test uses the LocalAddress
  * both as a source and destination MAC address.
  */
-static u8 LocalAddress[XEL_MAC_ADDR_SIZE] =
-{
+static u8 LocalAddress[XEL_MAC_ADDR_SIZE] = {
 	0x00, 0x0A, 0x35, 0x01, 0x02, 0x03
 };
 
@@ -110,7 +124,11 @@ int main()
 	 * Run the EmacLite example , specify the Device ID that is
 	 * generated in xparameters.h.
 	 */
+#ifdef SDT
+	Status = EmacLiteIntrLoopbackExample(EMACLITE_BASEADDR);
+#else
 	Status = EmacLiteIntrLoopbackExample(EMAC_DEVICE_ID);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Emaclite internal loopback Example Failed\r\n");
 		return XST_FAILURE;
@@ -135,27 +153,39 @@ int main()
 * @note		None.
 *
 ******************************************************************************/
+#ifdef SDT
+int EmacLiteIntrLoopbackExample(UINTPTR BaseAddr)
+#else
 int EmacLiteIntrLoopbackExample(u16 DeviceId)
+#endif
 {
 	int Status;
+#ifndef SDT
 	XIntc *IntcInstancePtr;
+#endif
 	XEmacLite *EmacLiteInstPtr;
 	u32 TxLength;
 	XEmacLite_Config *ConfigPtr;
 
 	RecvFrameLength = 0;
+#ifndef SDT
 	IntcInstancePtr = &IntcInstance;
-	EmacLiteInstPtr =&EmacLiteInstance;
+#endif
+	EmacLiteInstPtr = &EmacLiteInstance;
 
 	/*
 	 * Initialize the EmacLite device.
 	 */
+#ifdef SDT
+	ConfigPtr = XEmacLite_LookupConfig(BaseAddr);
+#else
 	ConfigPtr = XEmacLite_LookupConfig(DeviceId);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 	Status = XEmacLite_CfgInitialize(EmacLiteInstPtr, ConfigPtr,
-						ConfigPtr->BaseAddress);
+					 ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -168,8 +198,15 @@ int EmacLiteIntrLoopbackExample(u16 DeviceId)
 	/*
 	 * Set up the interrupt infrastructure.
 	 */
+#ifdef SDT
+	Status = XSetupInterruptSystem(EmacLiteInstPtr, &XEmacLite_InterruptHandler,
+				       EmacLiteInstPtr->EmacLiteConfig.IntrId,
+				       EmacLiteInstPtr->EmacLiteConfig.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#else
 	Status = EmacLiteSetupIntrSystem(IntcInstancePtr, EmacLiteInstPtr,
-						INTC_EMACLITE_ID);
+					 INTC_EMACLITE_ID);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -243,8 +280,13 @@ int EmacLiteIntrLoopbackExample(u16 DeviceId)
 			 * Disable and disconnect the EmacLite Interrupts.
 			 */
 			XEmacLite_DisableInterrupts(EmacLiteInstPtr);
+#ifdef SDT
+			XDisconnectInterruptCntrl(EmacLiteInstPtr->EmacLiteConfig.IntrId,
+						  EmacLiteInstPtr->EmacLiteConfig.IntrParent);
+#else
 			EmacLiteDisableIntrSystem(IntcInstancePtr,
-							 INTC_EMACLITE_ID);
+						  INTC_EMACLITE_ID);
+#endif
 			return XST_FAILURE;
 		}
 	}
@@ -258,7 +300,12 @@ int EmacLiteIntrLoopbackExample(u16 DeviceId)
 	 * Disable and disconnect the EmacLite Interrupts.
 	 */
 	XEmacLite_DisableInterrupts(EmacLiteInstPtr);
+#ifdef SDT
+	XDisconnectInterruptCntrl(EmacLiteInstPtr->EmacLiteConfig.IntrId,
+				  EmacLiteInstPtr->EmacLiteConfig.IntrParent);
+#else
 	EmacLiteDisableIntrSystem(IntcInstancePtr, INTC_EMACLITE_ID);
+#endif
 
 	return XST_SUCCESS;
 }
@@ -317,8 +364,8 @@ static int EmacLiteSendFrame(XEmacLite *XEmacInstancePtr, u32 PayloadSize)
 	/*
 	 * Set up the type/length field - be sure its in network order.
 	 */
-    *((u16 *)FramePtr) = Xil_Htons(PayloadSize);
-    FramePtr++;
+	*((u16 *)FramePtr) = Xil_Htons(PayloadSize);
+	FramePtr++;
 	FramePtr++;
 
 	/*
@@ -333,7 +380,7 @@ static int EmacLiteSendFrame(XEmacLite *XEmacInstancePtr, u32 PayloadSize)
 	 * Now send the frame.
 	 */
 	Status = XEmacLite_Send(XEmacInstancePtr, (u8 *)TxFrame,
-			    PayloadSize + XEL_HEADER_SIZE);
+				PayloadSize + XEL_HEADER_SIZE);
 
 	return  Status;
 }
@@ -367,8 +414,8 @@ static int EmacLiteRecvFrame(u32 PayloadSize)
 		/*
 		 * Verify length, which should be the payload size.
 		 */
-		if ((RecvFrameLength- (XEL_HEADER_SIZE + XEL_FCS_SIZE)) !=
-				PayloadSize) {
+		if ((RecvFrameLength - (XEL_HEADER_SIZE + XEL_FCS_SIZE)) !=
+		    PayloadSize) {
 			return XST_LOOPBACK_ERROR;
 		}
 
@@ -444,6 +491,7 @@ static void EmacLiteSendHandler(void *CallBackRef)
 
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -465,7 +513,7 @@ static void EmacLiteSendHandler(void *CallBackRef)
 *
 ******************************************************************************/
 static int EmacLiteSetupIntrSystem(XIntc *IntcInstancePtr,
-			 XEmacLite *EmacLiteInstPtr, u16 EmacLiteIntrId)
+				   XEmacLite *EmacLiteInstPtr, u16 EmacLiteIntrId)
 {
 	int Status;
 
@@ -485,9 +533,9 @@ static int EmacLiteSetupIntrSystem(XIntc *IntcInstancePtr,
 	 * specific interrupt processing for the device.
 	 */
 	Status = XIntc_Connect(IntcInstancePtr,
-				EmacLiteIntrId,
-				XEmacLite_InterruptHandler,
-				(void *)(EmacLiteInstPtr));
+			       EmacLiteIntrId,
+			       XEmacLite_InterruptHandler,
+			       (void *)(EmacLiteInstPtr));
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -521,8 +569,8 @@ static int EmacLiteSetupIntrSystem(XIntc *IntcInstancePtr,
 	 * Register the interrupt controller handler with the exception table.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				(Xil_ExceptionHandler) XIntc_InterruptHandler,
-				IntcInstancePtr);
+				     (Xil_ExceptionHandler) XIntc_InterruptHandler,
+				     IntcInstancePtr);
 
 	/*
 	 * Enable non-critical exceptions.
@@ -551,7 +599,7 @@ static int EmacLiteSetupIntrSystem(XIntc *IntcInstancePtr,
 *
 ******************************************************************************/
 static void EmacLiteDisableIntrSystem(XIntc *IntcInstancePtr,
-						 u16 EmacLiteIntrId)
+				      u16 EmacLiteIntrId)
 {
 	/*
 	 * Disconnect and disable the interrupts for the EmacLite device.
@@ -559,3 +607,4 @@ static void EmacLiteDisableIntrSystem(XIntc *IntcInstancePtr,
 	XIntc_Disconnect(IntcInstancePtr, EmacLiteIntrId);
 
 }
+#endif

@@ -26,5 +26,5 @@ var NAVTREEINDEX0 =
 "xdfxasm__hw_8h.html#gab1c260601f1123450c205d6c6a0bc308":[2,2,0],
 "xdfxasm__hw_8h.html#gacb795d12bfcf138db49ba64d9c1b614e":[2,2,3],
 "xdfxasm__sinit_8c.html":[2,3],
-"xdfxasm__sinit_8c.html#gab49ddf272d8db2a95f7b4420261a6ca1":[2,3,0]
+"xdfxasm__sinit_8c.html#gae65186e7648d1f958994314c58c674d5":[2,3,0]
 };

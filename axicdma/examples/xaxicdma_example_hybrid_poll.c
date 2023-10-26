@@ -83,6 +83,7 @@ extern void xil_printf(const char *format, ...);
 /*
  * Device hardware build related constants.
  */
+#ifndef SDT
 #ifndef TESTAPP_GEN
 #define DMA_CTRL_DEVICE_ID  XPAR_AXICDMA_0_DEVICE_ID
 #endif
@@ -95,9 +96,19 @@ extern void xil_printf(const char *format, ...);
 #define MEMORY_BASE	XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
 #elif XPAR_PSU_DDR_0_S_AXI_BASEADDR
 #define MEMORY_BASE	XPAR_PSU_DDR_0_S_AXI_BASEADDR
+#endif
+
 #else
+
+#ifdef XPAR_MEM0_BASEADDRESS
+#define MEMORY_BASE		XPAR_MEM0_BASEADDRESS
+#endif
+#define AXICDMA_BASE_ADDR       XPAR_XAXICDMA_0_BASEADDR
+#endif
+
+#ifndef MEMORY_BASE
 #warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-		DEFAULT SET TO 0x01000000
+DEFAULT SET TO 0x01000000
 #define MEMORY_BASE		0x01000000
 #endif
 
@@ -138,7 +149,11 @@ static int CheckSgCompletion(XAxiCdma *InstancePtr);
 static int CheckData(u8 *SrcPtr, u8 *DestPtr, int Length);
 static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries);
 static int DoSgPollTransfer(XAxiCdma *InstancePtr, int Length);
+#ifndef SDT
 int XAxiCdma_HybridPollExample(u16 DeviceId);
+#else
+int XAxiCdma_HybridPollExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -190,7 +205,11 @@ int main()
 
 	/* Run the poll example for simple transfer
 	 */
+#ifndef SDT
 	Status = XAxiCdma_HybridPollExample(DMA_CTRL_DEVICE_ID);
+#else
+	Status = XAxiCdma_HybridPollExample(AXICDMA_BASE_ADDR);
+#endif
 
 	if (Status != (XST_SUCCESS)) {
 		xil_printf("Axicdma Hybrid polled Example Failed\r\n");
@@ -222,10 +241,10 @@ static void Uart550_Setup(void)
 	/* Set the baudrate to be predictable
 	 */
 	XUartNs550_SetBaud(XPAR_UARTNS550_0_BASEADDR,
-			XPAR_XUARTNS550_CLOCK_HZ, 9600);
+			   XPAR_XUARTNS550_CLOCK_HZ, 9600);
 
 	XUartNs550_SetLineControlReg(XPAR_UARTNS550_0_BASEADDR,
-			XUN_LCR_8_DATA_BITS);
+				     XUN_LCR_8_DATA_BITS);
 
 }
 #endif
@@ -253,14 +272,14 @@ static int SetupSgTransfer(XAxiCdma *InstancePtr)
 
 	/* Setup BD ring */
 	BdCount = XAxiCdma_BdRingCntCalc(XAXICDMA_BD_MINIMUM_ALIGNMENT,
-				    BD_SPACE_HIGH - BD_SPACE_BASE + 1,
-				    (UINTPTR)BD_SPACE_BASE);
+					 BD_SPACE_HIGH - BD_SPACE_BASE + 1,
+					 (UINTPTR)BD_SPACE_BASE);
 
 	Status = XAxiCdma_BdRingCreate(InstancePtr, BD_SPACE_BASE,
-		BD_SPACE_BASE, XAXICDMA_BD_MINIMUM_ALIGNMENT, BdCount);
+				       BD_SPACE_BASE, XAXICDMA_BD_MINIMUM_ALIGNMENT, BdCount);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Create BD ring failed %d\r\n",
-								Status);
+			    Status);
 
 		return XST_FAILURE;
 	}
@@ -272,7 +291,7 @@ static int SetupSgTransfer(XAxiCdma *InstancePtr)
 	Status = XAxiCdma_BdRingClone(InstancePtr, &BdTemplate);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Clone BD ring failed %d\r\n",
-								Status);
+			    Status);
 
 		return XST_FAILURE;
 	}
@@ -280,10 +299,10 @@ static int SetupSgTransfer(XAxiCdma *InstancePtr)
 	/* Initialize receive buffer to 0's and transmit buffer with pattern
 	 */
 	memset((void *)ReceiveBufferPtr, 0,
-		MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
+	       MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
 
 	SrcBufferPtr = (u8 *)TransmitBufferPtr;
-	for(Index = 0; Index < MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER; Index++) {
+	for (Index = 0; Index < MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER; Index++) {
 		SrcBufferPtr[Index] = Index & 0xFF;
 	}
 
@@ -291,9 +310,9 @@ static int SetupSgTransfer(XAxiCdma *InstancePtr)
 	 * in case the Data Cache is enabled
 	 */
 	Xil_DCacheFlushRange((UINTPTR)TransmitBufferPtr,
-		MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
+			     MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
 	Xil_DCacheFlushRange((UINTPTR)ReceiveBufferPtr,
-			MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
+			     MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
 
 	return XST_SUCCESS;
 }
@@ -321,7 +340,7 @@ static int SubmitSgTransfer(XAxiCdma *InstancePtr)
 	UINTPTR DstBufferAddr;
 
 	Status = XAxiCdma_BdRingAlloc(InstancePtr,
-		    NUMBER_OF_BDS_TO_TRANSFER, &BdPtr);
+				      NUMBER_OF_BDS_TO_TRANSFER, &BdPtr);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Failed bd alloc\r\n");
 
@@ -334,32 +353,32 @@ static int SubmitSgTransfer(XAxiCdma *InstancePtr)
 
 	/* Set up the BDs
 	 */
-	for(Index = 0; Index < NUMBER_OF_BDS_TO_TRANSFER; Index++) {
+	for (Index = 0; Index < NUMBER_OF_BDS_TO_TRANSFER; Index++) {
 
 		Status = XAxiCdma_BdSetSrcBufAddr(BdCurPtr, SrcBufferAddr);
-		if(Status != XST_SUCCESS) {
+		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Set src addr failed %d, %x/%x\r\n",
-			    Status, (unsigned int)BdCurPtr,
-			    (unsigned int)SrcBufferAddr);
+				    "Set src addr failed %d, %x/%x\r\n",
+				    Status, (unsigned int)BdCurPtr,
+				    (unsigned int)SrcBufferAddr);
 
 			return XST_FAILURE;
 		}
 
 		Status = XAxiCdma_BdSetDstBufAddr(BdCurPtr, DstBufferAddr);
-		if(Status != XST_SUCCESS) {
+		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Set dst addr failed %d, %x/%x\r\n",
-			    Status, (unsigned int)BdCurPtr,
-			    (unsigned int)DstBufferAddr);
+				    "Set dst addr failed %d, %x/%x\r\n",
+				    Status, (unsigned int)BdCurPtr,
+				    (unsigned int)DstBufferAddr);
 
 			return XST_FAILURE;
 		}
 
 		Status = XAxiCdma_BdSetLength(BdCurPtr, MAX_PKT_LEN);
-		if(Status != XST_SUCCESS) {
+		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Set BD length failed %d\r\n", Status);
+				    "Set BD length failed %d\r\n", Status);
 
 			return XST_FAILURE;
 		}
@@ -371,7 +390,7 @@ static int SubmitSgTransfer(XAxiCdma *InstancePtr)
 
 	/* Give the BDs to hardware */
 	Status = XAxiCdma_BdRingToHw(InstancePtr, NUMBER_OF_BDS_TO_TRANSFER,
-		BdPtr, NULL, NULL);
+				     BdPtr, NULL, NULL);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Failed to hw %d\r\n", Status);
 
@@ -415,7 +434,7 @@ static int CheckSgCompletion(XAxiCdma *InstancePtr)
 
 	/* Check finished BDs then release them
 	 */
-	if(BdCount > 0) {
+	if (BdCount > 0) {
 		BdCurPtr = BdPtr;
 
 		for (Index = 0; Index < BdCount; Index++) {
@@ -436,9 +455,9 @@ static int CheckSgCompletion(XAxiCdma *InstancePtr)
 		 */
 		Status = XAxiCdma_BdRingFree(InstancePtr, BdCount, BdPtr);
 
-		if(Status != XST_SUCCESS) {
+		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Error free BD %d\r\n", Status);
+				    "Error free BD %d\r\n", Status);
 
 			Error = 1;
 			return 0;
@@ -477,9 +496,9 @@ static int CheckData(u8 *SrcPtr, u8 *DestPtr, int Length)
 	for (Index = 0; Index < Length; Index++) {
 		if ( DestPtr[Index] != SrcPtr[Index]) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Data check failure %d: %x/%x\r\n",
-			    Index, (unsigned int)DestPtr[Index],
-			    (unsigned int)SrcPtr[Index]);
+				    "Data check failure %d: %x/%x\r\n",
+				    Index, (unsigned int)DestPtr[Index],
+				    (unsigned int)SrcPtr[Index]);
 
 			return XST_FAILURE;
 		}
@@ -532,7 +551,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 		Retries -= 1;
 
 		Status = XAxiCdma_SimpleTransfer(InstancePtr, (UINTPTR)SrcBuffer,
-			(UINTPTR)DestBuffer, Length, NULL, NULL);
+						 (UINTPTR)DestBuffer, Length, NULL, NULL);
 		if (Status == XST_SUCCESS) {
 			break;
 		}
@@ -542,7 +561,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 	 */
 	if (!Retries) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Failed to submit the transfer %d\r\n", Status);
+			    "Failed to submit the transfer %d\r\n", Status);
 
 		return XST_FAILURE;
 	}
@@ -550,12 +569,12 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 	/* Wait until the DMA transfer is done or timeout
 	 */
 	Status = Xil_WaitForEvent(InstancePtr->BaseAddr + XAXICDMA_SR_OFFSET,
-			XAXICDMA_SR_IDLE_MASK, XAXICDMA_SR_IDLE_MASK, POLL_TIMEOUT_COUNTER);
+				  XAXICDMA_SR_IDLE_MASK, XAXICDMA_SR_IDLE_MASK, POLL_TIMEOUT_COUNTER);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-				"Failed to complete the transfer with %d\r\n", Status);
+			    "Failed to complete the transfer with %d\r\n", Status);
 		return XST_FAILURE;
-        }
+	}
 
 	/* If the hardware has errors, this example fails
 	 * This is a poll example, no interrupt handler is involved.
@@ -566,7 +585,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 		int TimeOut = RESET_LOOP_COUNT;
 
 		xdbg_printf(XDBG_DEBUG_ERROR, "Transfer has error %x\r\n",
-		    (unsigned int)Error);
+			    (unsigned int)Error);
 
 		/* Need to reset the hardware to restore to the correct state
 		 */
@@ -583,7 +602,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 		 */
 		if (!TimeOut) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Reset hardware failed with %d\r\n", Status);
+				    "Reset hardware failed with %d\r\n", Status);
 
 		}
 
@@ -595,7 +614,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 	Status = CheckData(SrcPtr, DestPtr, Length);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Check data failed for simple "
-		    "transfer\r\n");
+			    "transfer\r\n");
 
 		return XST_FAILURE;
 	}
@@ -636,7 +655,7 @@ static int DoSgPollTransfer(XAxiCdma *InstancePtr, int Length)
 	Status = SubmitSgTransfer(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Do SG transfer failed with %d\r\n", Status);
+			    "Do SG transfer failed with %d\r\n", Status);
 
 		return XST_FAILURE;
 	}
@@ -647,23 +666,24 @@ static int DoSgPollTransfer(XAxiCdma *InstancePtr, int Length)
 	 */
 	while (TimeOut) {
 		if ((CheckSgCompletion(InstancePtr) >=
-		     NUMBER_OF_BDS_TO_TRANSFER) && !Error)
+		     NUMBER_OF_BDS_TO_TRANSFER) && !Error) {
 			break;
+		}
 		TimeOut--;
 		usleep(1U);
 	}
 
-	if(Error) {
+	if (Error) {
 		return XST_FAILURE;
 	}
 
 	/* Transfer completed successfully, check data
 	 */
 	Status = CheckData(SrcPtr, DstPtr,
-		MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
+			   MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "Check data failed for sg "
-		    "transfer\r\n");
+			    "transfer\r\n");
 
 		return XST_FAILURE;
 	}
@@ -690,7 +710,11 @@ static int DoSgPollTransfer(XAxiCdma *InstancePtr, int Length)
 *		function hangs
 *
 ******************************************************************************/
+#ifndef SDT
 int XAxiCdma_HybridPollExample(u16 DeviceId)
+#else
+int XAxiCdma_HybridPollExample(UINTPTR BaseAddress)
+#endif
 {
 	XAxiCdma_Config *CfgPtr;
 	int Status;
@@ -698,20 +722,31 @@ int XAxiCdma_HybridPollExample(u16 DeviceId)
 
 	/* Initialize the XAxiCdma device.
 	 */
+#ifndef SDT
 	CfgPtr = XAxiCdma_LookupConfig(DeviceId);
 	if (!CfgPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Cannot find config structure for device %d\r\n",
-			DeviceId);
+			    "Cannot find config structure for device %d\r\n",
+			    DeviceId);
 
 		return XST_FAILURE;
 	}
+#else
+	CfgPtr = XAxiCdma_LookupConfig(BaseAddress);
+	if (!CfgPtr) {
+		xdbg_printf(XDBG_DEBUG_ERROR,
+			    "Cannot find config structure for device %llx\r\n",
+			    BaseAddress);
+
+		return XST_FAILURE;
+	}
+#endif
 
 	Status = XAxiCdma_CfgInitialize(&Engine, CfgPtr,
-						CfgPtr->BaseAddress);
+					CfgPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Initialization failed with %d\r\n", Status);
+			    "Initialization failed with %d\r\n", Status);
 
 		return XST_FAILURE;
 	}
@@ -725,7 +760,7 @@ int XAxiCdma_HybridPollExample(u16 DeviceId)
 	Status = SetupSgTransfer(&Engine);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Setup SG transfer failed with error %d\r\n", Status);
+			    "Setup SG transfer failed with error %d\r\n", Status);
 		return XST_FAILURE;
 	}
 
@@ -735,10 +770,10 @@ int XAxiCdma_HybridPollExample(u16 DeviceId)
 	/* Do one simple transfer
 	 */
 	Status = DoSimplePollTransfer(&Engine,
-		BUFFER_BYTESIZE, SubmitTries);
+				      BUFFER_BYTESIZE, SubmitTries);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "First simple transfer failed with error %d\r\n", Status);
+			    "First simple transfer failed with error %d\r\n", Status);
 		return XST_FAILURE;
 	}
 
@@ -752,7 +787,7 @@ int XAxiCdma_HybridPollExample(u16 DeviceId)
 	Status = DoSgPollTransfer(&Engine, BUFFER_BYTESIZE);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Scatter gather transfer failed with error %d\r\n", Status);
+			    "Scatter gather transfer failed with error %d\r\n", Status);
 		return XST_FAILURE;
 	}
 
@@ -764,10 +799,10 @@ int XAxiCdma_HybridPollExample(u16 DeviceId)
 	/* Finally, do another simple transfer
 	 */
 	Status = DoSimplePollTransfer(&Engine,
-		BUFFER_BYTESIZE, SubmitTries);
+				      BUFFER_BYTESIZE, SubmitTries);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-		    "Second simple transfer failed with error %d\r\n", Status);
+			    "Second simple transfer failed with error %d\r\n", Status);
 		return XST_FAILURE;
 	}
 

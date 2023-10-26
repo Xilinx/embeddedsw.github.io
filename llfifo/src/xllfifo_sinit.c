@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xllfifo_sinit.c
-* @addtogroup llfifo_v5_5
+* @addtogroup llfifo Overview
 * @{
 *
 * This file contains static initialization functionality for Axi Streaming FIFO
@@ -25,8 +26,10 @@
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xllfifo.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 
 /*****************************************************************************/
 /**
@@ -41,6 +44,7 @@
  * @note	None
  *
  ******************************************************************************/
+#ifndef SDT
 XLlFifo_Config *XLlFfio_LookupConfig(u32 DeviceId)
 {
 	extern XLlFifo_Config XLlFifo_ConfigTable[];
@@ -59,4 +63,24 @@ XLlFifo_Config *XLlFfio_LookupConfig(u32 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XLlFifo_Config *XLlFfio_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XLlFifo_Config XLlFifo_ConfigTable[];
+	XLlFifo_Config *CfgPtr;
+	u32 Index;
+
+	CfgPtr = NULL;
+
+	for (Index = (u32)0x0; XLlFifo_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XLlFifo_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XLlFifo_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /** @} */

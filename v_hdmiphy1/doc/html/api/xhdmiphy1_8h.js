@@ -17,6 +17,8 @@ var xhdmiphy1_8h =
       [ "XHDMIPHY1_CHANNEL_ID_TXMMCM", "xhdmiphy1_8h.html#gga54f72201d2012e3c638ec92b5e310f23ab3654898b63a61cca2a2444e0a482691", null ],
       [ "XHDMIPHY1_CHANNEL_ID_RXMMCM", "xhdmiphy1_8h.html#gga54f72201d2012e3c638ec92b5e310f23a191122552935905939d09e49af98effb", null ],
       [ "XHDMIPHY1_CHANNEL_ID_CMN", "xhdmiphy1_8h.html#gga54f72201d2012e3c638ec92b5e310f23aebfeb751134acd6d0d96de2b100b2f28", null ],
+      [ "XHDMIPHY1_MMCM", "xhdmiphy1_8h.html#gga5c14699ae94ae5574cdd7e348fb26e6aa7eea42e07ee95cebea1d9d47a4bcbd4e", null ],
+      [ "XHDMIPHY1_PLL", "xhdmiphy1_8h.html#gga5c14699ae94ae5574cdd7e348fb26e6aa4003ad3499411cd2dbcf1f80682683e9", null ],
       [ "XHDMIPHY1_DIR_RX", "xhdmiphy1_8h.html#gga8949242c95cc887f4405af450db75400a0b189e576c72cb90bc17ab01bb0736e8", null ],
       [ "XHDMIPHY1_DIR_TX", "xhdmiphy1_8h.html#gga8949242c95cc887f4405af450db75400a65fb6048f1fbd1e9c1c2d199f047e76f", null ],
       [ "XHDMIPHY1_DIR_NONE", "xhdmiphy1_8h.html#gga8949242c95cc887f4405af450db75400ab7500fdcb7f08c8d0d0d9b4027a460da", null ]

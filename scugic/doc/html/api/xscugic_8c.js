@@ -1,5 +1,6 @@
 var xscugic_8c =
 [
+    [ "DEFAULT_PRIORITY", "xscugic_8c.html#ga0756f011ef667460d583017366823244", null ],
     [ "XScuGic_CfgInitialize", "xscugic_8c.html#gaf8e0bfe31c0fa2ca654c36715a3c13f8", null ],
     [ "XScuGic_Connect", "xscugic_8c.html#ga48f9dd531aa861a74e6bd627943573ea", null ],
     [ "XScuGic_Disable", "xscugic_8c.html#gaafd153e16238a1189c513846675e096a", null ],

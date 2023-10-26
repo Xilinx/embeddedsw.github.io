@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,23 +20,34 @@
  * Ver   Who  Date     Changes
  * ----- ---- -----------------------------------------------------------------
  * 1.00a hvm  12/3/10 First release
+ * 5.6   pm   07/05/23 Removed powerpc support.
+ * 5.6   pm   07/05/23 Added support for system device-tree flow.
  *
  * </pre>
  *****************************************************************************/
 /***************************** Include Files *********************************/
 
 #include "xusb.h"
-#include "xintc.h"
 #include "stdio.h"
 #include "xenv_standalone.h"
 #include "xil_exception.h"
 #include "xil_cache.h"
+#include "xparameters.h"
 
+#ifndef SDT
+#include "xintc.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 /************************** Constant Definitions *****************************/
 
+#ifndef SDT
 #define USB_DEVICE_ID		XPAR_USB_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
 #define USB_INTR		XPAR_INTC_0_USB_0_VEC_ID
+#else
+#define XUSB_BASEADDRESS	XPAR_XUSB_0_BASEADDR
+#endif
 
 #define ULPI_SCRATCH_REGISTER	0x16
 #define WRITE_REG_DATA		0xAA
@@ -45,12 +57,16 @@
 XUsb UsbInstance;		/* The instance of the USB device */
 XUsb_Config *UsbConfigPtr;	/* Instance of the USB config structure */
 
+#ifndef SDT
 XIntc InterruptController;	/* Instance of the Interrupt Controller */
+#endif
 
 volatile u8 PhyAccessDone = 0;
 
 void UsbIfPhyIntrHandler(void *CallBackRef, u32 IntrStatus);
-static int SetupInterruptSystem(XUsb * InstancePtr);
+#ifndef SDT
+static int SetupInterruptSystem(XUsb *InstancePtr);
+#endif
 
 /*****************************************************************************/
 /**
@@ -72,15 +88,15 @@ int main()
 	/*
 	 * Initialize the USB driver.
 	 */
+#ifndef SDT
 	UsbConfigPtr = XUsb_LookupConfig(USB_DEVICE_ID);
+#else
+	UsbConfigPtr = XUsb_LookupConfig(XUSB_BASEADDRESS);
+#endif
 	if (NULL == UsbConfigPtr) {
 		return XST_FAILURE;
 	}
-#ifdef __PPC__
-
-	Xil_ICacheEnableRegion (0x80000001);
-	Xil_DCacheEnableRegion (0x80000001);
-#endif
+#ifndef SDT
 #ifdef __MICROBLAZE__
 	Xil_ICacheInvalidate();
 	Xil_ICacheEnable();
@@ -88,6 +104,7 @@ int main()
 
 	Xil_DCacheInvalidate();
 	Xil_DCacheEnable();
+#endif
 #endif
 
 	/*
@@ -103,11 +120,19 @@ int main()
 	}
 
 	XUsb_UlpiIntrSetHandler (&UsbInstance, (void *) UsbIfPhyIntrHandler,
-			    &UsbInstance);
+				 &UsbInstance);
 	/*
 	 * Setup the interrupt system.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&UsbInstance);
+#else
+	Status = XSetupInterruptSystem(&UsbInstance,
+				       &XUsb_IntrHandler,
+				       UsbConfigPtr->IntrId,
+				       UsbConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -125,7 +150,7 @@ int main()
 	 * Initiate a ULPI register write transaction.
 	 */
 	XUsb_UlpiPhyWriteRegister(&UsbInstance, ULPI_SCRATCH_REGISTER,
-					WRITE_REG_DATA);
+				  WRITE_REG_DATA);
 
 
 	/* Wait until the write transaction is done */
@@ -135,9 +160,9 @@ int main()
 	 * Read the PHY read register.  We do not wait for transaction
 	 * complete interrupt in this case. The API internally polls for the
 	 * completion and then returns the register value read.
- 	 */
+	 */
 	ReadRegData = XUsb_UlpiPhyReadRegister(&UsbInstance,
-					ULPI_SCRATCH_REGISTER);
+					       ULPI_SCRATCH_REGISTER);
 
 
 	/* Compare the Written data and read data*/
@@ -179,6 +204,7 @@ void UsbIfPhyIntrHandler(void *CallBackRef, u32 IntrStatus)
 
 }
 
+#ifndef SDT
 /******************************************************************************/
 /**
 *
@@ -199,7 +225,7 @@ void UsbIfPhyIntrHandler(void *CallBackRef, u32 IntrStatus)
 * @note		None
 *
 *******************************************************************************/
-static int SetupInterruptSystem(XUsb * InstancePtr)
+static int SetupInterruptSystem(XUsb *InstancePtr)
 {
 	int Status;
 
@@ -247,8 +273,8 @@ static int SetupInterruptSystem(XUsb * InstancePtr)
 	 * Register the interrupt controller handler with the exception table
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				(Xil_ExceptionHandler)XIntc_InterruptHandler,
-				&InterruptController);
+				     (Xil_ExceptionHandler)XIntc_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Enable non-critical exceptions
@@ -257,5 +283,5 @@ static int SetupInterruptSystem(XUsb * InstancePtr)
 
 	return XST_SUCCESS;
 }
-
+#endif
 

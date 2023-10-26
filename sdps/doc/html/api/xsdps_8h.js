@@ -42,7 +42,7 @@ var xsdps_8h =
     [ "XSDPS_ZYNQMP_SD0_BASE", "xsdps_8h.html#ga206b703b7f911793694382fed5b5ff60", null ],
     [ "XSDPS_ZYNQMP_SD1_BASE", "xsdps_8h.html#ga20a4495876d4efadbb543db0974af396", null ],
     [ "XSdPs_CardInitialize", "xsdps_8h.html#ga3c3ab46b98e997b8439af4b149445811", null ],
-    [ "XSdPs_CfgInitialize", "xsdps_8h.html#gabcd75a06ca4fb42ebcec4526282dffdf", null ],
+    [ "XSdPs_CfgInitialize", "xsdps_8h.html#gaf99da6fcfbc311afcd2d6e8a94c5fe55", null ],
     [ "XSdPs_Change_BusSpeed", "xsdps_8h.html#ga6bc000fb4ce51502058f2e351c90fc19", null ],
     [ "XSdPs_Change_BusWidth", "xsdps_8h.html#gaf11db1719933123762fecb790a2977da", null ],
     [ "XSdPs_Change_ClkFreq", "xsdps_8h.html#ga1f8661e4ae53a7c29b3fd44cc56a3673", null ],
@@ -62,5 +62,6 @@ var xsdps_8h =
     [ "XSdPs_SetBlkSize", "xsdps_8h.html#ga1af3178b4b24c991b431eb7a0aa3b23b", null ],
     [ "XSdPs_StartReadTransfer", "xsdps_8h.html#ga4910d9a9023501be9878c9bf02d3970f", null ],
     [ "XSdPs_StartWriteTransfer", "xsdps_8h.html#ga6f7763ba81207cc125a3da437b140b58", null ],
-    [ "XSdPs_WritePolled", "xsdps_8h.html#ga69aa57979c1ef9b9ec3fbdc6d8ab7277", null ]
+    [ "XSdPs_WritePolled", "xsdps_8h.html#ga69aa57979c1ef9b9ec3fbdc6d8ab7277", null ],
+    [ "XSdPs_ConfigTable", "xsdps_8h.html#ga40d2b56e1265bf5730e99da60e25dc2a", null ]
 ];

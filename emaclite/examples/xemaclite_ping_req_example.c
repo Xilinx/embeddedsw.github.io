@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2008 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2008 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -60,7 +61,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifdef SDT
+#define EMACLITE_BASEADDR	XPAR_XEMACLITE_0_BASEADDR
+#else
 #define EMAC_DEVICE_ID		  XPAR_EMACLITE_0_DEVICE_ID
+#endif
 
 /*
  * Change this parameter to limit the number of ping requests sent by this
@@ -125,8 +130,11 @@
 
 
 /************************** Function Prototypes ******************************/
-
+#ifdef SDT
+static int EmacLitePingReqExample(UINTPTR BaseAddress);
+#else
 static int EmacLitePingReqExample(u16 DeviceId);
+#endif
 
 static void SendArpReqFrame(XEmacLite *InstancePtr);
 
@@ -137,15 +145,14 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr);
 static u16 CheckSumCalculation(u16 *RxFramePtr16, int StartLoc, int Length);
 
 static int CompareData(u16 *LhsPtr, u16 *RhsPtr, int LhsLoc, int RhsLoc,
-			int Count);
+		       int Count);
 
 /************************** Variable Definitions *****************************/
 
 /*
  * Set up a local MAC address.
  */
-static u8 LocalMacAddr[XEL_MAC_ADDR_SIZE] =
-{
+static u8 LocalMacAddr[XEL_MAC_ADDR_SIZE] = {
 	0x00, 0x0A, 0x35, 0x03, 0x02, 0x01
 };
 
@@ -153,16 +160,14 @@ static u8 LocalMacAddr[XEL_MAC_ADDR_SIZE] =
  * The IP address was set to 172.16.63.121. User need to set a free IP address
  * based on the network on which this example is to be run.
  */
-static u8 LocalIpAddress[IP_ADDR_SIZE] =
-{
+static u8 LocalIpAddress[IP_ADDR_SIZE] = {
 	172, 16, 63, 121
 };
 
 /*
  * Set up a Destination IP address. Currently it is set to 172.16.63.61.
  */
-static u8 DestIpAddress[IP_ADDR_SIZE] =
-{
+static u8 DestIpAddress[IP_ADDR_SIZE] = {
 	172, 16, 63, 61
 };
 
@@ -172,8 +177,7 @@ static XEmacLite EmacLiteInstance;	/* Instance of the EmacLite driver */
 /*
  * Known data transmitted in Echo request.
  */
-u16 IcmpData[ICMP_KNOWN_DATA_LEN] =
-{
+u16 IcmpData[ICMP_KNOWN_DATA_LEN] = {
 	0x6162,	0x6364,	0x6566, 0x6768, 0x696A,	0x6B6C, 0x6D6E,	0x6F70,
 	0x7172, 0x7374, 0x7576, 0x7761, 0x6263,	0x6465, 0x6667,	0x6869
 };
@@ -183,8 +187,7 @@ u16 IcmpData[ICMP_KNOWN_DATA_LEN] =
  * Icmp type, ipv4 typelength, packet length, identification field
  * Fragment type, time to live and ICM, checksum.
  */
-u16 IpHeaderInfo[IP_HEADER_INFO_LEN] =
-{
+u16 IpHeaderInfo[IP_HEADER_INFO_LEN] = {
 	0x0800,	0x4500, 0x003C,	0x5566,	0x0000,	0x8001, 0x0000
 };
 
@@ -231,7 +234,11 @@ int main()
 	/*
 	 * Run the EmacLite Ping request example.
 	 */
+#ifdef SDT
+	Status = EmacLitePingReqExample(EMACLITE_BASEADDR);
+#else
 	Status = EmacLitePingReqExample(EMAC_DEVICE_ID);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Emaclite ping request Example Failed\r\n");
 		return XST_FAILURE;
@@ -256,7 +263,11 @@ int main()
 * @note		None.
 *
 ******************************************************************************/
+#ifdef SDT
+static int EmacLitePingReqExample(UINTPTR BaseAddress)
+#else
 static int EmacLitePingReqExample(u16 DeviceId)
+#endif
 {
 	int Status;
 	int Index;
@@ -272,13 +283,17 @@ static int EmacLitePingReqExample(u16 DeviceId)
 	/*
 	 * Initialize the EmacLite device.
 	 */
+#ifdef SDT
+	ConfigPtr = XEmacLite_LookupConfig(BaseAddress);
+#else
 	ConfigPtr = XEmacLite_LookupConfig(DeviceId);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 	Status = XEmacLite_CfgInitialize(EmacLiteInstPtr,
-					ConfigPtr,
-					ConfigPtr->BaseAddress);
+					 ConfigPtr,
+					 ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -322,8 +337,8 @@ static int EmacLitePingReqExample(u16 DeviceId)
 			Count = NUM_PACK_CHECK_RX_PACK;
 			while (RecvFrameLength == 0) {
 				RecvFrameLength = XEmacLite_Recv(
-							EmacLiteInstPtr,
-							(u8 *)RxFrame);
+							  EmacLiteInstPtr,
+							  (u8 *)RxFrame);
 
 				/*
 				 * To avoid infinite loop when no packet is
@@ -339,7 +354,7 @@ static int EmacLitePingReqExample(u16 DeviceId)
 			 */
 			if (RecvFrameLength != 0) {
 				EchoReplyStatus = ProcessRecvFrame(
-							EmacLiteInstPtr);
+							  EmacLiteInstPtr);
 			}
 			RecvFrameLength = 0;
 
@@ -358,9 +373,9 @@ static int EmacLitePingReqExample(u16 DeviceId)
 		 */
 		if (EchoReplyStatus == XST_FAILURE) {
 			xil_printf("Packet No: %d",
-				NUM_OF_PING_REQ_PKTS - NumOfPingReqPkts);
+				   NUM_OF_PING_REQ_PKTS - NumOfPingReqPkts);
 			xil_printf(" Seq NO %d Request timed out\r\n",
-							SeqNum);
+				   SeqNum);
 		}
 	}
 	return XST_SUCCESS;
@@ -513,7 +528,7 @@ static void SendEchoReqFrame(XEmacLite *InstancePtr)
 	TempPtr = (u16 *)LocalMacAddr;
 	while (Index--) {
 		*(TxFramePtr + (Index + SRC_MAC_ADDR_LOC )) =
-							*(TempPtr + Index);
+			*(TempPtr + Index);
 	}
 
 	/*
@@ -522,7 +537,7 @@ static void SendEchoReqFrame(XEmacLite *InstancePtr)
 	Index = IP_START_LOC;
 	while (Index--) {
 		*(TxFramePtr + (Index + ETHER_PROTO_TYPE_LOC )) =
-				Xil_Htons(*(IpHeaderInfo + Index));
+			Xil_Htons(*(IpHeaderInfo + Index));
 	}
 
 	/*
@@ -532,7 +547,7 @@ static void SendEchoReqFrame(XEmacLite *InstancePtr)
 	TempPtr = (u16 *)LocalIpAddress;
 	while (Index--) {
 		*(TxFramePtr + (Index + IP_REQ_SRC_IP_LOC )) =
-						*(TempPtr + Index);
+			*(TempPtr + Index);
 	}
 
 	/*
@@ -542,14 +557,14 @@ static void SendEchoReqFrame(XEmacLite *InstancePtr)
 	TempPtr = (u16 *)DestIpAddress;
 	while (Index--) {
 		*(TxFramePtr + (Index + IP_REQ_DEST_IP_LOC )) =
-						*(TempPtr + Index);
+			*(TempPtr + Index);
 	}
 
 	/*
 	 * Checksum is calculated for IP field and added in the frame.
 	 */
 	CheckSum = CheckSumCalculation((u16 *)TxFrame, IP_START_LOC,
-							IP_HEADER_LEN);
+				       IP_HEADER_LEN);
 	CheckSum = ~CheckSum;
 	*(TxFramePtr + IP_CHECKSUM_LOC) = Xil_Htons(CheckSum);
 
@@ -575,14 +590,14 @@ static void SendEchoReqFrame(XEmacLite *InstancePtr)
 	Index = ICMP_KNOWN_DATA_LEN;
 	while (Index--) {
 		*(TxFramePtr + (Index + ICMP_KNOWN_DATA_LOC)) =
-				Xil_Htons(*(IcmpData + Index));
+			Xil_Htons(*(IcmpData + Index));
 	}
 
 	/*
 	 * Checksum is calculated for Data Field and added in the frame.
 	 */
 	CheckSum = CheckSumCalculation((u16 *)TxFrame, ICMP_DATA_START_LOC,
-						ICMP_DATA_FIELD_LEN );
+				       ICMP_DATA_FIELD_LEN );
 	CheckSum = ~CheckSum;
 	*(TxFramePtr + ICMP_DATA_CHECKSUM_LOC) = Xil_Htons(CheckSum);
 
@@ -628,7 +643,7 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr)
 		 * Check ARP type.
 		 */
 		if (Xil_Ntohs(*(RxFramePtr + ETHER_PROTO_TYPE_LOC)) ==
-				XEL_ETHER_PROTO_TYPE_ARP ) {
+		    XEL_ETHER_PROTO_TYPE_ARP ) {
 
 			/*
 			 * Check ARP status.
@@ -641,8 +656,8 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr)
 				 */
 				TempPtr = (u16 *)DestIpAddress;
 				Match = CompareData(RxFramePtr,
-						TempPtr, ARP_REQ_SRC_IP_LOC,
-						0, IP_ADDR_LEN);
+						    TempPtr, ARP_REQ_SRC_IP_LOC,
+						    0, IP_ADDR_LEN);
 				if (Match == XST_SUCCESS) {
 
 					/*
@@ -654,8 +669,8 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr)
 					while (Index--) {
 						*(TempPtr + Index) =
 							*(RxFramePtr +
-							(SRC_MAC_ADDR_LOC +
-								Index));
+							  (SRC_MAC_ADDR_LOC +
+							   Index));
 					}
 
 					/*
@@ -670,23 +685,23 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr)
 		 * Check for IP type.
 		 */
 		else if (Xil_Ntohs(*(RxFramePtr + ETHER_PROTO_TYPE_LOC)) ==
-						XEL_ETHER_PROTO_TYPE_IP) {
+			 XEL_ETHER_PROTO_TYPE_IP) {
 
 			/*
 			 * Calculate checksum.
 			 */
 			CheckSum = CheckSumCalculation(RxFramePtr,
-							ICMP_DATA_START_LOC,
-							ICMP_DATA_FIELD_LEN);
+						       ICMP_DATA_START_LOC,
+						       ICMP_DATA_FIELD_LEN);
 
 			/*
 			 * Verify checksum, echo reply, identifier number and
 			 * sequence number of the received packet.
 			 */
 			if ((CheckSum == CORRECT_CHECKSUM_VALUE) &&
-			(Xil_Ntohs(*(RxFramePtr + ICMP_ECHO_FIELD_LOC)) == ECHO_REPLY) &&
-			(Xil_Ntohs(*(RxFramePtr + ICMP_IDEN_FIELD_LOC)) == IDEN_NUM) &&
-			(Xil_Ntohs(*(RxFramePtr + (ICMP_SEQ_NO_LOC))) == SeqNum)) {
+			    (Xil_Ntohs(*(RxFramePtr + ICMP_ECHO_FIELD_LOC)) == ECHO_REPLY) &&
+			    (Xil_Ntohs(*(RxFramePtr + ICMP_IDEN_FIELD_LOC)) == IDEN_NUM) &&
+			    (Xil_Ntohs(*(RxFramePtr + (ICMP_SEQ_NO_LOC))) == SeqNum)) {
 
 				/*
 				 * Verify data in the received packet with known
@@ -694,17 +709,17 @@ static int ProcessRecvFrame(XEmacLite *InstancePtr)
 				 */
 				TempPtr = IcmpData;
 				Match = CompareData(RxFramePtr,
-						TempPtr, ICMP_KNOWN_DATA_LOC,
-							0, ICMP_KNOWN_DATA_LEN);
+						    TempPtr, ICMP_KNOWN_DATA_LOC,
+						    0, ICMP_KNOWN_DATA_LEN);
 				if (Match == XST_FAILURE) {
 					DataWrong = 1;
 				}
 			}
 			if (DataWrong != 1) {
 				xil_printf("Packet No: %d ",
-				NUM_OF_PING_REQ_PKTS - NumOfPingReqPkts);
+					   NUM_OF_PING_REQ_PKTS - NumOfPingReqPkts);
 				xil_printf("Seq NO %d Echo Packet received\r\n",
-								SeqNum);
+					   SeqNum);
 				return XST_SUCCESS;
 			}
 		}
@@ -748,7 +763,7 @@ static u16 CheckSumCalculation(u16 *RxFramePtr, int StartLoc, int Length)
 	 * Add upper 16 bits to lower 16 bits.
 	 */
 	CheckSum = Sum;
-	Sum = Sum>>16;
+	Sum = Sum >> 16;
 	CheckSum = Sum + CheckSum;
 	return CheckSum;
 }
@@ -770,7 +785,7 @@ static u16 CheckSumCalculation(u16 *RxFramePtr, int StartLoc, int Length)
 *
 ******************************************************************************/
 static int CompareData(u16 *LhsPtr, u16 *RhsPtr, int LhsLoc, int RhsLoc,
-								int Count)
+		       int Count)
 {
 	int Result;
 	while (Count--) {

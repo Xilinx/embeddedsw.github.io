@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xcanfd.h
-* @addtogroup canfd_v2_6
+* @addtogroup canfd Overview
 * @{
 * @details
 *
@@ -256,7 +257,9 @@ exclusion
 * 2.4   sne  08/28/20 Modify Makefile to support parallel make execution.
 * 2.5	sne  11/23/20 Fixed MISRAC violations.
 * 2.7	sne  04/26/22 Corrected Return value of XCanFd_GetFreeBuffer().
-*
+* 2.8	ht   06/19/23 Added support for system device-tree flow.
+* 2.8	gm   06/22/23 Add XCanFd_stop to support release node.
+* 2.8	ht   07/18/23 Fixed GCC warnings.
 * </pre>
 *
 ******************************************************************************/
@@ -334,12 +337,21 @@ extern "C" {
  * This typedef contains configuration information for a device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	u32 Rx_Mode;			/**< 1-Mailbox 0-sequential */
 	u32 NumofRxMbBuf;	/**< Number of RxBuffers */
 	u32 NumofTxBuf;         /**< Number of TxBuffers */
+#ifndef SDT
 	u32 IsPl;		/**< IsPl, 1= AXI CANFD instance,0= CANFD instance */
+#else
+	u16 IntrId; /**< Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
+	UINTPTR IntrParent; /**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
 } XCanFd_Config;
 
 /************************** Variable Definitions *****************************/
@@ -416,7 +428,7 @@ typedef struct {
 	XCanFd_EventHandler EventHandler;
 	void *EventRef;	  /**< This will be passed to the EventHandler callback */
 
-}XCanFd;
+} XCanFd;
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -436,7 +448,7 @@ typedef struct {
 *****************************************************************************/
 #define XCanFd_IsTxDone(InstancePtr) \
 	((XCanFd_ReadReg(((InstancePtr)->CanFdConfig.BaseAddress), \
-			XCANFD_ISR_OFFSET) & XCANFD_IXR_TXOK_MASK) ? TRUE : FALSE)
+			 XCANFD_ISR_OFFSET) & XCANFD_IXR_TXOK_MASK) ? TRUE : FALSE)
 
 /****************************************************************************/
 /**
@@ -462,12 +474,12 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCanFd_CreateIdValue(StandardId, SubRemoteTransReq, IdExtension, \
-		ExtendedId, RemoteTransReq) \
-	((((StandardId) << (u32)XCANFD_IDR_ID1_SHIFT) & (u32)XCANFD_IDR_ID1_MASK) | \
-	(((SubRemoteTransReq) << (u32)XCANFD_IDR_SRR_SHIFT) & (u32)XCANFD_IDR_SRR_MASK) | \
-	(((IdExtension) << (u32)XCANFD_IDR_IDE_SHIFT) & (u32)XCANFD_IDR_IDE_MASK) | \
-	(((ExtendedId) << (u32)XCANFD_IDR_ID2_SHIFT) & (u32)XCANFD_IDR_ID2_MASK) | \
-	((RemoteTransReq) & (u32)XCANFD_IDR_RTR_MASK))
+			     ExtendedId, RemoteTransReq) \
+((((StandardId) << (u32)XCANFD_IDR_ID1_SHIFT) & (u32)XCANFD_IDR_ID1_MASK) | \
+ (((SubRemoteTransReq) << (u32)XCANFD_IDR_SRR_SHIFT) & (u32)XCANFD_IDR_SRR_MASK) | \
+ (((IdExtension) << (u32)XCANFD_IDR_IDE_SHIFT) & (u32)XCANFD_IDR_IDE_MASK) | \
+ (((ExtendedId) << (u32)XCANFD_IDR_ID2_SHIFT) & (u32)XCANFD_IDR_ID2_MASK) | \
+ ((RemoteTransReq) & (u32)XCANFD_IDR_RTR_MASK))
 
 /****************************************************************************/
 /**
@@ -487,7 +499,7 @@ typedef struct {
 *****************************************************************************/
 #define XCanFd_Create_CanFD_DlcValue(DataLengCode) \
 	((((DataLengCode) << XCANFD_DLCR_DLC_SHIFT) & XCANFD_DLCR_DLC_MASK) \
-			|(XCANFD_DLCR_EDL_MASK))
+	 |(XCANFD_DLCR_EDL_MASK))
 
 /****************************************************************************/
 /**
@@ -507,7 +519,7 @@ typedef struct {
 *****************************************************************************/
 #define XCanFd_Create_CanFD_Dlc_BrsValue(DataLengCode) \
 	((((DataLengCode) << (u32)XCANFD_DLCR_DLC_SHIFT) & (u32)XCANFD_DLCR_DLC_MASK) \
-			|(XCANFD_DLCR_EDL_MASK) |(XCANFD_DLCR_BRS_MASK))
+	 |(XCANFD_DLCR_EDL_MASK) |(XCANFD_DLCR_BRS_MASK))
 
 /****************************************************************************/
 /**
@@ -553,9 +565,9 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer)	\
-		(((XCanFd_ReadReg((InstancePtr)->CanFdConfig.BaseAddress, \
-				XCANFD_TRR_OFFSET) & ((u32)1 << (TxBuffer))) \
-				== (u32)1) ? FALSE : TRUE)
+	(((XCanFd_ReadReg((InstancePtr)->CanFdConfig.BaseAddress, \
+			  XCANFD_TRR_OFFSET) & ((u32)1 << (TxBuffer))) \
+	  == (u32)1) ? FALSE : TRUE)
 
 
 /****************************************************************************/
@@ -720,7 +732,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCANFD_RCS_OFFSET(NoCtrlStatus)	\
-		(XCANFD_RCS0_OFFSET+((UINTPTR)NoCtrlStatus*4U))
+	(XCANFD_RCS0_OFFSET+((UINTPTR)NoCtrlStatus*4U))
 
 /*****************************************************************************/
 /**
@@ -732,8 +744,8 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCANFD_AFMR_OFFSET(FilterIndex)	\
-		(XCANFD_AFMR_BASE_OFFSET+\
-		((UINTPTR)FilterIndex*8U))
+	(XCANFD_AFMR_BASE_OFFSET+\
+	 ((UINTPTR)FilterIndex*8U))
 
 /*****************************************************************************/
 /**
@@ -745,8 +757,8 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCANFD_AFIDR_OFFSET(FilterIndex)	\
-		(XCANFD_AFIDR_BASE_OFFSET+\
-		((UINTPTR)FilterIndex*8U))
+	(XCANFD_AFIDR_BASE_OFFSET+\
+	 ((UINTPTR)FilterIndex*8U))
 
 /*****************************************************************************/
 /**
@@ -785,7 +797,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCANFD_GET_RX_MODE(InstancePtr)\
-		((InstancePtr)->CanFdConfig.Rx_Mode)
+	((InstancePtr)->CanFdConfig.Rx_Mode)
 
 /*****************************************************************************/
 /**
@@ -888,7 +900,7 @@ typedef struct {
 ******************************************************************************/
 #define XCanFd_Get_Tranceiver_Delay_CompensationOffset(InstancePtr)	\
 	((XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,\
-	XCANFD_F_BRPR_OFFSET) & XCANFD_F_BRPR_TDCMASK) >> 8)
+			 XCANFD_F_BRPR_OFFSET) & XCANFD_F_BRPR_TDCMASK) >> 8)
 
 /*****************************************************************************/
 /**
@@ -988,9 +1000,9 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCanFd_Get_NofRxBuffers(InstancePtr)	\
-		((InstancePtr->CanFdConfig.NumofRxMbBuf == 48) ? (3) \
-				:((InstancePtr->CanFdConfig.NumofRxMbBuf == 32) ? \
-				(2) : (1)))
+	((InstancePtr->CanFdConfig.NumofRxMbBuf == 48) ? (3) \
+	 :((InstancePtr->CanFdConfig.NumofRxMbBuf == 32) ? \
+	   (2) : (1)))
 
 /****************************************************************************/
 /**
@@ -1006,7 +1018,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XCanFd_Get_RxBuffers(InstancePtr)	\
-		InstancePtr->CanFdConfig.NumofRxMbBuf;
+	InstancePtr->CanFdConfig.NumofRxMbBuf;
 
 /****************************************************************************/
 /**
@@ -1026,31 +1038,36 @@ typedef struct {
 
 /* Functions in xcan.c */
 int XCanFd_CfgInitialize(XCanFd *InstancePtr, XCanFd_Config *ConfigPtr,
-						UINTPTR EffectiveAddr);
+			 UINTPTR EffectiveAddr);
+int XCanFd_stop(XCanFd *InstancePtr);
 u8 XCanFd_GetMode(XCanFd *InstancePtr);
 void XCanFd_EnterMode(XCanFd *InstancePtr, u8 OperationMode);
 void XCanFd_GetBusErrorCounter(XCanFd *InstancePtr, u8 *RxErrorCount,
-							u8 *TxErrorCount);
+			       u8 *TxErrorCount);
 
-int XCanFd_Send(XCanFd *InstancePtr,u32 *FramePtr,u32 *TxBufferNumber);
+int XCanFd_Send(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber);
 void XCanFd_AcceptFilterEnable(XCanFd *InstancePtr, u32 FilterIndexMask);
 void XCanFd_AcceptFilterDisable(XCanFd *InstancePtr, u32 FilterIndexMask);
 u32 XCanFd_AcceptFilterGetEnabled(XCanFd *InstancePtr);
 int XCanFd_AcceptFilterSet(XCanFd *InstancePtr, u32 FilterIndex,
-						u32 MaskValue, u32 IdValue);
+			   u32 MaskValue, u32 IdValue);
 void XCanFd_AcceptFilterGet(XCanFd *InstancePtr, u32 FilterIndex,
-						u32 *MaskValue, u32 *IdValue);
+			    u32 *MaskValue, u32 *IdValue);
+#ifndef SDT
 XCanFd_Config *XCanFd_LookupConfig(u16 DeviceId);
+#else
+XCanFd_Config *XCanFd_LookupConfig(u32 BaseAddress);
+#endif
 XCanFd_Config *XCanFd_GetConfig(unsigned int InstanceIndex);
 int XCanFd_GetDlc2len(u32 Dlc, u32 Edl);
 u8 XCanFd_GetLen2Dlc(int len);
 u32 XCanFd_GetFreeBuffer(XCanFd *InstancePtr);
 int XCanFd_Send_Queue(XCanFd *InstancePtr);
-int XCanFd_Addto_Queue(XCanFd *InstancePtr, u32 *FramePtr,u32 *TxBufferNumber);
+int XCanFd_Addto_Queue(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber);
 u32 XCanFd_RxBuff_MailBox_Active(XCanFd *InstancePtr, u32 RxBuffer);
 u32 XCanFd_RxBuff_MailBox_DeActive(XCanFd *InstancePtr, u32 RxBuffer);
 u32 XCanFd_Set_MailBox_IdMask(XCanFd *InstancePtr, u32 RxBuffer,
-						u32 MaskValue, u32 IdValue);
+			      u32 MaskValue, u32 IdValue);
 u32 XCanFd_Recv_Sequential(XCanFd *InstancePtr, u32 *FramePtr);
 u32 XCanFd_Recv_Mailbox(XCanFd *InstancePtr, u32 *FramePtr);
 u32 XCanFd_Recv_TXEvents_Sequential(XCanFd *InstancePtr, u32 *FramePtr);
@@ -1068,14 +1085,14 @@ int XCanFd_SetBaudRatePrescaler(XCanFd *InstancePtr, u8 Prescaler);
 u8 XCanFd_GetBaudRatePrescaler(XCanFd *InstancePtr);
 u8 XCanFd_GetFBaudRatePrescaler(XCanFd *InstancePtr);
 int XCanFd_SetBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
-					u8 TimeSegment2, u16 TimeSegment1);
+			u8 TimeSegment2, u16 TimeSegment1);
 void XCanFd_GetBitTiming(XCanFd *InstancePtr, u8 *SyncJumpWidth,
-					u8 *TimeSegment2, u8 *TimeSegment1);
+			 u8 *TimeSegment2, u8 *TimeSegment1);
 void XCanFd_GetFBitTiming(XCanFd *InstancePtr, u8 *SyncJumpWidth,
-					u8 *TimeSegment2, u8 *TimeSegment1);
+			  u8 *TimeSegment2, u8 *TimeSegment1);
 int XCanFd_SetFBaudRatePrescaler(XCanFd *InstancePtr, u8 Prescaler);
 int XCanFd_SetFBitTiming(XCanFd *InstancePtr, u8 SyncJumpWidth,
-					u8 TimeSegment2, u8 TimeSegment1);
+			 u8 TimeSegment2, u8 TimeSegment1);
 void XCanFd_SetBitRateSwitch_DisableNominal(XCanFd *InstancePtr);
 void XCanFd_SetBitRateSwitch_EnableNominal(XCanFd *InstancePtr);
 u32 XCanFd_SetRxIntrWatermark(XCanFd *InstancePtr, s8 Threshold);
@@ -1092,15 +1109,15 @@ void XCanFd_InterruptDisable(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_InterruptClear(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_IntrHandler(void *InstancePtr);
 int XCanFd_SetHandler(XCanFd *InstancePtr, u32 HandlerType,
-				    void *CallBackFunc, void *CallBackRef);
+		      void *CallBackFunc, void *CallBackRef);
 void XCanFd_InterruptEnable_ReadyRqt(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_InterruptEnable_CancelRqt(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_InterruptDisable_ReadyRqt(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_InterruptDisable_CancelRqt(XCanFd *InstancePtr, u32 Mask);
 void XCanFd_InterruptEnable_RxBuffFull(XCanFd *InstancePtr, u32 Mask,
-						u32 RxBuffNumber);
+				       u32 RxBuffNumber);
 void XCanFd_InterruptDisable_RxBuffFull(XCanFd *InstancePtr, u32 Mask,
-						u32 RxBuffNumber);
+					u32 RxBuffNumber);
 
 
 #ifdef __cplusplus

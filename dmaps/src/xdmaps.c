@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xdmaps.c
-* @addtogroup dmaps_v2_8
+* @addtogroup dmaps Overview
 * @{
 *
 * This file contains the implementation of the interface functions for XDmaPs
@@ -46,6 +47,7 @@
 * 2.3 kpc     14/10/16   Fixed the compiler error when optimization O0 is used.
 * 2.5 hk      08/16/19   Add a memory barrier before DMASEV as per specification.
 * 2.6 hk      02/14/20   Correct boundary check for Channel.
+* 2.7 aj      12/07/23   Fixed changes to support system device tree flow
 *
 * </pre>
 *
@@ -78,8 +80,8 @@
 
 /************************** Function Prototypes *****************************/
 static int XDmaPs_Exec_DMAKILL(u32 BaseAddr,
-				unsigned int Channel,
-				unsigned int Thread);
+			       unsigned int Channel,
+			       unsigned int Thread);
 
 static void XDmaPs_BufPool_Free(XDmaPs_ProgBuf *Pool, void *Buf);
 
@@ -88,7 +90,7 @@ static int XDmaPs_Exec_DMAGO(u32 BaseAddr, unsigned int Channel, u32 DmaProg);
 static void XDmaPs_DoneISR_n(XDmaPs *InstPtr, unsigned Channel);
 static void *XDmaPs_BufPool_Allocate(XDmaPs_ProgBuf *Pool);
 static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
-				unsigned CacheLength);
+			       unsigned CacheLength);
 
 static void XDmaPs_Print_DmaProgBuf(char *Buf, int Length);
 
@@ -125,8 +127,8 @@ static void XDmaPs_Print_DmaProgBuf(char *Buf, int Length);
 *
 *****************************************************************************/
 int XDmaPs_CfgInitialize(XDmaPs *InstPtr,
-			  XDmaPs_Config *Config,
-			  u32 EffectiveAddr)
+			 XDmaPs_Config *Config,
+			 u32 EffectiveAddr)
 {
 	int Status = XST_SUCCESS;
 	unsigned int CacheLength = 0;
@@ -143,15 +145,26 @@ int XDmaPs_CfgInitialize(XDmaPs *InstPtr,
 	/*
 	 * Setup the driver instance using passed in parameters
 	 */
+#ifndef SDT
 	InstPtr->Config.DeviceId = Config->DeviceId;
+#endif
 	InstPtr->Config.BaseAddress = EffectiveAddr;
+
+#ifdef SDT
+	InstPtr->Config.IntrParent = Config->IntrParent;
+	/*  Added one fault Inerrupt and eight per-channel Interrupt  */
+	for (Channel = 0; Channel < (XDMAPS_CHANNELS_PER_DEV + 1); Channel++) {
+		InstPtr->Config.IntrId[Channel] = Config->IntrId[Channel];
+	}
+#endif
 
 	CfgReg = XDmaPs_ReadReg(EffectiveAddr, XDMAPS_CR1_OFFSET);
 	CacheLength = CfgReg & XDMAPS_CR1_I_CACHE_LEN_MASK;
-	if (CacheLength < 2 || CacheLength > 5)
+	if (CacheLength < 2 || CacheLength > 5) {
 		CacheLength = 0;
-	else
+	} else {
 		CacheLength = 1 << CacheLength;
+	}
 
 	InstPtr->CacheLength = CacheLength;
 
@@ -161,7 +174,11 @@ int XDmaPs_CfgInitialize(XDmaPs *InstPtr,
 	for (Channel = 0; Channel < XDMAPS_CHANNELS_PER_DEV; Channel++) {
 		ChanData = InstPtr->Chans + Channel;
 		ChanData->ChanId = Channel;
+#ifndef SDT
 		ChanData->DevId = Config->DeviceId;
+#else
+		ChanData->DevId = XDmaPs_GetDrvIndex(InstPtr, EffectiveAddr);
+#endif
 	}
 
 	InstPtr->IsReady = 1;
@@ -185,7 +202,7 @@ int XDmaPs_ResetManager(XDmaPs *InstPtr)
 {
 	int Status;
 	Status = XDmaPs_Exec_DMAKILL(InstPtr->Config.BaseAddress,
-				      0, 0);
+				     0, 0);
 
 	return Status;
 }
@@ -207,7 +224,7 @@ int XDmaPs_ResetChannel(XDmaPs *InstPtr, unsigned int Channel)
 {
 	int Status;
 	Status = XDmaPs_Exec_DMAKILL(InstPtr->Config.BaseAddress,
-				      Channel, 1);
+				     Channel, 1);
 
 	return Status;
 
@@ -247,8 +264,11 @@ void XDmaPs_FaultISR(XDmaPs *InstPtr)
 	Fsm = XDmaPs_ReadReg(BaseAddr, XDMAPS_FSM_OFFSET) & 0x01;
 	Fsc = XDmaPs_ReadReg(BaseAddr, XDMAPS_FSC_OFFSET) & 0xFF;
 
-
+#ifndef SDT
 	DevId = InstPtr->Config.DeviceId;
+#else
+	DevId = XDmaPs_GetDrvIndex(InstPtr, BaseAddr);
+#endif
 
 	if (Fsm) {
 		/*
@@ -275,9 +295,9 @@ void XDmaPs_FaultISR(XDmaPs *InstPtr)
 		if (Fsc & (0x01 << Chan)) {
 			FaultType =
 				XDmaPs_ReadReg(BaseAddr,
-						XDmaPs_FTCn_OFFSET(Chan));
+					       XDmaPs_FTCn_OFFSET(Chan));
 			Pc = XDmaPs_ReadReg(BaseAddr,
-					     XDmaPs_CPCn_OFFSET(Chan));
+					    XDmaPs_CPCn_OFFSET(Chan));
 
 			/* kill the channel thread */
 			/* Should we disable interrupt? */
@@ -302,7 +322,7 @@ void XDmaPs_FaultISR(XDmaPs *InstPtr)
 				DmaProgBuf = (void *)DmaCmd->GeneratedDmaProg;
 				if (DmaProgBuf)
 					XDmaPs_BufPool_Free(ChanData->ProgBufPool,
-							     DmaProgBuf);
+							    DmaProgBuf);
 				DmaCmd->GeneratedDmaProg = NULL;
 			}
 
@@ -332,16 +352,17 @@ void XDmaPs_FaultISR(XDmaPs *InstPtr)
 *
 ******************************************************************************/
 int XDmaPs_SetDoneHandler(XDmaPs *InstPtr,
-			   unsigned Channel,
-			   XDmaPsDoneHandler DoneHandler,
-			   void *CallbackRef)
+			  unsigned Channel,
+			  XDmaPsDoneHandler DoneHandler,
+			  void *CallbackRef)
 {
 	XDmaPs_ChannelData *ChanData;
 
 	Xil_AssertNonvoid(InstPtr != NULL);
 
-	if (Channel >= XDMAPS_CHANNELS_PER_DEV)
+	if (Channel >= XDMAPS_CHANNELS_PER_DEV) {
 		return XST_FAILURE;
+	}
 
 
 	ChanData = InstPtr->Chans + Channel;
@@ -367,8 +388,8 @@ int XDmaPs_SetDoneHandler(XDmaPs *InstPtr,
 *
 ******************************************************************************/
 int XDmaPs_SetFaultHandler(XDmaPs *InstPtr,
-			    XDmaPsFaultHandler FaultHandler,
-			    void *CallbackRef)
+			   XDmaPsFaultHandler FaultHandler,
+			   void *CallbackRef)
 {
 	Xil_AssertNonvoid(InstPtr != NULL);
 
@@ -437,7 +458,7 @@ static INLINE void XDmaPs_Memcpy4(char *Dst, char *Src)
 *
 *****************************************************************************/
 static INLINE int XDmaPs_Instr_DMAGO(char *DmaProg, unsigned int Cn,
-			       u32 Imm, unsigned int Ns)
+				     u32 Imm, unsigned int Ns)
 {
 	/*
 	 * DMAGO encoding:
@@ -504,7 +525,7 @@ static INLINE int XDmaPs_Instr_DMALD(char *DmaProg)
 *
 *****************************************************************************/
 static INLINE int XDmaPs_Instr_DMALP(char *DmaProg, unsigned Lc,
-			       unsigned LoopIterations)
+				     unsigned LoopIterations)
 {
 	/*
 	 * DMALP encoding
@@ -742,19 +763,19 @@ int XDmaPs_Instr_DMAWMB(char *DmaProg)
 static INLINE unsigned XDmaPs_ToEndianSwapSizeBits(unsigned int EndianSwapSize)
 {
 	switch (EndianSwapSize) {
-	case 0:
-	case 8:
-		return 0;
-	case 16:
-		return 1;
-	case 32:
-		return 2;
-	case 64:
-		return 3;
-	case 128:
-		return 4;
-	default:
-		return 0;
+		case 0:
+		case 8:
+			return 0;
+		case 16:
+			return 1;
+		case 32:
+			return 2;
+		case 64:
+			return 3;
+		case 128:
+			return 4;
+		default:
+			return 0;
 	}
 
 }
@@ -775,24 +796,24 @@ static INLINE unsigned XDmaPs_ToEndianSwapSizeBits(unsigned int EndianSwapSize)
 static INLINE unsigned XDmaPs_ToBurstSizeBits(unsigned BurstSize)
 {
 	switch (BurstSize) {
-	case 1:
-		return 0;
-	case 2:
-		return 1;
-	case 4:
-		return 2;
-	case 8:
-		return 3;
-	case 16:
-		return 4;
-	case 32:
-		return 5;
-	case 64:
-		return 6;
-	case 128:
-		return 7;
-	default:
-		return 0;
+		case 1:
+			return 0;
+		case 2:
+			return 1;
+		case 4:
+			return 2;
+		case 8:
+			return 3;
+		case 16:
+			return 4;
+		case 32:
+			return 5;
+		case 64:
+			return 6;
+		case 128:
+			return 7;
+		default:
+			return 0;
 	}
 }
 
@@ -835,7 +856,7 @@ u32 XDmaPs_ToCCRValue(XDmaPs_ChanCtrl *ChanCtrl)
 		XDmaPs_ToBurstSizeBits(ChanCtrl->DstBurstSize);
 	unsigned dst_burst_len = (ChanCtrl->DstBurstLen - 1) & 0x0F;
 	unsigned dst_cache_ctrl = (ChanCtrl->DstCacheCtrl & 0x03)
-		| ((ChanCtrl->DstCacheCtrl & 0x08) >> 1);
+				  | ((ChanCtrl->DstCacheCtrl & 0x08) >> 1);
 	unsigned dst_prot_ctrl = ChanCtrl->DstProtCtrl & 0x07;
 	unsigned dst_inc_bit = ChanCtrl->DstInc & 1;
 
@@ -843,21 +864,21 @@ u32 XDmaPs_ToCCRValue(XDmaPs_ChanCtrl *ChanCtrl)
 		XDmaPs_ToBurstSizeBits(ChanCtrl->SrcBurstSize);
 	unsigned src_burst_len = (ChanCtrl->SrcBurstLen - 1) & 0x0F;
 	unsigned src_cache_ctrl = (ChanCtrl->SrcCacheCtrl & 0x03)
-		| ((ChanCtrl->SrcCacheCtrl & 0x08) >> 1);
+				  | ((ChanCtrl->SrcCacheCtrl & 0x08) >> 1);
 	unsigned src_prot_ctrl = ChanCtrl->SrcProtCtrl & 0x07;
 	unsigned src_inc_bit = ChanCtrl->SrcInc & 1;
 
 	u32 ccr_value = (es << 28)
-		| (dst_cache_ctrl << 25)
-		| (dst_prot_ctrl << 22)
-		| (dst_burst_len << 18)
-		| (dst_burst_size << 15)
-		| (dst_inc_bit << 14)
-		| (src_cache_ctrl << 11)
-		| (src_prot_ctrl << 8)
-		| (src_burst_len << 4)
-		| (src_burst_size << 1)
-		| (src_inc_bit);
+			| (dst_cache_ctrl << 25)
+			| (dst_prot_ctrl << 22)
+			| (dst_burst_len << 18)
+			| (dst_burst_size << 15)
+			| (dst_inc_bit << 14)
+			| (src_cache_ctrl << 11)
+			| (src_prot_ctrl << 8)
+			| (src_burst_len << 4)
+			| (src_burst_size << 1)
+			| (src_inc_bit);
 
 	return ccr_value;
 }
@@ -883,9 +904,9 @@ u32 XDmaPs_ToCCRValue(XDmaPs_ChanCtrl *ChanCtrl)
 *
 *****************************************************************************/
 int XDmaPs_ConstructSingleLoop(char *DmaProgStart,
-				int CacheLength,
-				char *DmaProgLoopStart,
-				int LoopCount)
+			       int CacheLength,
+			       char *DmaProgLoopStart,
+			       int LoopCount)
 {
 	int CacheStartOffset;
 	int CacheEndOffset;
@@ -909,7 +930,7 @@ int XDmaPs_ConstructSingleLoop(char *DmaProgStart,
 		    != CacheEndOffset / CacheLength) {
 			/* insert the nops */
 			NumNops = CacheLength
-				- CacheStartOffset % CacheLength;
+				  - CacheStartOffset % CacheLength;
 			while (NumNops--) {
 				DmaProgBuf +=
 					XDmaPs_Instr_DMANOP(DmaProgBuf);
@@ -920,7 +941,7 @@ int XDmaPs_ConstructSingleLoop(char *DmaProgStart,
 	DmaProgBuf += XDmaPs_Instr_DMALD(DmaProgBuf);
 	DmaProgBuf += XDmaPs_Instr_DMAST(DmaProgBuf);
 	DmaProgBuf += XDmaPs_Instr_DMALPEND(DmaProgBuf,
-					     DmaProgBuf - 2, 0);
+					    DmaProgBuf - 2, 0);
 
 	return DmaProgBuf - DmaProgLoopStart;
 }
@@ -948,10 +969,10 @@ int XDmaPs_ConstructSingleLoop(char *DmaProgStart,
 *
 *****************************************************************************/
 int XDmaPs_ConstructNestedLoop(char *DmaProgStart,
-				int CacheLength,
-				char *DmaProgLoopStart,
-				unsigned int LoopCountOuter,
-				unsigned int LoopCountInner)
+			       int CacheLength,
+			       char *DmaProgLoopStart,
+			       unsigned int LoopCountOuter,
+			       unsigned int LoopCountInner)
 {
 	int CacheStartOffset;
 	int CacheEndOffset;
@@ -974,14 +995,14 @@ int XDmaPs_ConstructNestedLoop(char *DmaProgStart,
 			 */
 			DmaProgBuf +=
 				XDmaPs_ConstructSingleLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    LoopCountInner);
+							   CacheLength,
+							   DmaProgBuf,
+							   LoopCountInner);
 			/* outer loop end */
 			DmaProgBuf +=
 				XDmaPs_Instr_DMALPEND(DmaProgBuf,
-						       InnerLoopStart,
-						       1);
+						      InnerLoopStart,
+						      1);
 
 			/*
 			 * the nested loop is constructed for
@@ -1004,7 +1025,7 @@ int XDmaPs_ConstructNestedLoop(char *DmaProgStart,
 		    != CacheEndOffset / CacheLength) {
 			/* insert the nops */
 			NumNops = CacheLength
-				- CacheStartOffset % CacheLength;
+				  - CacheStartOffset % CacheLength;
 			while (NumNops--) {
 				DmaProgBuf +=
 					XDmaPs_Instr_DMANOP(DmaProgBuf);
@@ -1021,10 +1042,10 @@ int XDmaPs_ConstructNestedLoop(char *DmaProgStart,
 
 	/* inner DMALPEND */
 	DmaProgBuf += XDmaPs_Instr_DMALPEND(DmaProgBuf,
-					     DmaProgBuf - 2, 0);
+					    DmaProgBuf - 2, 0);
 	/* outer DMALPEND */
 	DmaProgBuf += XDmaPs_Instr_DMALPEND(DmaProgBuf,
-					     InnerLoopStart, 1);
+					    InnerLoopStart, 1);
 
 	/* return the number of bytes */
 	return DmaProgBuf - DmaProgLoopStart;
@@ -1066,7 +1087,7 @@ int XDmaPs_ConstructNestedLoop(char *DmaProgStart,
 *
 *****************************************************************************/
 static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
-				unsigned CacheLength)
+			       unsigned CacheLength)
 {
 	/*
 	 * unpack arguments
@@ -1118,18 +1139,20 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 
 	/* insert DMAMOV for SAR and DAR */
 	DmaProgBuf += XDmaPs_Instr_DMAMOV(DmaProgBuf,
-					   XDMAPS_MOV_SAR,
-					   SrcAddr);
+					  XDMAPS_MOV_SAR,
+					  SrcAddr);
 	DmaProgBuf += XDmaPs_Instr_DMAMOV(DmaProgBuf,
-					 XDMAPS_MOV_DAR,
-					 DstAddr);
+					  XDMAPS_MOV_DAR,
+					  DstAddr);
 
 
-	if (ChanCtrl->SrcInc)
+	if (ChanCtrl->SrcInc) {
 		SrcUnaligned = SrcAddr % ChanCtrl->SrcBurstSize;
+	}
 
-	if (ChanCtrl->DstInc)
+	if (ChanCtrl->DstInc) {
 		DstUnaligned = DstAddr % ChanCtrl->DstBurstSize;
+	}
 
 	if ((SrcUnaligned && DstInc) || (DstUnaligned && SrcInc)) {
 		ChanCtrl = &Mem2MemByteCC;
@@ -1151,12 +1174,12 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 		/* if head is unaligned, transfer head in bytes */
 		UnalignedCount = MemBurstSize - Unaligned;
 		CCRValue = XDMAPS_CCR_SINGLE_BYTE
-			| (SrcInc & 1)
-			| ((DstInc & 1) << 14);
+			   | (SrcInc & 1)
+			   | ((DstInc & 1) << 14);
 
 		DmaProgBuf += XDmaPs_Instr_DMAMOV(DmaProgBuf,
-						   XDMAPS_MOV_CCR,
-						   CCRValue);
+						  XDMAPS_MOV_CCR,
+						  CCRValue);
 
 		for (Index = 0; Index < UnalignedCount; Index++) {
 			DmaProgBuf += XDmaPs_Instr_DMALD(DmaProgBuf);
@@ -1169,8 +1192,8 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 	/* now the burst transfer part */
 	CCRValue = XDmaPs_ToCCRValue(ChanCtrl);
 	DmaProgBuf += XDmaPs_Instr_DMAMOV(DmaProgBuf,
-					   XDMAPS_MOV_CCR,
-					   CCRValue);
+					  XDMAPS_MOV_CCR,
+					  CCRValue);
 
 	BurstBytes = ChanCtrl->SrcBurstSize * ChanCtrl->SrcBurstLen;
 
@@ -1196,16 +1219,16 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 		if (LoopCount1 > 1)
 			DmaProgBuf +=
 				XDmaPs_ConstructNestedLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    LoopCount1,
-							    256);
+							   CacheLength,
+							   DmaProgBuf,
+							   LoopCount1,
+							   256);
 		else
 			DmaProgBuf +=
 				XDmaPs_ConstructSingleLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    256);
+							   CacheLength,
+							   DmaProgBuf,
+							   256);
 
 		/* there will be some that cannot be covered by
 		 * nested loops
@@ -1215,9 +1238,9 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 
 	if (LoopCount > 0) {
 		DmaProgBuf += XDmaPs_ConstructSingleLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    LoopCount);
+				CacheLength,
+				DmaProgBuf,
+				LoopCount);
 	}
 
 	if (TailBytes) {
@@ -1244,13 +1267,13 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 
 			DmaProgBuf +=
 				XDmaPs_Instr_DMAMOV(DmaProgBuf,
-						   XDMAPS_MOV_CCR,
-						   CCRValue);
+						    XDMAPS_MOV_CCR,
+						    CCRValue);
 			DmaProgBuf +=
 				XDmaPs_ConstructSingleLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    TailWords);
+							   CacheLength,
+							   DmaProgBuf,
+							   TailWords);
 
 		}
 
@@ -1264,19 +1287,19 @@ static int XDmaPs_BuildDmaProg(unsigned Channel, XDmaPs_Cmd *Cmd,
 			 * to perform a burst.
 			 */
 			CCRValue = XDMAPS_CCR_SINGLE_BYTE
-				| (SrcInc & 1)
-				| ((DstInc & 1) << 14);
+				   | (SrcInc & 1)
+				   | ((DstInc & 1) << 14);
 
 			DmaProgBuf +=
 				XDmaPs_Instr_DMAMOV(DmaProgBuf,
-						   XDMAPS_MOV_CCR,
-						   CCRValue);
+						    XDMAPS_MOV_CCR,
+						    CCRValue);
 
 			DmaProgBuf +=
 				XDmaPs_ConstructSingleLoop(DmaProgStart,
-							    CacheLength,
-							    DmaProgBuf,
-							    TailBytes);
+							   CacheLength,
+							   DmaProgBuf,
+							   TailBytes);
 
 		}
 	}
@@ -1322,8 +1345,9 @@ int XDmaPs_GenDmaProg(XDmaPs *InstPtr, unsigned int Channel, XDmaPs_Cmd *Cmd)
 	Xil_AssertNonvoid(Cmd != NULL);
 
 
-	if (Channel > XDMAPS_CHANNELS_PER_DEV)
+	if (Channel > XDMAPS_CHANNELS_PER_DEV) {
 		return XST_FAILURE;
+	}
 
 	ChanData = InstPtr->Chans + Channel;
 	ChanCtrl = &Cmd->ChanCtrl;
@@ -1352,7 +1376,7 @@ int XDmaPs_GenDmaProg(XDmaPs *InstPtr, unsigned int Channel, XDmaPs_Cmd *Cmd)
 
 	Cmd->GeneratedDmaProg = Buf;
 	ProgLen = XDmaPs_BuildDmaProg(Channel, Cmd,
-				       InstPtr->CacheLength);
+				      InstPtr->CacheLength);
 	Cmd->GeneratedDmaProgLength = ProgLen;
 
 
@@ -1396,8 +1420,9 @@ int XDmaPs_FreeDmaProg(XDmaPs *InstPtr, unsigned int Channel, XDmaPs_Cmd *Cmd)
 	Xil_AssertNonvoid(InstPtr != NULL);
 	Xil_AssertNonvoid(Cmd != NULL);
 
-	if (Channel > XDMAPS_CHANNELS_PER_DEV)
+	if (Channel > XDMAPS_CHANNELS_PER_DEV) {
 		return XST_FAILURE;
+	}
 
 	Buf = (void *)Cmd->GeneratedDmaProg;
 	ChanData = InstPtr->Chans + Channel;
@@ -1437,8 +1462,8 @@ int XDmaPs_FreeDmaProg(XDmaPs *InstPtr, unsigned int Channel, XDmaPs_Cmd *Cmd)
 *
 ****************************************************************************/
 int XDmaPs_Start(XDmaPs *InstPtr, unsigned int Channel,
-		  XDmaPs_Cmd *Cmd,
-		  int HoldDmaProg)
+		 XDmaPs_Cmd *Cmd,
+		 int HoldDmaProg)
 {
 	int Status;
 	u32 DmaProg = 0;
@@ -1450,32 +1475,35 @@ int XDmaPs_Start(XDmaPs *InstPtr, unsigned int Channel,
 
 	Cmd->DmaStatus = XST_FAILURE;
 
-	if (XDmaPs_IsActive(InstPtr, Channel))
+	if (XDmaPs_IsActive(InstPtr, Channel)) {
 		return XST_DEVICE_BUSY;
+	}
 
 	if (!Cmd->UserDmaProg && !Cmd->GeneratedDmaProg) {
 		Status = XDmaPs_GenDmaProg(InstPtr, Channel, Cmd);
-		if (Status)
+		if (Status) {
 			return XST_FAILURE;
+		}
 	}
 
 	InstPtr->Chans[Channel].HoldDmaProg = HoldDmaProg;
 
-	if (Cmd->UserDmaProg)
+	if (Cmd->UserDmaProg) {
 		DmaProg = (u32)Cmd->UserDmaProg;
-	else if (Cmd->GeneratedDmaProg)
+	} else if (Cmd->GeneratedDmaProg) {
 		DmaProg = (u32)Cmd->GeneratedDmaProg;
+	}
 
 	if (DmaProg) {
 		/* enable the interrupt */
 		Inten = XDmaPs_ReadReg(InstPtr->Config.BaseAddress,
-					XDMAPS_INTEN_OFFSET);
+				       XDMAPS_INTEN_OFFSET);
 		Inten |= 0x01 << Channel; /* set the correpsonding bit */
 		XDmaPs_WriteReg(InstPtr->Config.BaseAddress,
-				 XDMAPS_INTEN_OFFSET,
-				 Inten);
+				XDMAPS_INTEN_OFFSET,
+				Inten);
 		Inten = XDmaPs_ReadReg(InstPtr->Config.BaseAddress,
-				XDMAPS_INTEN_OFFSET);
+				       XDMAPS_INTEN_OFFSET);
 
 		InstPtr->Chans[Channel].DmaCmdToHw = Cmd;
 
@@ -1484,13 +1512,12 @@ int XDmaPs_Start(XDmaPs *InstPtr, unsigned int Channel,
 		}
 		if (Cmd->ChanCtrl.DstInc) {
 			Xil_DCacheInvalidateRange(Cmd->BD.DstAddr,
-					Cmd->BD.Length);
+						  Cmd->BD.Length);
 		}
 
 		Status = XDmaPs_Exec_DMAGO(InstPtr->Config.BaseAddress,
-					    Channel, DmaProg);
-	}
-	else {
+					   Channel, DmaProg);
+	} else {
 		InstPtr->Chans[Channel].DmaCmdToHw = NULL;
 		Status = XST_FAILURE;
 	}
@@ -1517,8 +1544,9 @@ int XDmaPs_IsActive(XDmaPs *InstPtr, unsigned int Channel)
 	Xil_AssertNonvoid(InstPtr != NULL);
 
 	/* Need to assert Channel is in range */
-	if (Channel >= XDMAPS_CHANNELS_PER_DEV)
+	if (Channel >= XDMAPS_CHANNELS_PER_DEV) {
 		return XST_FAILURE;
+	}
 
 	return InstPtr->Chans[Channel].DmaCmdToHw != NULL;
 }
@@ -1725,8 +1753,8 @@ void XDmaPs_DoneISR_7(XDmaPs *InstPtr)
 *
 *****************************************************************************/
 static int XDmaPs_Exec_DMAKILL(u32 BaseAddr,
-				unsigned int Channel,
-				unsigned int Thread)
+			       unsigned int Channel,
+			       unsigned int Thread)
 {
 	u32 DbgInst0;
 	int WaitCount;
@@ -1736,14 +1764,15 @@ static int XDmaPs_Exec_DMAKILL(u32 BaseAddr,
 	/* wait while debug status is busy */
 	WaitCount = 0;
 	while ((XDmaPs_ReadReg(BaseAddr, XDMAPS_DBGSTATUS_OFFSET)
-	       & XDMAPS_DBGSTATUS_BUSY)
-	       && (WaitCount < XDMAPS_MAX_WAIT))
+		& XDMAPS_DBGSTATUS_BUSY)
+	       && (WaitCount < XDMAPS_MAX_WAIT)) {
 		WaitCount++;
+	}
 
 	if (WaitCount >= XDMAPS_MAX_WAIT) {
 		/* wait time out */
 		xil_printf("PL330 device at %x debug status busy time out\n",
-		       BaseAddr);
+			   BaseAddr);
 
 		return -1;
 	}
@@ -1816,7 +1845,7 @@ static int XDmaPs_Exec_DMAGO(u32 BaseAddr, unsigned int Channel, u32 DmaProg)
 	/* wait while debug status is busy */
 	WaitCount = 0;
 	while ((XDmaPs_ReadReg(BaseAddr, XDMAPS_DBGSTATUS_OFFSET)
-	       & XDMAPS_DBGSTATUS_BUSY)
+		& XDMAPS_DBGSTATUS_BUSY)
 	       && (WaitCount < XDMAPS_MAX_WAIT)) {
 
 		WaitCount++;
@@ -1837,7 +1866,7 @@ static int XDmaPs_Exec_DMAGO(u32 BaseAddr, unsigned int Channel, u32 DmaProg)
 	/* wait while the DMA Manager is busy */
 	WaitCount = 0;
 	while ((XDmaPs_ReadReg(BaseAddr,
-				XDMAPS_DS_OFFSET) & XDMAPS_DS_DMA_STATUS)
+			       XDMAPS_DS_OFFSET) & XDMAPS_DS_DMA_STATUS)
 	       != XDMAPS_DS_DMA_STATUS_STOPPED
 	       && WaitCount <= XDMAPS_MAX_WAIT) {
 		WaitCount++;
@@ -1896,7 +1925,7 @@ static void XDmaPs_DoneISR_n(XDmaPs *InstPtr, unsigned Channel)
 			DmaProgBuf = (void *)DmaCmd->GeneratedDmaProg;
 			if (DmaProgBuf)
 				XDmaPs_BufPool_Free(ChanData->ProgBufPool,
-						     DmaProgBuf);
+						    DmaProgBuf);
 			DmaCmd->GeneratedDmaProg = NULL;
 		}
 
@@ -1925,8 +1954,9 @@ static void XDmaPs_DoneISR_n(XDmaPs *InstPtr, unsigned Channel)
 static void XDmaPs_Print_DmaProgBuf(char *Buf, int Length)
 {
 	int Index;
-	for (Index = 0; Index < Length; Index++)
+	for (Index = 0; Index < Length; Index++) {
 		xil_printf("[%x] %x\r\n", Index, Buf[Index]);
+	}
 
 }
 /****************************************************************************/
@@ -1940,20 +1970,20 @@ static void XDmaPs_Print_DmaProgBuf(char *Buf, int Length)
 * @note		None.
 *
 *****************************************************************************/
- void XDmaPs_Print_DmaProg(XDmaPs_Cmd *Cmd)
+void XDmaPs_Print_DmaProg(XDmaPs_Cmd *Cmd)
 {
 	if (Cmd->GeneratedDmaProg && Cmd->GeneratedDmaProgLength) {
 		xil_printf("Generated DMA program (%d):\r\n",
 			   Cmd->GeneratedDmaProgLength);
 		XDmaPs_Print_DmaProgBuf((char *)Cmd->GeneratedDmaProg,
-					 Cmd->GeneratedDmaProgLength);
+					Cmd->GeneratedDmaProgLength);
 	}
 
 	if (Cmd->UserDmaProg && Cmd->UserDmaProgLength) {
 		xil_printf("User defined DMA program (%d):\r\n",
 			   Cmd->UserDmaProgLength);
 		XDmaPs_Print_DmaProgBuf((char *)Cmd->UserDmaProg,
-					 Cmd->UserDmaProgLength);
+					Cmd->UserDmaProgLength);
 	}
 }
 

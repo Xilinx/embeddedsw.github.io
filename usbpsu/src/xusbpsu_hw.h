@@ -24,6 +24,7 @@
 * 1.8	pm    07/01/20 Add versal hibernation support
 *	pm    24/07/20 Fixed MISRA-C and Coverity warnings
 * 1.9	pm    15/03/21 Fixed doxygen warnings
+* 1.14	pm    21/06/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -33,12 +34,16 @@
 #ifndef XUSBPSU_HW_H	/* Prevent circular inclusions */
 #define XUSBPSU_HW_H	/**< by using protection macros  */
 
+#include "xstatus.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /***************************** Include Files ********************************/
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions ****************************/
 
@@ -398,7 +403,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XUsbPsu_ReadVendorReg(Offset) \
-       Xil_In32(VENDOR_BASE_ADDRESS + (u32)(Offset))
+	Xil_In32(VENDOR_BASE_ADDRESS + (u32)(Offset))
 
 /*****************************************************************************/
 /**
@@ -416,7 +421,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XUsbPsu_WriteVendorReg(Offset, Data) \
-       Xil_Out32(VENDOR_BASE_ADDRESS + (u32)(Offset), (u32)(Data))
+	Xil_Out32(VENDOR_BASE_ADDRESS + (u32)(Offset), (u32)(Data))
 
 #if defined (versal)
 /*****************************************************************************/
@@ -470,7 +475,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XUsbPsu_ReadLpdReg(Offset) \
-       Xil_In32(LPD_BASE_ADDRESS + (u32)(Offset))
+	Xil_In32(LPD_BASE_ADDRESS + (u32)(Offset))
 
 /*****************************************************************************/
 /**
@@ -488,7 +493,7 @@ extern "C" {
 *
 ******************************************************************************/
 #define XUsbPsu_WriteLpdReg(Offset, Data) \
-       Xil_Out32(LPD_BASE_ADDRESS + (u32)(Offset), (u32)(Data))
+	Xil_Out32(LPD_BASE_ADDRESS + (u32)(Offset), (u32)(Data))
 
 /************************** Function Prototypes ******************************/
 

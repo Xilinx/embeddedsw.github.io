@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved..
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite_l.h
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 *
 * This header file contains identifiers and basic driver functions and macros
@@ -317,8 +318,8 @@ extern "C" {
 *
 *****************************************************************************/
 #define XEmacLite_IsTxDone(BaseAddress)			\
-		 ((XEmacLite_ReadReg((BaseAddress), XEL_TSR_OFFSET) & 	 \
-			 XEL_TSR_XMIT_BUSY_MASK) != XEL_TSR_XMIT_BUSY_MASK)
+	((XEmacLite_ReadReg((BaseAddress), XEL_TSR_OFFSET) & 	 \
+	  XEL_TSR_XMIT_BUSY_MASK) != XEL_TSR_XMIT_BUSY_MASK)
 
 
 /****************************************************************************/
@@ -335,8 +336,8 @@ extern "C" {
 *
 *****************************************************************************/
 #define XEmacLite_IsRxEmpty(BaseAddress) \
-		  ((XEmacLite_ReadReg((BaseAddress), XEL_RSR_OFFSET) & \
-			XEL_RSR_RECV_DONE_MASK) != XEL_RSR_RECV_DONE_MASK)
+	((XEmacLite_ReadReg((BaseAddress), XEL_RSR_OFFSET) & \
+	  XEL_RSR_RECV_DONE_MASK) != XEL_RSR_RECV_DONE_MASK)
 
 /************************** Function Prototypes ******************************/
 

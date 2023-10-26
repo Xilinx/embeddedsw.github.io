@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,7 +11,13 @@
 #include "xil_assert.h"
 #include "xstatus.h"
 
-int TmrCtrSelfTestExample(u16 DeviceId, u8 TmrCtrNumber);
+#ifndef SDT
+int TmrCtrSelfTestExample(u16 DeviceId);
+#else
+int TmrCtrSelfTestExample(UINTPTR BaseAddr);
+int TmrCtrIntrExample(XTmrCtr *InstancePtr,
+		      UINTPTR BaseAddr);
+#endif
 
 #endif
 

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -33,10 +34,10 @@
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xstatus.h"
 #include "xtmrctr_l.h"
 #include "xil_printf.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -45,7 +46,11 @@
  * xparameters.h file. They are only defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define TMRCTR_BASEADDR		XPAR_TMRCTR_0_BASEADDR
+#else
+#define TMRCTR_BASEADDR		XPAR_XTMRCTR_0_BASEADDR
+#endif
 
 /*
  * This example only uses the 1st of the 2 timer counters contained in a
@@ -61,7 +66,7 @@
 
 /************************** Function Prototypes ******************************/
 
-int TmrCtrLowLevelExample(u32 TmrCtrBaseAddress, u8 TimerCounter);
+int TmrCtrLowLevelExample(UINTPTR TmrCtrBaseAddress, u8 TimerCounter);
 
 /************************** Variable Definitions *****************************/
 
@@ -120,7 +125,7 @@ int main(void)
 * return.
 *
 ****************************************************************************/
-int TmrCtrLowLevelExample(u32 TmrCtrBaseAddress, u8 TmrCtrNumber)
+int TmrCtrLowLevelExample(UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber)
 {
 	u32 Value1;
 	u32 Value2;
@@ -129,7 +134,7 @@ int TmrCtrLowLevelExample(u32 TmrCtrBaseAddress, u8 TmrCtrNumber)
 	/*
 	 * Clear the Control Status Register
 	 */
-	XTmrCtr_SetControlStatusReg(TmrCtrBaseAddress, TmrCtrNumber,0x0);
+	XTmrCtr_SetControlStatusReg(TmrCtrBaseAddress, TmrCtrNumber, 0x0);
 
 	/*
 	 * Set the value that is loaded into the timer counter and cause it to
@@ -142,9 +147,9 @@ int TmrCtrLowLevelExample(u32 TmrCtrBaseAddress, u8 TmrCtrNumber)
 	 * Clear the Load Timer bit in the Control Status Register
 	 */
 	ControlStatus = XTmrCtr_GetControlStatusReg(TmrCtrBaseAddress,
-						 TmrCtrNumber);
+			TmrCtrNumber);
 	XTmrCtr_SetControlStatusReg(TmrCtrBaseAddress, TmrCtrNumber,
-				 ControlStatus & (~XTC_CSR_LOAD_MASK));
+				    ControlStatus & (~XTC_CSR_LOAD_MASK));
 
 	/*
 	 * Get a snapshot of the timer counter value before it's started

@@ -25,7 +25,7 @@
  * 1.0   gm   10/12/18 Initial release.
  * </pre>
  *
- * @addtogroup xhdmiphy1_v2_4
+ * @addtogroup xhdmiphy1 Overview
  * @{
 *******************************************************************************/
 
@@ -163,6 +163,9 @@ extern "C" {
 #define XHDMIPHY1_CLKDET_TMR_TX_REG      0x0214
 #define XHDMIPHY1_CLKDET_TMR_RX_REG      0x0218
 #define XHDMIPHY1_CLKDET_FREQ_DRU_REG    0x021C
+#define XHDMIPHY1_CLKDET_FREQ_TX_FRL_REG 0x0230
+#define XHDMIPHY1_CLKDET_FREQ_RX_FRL_REG 0x0234
+
 /* @} */
 
 /** @name Data recovery unit registers (HDMI).

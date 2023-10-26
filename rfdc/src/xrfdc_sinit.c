@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -38,6 +39,8 @@
 * 11.0  cog    05/31/21 Upversion.
 * 11.1  cog    11/16/21 Upversion.
 *       cog    02/24/22 Fixed memory leak.
+* 12.1  cog    07/04/23 Add support for SDT.
+*       cog    07/14/23 Fix issues with SDT flow.
 *
 * </pre>
 *
@@ -46,7 +49,9 @@
 /***************************** Include Files *********************************/
 #include "xrfdc.h"
 #ifdef __BAREMETAL__
+#ifndef SDT
 #include "xparameters.h"
+#endif
 #else
 #include <dirent.h>
 #include <arpa/inet.h>
@@ -188,7 +193,15 @@ s32 XRFdc_GetDeviceNameByDeviceId(char *DevNamePtr, u16 DevId)
 * @note     None.
 *
 ******************************************************************************/
+#ifdef __BAREMETAL__
+#ifndef SDT
 XRFdc_Config *XRFdc_LookupConfig(u16 DeviceId)
+#else
+XRFdc_Config *XRFdc_LookupConfig(metal_phys_addr_t BaseAddr)
+#endif
+#else
+XRFdc_Config *XRFdc_LookupConfig(u16 DeviceId)
+#endif
 {
 	XRFdc_Config *CfgPtr = NULL;
 #ifndef __BAREMETAL__
@@ -235,13 +248,21 @@ RETURN_PATH1:
 RETURN_PATH2:
 #else
 	u32 Index;
-
+#ifndef SDT
 	for (Index = 0U; Index < (u32)XPAR_XRFDC_NUM_INSTANCES; Index++) {
 		if (XRFdc_ConfigTable[Index].DeviceId == DeviceId) {
 			CfgPtr = &XRFdc_ConfigTable[Index];
 			break;
 		}
 	}
+#else
+	for (Index = (u32)0x0; XRFdc_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XRFdc_ConfigTable[Index].BaseAddr == BaseAddr) || !BaseAddr) {
+			CfgPtr = &XRFdc_ConfigTable[Index];
+			break;
+		}
+	}
+#endif
 #endif
 	return (XRFdc_Config *)CfgPtr;
 }
@@ -278,7 +299,11 @@ u32 XRFdc_RegisterMetal(XRFdc *InstancePtr, u16 DeviceId, struct metal_device **
 		metal_log(METAL_LOG_ERROR, "\n Failed to register device");
 		goto RETURN_PATH;
 	}
+#ifndef SDT
 	Status = metal_device_open(XRFDC_BUS_NAME, XRFDC_DEV_NAME, DevicePtr);
+#else
+	Status = metal_device_open(XRFDC_BUS_NAME, (*DevicePtr)->name, DevicePtr);
+#endif
 	if (Status != XRFDC_SUCCESS) {
 		metal_log(METAL_LOG_ERROR, "\n Failed to open device usp_rf_data_converter");
 		goto RETURN_PATH;

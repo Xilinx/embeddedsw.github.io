@@ -24,7 +24,12 @@
 ******************************************************************************/
 #include "xparameters.h"
 
-#if defined (XPS_BOARD_VEK280_ES)
+#if defined (XPS_BOARD_VEK280_ES) || \
+	defined (XPS_BOARD_VEK280_ES_REVB)
+#define XPS_BOARD_VEK280
+#endif
+
+#if defined (XPS_BOARD_VEK280)
 #ifndef TI_TMDS1204_H
 #define TI_TMDS1204_H
 

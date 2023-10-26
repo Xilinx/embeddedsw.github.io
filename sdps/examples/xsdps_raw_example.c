@@ -25,6 +25,7 @@
 * ----- --- -------- ---------------------------------------------
 * 3.9 	mn  12/02/19 First release
 * 3.10	mn  09/17/20 Fix sector offset issue with Non-HCS SD cards
+* 4.2   ro     06/12/23 Added support for system device-tree flow.
 *
 *</pre>
 *
@@ -47,12 +48,12 @@ static int SdpsRawTest(void);
 
 #ifdef __ICCARM__
 #pragma data_alignment = 32
-u8 DestinationAddress[10*1024];
+u8 DestinationAddress[10 * 1024];
 #pragma data_alignment = 32
-u8 SourceAddress[10*1024];
+u8 SourceAddress[10 * 1024];
 #else
-u8 DestinationAddress[10*1024] __attribute__ ((aligned(32)));
-u8 SourceAddress[10*1024] __attribute__ ((aligned(32)));
+u8 DestinationAddress[10 * 1024] __attribute__ ((aligned(32)));
+u8 SourceAddress[10 * 1024] __attribute__ ((aligned(32)));
 #endif
 
 #define TEST 7
@@ -111,23 +112,27 @@ static int SdpsRawTest(void)
 	/*
 	 * Since block size is 512 bytes. File Size is 512*BlockCount.
 	 */
-	u32 FileSize = (512*NUM_BLOCKS); /* File Size is only up to 2MB */
+	u32 FileSize = (512 * NUM_BLOCKS); /* File Size is only up to 2MB */
 	u32 Sector = SECTOR_OFFSET;
 
-	for(BuffCnt = 0; BuffCnt < FileSize; BuffCnt++){
+	for (BuffCnt = 0; BuffCnt < FileSize; BuffCnt++) {
 		SourceAddress[BuffCnt] = TEST + BuffCnt;
 	}
 
 	/*
 	 * Initialize the host controller
 	 */
+#ifndef SDT
 	SdConfig = XSdPs_LookupConfig(XPAR_XSDPS_0_DEVICE_ID);
+#else
+	SdConfig = XSdPs_LookupConfig(XPAR_XSDPS_0_BASEADDR);
+#endif
 	if (NULL == SdConfig) {
 		return XST_FAILURE;
 	}
 
 	Status = XSdPs_CfgInitialize(&SdInstance, SdConfig,
-					SdConfig->BaseAddress);
+				     SdConfig->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -140,7 +145,9 @@ static int SdpsRawTest(void)
 	/*
 	 * Write data to SD/eMMC.
 	 */
-	if (!(SdInstance.HCS)) Sector *= XSDPS_BLK_SIZE_512_MASK;
+	if (!(SdInstance.HCS)) {
+		Sector *= XSDPS_BLK_SIZE_512_MASK;
+	}
 	Status = XSdPs_WritePolled(&SdInstance, Sector, NUM_BLOCKS,
 				   SourceAddress);
 	if (Status != XST_SUCCESS) {
@@ -152,15 +159,15 @@ static int SdpsRawTest(void)
 	 */
 	Status  = XSdPs_ReadPolled(&SdInstance, Sector, NUM_BLOCKS,
 				   DestinationAddress);
-	if (Status!=XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	/*
 	 * Data verification
 	 */
-	for(BuffCnt = 0; BuffCnt < FileSize; BuffCnt++){
-		if(SourceAddress[BuffCnt] != DestinationAddress[BuffCnt]){
+	for (BuffCnt = 0; BuffCnt < FileSize; BuffCnt++) {
+		if (SourceAddress[BuffCnt] != DestinationAddress[BuffCnt]) {
 			return XST_FAILURE;
 		}
 	}

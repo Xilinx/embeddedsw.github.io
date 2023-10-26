@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -34,6 +35,7 @@
 * 6.5   ms    01/23/17 Modified xil_printf statement in main function to
 *                      ensure that "Successfully ran" and "Failed" strings are
 *                      available in all examples. This is a fix for CR-965028.
+* 6.10  ht    06/23/23 Added support for system device-tree flow.
 * </pre>
 *
 *****************************************************************************/
@@ -52,7 +54,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define AXIPMON_DEVICE_ID 	XPAR_AXIPMON_0_DEVICE_ID
+#endif
 
 
 /**************************** Type Definitions ******************************/
@@ -62,8 +66,13 @@
 
 /************************** Function Prototypes *****************************/
 
+#ifndef SDT
 int AxiPmonPolledExample(u16 AxiPmonDeviceId, u32 *Metrics, u32 *ClkCntHigh,
-							     u32 *ClkCntLow);
+			 u32 *ClkCntLow);
+#else
+int AxiPmonPolledExample(UINTPTR BaseAddress, u32 *Metrics, u32 *ClkCntHigh,
+			 u32 *ClkCntLow);
+#endif
 
 /************************** Variable Definitions ****************************/
 
@@ -95,8 +104,13 @@ int main(void)
 	 * Run the AxiPmonitor polled example, specify the Device ID that is
 	 * generated in xparameters.h .
 	 */
+#ifndef SDT
 	Status = AxiPmonPolledExample(AXIPMON_DEVICE_ID, &Metrics, &ClkCntHigh,
-								   &ClkCntLow);
+				      &ClkCntLow);
+#else
+	Status = AxiPmonPolledExample(XPAR_XAXIPMON_0_BASEADDR, &Metrics, &ClkCntHigh,
+				      &ClkCntLow);
+#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("AXI Performance Monitor Polled example failed\r\n");
@@ -140,8 +154,13 @@ int main(void)
 * @note   	None
 *
 ****************************************************************************/
+#ifndef SDT
 int AxiPmonPolledExample(u16 AxiPmonDeviceId, u32 *Metrics, u32 *ClkCntHigh,
-							     u32 *ClkCntLow)
+			 u32 *ClkCntLow)
+#else
+int AxiPmonPolledExample(UINTPTR BaseAddress, u32 *Metrics, u32 *ClkCntHigh,
+			 u32 *ClkCntLow)
+#endif
 {
 	int Status;
 	XAxiPmon_Config *ConfigPtr;
@@ -153,13 +172,17 @@ int AxiPmonPolledExample(u16 AxiPmonDeviceId, u32 *Metrics, u32 *ClkCntHigh,
 	/*
 	 * Initialize the AxiPmon driver.
 	 */
+#ifndef SDT
 	ConfigPtr = XAxiPmon_LookupConfig(AxiPmonDeviceId);
+#else
+	ConfigPtr = XAxiPmon_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 
 	XAxiPmon_CfgInitialize(AxiPmonInstPtr, ConfigPtr,
-				ConfigPtr->BaseAddress);
+			       ConfigPtr->BaseAddress);
 
 	/*
 	 * Self Test the System Monitor/ADC device
@@ -176,13 +199,13 @@ int AxiPmonPolledExample(u16 AxiPmonDeviceId, u32 *Metrics, u32 *ClkCntHigh,
 	 */
 
 	XAxiPmon_SetMetrics(AxiPmonInstPtr, SlotId, XAPM_METRIC_SET_0,
-								XAPM_METRIC_COUNTER_0);
+			    XAPM_METRIC_COUNTER_0);
 
 	/*
 	 * Set Incrementer Ranges
 	 */
 	XAxiPmon_SetIncrementerRange(AxiPmonInstPtr, XAPM_INCREMENTER_0,
-							Range2, Range1);
+				     Range2, Range1);
 	/*
 	 * Enable Metric Counters.
 	 */
@@ -211,7 +234,7 @@ int AxiPmonPolledExample(u16 AxiPmonDeviceId, u32 *Metrics, u32 *ClkCntHigh,
 
 	/* Get Metric Counter 0  */
 	*Metrics = XAxiPmon_GetMetricCounter(AxiPmonInstPtr,
-						XAPM_METRIC_COUNTER_0);
+					     XAPM_METRIC_COUNTER_0);
 
 	/* Get Global Clock Cycles Count in ClkCntHigh,ClkCntLow */
 	XAxiPmon_GetGlobalClkCounter(AxiPmonInstPtr, ClkCntHigh, ClkCntLow);

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -94,6 +95,10 @@
  *	sdd 03/10/21 Fixed misrac warnings.
  *		     Fixed doxygen warnings.
  * 2.11 sdd 11/17/21 Updated tcl to check for microblaze processors
+ * 2.14 adk 04/14/23 Added support for system device-tree flow.
+ * 2.14 adk 05/22/23 Added IPI Mask's for referring to processor IPI Targets
+ * 		     in system device-tree flow.
+ * 2.14 sd 07/27/23  Update the target count.
  * </pre>
  *
  *****************************************************************************/
@@ -124,8 +129,33 @@ extern "C" {
 #define ENABLE_IPI_CRC_VAL	(0x0U) /**< Enable CRC */
 
 #if ENABLE_IPI_CRC_VAL
-#define ENABLE_IPI_CRC
+#define ENABLE_IPI_CRC  /**< Enable CalculateCRC API*/
 #endif
+
+/*
+ * Target List for referring to processor IPI Targets
+ * FIXME: This is a workaround for system device-tree flow, the proper solution
+ * would be generating the defines using lopper.
+ */
+#ifdef	SDT
+#ifdef	versal
+#define XPAR_XIPIPS_TARGET_PSV_PMC_0_CH0_MASK		0x00000002U
+#define XPAR_XIPIPS_TARGET_PSV_PMC_0_CH1_MASK		0x00000100U
+#define XPAR_XIPIPS_TARGET_PSV_PSM_0_CH0_MASK		0x00000001U
+#else
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXA53_0_CH0_MASK	0x00000001U
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXA53_1_CH0_MASK	0x00000001U
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXA53_2_CH0_MASK	0x00000001U
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXA53_3_CH0_MASK	0x00000001U
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXR5_0_CH0_MASK	0x00000100U
+#define XPAR_XIPIPS_TARGET_PSU_CORTEXR5_1_CH0_MASK	0x00000200U
+#define XPAR_XIPIPS_TARGET_PSU_PMU_0_CH0_MASK		0x00010000U
+#define XPAR_XIPIPS_TARGET_PSU_PMU_1_CH0_MASK		0x00020000U
+#define XPAR_XIPIPS_TARGET_PSU_PMU_2_CH0_MASK		0x00040000U
+#define XPAR_XIPIPS_TARGET_PSU_PMU_3_CH0_MASK		0x00080000U
+#endif
+#endif
+
 /**************************** Type Definitions *******************************/
 /**
  * Data structure used to refer IPI Targets
@@ -139,11 +169,19 @@ typedef struct {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId; /**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress; /**< Base address of the device */
 	u32 BitMask; /**< BitMask to be used to identify this CPU */
 	u32 BufferIndex; /**< Index of the IPI Message Buffer */
 	u32 IntId; /**< Interrupt ID on GIC **/
+#ifdef SDT
+	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+				 * Parent base address */
+#endif
 	u32 TargetCount; /**< Number of available IPI Targets */
 	XIpiPsu_Target TargetList[XIPIPSU_MAX_TARGETS] ; /**< List of IPI Targets */
 } XIpiPsu_Config;
@@ -175,7 +213,7 @@ typedef struct {
 *****************************************************************************/
 
 #define XIpiPsu_ReadReg(BaseAddress, RegOffset) \
-		Xil_In32((BaseAddress) + (RegOffset))
+	Xil_In32((BaseAddress) + (RegOffset))
 
 /****************************************************************************/
 /**
@@ -193,7 +231,7 @@ typedef struct {
 *****************************************************************************/
 
 #define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data) \
-		Xil_Out32(((BaseAddress) + (RegOffset)), (Data))
+	Xil_Out32(((BaseAddress) + (RegOffset)), (Data))
 
 /****************************************************************************/
 /**
@@ -212,8 +250,8 @@ typedef struct {
 *****************************************************************************/
 #define XIpiPsu_InterruptEnable(InstancePtr, Mask) \
 	XIpiPsu_WriteReg((InstancePtr)->Config.BaseAddress, \
-		XIPIPSU_IER_OFFSET, \
-		((Mask) & XIPIPSU_ALL_MASK));
+			 XIPIPSU_IER_OFFSET, \
+			 ((Mask) & XIPIPSU_ALL_MASK));
 
 /****************************************************************************/
 /**
@@ -232,8 +270,8 @@ typedef struct {
 *****************************************************************************/
 #define XIpiPsu_InterruptDisable(InstancePtr, Mask)  \
 	XIpiPsu_WriteReg((InstancePtr)->Config.BaseAddress, \
-		XIPIPSU_IDR_OFFSET, \
-		((Mask) & XIPIPSU_ALL_MASK));
+			 XIPIPSU_IDR_OFFSET, \
+			 ((Mask) & XIPIPSU_ALL_MASK));
 /****************************************************************************/
 /**
 *
@@ -248,7 +286,7 @@ typedef struct {
 *****************************************************************************/
 #define XIpiPsu_GetInterruptStatus(InstancePtr)  \
 	XIpiPsu_ReadReg((InstancePtr)->Config.BaseAddress, \
-		XIPIPSU_ISR_OFFSET)
+			XIPIPSU_ISR_OFFSET)
 /****************************************************************************/
 /**
 *
@@ -269,8 +307,8 @@ typedef struct {
 
 #define XIpiPsu_ClearInterruptStatus(InstancePtr, Mask)  \
 	XIpiPsu_WriteReg((InstancePtr)->Config.BaseAddress, \
-		XIPIPSU_ISR_OFFSET, \
-		((Mask) & XIPIPSU_ALL_MASK));
+			 XIPIPSU_ISR_OFFSET, \
+			 ((Mask) & XIPIPSU_ALL_MASK));
 /****************************************************************************/
 /**
 *
@@ -286,38 +324,45 @@ typedef struct {
 *****************************************************************************/
 #define XIpiPsu_GetObsStatus(InstancePtr)  \
 	XIpiPsu_ReadReg((InstancePtr)->Config.BaseAddress, \
-		XIPIPSU_OBS_OFFSET)
+			XIPIPSU_OBS_OFFSET)
 /****************************************************************************/
 /************************** Variable Definitions *****************************/
 /**
  * The IPIPSU configuration table, sized by the number of instances
  * defined in xparameters.h.
  */
+#ifndef SDT
 extern XIpiPsu_Config XIpiPsu_ConfigTable[XPAR_XIPIPSU_NUM_INSTANCES];
+#else
+extern XIpiPsu_Config XIpiPsu_ConfigTable[];
+#endif
 
 /************************** Function Prototypes *****************************/
 
 /* Static lookup function implemented in xipipsu_sinit.c */
-
+#ifndef SDT
 XIpiPsu_Config *XIpiPsu_LookupConfig(u32 DeviceId);
+#else
+XIpiPsu_Config *XIpiPsu_LookupConfig(u32 BaseAddress);
+#endif
 
 /* Interface Functions implemented in xipipsu.c */
 
-XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config * CfgPtr,
-		UINTPTR EffectiveAddress);
+XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config *CfgPtr,
+			      UINTPTR EffectiveAddress);
 
 void XIpiPsu_Reset(XIpiPsu *InstancePtr);
 
 XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask);
 
 XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
-		u32 TimeOutCount);
+			   u32 TimeOutCount);
 
 XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
-		u32 MsgLength, u8 BufferType);
+			    u32 MsgLength, u8 BufferType);
 
-XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask,const u32 *MsgPtr,
-		u32 MsgLength, u8 BufferType);
+XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask, const u32 *MsgPtr,
+			     u32 MsgLength, u8 BufferType);
 
 void XIpiPsu_SetConfigTable(u32 DeviceId, XIpiPsu_Config *ConfigTblPtr);
 

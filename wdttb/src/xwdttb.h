@@ -183,6 +183,7 @@
 *		      Generic WDT example
 * 5.5	sne  05/07/22 Added XWdtTb_SetGenericWdtWindowTimeOut API to configure
 *		      generic watchdog window.
+* 5.7	sb   07/12/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -222,13 +223,23 @@ typedef enum {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID of the device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;	/**< Base address of the device */
 	u32 EnableWinWdt;	/**< Flag for Window WDT enable */
+#ifndef SDT
 	u32 MaxCountWidth;	/**< Maximum width of first timer */
 	u32 SstCountWidth;	/**< Maximum width of Second Sequence Timer */
 	u32 IsPl;		/**< IsPl, 1= AXI Timebase ,0= WWDT  */
+#endif
 	u32 Clock;		/**< Watchdog Clock Frequency */
+#ifdef SDT
+	u16 IntrId[4];          /**< Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
+	UINTPTR IntrParent;     /**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
 } XWdtTb_Config;
 
 /**
@@ -242,7 +253,7 @@ typedef struct {
 	u32 IsReady;		/**< Device is initialized and ready */
 	u32 IsStarted;		/**< Device watchdog timer is running */
 	u32 EnableFailCounter;	/**< Fail counter, 0 = Disable, 1 = Enable */
-       u32 EnableWinMode;      /**<Enable Window WDT Method,0= DIsable,1=Enable*/
+	u32 EnableWinMode;      /**<Enable Window WDT Method,0= DIsable,1=Enable*/
 } XWdtTb;
 
 /************************** Variable Definitions *****************************/
@@ -294,7 +305,7 @@ static inline u32 XWdtTb_GetTbValue(const XWdtTb *InstancePtr)
 *
 ******************************************************************************/
 static inline void XWdtTb_SetRegSpaceAccessMode(const XWdtTb *InstancePtr,
-						u32 AccessMode)
+		u32 AccessMode)
 {
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -303,7 +314,7 @@ static inline void XWdtTb_SetRegSpaceAccessMode(const XWdtTb *InstancePtr,
 
 	/* Write access mode */
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_MWR_OFFSET,
-		AccessMode);
+			AccessMode);
 }
 
 /*****************************************************************************/
@@ -358,7 +369,7 @@ static inline u32 XWdtTb_GetLastEvent(const XWdtTb *InstancePtr)
 
 	/* Read enable status register and return last bad event(s) */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET) &
-		XWT_ESR_LBE_MASK) >> XWT_ESR_LBE_SHIFT);
+		 XWT_ESR_LBE_MASK) >> XWT_ESR_LBE_SHIFT);
 }
 
 /*****************************************************************************/
@@ -389,7 +400,7 @@ static inline u32 XWdtTb_GetFailCounter(const XWdtTb *InstancePtr)
 
 	/* Read enable status register and return fail counter value */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET) &
-		XWT_ESR_FCV_MASK) >> XWT_ESR_FCV_SHIFT);
+		 XWT_ESR_FCV_MASK) >> XWT_ESR_FCV_SHIFT);
 }
 
 /*****************************************************************************/
@@ -417,7 +428,7 @@ static inline u32 XWdtTb_IsResetPending(const XWdtTb *InstancePtr)
 
 	/* Read enable status register and return reset pending bit */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET) &
-		XWT_ESR_WRP_MASK) >> XWT_ESR_WRP_SHIFT);
+		 XWT_ESR_WRP_MASK) >> XWT_ESR_WRP_SHIFT);
 }
 
 /*****************************************************************************/
@@ -447,7 +458,7 @@ static inline u32 XWdtTb_GetIntrStatus(const XWdtTb *InstancePtr)
 
 	/* Read enable status register and return interrupt status */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET) &
-		XWT_ESR_WINT_MASK) >> XWT_ESR_WINT_SHIFT);
+		 XWT_ESR_WINT_MASK) >> XWT_ESR_WINT_SHIFT);
 }
 
 /*****************************************************************************/
@@ -475,7 +486,7 @@ static inline u32 XWdtTb_IsWrongCfg(const XWdtTb *InstancePtr)
 
 	/* Read enable status register and return wrong configuration value */
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET) &
-		XWT_ESR_WCFG_MASK) >> XWT_ESR_WCFG_SHIFT);
+		 XWT_ESR_WCFG_MASK) >> XWT_ESR_WCFG_SHIFT);
 }
 
 /*****************************************************************************/
@@ -501,12 +512,12 @@ static inline u32 XWdtTb_IsWrongCfg(const XWdtTb *InstancePtr)
 
 static inline void XWdtTb_SetSSTWindow(const XWdtTb *InstancePtr, u32 SST_window_config)
 {
-        /* Verify arguments. */
-        Xil_AssertVoid(InstancePtr != NULL);
-        Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
+	/* Verify arguments. */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->EnableWinMode == (u32)TRUE);
 
-        /*  Write SST window count value */
-        XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_SSTWR_OFFSET,SST_window_config);
+	/*  Write SST window count value */
+	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_SSTWR_OFFSET, SST_window_config);
 }
 
 /*****************************************************************************/
@@ -562,7 +573,7 @@ static inline void XWdtTb_StartQASequence(XWdtTb *InstancePtr, u32 Value)
 * This function sets the first feedback value for the TFR .
 *
 * @param     InstancePtr pointer to the XWdtTb instance to be worked on.
-* @param     First feedback to be programmed.
+* @param     Feedback to be programmed.
 * @return    None.
 *
 * @note
@@ -574,8 +585,8 @@ static inline void XWdtTb_SetFeedbackVal(XWdtTb *InstancePtr, u32 Feedback)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET,
-				(XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET)
-				& ((u32)~(XWT_TFR_FDBK_MASK))) | Feedback);
+			(XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET)
+			 & ((u32)~(XWT_TFR_FDBK_MASK))) | Feedback);
 }
 
 /*****************************************************************************/
@@ -594,7 +605,7 @@ static inline u32 XWdtTb_GetFeedbackVal(XWdtTb *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET)
-			& XWT_TFR_FDBK_MASK) >> XWT_TFR_FDBK_SHIFT);
+		 & XWT_TFR_FDBK_MASK) >> XWT_TFR_FDBK_SHIFT);
 
 }
 
@@ -614,7 +625,7 @@ static inline u32 XWdtTb_GetTokenVal(XWdtTb *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET)
-				& XWT_TOKEN_VAL_MASK) >> XWT_ESR_TOKENVAL_SHIFT);
+		 & XWT_TOKEN_VAL_MASK) >> XWT_ESR_TOKENVAL_SHIFT);
 }
 
 /*****************************************************************************/
@@ -633,13 +644,13 @@ static inline u32 XWdtTb_GetTokenVal(XWdtTb *InstancePtr)
 *
 ******************************************************************************/
 static inline void XWdtTb_SetSeedValue(const XWdtTb *InstancePtr,
-																u32 SeedValue)
+				       u32 SeedValue)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET,
 			(XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_TFR_OFFSET)
-			& ((u32)~(XWT_TFR_SEED_MASK))) | SeedValue);
+			 & ((u32)~(XWT_TFR_SEED_MASK))) | SeedValue);
 }
 
 /*****************************************************************************/
@@ -658,7 +669,7 @@ static inline u32 XWdtTb_InSecondWindow(XWdtTb *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	if (XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET)
-			& XWT_ESR_WSW_MASK) {
+	    & XWT_ESR_WSW_MASK) {
 		return TRUE;
 	} else {
 		return FALSE;
@@ -674,7 +685,7 @@ static inline u32 XWdtTb_InSecondWindow(XWdtTb *InstancePtr)
 *
 * @param     InstancePtr is a pointer to the XWdtTb instance to be
 *            worked on.
-* @param     Answer Value to be programmed.
+* @param     Ans Value to be programmed.
 *
 * @return    None
 *
@@ -703,7 +714,7 @@ static inline u32 XWdtTb_GetAnsByteCnt(const XWdtTb *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	return ((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_ESR_OFFSET)
-					& XWT_ESR_ACNT_MASK) >> XWT_ESR_ACNT_SHIFT);
+		 & XWT_ESR_ACNT_MASK) >> XWT_ESR_ACNT_SHIFT);
 }
 
 /*****************************************************************************/
@@ -721,8 +732,8 @@ static inline void XWdtTb_EnableQAMode(XWdtTb *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET)
-				& ~(XWT_FCR_WM_MASK))) | XWT_ENABLE_QA_MODE);
+			((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET)
+			  & ~(XWT_FCR_WM_MASK))) | XWT_ENABLE_QA_MODE);
 }
 
 /*****************************************************************************/
@@ -739,8 +750,8 @@ static inline void XWdtTb_DisableQAMode(XWdtTb *InstancePtr)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 	XWdtTb_WriteReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET,
-		((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET)
-					& ((u32)~(XWT_ENABLE_QA_MODE)))));
+			((XWdtTb_ReadReg(InstancePtr->Config.BaseAddr, XWT_FCR_OFFSET)
+			  & ((u32)~(XWT_ENABLE_QA_MODE)))));
 }
 
 /************************** Function Prototypes ******************************/
@@ -748,8 +759,8 @@ static inline void XWdtTb_DisableQAMode(XWdtTb *InstancePtr)
 /*
  * Required functions in xwdttb.c
  */
- s32 XWdtTb_CfgInitialize(XWdtTb *InstancePtr, const XWdtTb_Config *CfgPtr,
-				UINTPTR EffectiveAddr);
+s32 XWdtTb_CfgInitialize(XWdtTb *InstancePtr, const XWdtTb_Config *CfgPtr,
+			 UINTPTR EffectiveAddr);
 
 s32 XWdtTb_Initialize(XWdtTb *InstancePtr, u16 DeviceId);
 
@@ -762,7 +773,11 @@ u32 XWdtTb_IsGenericWdtFWExpired(const XWdtTb *InstancePtr);
 
 void XWdtTb_RestartWdt(const XWdtTb *InstancePtr);
 
+#ifndef SDT
 XWdtTb_Config *XWdtTb_LookupConfig(u16 DeviceId);
+#else
+XWdtTb_Config *XWdtTb_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /* Window WDT functions implemented in xwdttb.c */
 void XWdtTb_AlwaysEnable(const XWdtTb *InstancePtr);
@@ -783,7 +798,7 @@ void XWdtTb_DisableFailCounter(XWdtTb *InstancePtr);
 void XWdtTb_EnableExtraProtection(const XWdtTb *InstancePtr);
 void XWdtTb_DisableExtraProtection(const XWdtTb *InstancePtr);
 void XWdtTb_SetWindowCount(const XWdtTb *InstancePtr, u32 FirstWinCount,
-				u32 SecondWinCount);
+			   u32 SecondWinCount);
 void XWdtTb_SetGenericWdtWindow(const XWdtTb *InstancePtr, u32 GWOR_config);
 void XWdtTb_SetGenericWdtWindowTimeOut(const XWdtTb *InstancePtr, u32 MilliSeconds);
 u32 XWdtTb_ProgramWDTWidth(const XWdtTb *InstancePtr, u32 width);

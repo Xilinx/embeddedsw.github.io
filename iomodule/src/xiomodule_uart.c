@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -27,6 +28,8 @@
 *                      CR#1088640.
 * 2.13	sk   10/04/21 Update functions return type to fix misra-c violation.
 * 2.14  dp   08/08/22 Fix doxygen warnings.
+* 2.15  ml   02/27/23 Converted signed macros into unsigned macros to
+*                     fix misra-c violations.
 * </pre>
 *
 *****************************************************************************/
@@ -47,7 +50,7 @@
  * baud rate that will be generated using the specified clock and the
  * desired baud rate.
  */
-#define XUN_MAX_BAUD_ERROR_RATE		3	 /* max % error allowed */
+#define XUN_MAX_BAUD_ERROR_RATE		3U	 /* max % error allowed */
 /**
  *@endcond
  */
@@ -123,7 +126,7 @@ s32 XIOModule_CfgInitialize(XIOModule *InstancePtr, XIOModule_Config *Config,
 	/*
 	 * Modify the IER to disable the UART interrupts
 	 */
-	NewIER = InstancePtr->CurrentIER & 0xFFFFFFF8;
+	NewIER = InstancePtr->CurrentIER & 0xFFFFFFF8U;
 	XIomodule_Out32(InstancePtr->BaseAddress + XIN_IER_OFFSET, NewIER);
 	InstancePtr->CurrentIER = NewIER;
 
@@ -190,10 +193,12 @@ s32 XIOModule_SetBaudRate(XIOModule *InstancePtr, u32 BaudRate)
 	 * is positive due to rounding above
 	 */
 	TargetRate = Divisor * Baud16;
-	if (InputClockHz < TargetRate)
+	if (InputClockHz < TargetRate){
 		Error = TargetRate - InputClockHz;
-	else
+	}
+	else{
 		Error = InputClockHz - TargetRate;
+	}
 
 	/*
 	 * Error has total error now compute the percentage multiplied by 100 to
@@ -210,8 +215,8 @@ s32 XIOModule_SetBaudRate(XIOModule *InstancePtr, u32 BaudRate)
 	 */
 	XIOModule_WriteReg(InstancePtr->BaseAddress,
 			   XUL_BAUDRATE_OFFSET,
-			   Divisor - 1);
-	InstancePtr->CurrentUBRR = Divisor - 1;
+			   Divisor - 1U);
+	InstancePtr->CurrentUBRR = Divisor - 1U;
 
 	/*
 	 * Save the baud rate in the instance so that the get baud rate function

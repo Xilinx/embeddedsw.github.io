@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xprd.h
-* @addtogroup prd_v2_1
+* @addtogroup prd Overview
 * @{
 * @details
 *
@@ -73,7 +74,7 @@
 *       ms     04/05/2017    Modified comment lines notation in functions
 *                            of prd examples to avoid unnecessary description
 *                            which was displayed while generating doxygen.
-*
+* 2.2   Nava   06/22/2023    Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -104,7 +105,11 @@ typedef enum {
 
 /* This typedef contains configuration information for a device */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID of the device */
+#else
+	char *Name;
+#endif
 	u32 BaseAddress;	/**< Register Base Address */
 } XPrd_Config;
 
@@ -122,11 +127,15 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Functions in xprd_sinit.c */
+#ifndef SDT
 XPrd_Config *XPrd_LookupConfig(u16 DeviceId);
+#else
+XPrd_Config *XPrd_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /* Functions in xprd.c */
 s32 XPrd_CfgInitialize(XPrd *InstancePtr, XPrd_Config *ConfigPtr,
-				u32 EffectiveAddress);
+		       u32 EffectiveAddress);
 void XPrd_SetDecouplerState(XPrd *InstancePtr, XPrd_State DecouplerValue);
 XPrd_State XPrd_GetDecouplerState(XPrd *InstancePtr);
 

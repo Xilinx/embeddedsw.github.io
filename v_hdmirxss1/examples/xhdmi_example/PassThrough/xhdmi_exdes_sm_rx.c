@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -202,7 +203,7 @@ void Hdmiphy1HdmiRxReadyCallback(void *CallbackRef)
 	xdbg_xv_rx_print("%s,%d : XHdmiphy1_ClkDetGetRefClkFreqHz: %d\r\n",
 			__func__, __LINE__, Hdmiphy1Ptr->HdmiRxRefClkHz);
 #if defined (XPS_BOARD_VCK190) || \
-    defined (XPS_BOARD_VEK280_ES)
+    defined (XPS_BOARD_VEK280)
 	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
 		XV_HdmiRxSs1_SetStream(HdmiRxSs1Ptr,
 				       Hdmiphy1Ptr->HdmiRxRefClkHz,
@@ -419,7 +420,7 @@ u64 XV_Rx_GetLineRate(XV_Rx *InstancePtr)
 				     XHDMIPHY1_DIR_RX,
 				     XHDMIPHY1_CHANNEL_ID_CH1);
 #if defined (XPS_BOARD_VCK190) || \
-    defined (XPS_BOARD_VEK280_ES)
+    defined (XPS_BOARD_VEK280)
 
 	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
 		LineRate = InstancePtr->VidPhy->Quads[0].Plls[
@@ -2241,7 +2242,7 @@ static void XV_Rx_HdmiRx_EnterStatePhyReset(XV_Rx *InstancePtr)
 
 	xdbg_xv_rx_print("%s: Hdmi Rx : PhyReset ...\r\n", __func__);
 
-#if (defined (XPS_BOARD_VCK190) || defined (XPS_BOARD_VEK280_ES))
+#if (defined (XPS_BOARD_VCK190) || defined (XPS_BOARD_VEK280))
 	XHdmiphy1_PllType RxPllType;
 	XHdmiphy1_ChannelId ChId;
 
@@ -2261,11 +2262,15 @@ static void XV_Rx_HdmiRx_EnterStatePhyReset(XV_Rx *InstancePtr)
 						FALSE);
 	}
 #else
-	XHdmiphy1_ResetGtTxRx (InstancePtr->VidPhy,
-					0,
-					XHDMIPHY1_CHANNEL_ID_CHA,
-					XHDMIPHY1_DIR_RX,
-					FALSE);
+	if((InstancePtr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl != TRUE) ) {
+		XHdmiphy1_ClkDetFreqReset(InstancePtr->VidPhy, 0, XHDMIPHY1_DIR_RX);
+	} else {
+		XHdmiphy1_ResetGtTxRx (InstancePtr->VidPhy,
+				0,
+				XHDMIPHY1_CHANNEL_ID_CHA,
+				XHDMIPHY1_DIR_RX,
+				FALSE);
+	}
 #endif
 
 }
@@ -2353,6 +2358,13 @@ static void XV_Rx_HdmiRx_EnterStateFrlConfig(XV_Rx *InstancePtr)
 	}
 
 #endif
+
+#ifdef XPS_BOARD_ZCU106
+
+	XHdmiphy1_SetRxLpm(&Hdmiphy1, 0,
+			XHDMIPHY1_CHANNEL_ID_CHA, XHDMIPHY1_DIR_RX, 0);
+#endif
+
 	XHdmiphy1_Hdmi21Config(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX,
 			       LineRate, NChannels);
 
@@ -2469,7 +2481,7 @@ static void XV_Rx_HdmiRx_EnterStateTmdsConfig(XV_Rx *InstancePtr)
 
 	InstancePtr->RxClkSrcConfig(InstancePtr->RxClkSrcConfigCallbackRef);
 
-#ifdef XPS_BOARD_VCU118
+#if defined(XPS_BOARD_VCU118) || defined(XPS_BOARD_ZCU106)
 	//Set GT in LPM Mode for TMDS
 	XHdmiphy1_SetRxLpm(&Hdmiphy1, 0,
 	XHDMIPHY1_CHANNEL_ID_CHA, XHDMIPHY1_DIR_RX, 1);

@@ -33,6 +33,7 @@
 *                     functions instead of XWdtTb_Initialize for
 *                     initialization.
 * 4.5   nsk 08/07/19  Add macro to support testapp generation for polled mode
+* 5.7   sb  07/12/23  Added support for system device-tree flow.
 *</pre>
 ******************************************************************************/
 
@@ -48,7 +49,9 @@
  * xparameters.h file. They are only defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define WDTTB_DEVICE_ID		XPAR_WDTTB_0_DEVICE_ID
+#endif
 
 
 /**************************** Type Definitions *******************************/
@@ -59,7 +62,11 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int WdtTbExample(u16 DeviceId);
+#else
+int WdtTbExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -86,7 +93,11 @@ int main(void)
 	 * Call the example , specify the device ID that is generated in
 	 * xparameters.h.
 	 */
+#ifndef SDT
 	Status = WdtTbExample(WDTTB_DEVICE_ID);
+#else
+	Status = WdtTbExample(XPAR_XWDTTB_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("WDTTB example failed\n\r");
 		return XST_FAILURE;
@@ -123,7 +134,11 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 int WdtTbExample(u16 DeviceId)
+#else
+int WdtTbExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	int Count = 0;
@@ -133,7 +148,11 @@ int WdtTbExample(u16 DeviceId)
 	 * Initialize the WDTTB driver so that it's ready to use look up
 	 * configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XWdtTb_LookupConfig(DeviceId);
+#else
+	Config = XWdtTb_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -143,7 +162,7 @@ int WdtTbExample(u16 DeviceId)
 	 * it is ready to use.
 	 */
 	Status = XWdtTb_CfgInitialize(&WatchdogTimebase, Config,
-			Config->BaseAddr);
+				      Config->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -189,7 +208,7 @@ int WdtTbExample(u16 DeviceId)
 		 * If this is set means then the test has failed
 		 */
 		if (XWdtTb_ReadReg(WatchdogTimebase.Config.BaseAddr,
-				XWT_TWCSR0_OFFSET) & XWT_CSR0_WRS_MASK) {
+				   XWT_TWCSR0_OFFSET) & XWT_CSR0_WRS_MASK) {
 
 			/*
 			 * Stop the watchdog timer
@@ -202,7 +221,7 @@ int WdtTbExample(u16 DeviceId)
 		 * Check whether the WatchDog timer expires two times.
 		 * If the timer expires two times then the test is passed.
 		 */
-		if(Count == 2) {
+		if (Count == 2) {
 			break;
 		}
 	}

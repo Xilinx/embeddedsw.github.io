@@ -1,6 +1,6 @@
 
 /******************************************************************************
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -18,6 +18,7 @@
  * Ver   Who Date     Changes
  * ----- --- -------- -----------------------------------------------
  * 1.00  gm  06/30/22 First release
+ * 3.18  gm  07/14/23 Added SDT support.
  *
  * </pre>
  *
@@ -35,7 +36,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define IIC_DEVICE_ID		XPAR_XIICPS_0_DEVICE_ID
+#else
+#define XIICPS_BASEADDRESS	XPAR_XIICPS_0_BASEADDR
+#endif
 
 /*
  * The slave address to send to and receive from.
@@ -54,7 +59,9 @@
 
 /************************** Function Prototypes *******************************/
 
+#ifndef SDT
 int IicPsMasterPolledExample(u16 DeviceId);
+#endif
 int XIicPsSmbusPolledMasterWriteBlockData(XIicPs *InstancePtr, u8 Command, u8 ByteCount, u8 *SendBufferPtr);
 int XIicPsSmbusPolledMasterReadBlockData(XIicPs *InstancePtr, u8 Command, u8 ByteCount, u8 *RecvBufferPtr);
 /************************** Variable Definitions ******************************/
@@ -69,7 +76,7 @@ u8 SendBuffer[TEST_BUFFER_SIZE];    /**< Buffer for Transmitting Data */
 u8 RecvBuffer[TEST_BUFFER_SIZE];    /**< Buffer for Receiving Data */
 
 u8 Cmd = 0x11;								/* Send Command */
-u8 RecvByteCount=0;
+u8 RecvByteCount = 0;
 
 /******************************************************************************/
 /**
@@ -93,7 +100,11 @@ int main(void)
 	 * Run the Iic polled example in master mode, specify the Device
 	 * ID that is specified in xparameters.h.
 	 */
+#ifndef SDT
 	Status = IicPsMasterPolledExample(IIC_DEVICE_ID);
+#else
+	Status = IicPsMasterPolledExample(XIICPS_BASEADDRESS);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("SMBus Master Polled Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -105,7 +116,7 @@ int main(void)
 
 	xil_printf("SMBus Master : Byte count = 0x%x \r\n", RecvByteCount);
 
-	for(Index=0; Index<TEST_BUFFER_SIZE; Index++){
+	for (Index = 0; Index < TEST_BUFFER_SIZE; Index++) {
 		xil_printf("SMBus Master : Data: RecvBuffer[%d] = 0x%x \r\n", Index, RecvBuffer[Index]);
 	}
 
@@ -130,7 +141,11 @@ int main(void)
 * @note		None.
 *
 *******************************************************************************/
+#ifndef SDT
 int IicPsMasterPolledExample(u16 DeviceId)
+#else
+int IicPsMasterPolledExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XIicPs_Config *Config;
@@ -141,7 +156,11 @@ int IicPsMasterPolledExample(u16 DeviceId)
 	 * Look up the configuration in the config table,
 	 * then initialize it.
 	 */
+#ifndef SDT
 	Config = XIicPs_LookupConfig(DeviceId);
+#else
+	Config = XIicPs_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -213,7 +232,7 @@ int XIicPsSmbusPolledMasterWriteBlockData(XIicPs *InstancePtr, u8 Command, u8 By
 	int Status;
 	u32 Index;
 	u32 BufferIndex;
-	static u8 SmbusSendBuffer[TEST_BUFFER_SIZE+2];
+	static u8 SmbusSendBuffer[TEST_BUFFER_SIZE + 2];
 
 	while (XIicPs_BusIsBusy(&Iic)) {
 		/* NOP */
@@ -226,7 +245,7 @@ int XIicPsSmbusPolledMasterWriteBlockData(XIicPs *InstancePtr, u8 Command, u8 By
 	SmbusSendBuffer[0] = Command;
 	SmbusSendBuffer[1] = ByteCount;
 
-	for (Index = 2, BufferIndex=0; Index < (TEST_BUFFER_SIZE+2); Index++, BufferIndex++){
+	for (Index = 2, BufferIndex = 0; Index < (TEST_BUFFER_SIZE + 2); Index++, BufferIndex++) {
 		SmbusSendBuffer[Index] = SendBufferPtr[BufferIndex];
 	}
 
@@ -234,7 +253,7 @@ int XIicPsSmbusPolledMasterWriteBlockData(XIicPs *InstancePtr, u8 Command, u8 By
 	 * Send the buffer using the IIC and ignore the number of bytes sent
 	 * as the return value since we are using it in interrupt mode.
 	 */
-	Status = XIicPs_MasterSendPolled(&Iic, SmbusSendBuffer, ByteCount+2, IIC_SLAVE_ADDR);
+	Status = XIicPs_MasterSendPolled(&Iic, SmbusSendBuffer, ByteCount + 2, IIC_SLAVE_ADDR);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -268,7 +287,7 @@ int XIicPsSmbusPolledMasterReadBlockData(XIicPs *InstancePtr, u8 Command, u8 Byt
 	int Status;
 	u32 Index;
 	u32 BufferIndex;
-	static u8 SmbusRecvBuffer[TEST_BUFFER_SIZE+1];
+	static u8 SmbusRecvBuffer[TEST_BUFFER_SIZE + 1];
 
 	/*
 	 * Command Part
@@ -296,14 +315,14 @@ int XIicPsSmbusPolledMasterReadBlockData(XIicPs *InstancePtr, u8 Command, u8 Byt
 
 	RecvByteCount = 0;
 
-	for(Index=0;Index<TEST_BUFFER_SIZE;Index++){
-		SmbusRecvBuffer[Index]=0;
-		RecvBufferPtr[Index]=0;
+	for (Index = 0; Index < TEST_BUFFER_SIZE; Index++) {
+		SmbusRecvBuffer[Index] = 0;
+		RecvBufferPtr[Index] = 0;
 	}
-	SmbusRecvBuffer[Index]=0;
+	SmbusRecvBuffer[Index] = 0;
 
 	Status = XIicPs_MasterRecvPolled(&Iic, SmbusRecvBuffer,
-									 ByteCount+1, IIC_SLAVE_ADDR);
+					 ByteCount + 1, IIC_SLAVE_ADDR);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -315,7 +334,7 @@ int XIicPsSmbusPolledMasterReadBlockData(XIicPs *InstancePtr, u8 Command, u8 Byt
 
 	RecvByteCount = SmbusRecvBuffer[0];
 
-	for(BufferIndex=0, Index = 1; Index < (TEST_BUFFER_SIZE+1); BufferIndex++, Index++) {
+	for (BufferIndex = 0, Index = 1; Index < (TEST_BUFFER_SIZE + 1); BufferIndex++, Index++) {
 		RecvBufferPtr[BufferIndex] = SmbusRecvBuffer[Index];
 	}
 

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -29,6 +30,7 @@
 * 1.00a mta  03/09/06 Minor updates due to changes in the low level driver for
 *			 supporting repeated start functionality.
 * 2.00a sdm  09/22/09 Minor modifications as per coding guidelines.
+* 3.10  gm   07/09/23 Added SDT support
 *
 * </pre>
 *
@@ -46,8 +48,8 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-#define IIC_BASE_ADDRESS	XPAR_IIC_0_BASEADDR
 
+#define IIC_BASE_ADDRESS	XPAR_AXI_IIC_0_BASEADDR
 
 /*
  * The following constant defines the address of the IIC
@@ -67,8 +69,8 @@
 /************************** Function Prototypes ******************************/
 
 int LowLevelTempSensorExample(u32 IicBaseAddress,
-				u8 TempSensorAddress,
-				u8 *TemperaturePtr);
+			      u8 TempSensorAddress,
+			      u8 *TemperaturePtr);
 
 /************************** Variable Definitions *****************************/
 
@@ -96,8 +98,8 @@ int main(void)
 	 * xparameters.h
 	 */
 	LowLevelTempSensorExample(IIC_BASE_ADDRESS,
-					TEMP_SENSOR_ONCHIP_ADDRESS,
-					&TemperaturePtr);
+				  TEMP_SENSOR_ONCHIP_ADDRESS,
+				  &TemperaturePtr);
 	return 0;
 }
 
@@ -119,13 +121,13 @@ int main(void)
 *
 ****************************************************************************/
 int LowLevelTempSensorExample(u32 IicBaseAddress,
-				u8  TempSensorAddress,
-				u8 *TemperaturePtr)
+			      u8  TempSensorAddress,
+			      u8 *TemperaturePtr)
 {
 	int ByteCount;
 
 	ByteCount = XIic_Recv(IicBaseAddress, TempSensorAddress,
-				TemperaturePtr, 1, XIIC_STOP);
+			      TemperaturePtr, 1, XIIC_STOP);
 
 
 

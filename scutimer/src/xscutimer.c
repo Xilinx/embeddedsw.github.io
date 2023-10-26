@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscutimer.c
-* @addtogroup scutimer_v2_4
+* @addtogroup scutimer Overview
 * @{
 *
 * Contains the implementation of interface functions of the SCU Timer driver.
@@ -20,6 +21,7 @@
 * ----- --- -------- ---------------------------------------------
 * 1.00a nm  03/10/10 First release
 * 2.1 	sk  02/26/15 Modified the code for MISRA-C:2012 compliance.
+* 2.5   dp   07/11/23 Add Support for system device tree flow
 * </pre>
 *
 ******************************************************************************/
@@ -58,7 +60,7 @@
 *
 ******************************************************************************/
 s32 XScuTimer_CfgInitialize(XScuTimer *InstancePtr,
-			 XScuTimer_Config *ConfigPtr, u32 EffectiveAddress)
+			    XScuTimer_Config *ConfigPtr, u32 EffectiveAddress)
 {
 	s32 Status;
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -74,7 +76,9 @@ s32 XScuTimer_CfgInitialize(XScuTimer *InstancePtr,
 		/*
 		 * Copy configuration into the instance structure.
 		 */
+#ifndef SDT
 		InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
+#endif
 
 		/*
 		 * Save the base address pointer such that the registers of the block
@@ -93,9 +97,8 @@ s32 XScuTimer_CfgInitialize(XScuTimer *InstancePtr,
 		InstancePtr->Config.IntrParent = ConfigPtr->IntrParent;
 #endif
 
-		Status =(s32)XST_SUCCESS;
-	}
-	else {
+		Status = (s32)XST_SUCCESS;
+	} else {
 		Status = (s32)XST_DEVICE_IS_STARTED;
 	}
 	return Status;
@@ -124,7 +127,7 @@ void XScuTimer_Start(XScuTimer *InstancePtr)
 	 * Read the contents of the Control register.
 	 */
 	Register = XScuTimer_ReadReg(InstancePtr->Config.BaseAddr,
-				  XSCUTIMER_CONTROL_OFFSET);
+				     XSCUTIMER_CONTROL_OFFSET);
 
 	/*
 	 * Set the 'timer enable' bit in the register.
@@ -135,7 +138,7 @@ void XScuTimer_Start(XScuTimer *InstancePtr)
 	 * Update the Control register with the new value.
 	 */
 	XScuTimer_WriteReg(InstancePtr->Config.BaseAddr,
-			XSCUTIMER_CONTROL_OFFSET, Register);
+			   XSCUTIMER_CONTROL_OFFSET, Register);
 
 	/*
 	 * Indicate that the device is started.
@@ -166,7 +169,7 @@ void XScuTimer_Stop(XScuTimer *InstancePtr)
 	 * Read the contents of the Control register.
 	 */
 	Register = XScuTimer_ReadReg(InstancePtr->Config.BaseAddr,
-				  XSCUTIMER_CONTROL_OFFSET);
+				     XSCUTIMER_CONTROL_OFFSET);
 
 	/*
 	 * Clear the 'timer enable' bit in the register.
@@ -177,7 +180,7 @@ void XScuTimer_Stop(XScuTimer *InstancePtr)
 	 * Update the Control register with the new value.
 	 */
 	XScuTimer_WriteReg(InstancePtr->Config.BaseAddr,
-			XSCUTIMER_CONTROL_OFFSET, Register);
+			   XSCUTIMER_CONTROL_OFFSET, Register);
 
 	/*
 	 * Indicate that the device is stopped.
@@ -211,7 +214,7 @@ void XScuTimer_SetPrescaler(XScuTimer *InstancePtr, u8 PrescalerValue)
 	 * Read the Timer control register.
 	 */
 	ControlReg = XScuTimer_ReadReg(InstancePtr->Config.BaseAddr,
-					XSCUTIMER_CONTROL_OFFSET);
+				       XSCUTIMER_CONTROL_OFFSET);
 
 	/*
 	 * Clear all of the prescaler control bits in the register.
@@ -227,7 +230,7 @@ void XScuTimer_SetPrescaler(XScuTimer *InstancePtr, u8 PrescalerValue)
 	 * Write the register with the new values.
 	 */
 	XScuTimer_WriteReg(InstancePtr->Config.BaseAddr,
-			  XSCUTIMER_CONTROL_OFFSET, ControlReg);
+			   XSCUTIMER_CONTROL_OFFSET, ControlReg);
 }
 
 /*****************************************************************************/
@@ -256,7 +259,7 @@ u8 XScuTimer_GetPrescaler(XScuTimer *InstancePtr)
 	 * Read the Timer control register.
 	 */
 	ControlReg = XScuTimer_ReadReg(InstancePtr->Config.BaseAddr,
-				    XSCUTIMER_CONTROL_OFFSET);
+				       XSCUTIMER_CONTROL_OFFSET);
 	ControlReg &= XSCUTIMER_CONTROL_PRESCALER_MASK;
 
 	return (u8)(ControlReg >> XSCUTIMER_CONTROL_PRESCALER_SHIFT);

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xprd_sinit.c
-* @addtogroup prd_v2_1
+* @addtogroup prd Overview
 * @{
 *
 * This file contains the implementation of the XPrd driver's static
@@ -28,7 +29,7 @@
 *                           in the generated xprd_g.c for fixing MISRA-C
 *                           files. This is a fix for CR-966099 based on the
 *                           update in the tools.
-*
+* 2.2   Nava  06/22/23      Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -36,7 +37,9 @@
 /***************************** Include Files *********************************/
 
 #include "xprd.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -47,7 +50,11 @@
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
+#ifndef SDT
 extern XPrd_Config XPrd_ConfigTable[XPAR_XPRD_NUM_INSTANCES];
+#else
+extern XPrd_Config XPrd_ConfigTable[];
+#endif
 
 /*****************************************************************************/
 /**
@@ -64,13 +71,14 @@ extern XPrd_Config XPrd_ConfigTable[XPAR_XPRD_NUM_INSTANCES];
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XPrd_Config *XPrd_LookupConfig(u16 DeviceId)
 {
 	XPrd_Config *CfgPtr = NULL;
 	u32 Index;
 
 	for (Index = 0; Index < (u32)XPAR_XPRD_NUM_INSTANCES;
-		Index++) {
+	     Index++) {
 		if (XPrd_ConfigTable[Index].DeviceId == DeviceId) {
 			CfgPtr = &XPrd_ConfigTable[Index];
 			break;
@@ -79,4 +87,22 @@ XPrd_Config *XPrd_LookupConfig(u16 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XPrd_Config *XPrd_LookupConfig(UINTPTR BaseAddress)
+{
+	XPrd_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = 0; XPrd_ConfigTable[Index].Name != NULL;
+	     Index++) {
+		if ((XPrd_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XPrd_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /** @} */

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,6 +25,7 @@
  * Ver   Who Date     Changes
  * ----- --- -------- -----------------------------------------------
  * 1.00a sg  03/09/19 First release
+ * 3.18   gm   07/14/23 Added SDT support.
  *
  * </pre>
  *
@@ -36,6 +37,9 @@
 #include "xscugic.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions ******************************/
 
@@ -44,9 +48,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define IIC_DEVICE_ID		XPAR_XIICPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define IIC_INT_VEC_ID		XPAR_XIICPS_0_INTR
+#endif
 
 /*
  * The slave address to send to and receive from.
@@ -66,15 +72,21 @@
 
 /************************** Function Prototypes *******************************/
 
+#ifndef SDT
 s32 IicPsMultiMasterIntrExample(u16 DeviceId);
 static s32 SetupInterruptSystem(XIicPs *IicPsPtr);
+#else
+s32 IicPsMultiMasterIntrExample(UINTPTR BaseAddress);
+#endif
 
 void Handler(void *CallBackRef, u32 Event);
 
 /************************** Variable Definitions ******************************/
 
 XIicPs Iic;			/* Instance of the IIC Device */
+#ifndef SDT
 XScuGic InterruptController;	/* Instance of the Interrupt Controller */
+#endif
 
 /*
  * The following buffers are used in this example to send and receive data
@@ -113,7 +125,11 @@ s32 main(void)
 	 * Run the Iic Master Interrupt example , specify the Device ID that is
 	 * generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = IicPsMultiMasterIntrExample(IIC_DEVICE_ID);
+#else
+	Status = IicPsMultiMasterIntrExample(XPAR_XIICPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("IIC MultiMaster Interrupt Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -150,20 +166,29 @@ s32 main(void)
 * working it may never return.
 *
 *******************************************************************************/
+#ifndef SDT
 s32 IicPsMultiMasterIntrExample(u16 DeviceId)
+#else
+s32 IicPsMultiMasterIntrExample(UINTPTR BaseAddress)
+#endif
 {
 	s32 Status;
 	XIicPs_Config *Config;
 	s32 Index;
 	s32 tmp;
 	s32 BufferSizes[NUMBER_OF_SIZES] = {1, 2, 19, 31, 32, 33, 62, 63, 64,
-	65, 66, 94, 95, 96, 97, 98, 99, 250};
+					    65, 66, 94, 95, 96, 97, 98, 99, 250
+					   };
 
 	/*
 	 * Initialize the IIC driver so that it's ready to use
 	 * Look up the configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XIicPs_LookupConfig(DeviceId);
+#else
+	Config = XIicPs_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -185,7 +210,14 @@ s32 IicPsMultiMasterIntrExample(u16 DeviceId)
 	 * Connect the IIC to the interrupt subsystem such that interrupts can
 	 * occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Iic);
+#else
+	Status = XSetupInterruptSystem(&Iic, XIicPs_MasterInterruptHandler,
+				       Config->IntrId,
+				       Config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -213,7 +245,7 @@ s32 IicPsMultiMasterIntrExample(u16 DeviceId)
 		RecvBuffer[Index] = 0;
 	}
 
-	for(Index = 0; Index < NUMBER_OF_SIZES; Index++) {
+	for (Index = 0; Index < NUMBER_OF_SIZES; Index++) {
 
 		/* Wait for bus to become idle
 		 */
@@ -227,7 +259,7 @@ s32 IicPsMultiMasterIntrExample(u16 DeviceId)
 		 * Send the buffer, errors are reported by TotalErrorCount.
 		 */
 		XIicPs_MasterSend(&Iic, SendBuffer, BufferSizes[Index],
-				IIC_SLAVE_ADDR);
+				  IIC_SLAVE_ADDR);
 
 		/*
 		 * Wait for the entire buffer to be sent, letting the interrupt
@@ -236,66 +268,66 @@ s32 IicPsMultiMasterIntrExample(u16 DeviceId)
 		 * correctly.
 		 */
 		while (!SendComplete) {
-				if (ArbitrationLost) {
+			if (ArbitrationLost) {
 
-					/* Wait for bus to become idle
-					 */
-					while (XIicPs_BusIsBusy(&Iic)) {
-						/* NOP */
-					}
-
-					ArbitrationLost = FALSE;
-					/*
-					 * Re-send the buffer if there any arbitration lost and
-					 * errors are reported by TotalErrorCount.
-					 */
-					XIicPs_MasterSend(&Iic, SendBuffer, BufferSizes[Index],
-					IIC_SLAVE_ADDR);
-
-				} else if (0 != TotalErrorCount) {
-					return XST_FAILURE;
+				/* Wait for bus to become idle
+				 */
+				while (XIicPs_BusIsBusy(&Iic)) {
+					/* NOP */
 				}
+
+				ArbitrationLost = FALSE;
+				/*
+				 * Re-send the buffer if there any arbitration lost and
+				 * errors are reported by TotalErrorCount.
+				 */
+				XIicPs_MasterSend(&Iic, SendBuffer, BufferSizes[Index],
+						  IIC_SLAVE_ADDR);
+
+			} else if (0 != TotalErrorCount) {
+				return XST_FAILURE;
 			}
+		}
 
-			/*
-			 * Wait bus activities to finish.
-			 */
-			while (XIicPs_BusIsBusy(&Iic)) {
-				/* NOP */
-			}
+		/*
+		 * Wait bus activities to finish.
+		 */
+		while (XIicPs_BusIsBusy(&Iic)) {
+			/* NOP */
+		}
 
-			/*
-			 * Receive data from slave, errors are reported through
-			 * TotalErrorCount.
-			 */
-			RecvComplete = FALSE;
-			XIicPs_MasterRecv(&Iic, RecvBuffer, BufferSizes[Index],
-			IIC_SLAVE_ADDR);
+		/*
+		 * Receive data from slave, errors are reported through
+		 * TotalErrorCount.
+		 */
+		RecvComplete = FALSE;
+		XIicPs_MasterRecv(&Iic, RecvBuffer, BufferSizes[Index],
+				  IIC_SLAVE_ADDR);
 
-			while (!RecvComplete) {
-				if (ArbitrationLost) {
+		while (!RecvComplete) {
+			if (ArbitrationLost) {
 
-					/* Wait for bus to become idle
-					 */
-					while (XIicPs_BusIsBusy(&Iic)) {
-						/* NOP */
-					}
-
-					ArbitrationLost = FALSE;
-					/*
-					 * Retry buffer read if there any arbitration lost and
-					 * errors are reported by TotalErrorCount.
-					 */
-					XIicPs_MasterRecv(&Iic, RecvBuffer, BufferSizes[Index],
-					IIC_SLAVE_ADDR);
-				} else if (0 != TotalErrorCount) {
-					return XST_FAILURE;
+				/* Wait for bus to become idle
+				 */
+				while (XIicPs_BusIsBusy(&Iic)) {
+					/* NOP */
 				}
+
+				ArbitrationLost = FALSE;
+				/*
+				 * Retry buffer read if there any arbitration lost and
+				 * errors are reported by TotalErrorCount.
+				 */
+				XIicPs_MasterRecv(&Iic, RecvBuffer, BufferSizes[Index],
+						  IIC_SLAVE_ADDR);
+			} else if (0 != TotalErrorCount) {
+				return XST_FAILURE;
 			}
+		}
 
 		/* Check for received data.
 		 */
-		for(tmp = 0; tmp < BufferSizes[Index]; tmp ++) {
+		for (tmp = 0; tmp < BufferSizes[Index]; tmp ++) {
 
 			/*
 			 * Aardvark as slave can only set up to 64 bytes for
@@ -332,13 +364,13 @@ void Handler(void *CallBackRef, u32 Event)
 	/*
 	 * All of the data transfer has been finished.
 	 */
-	if (0 != (Event & XIICPS_EVENT_COMPLETE_RECV)){
+	if (0 != (Event & XIICPS_EVENT_COMPLETE_RECV)) {
 		RecvComplete = TRUE;
 	} else if (0 != (Event & XIICPS_EVENT_COMPLETE_SEND)) {
 		SendComplete = TRUE;
 	} else if (0 != (Event & XIICPS_EVENT_ARB_LOST)) {
 		ArbitrationLost = TRUE;
-	} else if (0 == (Event & XIICPS_EVENT_SLAVE_RDY)){
+	} else if (0 == (Event & XIICPS_EVENT_SLAVE_RDY)) {
 		/*
 		 * If it is other interrupt but not slave ready interrupt, it is
 		 * an error.
@@ -348,6 +380,7 @@ void Handler(void *CallBackRef, u32 Event)
 	}
 }
 
+#ifndef SDT
 /******************************************************************************/
 /**
 *
@@ -382,7 +415,7 @@ static s32 SetupInterruptSystem(XIicPs *IicPsPtr)
 	}
 
 	Status = XScuGic_CfgInitialize(&InterruptController, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -393,8 +426,8 @@ static s32 SetupInterruptSystem(XIicPs *IicPsPtr)
 	 * interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
-				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-				&InterruptController);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Connect the device driver handler that will be called when an
@@ -402,8 +435,8 @@ static s32 SetupInterruptSystem(XIicPs *IicPsPtr)
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(&InterruptController, IIC_INT_VEC_ID,
-			(Xil_InterruptHandler)XIicPs_MasterInterruptHandler,
-			(void *)IicPsPtr);
+				 (Xil_InterruptHandler)XIicPs_MasterInterruptHandler,
+				 (void *)IicPsPtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -421,3 +454,4 @@ static s32 SetupInterruptSystem(XIicPs *IicPsPtr)
 
 	return XST_SUCCESS;
 }
+#endif

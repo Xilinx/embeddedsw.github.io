@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xrtcpsu_sinit.c
-* @addtogroup rtcpsu_v1_11
+* @addtogroup rtcpsu Overview
 * @{
 *
 * This file contains the implementation of the XRtcPsu driver's static
@@ -29,6 +30,7 @@
 *                       as Pointer to const,No brackets to then/else,
 *                       Literal value requires a U suffix,Casting operation to a pointer
 *                       Array has no bounds specified,Logical conjunctions need brackets.
+* 1.13  ht     06/22/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -36,7 +38,9 @@
 /***************************** Include Files *********************************/
 
 #include "xrtcpsu.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -64,6 +68,7 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XRtcPsu_Config *XRtcPsu_LookupConfig(u16 DeviceId)
 {
 	XRtcPsu_Config *CfgPtr = NULL;
@@ -78,4 +83,21 @@ XRtcPsu_Config *XRtcPsu_LookupConfig(u16 DeviceId)
 
 	return (XRtcPsu_Config *)CfgPtr;
 }
+#else
+XRtcPsu_Config *XRtcPsu_LookupConfig(UINTPTR BaseAddress)
+{
+	XRtcPsu_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = 0U; XRtcPsu_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XRtcPsu_ConfigTable[Index].BaseAddr == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XRtcPsu_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XRtcPsu_Config *)CfgPtr;
+}
+#endif
 /** @} */

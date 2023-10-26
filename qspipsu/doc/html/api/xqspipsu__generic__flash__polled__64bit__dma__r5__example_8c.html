@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">qspipsu
    </div>
@@ -92,7 +92,12 @@ $(document).ready(function(){initNavTree('xqspipsu__generic__flash__polled__64bi
  1.15  akm 11/19/21 Fix read/write failures on Spansion flash parts.
  1.15  akm 12/22/21 Initialize variables before use.
  1.16  akm 08/16/22 Fix logical error in NumSect calculation.
- 1.17  akm 12/16/22 Add timeout in QSPIPSU driver examples.</pre><pre></pre> </div><table class="memberdecls">
+ 1.17  akm 12/16/22 Add timeout in QSPIPSU driver examples.
+ 1.18  sb  05/19/23 Update number of sector calculation logic
+           in flash erase API.
+ 1.18  sb  06/07/23 Added support for system device-tree flow.
+ 1.18  sb  07/24/23 Fix wrong init sequence for spansion byte ID.
+ 1.18  sb  08/02/23 Add status check for XQspiPsu_SetClkPrescaler API.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac7a0e7a44578f580f46491eb6f6ce726"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726">QspiPsuPolledFlashExample</a> (<a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *QspiPsuInstancePtr, u16 QspiPsuDeviceId)</td></tr>

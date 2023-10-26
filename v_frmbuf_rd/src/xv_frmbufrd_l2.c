@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017-2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017-2023 Xilinx, Inc. All Rights Reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xv_frmbufrd_l2.c
-* @addtogroup v_frmbuf_rd_v4_6
+* @addtogroup v_frmbuf_rd Overview
 * @{
 *
 * Frame Buffer Read Layer-2 Driver. The functions in this file provides an
@@ -34,6 +35,7 @@
 * 4.10  vv    02/05/19   Added new pixel formats with 12 and 16 bpc.
 * 4.50  pg    01/07/21   Added new registers to support fid_out interlace solution.
 *						Interrupt count support for throughput measurement.
+* 4.70  pg    05/23/23   Added new 3 planar video format Y_U_V8_420.
 * </pre>
 *
 ******************************************************************************/
@@ -160,6 +162,9 @@ XVidC_ColorFormat RdMemory2Live(XVidC_ColorFormat MemFmt)
 		case XVIDC_CSF_MEM_Y_U_V10 :
             StrmFmt = XVIDC_CSF_YCRCB_444;
             break;
+        case XVIDC_CSF_MEM_Y_U_V8_420 :
+            StrmFmt = XVIDC_CSF_YCRCB_420;
+            break;
 		default:
 			StrmFmt = (XVidC_ColorFormat)~0;
 			break;
@@ -178,14 +183,22 @@ XVidC_ColorFormat RdMemory2Live(XVidC_ColorFormat MemFmt)
  *         XST_DEVICE_NOT_FOUND if device is not found
  *
  ******************************************************************************/
+#ifndef SDT
 int XVFrmbufRd_Initialize(XV_FrmbufRd_l2 *InstancePtr, u16 DeviceId)
+#else
+int XVFrmbufRd_Initialize(XV_FrmbufRd_l2 *InstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
 	/* Setup the instance */
 	memset(InstancePtr, 0, sizeof(XV_FrmbufRd_l2));
+#ifndef SDT
 	Status = XV_frmbufrd_Initialize(&InstancePtr->FrmbufRd, DeviceId);
+#else
+	Status = XV_frmbufrd_Initialize(&InstancePtr->FrmbufRd, BaseAddress);
+#endif
 
 	if (Status == XST_SUCCESS) {
 		SetPowerOnDefaultState(InstancePtr);
@@ -425,6 +438,11 @@ int XVFrmbufRd_SetMemFormat(XV_FrmbufRd_l2 *InstancePtr,
 				   FmtValid = TRUE;
 				}
 				break;
+            case XVIDC_CSF_MEM_Y_U_V8_420 :
+                if (XVFrmbufRd_IsY_U_V8_420Enabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+		break;
 			case XVIDC_CSF_MEM_Y_U_V10 :
                 if (XVFrmbufRd_IsY_U_V10Enabled(InstancePtr)) {
 				   FmtValid = TRUE;
@@ -979,6 +997,7 @@ void XVFrmbufRd_DbgReportStatus(XV_FrmbufRd_l2 *InstancePtr)
 	xil_printf("Y16 Enabled:                %d\r\n", InstancePtr->FrmbufRd.Config.Y16En);
 	xil_printf("Y_U_V8 Enabled:             %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V8En);
 	xil_printf("Y_U_V10 Enabled:            %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V10En);
+	xil_printf("Y_U_V8_420 Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V8_420En);
 	xil_printf("Interlaced Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Interlaced);
 
 	xil_printf("Control Reg:                0x%x\r\n", ctrl);

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xclockps_pll.c
-* @addtogroup xclockps_v1_4
+* @addtogroup clockps Overview
 * @{
 *
 * This file handles PLL related definition and operations.
@@ -129,15 +130,15 @@ static XStatus XClock_PllGetMode(u8 PllIndex, XClock_PllMode *PllMode)
 	u32 Value;
 
 	/* Validate arguments */
-	 XCLOCK_VALIDATE_INDEX(PLL, PllIndex);
+	XCLOCK_VALIDATE_INDEX(PLL, PllIndex);
 
 	if (XST_SUCCESS != XClock_ReadReg(Plls[PllIndex].CtrlReg +
-				XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
+					  XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
 		return XST_FAILURE;
 	}
 
 	*PllMode = (Value & XCLOCK_PLL_FRAC_ENABLE_MASK) ?
-			XCLOCK_PLL_MODE_FRACTIONAL : XCLOCK_PLL_MODE_INTEGER;
+		   XCLOCK_PLL_MODE_FRACTIONAL : XCLOCK_PLL_MODE_INTEGER;
 
 	return XST_SUCCESS;
 }
@@ -167,9 +168,9 @@ static void XClock_PllSetMode(u8 PllIndex, XClock_PllMode Mode)
 	}
 
 	if (XST_SUCCESS != XClock_WriteReg(Plls[PllIndex].CtrlReg +
-				XCLOCK_PLL_FRAC_REGISTER_OFFSET, Value)) {
+					   XCLOCK_PLL_FRAC_REGISTER_OFFSET, Value)) {
 		xil_printf("Warning: Failed to set PLL mode for %d\n",
-								PllIndex);
+			   PllIndex);
 	}
 }
 
@@ -229,7 +230,7 @@ static void XClock_PllEnableSet(u8 PllIndex)
 
 	if (XST_SUCCESS != XClock_PllIsEnabled(PllIndex, &PllState)) {
 		xil_printf("Warning: Pll state fetch failed for %d\n",
-								PllIndex);
+			   PllIndex);
 		return;
 	}
 
@@ -249,7 +250,7 @@ static void XClock_PllEnableSet(u8 PllIndex)
 	}
 
 	Value |= XCLOCK_PLL_CTRL_RESET_SET << XCLOCK_PLL_CTRL_RESET_SHIFT;
-	if(XST_SUCCESS != XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
+	if (XST_SUCCESS != XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
 		xil_printf("Warning: Failed to enable PLL %d\n", PllIndex);
 		return;
 	}
@@ -262,9 +263,9 @@ static void XClock_PllEnableSet(u8 PllIndex)
 
 	do {
 		if (XST_SUCCESS !=
-			XClock_ReadReg(Plls[PllIndex].StatusReg, &Value)) {
+		    XClock_ReadReg(Plls[PllIndex].StatusReg, &Value)) {
 			xil_printf("Warning: Failed to enable PLL %d\n",
-								PllIndex);
+				   PllIndex);
 			return;
 		}
 		usleep(10);
@@ -299,7 +300,7 @@ static void XClock_PllDisableSet(u8 PllIndex)
 
 	if (XST_SUCCESS != XClock_PllIsEnabled(PllIndex, &PllState)) {
 		xil_printf("Warning: Pll state fetch failed for %d\n",
-								PllIndex);
+			   PllIndex);
 		return;
 	}
 
@@ -342,7 +343,7 @@ static void XClock_PllDisableSet(u8 PllIndex)
 *
 ******************************************************************************/
 static XStatus XClock_PllRoundRate(u8 PllIndex, XClockRate Rate,
-				XClockRate ParentRate, XClockRate *RoundRate)
+				   XClockRate ParentRate, XClockRate *RoundRate)
 {
 	u32            FeedbackDiv;
 	XClockRate     RateRem;
@@ -368,7 +369,7 @@ static XStatus XClock_PllRoundRate(u8 PllIndex, XClockRate Rate,
 		}
 		if (Rate < XCLOCK_PLL_RATE_VAL_MIN) {
 			FeedbackDiv = XCLOCK_CEIL_DIV
-						(XCLOCK_PLL_RATE_VAL_MIN, Rate);
+				      (XCLOCK_PLL_RATE_VAL_MIN, Rate);
 			Rate = Rate * FeedbackDiv;
 		}
 
@@ -379,7 +380,7 @@ static XStatus XClock_PllRoundRate(u8 PllIndex, XClockRate Rate,
 
 	FeedbackDiv = XCLOCK_ROUND_DIV(Rate, ParentRate);
 	XCLOCK_LIMIT_VALUE(FeedbackDiv, XCLOCK_PLL_CTRL_FBDIV_VAL_MIN,
-						XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
+			   XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
 
 	*RoundRate = (ParentRate * FeedbackDiv);
 
@@ -401,7 +402,7 @@ static XStatus XClock_PllRoundRate(u8 PllIndex, XClockRate Rate,
 *
 ******************************************************************************/
 static XStatus XClock_PllRecalcRate(u8 PllIndex, XClockRate ParentRate,
-							XClockRate *Rate)
+				    XClockRate *Rate)
 {
 	u32            Value;
 	u32            FeedbackDiv;
@@ -418,7 +419,7 @@ static XStatus XClock_PllRecalcRate(u8 PllIndex, XClockRate ParentRate,
 	}
 
 	FeedbackDiv = (Value & XCLOCK_PLL_CTRL_FBDIV_MASK) >>
-						XCLOCK_PLL_CTRL_FBDIV_SHIFT;
+		      XCLOCK_PLL_CTRL_FBDIV_SHIFT;
 	*Rate =  ParentRate * FeedbackDiv;
 
 	if (XST_SUCCESS != XClock_PllGetMode(PllIndex, &PllMode)) {
@@ -427,7 +428,7 @@ static XStatus XClock_PllRecalcRate(u8 PllIndex, XClockRate ParentRate,
 
 	if (PllMode == XCLOCK_PLL_MODE_FRACTIONAL) {
 		if (XST_SUCCESS != XClock_ReadReg(Plls[PllIndex].CtrlReg +
-				XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
+						  XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
 			return XST_FAILURE;
 		}
 
@@ -470,9 +471,9 @@ static void XClock_PllInit(u8 PllIndex)
 		/* Set rate */
 		ParentRate = XClock_FetchRate((XClock_Types)ParentType, ParentIdx);
 		if (XST_SUCCESS !=
-			XClock_PllRecalcRate(PllIndex, ParentRate, &Rate)) {
+		    XClock_PllRecalcRate(PllIndex, ParentRate, &Rate)) {
 			xil_printf("Warning: Failed to Recalculate rate for "
-					"Pll at index %d", PllIndex);
+				   "Pll at index %d", PllIndex);
 			return;
 		}
 
@@ -616,7 +617,7 @@ static XStatus XClock_PllFetchParent(XClock_Types *NodeType, u8 *PllIndex)
 *
 ******************************************************************************/
 static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
-				XClockRate Rate, XClockRate *SetRate, u8 DryRun)
+				 XClockRate Rate, XClockRate *SetRate, u8 DryRun)
 {
 	u32            Value;
 	u32            RateDiv;
@@ -632,7 +633,7 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 
 	/* Round rate to set */
 	if (XST_SUCCESS !=
-		XClock_PllRoundRate(PllIndex, Rate, ParentRate, &Rate)) {
+	    XClock_PllRoundRate(PllIndex, Rate, ParentRate, &Rate)) {
 		return XST_FAILURE;
 	}
 
@@ -645,17 +646,17 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 		FeedbackDiv = RateDiv / XCLOCK_PLL_FRAC_DIV;
 		FeedbackRem = RateDiv % XCLOCK_PLL_FRAC_DIV;
 		XCLOCK_LIMIT_VALUE(FeedbackDiv, XCLOCK_PLL_CTRL_FBDIV_VAL_MIN,
-						XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
+				   XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
 		Rate = ParentRate * FeedbackDiv;
 		RateOffset = (ParentRate * FeedbackRem) / XCLOCK_PLL_FRAC_DIV;
 		FeedbackData =
-		(XCLOCK_PLL_FRAC_DIV * FeedbackRem) / XCLOCK_PLL_FRAC_DIV;
+			(XCLOCK_PLL_FRAC_DIV * FeedbackRem) / XCLOCK_PLL_FRAC_DIV;
 
 		*SetRate = Rate + RateOffset;
 
 		if (!DryRun) {
 			if (XST_SUCCESS !=
-			XClock_ReadReg(Plls[PllIndex].CtrlReg, &Value)) {
+			    XClock_ReadReg(Plls[PllIndex].CtrlReg, &Value)) {
 				*SetRate = XCLOCK_INVALID_RATE;
 				return XST_FAILURE;
 			}
@@ -663,14 +664,14 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 			Value &= ~XCLOCK_PLL_CTRL_FBDIV_MASK;
 			Value |= FeedbackDiv << XCLOCK_PLL_CTRL_FBDIV_SHIFT;
 			if (XST_SUCCESS !=
-			XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
+			    XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
 				*SetRate = XCLOCK_INVALID_RATE;
 				return XST_FAILURE;
 			}
 
 			if (XST_SUCCESS !=
-				XClock_ReadReg(Plls[PllIndex].CtrlReg +
-				XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
+			    XClock_ReadReg(Plls[PllIndex].CtrlReg +
+					   XCLOCK_PLL_FRAC_REGISTER_OFFSET, &Value)) {
 				*SetRate = XCLOCK_INVALID_RATE;
 				return XST_FAILURE;
 			}
@@ -678,8 +679,8 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 			Value &= ~XCLOCK_PLL_FRAC_DATA_MASK;
 			Value |= FeedbackData & XCLOCK_PLL_FRAC_DATA_MASK;
 			if (XST_SUCCESS !=
-				XClock_WriteReg(Plls[PllIndex].CtrlReg +
-				XCLOCK_PLL_FRAC_REGISTER_OFFSET, Value)) {
+			    XClock_WriteReg(Plls[PllIndex].CtrlReg +
+					    XCLOCK_PLL_FRAC_REGISTER_OFFSET, Value)) {
 				*SetRate = XCLOCK_INVALID_RATE;
 				return XST_FAILURE;
 			}
@@ -692,13 +693,13 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 
 	FeedbackDiv = XCLOCK_ROUND_DIV(Rate, ParentRate);
 	XCLOCK_LIMIT_VALUE(FeedbackDiv, XCLOCK_PLL_CTRL_FBDIV_VAL_MIN,
-					XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
+			   XCLOCK_PLL_CTRL_FBDIV_VAL_MAX);
 
 	*SetRate = ParentRate * FeedbackDiv;
 
 	if (!DryRun) {
 		if (XST_SUCCESS !=
-			XClock_ReadReg(Plls[PllIndex].CtrlReg, &Value)) {
+		    XClock_ReadReg(Plls[PllIndex].CtrlReg, &Value)) {
 			*SetRate = XCLOCK_INVALID_RATE;
 			return XST_FAILURE;
 		}
@@ -706,7 +707,7 @@ static XStatus XClock_PllSetRate(u8 PllIndex, XClockRate ParentRate,
 		Value &= ~XCLOCK_PLL_CTRL_FBDIV_MASK;
 		Value |= FeedbackDiv << XCLOCK_PLL_CTRL_FBDIV_SHIFT;
 		if (XST_SUCCESS !=
-			XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
+		    XClock_WriteReg(Plls[PllIndex].CtrlReg, Value)) {
 			*SetRate = XCLOCK_INVALID_RATE;
 			return XST_FAILURE;
 		}
@@ -772,9 +773,9 @@ static void XClock_PllUpdateRate(u8 PllIndex)
 	/* Set rate */
 	ParentRate = XClock_FetchRate((XClock_Types)ParentType, ParentIdx);
 	if (XST_SUCCESS !=
-			XClock_PllRecalcRate(PllIndex, ParentRate, &Rate)) {
+	    XClock_PllRecalcRate(PllIndex, ParentRate, &Rate)) {
 		xil_printf("Warning: Failed to Recalculate rate for "
-						"Pll at index %d", PllIndex);
+			   "Pll at index %d", PllIndex);
 		return;
 	}
 

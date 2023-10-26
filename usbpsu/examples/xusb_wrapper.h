@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -22,6 +23,7 @@
  *			 example.
  *  1.5  vak	02/06/19 Add UsbPollHandler and UsbEnableEvent API's
  *  1.7  pm	02/03/20 Add closure bracket for "extern c" c++ compilation
+ *  1.14 pm     21/06/23 Added support for system device-tree flow.
  *
  * </pre>
  *
@@ -118,18 +120,22 @@ extern "C" {
 /************************** Variable Definitions *****************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
-Usb_Config* LookupConfig(u16 DeviceId);
+#ifndef SDT
+Usb_Config *LookupConfig(u16 DeviceId);
+#else
+Usb_Config *LookupConfig(UINTPTR BaseAddress);
+#endif
 void CacheInit(void);
 s32 CfgInitialize(struct Usb_DevData *InstancePtr,
-			Usb_Config *ConfigPtr, u32 BaseAddress);
+		  Usb_Config *ConfigPtr, u32 BaseAddress);
 void Set_Ch9Handler(void *InstancePtr,
-				void (*func)(struct Usb_DevData *, SetupPacket *));
+		    void (*func)(struct Usb_DevData *, SetupPacket *));
 void Set_RstHandler(void *InstancePtr, void (*func)(struct Usb_DevData *));
 void Set_Disconnect(void *InstancePtr, void (*func)(struct Usb_DevData *));
 void EpConfigure(void *UsbInstance, u8 EndpointNo, u8 dir, u32 Type);
 s32 ConfigureDevice(void *UsbInstance, u8 *MemPtr, u32 memSize);
 void SetEpHandler(void *InstancePtr, u8 Epnum,
-			u8 Dir, void (*Handler)(void *, u32, u32));
+		  u8 Dir, void (*Handler)(void *, u32, u32));
 s32 Usb_Start(void *InstancePtr);
 void UsbPollHandler(struct XUsbPsu *InstancePtr);
 void UsbEnableEvent(struct XUsbPsu *InstancePtr, u32 Mask);
@@ -138,9 +144,9 @@ void Set_DrvData(void *InstancePtr, void *data);
 s32 IsEpStalled(void *InstancePtr, u8 Epnum, u8 Dir);
 void EpClearStall(void *InstancePtr, u8 Epnum, u8 Dir);
 s32 EpBufferSend(void *InstancePtr, u8 UsbEp,
-			u8 *BufferPtr, u32 BufferLen);
+		 u8 *BufferPtr, u32 BufferLen);
 s32 EpBufferRecv(void *InstancePtr, u8 UsbEp,
-				u8 *BufferPtr, u32 Length);
+		 u8 *BufferPtr, u32 Length);
 void EpSetStall(void *InstancePtr, u8 Epnum, u8 Dir);
 void SetBits(void *InstancePtr, u32 TestSel);
 s32 SetDeviceAddress(void *InstancePtr, u16 Addr);

@@ -22,6 +22,8 @@
  * Ver   Who  Date     Changes
  * ----- ---- -------- -----------------------------------------------
  * 1.00  kpt  01/10/23 First release
+ *       yog  08/04/23 Removed support for PKI instances
+ * 1.01  ng   09/04/23 Added SDT support
  *
  *</pre>
  **************************************************************************************************/
@@ -33,6 +35,11 @@
 #include "xil_util.h"
 
 /************************************ Constant Definitions ***************************************/
+#ifndef SDT
+#define XTRNGPSX_PMC_DEVICE		0U /**< Device Id for PMC*/
+#else
+#define XTRNGPSX_PMC_DEVICE		XPAR_XTRNGPSX_0_BASEADDR /**< Device Id for PMC*/
+#endif
 
 /************************************** Type Definitions *****************************************/
 
@@ -95,65 +102,62 @@ int Trngpsx_Example()
 			.RepCountTestCutoff = XTRNGPSX_USER_CFG_REP_TEST_CUTOFF,
 	};
 
-	for (u32 DeviceId = 0U; DeviceId < XPAR_XTRNGPSX_NUM_INSTANCES; DeviceId++) {
-	   /*
-		* Initialize the TRNGPSX driver so that it's ready to use look up
-		* configuration in the config table, then initialize it.
-		*/
-		Config = XTrngpsx_LookupConfig(DeviceId);
-		if (NULL == Config) {
-			xil_printf("LookupConfig Failed \n\r");
-			goto END;
-		}
-
-		/* Initialize the TRNGPSX driver so that it is ready to use. */
-		Status = XTrngpsx_CfgInitialize(&Trngpsx, Config, Config->BaseAddress);
-		if (Status != XST_SUCCESS) {
-			xil_printf("CfgInitialize Failed, Status: 0x%08x\n\r", Status);
-			goto END;
-		}
-
-		xil_printf("\n\r TRNGPSX example with instance:%d \n\r ", DeviceId);
-		Status = XTrngpsx_PreOperationalSelfTests(&Trngpsx);
-		if (Status != XST_SUCCESS) {
-			xil_printf("KAT Failed, Status: 0x%08x\n\r", Status);
-			goto END;
-		}
-
-		/* Instantiate to complete initialization */
-		Status = XTrngpsx_Instantiate(&Trngpsx, NULL, 0U, NULL, &UsrCfg);
-		if (Status != XST_SUCCESS) {
-			xil_printf("Instantiate failed, Status: 0x%08x\n\r", Status);
-			goto END;
-		}
-
-		/* Invoke Generate twice and print, RandBuf contains random data from last call */
-		Status = XTrngpsx_Generate(&Trngpsx, RandBuf, sizeof(RandBuf), FALSE);
-		if (Status != XST_SUCCESS) {
-			xil_printf("Generate Failed, Status: 0x%08x\n\r", Status);
-			goto END;
-		}
-
-		xil_printf("Generate 1 Random data:\n\r");
-		Trngpsx_PrintBytes(RandBuf, sizeof(RandBuf));
-
-		Status = XTrngpsx_Generate(&Trngpsx, RandBuf, sizeof(RandBuf), FALSE);
-		if (Status != XST_SUCCESS) {
-			xil_printf("Generate Failed, Status: 0x%08x\n\r", Status);
-			goto END;
-		}
-
-		xil_printf("Generate 2 Random data:\n\r");
-		Trngpsx_PrintBytes(RandBuf, sizeof(RandBuf));
-
-		Status = XTrngpsx_Uninstantiate(&Trngpsx);
-		if (Status != XST_SUCCESS) {
-			xil_printf("Uninstantiate Failed \n\r");
-			goto END;
-		}
+	/*
+	 * Initialize the TRNGPSX driver so that it's ready to use look up
+	 * configuration in the config table, then initialize it.
+	 */
+	Config = XTrngpsx_LookupConfig(XTRNGPSX_PMC_DEVICE);
+	if (NULL == Config) {
+		xil_printf("LookupConfig Failed \n\r");
+		goto END;
 	}
 
-		Status = XST_SUCCESS;
+	/* Initialize the TRNGPSX driver so that it is ready to use. */
+	Status = XTrngpsx_CfgInitialize(&Trngpsx, Config, Config->BaseAddress);
+	if (Status != XST_SUCCESS) {
+		xil_printf("CfgInitialize Failed, Status: 0x%08x\n\r", Status);
+		goto END;
+	}
+
+	Status = XTrngpsx_PreOperationalSelfTests(&Trngpsx);
+	if (Status != XST_SUCCESS) {
+		xil_printf("KAT Failed, Status: 0x%08x\n\r", Status);
+		goto END;
+	}
+
+	/* Instantiate to complete initialization */
+	Status = XTrngpsx_Instantiate(&Trngpsx, NULL, 0U, NULL, &UsrCfg);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Instantiate failed, Status: 0x%08x\n\r", Status);
+		goto END;
+	}
+
+	/* Invoke Generate twice and print, RandBuf contains random data from last call */
+	Status = XTrngpsx_Generate(&Trngpsx, RandBuf, sizeof(RandBuf), FALSE);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Generate Failed, Status: 0x%08x\n\r", Status);
+		goto END;
+	}
+
+	xil_printf("Generate 1 Random data:\n\r");
+	Trngpsx_PrintBytes(RandBuf, sizeof(RandBuf));
+
+	Status = XTrngpsx_Generate(&Trngpsx, RandBuf, sizeof(RandBuf), FALSE);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Generate Failed, Status: 0x%08x\n\r", Status);
+		goto END;
+	}
+
+	xil_printf("Generate 2 Random data:\n\r");
+	Trngpsx_PrintBytes(RandBuf, sizeof(RandBuf));
+
+	Status = XTrngpsx_Uninstantiate(&Trngpsx);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Uninstantiate Failed \n\r");
+		goto END;
+	}
+
+	Status = XST_SUCCESS;
 END:
 	return Status;
 }

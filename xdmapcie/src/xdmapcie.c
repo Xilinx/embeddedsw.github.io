@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -76,6 +77,11 @@ int XDmaPcie_CfgInitialize(XDmaPcie *InstancePtr, XDmaPcie_Config *CfgPtr,
 
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
 
+#if defined(SDT) && defined(versal) && !defined(QDMA_PCIE_BRIDGE) && !defined(XDMA_PCIE_BRIDGE)
+	InstancePtr->Config.BaseAddress= InstancePtr->Config.Ecam;
+	InstancePtr->Config.Ecam= EffectiveAddress;
+#endif
+
 	if (InstancePtr->Config.Ecam == InstancePtr->Config.NpMemBaseAddr)
 		InstancePtr->Config.NpMemBaseAddr += XDMAPCIE_ECAM_MEMSIZE;
 
@@ -122,21 +128,28 @@ static u64 XDmaPcie_ReserveBarMem(XDmaPcie *InstancePtr,
 {
 	u64 Ret = 0;
 
-	if ((MemBarArdSize == XDMAPCIE_BAR_MEM_TYPE_64) &&
-	    (XdmaPcie_IsValidAddr(InstancePtr->Config.PMemBaseAddr) == TRUE)) {
-		Ret = InstancePtr->Config.PMemBaseAddr;
-		InstancePtr->Config.PMemBaseAddr = InstancePtr->Config.PMemBaseAddr
-							+ Size;
-		Xil_AssertNonvoid(InstancePtr->Config.PMemBaseAddr <=
-				InstancePtr->Config.PMemMaxAddr);
+	if (MemBarArdSize & XDMAPCIE_BAR_MEM_TYPE_64) {
+		if (MemBarArdSize & (XDMAPCIE_BAR_MEM_TYPE_64 << 1)) {
+			Ret = InstancePtr->Config.PMemBaseAddr;
+			InstancePtr->Config.PMemBaseAddr = InstancePtr->Config.PMemBaseAddr
+								+ Size;
+			Xil_AssertNonvoid(InstancePtr->Config.PMemBaseAddr <=
+					InstancePtr->Config.PMemMaxAddr);
+		} else {
+			Ret = InstancePtr->Config.NpMemBaseAddr;
+			InstancePtr->Config.NpMemBaseAddr = InstancePtr->Config.NpMemBaseAddr
+								+ Size;
+			Xil_AssertNonvoid(InstancePtr->Config.NpMemBaseAddr <=
+					InstancePtr->Config.NpMemMaxAddr);
+		}
 	} else {
+
 		Ret = InstancePtr->Config.NpMemBaseAddr;
 		InstancePtr->Config.NpMemBaseAddr = InstancePtr->Config.NpMemBaseAddr
 							+ Size;
 		Xil_AssertNonvoid(InstancePtr->Config.NpMemBaseAddr <=
 				InstancePtr->Config.NpMemMaxAddr);
 	}
-
 	return Ret;
 }
 #else
@@ -204,6 +217,8 @@ static int XDmaPcie_AllocBarSpace(XDmaPcie *InstancePtr, u32 Headertype, u8 Bus,
 	u32 Data = DATA_MASK_32;
 	u32 Location = 0;
 	u32 Size = 0, TestWrite;
+	u64 ReqBar = 0;
+	u64 MaxBarSize = 0;
 #if defined(__aarch64__) || defined(__arch64__)
 	u64 BarAddr;
 	u32 Size_1 = 0, *PPtr;
@@ -217,6 +232,7 @@ static int XDmaPcie_AllocBarSpace(XDmaPcie *InstancePtr, u32 Headertype, u8 Bus,
 
 	u8 MaxBars = 0;
 
+	MaxBarSize = InstancePtr->Config.NpMemMaxAddr - InstancePtr->Config.NpMemBaseAddr;
 	if (Headertype == XDMAPCIE_CFG_HEADER_O_TYPE) {
 		/* For endpoints */
 		MaxBars = 6;
@@ -255,10 +271,10 @@ static int XDmaPcie_AllocBarSpace(XDmaPcie *InstancePtr, u32 Headertype, u8 Bus,
 		}
 
 		/* check for 32 bit AS or 64 bit AS */
-		if ((Size & XDMAPCIE_CFG_BAR_MEM_AS_MASK) == XDMAPCIE_BAR_MEM_TYPE_64) {
+		if (Size & XDMAPCIE_BAR_MEM_TYPE_64) {
 #if defined(__aarch64__) || defined(__arch64__)
 			/* 64 bit AS is required */
-			MemAs = XDMAPCIE_BAR_MEM_TYPE_64;
+			MemAs = Size;
 			/* Compose function configuration space location */
 			Location_1 = XDmaPcie_ComposeExternalConfigAddress(
 				Bus, Device, Function,
@@ -278,6 +294,16 @@ static int XDmaPcie_AllocBarSpace(XDmaPcie *InstancePtr, u32 Headertype, u8 Bus,
 			*(PPtr + 1) = Size_1;
 
 			TestWrite = XDmaPcie_PositionRightmostSetbit(BarAddr);
+			ReqBar = (2 << (TestWrite - 1));
+
+                        if(ReqBar > MaxBarSize) {
+                                XDmaPcie_Dbg(
+					"Requested BAR size of %uK for bus: %d, dev: %d, "
+					"function: %d is out of range \n",
+					((2 << (TestWrite - 1))/1024),Bus,Device,Function);
+                                return XST_SUCCESS;
+                        }
+
 			/* actual bar size is 2 << TestWrite */
 			BarAddr =
 				XDmaPcie_ReserveBarMem(InstancePtr, MemAs,
@@ -325,7 +351,16 @@ static int XDmaPcie_AllocBarSpace(XDmaPcie *InstancePtr, u32 Headertype, u8 Bus,
 
 #if defined(__aarch64__) || defined(__arch64__)
 			/* 32 bit AS is required */
-			MemAs = XDMAPCIE_BAR_MEM_TYPE_32;
+			MemAs = Size;
+			ReqBar = (2 << (TestWrite - 1));
+
+                        if(ReqBar > MaxBarSize) {
+                                XDmaPcie_Dbg(
+					"Requested BAR size of %uK for bus: %d, dev: %d, "
+					"function: %d is out of range \n",
+					((2 << (TestWrite - 1))/1024),Bus,Device,Function);
+                                return XST_SUCCESS;
+                        }
 
 			/* actual bar size is 2 << TestWrite */
 			BarAddr =

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,6 +24,8 @@
 * 1.00a xd/sv  01/12/10 First release
 * 2.1 adk 		23/08/14 Fixed CR:798792 Peripheral test for CANPS IP in
 *						 SDK claims a 40kbps baud rate but it's not.
+* 3.7   ht     06/28/23 Added support for system device-tree flow.
+*       ht     07/10/23 Added support for peripheral test in SDT flow.
 * </pre>
 *
 ******************************************************************************/
@@ -40,7 +43,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define CAN_DEVICE_ID	XPAR_XCANPS_0_DEVICE_ID
+#endif
 
 /*
  * Maximum CAN frame length in words.
@@ -87,7 +92,11 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int CanPsPolledExample(u16 DeviceId);
+#else
+int CanPsPolledExample(XCanPs *CanInstancePtr, UINTPTR BaseAddress);
+#endif
 static int SendFrame(XCanPs *InstancePtr);
 static int RecvFrame(XCanPs *InstancePtr);
 
@@ -128,7 +137,11 @@ int main(void)
 	 * Run the Can Polled example, specify the Device ID that is generated
 	 * in xparameters.h .
 	 */
+#ifndef SDT
 	Status = CanPsPolledExample(CAN_DEVICE_ID);
+#else
+	Status = CanPsPolledExample(&Can, XPAR_XCANPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("CAN Polled Mode Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -157,7 +170,11 @@ int main(void)
 * loop and will never return to the caller.
 *
 ******************************************************************************/
+#ifndef SDT
 int CanPsPolledExample(u16 DeviceId)
+#else
+int CanPsPolledExample(XCanPs *CanInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XCanPs *CanInstPtr = &Can;
@@ -166,13 +183,17 @@ int CanPsPolledExample(u16 DeviceId)
 	/*
 	 * Initialize the Can device.
 	 */
+#ifndef SDT
 	ConfigPtr = XCanPs_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XCanPs_LookupConfig(BaseAddress);
+#endif
 	if (CanInstPtr == NULL) {
 		return XST_FAILURE;
 	}
 	Status = XCanPs_CfgInitialize(CanInstPtr,
-					ConfigPtr,
-					ConfigPtr->BaseAddr);
+				      ConfigPtr,
+				      ConfigPtr->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -191,7 +212,7 @@ int CanPsPolledExample(u16 DeviceId)
 	 * Register (BRPR) and Bit Timing Register (BTR).
 	 */
 	XCanPs_EnterMode(CanInstPtr, XCANPS_MODE_CONFIG);
-	while(XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_CONFIG);
+	while (XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_CONFIG);
 
 	/*
 	 * Setup Baud Rate Prescaler Register (BRPR) and
@@ -199,15 +220,15 @@ int CanPsPolledExample(u16 DeviceId)
 	 */
 	XCanPs_SetBaudRatePrescaler(CanInstPtr, TEST_BRPR_BAUD_PRESCALAR);
 	XCanPs_SetBitTiming(CanInstPtr, TEST_BTR_SYNCJUMPWIDTH,
-				TEST_BTR_SECOND_TIMESEGMENT,
+			    TEST_BTR_SECOND_TIMESEGMENT,
 
-				TEST_BTR_FIRST_TIMESEGMENT);
+			    TEST_BTR_FIRST_TIMESEGMENT);
 
 	/*
 	 * Enter Loop Back Mode.
 	 */
 	XCanPs_EnterMode(CanInstPtr, XCANPS_MODE_LOOPBACK);
-	while(XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_LOOPBACK);
+	while (XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_LOOPBACK);
 
 	/*
 	 * Send a frame, receive the frame via the loop back and verify its
@@ -315,11 +336,13 @@ static int RecvFrame(XCanPs *InstancePtr)
 		 * Verify Identifier and Data Length Code.
 		 */
 		if (RxFrame[0] !=
-			(u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0))
+		    (u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0)) {
 			return XST_LOOPBACK_ERROR;
+		}
 
-		if ((RxFrame[1] & ~XCANPS_DLCR_TIMESTAMP_MASK) != TxFrame[1])
+		if ((RxFrame[1] & ~XCANPS_DLCR_TIMESTAMP_MASK) != TxFrame[1]) {
 			return XST_LOOPBACK_ERROR;
+		}
 
 		/*
 		 * Verify Data field contents.

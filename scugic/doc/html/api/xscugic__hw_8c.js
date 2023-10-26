@@ -1,5 +1,6 @@
 var xscugic__hw_8c =
 [
+    [ "DEFAULT_PRIORITY", "xscugic__hw_8c.html#ga0756f011ef667460d583017366823244", null ],
     [ "XScuGic_DeviceInitialize", "xscugic__hw_8c.html#ga2cbf5d5ac5273e00c0b16bd33ad0707f", null ],
     [ "XScuGic_DeviceInterruptHandler", "xscugic__hw_8c.html#ga96bfe161e3b4e401f76f2b35df9fab86", null ],
     [ "XScuGic_DisableIntr", "xscugic__hw_8c.html#ga1774c615a0a651db7f6e42ffb049cafe", null ],

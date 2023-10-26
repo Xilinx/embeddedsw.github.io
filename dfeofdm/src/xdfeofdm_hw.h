@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -53,7 +53,8 @@
 * Ver   Who    Date     Changes
 * ----- ---    -------- -----------------------------------------------
 * 1.0   dc     11/21/22 Initial version
-*
+* 1.1   dc     05/22/23 State and status upgrades
+*       dc     06/28/23 Add phase compensation calculation
 * </pre>
 *
 ******************************************************************************/
@@ -92,6 +93,10 @@ extern "C" {
 #define XDFEOFDM_MODEL_PARAM_NUM_ANTENNA_WIDTH 4U
 #define XDFEOFDM_MODEL_PARAM_ANTENNA_INTERLEAVE_OFFSET 16U
 #define XDFEOFDM_MODEL_PARAM_ANTENNA_INTERLEAVE_WIDTH 4U
+#define XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_OFFSET 20U
+#define XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_WIDTH 1U
+#define XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_DISABLED 0U
+#define XDFEOFDM_MODEL_PARAM_PHASE_COMPENSATION_ENABLED 1U
 
 /* Delays */
 #define XDFEOFDM_DELAY_OFFSET 0x10U /**< Register offset */
@@ -112,6 +117,11 @@ extern "C" {
 #define XDFEOFDM_STATE_LOW_POWER_BF_WIDTH 1U
 #define XDFEOFDM_STATE_LOW_POWER_BF_NO 0U
 #define XDFEOFDM_STATE_LOW_POWER_BF_YES 1U
+#define XDFEOFDM_STATE_OFDM_ENABLE_OFFSET 0x28U /**< Register offset */
+#define XDFEOFDM_STATE_OFDM_ENABLE_BF_OFFSET 0U
+#define XDFEOFDM_STATE_OFDM_ENABLE_BF_WIDTH 1U
+#define XDFEOFDM_STATE_OFDM_ENABLE_BF_DISABLED 0U
+#define XDFEOFDM_STATE_OFDM_ENABLE_BF_ENABLED 1U
 
 /* Triggers */
 #define XDFEOFDM_TRIGGERS_ACTIVATE_OFFSET 0x30U /**< Register offset */
@@ -166,7 +176,11 @@ extern "C" {
 #define XDFEOFDM_STATUS_BF_SATURATION_WIDTH 1U
 #define XDFEOFDM_STATUS_NO_EVENT 0U
 #define XDFEOFDM_STATUS_EVENT 1U
-#define XDFEOFDM_IRQ_FLAGS_MASK 0x7U
+#define XDFEOFDM_STATUS_BF_OVERFLOW_OFFSET 3U
+#define XDFEOFDM_STATUS_BF_OVERFLOW_WIDTH 1U
+#define XDFEOFDM_STATUS_TREADY_LOW 0U
+#define XDFEOFDM_STATUS_TREADY_HIGH 1U
+#define XDFEOFDM_IRQ_FLAGS_MASK 0xFU
 
 /* Saturation Events */
 #define XDFEOFDM_STATUS_SATURATION_OFFSET 0x50U /**< Register offset */
@@ -176,9 +190,9 @@ extern "C" {
 #define XDFEOFDM_STATUS_SATURATION_SATURATION_COUNT_WIDTH 14U
 
 /* TUSER Framing bit Location register */
-#define XDFEOFDM_TUSER_FRAME_LOC_OFFSET 0x60U /**< Register offset */
-#define XDFEOFDM_FRAME_BIT_OFFSET 0U
-#define XDFEOFDM_FRAME_BIT_WIDTH 8U
+#define XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET 0x60U /**< Register offset */
+#define XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_OFFSET 0U
+#define XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_WIDTH 8U
 
 /* FT Sequence */
 #define XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET                             \
@@ -200,6 +214,7 @@ extern "C" {
 	0x1200U /**< Register offset */
 #define XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET 0x1204U /**< Register offset */
 #define XDFEOFDM_CC_SEQUENCE_LENGTH_WIDTH 4U
+#define XDFEOFDM_CC_SEQUENCE_LENGTH_OFFSET 0U
 
 /* CC Sequence */
 #define XDFEOFDM_CC_SEQUENCE_CURRENT_OFFSET(X)                                 \
@@ -252,6 +267,13 @@ extern "C" {
 	(0x1540U + (X << 2U)) /**< Register offset */
 #define XDFEOFDM_CARRIER_CONFIGURATION2_OUTPUT_DELAY_OFFSET 0U
 #define XDFEOFDM_CARRIER_CONFIGURATION2_OUTPUT_DELAY_WIDTH 16U
+
+#define XDFEOFDM_PHASE_COMPENSATION_CURRENT_OFFSET(X)                          \
+	(0x2000U + (X << 2U)) /**< Register offset */
+#define XDFEOFDM_PHASE_COMPENSATION_NEXT_OFFSET(X)                             \
+	(0x3000U + (X << 2U)) /**< Register offset */
+#define XDFEOFDM_PHASE_COMPENSATION_OFFSET 0U
+#define XDFEOFDM_PHASE_COMPENSATION_WIDTH 32U
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,6 +23,7 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.00a jz  01/30/10 First release
+* 3.18  gm  07/14/23 Added SDT support.
 *
 * </pre>
 *
@@ -34,6 +35,9 @@
 #include "xscugic.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions ******************************/
 
@@ -42,9 +46,12 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define IIC_DEVICE_ID		XPAR_XIICPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define IIC_INT_VEC_ID		XPAR_XIICPS_0_INTR
+#endif
+
 
 /*
  * The slave address to send to and receive from.
@@ -63,15 +70,21 @@
 
 /************************** Function Prototypes *******************************/
 
+#ifndef SDT
 int IicPsSlaveIntrExample(u16 DeviceId);
 static int SetupInterruptSystem(XIicPs *IicPsPtr);
+#else
+int IicPsSlaveIntrExample(UINTPTR BaseAddress);
+#endif
 
 void Handler(void *CallBackRef, u32 Event);
 
 /************************** Variable Definitions ******************************/
 
 XIicPs Iic;			/* Instance of the IIC Device */
+#ifndef SDT
 XScuGic InterruptController; 	/* Instance of the Interrupt Controller */
+#endif
 
 /*
  * The following buffers are used in this example to send and receive data
@@ -112,7 +125,11 @@ int main(void)
 	 * Run the Iic Slave Interrupt example , specify the Device ID that is
 	 * generated in xparameters.h.
 	 */
+#ifndef SDT
 	Status = IicPsSlaveIntrExample(IIC_DEVICE_ID);
+#else
+	Status = IicPsSlaveIntrExample(XPAR_XIICPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("IIC Slave Interrupt Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -145,7 +162,11 @@ int main(void)
 * working it may never return.
 *
 *******************************************************************************/
+#ifndef SDT
 int IicPsSlaveIntrExample(u16 DeviceId)
+#else
+int IicPsSlaveIntrExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XIicPs_Config *Config;
@@ -156,7 +177,11 @@ int IicPsSlaveIntrExample(u16 DeviceId)
 	 * Look up the configuration in the config table,
 	 * then initialize it.
 	 */
+#ifndef SDT
 	Config = XIicPs_LookupConfig(DeviceId);
+#else
+	Config = XIicPs_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -178,7 +203,14 @@ int IicPsSlaveIntrExample(u16 DeviceId)
 	 * Connect the IIC to the interrupt subsystem such that interrupts can
 	 * occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Iic);
+#else
+	Status = XSetupInterruptSystem(&Iic, XIicPs_SlaveInterruptHandler,
+				       Config->IntrId,
+				       Config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -251,7 +283,7 @@ int IicPsSlaveIntrExample(u16 DeviceId)
 	/*
 	 * Verify received data.
 	 */
-	for(Index = 0; Index < TEST_BUFFER_SIZE; Index ++) {
+	for (Index = 0; Index < TEST_BUFFER_SIZE; Index ++) {
 		if (RecvBuffer[Index] != Index) {
 			return XST_FAILURE;
 		}
@@ -282,10 +314,9 @@ void Handler(void *CallBackRef, u32 Event)
 	/*
 	 * Data transfer finishes.
 	 */
-	if (0 != (Event & XIICPS_EVENT_COMPLETE_RECV)){
+	if (0 != (Event & XIICPS_EVENT_COMPLETE_RECV)) {
 		RecvComplete = TRUE;
-	}
-	else if (0 != (Event & XIICPS_EVENT_COMPLETE_SEND)) {
+	} else if (0 != (Event & XIICPS_EVENT_COMPLETE_SEND)) {
 		SendComplete = TRUE;
 	} else {
 
@@ -296,6 +327,7 @@ void Handler(void *CallBackRef, u32 Event)
 	}
 }
 
+#ifndef SDT
 /******************************************************************************/
 /**
 *
@@ -331,7 +363,7 @@ static int SetupInterruptSystem(XIicPs *IicPsPtr)
 	}
 
 	Status = XScuGic_CfgInitialize(&InterruptController, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -342,8 +374,8 @@ static int SetupInterruptSystem(XIicPs *IicPsPtr)
 	 * interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
-				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-				&InterruptController);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Connect the device driver handler that will be called when an
@@ -351,8 +383,8 @@ static int SetupInterruptSystem(XIicPs *IicPsPtr)
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(&InterruptController, IIC_INT_VEC_ID,
-			(Xil_InterruptHandler)XIicPs_SlaveInterruptHandler,
-			(void *)IicPsPtr);
+				 (Xil_InterruptHandler)XIicPs_SlaveInterruptHandler,
+				 (void *)IicPsPtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -370,3 +402,4 @@ static int SetupInterruptSystem(XIicPs *IicPsPtr)
 
 	return XST_SUCCESS;
 }
+#endif

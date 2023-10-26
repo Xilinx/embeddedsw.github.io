@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">spips
    </div>
@@ -88,6 +88,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:affb5ebe3e4dce28bb91536500dcc3d7b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_spi_ps___config.html#affb5ebe3e4dce28bb91536500dcc3d7b">InputClockHz</a></td></tr>
 <tr class="memdesc:affb5ebe3e4dce28bb91536500dcc3d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input clock frequency.  <a href="#affb5ebe3e4dce28bb91536500dcc3d7b">More...</a><br/></td></tr>
 <tr class="separator:affb5ebe3e4dce28bb91536500dcc3d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8110b04c0f446cd35df029a7e423fd6"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_spi_ps___config.html#ae8110b04c0f446cd35df029a7e423fd6">IntrId</a></td></tr>
+<tr class="memdesc:ae8110b04c0f446cd35df029a7e423fd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags.  <a href="#ae8110b04c0f446cd35df029a7e423fd6">More...</a><br/></td></tr>
+<tr class="separator:ae8110b04c0f446cd35df029a7e423fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67af05f80f2d57b0ea4c07e1ddb65629"><td class="memItemLeft" align="right" valign="top">UINTPTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_spi_ps___config.html#a67af05f80f2d57b0ea4c07e1ddb65629">IntrParent</a></td></tr>
+<tr class="memdesc:a67af05f80f2d57b0ea4c07e1ddb65629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bit[0] Interrupt parent type Bit[64/32:1] Parent base address.  <a href="#a67af05f80f2d57b0ea4c07e1ddb65629">More...</a><br/></td></tr>
+<tr class="separator:a67af05f80f2d57b0ea4c07e1ddb65629"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This typedef contains configuration information for the device. </p>
@@ -137,6 +143,38 @@ Data Fields</h2></td></tr>
 <p>Input clock frequency. </p>
 
 <p>Referenced by <a class="el" href="group__spips.html#gabfabf86279474d10c04bfe97f3386a64">XSpiPs_CfgInitialize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae8110b04c0f446cd35df029a7e423fd6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u16 XSpiPs_Config::IntrId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags. </p>
+
+<p>Referenced by <a class="el" href="xspips__eeprom__intr__example_8c.html#ac4f6ae168aa5c9e32b150541a19c595a">SpiPsEepromIntrExample()</a>, and <a class="el" href="xspips__flash__intr__example_8c.html#a8c9271980c9ee6af4d5c1c9169275672">SpiPsFlashIntrExample()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a67af05f80f2d57b0ea4c07e1ddb65629"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">UINTPTR XSpiPs_Config::IntrParent</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bit[0] Interrupt parent type Bit[64/32:1] Parent base address. </p>
+
+<p>Referenced by <a class="el" href="xspips__eeprom__intr__example_8c.html#ac4f6ae168aa5c9e32b150541a19c595a">SpiPsEepromIntrExample()</a>, and <a class="el" href="xspips__flash__intr__example_8c.html#a8c9271980c9ee6af4d5c1c9169275672">SpiPsFlashIntrExample()</a>.</p>
 
 </div>
 </div>

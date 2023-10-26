@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2003 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2003 - 20222 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -55,7 +56,7 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
-*
+* 11.6 Nava 06/28/23  Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -78,7 +79,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define HWICAP_BASEADDR         XPAR_HWICAP_0_BASEADDR
+#else
+#define HWICAP_BASEADDR		XPAR_XHWICAP_0_BASEADDR
+#endif
 
 /*
  * Number of words to Read for getting Id code.
@@ -90,8 +95,7 @@
  */
 #define HWICAP_EXAMPLE_BITSTREAM_LENGTH     6
 
-static u32 ReadId[HWICAP_EXAMPLE_BITSTREAM_LENGTH] =
-{
+static u32 ReadId[HWICAP_EXAMPLE_BITSTREAM_LENGTH] = {
 	XHI_DUMMY_PACKET, /* Dummy Word */
 	XHI_SYNC_PACKET, /* Sync Word*/
 	XHI_NOOP_PACKET, /* Type 1 NO OP */
@@ -186,7 +190,7 @@ u32 HwIcapLowLevelExample(u32 BaseAddress, u32 *IdCode)
 	 */
 	Retries = 0;
 	while ((XHwIcap_ReadReg(BaseAddress, XHI_SR_OFFSET) &
-			XHI_SR_DONE_MASK) != XHI_SR_DONE_MASK) {
+		XHI_SR_DONE_MASK) != XHI_SR_DONE_MASK) {
 		Retries++;
 		if (Retries > XHI_MAX_RETRIES) {
 
@@ -204,7 +208,7 @@ u32 HwIcapLowLevelExample(u32 BaseAddress, u32 *IdCode)
 	 * Wait till the Write bit is cleared in the CR register.
 	 */
 	while ((XHwIcap_ReadReg(BaseAddress, XHI_CR_OFFSET)) &
-					XHI_CR_WRITE_MASK);
+	       XHI_CR_WRITE_MASK);
 	/*
 	 * Write to the SIZE register. We want to readback one word.
 	 */
@@ -221,7 +225,7 @@ u32 HwIcapLowLevelExample(u32 BaseAddress, u32 *IdCode)
 	 */
 	Retries = 0;
 	while ((XHwIcap_ReadReg(BaseAddress, XHI_SR_OFFSET) &
-			XHI_SR_DONE_MASK) != XHI_SR_DONE_MASK) {
+		XHI_SR_DONE_MASK) != XHI_SR_DONE_MASK) {
 		Retries++;
 		if (Retries > XHI_MAX_RETRIES) {
 
@@ -237,7 +241,7 @@ u32 HwIcapLowLevelExample(u32 BaseAddress, u32 *IdCode)
 	 * Wait till the Read bit is cleared in the CR register.
 	 */
 	while ((XHwIcap_ReadReg(BaseAddress, XHI_CR_OFFSET)) &
-					XHI_CR_READ_MASK);
+	       XHI_CR_READ_MASK);
 	/*
 	 * Return the IDCODE value
 	 */

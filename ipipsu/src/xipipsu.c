@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -35,6 +36,7 @@
 *	sd  06/02/21	Update the crc code remove the check for max length.
 * 2.10	sd	07/14/21	Fix a unused label warning
 * 2.12	sd	03/29/22	Make the message pointer in XIpiPsu_WriteMessage constant
+* 2.14	ht	06/13/23	Restructured the code for more modularity
 * </pre>
 *
 *****************************************************************************/
@@ -45,11 +47,6 @@
 #include "xipipsu_buf.h"
 
 /************************** Constant Definitions *****************************/
-#define POLYNOM					0x8005U /**< Polynomial */
-#define INITIAL_CRC_VAL			0x4F4EU		/**< Initial crc value */
-#define CRC16_MASK				0xFFFFU /**< CRC mask */
-#define CRC16_HIGH_BIT_MASK		0x8000U		/**< CRC high bit mask */
-#define NUM_BITS_IN_BYTE		0x8U		/**< 8 bits in a byte */
 
 /****************************************************************************/
 /**
@@ -66,27 +63,34 @@
  *
  */
 
-XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config * CfgPtr,
-		UINTPTR EffectiveAddress)
+XStatus XIpiPsu_CfgInitialize(XIpiPsu *InstancePtr, XIpiPsu_Config *CfgPtr,
+			      UINTPTR EffectiveAddress)
 {
 	u32 Index;
-	/* Verify arguments */
+
+	/* Validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(CfgPtr != NULL);
 	/* Set device base address and ID */
+#ifndef SDT
 	InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+#endif
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
 	InstancePtr->Config.BitMask = CfgPtr->BitMask;
 	InstancePtr->Config.IntId = CfgPtr->IntId;
+#ifdef SDT
+	InstancePtr->Config.IntrParent = CfgPtr->IntrParent;
+#endif
 	InstancePtr->Config.BufferIndex = CfgPtr->BufferIndex;
 
 	InstancePtr->Config.TargetCount = CfgPtr->TargetCount;
 
+	/* Initialize the TargetList */
 	for (Index = 0U; Index < CfgPtr->TargetCount; Index++) {
 		InstancePtr->Config.TargetList[Index].Mask =
-				CfgPtr->TargetList[Index].Mask;
+			CfgPtr->TargetList[Index].Mask;
 		InstancePtr->Config.TargetList[Index].BufferIndex =
-				CfgPtr->TargetList[Index].BufferIndex;
+			CfgPtr->TargetList[Index].BufferIndex;
 	}
 
 	/* Mark the component as Ready */
@@ -112,11 +116,11 @@ void XIpiPsu_Reset(XIpiPsu *InstancePtr)
 	/**************Disable***************/
 
 	XIpiPsu_WriteReg(InstancePtr->Config.BaseAddress, XIPIPSU_IDR_OFFSET,
-			XIPIPSU_ALL_MASK);
+			 XIPIPSU_ALL_MASK);
 
 	/**************Clear***************/
 	XIpiPsu_WriteReg(InstancePtr->Config.BaseAddress, XIPIPSU_ISR_OFFSET,
-			XIPIPSU_ALL_MASK);
+			 XIPIPSU_ALL_MASK);
 
 }
 
@@ -133,13 +137,13 @@ void XIpiPsu_Reset(XIpiPsu *InstancePtr)
 
 XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask)
 {
-
+	/* Validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	/* Trigger an IPI to the Target */
 	XIpiPsu_WriteReg(InstancePtr->Config.BaseAddress, XIPIPSU_TRIG_OFFSET,
-			DestCpuMask);
+			 DestCpuMask);
 	return (XStatus) XST_SUCCESS;
 
 }
@@ -156,11 +160,12 @@ XStatus XIpiPsu_TriggerIpi(XIpiPsu *InstancePtr, u32 DestCpuMask)
  */
 
 XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
-		u32 TimeOutCount)
+			   u32 TimeOutCount)
 {
 	u32 Flag, PollCount;
 	XStatus Status;
 
+	/* Validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
@@ -168,7 +173,7 @@ XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
 	/* Poll the OBS register until the corresponding DestCpu bit is cleared */
 	do {
 		Flag = (XIpiPsu_ReadReg(InstancePtr->Config.BaseAddress,
-				XIPIPSU_OBS_OFFSET)) & (DestCpuMask);
+					XIPIPSU_OBS_OFFSET)) & (DestCpuMask);
 		PollCount++;
 		/* Check if the IPI was Acknowledged by the Target or we Timed Out*/
 	} while ((0x00000000U != Flag) && (PollCount < TimeOutCount));
@@ -182,45 +187,6 @@ XStatus XIpiPsu_PollForAck(const XIpiPsu *InstancePtr, u32 DestCpuMask,
 	return Status;
 }
 
-#ifdef ENABLE_IPI_CRC
-/**
- * @brief Calculate CRC for IPI buffer data
- *
- * @param	BufAddr - buffer on which CRC is calculated
- * @param	BufSize - size of the buffer in bytes
- *
- * @return	Checksum - 16 bit CRC value
- */
-static u32 XIpiPsu_CalculateCRC(u32 BufAddr, u32 BufSize)
-{
-	u32 Crc16 = INITIAL_CRC_VAL;
-	u32 DataIn;
-	u32 Idx = 0;
-	u32 Bits = 0;
-	volatile u32 Temp1Crc;
-	volatile u32 Temp2Crc;
-
-	for (Idx = 0U; Idx < BufSize; Idx++) {
-		/* Move byte into MSB of 16bit CRC */
-		DataIn = (u32)Xil_In8(BufAddr + Idx);
-		Crc16 ^= (DataIn << NUM_BITS_IN_BYTE);
-
-		/* Process each bit of 8 bit value */
-		for (Bits = 0; Bits < NUM_BITS_IN_BYTE; Bits++) {
-			Temp1Crc = ((Crc16 << 1U) ^ POLYNOM);
-			Temp2Crc = Crc16 << 1U;
-
-			if ((Crc16 & CRC16_HIGH_BIT_MASK) != 0) {
-				Crc16 = Temp1Crc;
-			} else {
-				Crc16 = Temp2Crc;
-			}
-		}
-		Crc16 &= CRC16_MASK;
-	}
-	return Crc16;
-}
-#endif
 
 /**
  * @brief	Read an Incoming Message from a Source
@@ -236,7 +202,7 @@ static u32 XIpiPsu_CalculateCRC(u32 BufAddr, u32 BufSize)
  */
 
 XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
-		u32 MsgLength, u8 BufferType)
+			    u32 MsgLength, u8 BufferType)
 {
 	XStatus Status = (XStatus) XST_FAILURE;
 	u32 *BufferPtr;
@@ -245,13 +211,15 @@ XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 
 	(void)Crc;
 
+	/* Validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(MsgPtr != NULL);
 	Xil_AssertNonvoid(MsgLength <= XIPIPSU_MAX_MSG_LEN);
 
+	/*Get the Buffer Address for a given pair of CPUs */
 	BufferPtr = XIpiPsu_GetBufferAddress(InstancePtr, SrcCpuMask,
-			InstancePtr->Config.BitMask, BufferType);
+					     InstancePtr->Config.BitMask, BufferType);
 	if (BufferPtr != NULL) {
 #ifdef ENABLE_IPI_CRC
 		Crc = XIpiPsu_CalculateCRC((u32)BufferPtr, XIPIPSU_W0_TO_W6_SIZE);
@@ -272,6 +240,7 @@ XStatus XIpiPsu_ReadMessage(XIpiPsu *InstancePtr, u32 SrcCpuMask, u32 *MsgPtr,
 #ifdef ENABLE_IPI_CRC
 END:
 #endif
+	/* Return statement */
 	return Status;
 }
 
@@ -289,20 +258,23 @@ END:
  * 			XST_FAILURE if an error occurred
  */
 
-XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask,const u32 *MsgPtr,
-		u32 MsgLength, u8 BufferType)
+XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask, const u32 *MsgPtr,
+			     u32 MsgLength, u8 BufferType)
 {
 	XStatus Status = (XStatus)XST_FAILURE;
 	u32 *BufferPtr;
 	u32 Index;
 
+	/* Validate the input arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(MsgPtr != NULL);
 	Xil_AssertNonvoid(MsgLength <= XIPIPSU_MAX_MSG_LEN);
 
+	/*Get the Buffer Address for a given pair of CPUs */
 	BufferPtr = XIpiPsu_GetBufferAddress(InstancePtr,
-			InstancePtr->Config.BitMask, DestCpuMask, BufferType);
+					     InstancePtr->Config.BitMask, DestCpuMask, BufferType);
+
 	if (BufferPtr != NULL) {
 		/* Copy the Message to IPI Buffer */
 		for (Index = 0U; Index < MsgLength; Index++) {
@@ -311,11 +283,12 @@ XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask,const u32 *Ms
 #ifdef ENABLE_IPI_CRC
 		/* Word 8 in IPI is reserved for storing CRC */
 		BufferPtr[XIPIPSU_CRC_INDEX] =
-				XIpiPsu_CalculateCRC((u32)BufferPtr, XIPIPSU_W0_TO_W6_SIZE);
+			XIpiPsu_CalculateCRC((u32)BufferPtr, XIPIPSU_W0_TO_W6_SIZE);
 #endif
 		Status = (XStatus)XST_SUCCESS;
 	}
 
+	/* Return statement */
 	return Status;
 }
 
@@ -340,13 +313,17 @@ XStatus XIpiPsu_WriteMessage(XIpiPsu *InstancePtr, u32 DestCpuMask,const u32 *Ms
 * 			use cases, this is not needed.
 *
 ******************************************************************************/
+#ifndef SDT
 void XIpiPsu_SetConfigTable(u32 DeviceId, XIpiPsu_Config *ConfigTblPtr)
 {
 	u32 Index;
 
+	/* Validate the input argument */
 	Xil_AssertVoid(ConfigTblPtr != NULL);
 
+	/* Loop through all the IPI devices present in the system */
 	for (Index = 0U; Index < XPAR_XIPIPSU_NUM_INSTANCES; Index++) {
+		/* Set up the device configuration based on the unique device ID */
 		if (XIpiPsu_ConfigTable[Index].DeviceId == DeviceId) {
 			XIpiPsu_ConfigTable[Index].BaseAddress = ConfigTblPtr->BaseAddress;
 			XIpiPsu_ConfigTable[Index].BitMask = ConfigTblPtr->BitMask;
@@ -355,4 +332,5 @@ void XIpiPsu_SetConfigTable(u32 DeviceId, XIpiPsu_Config *ConfigTblPtr)
 		}
 	}
 }
+#endif
 /** @} */

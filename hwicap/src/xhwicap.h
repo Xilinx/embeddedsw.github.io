@@ -163,6 +163,7 @@
 *                      families older than 7 series.So removed .o referenced
 *                      function prototypes from the header file.
 * 11.5 Nava   09/30/22 Added new IDCODE's as mentioned in the ug570 Doc.
+* 11.6 Nava   06/28/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -216,14 +217,22 @@ extern "C" {
  *		requested if there was an error.
  */
 typedef void (*XHwIcap_StatusHandler) (void *CallBackRef, u32 StatusEvent,
-					u32 WordCount);
+				       u32 WordCount);
 
 
 /**
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Device ID  of device */
+#else
+	char *Name;
+	u32 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
+				  * trigger type and level flags */
+	UINTPTR IntrParent;	/** Bit[0] Interrupt parent type Bit[64/32:1]
+				  * Parent base address */
+#endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	int IcapWidth;		/**< Width of ICAP */
 	int IsLiteMode;		/**< IsLiteMode, 0 not
@@ -231,11 +240,11 @@ typedef struct {
 
 } XHwIcap_Config;
 
- /**
-  * The XHwIcap driver instance data. The user is required to allocate a
-  * variable of this type for every HwIcap device in the system. A pointer
-  * to a variable of this type is then passed to the driver API functions.
-  */
+/**
+ * The XHwIcap driver instance data. The user is required to allocate a
+ * variable of this type for every HwIcap device in the system. A pointer
+ * to a variable of this type is then passed to the driver API functions.
+ */
 typedef struct {
 	XHwIcap_Config HwIcapConfig; /**< Instance of the config struct. */
 	u32 IsReady;		     /**< Device is initialized and ready */
@@ -280,7 +289,7 @@ typedef struct {
 *****************************************************************************/
 #define XHwIcap_FifoWrite(InstancePtr, Data) 				\
 	(XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress),	\
-		XHI_WF_OFFSET, (Data)))
+			  XHI_WF_OFFSET, (Data)))
 
 /****************************************************************************/
 /**
@@ -296,7 +305,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XHwIcap_FifoRead(InstancePtr) 					\
-(XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_RF_OFFSET))
+	(XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_RF_OFFSET))
 
 /****************************************************************************/
 /**
@@ -317,7 +326,7 @@ typedef struct {
 *****************************************************************************/
 #define XHwIcap_SetSizeReg(InstancePtr, Data) \
 	(XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress), \
-		XHI_SZ_OFFSET, (Data)))
+			  XHI_SZ_OFFSET, (Data)))
 
 /****************************************************************************/
 /**
@@ -333,7 +342,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XHwIcap_GetControlReg(InstancePtr) \
- (XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_CR_OFFSET))
+	(XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_CR_OFFSET))
 
 
 /****************************************************************************/
@@ -350,9 +359,9 @@ typedef struct {
 *
 *****************************************************************************/
 #define XHwIcap_StartConfig(InstancePtr) \
- (XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_CR_OFFSET, \
- 	(XHwIcap_GetControlReg(InstancePtr) & 				      \
- 	(~ XHI_CR_READ_MASK)) | XHI_CR_WRITE_MASK))
+	(XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_CR_OFFSET, \
+			  (XHwIcap_GetControlReg(InstancePtr) & 				      \
+			   (~ XHI_CR_READ_MASK)) | XHI_CR_WRITE_MASK))
 
 
 /****************************************************************************/
@@ -369,9 +378,9 @@ typedef struct {
 *
 *****************************************************************************/
 #define XHwIcap_StartReadBack(InstancePtr) \
- (XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress) , XHI_CR_OFFSET, \
- 	(XHwIcap_GetControlReg(InstancePtr) & 				      \
- 	(~ XHI_CR_WRITE_MASK)) | XHI_CR_READ_MASK))
+	(XHwIcap_WriteReg(((InstancePtr)->HwIcapConfig.BaseAddress) , XHI_CR_OFFSET, \
+			  (XHwIcap_GetControlReg(InstancePtr) & 				      \
+			   (~ XHI_CR_WRITE_MASK)) | XHI_CR_READ_MASK))
 
 
 /****************************************************************************/
@@ -387,7 +396,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XHwIcap_GetStatusReg(InstancePtr) \
-(XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_SR_OFFSET))
+	(XHwIcap_ReadReg(((InstancePtr)->HwIcapConfig.BaseAddress), XHI_SR_OFFSET))
 
 /****************************************************************************/
 /**
@@ -427,7 +436,7 @@ typedef struct {
 *****************************************************************************/
 #define XHwIcap_IsDeviceBusy(InstancePtr)			\
 	((XHwIcap_GetStatusReg(InstancePtr) & XHI_SR_DONE_MASK) ? \
-				FALSE : TRUE)
+	 FALSE : TRUE)
 
 /*****************************************************************************/
 /**
@@ -447,7 +456,7 @@ typedef struct {
 ******************************************************************************/
 #define XHwIcap_IntrGlobalEnable(InstancePtr)				\
 	XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress,	\
-				XHI_GIER_OFFSET, XHI_GIER_GIE_MASK)
+			 XHI_GIER_OFFSET, XHI_GIER_GIE_MASK)
 
 /*****************************************************************************/
 /**
@@ -466,7 +475,7 @@ typedef struct {
 ******************************************************************************/
 #define XHwIcap_IntrGlobalDisable(InstancePtr)				\
 	XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress,	\
-				XHI_GIER_OFFSET, 0x0)
+			 XHI_GIER_OFFSET, 0x0)
 
 /*****************************************************************************/
 /**
@@ -485,7 +494,7 @@ typedef struct {
 ******************************************************************************/
 #define XHwIcap_IntrGetStatus(InstancePtr)				\
 	XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
-				XHI_IPISR_OFFSET)
+			XHI_IPISR_OFFSET)
 
 /*****************************************************************************/
 /**
@@ -507,11 +516,11 @@ typedef struct {
 *
 ******************************************************************************/
 #define XHwIcap_IntrDisable(InstancePtr, IntrMask)           \
-XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
-			XHI_IPIER_OFFSET, \
-	XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
-		XHI_IPIER_OFFSET) & (~ (IntrMask & XHI_IPIXR_ALL_MASK)));\
-		(InstancePtr)->IsPolled = TRUE;
+	XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
+			 XHI_IPIER_OFFSET, \
+			 XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
+					 XHI_IPIER_OFFSET) & (~ (IntrMask & XHI_IPIXR_ALL_MASK)));\
+	(InstancePtr)->IsPolled = TRUE;
 
 /*****************************************************************************/
 /**
@@ -534,10 +543,10 @@ XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
 ******************************************************************************/
 #define XHwIcap_IntrEnable(InstancePtr, IntrMask) \
 	XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
-			XHI_IPIER_OFFSET, \
-	(XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
-		XHI_IPIER_OFFSET) | ((IntrMask) & XHI_IPIXR_ALL_MASK))); \
-		(InstancePtr)->IsPolled = FALSE;
+			 XHI_IPIER_OFFSET, \
+			 (XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
+					  XHI_IPIER_OFFSET) | ((IntrMask) & XHI_IPIXR_ALL_MASK))); \
+	(InstancePtr)->IsPolled = FALSE;
 
 /*****************************************************************************/
 /**
@@ -575,9 +584,9 @@ XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
 ******************************************************************************/
 #define XHwIcap_IntrClear(InstancePtr, IntrMask)           \
 	XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
-			XHI_IPISR_OFFSET, \
-		XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
-		XHI_IPISR_OFFSET) | ((IntrMask) & XHI_IPIXR_ALL_MASK))
+			 XHI_IPISR_OFFSET, \
+			 XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, \
+					 XHI_IPISR_OFFSET) | ((IntrMask) & XHI_IPIXR_ALL_MASK))
 
 /*****************************************************************************/
 /**
@@ -595,7 +604,7 @@ XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
 *
 ******************************************************************************/
 #define XHwIcap_GetWrFifoVacancy(InstancePtr)				\
- XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, XHI_WFV_OFFSET)
+	XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, XHI_WFV_OFFSET)
 
 /*****************************************************************************/
 /**
@@ -611,7 +620,7 @@ XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
 *
 ******************************************************************************/
 #define XHwIcap_GetRdFifoOccupancy(InstancePtr)		\
- XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, XHI_RFO_OFFSET)
+	XHwIcap_ReadReg((InstancePtr)->HwIcapConfig.BaseAddress, XHI_RFO_OFFSET)
 
 /************************** Function Prototypes *****************************/
 
@@ -619,7 +628,7 @@ XHwIcap_WriteReg((InstancePtr)->HwIcapConfig.BaseAddress, 	\
  * Functions in the xhwicap.c
  */
 int XHwIcap_CfgInitialize(XHwIcap *InstancePtr, XHwIcap_Config *ConfigPtr,
-				UINTPTR EffectiveAddr);
+			  UINTPTR EffectiveAddr);
 int XHwIcap_DeviceWrite(XHwIcap *InstancePtr, u32 *FrameBuffer, u32 NumWords);
 int XHwIcap_DeviceRead(XHwIcap *InstancePtr, u32 *FrameBuffer, u32 NumWords);
 void XHwIcap_Reset(XHwIcap *InstancePtr);
@@ -629,7 +638,11 @@ void XHwIcap_Abort(XHwIcap *InstancePtr);
 /*
  * Functions in xhwicap_sinit.c.
  */
+#ifndef SDT
 XHwIcap_Config *XHwIcap_LookupConfig(u16 DeviceId);
+#else
+XHwIcap_Config *XHwIcap_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * Functions in the xhwicap_srp.c
@@ -641,30 +654,30 @@ u32 XHwIcap_GetConfigReg(XHwIcap *InstancePtr, u32 ConfigReg, u32 *RegData);
 /*
  *  Function in xhwicap_selftest.c
  */
- int XHwIcap_SelfTest(XHwIcap *InstancePtr);
+int XHwIcap_SelfTest(XHwIcap *InstancePtr);
 
 /*
  *  Function in xhwicap_intr.c
  */
 void XHwIcap_IntrHandler(void *InstancePtr);
-void XHwIcap_SetInterruptHandler(XHwIcap * InstancePtr, void *CallBackRef,
-			   XHwIcap_StatusHandler FuncPtr);
+void XHwIcap_SetInterruptHandler(XHwIcap *InstancePtr, void *CallBackRef,
+				 XHwIcap_StatusHandler FuncPtr);
 
 /*
  * Functions in the xhwicap_device_read_frame.c
  */
 int XHwIcap_DeviceReadFrame(XHwIcap *InstancePtr, long Top,
-				long Block, long HClkRow,
-				long MajorFrame, long MinorFrame,
-				u32 *FrameBuffer);
+			    long Block, long HClkRow,
+			    long MajorFrame, long MinorFrame,
+			    u32 *FrameBuffer);
 
 /*
  * Functions in the xhwicap_device_write_frame.c
  */
 int XHwIcap_DeviceWriteFrame(XHwIcap *InstancePtr, long Top,
-				long Block, long HClkRow,
-				long MajorFrame, long MinorFrame,
-				u32 *FrameData);
+			     long Block, long HClkRow,
+			     long MajorFrame, long MinorFrame,
+			     u32 *FrameData);
 
 /************************** Variable Declarations ***************************/
 

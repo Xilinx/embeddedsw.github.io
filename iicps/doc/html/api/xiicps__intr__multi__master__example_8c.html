@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">iicps
    </div>
@@ -75,7 +75,8 @@ $(document).ready(function(){initNavTree('xiicps__intr__multi__master__example_8
 </p>
 <hr/>
 <p>
-1.00a sg  03/09/19 First release</pre><pre></pre> </div><table class="memberdecls">
+1.00a sg  03/09/19 First release
+3.18   gm   07/14/23 Added SDT support.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aafb491ea5cbffa3e3f6364edec38341e"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiicps__intr__multi__master__example_8c.html#aafb491ea5cbffa3e3f6364edec38341e">IicPsMultiMasterIntrExample</a> (u16 DeviceId)</td></tr>
@@ -156,7 +157,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This function contains an infinite loop such that if interrupts are not working it may never return. </p>
 
-<p>References <a class="el" href="struct_x_iic_ps___config.html#a2bdee49f560d4a22a433c6c327d6d912">XIicPs_Config::BaseAddress</a>, <a class="el" href="xiicps__intr__master__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="xiicps__eeprom__intr__example_8c.html#aa443a47eeb2dc837aa355392c701f05e">TotalErrorCount</a>, <a class="el" href="group__iicps.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, <a class="el" href="group__iicps.html#gae97ad9c202953c7e49bfb56533c47079">XIicPs_CfgInitialize()</a>, <a class="el" href="group__iicps.html#ga14c7ff4f51185d8aab0028c0eeb3c336">XIicPs_LookupConfig()</a>, <a class="el" href="group__iicps.html#ga4817f45c28341cea4ab8960dc1203acb">XIicPs_MasterRecv()</a>, <a class="el" href="group__iicps.html#ga3027c1eb6ece3193a978a2da8e06c011">XIicPs_MasterSend()</a>, <a class="el" href="group__iicps.html#ga6f9db7651cd6ee0232dc9fdaca3f976a">XIicPs_SelfTest()</a>, <a class="el" href="group__iicps.html#gafb24cfdacf6cf28d80126862dc1cfbe5">XIicPs_SetSClk()</a>, and <a class="el" href="group__iicps.html#gab2581047e7d5607fe96fe0dac9673527">XIicPs_SetStatusHandler()</a>.</p>
+<p>References <a class="el" href="struct_x_iic_ps___config.html#a2bdee49f560d4a22a433c6c327d6d912">XIicPs_Config::BaseAddress</a>, <a class="el" href="xiicps__intr__master__example_8c.html#aec9a48698a06b521d36fbec8793119ec">Handler()</a>, <a class="el" href="xiicps__eeprom__intr__example_8c.html#aa443a47eeb2dc837aa355392c701f05e">TotalErrorCount</a>, <a class="el" href="group__iicps.html#ga5b67ad96b8c40bdd47c2c2f8a57f170c">XIicPs_BusIsBusy()</a>, <a class="el" href="group__iicps.html#gae97ad9c202953c7e49bfb56533c47079">XIicPs_CfgInitialize()</a>, <a class="el" href="group__iicps.html#ga14c7ff4f51185d8aab0028c0eeb3c336">XIicPs_LookupConfig()</a>, <a class="el" href="group__iicps.html#gad64f0389aa694ecf21ca8a39e44cf13f">XIicPs_MasterInterruptHandler()</a>, <a class="el" href="group__iicps.html#ga4817f45c28341cea4ab8960dc1203acb">XIicPs_MasterRecv()</a>, <a class="el" href="group__iicps.html#ga3027c1eb6ece3193a978a2da8e06c011">XIicPs_MasterSend()</a>, <a class="el" href="group__iicps.html#ga6f9db7651cd6ee0232dc9fdaca3f976a">XIicPs_SelfTest()</a>, <a class="el" href="group__iicps.html#gafb24cfdacf6cf28d80126862dc1cfbe5">XIicPs_SetSClk()</a>, and <a class="el" href="group__iicps.html#gab2581047e7d5607fe96fe0dac9673527">XIicPs_SetStatusHandler()</a>.</p>
 
 <p>Referenced by <a class="el" href="xiicps__intr__multi__master__example_8c.html#a829bd6402048eb2a52282fa941b2c45d">main()</a>.</p>
 

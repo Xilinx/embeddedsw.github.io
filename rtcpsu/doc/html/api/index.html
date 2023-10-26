@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">rtcpsu
    </div>
@@ -86,8 +86,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Alarm is generated.</li>
 <li>A new second is generated.</li>
 </ul>
-<p>The application can control which interrupts are enabled using the <a class="el" href="group__rtcpsu__v1__11.html#ga645920d3519722e8dc815d07db527367" title="This function sets the interrupt mask. ">XRtcPsu_SetInterruptMask()</a> function.</p>
-<p>In order to use interrupts, it is necessary for the user to connect the driver interrupt handler, <a class="el" href="group__rtcpsu__v1__11.html#ga01ca03d23194687c8026dc2f38da6ff7" title="This function is the interrupt handler for the driver. ">XRtcPsu_InterruptHandler()</a>, to the interrupt system of the application. A separate handler should be provided by the application to communicate with the interrupt system, and conduct application specific interrupt handling. An application registers its own handler through the <a class="el" href="group__rtcpsu__v1__11.html#ga40b45bedf590e3e65eb525f1827768e4" title="This function sets the handler that will be called when an event (interrupt) occurs that needs applic...">XRtcPsu_SetHandler()</a> function.</p>
+<p>The application can control which interrupts are enabled using the <a class="el" href="group__rtcpsu.html#ga645920d3519722e8dc815d07db527367" title="This function sets the interrupt mask. ">XRtcPsu_SetInterruptMask()</a> function.</p>
+<p>In order to use interrupts, it is necessary for the user to connect the driver interrupt handler, <a class="el" href="group__rtcpsu.html#ga01ca03d23194687c8026dc2f38da6ff7" title="This function is the interrupt handler for the driver. ">XRtcPsu_InterruptHandler()</a>, to the interrupt system of the application. A separate handler should be provided by the application to communicate with the interrupt system, and conduct application specific interrupt handling. An application registers its own handler through the <a class="el" href="group__rtcpsu.html#ga40b45bedf590e3e65eb525f1827768e4" title="This function sets the handler that will be called when an event (interrupt) occurs that needs applic...">XRtcPsu_SetHandler()</a> function.</p>
 <pre>
 MODIFICATION HISTORY:</pre><pre>Ver   Who    Date       Changes
 </p>
@@ -120,7 +120,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date       Changes
                       Literal value requires a U suffix,Casting operation to a pointer
                       Array has no bounds specified,Logical conjunctions need brackets.
 1.10     sne    08/28/20 Modify Makefile to support parallel make execution.
-1.11     sne    04/23/21 Fixed doxygen warnings.</pre><pre></pre> </div></div><!-- contents -->
+1.11     sne    04/23/21 Fixed doxygen warnings.
+1.13  ht        06/22/23 Added support for system device-tree flow.
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>

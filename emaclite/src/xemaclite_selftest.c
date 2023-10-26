@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite_selftest.c
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 *
 * Function(s) in this file are the required functions for the EMAC Lite
@@ -61,7 +62,7 @@
 * @note		None.
 *
 ******************************************************************************/
-int XEmacLite_SelfTest(XEmacLite * InstancePtr)
+int XEmacLite_SelfTest(XEmacLite *InstancePtr)
 {
 	UINTPTR BaseAddress;
 	u8 Index;
@@ -77,7 +78,7 @@ int XEmacLite_SelfTest(XEmacLite * InstancePtr)
 	 * Determine the TX buffer address
 	 */
 	BaseAddress = InstancePtr->EmacLiteConfig.BaseAddress +
-			XEL_TXBUFF_OFFSET;
+		      XEL_TXBUFF_OFFSET;
 
 	/*
 	 * Write the TestString to the TX buffer in EMAC Lite then
@@ -131,7 +132,7 @@ int XEmacLite_SelfTest(XEmacLite * InstancePtr)
 	 * Determine the RX buffer address
 	 */
 	BaseAddress = InstancePtr->EmacLiteConfig.BaseAddress +
-				XEL_RXBUFF_OFFSET;
+		      XEL_RXBUFF_OFFSET;
 
 	/*
 	 * Write the TestString to the RX buffer in EMAC Lite then

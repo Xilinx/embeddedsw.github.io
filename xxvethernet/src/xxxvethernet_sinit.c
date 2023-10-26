@@ -1,12 +1,13 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /**
 *
 * @file xxxvethernet_sinit.c
-* @addtogroup xxvethernet_v1_7
+* @addtogroup xxvethernet Overview
 * @{
 *
 * This file contains static initialization functionality for XXV Ethernet driver.
@@ -25,7 +26,9 @@
 
 /***************************** Include Files *********************************/
 
+#ifndef SDT
 #include "xparameters.h"
+#endif
 #include "xxxvethernet.h"
 
 /************************** Constant Definitions *****************************/
@@ -55,6 +58,25 @@
 *		- NULL if no match is found.
 *
 ******************************************************************************/
+#ifdef SDT
+XXxvEthernet_Config *XXxvEthernet_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XXxvEthernet_Config XXxvEthernet_ConfigTable[];
+	XXxvEthernet_Config *CfgPtr = NULL;
+	int Index;
+
+	for (Index = 0x0; XXxvEthernet_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XXxvEthernet_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XXxvEthernet_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (CfgPtr);
+}
+#else
+
 XXxvEthernet_Config *XXxvEthernet_LookupConfig(u16 DeviceId)
 {
 	extern XXxvEthernet_Config XXxvEthernet_ConfigTable[];
@@ -70,7 +92,7 @@ XXxvEthernet_Config *XXxvEthernet_LookupConfig(u16 DeviceId)
 
 	return (CfgPtr);
 }
-
+#endif
 /*****************************************************************************/
 /**
 * XXxvEthernet_LookupConfigBaseAddr returns a reference to an
@@ -87,6 +109,24 @@ XXxvEthernet_Config *XXxvEthernet_LookupConfig(u16 DeviceId)
 *		- NULL if no match is found.
 *
 ******************************************************************************/
+#ifdef SDT
+XXxvEthernet_Config *XXxvEthernet_LookupConfigBaseAddr(UINTPTR BaseAddress)
+{
+	extern XXxvEthernet_Config XXxvEthernet_ConfigTable[];
+	XXxvEthernet_Config *CfgPtr = NULL;
+	int Index;
+
+	for (Index = 0x0; XXxvEthernet_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XXxvEthernet_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XXxvEthernet_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (CfgPtr);
+}
+#else
 XXxvEthernet_Config *XXxvEthernet_LookupConfigBaseAddr(UINTPTR Baseaddr)
 {
 	extern XXxvEthernet_Config XXxvEthernet_ConfigTable[];
@@ -102,4 +142,5 @@ XXxvEthernet_Config *XXxvEthernet_LookupConfigBaseAddr(UINTPTR Baseaddr)
 
 	return (CfgPtr);
 }
+#endif
 /** @} */

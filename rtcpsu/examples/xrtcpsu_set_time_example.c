@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -21,6 +22,7 @@
 * ----- ------ -------- -----------------------------------------------
 * 1.00  kvn 05/12/15 First Release
 * 1.6	tjs 09/17/18 Fixed compilation warnings
+* 1.13	ht  06/21/23 Added support for system device-tree flow.
 *
 * </pre>
 ******************************************************************************/
@@ -39,7 +41,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define RTC_DEVICE_ID              XPAR_XRTCPSU_0_DEVICE_ID
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -47,7 +51,11 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int RtcPsuSetTimeExample(u16 DeviceId);
+#else
+int RtcPsuSetTimeExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -74,7 +82,11 @@ int main(void)
 	 * Run the Rtc_Psu set time example , specify the the Device ID that is
 	 * generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = RtcPsuSetTimeExample(RTC_DEVICE_ID);
+#else
+	Status = RtcPsuSetTimeExample(XPAR_XRTCPSU_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("RTC Set time Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -99,17 +111,25 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 int RtcPsuSetTimeExample(u16 DeviceId)
+#else
+int RtcPsuSetTimeExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
-	u32 CurrentTime, DesiredTime,LastSetTime;
-	XRtcPsu_DT dt1,dt2,dt3;
+	u32 CurrentTime, DesiredTime, LastSetTime;
+	XRtcPsu_DT dt1, dt2, dt3;
 
 	/*
 	 * Initialize the RTC driver so that it's ready to use.
 	 * Look up the configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XRtcPsu_LookupConfig(DeviceId);
+#else
+	Config = XRtcPsu_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -128,28 +148,28 @@ int RtcPsuSetTimeExample(u16 DeviceId)
 	xil_printf("Day Convention : 0-Fri, 1-Sat, 2-Sun, 3-Mon, 4-Tue, 5-Wed, 6-Thur\n\r");
 	xil_printf("Last set time for RTC is..\n\r");
 	LastSetTime = XRtcPsu_GetLastSetTime(&Rtc_Psu);
-	XRtcPsu_SecToDateTime(LastSetTime,&dt1);
+	XRtcPsu_SecToDateTime(LastSetTime, &dt1);
 	xil_printf("YEAR:MM:DD HR:MM:SS \t %04d:%02d:%02d %02d:%02d:%02d\t Day = %d\n\r",
-			dt1.Year,dt1.Month,dt1.Day,dt1.Hour,dt1.Min,dt1.Sec,dt1.WeekDay);
+		   dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Min, dt1.Sec, dt1.WeekDay);
 
 	xil_printf("Current RTC time is..\n\r");
 	CurrentTime = XRtcPsu_GetCurrentTime(&Rtc_Psu);
-	XRtcPsu_SecToDateTime(CurrentTime,&dt2);
+	XRtcPsu_SecToDateTime(CurrentTime, &dt2);
 	xil_printf("YEAR:MM:DD HR:MM:SS \t %04d:%02d:%02d %02d:%02d:%02d\t Day = %d\n\r",
-			dt2.Year,dt2.Month,dt2.Day,dt2.Hour,dt2.Min,dt2.Sec,dt2.WeekDay);
+		   dt2.Year, dt2.Month, dt2.Day, dt2.Hour, dt2.Min, dt2.Sec, dt2.WeekDay);
 
 	xil_printf("Enter Desired Current Time YEAR:MM:DD HR:MM:SS : ");
 #if defined(__aarch64__)
 	scanf("%d %d %d %d %d %d", &dt3.Year, &dt3.Month, &dt3.Day,
-			&dt3.Hour, &dt3.Min, &dt3.Sec);
+	      &dt3.Hour, &dt3.Min, &dt3.Sec);
 #else
 	scanf("%ld %ld %ld %ld %ld %ld", &dt3.Year, &dt3.Month, &dt3.Day,
-			&dt3.Hour, &dt3.Min, &dt3.Sec);
+	      &dt3.Hour, &dt3.Min, &dt3.Sec);
 #endif
-	xil_printf("%d %d %d %d %d %d\n\r",dt3.Year,dt3.Month,dt3.Day,dt3.Hour,dt3.Min,dt3.Sec);
+	xil_printf("%d %d %d %d %d %d\n\r", dt3.Year, dt3.Month, dt3.Day, dt3.Hour, dt3.Min, dt3.Sec);
 
 	DesiredTime = XRtcPsu_DateTimeToSec(&dt3);
-	XRtcPsu_SetTime(&Rtc_Psu,DesiredTime);
+	XRtcPsu_SetTime(&Rtc_Psu, DesiredTime);
 
 	return XST_SUCCESS;
 }

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,13 +21,16 @@
 * ----- ---- -------- -------------------------------------------------------
 * 1.0 ram 02/12/16 Initial version for Clock Wizard
 * 1.2 ms  03/02/17 Fixed compilation errors. Fix for CR-970507.
+* 1.6 sd  07/07/23 Added SDT support.
 * </pre>
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xstatus.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 #include "xclk_wiz_hw.h"
 #include "xclk_wiz.h"
 
@@ -90,7 +94,7 @@ void XClk_Wiz_InterruptDisable(XClk_Wiz *InstancePtr, u32 Mask)
 	Xil_AssertVoid((Mask & (~(XCLK_WIZ_IER_ALLINTR_MASK))) == 0);
 
 	XClk_Wiz_IntrDisable(InstancePtr, \
-		(Mask & (XClk_Wiz_GetIntrEnable(InstancePtr))));
+			     (Mask & (XClk_Wiz_GetIntrEnable(InstancePtr))));
 }
 
 /*****************************************************************************/
@@ -200,7 +204,7 @@ void XClk_Wiz_InterruptClear(XClk_Wiz *InstancePtr, u32 Mask)
 *
 ****************************************************************************/
 int XClk_Wiz_SetCallBack(XClk_Wiz *InstancePtr, u32 HandleType,
-		void *CallBackFunc, void *CallBackRef)
+			 void *CallBackFunc, void *CallBackRef)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(CallBackRef != NULL);
@@ -212,7 +216,7 @@ int XClk_Wiz_SetCallBack(XClk_Wiz *InstancePtr, u32 HandleType,
 			InstancePtr->ClkOutOfRangeRef = CallBackRef;
 			break;
 		case XCLK_WIZ_HANDLER_CLK_GLITCH:
-			InstancePtr->ClkGlitchCallBack= (XClk_Wiz_CallBack)CallBackFunc;
+			InstancePtr->ClkGlitchCallBack = (XClk_Wiz_CallBack)CallBackFunc;
 			InstancePtr->ClkGlitchRef = CallBackRef;
 			break;
 		case XCLK_WIZ_HANDLER_CLK_STOP:
@@ -273,7 +277,7 @@ void XClk_Wiz_IntrHandler(void *InstancePtr)
 		 * callback function
 		 */
 		XClk_WizPtr->ClkOutOfRangeCallBack\
-			(XClk_WizPtr->ClkOutOfRangeRef, Mask);
+		(XClk_WizPtr->ClkOutOfRangeRef, Mask);
 	}
 
 	Mask = PendingIntr & XCLK_WIZ_ISR_CLKALL_MINFREQ_MASK;
@@ -282,7 +286,7 @@ void XClk_Wiz_IntrHandler(void *InstancePtr)
 		 * callback function
 		 */
 		XClk_WizPtr->ClkOutOfRangeCallBack\
-			(XClk_WizPtr->ClkOutOfRangeRef, Mask);
+		(XClk_WizPtr->ClkOutOfRangeRef, Mask);
 	}
 
 	Mask = PendingIntr & XCLK_WIZ_ISR_CLKALL_GLITCH_MASK;
@@ -290,14 +294,14 @@ void XClk_Wiz_IntrHandler(void *InstancePtr)
 		/* If clock glitch then call corresponding
 		 * callback function */
 		XClk_WizPtr->ClkGlitchCallBack\
-			(XClk_WizPtr->ClkGlitchRef, Mask);
+		(XClk_WizPtr->ClkGlitchRef, Mask);
 	}
 	Mask = PendingIntr & XCLK_WIZ_ISR_CLKALL_STOP_MASK;
 	if (Mask) {
 		/* If clock stops then call corresponding
 		 * callback function */
 		XClk_WizPtr->ClkStopCallBack\
-			(XClk_WizPtr->ClkStopRef, Mask);
+		(XClk_WizPtr->ClkStopRef, Mask);
 	}
 
 	/* Clear pending interrupt(s) */

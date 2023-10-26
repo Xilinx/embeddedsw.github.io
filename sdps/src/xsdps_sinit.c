@@ -22,6 +22,7 @@
 * 1.00a hk/sg  10/17/13 Initial release
 *       kvn    07/15/15 Modified the code according to MISRAC-2012.
 * 3.7   aru    03/12/19 Modified the code according to MISRAC-2012.
+* 4.2   ro     06/12/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -40,10 +41,6 @@
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
-/**
- * XSdPs Configuration Table
- */
-extern XSdPs_Config XSdPs_ConfigTable[XPAR_XSDPS_NUM_INSTANCES];
 
 /*****************************************************************************/
 /**
@@ -63,6 +60,7 @@ extern XSdPs_Config XSdPs_ConfigTable[XPAR_XSDPS_NUM_INSTANCES];
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XSdPs_Config *XSdPs_LookupConfig(u16 DeviceId)
 {
 	XSdPs_Config *CfgPtr = NULL;
@@ -76,4 +74,21 @@ XSdPs_Config *XSdPs_LookupConfig(u16 DeviceId)
 	}
 	return (XSdPs_Config *)CfgPtr;
 }
+#else
+XSdPs_Config *XSdPs_LookupConfig(u32 BaseAddress)
+{
+	XSdPs_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = 0U; XSdPs_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XSdPs_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XSdPs_ConfigTable[Index];
+			break;
+		}
+	}
+	return (XSdPs_Config *)CfgPtr;
+}
+#endif
+
 /** @} */

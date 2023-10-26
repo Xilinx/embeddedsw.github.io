@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2006 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -74,6 +75,7 @@
 *       ms   04/05/17 Modified Comment lines in functions to
 *                     recognize it as documentation block for doxygen
 *                     generation.
+* 3.10  gm   07/09/23 Added SDT support.
 * </pre>
 *
 ******************************************************************************/
@@ -92,7 +94,8 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-#define IIC_BASE_ADDRESS	XPAR_IIC_0_BASEADDR
+
+#define IIC_BASE_ADDRESS	XPAR_AXI_IIC_0_BASEADDR
 
 /*
  * The Starting address in the IIC EEPROM on which this test is performed.
@@ -109,7 +112,7 @@
  * Please refer the User Guide's of the respective boards for further
  * information about the IIC slave address of IIC EEPROM's.
  */
- #define EEPROM_ADDRESS		0x50
+#define EEPROM_ADDRESS		0x50
 
 /*
  * The page size determines how much data should be written at a time.
@@ -207,12 +210,12 @@ int IicLowLevelDynEeprom()
 	 * Make sure all the Fifo's are cleared and Bus is Not busy.
 	 */
 	while (((StatusReg = XIic_ReadReg(IIC_BASE_ADDRESS,
-				XIIC_SR_REG_OFFSET)) &
-				(XIIC_SR_RX_FIFO_EMPTY_MASK |
-				XIIC_SR_TX_FIFO_EMPTY_MASK |
-				XIIC_SR_BUS_BUSY_MASK)) !=
-				(XIIC_SR_RX_FIFO_EMPTY_MASK |
-				XIIC_SR_TX_FIFO_EMPTY_MASK)) {
+					  XIIC_SR_REG_OFFSET)) &
+		(XIIC_SR_RX_FIFO_EMPTY_MASK |
+		 XIIC_SR_TX_FIFO_EMPTY_MASK |
+		 XIIC_SR_BUS_BUSY_MASK)) !=
+	       (XIIC_SR_RX_FIFO_EMPTY_MASK |
+		XIIC_SR_TX_FIFO_EMPTY_MASK)) {
 
 	}
 
@@ -300,8 +303,8 @@ u8 EepromWriteByte(u8 *BufferPtr, u8 ByteCount)
 	 * Write a page of data at the specified address to the EEPROM.
 	 */
 	SentByteCount = XIic_DynSend(IIC_BASE_ADDRESS, EepromIicAddr,
-				WriteBuffer, sizeof(Address) + PAGE_SIZE,
-				XIIC_STOP);
+				     WriteBuffer, sizeof(Address) + PAGE_SIZE,
+				     XIIC_STOP);
 
 	/*
 	 * Return the number of bytes written to the EEPROM.
@@ -340,10 +343,10 @@ u8 EepromReadByte(u8 *BufferPtr, u8 ByteCount)
 		StatusReg = XIic_ReadReg(IIC_BASE_ADDRESS, XIIC_SR_REG_OFFSET);
 		if (!(StatusReg & XIIC_SR_BUS_BUSY_MASK)) {
 			SentByteCount = XIic_DynSend(IIC_BASE_ADDRESS,
-							EepromIicAddr,
-							(u8 *) &Address,
-							sizeof(Address),
-							XIIC_STOP);
+						     EepromIicAddr,
+						     (u8 *) &Address,
+						     sizeof(Address),
+						     XIIC_STOP);
 		}
 
 	} while (SentByteCount != sizeof(Address));

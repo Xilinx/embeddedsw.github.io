@@ -289,6 +289,9 @@
 *                       DAC coupling.
 *       cog    01/07/23 Added VOP support for DC coupled DACs and removed VOP
 *                       support for ES1 Parts.
+* 12.1  cog    07/04/23 Add support for SDT.
+*       cog    07/14/23 Fix issues with SDT flow.
+*       cog    07/27/23 Add NCO frequency to config structures.
 *
 * </pre>
 *
@@ -598,6 +601,7 @@ typedef struct {
 	u32 FifoEnable;
 	u32 AdderEnable;
 	u32 MixerType;
+	double NCOFreq;
 } XRFdc_DACBlock_DigitalDataPath_Config;
 
 /**
@@ -617,6 +621,7 @@ typedef struct {
 	u32 DecimationMode;
 	u32 FifoEnable;
 	u32 MixerType;
+	double NCOFreq;
 } XRFdc_ADCBlock_DigitalDataPath_Config;
 
 /**
@@ -662,7 +667,11 @@ typedef struct {
  * RFdc Config Structure.
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId;
+#else
+	char *Name;/**< Unique name of the device */
+#endif
 	metal_phys_addr_t BaseAddr;
 	u32 ADCType; /* ADC Type 4GSPS or 2GSPS*/
 	u32 MasterADCTile; /* ADC master Tile */
@@ -824,7 +833,9 @@ typedef struct {
 #define XRFDC_CONFIG_DATA_SIZE sizeof(XRFdc_Config)
 #else
 #define XRFDC_BUS_NAME "generic"
+#ifndef SDT
 #define XRFDC_DEV_NAME XPAR_XRFDC_0_DEV_NAME
+#endif
 #endif
 #define XRFDC_REGION_SIZE 0x40000U
 #define XRFDC_IP_BASE 0x0U
@@ -1338,7 +1349,11 @@ typedef struct {
 /*****************************************************************************/
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 XRFdc_Config *XRFdc_LookupConfig(u16 DeviceId);
+#else
+XRFdc_Config *XRFdc_LookupConfig(metal_phys_addr_t BaseAddr);
+#endif
 u32 XRFdc_RegisterMetal(XRFdc *InstancePtr, u16 DeviceId, struct metal_device **DevicePtr);
 u32 XRFdc_CfgInitialize(XRFdc *InstancePtr, XRFdc_Config *ConfigPtr);
 u32 XRFdc_StartUp(XRFdc *InstancePtr, u32 Type, int Tile_Id);

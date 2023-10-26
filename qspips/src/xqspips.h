@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xqspips.h
-* @addtogroup qspips_v3_10
+* @addtogroup qspips Overview
 * @{
 * @details
 *
@@ -270,6 +271,7 @@
 *			XQspiPs_InterruptHandler() APIs to fill TX FIFO with valid
 *			data when RX buffer is not NULL.
 * 3.8	akm 09/02/20 Updated the Makefile to support parallel make execution.
+* 3.11	akm 07/10/23 Update the driver to support for system device-tree flow.
 *
 * </pre>
 *
@@ -478,16 +480,26 @@ extern "C" {
  *		requested if the status event indicates an error.
  */
 typedef void (*XQspiPs_StatusHandler) (void *CallBackRef, u32 StatusEvent,
-					unsigned ByteCount);
+				       unsigned ByteCount);
 
 /**
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	u32 BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
 	u8  ConnectionMode; /**< Single, Stacked and Parallel mode */
+#ifdef SDT
+	u32 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
+				 * trigger type and level flags */
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
+				 * Parent base address */
+#endif
 } XQspiPs_Config;
 
 /**
@@ -571,7 +583,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_SetSlaveIdle(InstancePtr, RegisterValue)	\
 	XQspiPs_Out32(((InstancePtr)->Config.BaseAddress) +	\
-			XQSPIPS_SICR_OFFSET, (RegisterValue))
+		      XQSPIPS_SICR_OFFSET, (RegisterValue))
 
 /****************************************************************************/
 /**
@@ -589,7 +601,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_GetSlaveIdle(InstancePtr)				\
 	XQspiPs_In32(((InstancePtr)->Config.BaseAddress) +		\
-	XQSPIPS_SICR_OFFSET)
+		     XQSPIPS_SICR_OFFSET)
 
 /****************************************************************************/
 /**
@@ -608,7 +620,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_SetTXWatermark(InstancePtr, RegisterValue)		\
 	XQspiPs_Out32(((InstancePtr)->Config.BaseAddress) +		\
-			XQSPIPS_TXWR_OFFSET, (RegisterValue))
+		      XQSPIPS_TXWR_OFFSET, (RegisterValue))
 
 /****************************************************************************/
 /**
@@ -644,7 +656,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_SetRXWatermark(InstancePtr, RegisterValue)		\
 	XQspiPs_Out32(((InstancePtr)->Config.BaseAddress) +		\
-			XQSPIPS_RXWR_OFFSET, (RegisterValue))
+		      XQSPIPS_RXWR_OFFSET, (RegisterValue))
 
 /****************************************************************************/
 /**
@@ -678,7 +690,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_Enable(InstancePtr)					\
 	XQspiPs_Out32((InstancePtr->Config.BaseAddress) + XQSPIPS_ER_OFFSET, \
-			XQSPIPS_ER_ENABLE_MASK)
+		      XQSPIPS_ER_ENABLE_MASK)
 
 /****************************************************************************/
 /**
@@ -714,7 +726,7 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_SetLqspiConfigReg(InstancePtr, RegisterValue)		\
 	XQspiPs_Out32(((InstancePtr)->Config.BaseAddress) +		\
-			XQSPIPS_LQSPI_CR_OFFSET, (RegisterValue))
+		      XQSPIPS_LQSPI_CR_OFFSET, (RegisterValue))
 
 /****************************************************************************/
 /**
@@ -732,34 +744,38 @@ typedef struct {
 *****************************************************************************/
 #define XQspiPs_GetLqspiConfigReg(InstancePtr)				\
 	XQspiPs_In32((InstancePtr->Config.BaseAddress) +		\
-			XQSPIPS_LQSPI_CR_OFFSET)
+		     XQSPIPS_LQSPI_CR_OFFSET)
 
 /************************** Function Prototypes ******************************/
 
 /*
  * Initialization function, implemented in xqspips_sinit.c
  */
+#ifndef SDT
 XQspiPs_Config *XQspiPs_LookupConfig(u16 DeviceId);
+#else
+XQspiPs_Config *XQspiPs_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * Functions implemented in xqspips.c
  */
 int XQspiPs_CfgInitialize(XQspiPs *InstancePtr, XQspiPs_Config *Config,
-			   u32 EffectiveAddr);
+			  u32 EffectiveAddr);
 void XQspiPs_Reset(XQspiPs *InstancePtr);
 void XQspiPs_Abort(XQspiPs *InstancePtr);
 
 s32 XQspiPs_Transfer(XQspiPs *InstancePtr, u8 *SendBufPtr, u8 *RecvBufPtr,
-		      u32 ByteCount);
+		     u32 ByteCount);
 s32 XQspiPs_PolledTransfer(XQspiPs *InstancePtr, u8 *SendBufPtr,
-			    u8 *RecvBufPtr, u32 ByteCount);
+			   u8 *RecvBufPtr, u32 ByteCount);
 int XQspiPs_LqspiRead(XQspiPs *InstancePtr, u8 *RecvBufPtr,
-			u32 Address, unsigned ByteCount);
+		      u32 Address, unsigned ByteCount);
 
 int XQspiPs_SetSlaveSelect(XQspiPs *InstancePtr);
 
 void XQspiPs_SetStatusHandler(XQspiPs *InstancePtr, void *CallBackRef,
-				XQspiPs_StatusHandler FuncPtr);
+			      XQspiPs_StatusHandler FuncPtr);
 void XQspiPs_InterruptHandler(void *InstancePtr);
 
 /*
@@ -777,9 +793,9 @@ s32 XQspiPs_SetClkPrescaler(XQspiPs *InstancePtr, u8 Prescaler);
 u8 XQspiPs_GetClkPrescaler(XQspiPs *InstancePtr);
 
 int XQspiPs_SetDelays(XQspiPs *InstancePtr, u8 DelayNss, u8 DelayBtwn,
-			 u8 DelayAfter, u8 DelayInit);
+		      u8 DelayAfter, u8 DelayInit);
 void XQspiPs_GetDelays(XQspiPs *InstancePtr, u8 *DelayNss, u8 *DelayBtwn,
-			 u8 *DelayAfter, u8 *DelayInit);
+		       u8 *DelayAfter, u8 *DelayInit);
 #ifdef __cplusplus
 }
 #endif

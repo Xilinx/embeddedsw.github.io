@@ -8,7 +8,7 @@
 /**
 *
 * @file xmcdma_selftest.c
-* @addtogroup mcdma_v1_7
+* @addtogroup mcdma Overview
 * @{
 *
 * This file contains the self-test function for the MCDMA core.
@@ -72,7 +72,7 @@ s32 XMcdma_SelfTest(XMcdma *InstancePtr)
 
 	while (TimeOut) {
 
-		if(XMcdma_ResetIsDone(InstancePtr)) {
+		if (XMcdma_ResetIsDone(InstancePtr)) {
 			break;
 		}
 

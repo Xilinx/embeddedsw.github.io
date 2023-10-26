@@ -1,12 +1,13 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 
 /**
 * @file xbram.c
-* @addtogroup bram_v4_8
+* @addtogroup bram Overview
 * @{
 *
 * The implementation of the XBram driver's basic functionality.
@@ -27,6 +28,7 @@
 *					  XBram_CfgInitialize API.
 * 4.1   sk   11/10/15 Used UINTPTR instead of u32 for Baseaddress CR# 867425.
 *                     Changed the prototype of XBram_CfgInitialize API.
+* 4.9   sd   07/07/23 Added SDT support.
 *</pre>
 *
 *****************************************************************************/
@@ -98,20 +100,25 @@ int XBram_CfgInitialize(XBram *InstancePtr,
 	InstancePtr->Config.DataWidth = Config->DataWidth;
 	InstancePtr->Config.EccPresent = Config->EccPresent;
 	InstancePtr->Config.FaultInjectionPresent =
-					Config->FaultInjectionPresent;
+		Config->FaultInjectionPresent;
 	InstancePtr->Config.CorrectableFailingRegisters =
-					Config->CorrectableFailingRegisters;
+		Config->CorrectableFailingRegisters;
 	InstancePtr->Config.CorrectableFailingDataRegs =
-					Config->CorrectableFailingDataRegs;
+		Config->CorrectableFailingDataRegs;
 	InstancePtr->Config.UncorrectableFailingRegisters =
-					Config->UncorrectableFailingRegisters;
+		Config->UncorrectableFailingRegisters;
 	InstancePtr->Config.UncorrectableFailingDataRegs =
-					Config->UncorrectableFailingDataRegs;
+		Config->UncorrectableFailingDataRegs;
 	InstancePtr->Config.EccStatusInterruptPresent =
-					Config->EccStatusInterruptPresent;
+		Config->EccStatusInterruptPresent;
 	InstancePtr->Config.CorrectableCounterBits =
-					Config->CorrectableCounterBits;
+		Config->CorrectableCounterBits;
 	InstancePtr->Config.WriteAccess = Config->WriteAccess;
+#ifdef SDT
+	InstancePtr->Config.IntId = Config->IntId;
+	InstancePtr->Config.IntrParent = Config->IntrParent;
+#endif
+
 
 	/*
 	 * Indicate the instance is now ready to use, initialized without error

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -31,6 +32,7 @@
 * 2.13	sk   10/30/21  Move (IntrStatus == 0) check to the start of for loop
 * 		       in XIOModule_DeviceInterruptHandler function to skip
 * 		       processing when IntrStatus is 0.
+* 2.15  ml   02/27/23  update functions return type to fix misra-c violation.
 * </pre>
 *
 ******************************************************************************/
@@ -38,10 +40,12 @@
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xiomodule.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 #include "xiomodule_i.h"
-
+#include <stdbool.h>
 /************************** Constant Definitions *****************************/
 
 
@@ -139,7 +143,11 @@ void XIOModule_DeviceInterruptHandler(void *DeviceId)
 	XIOModule_VectorTableEntry *TablePtr;
 
 	/* Get the configuration data using the device ID */
+#ifndef SDT
 	CfgPtr = &XIOModule_ConfigTable[(UINTPTR) DeviceId];
+#else
+	CfgPtr = XIOModule_LookupConfig((UINTPTR) DeviceId);
+#endif
 
 	/* Get the interrupts that are waiting to be serviced
 	 */
@@ -154,17 +162,17 @@ void XIOModule_DeviceInterruptHandler(void *DeviceId)
 		/* If there are no other bits set indicating that all interrupts
 		 * have been serviced, then exit the loop
 		 */
-		if (IntrStatus == 0) {
+		if (IntrStatus == 0U) {
 			break;
 		}
 
 		TablePtr = &(CfgPtr->HandlerTable[IntrNumber]);
 
-		if ((IntrStatus & 1) && (TablePtr->Handler != NULL)) {
+		if ((bool)(IntrStatus & 1U) && (TablePtr->Handler != NULL)) {
 			/* If the interrupt has been setup to acknowledge it
 			 * before servicing the interrupt, then ack it
 			 */
-			if (CfgPtr->AckBeforeService & IntrMask) {
+			if ((bool)(CfgPtr->AckBeforeService & IntrMask)) {
 			    XIOModule_AckIntr(CfgPtr->BaseAddress, IntrMask);
 			}
 
@@ -177,7 +185,7 @@ void XIOModule_DeviceInterruptHandler(void *DeviceId)
 			/* If the interrupt has been setup to acknowledge it
 			 * after it has been serviced then ack it
 			 */
-			if ((CfgPtr->AckBeforeService & IntrMask) == 0) {
+			if ((CfgPtr->AckBeforeService & IntrMask) == 0U) {
 			    XIOModule_AckIntr(CfgPtr->BaseAddress, IntrMask);
 			}
 
@@ -185,7 +193,7 @@ void XIOModule_DeviceInterruptHandler(void *DeviceId)
 			 * Read the ISR again to handle architectures with
 			 * posted write bus access issues.
 			 */
-			XIOModule_GetIntrStatus(CfgPtr->BaseAddress);
+			(void) XIOModule_GetIntrStatus(CfgPtr->BaseAddress);
 
 			/*
 			 * If only the highest priority interrupt is to be
@@ -234,7 +242,7 @@ void XIOModule_SetIntrSvcOption(UINTPTR BaseAddress, s32 Option)
 
 	CfgPtr = LookupConfigByBaseAddress(BaseAddress);
 	if (CfgPtr != NULL) {
-		CfgPtr->Options = Option;
+		CfgPtr->Options = (u32) Option;
 	}
 }
 
@@ -302,7 +310,11 @@ static XIOModule_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress)
 	XIOModule_Config *CfgPtr = NULL;
 	u32 i;
 
+#ifndef SDT
 	for (i = 0U; i < XPAR_XIOMODULE_NUM_INSTANCES; i++) {
+#else
+	for (i = 0U; XIOModule_ConfigTable[i].Name != NULL; i++) {
+#endif
 		if (XIOModule_ConfigTable[i].BaseAddress == BaseAddress) {
 			CfgPtr = &XIOModule_ConfigTable[i];
 			break;
@@ -330,8 +342,8 @@ static XIOModule_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress)
 ******************************************************************************/
 void XIOModule_SendByte(UINTPTR BaseAddress, u8 Data)
 {
-	while (XIOModule_IsTransmitFull(BaseAddress));
-
+	while (XIOModule_IsTransmitFull(BaseAddress)){
+	}
 	XIomodule_Out32(BaseAddress + XUL_TX_OFFSET, Data);
 }
 
@@ -352,8 +364,8 @@ void XIOModule_SendByte(UINTPTR BaseAddress, u8 Data)
 ******************************************************************************/
 u8 XIOModule_RecvByte(UINTPTR BaseAddress)
 {
-	while (XIOModule_IsReceiveEmpty(BaseAddress));
-
+	while (XIOModule_IsReceiveEmpty(BaseAddress)){
+	}
 	return (u8)XIomodule_In32(BaseAddress + XUL_RX_OFFSET);
 }
 

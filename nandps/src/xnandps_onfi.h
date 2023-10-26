@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xnandps_onfi.h
-* @addtogroup nandps_v2_7
+* @addtogroup nandps Overview
 * @{
 *
 * This file implements ONFI specific commands which are used to get the
@@ -164,7 +165,7 @@ extern "C" {
  * This enum defines the onfi commands.
  */
 enum OnfiCommandsEnum {
-	READ=0,			/**< ONFI Read */
+	READ = 0,			/**< ONFI Read */
 	CHANGE_READ_COLUMN,	/**< ONFI Change Read Column */
 	BLOCK_ERASE,		/**< ONFI Block Erase */
 	READ_STATUS,		/**< ONFI Read Status */
@@ -286,7 +287,8 @@ typedef struct {
 } OnfiNand_Geometry;
 #pragma pack(pop)
 #else
-}__attribute__((packed))OnfiNand_Geometry;
+}
+__attribute__((packed))OnfiNand_Geometry;
 #endif
 
 /************************** Function Prototypes ******************************/

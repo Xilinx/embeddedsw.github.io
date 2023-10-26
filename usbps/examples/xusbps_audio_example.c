@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -17,6 +18,7 @@
  * Ver   Who	Date     Changes
  * ----- ---- -------- -------------------------------------------------------
  * 1.0   pm	20/02/20 First release
+ * 2.8   pm	07/07/23 Added support for system device-tree flow.
  *
  * </pre>
  *
@@ -28,12 +30,16 @@
 #include "xusbps_ch9_audio.h"
 #include "xusbps_class_audio.h"
 
-#include "xscugic.h"
 #include "xil_exception.h"
 #include "xpseudo_asm.h"
 #include "xreg_cortexa9.h"
 #include "xil_cache.h"
 
+#ifndef SDT
+#include "xscugic.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 
 #ifdef XUSBPS_MICROPHONE
 #include "xusbps_audiodata.h"
@@ -87,21 +93,28 @@ u8 Buffer[MEMORY_SIZE] ALIGNMENT_CACHELINE;
 
 #endif
 
+#ifndef SDT
 #define USB_DEVICE_ID		XPAR_XUSBPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define	USB_INTR_ID		XPAR_XUSBPS_0_INTR
-
+#else
+#define USBPS_BASEADDR		XPS_USB0_BASEADDR /* USBPS base address */
+#endif
 /************************** Function Prototypes ******************************/
 static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
-		u32 BytesTxed );
+				u32 BytesTxed );
 static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
-		u32 BytesTxed );
+				 u32 BytesTxed );
 static void XUsbPs_AudioTransferSize(void);
 static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType);
-s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
-		XScuGic *IntcInstancePtr);
 s32 XUsbPs_CfgInit(struct Usb_DevData *InstancePtr, Usb_Config *ConfigPtr,
-		u32 BaseAddress);
+		   u32 BaseAddress);
+
+#ifndef SDT
+s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
+				XScuGic *IntcInstancePtr);
+#endif
+
 /************************** Variable Definitions *****************************/
 struct Usb_DevData UsbInstance;
 
@@ -111,14 +124,17 @@ XUsbPs PrivateData;
 /*
  * Interrupt controller instance
  */
+#ifndef SDT
 XScuGic InterruptController;
+#endif
+
 XUsbPs_DeviceConfig DeviceConfig;
 
 /*
  * A ram array
  */
 u32 RamDisk[RAMDISKSECTORS * RAMBLOCKS] __attribute__ ((aligned(4)));
-u8 *WrRamDiskPtr = (u8 *) &(RamDisk[0]);
+u8 *WrRamDiskPtr = (u8 *) & (RamDisk[0]);
 
 u8 BufferPtrTemp[1024];
 
@@ -135,7 +151,7 @@ static u32 FileSize = sizeof(RamDisk);
 #endif
 
 /* Supported AUDIO sampling frequencies */
-u8 AudioFreq [MAX_AUDIO_FREQ][3] ={
+u8 AudioFreq [MAX_AUDIO_FREQ][3] = {
 	{ 0x40, 0x1F, 0x00 },	/* sample frequency 8000  */
 	{ 0x44, 0xAC, 0x00 },	/* sample frequency 44100 */
 	{ 0x80, 0xBB, 0x00 },	/* sample frequency 48000 */
@@ -164,13 +180,17 @@ int main(void)
 
 	xil_printf("Xilinx Audio Start...\r\n");
 
+#ifndef SDT
 	UsbConfigPtr = XUsbPs_LookupConfig(USB_DEVICE_ID);
+#else
+	UsbConfigPtr = XUsbPs_LookupConfig(USBPS_BASEADDR);
+#endif
 	if (NULL == UsbConfigPtr) {
 		return XST_FAILURE;
 	}
 
 	Status = XUsbPs_CfgInit(&UsbInstance, UsbConfigPtr,
-			UsbConfigPtr->BaseAddress);
+				UsbConfigPtr->BaseAddress);
 	if (XST_SUCCESS != Status) {
 		return XST_FAILURE;
 	}
@@ -216,9 +236,9 @@ int main(void)
 	 * Hook up chapter9 handler
 	 */
 	Status = XUsbPs_EpSetHandler(UsbInstance.PrivateData, 0,
-			XUSBPS_EP_DIRECTION_OUT,
-			(XUsbPs_EpHandlerFunc)XUsbPs_Ep0EventHandler,
-			UsbInstance.PrivateData);
+				     XUSBPS_EP_DIRECTION_OUT,
+				     (XUsbPs_EpHandlerFunc)XUsbPs_Ep0EventHandler,
+				     UsbInstance.PrivateData);
 
 	/*
 	 * set endpoint handlers
@@ -226,19 +246,30 @@ int main(void)
 	 * XUsbPsu_IsoOutHandler -  to be called when data is received
 	 */
 	XUsbPs_EpSetIsoHandler(UsbInstance.PrivateData, ISO_EP,
-			XUSBPS_EP_DIRECTION_IN,
-			XUsbPs_IsoInHandler);
+			       XUSBPS_EP_DIRECTION_IN,
+			       XUsbPs_IsoInHandler);
 
 	XUsbPs_EpSetIsoHandler(UsbInstance.PrivateData, ISO_EP,
-			XUSBPS_EP_DIRECTION_OUT,
-			XUsbPs_IsoOutHandler);
+			       XUSBPS_EP_DIRECTION_OUT,
+			       XUsbPs_IsoOutHandler);
 
 	/*
 	 * Setup interrupts
 	 */
+#ifndef SDT
 	Status = XUsbPs_SetupInterruptSystem((XUsbPs *)UsbInstance.PrivateData,
-			INTC_DEVICE_ID,
-			&InterruptController);
+					     INTC_DEVICE_ID,
+					     &InterruptController);
+#else
+	Status = XSetupInterruptSystem((XUsbPs *)UsbInstance.PrivateData,
+				       &XUsbPs_IntrHandler,
+				       UsbConfigPtr->IntrId,
+				       UsbConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+
+	XUsbPs_IntrEnable((XUsbPs *)UsbInstance.PrivateData,
+			  XUSBPS_IXR_UR_MASK | XUSBPS_IXR_UI_MASK);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -250,7 +281,7 @@ int main(void)
 	 */
 	XUsbPs_Start((XUsbPs *)UsbInstance.PrivateData);
 
-	while(1) {
+	while (1) {
 		/*
 		 * Rest is taken care by interrupts
 		 */
@@ -281,8 +312,8 @@ static void XUsbPs_AudioTransferSize(void)
 	 * descriptors
 	 */
 	AudioFreqTemp = (u32)((u8)AudioFreq[CUR_AUDIOFREQ][0] |
-			(u8)AudioFreq[CUR_AUDIOFREQ][1] << 8 |
-			(u8)AudioFreq[CUR_AUDIOFREQ][2] << 16);
+			      (u8)AudioFreq[CUR_AUDIOFREQ][1] << 8 |
+			      (u8)AudioFreq[CUR_AUDIOFREQ][2] << 16);
 
 	/*
 	 * Audio transmission Bytes required to send in one sec
@@ -296,15 +327,16 @@ static void XUsbPs_AudioTransferSize(void)
 	 * Audio data transfer size to be transfered at every interval
 	 */
 	MaxPacketSize = AUDIO_CHANNEL_NUM * AUDIO_FRAME_SIZE *
-		DIV_ROUND_UP(AudioFreqTemp, INTERVAL_PER_SECOND /
-				(1 << (AUDIO_INTERVAL - 1)));
+			DIV_ROUND_UP(AudioFreqTemp, INTERVAL_PER_SECOND /
+				     (1 << (AUDIO_INTERVAL - 1)));
 	PacketSize = ((Rate / Interval) < MaxPacketSize) ?
-		(Rate / Interval) : MaxPacketSize;
+		     (Rate / Interval) : MaxPacketSize;
 
-	if (PacketSize < MaxPacketSize)
+	if (PacketSize < MaxPacketSize) {
 		PacketResidue = Rate % Interval;
-	else
+	} else {
 		PacketResidue = 0;
+	}
 }
 
 /****************************************************************************/
@@ -322,7 +354,7 @@ static void XUsbPs_AudioTransferSize(void)
  *
  *****************************************************************************/
 static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
-		u32 BytesTxed)
+				u32 BytesTxed)
 {
 	struct Usb_DevData *InstancePtr = CallBackRef;
 	u32 Size;
@@ -359,10 +391,11 @@ static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
 				Residue -= Framesize * Interval;
 			}
 
-			if ((Index + Size) > FileSize)
+			if ((Index + Size) > FileSize) {
 				Index = 0;
-			else
+			} else {
 				Index += Size;
+			}
 
 			FirstPktFrame = 0;
 		}
@@ -384,7 +417,7 @@ static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
  *
  *****************************************************************************/
 static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
-		u32 BytesTxed)
+				 u32 BytesTxed)
 {
 	struct Usb_DevData *InstancePtr = CallBackRef;
 	u32 Size;
@@ -411,7 +444,7 @@ static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
 	}
 
 	XUsbPs_EpDataBufferReceive((XUsbPs *)InstancePtr->PrivateData, ISO_EP,
-			BufferPtrTemp, Size);
+				   BufferPtrTemp, Size);
 }
 
 
@@ -431,7 +464,8 @@ static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
  * @return	None.
  *
  ******************************************************************************/
-static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType) {
+static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType)
+{
 	XUsbPs *InstancePtr;
 	int Status;
 	XUsbPs_SetupData SetupData;
@@ -446,33 +480,33 @@ static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType) {
 
 	switch (EventType) {
 
-	/* Handle the Setup Packets received on Endpoint 0. */
-	case XUSBPS_EP_EVENT_SETUP_DATA_RECEIVED:
-		Status = XUsbPs_EpGetSetupData(InstancePtr, EpNum, &SetupData);
-		if (XST_SUCCESS == Status) {
-			/* Handle the setup packet. */
-			(int) XUsbPs_Ch9HandleSetupPacket((XUsbPs *)InstancePtr,
-					&SetupData);
-		}
-		break;
+		/* Handle the Setup Packets received on Endpoint 0. */
+		case XUSBPS_EP_EVENT_SETUP_DATA_RECEIVED:
+			Status = XUsbPs_EpGetSetupData(InstancePtr, EpNum, &SetupData);
+			if (XST_SUCCESS == Status) {
+				/* Handle the setup packet. */
+				(int) XUsbPs_Ch9HandleSetupPacket((XUsbPs *)InstancePtr,
+								  &SetupData);
+			}
+			break;
 
 		/* We get data RX events for 0 length packets on endpoint 0.
 		 * We receive and immediately release them again here, but
 		 * there's no action to be taken.
 		 */
-	case XUSBPS_EP_EVENT_DATA_RX:
-		/* Get the data buffer. */
-		Status = XUsbPs_EpBufferReceive(InstancePtr, EpNum, &BufferPtr,
-				&BufferLen, &Handle);
-		if (XST_SUCCESS == Status) {
-			/* Return the buffer. */
-			XUsbPs_EpBufferRelease(Handle);
-		}
-		break;
+		case XUSBPS_EP_EVENT_DATA_RX:
+			/* Get the data buffer. */
+			Status = XUsbPs_EpBufferReceive(InstancePtr, EpNum, &BufferPtr,
+							&BufferLen, &Handle);
+			if (XST_SUCCESS == Status) {
+				/* Return the buffer. */
+				XUsbPs_EpBufferRelease(Handle);
+			}
+			break;
 
-	default:
-		/* Unhandled event. Ignore. */
-		break;
+		default:
+			/* Unhandled event. Ignore. */
+			break;
 	}
 }
 
@@ -494,8 +528,9 @@ static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType) {
  * @note		None.
  *
  *****************************************************************************/
+#ifndef SDT
 s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
-		XScuGic *IntcInstancePtr)
+				XScuGic *IntcInstancePtr)
 {
 	s32 Status;
 	XScuGic_Config *IntcConfig;
@@ -509,7 +544,7 @@ s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
 		return XST_FAILURE;
 	}
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-			IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -519,16 +554,16 @@ s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
 	 * interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
-			(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-			IntcInstancePtr);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 	/*
 	 * Connect the device driver handler that will be called when an
 	 * interrupt for the device occurs, the handler defined above performs
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, USB_INTR_ID,
-			(Xil_ExceptionHandler)XUsbPs_IntrHandler,
-			(void *)InstancePtr);
+				 (Xil_ExceptionHandler)XUsbPs_IntrHandler,
+				 (void *)InstancePtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -548,6 +583,7 @@ s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
 
 	return XST_SUCCESS;
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -574,11 +610,11 @@ s32 XUsbPs_SetupInterruptSystem(XUsbPs *InstancePtr, u16 IntcDeviceID,
 ******************************************************************************/
 
 s32 XUsbPs_CfgInit(struct Usb_DevData *InstancePtr, Usb_Config *ConfigPtr,
-		u32 BaseAddress)
+		   u32 BaseAddress)
 {
 	PrivateData.AppData = InstancePtr;
 	InstancePtr->PrivateData = (void *)&PrivateData;
 
 	return XUsbPs_CfgInitialize((XUsbPs *)InstancePtr->PrivateData,
-			ConfigPtr, BaseAddress);
+				    ConfigPtr, BaseAddress);
 }

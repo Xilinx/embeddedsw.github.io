@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeofdm
    </div>
@@ -75,13 +75,18 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 </p>
 <hr/>
 <p>
-1.0   dc     11/21/22 Initial version</pre><pre></pre> </div><table class="memberdecls">
+1.0   dc     11/21/22 Initial version
+1.1   dc     05/22/23 State and status upgrades
+      dc     06/20/23 Deprecate obsolete APIs
+      dc     06/28/23 Add phase compensation calculation
+      cog    07/04/23 Add support for SDT
+      dc     07/27/23 Output delay in ccid slots
+      dc     07/31/23 Antenna interleave delay reorder
+      dc     08/28/23 Remove immediate trigger
+</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaeafbf7142bebfebc4391dd3bd3b61600">XDFEOFDM_U32_NUM_BITS</a>&#160;&#160;&#160;(32U)</td></tr>
-<tr class="memdesc:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bits in register.  <a href="group__dfeofdm.html#gaeafbf7142bebfebc4391dd3bd3b61600">More...</a><br/></td></tr>
-<tr class="separator:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab4ee35983c0d92285d640affefc3dcad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gab4ee35983c0d92285d640affefc3dcad">XDFEOFDM_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(0U)</td></tr>
+<tr class="memitem:gab4ee35983c0d92285d640affefc3dcad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gab4ee35983c0d92285d640affefc3dcad">XDFEOFDM_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(1U)</td></tr>
 <tr class="memdesc:gab4ee35983c0d92285d640affefc3dcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="group__dfeofdm.html#gab4ee35983c0d92285d640affefc3dcad">More...</a><br/></td></tr>
 <tr class="separator:gab4ee35983c0d92285d640affefc3dcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca6bdd93682f011cf7af49604858e6c4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaca6bdd93682f011cf7af49604858e6c4">XDFEOFDM_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -156,6 +161,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5e4d810d0e04bbad650fbb60115254e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga5e4d810d0e04bbad650fbb60115254e4">XDfeOfdm_SetTriggersCfg</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, <a class="el" href="struct_x_dfe_ofdm___trigger_cfg.html">XDfeOfdm_TriggerCfg</a> *TriggerCfg)</td></tr>
 <tr class="memdesc:ga5e4d810d0e04bbad650fbb60115254e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets trigger configuration.  <a href="group__dfeofdm.html#ga5e4d810d0e04bbad650fbb60115254e4">More...</a><br/></td></tr>
 <tr class="separator:ga5e4d810d0e04bbad650fbb60115254e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaef986bcb74ec77dff1a72b67deab3f9e">XDfeOfdm_SetTuserOutFrameLocation</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, u32 TuserOutFrameLocation)</td></tr>
+<tr class="memdesc:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF.  <a href="group__dfeofdm.html#gaef986bcb74ec77dff1a72b67deab3f9e">More...</a><br/></td></tr>
+<tr class="separator:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga54bde32062a405022c4d2881439f61a2"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga54bde32062a405022c4d2881439f61a2">XDfeOfdm_GetTuserOutFrameLocation</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga54bde32062a405022c4d2881439f61a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF.  <a href="group__dfeofdm.html#ga54bde32062a405022c4d2881439f61a2">More...</a><br/></td></tr>
+<tr class="separator:ga54bde32062a405022c4d2881439f61a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3233d744d373a9bd445f462a21af6118"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga3233d744d373a9bd445f462a21af6118">XDfeOfdm_SetTUserDelay</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, u32 Delay)</td></tr>
 <tr class="memdesc:ga3233d744d373a9bd445f462a21af6118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the delay, which will be added to TUSER and TLAST (delay matched through the IP).  <a href="group__dfeofdm.html#ga3233d744d373a9bd445f462a21af6118">More...</a><br/></td></tr>
 <tr class="separator:ga3233d744d373a9bd445f462a21af6118"><td class="memSeparator" colspan="2">&#160;</td></tr>

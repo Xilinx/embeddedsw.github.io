@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">sysmonpsv
    </div>
@@ -63,7 +63,8 @@ $(document).ready(function(){initNavTree('group___overview.html','');});
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Overview</div>  </div>
 </div><!--header-->
@@ -275,6 +276,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga77add816aad89432fc3b4f87f7671133"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga77add816aad89432fc3b4f87f7671133">XSysMonPsv_SetNewDataIntSrc</a> (<a class="el" href="struct_x_sys_mon_psv.html">XSysMonPsv</a> *InstancePtr, XSysMonPsv_Supply Supply, u32 Mask)</td></tr>
 <tr class="memdesc:ga77add816aad89432fc3b4f87f7671133"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets a supply as a source new data interrupt.  <a href="#ga77add816aad89432fc3b4f87f7671133">More...</a><br/></td></tr>
 <tr class="separator:ga77add816aad89432fc3b4f87f7671133"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga00b971717cc516fac2e07b91bedfcd4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_sys_mon_psv___config.html">XSysMonPsv_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga00b971717cc516fac2e07b91bedfcd4b">XSysMonPsv_LookupConfig</a> (void)</td></tr>
+<tr class="memdesc:ga00b971717cc516fac2e07b91bedfcd4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function looks for the device configuration based on the unique device ID.  <a href="#ga00b971717cc516fac2e07b91bedfcd4b">More...</a><br/></td></tr>
+<tr class="separator:ga00b971717cc516fac2e07b91bedfcd4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga28f9626b9d0b374d150b23eda6f685b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_sys_mon_psv___config.html">XSysMonPsv_Config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga28f9626b9d0b374d150b23eda6f685b8">XSysMonPsv_ConfigTable</a> []</td></tr>
+<tr class="memdesc:ga28f9626b9d0b374d150b23eda6f685b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Config Table for sysmon device.  <a href="#ga28f9626b9d0b374d150b23eda6f685b8">More...</a><br/></td></tr>
+<tr class="separator:ga28f9626b9d0b374d150b23eda6f685b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 XSYSMONPSV Base Address</h2></td></tr>
@@ -5186,7 +5196,7 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
 <li>XST_SUCCESS if successful.</li>
 </ul>
 </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The user needs to first call the <a class="el" href="group__sysmonpsv__v2__3.html#ga00b971717cc516fac2e07b91bedfcd4b" title="This function looks for the device configuration based on the unique device ID. ">XSysMonPsv_LookupConfig()</a> API which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="group___overview.html#ga6aec1b9759a733a3efa72ccc9a872006" title="This function initializes XSysMonPsv device/instance. ">XSysMonPsv_CfgInitialize()</a> API. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The user needs to first call the <a class="el" href="group___overview.html#ga00b971717cc516fac2e07b91bedfcd4b" title="This function looks for the device configuration based on the unique device ID. ">XSysMonPsv_LookupConfig()</a> API which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="group___overview.html#ga6aec1b9759a733a3efa72ccc9a872006" title="This function initializes XSysMonPsv device/instance. ">XSysMonPsv_CfgInitialize()</a> API. </dd></dl>
 
 <p>References <a class="el" href="struct_x_sys_mon_psv___config.html#a633d0f7cb706ecb1a0b17aa229b49298">XSysMonPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv.html#afc8dbd1c93e2f311970d45e465c66770">XSysMonPsv::IsReady</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, and <a class="el" href="xsysmonpsv__driver_8h.html#a16eec4745af4af2aaee82607ad4ba2e3">XSYSMONPSV_MAX_SUPPLIES</a>.</p>
 
@@ -5710,6 +5720,27 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_sys_mon_psv.html#addcacffd66e527f65d6bfd53bcb44605">XSysMonPsv::Config</a>, <a class="el" href="struct_x_sys_mon_psv___config.html#a8dd8a0f21ce7dda3a56d1526c3e8f676">XSysMonPsv_Config::Supply_List</a>, <a class="el" href="group___overview.html#ga9a679ed94a444b7c9bfe9932e281d842">XSYSMONPSV_INVALID</a>, <a class="el" href="group___overview.html#ga916b6265b6d630fc8678e714e3123dfd">XSYSMONPSV_INVALID_SUPPLY</a>, <a class="el" href="group___overview.html#ga23df87aff34d00cea737cb84ed7ea9bc">XSYSMONPSV_NEW_DATA_FLAG0</a>, <a class="el" href="xsysmonpsv__direct_8c.html#af4320c775170d738c09e9514f8ed0578">XSysMonPsv_ReadReg32()</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga00b971717cc516fac2e07b91bedfcd4b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_x_sys_mon_psv___config.html">XSysMonPsv_Config</a>* XSysMonPsv_LookupConfig </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function looks for the device configuration based on the unique device ID. </p>
+<p>The table XSysmonPsu_ConfigTable[] contains the configuration information for each device in the system.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the configuration table entry corresponding to the given device , or NULL if no match is found.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 </div>
 </div>
@@ -7050,6 +7081,21 @@ Register: XSYSMONPSV_TEMP_SAT</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="group___overview.html#ga049eaa31bd447aa56396ba60e80ea7fe">XSYSMONPSV_PCSR_CONTROL</a>, <a class="el" href="group___overview.html#ga20b9ef1fcb5a3058b0dc91457407767d">XSYSMONPSV_PCSR_CONTROL_SYS_RST_MASK_MASK</a>, <a class="el" href="group___overview.html#ga42d3a77148067de0be7e6ff2b55b9e83">XSYSMONPSV_PCSR_MASK</a>, <a class="el" href="group___overview.html#ga3be988f3875dee9ab919a1b4c7033f02">XSYSMONPSV_PCSR_MASK_SYS_RST_MASK_MASK</a>, and <a class="el" href="xsysmonpsv__direct_8c.html#a858045476b6a6087db4ca972b571177b">XSysMonPsv_WriteReg32()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="ga28f9626b9d0b374d150b23eda6f685b8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_x_sys_mon_psv___config.html">XSysMonPsv_Config</a> XSysMonPsv_ConfigTable[]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Config Table for sysmon device. </p>
 
 </div>
 </div>

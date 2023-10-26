@@ -19,6 +19,9 @@
 * Ver   Who  Date        Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.0   kpt  01/03/23 Initial release
+*       kpt  05/18/23 Fix passing invalid DF length in HRNG mode
+* 1.1   kpt  08/29/23 Add volatile keyword to avoid compiler optimization
+*       ng   09/04/23 Added SDT support
 *
 * </pre>
 *
@@ -351,7 +354,11 @@ int XTrngpsx_CfgInitialize(XTrngpsx_Instance *InstancePtr, const XTrngpsx_Config
 	}
 
 	/* Populate Config parameters */
+	#ifndef SDT
 	InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+	#else
+	InstancePtr->Config.Name = CfgPtr->Name;
+	#endif
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 
 	InstancePtr->State = XTRNGPSX_UNINITIALIZED_STATE;
@@ -661,7 +668,7 @@ int XTrngpsx_Generate(XTrngpsx_Instance *InstancePtr, u8 *RandBuf, u32 RandBufSi
 			if ((InstancePtr->Stats.ElapsedSeedLife >= InstancePtr->UserCfg.SeedLife) ||
 				(PredResistance == TRUE)) {
 				XTRNGPSX_TEMPORAL_CHECK(END, Status, XTrngpsx_Reseed, InstancePtr,
-						NULL, 0U);
+						NULL, InstancePtr->UserCfg.DFLength);
 			}
 		}
 		else {
@@ -981,7 +988,7 @@ END:
  *
  **************************************************************************************************/
 static int XTrngpsx_WriteSeed(XTrngpsx_Instance *InstancePtr, const u8 *Seed, u8 DLen) {
-	int Status = XST_FAILURE;
+	volatile int Status = XST_FAILURE;
 	u32 SeedLen = (DLen + 1U) * XTRNGPSX_BLOCK_LEN_IN_BYTES;
 	volatile u32 Idx = 0U;
 	u8 Cnt = 0U;

@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">scugic
    </div>
@@ -63,9 +63,7 @@ $(document).ready(function(){initNavTree('xscugic_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle">
 <div class="title">xscugic.h File Reference</div>  </div>
 </div><!--header-->
@@ -82,6 +80,32 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ga9f2c28f54da589ba1000235cfb0929ba"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga9f2c28f54da589ba1000235cfb0929ba">XSCUGIC_H</a></td></tr>
+<tr class="memdesc:ga9f2c28f54da589ba1000235cfb0929ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; prevent circular inclusions  <a href="group__scugic.html#ga9f2c28f54da589ba1000235cfb0929ba">More...</a><br/></td></tr>
+<tr class="separator:ga9f2c28f54da589ba1000235cfb0929ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">EFUSE status Register information</div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>EFUSE Status Register </p>
+</div></td></tr>
+<tr class="memitem:ga07d27bd67c789603a7130283855f0c53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga07d27bd67c789603a7130283855f0c53"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>EFUSE_STATUS_OFFSET</b>&#160;&#160;&#160;0x10</td></tr>
+<tr class="separator:ga07d27bd67c789603a7130283855f0c53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabf7f61958eba005dd02a7014a664def5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabf7f61958eba005dd02a7014a664def5"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>EFUSE_STATUS_CPU_MASK</b>&#160;&#160;&#160;0x80</td></tr>
+<tr class="separator:gabf7f61958eba005dd02a7014a664def5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3dde6ae31d569b01dc88903a5340d744"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga3dde6ae31d569b01dc88903a5340d744">ARMA9</a></td></tr>
+<tr class="memdesc:ga3dde6ae31d569b01dc88903a5340d744"><td class="mdescLeft">&#160;</td><td class="mdescRight">ARMA9 macro to identify cortexA9.  <a href="group__scugic.html#ga3dde6ae31d569b01dc88903a5340d744">More...</a><br/></td></tr>
+<tr class="separator:ga3dde6ae31d569b01dc88903a5340d744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
+GICD_CTLR Register information</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp2b456a55406635bf4ed57e8208932672"></a>GICD_CTLR Status Register </p>
+</td></tr>
+<tr class="memitem:ga8fe68480cb749450b3b8df5af1fb5198"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8fe68480cb749450b3b8df5af1fb5198"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XSCUGIC500_DCTLR_ARE_NS_ENABLE</b>&#160;&#160;&#160;0x20</td></tr>
+<tr class="separator:ga8fe68480cb749450b3b8df5af1fb5198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28dd6678d0630c07191a41b8f5af0950"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga28dd6678d0630c07191a41b8f5af0950"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XSCUGIC500_DCTLR_ARE_S_ENABLE</b>&#160;&#160;&#160;0x10</td></tr>
+<tr class="separator:ga28dd6678d0630c07191a41b8f5af0950"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2a4ba236ff7bfeab20b5ca81082f2b13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga2a4ba236ff7bfeab20b5ca81082f2b13">XScuGic_CPUWriteReg</a>(InstancePtr, RegOffset, Data)</td></tr>
 <tr class="memdesc:ga2a4ba236ff7bfeab20b5ca81082f2b13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the given CPU Interface register.  <a href="group__scugic.html#ga2a4ba236ff7bfeab20b5ca81082f2b13">More...</a><br/></td></tr>
 <tr class="separator:ga2a4ba236ff7bfeab20b5ca81082f2b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -94,9 +118,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga3d639fe1851f9d833367fb4322390eeb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga3d639fe1851f9d833367fb4322390eeb">XScuGic_DistReadReg</a>(InstancePtr, RegOffset)&#160;&#160;&#160;(<a class="el" href="xscugic__hw_8h.html#af5fb346faf5dff7820e4ce87c86f8eca">XScuGic_ReadReg</a>(((InstancePtr)-&gt;Config-&gt;DistBaseAddress), (RegOffset)))</td></tr>
 <tr class="memdesc:ga3d639fe1851f9d833367fb4322390eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the given Distributor Interface register.  <a href="group__scugic.html#ga3d639fe1851f9d833367fb4322390eeb">More...</a><br/></td></tr>
 <tr class="separator:ga3d639fe1851f9d833367fb4322390eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
+<tr class="memitem:ga3de9d984ad4026ce214e09bf796cdc49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_scu_gic___config.html">XScuGic_Config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga3de9d984ad4026ce214e09bf796cdc49">XScuGic_ConfigTable</a> []</td></tr>
+<tr class="memdesc:ga3de9d984ad4026ce214e09bf796cdc49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Config table.  <a href="group__scugic.html#ga3de9d984ad4026ce214e09bf796cdc49">More...</a><br/></td></tr>
+<tr class="separator:ga3de9d984ad4026ce214e09bf796cdc49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga48f9dd531aa861a74e6bd627943573ea"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga48f9dd531aa861a74e6bd627943573ea">XScuGic_Connect</a> (<a class="el" href="struct_x_scu_gic.html">XScuGic</a> *InstancePtr, u32 Int_Id, Xil_InterruptHandler Handler, void *CallBackRef)</td></tr>
 <tr class="memdesc:ga48f9dd531aa861a74e6bd627943573ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the connection between the Int_Id of the interrupt source and the associated handler that is to run when the interrupt is recognized.  <a href="group__scugic.html#ga48f9dd531aa861a74e6bd627943573ea">More...</a><br/></td></tr>
 <tr class="separator:ga48f9dd531aa861a74e6bd627943573ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,18 +169,15 @@ Functions</h2></td></tr>
 <tr class="memitem:gab2c0554b809121cc91a96fcd8c749c25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_scu_gic___config.html">XScuGic_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#gab2c0554b809121cc91a96fcd8c749c25">XScuGic_LookupConfig</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:gab2c0554b809121cc91a96fcd8c749c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up the device configuration based on the unique device ID.  <a href="group__scugic.html#gab2c0554b809121cc91a96fcd8c749c25">More...</a><br/></td></tr>
 <tr class="separator:gab2c0554b809121cc91a96fcd8c749c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga805a47295123177a48b07fccfe037702"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_scu_gic___config.html">XScuGic_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga805a47295123177a48b07fccfe037702">XScuGic_LookupConfigBaseAddr</a> (UINTPTR BaseAddress)</td></tr>
+<tr class="memdesc:ga805a47295123177a48b07fccfe037702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up the device configuration based on the BaseAddress.  <a href="group__scugic.html#ga805a47295123177a48b07fccfe037702">More...</a><br/></td></tr>
+<tr class="separator:ga805a47295123177a48b07fccfe037702"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa26a952ecd376be0bc3d8433023d1364"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#gaa26a952ecd376be0bc3d8433023d1364">XScuGic_InterruptHandler</a> (<a class="el" href="struct_x_scu_gic.html">XScuGic</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gaa26a952ecd376be0bc3d8433023d1364"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the primary interrupt handler for the driver.  <a href="group__scugic.html#gaa26a952ecd376be0bc3d8433023d1364">More...</a><br/></td></tr>
 <tr class="separator:gaa26a952ecd376be0bc3d8433023d1364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga081a9a62546b413d94e609894282a575"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga081a9a62546b413d94e609894282a575">XScuGic_SelfTest</a> (<a class="el" href="struct_x_scu_gic.html">XScuGic</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga081a9a62546b413d94e609894282a575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a self-test on the driver/device.  <a href="group__scugic.html#ga081a9a62546b413d94e609894282a575">More...</a><br/></td></tr>
 <tr class="separator:ga081a9a62546b413d94e609894282a575"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ga3de9d984ad4026ce214e09bf796cdc49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_scu_gic___config.html">XScuGic_Config</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga3de9d984ad4026ce214e09bf796cdc49">XScuGic_ConfigTable</a> []</td></tr>
-<tr class="memdesc:ga3de9d984ad4026ce214e09bf796cdc49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Config table.  <a href="group__scugic.html#ga3de9d984ad4026ce214e09bf796cdc49">More...</a><br/></td></tr>
-<tr class="separator:ga3de9d984ad4026ce214e09bf796cdc49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

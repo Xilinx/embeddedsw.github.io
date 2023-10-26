@@ -28,6 +28,7 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.13   akm  02/11/21 First release
+* 1.18   sb   06/07/23 Added support for system device-tree flow.
 *
 *</pre>
 *
@@ -40,6 +41,9 @@
 #include "xil_cache.h"
 #include "xscugic.h"            /* Interrupt controller device driver */
 #include "xil_exception.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
 
 /************************** Constant Definitions *****************************/
@@ -49,7 +53,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define QSPIPSU_DEVICE_ID       XPAR_XQSPIPSU_0_DEVICE_ID
+#endif
 #define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define QSPIPSU_INTR_ID         XPAR_XQSPIPS_0_INTR
 
@@ -138,21 +144,26 @@ u8 FSRFlag;
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
-                XQspiPsu *QspiPsuInstancePtr,
-                u16 QspiPsuDeviceId, u16 QspiPsuIntrId);
+				 XQspiPsu *QspiPsuInstancePtr,
+				 u16 QspiPsuDeviceId, u16 QspiPsuIntrId);
+#else
+int QspiPsuInterruptFlashExample(XQspiPsu *QspiPsuInstancePtr,
+				 UINTPTR BaseAddress);
+#endif
 int FlashReadID(XQspiPsu *QspiPsuPtr);
 int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address);
 int FlashWrite(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
-				u8 *WriteBfrPtr);
+	       u8 *WriteBfrPtr);
 int FlashRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
-				u8 *WriteBfrPtr, u8 *ReadBfrPtr);
+	      u8 *WriteBfrPtr, u8 *ReadBfrPtr);
 int FlashStatusRead(XQspiPsu *QspiPsuPtr, u8 RegAddr, u8 *ReadBfrPtr);
 int FlashStatusWrite(XQspiPsu *QspiPsuPtr, u8 RegAddr, u8 RegVal);
 int FlashCheckIsBadBlock(XQspiPsu *QspiPsuPtr, u32 Address);
 int FlashIsNotBusy(XQspiPsu *QspiPsuPtr);
 static int QspiPsuSetupIntrSystem(XScuGic *IntcInstancePtr,
-                               XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuIntrId);
+				  XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuIntrId);
 void QspiPsuHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
 s32 XQspiPsu_ReadParamPage(XQspiPsu *QspiPsuPtr);
 s32 XQspiPsu_ParamPageCrc(u8 *ParamBuf, u32 StartOff, u32 Length);
@@ -230,22 +241,27 @@ u32 MaxData;
  ******************************************************************************/
 int main(void)
 {
-    int Status;
+	int Status;
 
-    xil_printf("QSPIPSU Generic NAND Flash Interrupt Example Test \r\n");
+	xil_printf("QSPIPSU Generic NAND Flash Interrupt Example Test \r\n");
 
-    /*
-     * Run the QspiPsu Interrupt example.
-     */
-    Status = QspiPsuInterruptFlashExample(&IntcInstance, &QspiPsuInstance,
-                                    QSPIPSU_DEVICE_ID, QSPIPSU_INTR_ID);
-    if (Status != XST_SUCCESS) {
-            xil_printf("QSPIPSU Generic NAND Flash Interrupt Example Failed\r\n");
-            return XST_FAILURE;
-    }
+	/*
+	 * Run the QspiPsu Interrupt example.
+	 */
+#ifndef SDT
+	Status = QspiPsuInterruptFlashExample(&IntcInstance, &QspiPsuInstance,
+					      QSPIPSU_DEVICE_ID, QSPIPSU_INTR_ID);
+#else
+	Status = QspiPsuInterruptFlashExample(&QspiPsuInstance,
+					      XPAR_XQSPIPSU_0_BASEADDR);
+#endif
+	if (Status != XST_SUCCESS) {
+		xil_printf("QSPIPSU Generic NAND Flash Interrupt Example Failed\r\n");
+		return XST_FAILURE;
+	}
 
-    xil_printf("Successfully ran QSPIPSU Generic NAND Flash Interrupt Example\r\n");
-    return XST_SUCCESS;
+	xil_printf("Successfully ran QSPIPSU Generic NAND Flash Interrupt Example\r\n");
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -261,9 +277,13 @@ int main(void)
  * @note        None.
  *
  *****************************************************************************/
+#ifndef SDT
 int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
-                XQspiPsu *QspiPsuInstancePtr,
-                u16 QspiPsuDeviceId, u16 QspiPsuIntrId)
+				 XQspiPsu *QspiPsuInstancePtr,
+				 u16 QspiPsuDeviceId, u16 QspiPsuIntrId)
+#else
+int QspiPsuInterruptFlashExample(XQspiPsu *QspiPsuInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	u8 UniqueValue;
@@ -277,7 +297,11 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	/*
 	 * Initialize the QSPIPSU driver so that it's ready to use
 	 */
+#ifndef SDT
 	QspiPsuConfig = XQspiPsu_LookupConfig(QspiPsuDeviceId);
+#else
+	QspiPsuConfig = XQspiPsu_LookupConfig(BaseAddress);
+#endif
 	if (QspiPsuConfig == NULL) {
 		return XST_FAILURE;
 	}
@@ -292,8 +316,15 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	 * Connect the QspiPsu device to the interrupt subsystem such that
 	 * interrupts can occur. This function is application specific
 	 */
+#ifndef SDT
 	Status = QspiPsuSetupIntrSystem(IntcInstancePtr, QspiPsuInstancePtr,
-				     QspiPsuIntrId);
+					QspiPsuIntrId);
+#else
+	Status = XSetupInterruptSystem(QspiPsuInstancePtr, &XQspiPsu_InterruptHandler,
+				       QspiPsuConfig->IntrId,
+				       QspiPsuConfig->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -305,7 +336,7 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	 * so the handler is able to access the instance data
 	 */
 	XQspiPsu_SetStatusHandler(QspiPsuInstancePtr, QspiPsuInstancePtr,
-				 (XQspiPsu_StatusHandler) QspiPsuHandler);
+				  (XQspiPsu_StatusHandler) QspiPsuHandler);
 
 	/*
 	 * Set Manual Start
@@ -319,8 +350,8 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 
 	/* Upper chip and upper bus selection */
 	XQspiPsu_SelectFlash(QspiPsuInstancePtr,
-		XQSPIPSU_SELECT_FLASH_CS_UPPER,
-		XQSPIPSU_SELECT_FLASH_BUS_UPPER);
+			     XQSPIPSU_SELECT_FLASH_CS_UPPER,
+			     XQSPIPSU_SELECT_FLASH_BUS_UPPER);
 
 	/*
 	 * Read flash ID and obtain all flash related information
@@ -354,7 +385,7 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	}
 
 	Crc = ((ParameterPageData[CRC_1_OFFSET] << 8) |
-			ParameterPageData[CRC_0_OFFSET]);
+	       ParameterPageData[CRC_0_OFFSET]);
 
 	if (Crc != XQspiPsu_ParamPageCrc(ParameterPageData, 0x00, ONFI_CRC_LEN)) {
 		xil_printf("Parameter page crc check failed\n\r");
@@ -362,14 +393,14 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	}
 
 	PageSize = (ParameterPageData[PAGE_SIZE_3_OFFSET] << 24) |
-			   (ParameterPageData[PAGE_SIZE_2_OFFSET] << 16) |
-			   (ParameterPageData[PAGE_SIZE_1_OFFSET] << 8) |
-			    ParameterPageData[PAGE_SIZE_0_OFFSET];
+		   (ParameterPageData[PAGE_SIZE_2_OFFSET] << 16) |
+		   (ParameterPageData[PAGE_SIZE_1_OFFSET] << 8) |
+		   ParameterPageData[PAGE_SIZE_0_OFFSET];
 
 	PageCount = (ParameterPageData[PAGE_COUNT_3_OFFSET] << 24) |
-			    (ParameterPageData[PAGE_COUNT_2_OFFSET] << 16) |
-			    (ParameterPageData[PAGE_COUNT_1_OFFSET] << 8) |
-			     ParameterPageData[PAGE_COUNT_0_OFFSET];
+		    (ParameterPageData[PAGE_COUNT_2_OFFSET] << 16) |
+		    (ParameterPageData[PAGE_COUNT_1_OFFSET] << 8) |
+		    ParameterPageData[PAGE_COUNT_0_OFFSET];
 
 	if (PageSize > MAX_PAGE_SIZE) {
 		xil_printf("Invalid Page Size\n\r");
@@ -383,7 +414,7 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 
 	xil_printf("ReadCmd: 0x%x, WriteCmd: 0x%x,"
 		   " StatusCmd: 0x%x\n\r",
-		ReadCmd, WriteCmd, StatusCmd);
+		   ReadCmd, WriteCmd, StatusCmd);
 
 	Status = FlashCheckIsBadBlock(QspiPsuInstancePtr, TEST_ADDRESS);
 	if (Status != XST_SUCCESS) {
@@ -401,7 +432,7 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	MaxData = (PageCount * PageSize);
 
 	for (UniqueValue = UNIQUE_VALUE, Count = 0; Count < PageSize;
-			Count++, UniqueValue++) {
+	     Count++, UniqueValue++) {
 		WriteBuffer[Count] = (u8) (UniqueValue + Test);
 	}
 
@@ -416,8 +447,8 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 
 	for (Page = 0; Page < MAX_PAGE_COUNT; Page++) {
 		Status = FlashWrite(QspiPsuInstancePtr,
-				(Page * PageSize) + TEST_ADDRESS, PageSize, WriteCmd,
-				WriteBuffer);
+				    (Page * PageSize) + TEST_ADDRESS, PageSize, WriteCmd,
+				    WriteBuffer);
 		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
 		}
@@ -427,13 +458,13 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
 	FlashStatusWrite(QspiPsuInstancePtr, STATUS_REG_2, DISABLE_BUF_MODE);
 
 	Status = FlashRead(QspiPsuInstancePtr, TEST_ADDRESS,
-			MaxData, ReadCmd, CmdBfr, ReadBuffer);
+			   MaxData, ReadCmd, CmdBfr, ReadBuffer);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	for (UniqueValue = UNIQUE_VALUE, Count = 0; Count < MaxData;
-				Count++, UniqueValue++) {
+	     Count++, UniqueValue++) {
 		if (ReadBuffer[Count] != (u8) (UniqueValue + Test)) {
 			return XST_FAILURE;
 		}
@@ -459,45 +490,45 @@ int QspiPsuInterruptFlashExample(XScuGic *IntcInstancePtr,
  *
  ******************************************************************************/
 static int QspiPsuSetupIntrSystem(XScuGic *IntcInstancePtr,
-                               XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuIntrId)
+				  XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuIntrId)
 {
-        int Status;
+	int Status;
 
-        XScuGic_Config *IntcConfig; /* Instance of the interrupt controller */
+	XScuGic_Config *IntcConfig; /* Instance of the interrupt controller */
 
-        Xil_ExceptionInit();
+	Xil_ExceptionInit();
 
-        /*
-         * Initialize the interrupt controller driver so that it is ready to
-         * use.
-         */
-        IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
-        if (IntcConfig == NULL) {
-                return XST_FAILURE;
-        }
+	/*
+	 * Initialize the interrupt controller driver so that it is ready to
+	 * use.
+	 */
+	IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
+	if (IntcConfig == NULL) {
+		return XST_FAILURE;
+	}
 
-        Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-                        IntcConfig->CpuBaseAddress);
-        if (Status != XST_SUCCESS) {
-                return XST_FAILURE;
-        }
+	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
+				       IntcConfig->CpuBaseAddress);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
-        /*
-         * Connect the interrupt controller interrupt handler to the hardware
-         * interrupt handling logic in the processor.
-         */
-        Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-                        (Xil_ExceptionHandler)XScuGic_InterruptHandler,
-                        IntcInstancePtr);
+	/*
+	 * Connect the interrupt controller interrupt handler to the hardware
+	 * interrupt handling logic in the processor.
+	 */
+	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 
-        /*
-         * Connect the device driver handler that will be called when an
-         * interrupt for the device occurs, the handler defined above performs
-         * the specific interrupt processing for the device.
-         */
-        Status = XScuGic_Connect(IntcInstancePtr, QspiPsuIntrId,
-                        (Xil_ExceptionHandler)XQspiPsu_InterruptHandler,
-                        (void *)QspiPsuInstancePtr);
+	/*
+	 * Connect the device driver handler that will be called when an
+	 * interrupt for the device occurs, the handler defined above performs
+	 * the specific interrupt processing for the device.
+	 */
+	Status = XScuGic_Connect(IntcInstancePtr, QspiPsuIntrId,
+				 (Xil_ExceptionHandler)XQspiPsu_InterruptHandler,
+				 (void *)QspiPsuInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -529,18 +560,18 @@ static int QspiPsuSetupIntrSystem(XScuGic *IntcInstancePtr,
  *****************************************************************************/
 void QspiPsuHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
 {
-        /*
-         * Indicate the transfer on the QSPIPSU bus is no longer in progress
-         * regardless of the status event
-         */
-        TransferInProgress = FALSE;
+	/*
+	 * Indicate the transfer on the QSPIPSU bus is no longer in progress
+	 * regardless of the status event
+	 */
+	TransferInProgress = FALSE;
 
-        /*
-         * If the event was not transfer done, then track it as an error
-         */
-        if (StatusEvent != XST_SPI_TRANSFER_DONE) {
-                Error++;
-        }
+	/*
+	 * If the event was not transfer done, then track it as an error
+	 */
+	if (StatusEvent != XST_SPI_TRANSFER_DONE) {
+		Error++;
+	}
 }
 
 /*****************************************************************************/
@@ -612,7 +643,7 @@ int FlashReadID(XQspiPsu *QspiPsuPtr)
  *
  ******************************************************************************/
 int FlashWrite(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
-				u8 *WriteBfrPtr)
+	       u8 *WriteBfrPtr)
 {
 	u8 WriteEnableCmd;
 	u8 ProgExeCmd;
@@ -810,7 +841,7 @@ int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address)
  *
  ******************************************************************************/
 int FlashRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
-				u8 *WriteBfrPtr, u8 *ReadBfrPtr)
+	      u8 *WriteBfrPtr, u8 *ReadBfrPtr)
 {
 	u16 PageAddr;
 	u8 PageReadCmd;
@@ -1100,7 +1131,7 @@ int FlashCheckIsBadBlock(XQspiPsu *QspiPsuPtr, u32 Address)
 	FlashMsg[2].TxBfrPtr = NULL;
 	FlashMsg[2].RxBfrPtr = ReadSpareBfrPtr;
 	FlashMsg[2].ByteCount = ((ParameterPageData[SPARE_1_OFFSET] << 8) |
-							 ParameterPageData[SPARE_0_OFFSET]);
+				 ParameterPageData[SPARE_0_OFFSET]);
 	FlashMsg[2].BusWidth = XQSPIPSU_SELECT_MODE_QUADSPI;
 	FlashMsg[2].Flags = XQSPIPSU_MSG_FLAG_RX;
 
@@ -1131,98 +1162,98 @@ int FlashCheckIsBadBlock(XQspiPsu *QspiPsuPtr, u32 Address)
 ******************************************************************************/
 s32 XQspiPsu_ReadParamPage(XQspiPsu *QspiPsuPtr)
 {
-        s32 Status = XST_FAILURE;
-        u16 PageAddr;
-		u8 PageReadCmd;
-		u8 WriteBuf[2];
-		u8 Status_Reg;
+	s32 Status = XST_FAILURE;
+	u16 PageAddr;
+	u8 PageReadCmd;
+	u8 WriteBuf[2];
+	u8 Status_Reg;
 
-		/*
-		 * To access Parameter page data,
-		 * the OTP-E bit in Status Register-2
-		 * must be set to “1” first
-		 */
-		FlashStatusRead(QspiPsuPtr, STATUS_REG_2, &Status_Reg);
-		Status_Reg |= 0x01 << OTP_E_BIT;
-		FlashStatusWrite(QspiPsuPtr, STATUS_REG_2, Status_Reg);
+	/*
+	 * To access Parameter page data,
+	 * the OTP-E bit in Status Register-2
+	 * must be set to “1” first
+	 */
+	FlashStatusRead(QspiPsuPtr, STATUS_REG_2, &Status_Reg);
+	Status_Reg |= 0x01 << OTP_E_BIT;
+	FlashStatusWrite(QspiPsuPtr, STATUS_REG_2, Status_Reg);
 
-		PageAddr = PARAMETER_PAGE_ADDRESS;
+	PageAddr = PARAMETER_PAGE_ADDRESS;
 
-		/* Set page address */
-		WriteBuf[0] = (u8) ((PageAddr & 0xFF00) >> 8);
-		WriteBuf[1] = (u8) (PageAddr & 0xFF);
+	/* Set page address */
+	WriteBuf[0] = (u8) ((PageAddr & 0xFF00) >> 8);
+	WriteBuf[1] = (u8) (PageAddr & 0xFF);
 
-		PageReadCmd = PAGE_DATA_READ;
+	PageReadCmd = PAGE_DATA_READ;
 
-		FlashMsg[0].TxBfrPtr = &PageReadCmd;
-		FlashMsg[0].RxBfrPtr = NULL;
-		FlashMsg[0].ByteCount = 1;
-		FlashMsg[0].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
-		FlashMsg[0].Flags = XQSPIPSU_MSG_FLAG_TX;
+	FlashMsg[0].TxBfrPtr = &PageReadCmd;
+	FlashMsg[0].RxBfrPtr = NULL;
+	FlashMsg[0].ByteCount = 1;
+	FlashMsg[0].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
+	FlashMsg[0].Flags = XQSPIPSU_MSG_FLAG_TX;
 
-		FlashMsg[1].TxBfrPtr = NULL;
-		FlashMsg[1].RxBfrPtr = NULL;
-		FlashMsg[1].ByteCount = DUMMY_CLOCKS;
-		FlashMsg[1].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
-		FlashMsg[1].Flags = 0;
+	FlashMsg[1].TxBfrPtr = NULL;
+	FlashMsg[1].RxBfrPtr = NULL;
+	FlashMsg[1].ByteCount = DUMMY_CLOCKS;
+	FlashMsg[1].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
+	FlashMsg[1].Flags = 0;
 
-		FlashMsg[2].TxBfrPtr = WriteBuf;
-		FlashMsg[2].RxBfrPtr = NULL;
-		FlashMsg[2].ByteCount = 2;
-		FlashMsg[2].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
-		FlashMsg[2].Flags = XQSPIPSU_MSG_FLAG_TX;
+	FlashMsg[2].TxBfrPtr = WriteBuf;
+	FlashMsg[2].RxBfrPtr = NULL;
+	FlashMsg[2].ByteCount = 2;
+	FlashMsg[2].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
+	FlashMsg[2].Flags = XQSPIPSU_MSG_FLAG_TX;
 
-		TransferInProgress = TRUE;
-		Status = XQspiPsu_InterruptTransfer(QspiPsuPtr, FlashMsg, 3);
-		if (Status != XST_SUCCESS) {
-			return XST_FAILURE;
-		}
-		while (TransferInProgress);
+	TransferInProgress = TRUE;
+	Status = XQspiPsu_InterruptTransfer(QspiPsuPtr, FlashMsg, 3);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+	while (TransferInProgress);
 
-		/* Check flash is busy */
-		Status = FlashIsNotBusy(QspiPsuPtr);
-		if (Status != XST_SUCCESS) {
-			return XST_FAILURE;
-		}
+	/* Check flash is busy */
+	Status = FlashIsNotBusy(QspiPsuPtr);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
-		/* Continuous data read */
-		WriteBuf[COMMAND_OFFSET] = QUAD_READ_CMD_4B;
+	/* Continuous data read */
+	WriteBuf[COMMAND_OFFSET] = QUAD_READ_CMD_4B;
 
-		FlashMsg[0].TxBfrPtr = WriteBuf;
-		FlashMsg[0].RxBfrPtr = NULL;
-		FlashMsg[0].ByteCount = 1;
-		FlashMsg[0].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
-		FlashMsg[0].Flags = XQSPIPSU_MSG_FLAG_TX;
+	FlashMsg[0].TxBfrPtr = WriteBuf;
+	FlashMsg[0].RxBfrPtr = NULL;
+	FlashMsg[0].ByteCount = 1;
+	FlashMsg[0].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
+	FlashMsg[0].Flags = XQSPIPSU_MSG_FLAG_TX;
 
-		FlashMsg[1].TxBfrPtr = NULL;
-		FlashMsg[1].RxBfrPtr = NULL;
-		FlashMsg[1].ByteCount = 5 * DUMMY_CLOCKS;
-		FlashMsg[1].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
-		FlashMsg[1].Flags = 0;
+	FlashMsg[1].TxBfrPtr = NULL;
+	FlashMsg[1].RxBfrPtr = NULL;
+	FlashMsg[1].ByteCount = 5 * DUMMY_CLOCKS;
+	FlashMsg[1].BusWidth = XQSPIPSU_SELECT_MODE_SPI;
+	FlashMsg[1].Flags = 0;
 
-		FlashMsg[2].TxBfrPtr = NULL;
-		FlashMsg[2].RxBfrPtr = ParameterPageData;
-		FlashMsg[2].ByteCount = 2048;
-		FlashMsg[2].BusWidth = XQSPIPSU_SELECT_MODE_QUADSPI;
-		FlashMsg[2].Flags = XQSPIPSU_MSG_FLAG_RX;
+	FlashMsg[2].TxBfrPtr = NULL;
+	FlashMsg[2].RxBfrPtr = ParameterPageData;
+	FlashMsg[2].ByteCount = 2048;
+	FlashMsg[2].BusWidth = XQSPIPSU_SELECT_MODE_QUADSPI;
+	FlashMsg[2].Flags = XQSPIPSU_MSG_FLAG_RX;
 
-		TransferInProgress = TRUE;
-		Status = XQspiPsu_InterruptTransfer(QspiPsuPtr, FlashMsg, 3);
-		if (Status != XST_SUCCESS) {
-			return XST_FAILURE;
-		}
-		while (TransferInProgress);
+	TransferInProgress = TRUE;
+	Status = XQspiPsu_InterruptTransfer(QspiPsuPtr, FlashMsg, 3);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+	while (TransferInProgress);
 
-		/*
-		 * To return to the main memory array operation,
-		 * OTP-E bit in Status Register-2 needs to be to
-		 * set to "0"
-		 */
-		FlashStatusRead(QspiPsuPtr, STATUS_REG_2, &Status_Reg);
-		Status_Reg &= ~(0x01 << OTP_E_BIT);
-		FlashStatusWrite(QspiPsuPtr, STATUS_REG_2, Status_Reg);
+	/*
+	 * To return to the main memory array operation,
+	 * OTP-E bit in Status Register-2 needs to be to
+	 * set to "0"
+	 */
+	FlashStatusRead(QspiPsuPtr, STATUS_REG_2, &Status_Reg);
+	Status_Reg &= ~(0x01 << OTP_E_BIT);
+	FlashStatusWrite(QspiPsuPtr, STATUS_REG_2, Status_Reg);
 
-		return XST_SUCCESS;
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -1242,38 +1273,38 @@ s32 XQspiPsu_ReadParamPage(XQspiPsu *QspiPsuPtr)
 ******************************************************************************/
 s32 XQspiPsu_ParamPageCrc(u8 *ParamBuf, u32 StartOff, u32 Length)
 {
-        const u32 CrcInit = 0x4F4EU;
-        const u32 Order = 16U;
-        const u32 Polynom = 0x8005U;
-        u32 i, j, c, Bit;
-        u32 Crc = CrcInit;
-        u32 DataIn;
-        u32 DataByteCount = 0U;
-        u32 CrcMask, CrcHighBit;
+	const u32 CrcInit = 0x4F4EU;
+	const u32 Order = 16U;
+	const u32 Polynom = 0x8005U;
+	u32 i, j, c, Bit;
+	u32 Crc = CrcInit;
+	u32 DataIn;
+	u32 DataByteCount = 0U;
+	u32 CrcMask, CrcHighBit;
 
-        CrcMask = ((u32)(((u32)1 << (Order - (u32)1)) -(u32)1) << (u32)1) | (u32)1;
-        CrcHighBit = (u32)((u32)1 << (Order - (u32)1));
-        /*
-         * CRC covers the data bytes between byte 0 and byte 253
-         * (ONFI 1.0, section 5.4.1.36)
-         */
-        for (i = StartOff; i < Length; i++) {
-                DataIn = *(ParamBuf + i);
-                c = (u32)DataIn;
-                DataByteCount++;
-                j = 0x80U;
-                while (j != 0U) {
-                        Bit = Crc & CrcHighBit;
-                        Crc <<= 1U;
-                        if ((c & j) != 0U) {
-                                Bit ^= CrcHighBit;
-                        }
-                        if (Bit != 0U) {
-                                Crc ^= Polynom;
-                        }
-                        j >>= 1U;
-                }
-                Crc &= CrcMask;
-        }
-        return Crc;
+	CrcMask = ((u32)(((u32)1 << (Order - (u32)1)) - (u32)1) << (u32)1) | (u32)1;
+	CrcHighBit = (u32)((u32)1 << (Order - (u32)1));
+	/*
+	 * CRC covers the data bytes between byte 0 and byte 253
+	 * (ONFI 1.0, section 5.4.1.36)
+	 */
+	for (i = StartOff; i < Length; i++) {
+		DataIn = *(ParamBuf + i);
+		c = (u32)DataIn;
+		DataByteCount++;
+		j = 0x80U;
+		while (j != 0U) {
+			Bit = Crc & CrcHighBit;
+			Crc <<= 1U;
+			if ((c & j) != 0U) {
+				Bit ^= CrcHighBit;
+			}
+			if (Bit != 0U) {
+				Crc ^= Polynom;
+			}
+			j >>= 1U;
+		}
+		Crc &= CrcMask;
+	}
+	return Crc;
 }

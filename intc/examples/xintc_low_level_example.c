@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -72,11 +73,16 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define INTC_BASEADDR		XPAR_INTC_0_BASEADDR
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
 #define INTC_DEVICE_INTR_ID	XPAR_INTC_0_UARTLITE_0_VEC_ID
 #define INTC_DEVICE_INT_MASK	XPAR_RS232_UART_1_INTERRUPT_MASK
-
+#else
+#define INTC_BASEADDR		XPAR_XINTC_0_BASEADDR
+#define INTC_DEVICE_INTR_ID	0x0U
+#define INTC_DEVICE_INT_MASK	0x1U
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -162,8 +168,8 @@ int IntcLowLevelExample(u32 IntcBaseAddress)
 	 * specific interrupt processing for the device.
 	 */
 	XIntc_RegisterHandler(IntcBaseAddress, INTC_DEVICE_INTR_ID,
-				(XInterruptHandler)DeviceDriverHandler,
-				(void *)0);
+			      (XInterruptHandler)DeviceDriverHandler,
+			      (void *)0);
 
 	/*
 	 * Enable interrupts for all devices that cause interrupts, and enable
@@ -196,8 +202,7 @@ int IntcLowLevelExample(u32 IntcBaseAddress)
 	 * Wait for the interrupt to be processed, if the interrupt does not
 	 * occur this loop will wait forever.
 	 */
-	while (1)
-	{
+	while (1) {
 		/*
 		 * If the interrupt occurred which is indicated by the global
 		 * variable which is set in the device driver handler, then
@@ -237,9 +242,15 @@ void SetupInterruptSystem()
 	/*
 	 * Register the interrupt controller handler with the exception table.
 	 */
+#ifndef SDT
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
-			INTC_DEVICE_ID);
+				     (Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
+				     INTC_DEVICE_ID);
+#else
+	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+				     (Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
+				     INTC_BASEADDR);
+#endif
 
 	/*
 	 * Enable exceptions.

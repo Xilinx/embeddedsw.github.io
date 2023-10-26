@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,6 +37,7 @@
 *       ms   04/05/17 Modified Comment lines in functions to
 *                     recognize it as documentation block for doxygen
 *                     generation.
+* 3.9   sb   07/05/23 Added support for system device-tree flow.
 *</pre>
 *
 ******************************************************************************/
@@ -53,7 +55,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_DEVICE_ID		XPAR_XSPIPS_0_DEVICE_ID
+#endif
 
 /*
  * The following constant specify the max amount of data the slave is
@@ -66,10 +70,10 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 #define SpiPs_RecvByte(BaseAddress) \
-		(u8)XSpiPs_In32((BaseAddress) + XSPIPS_RXD_OFFSET)
+	(u8)XSpiPs_In32((BaseAddress) + XSPIPS_RXD_OFFSET)
 
 #define SpiPs_SendByte(BaseAddress, Data) \
-		XSpiPs_Out32((BaseAddress) + XSPIPS_TXD_OFFSET, (Data))
+	XSpiPs_Out32((BaseAddress) + XSPIPS_TXD_OFFSET, (Data))
 
 /************************** Function Prototypes ******************************/
 
@@ -77,7 +81,11 @@ void SpiSlaveRead(int ByteCount);
 
 void SpiSlaveWrite(u8 *Sendbuffer, int ByteCount);
 
+#ifndef SDT
 int SpiPsSlavePolledExample(u16 SpiDeviceId);
+#else
+int SpiPsSlavePolledExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -116,7 +124,11 @@ int main(void)
 	/*
 	 * Run the SpiPs Slave Polled example.
 	 */
+#ifndef SDT
 	Status = SpiPsSlavePolledExample(SPI_DEVICE_ID);
+#else
+	Status = SpiPsSlavePolledExample(XPAR_XSPIPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("SpiPs Slave Polled Example Failed \r\n");
 		return XST_FAILURE;
@@ -143,7 +155,11 @@ int main(void)
 *
 *
 *****************************************************************************/
+#ifndef SDT
 int SpiPsSlavePolledExample(u16 SpiDeviceId)
+#else
+int SpiPsSlavePolledExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	u8 *BufferPtr;
@@ -152,13 +168,17 @@ int SpiPsSlavePolledExample(u16 SpiDeviceId)
 	/*
 	 * Initialize the SPI driver so that it's ready to use
 	 */
+#ifndef SDT
 	SpiConfig = XSpiPs_LookupConfig(SpiDeviceId);
+#else
+	SpiConfig = XSpiPs_LookupConfig(BaseAddress);
+#endif
 	if (NULL == SpiConfig) {
 		return XST_FAILURE;
 	}
 
 	Status = XSpiPs_CfgInitialize((&SpiInstance), SpiConfig,
-					SpiConfig->BaseAddress);
+				      SpiConfig->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -169,7 +189,7 @@ int SpiPsSlavePolledExample(u16 SpiDeviceId)
 	 * to quiescent high and CPHA is set to 1.
 	 */
 	Status = XSpiPs_SetOptions((&SpiInstance), (XSPIPS_CR_CPHA_MASK) | \
-			(XSPIPS_CR_CPOL_MASK));
+				   (XSPIPS_CR_CPOL_MASK));
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -179,7 +199,7 @@ int SpiPsSlavePolledExample(u16 SpiDeviceId)
 	/*
 	 * Set the Rx FIFO Threshold to the Max Data
 	 */
-	XSpiPs_SetRXWatermark((&SpiInstance),MAX_DATA);
+	XSpiPs_SetRXWatermark((&SpiInstance), MAX_DATA);
 
 	/*
 	 * Enable the device.
@@ -231,22 +251,22 @@ void SpiSlaveRead(int ByteCount)
 	u32 StatusReg;
 
 	StatusReg = XSpiPs_ReadReg(SpiInstance.Config.BaseAddress,
-					XSPIPS_SR_OFFSET);
+				   XSPIPS_SR_OFFSET);
 
 	/*
 	 * Polling the Rx Buffer for Data
 	 */
-	do{
+	do {
 		StatusReg = XSpiPs_ReadReg(SpiInstance.Config.BaseAddress,
-					XSPIPS_SR_OFFSET);
-	}while(!(StatusReg & XSPIPS_IXR_RXNEMPTY_MASK));
+					   XSPIPS_SR_OFFSET);
+	} while (!(StatusReg & XSPIPS_IXR_RXNEMPTY_MASK));
 
 	/*
 	 * Reading the Rx Buffer
 	 */
-	for(Count = 0; Count < ByteCount; Count++){
+	for (Count = 0; Count < ByteCount; Count++) {
 		ReadBuffer[Count] = SpiPs_RecvByte(
-				SpiInstance.Config.BaseAddress);
+					    SpiInstance.Config.BaseAddress);
 	}
 
 }
@@ -271,16 +291,16 @@ void SpiSlaveWrite(u8 *Sendbuffer, int ByteCount)
 	int TransCount = 0;
 
 	StatusReg = XSpiPs_ReadReg(SpiInstance.Config.BaseAddress,
-				XSPIPS_SR_OFFSET);
+				   XSPIPS_SR_OFFSET);
 
 	/*
 	 * Fill the TXFIFO with as many bytes as it will take (or as
 	 * many as we have to send).
 	 */
 	while ((ByteCount > 0) &&
-		(TransCount < XSPIPS_FIFO_DEPTH)) {
+	       (TransCount < XSPIPS_FIFO_DEPTH)) {
 		SpiPs_SendByte(SpiInstance.Config.BaseAddress,
-				*Sendbuffer);
+			       *Sendbuffer);
 		Sendbuffer++;
 		++TransCount;
 		ByteCount--;
@@ -291,8 +311,8 @@ void SpiSlaveWrite(u8 *Sendbuffer, int ByteCount)
 	 */
 	do {
 		StatusReg = XSpiPs_ReadReg(
-				SpiInstance.Config.BaseAddress,
-					XSPIPS_SR_OFFSET);
+				    SpiInstance.Config.BaseAddress,
+				    XSPIPS_SR_OFFSET);
 	} while ((StatusReg & XSPIPS_IXR_TXOW_MASK) == 0);
 
 }

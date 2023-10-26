@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xcoresightpsdcc.c
-* @addtogroup coresightps_dcc_v1_8
+* @addtogroup coresightps_dcc Overview
 * @{
 *
 * Functions in this file are the minimum required functions for the
@@ -29,7 +30,7 @@
 *                       for MB BSPs. Instead it throws up a warning. This
 *                       fixes the CR#953056.
 * 1.5   sne    01/19/19 Fixed MISRA-C Violations CR#1025101.
-*
+* 1.9   ht     07/05/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -74,13 +75,14 @@ static INLINE u32 XCoresightPs_DccGetStatus(void);
 void XCoresightPs_DccSendByte(u32 BaseAddress, u8 Data)
 {
 	(void) BaseAddress;
-	while (XCoresightPs_DccGetStatus() & XCORESIGHTPS_DCC_STATUS_TX)
-	{dsb();}
+	while (XCoresightPs_DccGetStatus() & XCORESIGHTPS_DCC_STATUS_TX) {
+		dsb();
+	}
 #ifdef __aarch64__
 	asm volatile ("msr dbgdtrtx_el0, %0" : : "r" (Data));
 #elif defined (__GNUC__) || defined (__ICCARM__)
 	asm volatile("mcr p14, 0, %0, c0, c5, 0"
-			: : "r" (Data));
+		     : : "r" (Data));
 #else
 	{
 		volatile register u32 Reg __asm("cp14:0:c0:c5:0");
@@ -111,14 +113,15 @@ u8 XCoresightPs_DccRecvByte(u32 BaseAddress)
 	u8 Data = 0U;
 	(void) BaseAddress;
 
-	while (!(XCoresightPs_DccGetStatus() & XCORESIGHTPS_DCC_STATUS_RX))
-        {dsb();}
+	while (!(XCoresightPs_DccGetStatus() & XCORESIGHTPS_DCC_STATUS_RX)) {
+		dsb();
+	}
 
 #ifdef __aarch64__
 	asm volatile ("mrs %0, dbgdtrrx_el0" : "=r" (Data));
 #elif defined (__GNUC__) || defined (__ICCARM__)
 	asm volatile("mrc p14, 0, %0, c0, c5, 0"
-			: "=r" (Data));
+		     : "=r" (Data));
 #else
 	{
 		volatile register u32 Reg __asm("cp14:0:c0:c5:0");
@@ -151,7 +154,7 @@ static INLINE u32 XCoresightPs_DccGetStatus(void)
 	asm volatile ("mrs %0, mdccsr_el0" : "=r" (Status));
 #elif defined (__GNUC__) || defined (__ICCARM__)
 	asm volatile("mrc p14, 0, %0, c0, c1, 0"
-			: "=r" (Status) : : "cc");
+		     : "=r" (Status) : : "cc");
 #else
 	{
 		volatile register u32 Reg __asm("cp14:0:c0:c1:0");
@@ -160,5 +163,17 @@ static INLINE u32 XCoresightPs_DccGetStatus(void)
 #endif
 	return Status;
 }
+
+#ifdef XPAR_STDIN_IS_CORESIGHTPS_DCC
+void outbyte(char c)
+{
+	XCoresightPs_DccSendByte(STDOUT_BASEADDRESS, c);
+}
+
+char inbyte(void)
+{
+	return XCoresightPs_DccRecvByte(STDIN_BASEADDRESS);
+}
+#endif
 #endif
 /** @} */

@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">qspipsu
    </div>
@@ -188,7 +188,12 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who Date     Changes
 1.14 akm 08/12/21 Perform Dcache invalidate at the end of the DMA transfer.
 1.17 akm 10/31/22 Add support for Winbond flash w25q02nw.
 1.17 akm 12/16/22 Add timeout in QSPIPSU driver operation.
-1.17 akm 01/02/23 Use Xil_WaitForEvent() API for register bit polling.</pre><pre></pre> </div></div><!-- contents -->
+1.17 akm 01/02/23 Use Xil_WaitForEvent() API for register bit polling.
+1.18 sb  06/07/23 Added support for system device-tree flow.
+1.18 sb  06/19/23 Add memory barrier instruction and convert IsBusy varible
+                  to volatile.
+1.18 ht  07/18/23 Fixed GCC warnings.
+1.18 sb  08/01/23 Added support for Feed back clock</pre><pre></pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>

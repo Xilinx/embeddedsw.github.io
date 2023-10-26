@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xbram_g.c
-* @addtogroup bram_v4_8
+* @addtogroup bram Overview
 * @{
 *
 * This file contains a configuration table that specifies the configuration
@@ -48,22 +49,22 @@
  */
 XBram_Config XBram_ConfigTable[] = {
 	{
-	 XPAR_BRAM_0_DEVICE_ID,
-	 XPAR_BRAM_0_ECC,
-	 XPAR_BRAM_0_FAULT_INJECT,
-	 XPAR_BRAM_0_CE_FAILING_REGISTERS,
-	 XPAR_BRAM_0_CE_FAILING_DATA_REGISTERS,
-	 XPAR_BRAM_0_UE_FAILING_REGISTERS,
-	 XPAR_BRAM_0_UE_FAILING_DATA_REGISTERS,
-	 XPAR_BRAM_0_ECC_STATUS_REGISTERS,
-	 XPAR_BRAM_0_CE_COUNTER_WIDTH,
-	 XPAR_BRAM_0_ECC_ONOFF_REGISTER,
-	 XPAR_BRAM_0_ECC_ONOFF_RESET_VALUE,
-	 XPAR_BRAM_0_WRITE_ACCESS,
-	 XPAR_BRAM_0_BASEADDR,
-	 XPAR_BRAM_0_HIGHADDR,
-	 XPAR_BRAM_0_CTRL_BASEADDR,
-	 XPAR_BRAM_0_CTRL_HIGHADDR,
+		XPAR_BRAM_0_DEVICE_ID,
+		XPAR_BRAM_0_ECC,
+		XPAR_BRAM_0_FAULT_INJECT,
+		XPAR_BRAM_0_CE_FAILING_REGISTERS,
+		XPAR_BRAM_0_CE_FAILING_DATA_REGISTERS,
+		XPAR_BRAM_0_UE_FAILING_REGISTERS,
+		XPAR_BRAM_0_UE_FAILING_DATA_REGISTERS,
+		XPAR_BRAM_0_ECC_STATUS_REGISTERS,
+		XPAR_BRAM_0_CE_COUNTER_WIDTH,
+		XPAR_BRAM_0_ECC_ONOFF_REGISTER,
+		XPAR_BRAM_0_ECC_ONOFF_RESET_VALUE,
+		XPAR_BRAM_0_WRITE_ACCESS,
+		XPAR_BRAM_0_BASEADDR,
+		XPAR_BRAM_0_HIGHADDR,
+		XPAR_BRAM_0_CTRL_BASEADDR,
+		XPAR_BRAM_0_CTRL_HIGHADDR,
 	}
 };
 /** @} */

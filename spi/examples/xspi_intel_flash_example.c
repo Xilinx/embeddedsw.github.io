@@ -38,6 +38,7 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 *       ms   04/05/17 Modified Comment lines to follow doxygen rules.
+* 4.11  sb   07/11/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -45,7 +46,11 @@
 /***************************** Include Files *********************************/
 
 #include "xparameters.h"	/* EDK generated parameters */
+#ifndef SDT
 #include "xintc.h"		/* Interrupt controller device driver */
+#else
+#include "xinterrupt_wrap.h"
+#endif
 #include "xspi.h"		/* SPI device driver */
 #include "xil_exception.h"
 #include "xil_printf.h"
@@ -58,9 +63,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_DEVICE_ID			XPAR_SPI_0_DEVICE_ID
 #define INTC_DEVICE_ID			XPAR_INTC_0_DEVICE_ID
 #define SPI_INTR_ID			XPAR_INTC_0_SPI_0_VEC_ID
+#endif
 
 /*
  * The following constant defines the slave select signal that is used to
@@ -147,7 +154,9 @@ int SpiIntelFlashGetStatus(XSpi *SpiPtr);
 int SpiIntelFlashWriteStatus(XSpi *SpiPtr, u8 StatusRegister);
 static int SpiIntelFlashWaitForFlashNotBusy(void);
 void SpiHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -156,7 +165,9 @@ static int SetupInterruptSystem(XSpi *SpiPtr);
  * are initialized to zero each time the program runs. They could be local
  * but should at least be static so they are zeroed.
  */
+#ifndef SDT
 static XIntc InterruptController;
+#endif
 static XSpi Spi;
 
 /*
@@ -200,13 +211,17 @@ int main(void)
 	/*
 	 * Initialize the SPI driver so that it is  ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XSpi_LookupConfig(SPI_DEVICE_ID);
+#else
+	ConfigPtr = XSpi_LookupConfig(XPAR_XSPI_0_BASEADDR);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
 
 	Status = XSpi_CfgInitialize(&Spi, ConfigPtr,
-				  ConfigPtr->BaseAddress);
+				    ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -215,8 +230,15 @@ int main(void)
 	 * Connect the SPI driver to the interrupt subsystem such that
 	 * interrupts can occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Spi);
-	if(Status != XST_SUCCESS) {
+#else
+	Status = XSetupInterruptSystem(&Spi, &XSpi_InterruptHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -234,8 +256,8 @@ int main(void)
 	 * transfer, this must be done before the slave select is set.
 	 */
 	Status = XSpi_SetOptions(&Spi, XSP_MASTER_OPTION |
-						XSP_MANUAL_SSELECT_OPTION);
-	if(Status != XST_SUCCESS) {
+				 XSP_MANUAL_SSELECT_OPTION);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -244,7 +266,7 @@ int main(void)
 	 * read and written using the SPI bus.
 	 */
 	Status = XSpi_SetSlaveSelect(&Spi, INTEL_SPI_SELECT);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -257,7 +279,7 @@ int main(void)
 	 * Perform the Write Enable operation.
 	 */
 	Status = SpiIntelFlashWriteEnable(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -265,7 +287,7 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -273,7 +295,7 @@ int main(void)
 	 * Disable the sector protection
 	 */
 	Status = SpiIntelFlashWriteStatus(&Spi, INTEL_DISABLE_PROTECTION_ALL);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -281,7 +303,7 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -295,7 +317,7 @@ int main(void)
 	 * Perform the Write Enable operation.
 	 */
 	Status = SpiIntelFlashWriteEnable(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -303,7 +325,7 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -311,7 +333,7 @@ int main(void)
 	 * Perform the Sector Erase operation.
 	 */
 	Status = SpiIntelFlashSectorErase(&Spi, Address);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -319,7 +341,7 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -327,7 +349,7 @@ int main(void)
 	 * Perform the Write Enable operation.
 	 */
 	Status = SpiIntelFlashWriteEnable(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -335,7 +357,7 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -344,7 +366,7 @@ int main(void)
 	 * Perform the Write operation.
 	 */
 	Status = SpiIntelFlashWrite(&Spi, Address, INTEL_FLASH_PAGE_SIZE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -352,14 +374,14 @@ int main(void)
 	 * Wait till the Flash is not Busy.
 	 */
 	Status = SpiIntelFlashWaitForFlashNotBusy();
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 	/*
 	 * Clear the read Buffer.
 	 */
-	for(Index = 0; Index < INTEL_FLASH_PAGE_SIZE +
-			INTEL_READ_WRITE_EXTRA_BYTES; Index++) {
+	for (Index = 0; Index < INTEL_FLASH_PAGE_SIZE +
+	     INTEL_READ_WRITE_EXTRA_BYTES; Index++) {
 		ReadBuffer[Index] = 0x0;
 	}
 
@@ -367,7 +389,7 @@ int main(void)
 	 * Read the data from the Page.
 	 */
 	Status = SpiIntelFlashRead(&Spi, Address, INTEL_FLASH_PAGE_SIZE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -375,9 +397,9 @@ int main(void)
 	/*
 	 * Compare the data read against the data that was Written.
 	 */
-	for(Index = 0; Index < INTEL_FLASH_PAGE_SIZE; Index++) {
-		if(ReadBuffer[Index + INTEL_READ_WRITE_EXTRA_BYTES] !=
-					(u8)(Index + INTEL_FLASH_TEST_BYTE)) {
+	for (Index = 0; Index < INTEL_FLASH_PAGE_SIZE; Index++) {
+		if (ReadBuffer[Index + INTEL_READ_WRITE_EXTRA_BYTES] !=
+		    (u8)(Index + INTEL_FLASH_TEST_BYTE)) {
 			return XST_FAILURE;
 		}
 	}
@@ -412,8 +434,8 @@ int SpiIntelFlashWriteEnable(XSpi *SpiPtr)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-				INTEL_WRITE_ENABLE_BYTES);
-	if(Status != XST_SUCCESS) {
+			       INTEL_WRITE_ENABLE_BYTES);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -421,8 +443,8 @@ int SpiIntelFlashWriteEnable(XSpi *SpiPtr)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction..
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -464,8 +486,8 @@ int SpiIntelFlashWrite(XSpi *SpiPtr, u32 Addr, u32 ByteCount)
 	 * Fill in the TEST data that is to be written into the STM Serial Flash
 	 * device.
 	 */
-	for(Index = 4; Index < ByteCount + INTEL_READ_WRITE_EXTRA_BYTES;
-						Index++) {
+	for (Index = 4; Index < ByteCount + INTEL_READ_WRITE_EXTRA_BYTES;
+	     Index++) {
 		WriteBuffer[Index] = (u8)((Index - 4) + INTEL_FLASH_TEST_BYTE);
 	}
 
@@ -474,8 +496,8 @@ int SpiIntelFlashWrite(XSpi *SpiPtr, u32 Addr, u32 ByteCount)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-				(ByteCount + INTEL_READ_WRITE_EXTRA_BYTES));
-	if(Status != XST_SUCCESS) {
+			       (ByteCount + INTEL_READ_WRITE_EXTRA_BYTES));
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -483,8 +505,8 @@ int SpiIntelFlashWrite(XSpi *SpiPtr, u32 Addr, u32 ByteCount)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction..
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -525,7 +547,7 @@ int SpiIntelFlashRead(XSpi *SpiPtr, u32 Addr, u32 ByteCount)
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer( SpiPtr, WriteBuffer, ReadBuffer,
 				(ByteCount + INTEL_READ_WRITE_EXTRA_BYTES));
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -533,8 +555,8 @@ int SpiIntelFlashRead(XSpi *SpiPtr, u32 Addr, u32 ByteCount)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction..
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -568,8 +590,8 @@ int SpiIntelFlashBulkErase(XSpi *SpiPtr)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-					INTEL_BULK_ERASE_BYTES);
-	if(Status != XST_SUCCESS) {
+			       INTEL_BULK_ERASE_BYTES);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -577,8 +599,8 @@ int SpiIntelFlashBulkErase(XSpi *SpiPtr)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction..
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -618,8 +640,8 @@ int SpiIntelFlashSectorErase(XSpi *SpiPtr, u32 Addr)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-				INTEL_SECTOR_ERASE_BYTES);
-	if(Status != XST_SUCCESS) {
+			       INTEL_SECTOR_ERASE_BYTES);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -627,8 +649,8 @@ int SpiIntelFlashSectorErase(XSpi *SpiPtr, u32 Addr)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction.
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -663,8 +685,8 @@ int SpiIntelFlashGetStatus(XSpi *SpiPtr)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, ReadBuffer,
-						INTEL_STATUS_READ_BYTES);
-	if(Status != XST_SUCCESS) {
+			       INTEL_STATUS_READ_BYTES);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -672,8 +694,8 @@ int SpiIntelFlashGetStatus(XSpi *SpiPtr)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction.
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -711,8 +733,8 @@ int SpiIntelFlashWriteStatus(XSpi *SpiPtr, u8 StatusRegister)
 	 */
 	TransferInProgress = TRUE;
 	Status = XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-				INTEL_STATUS_WRITE_BYTES);
-	if(Status != XST_SUCCESS) {
+			       INTEL_STATUS_WRITE_BYTES);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -720,8 +742,8 @@ int SpiIntelFlashWriteStatus(XSpi *SpiPtr, u8 StatusRegister)
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction..
 	 */
-	while(TransferInProgress);
-	if(ErrorCount != 0) {
+	while (TransferInProgress);
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -748,13 +770,13 @@ int SpiIntelFlashWaitForFlashNotBusy(void)
 	int Status;
 	u8 StatusReg;
 
-	while(1) {
+	while (1) {
 
 		/*
 		 * Get the Status Register.
 		 */
 		Status = SpiIntelFlashGetStatus(&Spi);
-		if(Status != XST_SUCCESS) {
+		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
 		}
 
@@ -763,7 +785,7 @@ int SpiIntelFlashWaitForFlashNotBusy(void)
 		 * If so break.
 		 */
 		StatusReg = ReadBuffer[1];
-		if((StatusReg & INTEL_FLASH_SR_IS_READY_MASK) == 0) {
+		if ((StatusReg & INTEL_FLASH_SR_IS_READY_MASK) == 0) {
 			break;
 		}
 	}
@@ -825,6 +847,7 @@ void SpiHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
 * @note		None
 *
 ******************************************************************************/
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr)
 {
 
@@ -836,7 +859,7 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * xparameters.h
 	 */
 	Status = XIntc_Initialize(&InterruptController, INTC_DEVICE_ID);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -846,10 +869,10 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * specific interrupt processing for the device
 	 */
 	Status = XIntc_Connect(&InterruptController,
-				SPI_INTR_ID,
-				(XInterruptHandler)XSpi_InterruptHandler,
-				(void *)SpiPtr);
-	if(Status != XST_SUCCESS) {
+			       SPI_INTR_ID,
+			       (XInterruptHandler)XSpi_InterruptHandler,
+			       (void *)SpiPtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -859,7 +882,7 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * the SPI can cause interrupts through the interrupt controller.
 	 */
 	Status = XIntc_Start(&InterruptController, XIN_REAL_MODE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -878,8 +901,8 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * Register the interrupt controller handler with the exception table
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)XIntc_InterruptHandler,
-			 &InterruptController);
+				     (Xil_ExceptionHandler)XIntc_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Enable non-critical exceptions
@@ -888,4 +911,5 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 
 	return XST_SUCCESS;
 }
+#endif
 

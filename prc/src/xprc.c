@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xprc.c
-* @addtogroup prc_v2_1
+* @addtogroup prc Overview
 * @{
 *
 * This file contains the required functions for the XPrc driver. Refer xprc.h
@@ -19,13 +20,14 @@
 *
 * Ver   Who     Date         Changes
 * ---- ----- ------------  -----------------------------------------------
-* 1.0   ms    07/18/2016    First release
+* 1.0   ms    07/18/16      First release
 * 1.1   ms    08/01/17      Added a new parameter "Cp_Compression" in
 *                           "XPrc_CfgInitialize" function.
 *                           Added new status error macros in function
 *                           "XPrc_PrintVsmStatus".
 * 1.2  Nava   29/03/19      Updated the tcl logic to generated the
 *                           XPrc_ConfigTable properly.
+* 2.2  Nava   07/04/23      Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -45,9 +47,9 @@
 /************************** Function Prototypes ******************************/
 
 static u32 XPrc_GetRegisterOffset(XPrc *InstancePtr, u32 VsmId, u8 BankId,
-			u8 TableInBank, u8 TableRow);
+				  u8 TableInBank, u8 TableRow);
 static void XPrc_SendCommand(XPrc *InstancePtr, u16 VsmId, u8 Cmd, u8 Byte,
-			u16 Halfword);
+			     u16 Halfword);
 static u16 XPrc_GetOffsetForTableType(u8 TableId);
 
 /****************************** Functions Definitions ************************/
@@ -70,7 +72,7 @@ static u16 XPrc_GetOffsetForTableType(u8 TableId);
 *
 ******************************************************************************/
 s32 XPrc_CfgInitialize(XPrc *InstancePtr, XPrc_Config *ConfigPtr,
-			u32 EffectiveAddr)
+		       u32 EffectiveAddr)
 {
 	u8 Index;
 
@@ -82,45 +84,47 @@ s32 XPrc_CfgInitialize(XPrc *InstancePtr, XPrc_Config *ConfigPtr,
 	 * is ready to use until everything has been initialized successfully.
 	 */
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
+#ifndef SDT
 	InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
+#endif
 
 	InstancePtr->Config.NumberOfVsms = ConfigPtr->NumberOfVsms;
 	InstancePtr->Config.RequiresClearBitstreams =
-				ConfigPtr->RequiresClearBitstreams;
+		ConfigPtr->RequiresClearBitstreams;
 	InstancePtr->Config.Cp_Arbitration_Protocol =
-				ConfigPtr->Cp_Arbitration_Protocol;
+		ConfigPtr->Cp_Arbitration_Protocol;
 	InstancePtr->Config.Has_Axi_Lite_If =
-				ConfigPtr->Has_Axi_Lite_If;
+		ConfigPtr->Has_Axi_Lite_If;
 	InstancePtr->Config.Reset_Active_Level =
-				ConfigPtr->Reset_Active_Level;
+		ConfigPtr->Reset_Active_Level;
 	InstancePtr->Config.Cp_Fifo_Depth = ConfigPtr->Cp_Fifo_Depth;
 	InstancePtr->Config.Cp_Fifo_Type = ConfigPtr->Cp_Fifo_Type;
 	InstancePtr->Config.Cp_Family = ConfigPtr->Cp_Family;
 	InstancePtr->Config.Cdc_Stages = ConfigPtr->Cdc_Stages;
 	InstancePtr->Config.Cp_Compression = ConfigPtr->Cp_Compression;
 
-	for(Index = 0; Index < InstancePtr->Config.NumberOfVsms; Index++) {
+	for (Index = 0; Index < InstancePtr->Config.NumberOfVsms; Index++) {
 		InstancePtr->Config.NumberOfRms[Index] =
-				ConfigPtr->NumberOfRms[Index];
+			ConfigPtr->NumberOfRms[Index];
 		InstancePtr->Config.NumberOfRmsAllocated[Index] =
-				ConfigPtr->NumberOfRmsAllocated[Index];
+			ConfigPtr->NumberOfRmsAllocated[Index];
 		InstancePtr->Config.Start_In_Shutdown[Index] =
-				ConfigPtr->Start_In_Shutdown[Index];
+			ConfigPtr->Start_In_Shutdown[Index];
 		InstancePtr->Config.No_Of_Triggers_Allocated[Index] =
-				ConfigPtr->No_Of_Triggers_Allocated[Index];
+			ConfigPtr->No_Of_Triggers_Allocated[Index];
 		InstancePtr->Config.Shutdown_On_Error[Index] =
-				ConfigPtr->Shutdown_On_Error[Index];
+			ConfigPtr->Shutdown_On_Error[Index];
 		InstancePtr->Config.Has_Por_Rm[Index] =
-				ConfigPtr->Has_Por_Rm[Index];
+			ConfigPtr->Has_Por_Rm[Index];
 		InstancePtr->Config.Por_Rm[Index] = ConfigPtr->Por_Rm[Index];
 		InstancePtr->Config.Has_Axis_Status[Index] =
-				ConfigPtr->Has_Axis_Status[Index];
+			ConfigPtr->Has_Axis_Status[Index];
 		InstancePtr->Config.Has_Axis_Control[Index] =
-				ConfigPtr->Has_Axis_Control[Index];
+			ConfigPtr->Has_Axis_Control[Index];
 		InstancePtr->Config.Skip_Rm_Startup_After_Reset[Index] =
-				ConfigPtr->Skip_Rm_Startup_After_Reset[Index];
+			ConfigPtr->Skip_Rm_Startup_After_Reset[Index];
 		InstancePtr->Config.Num_Hw_Triggers[Index] =
-				ConfigPtr->Num_Hw_Triggers[Index];
+			ConfigPtr->Num_Hw_Triggers[Index];
 	}
 
 	InstancePtr->Config.RegVsmMsb = ConfigPtr->RegVsmMsb;
@@ -157,7 +161,7 @@ void XPrc_SendShutdownCommand(XPrc *InstancePtr, u16 VsmId)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	XPrc_SendCommand(InstancePtr, VsmId, XPRC_CR_SHUTDOWN_CMD,
-			XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
+			 XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
 }
 
 /*****************************************************************************/
@@ -181,7 +185,7 @@ void XPrc_SendRestartWithNoStatusCommand(XPrc *InstancePtr, u16 VsmId)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	XPrc_SendCommand(InstancePtr, VsmId, XPRC_CR_RESTART_NO_STATUS_CMD,
-			XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
+			 XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
 }
 
 /*****************************************************************************/
@@ -203,16 +207,16 @@ void XPrc_SendRestartWithNoStatusCommand(XPrc *InstancePtr, u16 VsmId)
 *
 ******************************************************************************/
 void XPrc_SendRestartWithStatusCommand(XPrc *InstancePtr, u16 VsmId, u8 Full,
-			u16 RmId)
+				       u16 RmId)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 	Xil_AssertVoid((Full == XPRC_CR_VS_FULL) ||
-			(Full == XPRC_CR_VS_EMPTY));
+		       (Full == XPRC_CR_VS_EMPTY));
 
 	XPrc_SendCommand(InstancePtr, VsmId, XPRC_CR_RESTART_WITH_STATUS_CMD,
-			Full, RmId);
+			 Full, RmId);
 }
 
 /*****************************************************************************/
@@ -236,7 +240,7 @@ void XPrc_SendProceedCommand(XPrc *InstancePtr, u16 VsmId)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	XPrc_SendCommand(InstancePtr, VsmId, XPRC_CR_OK_TO_PROCEED_CMD,
-			XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
+			 XPRC_CR_DEFAULT_BYTE, XPRC_CR_DEFAULT_HALFWORD);
 }
 
 /*****************************************************************************/
@@ -264,8 +268,8 @@ void XPrc_SendProceedCommand(XPrc *InstancePtr, u16 VsmId)
 *
 ******************************************************************************/
 void XPrc_SendUserControlCommand(XPrc *InstancePtr, u16 VsmId,
-			u8 Rm_Shutdown_Req, u8 Rm_Decouple, u8 Sw_Shutdown_Req,
-			u8 Sw_Startup_Req, u8 Rm_Reset)
+				 u8 Rm_Shutdown_Req, u8 Rm_Decouple, u8 Sw_Shutdown_Req,
+				 u8 Sw_Startup_Req, u8 Rm_Reset)
 {
 	u8 Byte = 0;
 
@@ -275,16 +279,16 @@ void XPrc_SendUserControlCommand(XPrc *InstancePtr, u16 VsmId,
 
 	Byte = Rm_Shutdown_Req;	/* Bit 0 so I can start by just assigning */
 	Byte |= (Rm_Decouple << XPRC_CR_USER_CONTROL_RM_DECOUPLE_BIT);
-				/* Bit 1 */
+	/* Bit 1 */
 	Byte |= (Sw_Shutdown_Req << XPRC_CR_USER_CONTROL_SW_SHUTDOWN_REQ_BIT);
-				/* Bit 2 */
+	/* Bit 2 */
 	Byte |= (Sw_Startup_Req << XPRC_CR_USER_CONTROL_SW_STARTUP_REQ_BIT);
-				/* Bit 3 */
+	/* Bit 3 */
 	Byte |= (Rm_Reset << XPRC_CR_USER_CONTROL_RM_RESET_BIT);
-				/* Bit 4 */
+	/* Bit 4 */
 
 	XPrc_SendCommand(InstancePtr, VsmId, XPRC_CR_USER_CTRL_CMD, Byte,
-				XPRC_CR_DEFAULT_HALFWORD);
+			 XPRC_CR_DEFAULT_HALFWORD);
 }
 
 /*****************************************************************************/
@@ -305,7 +309,7 @@ void XPrc_SendUserControlCommand(XPrc *InstancePtr, u16 VsmId,
 *
 ******************************************************************************/
 void XPrc_SetTriggerToRmMapping(XPrc *InstancePtr, u16 VsmId, u16 TriggerId,
-			u16 RmId)
+				u16 RmId)
 {
 	u32 Address;
 
@@ -314,12 +318,12 @@ void XPrc_SetTriggerToRmMapping(XPrc *InstancePtr, u16 VsmId, u16 TriggerId,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_TRIGGER_REG, TriggerId);
+					  XPRC_TRIGGER_REG, TriggerId);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetTriggerToRmMapping :: Instance"
-		"%d, VSMID = %x, Address = %x, Trigger = %x, Rm = %x \n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, TriggerId,
-		RmId);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetTriggerToRmMapping ::InstanceAddr"
+		    "%x, VSMID = %x, Address = %x, Trigger = %x, Rm = %x \n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, TriggerId,
+		    RmId);
 
 	XPrc_WriteReg(Address, RmId);
 }
@@ -349,7 +353,7 @@ u32 XPrc_GetTriggerToRmMapping(XPrc *InstancePtr, u16 VsmId, u16 TriggerId)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_TRIGGER_REG, TriggerId);
+					  XPRC_TRIGGER_REG, TriggerId);
 
 	return XPrc_ReadReg(Address);
 }
@@ -385,12 +389,12 @@ void XPrc_SetRmBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId, u16 BsIndex)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_RM_BS_INDEX_REG, RmId);
+					  XPRC_RM_BS_INDEX_REG, RmId);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetRmBsIndex :: Instance %d,"
-		"VSMID = %x, Address = %x, Rm = %x, Bs Index = %x \n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, RmId,
-		BsIndex);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetRmBsIndex ::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Rm = %x, Bs Index = %x \n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, RmId,
+		    BsIndex);
 
 	XPrc_WriteReg(Address, BsIndex);
 }
@@ -417,7 +421,7 @@ void XPrc_SetRmBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId, u16 BsIndex)
 *
 ******************************************************************************/
 void XPrc_SetRmClearingBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId,
-			u16 ClearingBsIndex)
+			       u16 ClearingBsIndex)
 {
 	u32 Address;
 	u32 BsIndex;
@@ -428,18 +432,18 @@ void XPrc_SetRmClearingBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_RM_BS_INDEX_REG, RmId);
+					  XPRC_RM_BS_INDEX_REG, RmId);
 
 	/* Read the register and merge in the clearing BS index */
 	BsIndex = XPrc_ReadReg(Address);
 	Data = BsIndex;
 	Data |= (ClearingBsIndex << XPRC_RM_CLEARING_BS_INDEX_SHIFT);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetRmClearingBsIndex :: Instance"
-		"%d, VSMID = %x, Address = %x, Rm = %x, Data = %x,"
-		"Clearing Bs Index = %x, Bs Index = %x\n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, RmId, Data,
-		ClearingBsIndex, BsIndex);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetRmClearingBsIndex ::InstanceAddr"
+		    "%x, VSMID = %x, Address = %x, Rm = %x, Data = %x,"
+		    "Clearing Bs Index = %x, Bs Index = %x\n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, RmId, Data,
+		    ClearingBsIndex, BsIndex);
 
 	XPrc_WriteReg(Address, Data);
 }
@@ -471,7 +475,7 @@ u32 XPrc_GetRmBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_RM_BS_INDEX_REG, RmId);
+					  XPRC_RM_BS_INDEX_REG, RmId);
 
 	/* Read the register and merge in the clearing BS index */
 	Data = XPrc_ReadReg(Address);
@@ -509,7 +513,7 @@ u16 XPrc_GetRmClearingBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-				XPRC_RM_BS_INDEX_REG, RmId);
+					  XPRC_RM_BS_INDEX_REG, RmId);
 
 	/* Read the register and merge in the clearing BS index */
 	Data = XPrc_ReadReg(Address);
@@ -556,8 +560,8 @@ u16 XPrc_GetRmClearingBsIndex(XPrc *InstancePtr, u16 VsmId, u16 RmId)
 *
 ******************************************************************************/
 void XPrc_SetRmControl(XPrc *InstancePtr, u16 VsmId, u16 RmId,
-	u8 ShutdownRequired, u8 StartupRequired, u8 ResetRequired,
-	u8 ResetDuration)
+		       u8 ShutdownRequired, u8 StartupRequired, u8 ResetRequired,
+		       u8 ResetDuration)
 {
 	u32 Address;
 	u32 Data = 0;
@@ -567,28 +571,28 @@ void XPrc_SetRmControl(XPrc *InstancePtr, u16 VsmId, u16 RmId,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 	Xil_AssertVoid(ShutdownRequired <= XPRC_RM_CR_SW_HW_SHUTDOWN_REQUIRED);
 	Xil_AssertVoid((StartupRequired == XPRC_RM_CR_STARTUP_NOT_REQUIRED) ||
-			(StartupRequired == XPRC_RM_CR_SW_STARTUP_REQUIRED));
+		       (StartupRequired == XPRC_RM_CR_SW_STARTUP_REQUIRED));
 	Xil_AssertVoid(ResetRequired <= XPRC_RM_CR_HIGH_RESET_REQUIRED);
 	Xil_AssertVoid(ResetDuration < XPRC_RM_CR_MAX_RESETDURATION);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_RM_CONTROL_REG, RmId);
+					  XPRC_RM_CONTROL_REG, RmId);
 
 	Data |= ((ShutdownRequired << XPRC_RM_CR_SHUTDOWN_REQUIRED_SHIFT) &
-			XPRC_RM_CR_SHUTDOWN_REQUIRED_MASK);
+		 XPRC_RM_CR_SHUTDOWN_REQUIRED_MASK);
 	Data |= ((StartupRequired << XPRC_RM_CR_STARTUP_REQUIRED_SHIFT) &
-			XPRC_RM_CR_STARTUP_REQUIRED_MASK);
+		 XPRC_RM_CR_STARTUP_REQUIRED_MASK);
 	Data |= ((ResetRequired << XPRC_RM_CR_RESET_REQUIRED_SHIFT) &
-			XPRC_RM_CR_RESET_REQUIRED_MASK);
+		 XPRC_RM_CR_RESET_REQUIRED_MASK);
 	Data |= ((ResetDuration << XPRC_RM_CR_RESET_DURATION_SHIFT) &
-			XPRC_RM_CR_RESET_DURATION_MASK);
+		 XPRC_RM_CR_RESET_DURATION_MASK);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetRmControl :: Instance %d,"
-		"VSMID = %x, Address = %x, Data = %x (| Reset Duration %0d |"
-		"Reset Required %0d | Startup Required = %0d | Shutdown"
-		"Required = %0d |)\n\r", InstancePtr->Config.DeviceId,
-		VsmId, Address, Data, ResetDuration, ResetRequired,
-		StartupRequired, ShutdownRequired);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetRmControl ::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Data = %x (| Reset Duration %0d |"
+		    "Reset Required %0d | Startup Required = %0d | Shutdown"
+		    "Required = %0d |)\n\r", InstancePtr->Config.BaseAddress,
+		    VsmId, Address, Data, ResetDuration, ResetRequired,
+		    StartupRequired, ShutdownRequired);
 
 	XPrc_WriteReg(Address, Data);
 }
@@ -632,8 +636,8 @@ void XPrc_SetRmControl(XPrc *InstancePtr, u16 VsmId, u16 RmId,
 *
 ******************************************************************************/
 void XPrc_GetRmControl(XPrc *InstancePtr, u16 VsmId, u16 RmId,
-			u8 *ShutdownRequired, u8 *StartupRequired,
-			u8 *ResetRequired, u8 *ResetDuration)
+		       u8 *ShutdownRequired, u8 *StartupRequired,
+		       u8 *ResetRequired, u8 *ResetDuration)
 {
 	u32 Address;
 	u32 Data;
@@ -643,36 +647,36 @@ void XPrc_GetRmControl(XPrc *InstancePtr, u16 VsmId, u16 RmId,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_RM_CONTROL_REG, RmId);
+					  XPRC_RM_CONTROL_REG, RmId);
 
 	Data = XPrc_ReadReg(Address);
 
 	if (ShutdownRequired != NULL) {
 		*ShutdownRequired = (Data & XPRC_RM_CR_SHUTDOWN_REQUIRED_MASK)
-				>> XPRC_RM_CR_SHUTDOWN_REQUIRED_SHIFT;
+				    >> XPRC_RM_CR_SHUTDOWN_REQUIRED_SHIFT;
 	}
 
 	if (StartupRequired != NULL) {
 		*StartupRequired = (Data & XPRC_RM_CR_STARTUP_REQUIRED_MASK)
-				>> XPRC_RM_CR_STARTUP_REQUIRED_SHIFT;
+				   >> XPRC_RM_CR_STARTUP_REQUIRED_SHIFT;
 	}
 
 	if (ResetRequired != NULL) {
 		*ResetRequired = (Data & XPRC_RM_CR_RESET_REQUIRED_MASK) >>
-				XPRC_RM_CR_RESET_REQUIRED_SHIFT;
+				 XPRC_RM_CR_RESET_REQUIRED_SHIFT;
 	}
 
 	if (ResetDuration != NULL) {
 		*ResetDuration = (Data & XPRC_RM_CR_RESET_DURATION_MASK) >>
-				XPRC_RM_CR_RESET_DURATION_SHIFT;
+				 XPRC_RM_CR_RESET_DURATION_SHIFT;
 	}
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_GetRmControl :: Instance %d,"
-		"VSMID = %x, Address = %x, Data = %x (| Reset Duration %0d |"
-		"Reset Required %0d | Startup Required = %0d | Shutdown"
-		"Required = %0d |)\n\r", InstancePtr->Config.DeviceId,
-		VsmId, Address, Data, *ResetDuration, *ResetRequired,
-		*StartupRequired, *ShutdownRequired);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_GetRmControl ::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Data = %x (| Reset Duration %0d |"
+		    "Reset Required %0d | Startup Required = %0d | Shutdown"
+		    "Required = %0d |)\n\r", InstancePtr->Config.BaseAddress,
+		    VsmId, Address, Data, *ResetDuration, *ResetRequired,
+		    *StartupRequired, *ShutdownRequired);
 
 }
 
@@ -703,12 +707,12 @@ void XPrc_SetBsId(XPrc *InstancePtr, u16 VsmId, u16 BsIndex, u16 BsId)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_ID_REG, BsIndex);
+					  XPRC_BS_ID_REG, BsIndex);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetBsId :: Instance %d, VSMID ="
-		"%x, Address = %x, Bs Index = %x, Bs Id = %x \n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, BsIndex,
-		BsId);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetBsId ::InstanceAddr %x, VSMID ="
+		    "%x, Address = %x, Bs Index = %x, Bs Id = %x \n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, BsIndex,
+		    BsId);
 
 	XPrc_WriteReg(Address, BsId);
 }
@@ -741,7 +745,7 @@ u32 XPrc_GetBsId(XPrc *InstancePtr, u16 VsmId, u16 BsIndex)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_ID_REG, BsIndex);
+					  XPRC_BS_ID_REG, BsIndex);
 
 	/* Read the register and merge in the clearing BS index */
 	Data = XPrc_ReadReg(Address);
@@ -774,12 +778,12 @@ void XPrc_SetBsSize(XPrc *InstancePtr, u16 VsmId, u16 BsIndex, u32 BsSize)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_SIZE_REG, BsIndex);
+					  XPRC_BS_SIZE_REG, BsIndex);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetBsSize :: Instance %d, VSMID ="
-		"%x, Address = %x, Bs Index = %x, Bs Size = %x \n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, BsIndex,
-		BsSize);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetBsSize ::InstanceAddr %x, VSMID ="
+		    "%x, Address = %x, Bs Index = %x, Bs Size = %x \n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, BsIndex,
+		    BsSize);
 
 	XPrc_WriteReg(Address, BsSize);
 }
@@ -809,15 +813,15 @@ u32 XPrc_GetBsSize(XPrc *InstancePtr, u16 VsmId, u16 BsIndex)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_SIZE_REG, BsIndex);
+					  XPRC_BS_SIZE_REG, BsIndex);
 
 
 	Data = XPrc_ReadReg(Address);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_getBsSize :: Instance %d, VSMID ="
-		"%x, Address = %x, Bs Index = %x, Bs Size = %x \n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, BsIndex,
-		Data);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_getBsSize ::InstanceAddr %x, VSMID ="
+		    "%x, Address = %x, Bs Index = %x, Bs Size = %x \n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, BsIndex,
+		    Data);
 
 	return Data;
 }
@@ -839,7 +843,7 @@ u32 XPrc_GetBsSize(XPrc *InstancePtr, u16 VsmId, u16 BsIndex)
 *
 ******************************************************************************/
 void XPrc_SetBsAddress(XPrc *InstancePtr, u16 VsmId, u16 BsIndex,
-		u32 BsAddress)
+		       u32 BsAddress)
 {
 	u32 Address;
 
@@ -848,12 +852,12 @@ void XPrc_SetBsAddress(XPrc *InstancePtr, u16 VsmId, u16 BsIndex,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_ADDRESS_REG, BsIndex);
+					  XPRC_BS_ADDRESS_REG, BsIndex);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SetBsAddress :: Instance %d,"
-		"VSMID = %x, Address = %x, Bs Index = %x, Bs Address ="
-		"%x \n\r", InstancePtr->Config.DeviceId, VsmId, Address,
-		BsIndex, BsAddress);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SetBsAddress ::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Bs Index = %x, Bs Address ="
+		    "%x \n\r", InstancePtr->Config.BaseAddress, VsmId, Address,
+		    BsIndex, BsAddress);
 
 	XPrc_WriteReg(Address, BsAddress);
 }
@@ -883,15 +887,15 @@ u32 XPrc_GetBsAddress(XPrc *InstancePtr, u16 VsmId, u16 BsIndex)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_BS_ADDRESS_REG, BsIndex);
+					  XPRC_BS_ADDRESS_REG, BsIndex);
 
 
 	Data = XPrc_ReadReg(Address);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_getBsAddress:: Instance %d,"
-		"VSMID = %x, Address = %x, Bs Index = %x, Bs Address ="
-		"%x \n\r", InstancePtr->Config.DeviceId, VsmId, Address,
-		BsIndex, Data);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_getBsAddress::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Bs Index = %x, Bs Address ="
+		    "%x \n\r", InstancePtr->Config.BaseAddress, VsmId, Address,
+		    BsIndex, Data);
 
 	return Data;
 }
@@ -918,7 +922,7 @@ u32 XPrc_ReadStatusReg(XPrc *InstancePtr, u16 VsmId)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_STATUS_REG, XPRC_REG_TABLE_ROW);
+					  XPRC_STATUS_REG, XPRC_REG_TABLE_ROW);
 
 	return XPrc_ReadReg(Address);
 }
@@ -952,7 +956,7 @@ u8 XPrc_IsVsmInShutdown(XPrc *InstancePtr, u32 VsmIdOrStatus)
 	}
 
 	return (Status & XPRC_SR_SHUTDOWN_MASK) ? XPRC_SR_SHUTDOWN_ON :
-		XPRC_SR_SHUTDOWN_OFF;
+	       XPRC_SR_SHUTDOWN_OFF;
 }
 
 /*****************************************************************************/
@@ -1090,7 +1094,7 @@ u32 XPrc_GetBsIdFromStatus(XPrc *InstancePtr, u32 VsmIdOrStatus)
 * @note		None.
 *
 ******************************************************************************/
-void XPrc_PrintVsmStatus(XPrc *InstancePtr, u32 VsmIdOrStatus, char * Prefix)
+void XPrc_PrintVsmStatus(XPrc *InstancePtr, u32 VsmIdOrStatus, char *Prefix)
 {
 	u32 Status = VsmIdOrStatus;
 	u8 Is_shutdown;
@@ -1114,101 +1118,100 @@ void XPrc_PrintVsmStatus(XPrc *InstancePtr, u32 VsmIdOrStatus, char * Prefix)
 		 */
 
 		/* Shutdown mode */
-		xprc_core_printf(XPRC_DEBUG_GENERAL,"%sMode : SHUTDOWN\n\r",
-				Prefix);
-		xprc_core_printf(XPRC_DEBUG_GENERAL,"%sRM_SHUTDOWN_ACK : %x\n\r",
-				Prefix, State);
-	}
-	else {
+		xprc_core_printf(XPRC_DEBUG_GENERAL, "%sMode : SHUTDOWN\n\r",
+				 Prefix);
+		xprc_core_printf(XPRC_DEBUG_GENERAL, "%sRM_SHUTDOWN_ACK : %x\n\r",
+				 Prefix, State);
+	} else {
 		/* Active Mode */
-		xprc_printf(XPRC_DEBUG_GENERAL,"%sMode : ACTIVE\n\r", Prefix);
+		xprc_printf(XPRC_DEBUG_GENERAL, "%sMode : ACTIVE\n\r", Prefix);
 		switch (State) {
 			case XPRC_SR_STATE_EMPTY:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE :"
-					"EMPTY (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE :"
+						 "EMPTY (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_HW_SHUTDOWN:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : HW"
-					"SHUTDOWN (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : HW"
+						 "SHUTDOWN (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_SW_SHUTDOWN:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : SW"
-					"SHUTDOWN (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : SW"
+						 "SHUTDOWN (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_RM_UNLOAD:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : RM"
-					"UNLOAD (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : RM"
+						 "UNLOAD (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_RM_LOAD:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : RM"
-					"LOAD (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : RM"
+						 "LOAD (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_SW_STARTUP:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : SW"
-					"STARTUP (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : SW"
+						 "STARTUP (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_RM_RESET:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : RM"
-					"RESET (%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : RM"
+						 "RESET (%x)\n\r", Prefix, State);
 				break;
 			case XPRC_SR_STATE_FULL:
-				xprc_core_printf(XPRC_DEBUG_GENERAL,"%sSTATE : FULL"
-					"(%x)\n\r", Prefix, State);
+				xprc_core_printf(XPRC_DEBUG_GENERAL, "%sSTATE : FULL"
+						 "(%x)\n\r", Prefix, State);
 				break;
 			default:
 				break;
 		}
 		if (State != XPRC_SR_STATE_EMPTY) {
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sRM_ID : %d\n\r",
-				Prefix, XPrc_GetRmIdFromStatus(NULL, Status));
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sBS_ID : %d\n\r",
-				Prefix, XPrc_GetBsIdFromStatus(NULL, Status));
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sRM_ID : %d\n\r",
+					 Prefix, XPrc_GetRmIdFromStatus(NULL, Status));
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sBS_ID : %d\n\r",
+					 Prefix, XPrc_GetBsIdFromStatus(NULL, Status));
 		}
 	}
 	switch (Error) {
 		case XPRC_SR_BS_COMPATIBLE_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : BS"
-				"COMPATIBLE ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : BS"
+					 "COMPATIBLE ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_DECOMPRESS_BAD_FORMAT_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : DECOMPRESS"
-				"BAD FORMAT ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : DECOMPRESS"
+					 "BAD FORMAT ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_DECOMPRESS_BAD_SIZE_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : DECOMPRESS"
-				"BAD SIZE ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : DECOMPRESS"
+					 "BAD SIZE ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_FETCH_AND_CP_LOST_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : FETCH AND"
-				"CP LOST_ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : FETCH AND"
+					 "CP LOST_ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_FETCH_AND_BS_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : FETCH AND BS"
-				"ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : FETCH AND BS"
+					 "ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_FETCH_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : FETCH ERROR"
-				"(%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : FETCH ERROR"
+					 "(%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_CP_LOST_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : CP LOST"
-				"ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : CP LOST"
+					 "ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_BS_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : BS ERROR"
-				"(%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : BS ERROR"
+					 "(%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_BAD_CONFIG_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : BAD CONFIG"
-				"ERROR (%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : BAD CONFIG"
+					 "ERROR (%x)\n\r", Prefix, Error);
 			break;
 		case XPRC_SR_NO_ERROR:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : NO ERROR"
-				"(%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : NO ERROR"
+					 "(%x)\n\r", Prefix, Error);
 			break;
 		default:
-			xprc_core_printf(XPRC_DEBUG_GENERAL,"%sERROR : UNKNOWN"
-				"(%x)\n\r", Prefix, Error);
+			xprc_core_printf(XPRC_DEBUG_GENERAL, "%sERROR : UNKNOWN"
+					 "(%x)\n\r", Prefix, Error);
 			break;
 	}
 }
@@ -1236,11 +1239,11 @@ void XPrc_SendSwTrigger(XPrc *InstancePtr, u16 VsmId, u16 TriggerId)
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_SW_TRIGGER_REG, XPRC_REG_TABLE_ROW);
+					  XPRC_SW_TRIGGER_REG, XPRC_REG_TABLE_ROW);
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SendTrigger :: Instance %d,"
-		"VSM_ID = %x, Address = %x, TriggerId = %x\n\r",
-		InstancePtr->Config.DeviceId, VsmId, Address, TriggerId);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SendTrigger ::InstanceAddr %x,"
+		    "VSM_ID = %x, Address = %x, TriggerId = %x\n\r",
+		    InstancePtr->Config.BaseAddress, VsmId, Address, TriggerId);
 
 	XPrc_WriteReg(Address, TriggerId);
 }
@@ -1275,7 +1278,7 @@ u8 XPrc_IsSwTriggerPending(XPrc *InstancePtr, u16 VsmId, u16 *TriggerId)
 	Xil_AssertNonvoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_SW_TRIGGER_REG, XPRC_REG_TABLE_ROW);
+					  XPRC_SW_TRIGGER_REG, XPRC_REG_TABLE_ROW);
 	Data = XPrc_ReadReg(Address);
 
 	if (TriggerId != NULL) {
@@ -1283,7 +1286,7 @@ u8 XPrc_IsSwTriggerPending(XPrc *InstancePtr, u16 VsmId, u16 *TriggerId)
 	}
 
 	return (Data & XPRC_SW_TRIGGER_PENDING_MASK) ? XPRC_SW_TRIGGER_PENDING
-			: XPRC_NO_SW_TRIGGER_PENDING;
+	       : XPRC_NO_SW_TRIGGER_PENDING;
 }
 
 /*****************************************************************************/
@@ -1320,7 +1323,7 @@ u8 XPrc_IsSwTriggerPending(XPrc *InstancePtr, u16 VsmId, u16 *TriggerId)
 *
 ******************************************************************************/
 static u32 XPrc_GetRegisterOffset(XPrc *InstancePtr, u32 VsmId, u8 BankId,
-			u8 TableInBank, u8 TableRow)
+				  u8 TableInBank, u8 TableRow)
 {
 	u32 Offset = 0;
 
@@ -1328,7 +1331,7 @@ static u32 XPrc_GetRegisterOffset(XPrc *InstancePtr, u32 VsmId, u8 BankId,
 		Offset = VsmId << XPrc_GetRegVsmLsb(InstancePtr);
 		Offset += BankId << XPrc_GetRegBankLsb(InstancePtr);
 		Offset += TableRow << (XPrc_GetRegSelectLsb(InstancePtr) +
-			XPrc_GetOffsetForTableType(BankId));
+				       XPrc_GetOffsetForTableType(BankId));
 		Offset += TableInBank << XPrc_GetRegSelectLsb(InstancePtr);
 	}
 
@@ -1361,7 +1364,7 @@ static u32 XPrc_GetRegisterOffset(XPrc *InstancePtr, u32 VsmId, u8 BankId,
 *
 ******************************************************************************/
 u32 XPrc_GetRegisterAddress(XPrc *InstancePtr, u32 VsmId,
-			u8 RegisterType, u16 TableRow)
+			    u8 RegisterType, u16 TableRow)
 {
 	/* XPRC_VSM_GENERAL_REG_BANK, XPRC_VSM_TRIGGER_REG_BANK,
 	 * XPRC_VSM_RM_REG_BANK, XPRC_VSM_BS_REG_BANK
@@ -1414,7 +1417,7 @@ u32 XPrc_GetRegisterAddress(XPrc *InstancePtr, u32 VsmId,
 	}
 
 	return (InstancePtr->Config.BaseAddress) + XPrc_GetRegisterOffset(
-			InstancePtr, VsmId, BankId, TableInBank, TableRow);
+		       InstancePtr, VsmId, BankId, TableInBank, TableRow);
 }
 
 /*****************************************************************************/
@@ -1438,7 +1441,7 @@ u32 XPrc_GetRegisterAddress(XPrc *InstancePtr, u32 VsmId,
 *
 ******************************************************************************/
 static void XPrc_SendCommand(XPrc *InstancePtr, u16 VsmId, u8 Cmd, u8 Byte,
-			u16 Halfword)
+			     u16 Halfword)
 {
 	u32 Address;
 	u32 Data = 0;
@@ -1449,7 +1452,7 @@ static void XPrc_SendCommand(XPrc *InstancePtr, u16 VsmId, u8 Cmd, u8 Byte,
 	Xil_AssertVoid(VsmId < XPRC_MAX_NUMBER_OF_VSMS);
 
 	Address = XPrc_GetRegisterAddress(InstancePtr, VsmId,
-			XPRC_CONTROL_REG, XPRC_REG_TABLE_ROW);
+					  XPRC_CONTROL_REG, XPRC_REG_TABLE_ROW);
 
 	/* Register format is
 	 * 31       16 15   8 7        0
@@ -1459,10 +1462,10 @@ static void XPrc_SendCommand(XPrc *InstancePtr, u16 VsmId, u8 Cmd, u8 Byte,
 	Data |= (Byte << XPRC_CR_BYTE_FIELD_LSB);
 	Data |= Cmd;
 
-	xprc_printf(XPRC_DEBUG_GENERAL,"XPrc_SendCommand :: Instance %d,"
-		"VSMID = %x, Address = %x, Data = %x (| Halfword %x | Byte"
-		"%x | Cmd = %x |)\n\r", InstancePtr->Config.DeviceId,
-		VsmId, Address, Data, Halfword, Byte, Cmd);
+	xprc_printf(XPRC_DEBUG_GENERAL, "XPrc_SendCommand ::InstanceAddr %x,"
+		    "VSMID = %x, Address = %x, Data = %x (| Halfword %x | Byte"
+		    "%x | Cmd = %x |)\n\r", InstancePtr->Config.BaseAddress,
+		    VsmId, Address, Data, Halfword, Byte, Cmd);
 
 	XPrc_WriteReg(Address, Data);
 }
@@ -1491,13 +1494,13 @@ static u16 XPrc_GetOffsetForTableType(u8 TableId)
 	 */
 	switch (TableId) {
 		case XPRC_VSM_RM_REG_BANK:
-		/* RM Registers */
-		/* The equation is ceil(log2(XPRC_VSM_REGISTERS_PER_RM)) */
+			/* RM Registers */
+			/* The equation is ceil(log2(XPRC_VSM_REGISTERS_PER_RM)) */
 			Offset = 1;
 			break;
 		case XPRC_VSM_BS_REG_BANK:
-		/* BS Registers */
-		/* The equation is * ceil(log2(XPRC_VSM_REGISTERS_PER_BS)) */
+			/* BS Registers */
+			/* The equation is * ceil(log2(XPRC_VSM_REGISTERS_PER_BS)) */
 			Offset = 2;
 			break;
 		default:

@@ -8,7 +8,7 @@
 /**
 *
 * @file xzdma_sinit.c
-* @addtogroup zdma_v1_14
+* @addtogroup zdma Overview
 * @{
 *
 * This file contains static initialization methods for Xilinx ZDMA core.
@@ -25,7 +25,9 @@
 /***************************** Include Files *********************************/
 
 #include "xzdma.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -61,6 +63,7 @@
 *
 * @note		None.
 ******************************************************************************/
+#ifndef SDT
 XZDma_Config *XZDma_LookupConfig(u16 DeviceId)
 {
 	extern XZDma_Config XZDma_ConfigTable[XPAR_XZDMA_NUM_INSTANCES];
@@ -69,7 +72,7 @@ XZDma_Config *XZDma_LookupConfig(u16 DeviceId)
 
 	/* Checks all the instances */
 	for (Index = (u32)0x0; Index < (u32)(XPAR_XZDMA_NUM_INSTANCES);
-								Index++) {
+	     Index++) {
 		if (XZDma_ConfigTable[Index].DeviceId == DeviceId) {
 			CfgPtr = &XZDma_ConfigTable[Index];
 			break;
@@ -78,4 +81,23 @@ XZDma_Config *XZDma_LookupConfig(u16 DeviceId)
 
 	return (XZDma_Config *)CfgPtr;
 }
+#else
+XZDma_Config *XZDma_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XZDma_Config XZDma_ConfigTable[];
+	XZDma_Config *CfgPtr = NULL;
+	u32 Index;
+
+	/* Checks all the instances */
+	for (Index = (u32)0x0; XZDma_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XZDma_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XZDma_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XZDma_Config *)CfgPtr;
+}
+#endif
 /** @} */

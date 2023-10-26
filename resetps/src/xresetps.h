@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xresetps.h
-* @addtogroup xresetps_v1_5
+* @addtogroup resetps Overview
 * @{
 * @details
 *
@@ -33,6 +34,7 @@
 * 1.4   sk     09/01/20 Updated the Makefile to support parallel make
 *                       execution.
 * 1.5   sk     11/30/21 Fix compilation warnings reported with "-Wundef" flag.
+* 1.6   sd     07/07/23 Added SDT support.
 * </pre>
 *
 ******************************************************************************/
@@ -58,8 +60,10 @@ extern "C" {
  * Device ID and Num Instances defines for resetps. Resetps uses common
  * hardware with other driver and hence this wrapper defines are required
  */
+#ifndef SDT
 #define XPAR_XRESETPS_NUM_INSTANCES    (XPAR_XCRPSU_NUM_INSTANCES)
 #define XPAR_XRESETPS_DEVICE_ID        (XPAR_XCRPSU_0_DEVICE_ID)
+#endif
 
 /*
  * Constants for supported/Not supported reset actions
@@ -72,7 +76,12 @@ extern "C" {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;                    /**< Unique ID of device */
+#else
+	char *Name;
+	u32 BaseAddress;
+#endif
 } XResetPs_Config;
 
 /**
@@ -262,7 +271,7 @@ typedef enum {
 * 		vice versa.
 ******************************************************************************/
 #define XRESETPS_SUPPORTED_ACT(ResetSupport, PulseSupport, AssertSupport) \
-		     ((ResetSupport << 2) | (PulseSupport << 1) | AssertSupport)
+	((ResetSupport << 2) | (PulseSupport << 1) | AssertSupport)
 
 /****************************************************************************/
 /**
@@ -322,7 +331,7 @@ typedef enum {
 *
 ******************************************************************************/
 #define XResetPs_ReadReg(RegAddress) \
-				Xil_In32((u32)RegAddress)
+	Xil_In32((u32)RegAddress)
 
 /****************************************************************************/
 /**
@@ -338,28 +347,32 @@ typedef enum {
 *
 ******************************************************************************/
 #define XResetPs_WriteReg(RegAddress, Data) \
-				Xil_Out32((u32)RegAddress, (u32)Data)
+	Xil_Out32((u32)RegAddress, (u32)Data)
 
 /************************** Function Prototypes ******************************/
 
 /*
  * Lookup configuration in xresetps_sinit.c.
  */
+#ifndef SDT
 XResetPs_Config *XResetPs_LookupConfig(u16 DeviceId);
+#else
+XResetPs_Config *XResetPs_LookupConfig(u32 BaseAddress);
+#endif
 
 /*
  * Interface functions in xresetps.c
  */
 XStatus XResetPs_CfgInitialize(XResetPs *InstancePtr,
-						    XResetPs_Config *ConfigPtr);
+			       XResetPs_Config *ConfigPtr);
 XStatus XResetPs_ResetAssert(XResetPs *InstancePtr,
-						  const XResetPs_RstId ResetID);
+			     const XResetPs_RstId ResetID);
 XStatus XResetPs_ResetDeassert(XResetPs *InstancePtr,
-						  const XResetPs_RstId ResetID);
+			       const XResetPs_RstId ResetID);
 XStatus XResetPs_ResetPulse(XResetPs *InstancePtr,
-						  const XResetPs_RstId ResetID);
+			    const XResetPs_RstId ResetID);
 XStatus XResetPs_ResetStatus(XResetPs *InstancePtr,
-		      const XResetPs_RstId ResetID, XResetPs_RstStatus *Status);
+			     const XResetPs_RstId ResetID, XResetPs_RstStatus *Status);
 
 #ifdef __cplusplus
 }

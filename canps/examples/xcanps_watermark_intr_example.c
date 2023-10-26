@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -27,8 +28,8 @@
 * ----- -----  -------- -----------------------------------------------
 * 1.00a xd/sv  01/12/10 First release
 * 3.1   adk    10/11/15 Fixed CR#911958 Add support for Tx Watermark testing.
-*
-*
+* 3.7   ht     06/28/23 Added support for system device-tree flow.
+*              07/10/23 Updated conditional macros for interrupt headers.
 * </pre>
 *
 ******************************************************************************/
@@ -37,9 +38,13 @@
 
 #include "xparameters.h"
 #include "xcanps.h"
-#include "xscugic.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
+#ifndef SDT
+#include "xscugic.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -48,9 +53,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define CAN_DEVICE_ID		XPAR_XCANPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define CAN_INTR_VEC_ID		XPAR_XCANPS_0_INTR
+#endif
 
 /*
  * Maximum CAN frame length in words.
@@ -100,11 +107,15 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr,
-				XCanPs *CanInstPtr,
-				u16 CanDeviceId,
-				u16 CanIntrId);
-
+			      XCanPs *CanInstPtr,
+			      u16 CanDeviceId,
+			      u16 CanIntrId);
+#else
+int CanPsWatermarkIntrExample(XCanPs *CanInstPtr,
+			      UINTPTR BaseAddress);
+#endif
 static void Config(XCanPs *InstancePtr);
 static void SendFrame(XCanPs *InstancePtr);
 static int ReceiveData(XCanPs *InstancePtr);
@@ -114,16 +125,18 @@ static void RecvHandler(void *CallBackRef);
 static void ErrorHandler(void *CallBackRef, u32 ErrorMask);
 static void EventHandler(void *CallBackRef, u32 Mask);
 
+#ifndef SDT
 static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 				XCanPs *CanInstancePtr,
 				u16 CanIntrId);
-
+#endif
 
 /************************** Variable Definitions *****************************/
 
 static XCanPs CanInstance;   /* Instance of the Can driver */
+#ifndef SDT
 static XScuGic IntcInstance; /* Instance of the Interrupt Controller driver */
-
+#endif
 
 /*
  * Buffers to hold frames to send and receive. These are declared as global so
@@ -164,8 +177,13 @@ int main(void)
 	/*
 	 * Run the Can Rx Watermark interrupt example.
 	 */
+#ifndef SDT
 	Status = CanPsWatermarkIntrExample(&IntcInstance, &CanInstance,
-					    CAN_DEVICE_ID, CAN_INTR_VEC_ID);
+					   CAN_DEVICE_ID, CAN_INTR_VEC_ID);
+#else
+	Status = CanPsWatermarkIntrExample(&CanInstance,
+					   XPAR_XCANPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("CAN Watermark Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -197,8 +215,13 @@ int main(void)
 *		an infinite loop and will never return to the caller.
 *
 ******************************************************************************/
+#ifndef SDT
 int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr, XCanPs *CanInstPtr,
-				u16 CanDeviceId, u16 CanIntrId)
+			      u16 CanDeviceId, u16 CanIntrId)
+#else
+int CanPsWatermarkIntrExample(XCanPs *CanInstPtr,
+			      UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XCanPs_Config *ConfigPtr;
@@ -207,14 +230,18 @@ int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr, XCanPs *CanInstPtr,
 	/*
 	 * Initialize the Can device.
 	 */
+#ifndef SDT
 	ConfigPtr = XCanPs_LookupConfig(CanDeviceId);
+#else
+	ConfigPtr = XCanPs_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 
 	Status = XCanPs_CfgInitialize(CanInstPtr,
-					ConfigPtr,
-					ConfigPtr->BaseAddr);
+				      ConfigPtr,
+				      ConfigPtr->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -237,13 +264,13 @@ int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr, XCanPs *CanInstPtr,
 	 * Set the interrupt handlers.
 	 */
 	XCanPs_SetHandler(CanInstPtr, XCANPS_HANDLER_SEND,
-			(void *)SendHandler, (void *)CanInstPtr);
+			  (void *)SendHandler, (void *)CanInstPtr);
 	XCanPs_SetHandler(CanInstPtr, XCANPS_HANDLER_RECV,
-			(void *)RecvHandler, (void *)CanInstPtr);
+			  (void *)RecvHandler, (void *)CanInstPtr);
 	XCanPs_SetHandler(CanInstPtr, XCANPS_HANDLER_ERROR,
-			(void *)ErrorHandler, (void *)CanInstPtr);
+			  (void *)ErrorHandler, (void *)CanInstPtr);
 	XCanPs_SetHandler(CanInstPtr, XCANPS_HANDLER_EVENT,
-			(void *)EventHandler, (void *)CanInstPtr);
+			  (void *)EventHandler, (void *)CanInstPtr);
 
 	/*
 	 * Initialize flags.
@@ -255,9 +282,16 @@ int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr, XCanPs *CanInstPtr,
 	/*
 	 * Connect to the interrupt controller.
 	 */
+#ifndef SDT
 	Status =  SetupInterruptSystem(IntcInstPtr,
-					CanInstPtr,
-					CanIntrId);
+				       CanInstPtr,
+				       CanIntrId);
+#else
+	Status = XSetupInterruptSystem(CanInstPtr, &XCanPs_IntrHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -273,14 +307,14 @@ int CanPsWatermarkIntrExample(XScuGic *IntcInstPtr, XCanPs *CanInstPtr,
 	 * New Message Received Interrupt.
 	 */
 	XCanPs_IntrDisable(CanInstPtr,
-				XCANPS_IXR_RXNEMP_MASK |
-				XCANPS_IXR_RXOK_MASK | XCANPS_IXR_TXOK_MASK);
+			   XCANPS_IXR_RXNEMP_MASK |
+			   XCANPS_IXR_RXOK_MASK | XCANPS_IXR_TXOK_MASK);
 
 	/*
 	 * Enter Loop Back Mode.
 	 */
 	XCanPs_EnterMode(CanInstPtr, XCANPS_MODE_LOOPBACK);
-	while(XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_LOOPBACK);
+	while (XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_LOOPBACK);
 
 	/*
 	 * Send a number of frames.
@@ -345,7 +379,7 @@ static void Config(XCanPs *InstancePtr)
 	 * Configuration Mode.
 	 */
 	XCanPs_EnterMode(InstancePtr, XCANPS_MODE_CONFIG);
-	while(XCanPs_GetMode(InstancePtr) != XCANPS_MODE_CONFIG);
+	while (XCanPs_GetMode(InstancePtr) != XCANPS_MODE_CONFIG);
 
 	/*
 	 * Setup Baud Rate Prescaler Register (BRPR) and
@@ -353,8 +387,8 @@ static void Config(XCanPs *InstancePtr)
 	 */
 	XCanPs_SetBaudRatePrescaler(InstancePtr, TEST_BRPR_BAUD_PRESCALAR);
 	XCanPs_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH,
-					TEST_BTR_SECOND_TIMESEGMENT,
-					TEST_BTR_FIRST_TIMESEGMENT);
+			    TEST_BTR_SECOND_TIMESEGMENT,
+			    TEST_BTR_FIRST_TIMESEGMENT);
 
 	/*
 	 * Set the threshold value for the Rx FIFO Watermark interrupt.
@@ -456,7 +490,7 @@ static int ReceiveData(XCanPs *InstancePtr)
 		 * Verify Identifier and Data Length Code.
 		 */
 		if (RxFrame[0] !=
-			(u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0)) {
+		    (u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0)) {
 
 			LoopbackError = TRUE;
 			return XST_FAILURE;
@@ -564,31 +598,31 @@ static void RecvHandler(void *CallBackRef)
 ******************************************************************************/
 static void ErrorHandler(void *CallBackRef, u32 ErrorMask)
 {
-	if(ErrorMask & XCANPS_ESR_ACKER_MASK) {
+	if (ErrorMask & XCANPS_ESR_ACKER_MASK) {
 		/*
 		 * ACK Error handling code should be put here.
 		 */
 	}
 
-	if(ErrorMask & XCANPS_ESR_BERR_MASK) {
+	if (ErrorMask & XCANPS_ESR_BERR_MASK) {
 		/*
 		 * Bit Error handling code should be put here.
 		 */
 	}
 
-	if(ErrorMask & XCANPS_ESR_STER_MASK) {
+	if (ErrorMask & XCANPS_ESR_STER_MASK) {
 		/*
 		 * Stuff Error handling code should be put here.
 		 */
 	}
 
-	if(ErrorMask & XCANPS_ESR_FMER_MASK) {
+	if (ErrorMask & XCANPS_ESR_FMER_MASK) {
 		/*
 		 * Form Error handling code should be put here.
 		 */
 	}
 
-	if(ErrorMask & XCANPS_ESR_CRCER_MASK) {
+	if (ErrorMask & XCANPS_ESR_CRCER_MASK) {
 		/*
 		 * CRC Error handling code should be put here.
 		 */
@@ -646,28 +680,28 @@ static void EventHandler(void *CallBackRef, u32 IntrMask)
 		return;
 	}
 
-	if(IntrMask & XCANPS_IXR_RXOFLW_MASK) {
+	if (IntrMask & XCANPS_IXR_RXOFLW_MASK) {
 		/*
 		 * Code to handle RX FIFO Overflow
 		 * Interrupt should be put here.
 		 */
 	}
 
-	if(IntrMask & XCANPS_IXR_RXUFLW_MASK) {
+	if (IntrMask & XCANPS_IXR_RXUFLW_MASK) {
 		/*
 		 * Code to handle RX FIFO Underflow
 		 * Interrupt should be put here.
 		 */
 	}
 
-	if(IntrMask & XCANPS_IXR_TXBFLL_MASK) {
+	if (IntrMask & XCANPS_IXR_TXBFLL_MASK) {
 		/*
 		 * Code to handle TX High Priority Buffer Full
 		 * Interrupt should be put here.
 		 */
 	}
 
-	if(IntrMask & XCANPS_IXR_TXFLL_MASK) {
+	if (IntrMask & XCANPS_IXR_TXFLL_MASK) {
 		/*
 		 * Code to handle TX FIFO Full
 		 * Interrupt should be put here.
@@ -696,6 +730,7 @@ static void EventHandler(void *CallBackRef, u32 IntrMask)
 	}
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -737,7 +772,7 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -748,8 +783,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
-				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-				IntcInstancePtr);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 #endif
 
 	/*
@@ -758,8 +793,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, CanIntrId,
-				(Xil_InterruptHandler)XCanPs_IntrHandler,
-				(void *)CanInstancePtr);
+				 (Xil_InterruptHandler)XCanPs_IntrHandler,
+				 (void *)CanInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
@@ -777,3 +812,4 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 #endif
 	return XST_SUCCESS;
 }
+#endif

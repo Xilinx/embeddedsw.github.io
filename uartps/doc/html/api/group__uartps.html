@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">uartps
    </div>
@@ -1074,10 +1074,10 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>), \</div>
 <div class="line">          (((Xil_In32((InstancePtr)-&gt;Config.BaseAddress + (u32)XUARTPS_CR_OFFSET)) &amp; \</div>
 <div class="line">          (u32)(~<a class="code" href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a>)) | ((u32)<a class="code" href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a> | (u32)<a class="code" href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a>)))</div>
-<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:92</div></div>
-<div class="ttc" id="group__uartps_html_gaffa7bb80501ee66683ce853436190ea9"><div class="ttname"><a href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_RX_DIS</div><div class="ttdoc">RX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:90</div></div>
-<div class="ttc" id="group__uartps_html_ga4831dbafe987c3286b022f3ab937bc9a"><div class="ttname"><a href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_TX_DIS</div><div class="ttdoc">TX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:88</div></div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:59</div></div>
+<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:93</div></div>
+<div class="ttc" id="group__uartps_html_gaffa7bb80501ee66683ce853436190ea9"><div class="ttname"><a href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_RX_DIS</div><div class="ttdoc">RX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:91</div></div>
+<div class="ttc" id="group__uartps_html_ga4831dbafe987c3286b022f3ab937bc9a"><div class="ttname"><a href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_TX_DIS</div><div class="ttdoc">TX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:89</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
 </div><!-- fragment -->
 <p>Disable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1109,10 +1109,10 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>), \</div>
 <div class="line">          ((Xil_In32((InstancePtr)-&gt;Config.BaseAddress + (u32)XUARTPS_CR_OFFSET) &amp; \</div>
 <div class="line">          (u32)(~<a class="code" href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a>)) | ((u32)<a class="code" href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a> | (u32)<a class="code" href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a>)))</div>
-<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:92</div></div>
-<div class="ttc" id="group__uartps_html_gaf22f08ec08cbe06a53efbd44a43b8096"><div class="ttname"><a href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_TX_EN</div><div class="ttdoc">TX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:89</div></div>
-<div class="ttc" id="group__uartps_html_ga31a05c9637d59b0631b43758a78d605e"><div class="ttname"><a href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_RX_EN</div><div class="ttdoc">RX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:91</div></div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:59</div></div>
+<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:93</div></div>
+<div class="ttc" id="group__uartps_html_gaf22f08ec08cbe06a53efbd44a43b8096"><div class="ttname"><a href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_TX_EN</div><div class="ttdoc">TX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:90</div></div>
+<div class="ttc" id="group__uartps_html_ga31a05c9637d59b0631b43758a78d605e"><div class="ttname"><a href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_RX_EN</div><div class="ttdoc">RX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:92</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
 </div><!-- fragment -->
 <p>Enable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1565,8 +1565,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">!((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;        \</div>
 <div class="line">        (u32)<a class="code" href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a>) == (u32)<a class="code" href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:70</div></div>
-<div class="ttc" id="group__uartps_html_gad604ae6739b459eb76fd3515d3d4f249"><div class="ttname"><a href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_RXEMPTY</div><div class="ttdoc">RX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:281</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
+<div class="ttc" id="group__uartps_html_gad604ae6739b459eb76fd3515d3d4f249"><div class="ttname"><a href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_RXEMPTY</div><div class="ttdoc">RX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:282</div></div>
 </div><!-- fragment -->
 <p>Determine if there is receive data in the receiver and/or FIFO. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1597,8 +1597,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32(((InstancePtr)-&gt;Config.BaseAddress) + (u32)<a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp; \</div>
 <div class="line">         (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>) == (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:70</div></div>
-<div class="ttc" id="group__uartps_html_ga4eb9c1b9ceaf7aecb36d43c983edbe95"><div class="ttname"><a href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_TXEMPTY</div><div class="ttdoc">TX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:279</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
+<div class="ttc" id="group__uartps_html_ga4eb9c1b9ceaf7aecb36d43c983edbe95"><div class="ttname"><a href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_TXEMPTY</div><div class="ttdoc">TX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:280</div></div>
 </div><!-- fragment -->
 <p>Determine if the transmitter FIFO is empty. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1631,8 +1631,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;         \</div>
 <div class="line">         (u32)<a class="code" href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a>) == (u32)<a class="code" href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:70</div></div>
-<div class="ttc" id="group__uartps_html_ga1fe57953aa624e5c7a1c8e20799dc012"><div class="ttname"><a href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a></div><div class="ttdeci">#define XUARTPS_SR_TXFULL</div><div class="ttdoc">TX FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:278</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
+<div class="ttc" id="group__uartps_html_ga1fe57953aa624e5c7a1c8e20799dc012"><div class="ttname"><a href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a></div><div class="ttdeci">#define XUARTPS_SR_TXFULL</div><div class="ttdoc">TX FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:279</div></div>
 </div><!-- fragment -->
 <p>Determine if a byte of data can be sent with the transmitter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3027,7 +3027,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress) + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>, \</div>
 <div class="line">                        (u32)(RegisterValue))</div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:59</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
 </div><!-- fragment -->
 <p>Set the UART Mode Control Register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3682,6 +3682,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_uart_ps___config.html#ae84ddc1aadabf71057f148681630fa40">XUartPs_Config::BaseAddress</a>, <a class="el" href="group__uartps.html#ga0cfdb73d2795d7cc3b849fe1622fa029">XUARTPS_IMR_OFFSET</a>, <a class="el" href="group__uartps.html#ga7e96d23606d96a7d9816bc2ff777cbf8">XUARTPS_ISR_OFFSET</a>, <a class="el" href="group__uartps.html#gadf1dabb7547f5b16748e8c6307cfc7a1">XUARTPS_IXR_DMS</a>, <a class="el" href="group__uartps.html#gaa6048212fde48f7188efd90c83c4822d">XUARTPS_IXR_FRAMING</a>, <a class="el" href="group__uartps.html#gafd4a37077bddeeefcc39d58b4f08fb23">XUARTPS_IXR_OVER</a>, <a class="el" href="group__uartps.html#ga2a11620ed0dd465adf0de24f6d7ad418">XUARTPS_IXR_PARITY</a>, <a class="el" href="group__uartps.html#gab5df3d1fd00008bd7cc177abd02f07e5">XUARTPS_IXR_RBRK</a>, <a class="el" href="group__uartps.html#ga541b132695e333571fd8c6b2eeaa23bd">XUARTPS_IXR_RXEMPTY</a>, <a class="el" href="group__uartps.html#gae374cc3c085d3cac795d95b657b03d5e">XUARTPS_IXR_RXFULL</a>, <a class="el" href="group__uartps.html#gaad5de1c646049d7ced8841e316a34892">XUARTPS_IXR_RXOVR</a>, <a class="el" href="group__uartps.html#ga7194f5e99a1a98178f6bf1462791aaac">XUARTPS_IXR_TOUT</a>, <a class="el" href="group__uartps.html#ga9a4207349f3980046ba4ea9e4379007a">XUARTPS_IXR_TXEMPTY</a>, <a class="el" href="group__uartps.html#ga9abc091be0a0e2cc18bbc540db6e513b">XUARTPS_IXR_TXFULL</a>, <a class="el" href="group__uartps.html#ga16be7534dc3d678f8abcfeb87e6a4f7e">XUartPs_ReadReg</a>, and <a class="el" href="group__uartps.html#gab541297d822b163193a2e47305987ab6">XUartPs_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xuartps__intr__example_8c.html#aee2cb1d1ffc3c0fdb4ca1c8a07a3f65c">UartPsIntrExample()</a>.</p>
 
 </div>
 </div>

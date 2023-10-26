@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -34,6 +35,7 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
+* 4.10  gm   07/11/23 Added SDT support.
 *
 *</pre>
 *
@@ -46,11 +48,14 @@
 #include "xil_exception.h"
 
 #ifdef XPAR_INTC_0_DEVICE_ID
- #include "xintc.h"
- #include <stdio.h>
+#include "xintc.h"
+#include <stdio.h>
 #else
- #include "xscugic.h"
- #include "xil_printf.h"
+#include "xscugic.h"
+#include "xil_printf.h"
+#endif
+#ifdef SDT
+#include "xinterrupt_wrap.h"
 #endif
 
 /************************** Constant Definitions *****************************/
@@ -60,16 +65,22 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define GPIO_DEVICE_ID		XPAR_GPIO_0_DEVICE_ID
+#else
+#define	XGPIO_AXI_BASEADDRESS	XPAR_XGPIO_0_BASEADDR
+#endif
 #define GPIO_CHANNEL1		1
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
- #define INTC_GPIO_INTERRUPT_ID	XPAR_INTC_0_GPIO_0_VEC_ID
- #define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
+#define INTC_GPIO_INTERRUPT_ID	XPAR_INTC_0_GPIO_0_VEC_ID
+#define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
 #else
- #define INTC_GPIO_INTERRUPT_ID	XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR
- #define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define INTC_GPIO_INTERRUPT_ID	XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR
+#define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
 #endif /* XPAR_INTC_0_DEVICE_ID */
+#endif
 
 /*
  * The following constants define the positions of the buttons and LEDs each
@@ -103,29 +114,37 @@
 
 #define INTR_DELAY	0x00FFFFFF
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
- #define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
- #define INTC		XIntc
- #define INTC_HANDLER	XIntc_InterruptHandler
+#define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
+#define INTC		XIntc
+#define INTC_HANDLER	XIntc_InterruptHandler
 #else
- #define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
- #define INTC		XScuGic
- #define INTC_HANDLER	XScuGic_InterruptHandler
+#define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define INTC		XScuGic
+#define INTC_HANDLER	XScuGic_InterruptHandler
 #endif /* XPAR_INTC_0_DEVICE_ID */
+#endif
 
 /************************** Function Prototypes ******************************/
 void GpioHandler(void *CallBackRef);
 
+#ifndef SDT
 int GpioIntrExample(INTC *IntcInstancePtr, XGpio *InstancePtr,
-			u16 DeviceId, u16 IntrId,
-			u16 IntrMask, u32 *DataRead);
+		    u16 DeviceId, u16 IntrId,
+		    u16 IntrMask, u32 *DataRead);
 
 int GpioSetupIntrSystem(INTC *IntcInstancePtr, XGpio *InstancePtr,
 			u16 DeviceId, u16 IntrId, u16 IntrMask);
 
 void GpioDisableIntr(INTC *IntcInstancePtr, XGpio *InstancePtr,
-			u16 IntrId, u16 IntrMask);
+		     u16 IntrId, u16 IntrMask);
+#else
 
+int GpioIntrExample(XGpio *InstancePtr,
+		    UINTPTR BaseAddress,
+		    u16 IntrMask, u32 *DataRead);
+#endif
 /************************** Variable Definitions *****************************/
 
 /*
@@ -134,8 +153,9 @@ void GpioDisableIntr(INTC *IntcInstancePtr, XGpio *InstancePtr,
  */
 XGpio Gpio; /* The Instance of the GPIO Driver */
 
+#ifndef SDT
 INTC Intc; /* The Instance of the Interrupt Controller Driver */
-
+#endif
 
 static u16 GlobalIntrMask; /* GPIO channel mask that is needed by
 			    * the Interrupt Handler */
@@ -162,21 +182,28 @@ int main(void)
 	int Status;
 	u32 DataRead;
 
-	  print(" Press button to Generate Interrupt\r\n");
+	print(" Press button to Generate Interrupt\r\n");
 
-	  Status = GpioIntrExample(&Intc, &Gpio,
-				   GPIO_DEVICE_ID,
-				   INTC_GPIO_INTERRUPT_ID,
-				   GPIO_CHANNEL1, &DataRead);
+#ifndef SDT
+	Status = GpioIntrExample(&Intc, &Gpio,
+				 GPIO_DEVICE_ID,
+				 INTC_GPIO_INTERRUPT_ID,
+				 GPIO_CHANNEL1, &DataRead);
+#else
+	Status = GpioIntrExample(&Gpio,
+				 XGPIO_AXI_BASEADDRESS,
+				 GPIO_CHANNEL1, &DataRead);
+#endif
 
-	if (Status == 0 ){
-		if(DataRead == 0)
+	if (Status == 0 ) {
+		if (DataRead == 0) {
 			print("No button pressed. \r\n");
-		else
+		} else {
 			print("Successfully ran Gpio Interrupt Tapp Example\r\n");
+		}
 	} else {
-		 print("Gpio Interrupt Tapp Example Failed.\r\n");
-		 return XST_FAILURE;
+		print("Gpio Interrupt Tapp Example Failed.\r\n");
+		return XST_FAILURE;
 	}
 
 	return XST_SUCCESS;
@@ -207,20 +234,40 @@ int main(void)
 * @note		None.
 *
 ******************************************************************************/
-int GpioIntrExample(INTC *IntcInstancePtr, XGpio* InstancePtr, u16 DeviceId,
-			u16 IntrId, u16 IntrMask, u32 *DataRead)
+#ifndef SDT
+int GpioIntrExample(INTC *IntcInstancePtr, XGpio *InstancePtr, u16 DeviceId,
+		    u16 IntrId, u16 IntrMask, u32 *DataRead)
+#else
+int GpioIntrExample(XGpio *InstancePtr, UINTPTR BaseAddress,
+		    u16 IntrMask, u32 *DataRead)
+#endif
 {
 	int Status;
 	u32 delay;
+#ifdef SDT
+	XGpio_Config *ConfigPtr;
 
+	ConfigPtr = XGpio_LookupConfig(BaseAddress);
+#endif
 	/* Initialize the GPIO driver. If an error occurs then exit */
+#ifndef SDT
 	Status = XGpio_Initialize(InstancePtr, DeviceId);
+#else
+	Status = XGpio_Initialize(InstancePtr, BaseAddress);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
+#ifndef SDT
 	Status = GpioSetupIntrSystem(IntcInstancePtr, InstancePtr, DeviceId,
-					IntrId, IntrMask);
+				     IntrId, IntrMask);
+#else
+	Status = XSetupInterruptSystem(InstancePtr, &GpioHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -228,18 +275,22 @@ int GpioIntrExample(INTC *IntcInstancePtr, XGpio* InstancePtr, u16 DeviceId,
 	IntrFlag = 0;
 	delay = 0;
 
-	while(!IntrFlag && (delay < INTR_DELAY)) {
+	while (!IntrFlag && (delay < INTR_DELAY)) {
 		delay++;
 	}
 
+#ifndef SDT
 	GpioDisableIntr(IntcInstancePtr, InstancePtr, IntrId, IntrMask);
+#else
+	XDisconnectInterruptCntrl(ConfigPtr->IntrId, ConfigPtr->IntrParent);
+#endif
 
 	*DataRead = IntrFlag;
 
 	return Status;
 }
 
-
+#ifndef SDT
 /******************************************************************************/
 /**
 *
@@ -312,14 +363,14 @@ int GpioSetupIntrSystem(INTC *IntcInstancePtr, XGpio *InstancePtr,
 	}
 
 	Result = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Result != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 #endif /* TESTAPP_GEN */
 
 	XScuGic_SetPriorityTriggerType(IntcInstancePtr, IntrId,
-					0xA0, 0x3);
+				       0xA0, 0x3);
 
 	/*
 	 * Connect the interrupt handler that will be called when an
@@ -349,13 +400,14 @@ int GpioSetupIntrSystem(INTC *IntcInstancePtr, XGpio *InstancePtr,
 	Xil_ExceptionInit();
 
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)INTC_HANDLER, IntcInstancePtr);
+				     (Xil_ExceptionHandler)INTC_HANDLER, IntcInstancePtr);
 
 	/* Enable non-critical exceptions */
 	Xil_ExceptionEnable();
 
 	return XST_SUCCESS;
 }
+#endif
 
 /******************************************************************************/
 /**
@@ -380,6 +432,7 @@ void GpioHandler(void *CallbackRef)
 
 }
 
+#ifndef SDT
 /******************************************************************************/
 /**
 *
@@ -398,7 +451,7 @@ void GpioHandler(void *CallbackRef)
 *
 ******************************************************************************/
 void GpioDisableIntr(INTC *IntcInstancePtr, XGpio *InstancePtr,
-			u16 IntrId, u16 IntrMask)
+		     u16 IntrId, u16 IntrMask)
 {
 	XGpio_InterruptDisable(InstancePtr, IntrMask);
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -410,3 +463,4 @@ void GpioDisableIntr(INTC *IntcInstancePtr, XGpio *InstancePtr,
 #endif
 	return;
 }
+#endif

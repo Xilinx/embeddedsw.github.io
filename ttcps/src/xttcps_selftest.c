@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -21,6 +21,7 @@
 * ----- ------ -------- ---------------------------------------------
 * 1.00a drg/jz 01/21/10 First release
 * 3.00  kvn    02/13/15 Modified code for MISRA-C:2012 compliance.
+* 3.18  ml     09/08/23 Added comments to fix HIS COMF violations.
 * </pre>
 *
 ******************************************************************************/
@@ -65,6 +66,9 @@ s32 XTtcPs_SelfTest(XTtcPs *InstancePtr)
 	s32 Status;
 	u32 TempReg;
 
+	/*
+	 * Validate input arguments and in case of error conditions assert.
+	 */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
@@ -72,11 +76,10 @@ s32 XTtcPs_SelfTest(XTtcPs *InstancePtr)
 	 * All the TTC registers should be in their default state right now.
 	 */
 	TempReg = XTtcPs_ReadReg(InstancePtr->Config.BaseAddress,
-				   XTTCPS_CNT_CNTRL_OFFSET);
+				 XTTCPS_CNT_CNTRL_OFFSET);
 	if (XTTCPS_CNT_CNTRL_RESET_VALUE != (u32)TempReg) {
 		Status = XST_FAILURE;
-	}
-	else {
+	} else {
 		Status = XST_SUCCESS;
 	}
 	return Status;

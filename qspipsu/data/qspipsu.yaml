@@ -1,0 +1,67 @@
+# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for QSPIPSU controller
+
+maintainers:
+  - Appana Durga Kedareswara Rao <appanad.durga.rao@xilinx.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,zynqmp-qspi-1.0
+        - enum:
+          - xlnx,versal-qspi-1.0
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,clock-freq:
+    description: Input clock frequency
+  dma-coherent:
+    description: Present if dma operations are coherent
+    type: boolean
+
+config:
+    - XQspiPsu_Config
+required:
+    - compatible
+    - reg: 1
+    - xlnx,clock-freq
+    - xlnx,connection-mode
+    - xlnx,bus-width
+    - dma-coherent
+    - interrupts
+    - interrupt-parent
+    - clocks
+    - qspi-fbclk
+
+examples:
+   xqspipsu_polldata_polltimeout_interrupt_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+    - interrupts
+   xqspipsu_generic_flash_interrupt_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+    - interrupts
+   xqspipsu_write_protect_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+    - interrupts
+   xqspipsu_generic_flash_polled_64bit_dma_r5_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+   xqspipsu_generic_flash_polled_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+   xqspipsu_generic_flash_non_blocking_read_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+   xqspipsu_generic_flash_lqspi_example.c:
+    - dependency_files:
+        - xqspipsu_flash_config.h
+...

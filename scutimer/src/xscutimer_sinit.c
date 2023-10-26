@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscutimer_sinit.c
-* @addtogroup scutimer_v2_4
+* @addtogroup scutimer Overview
 * @{
 *
 * This file contains method for static initialization (compile-time) of the
@@ -20,6 +21,7 @@
 * ----- --- -------- ---------------------------------------------
 * 1.00a nm  03/10/10 First release
 * 2.1 	sk  02/26/15 Modified the code for MISRA-C:2012 compliance.
+* 2.5   dp   07/11/23 Add Support for system device tree flow
 * </pre>
 *
 ******************************************************************************/
@@ -27,7 +29,9 @@
 /***************************** Include Files *********************************/
 
 #include "xscutimer.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -36,7 +40,11 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Variable Definitions ****************************/
+#ifndef SDT
 extern XScuTimer_Config XScuTimer_ConfigTable[XPAR_XSCUTIMER_NUM_INSTANCES];
+#else
+extern XScuTimer_Config XScuTimer_ConfigTable[];
+#endif
 
 /************************** Function Prototypes ******************************/
 
@@ -53,6 +61,7 @@ extern XScuTimer_Config XScuTimer_ConfigTable[XPAR_XSCUTIMER_NUM_INSTANCES];
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XScuTimer_Config *XScuTimer_LookupConfig(u16 DeviceId)
 {
 	XScuTimer_Config *CfgPtr = NULL;
@@ -67,4 +76,20 @@ XScuTimer_Config *XScuTimer_LookupConfig(u16 DeviceId)
 
 	return (XScuTimer_Config *)CfgPtr;
 }
+#else
+XScuTimer_Config *XScuTimer_LookupConfig(UINTPTR BaseAddr)
+{
+	XScuTimer_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = 0U; XScuTimer_ConfigTable[Index].Name != NULL; Index++) {
+		if (XScuTimer_ConfigTable[Index].BaseAddr == BaseAddr) {
+			CfgPtr = &XScuTimer_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XScuTimer_Config *)CfgPtr;
+}
+#endif
 /** @} */

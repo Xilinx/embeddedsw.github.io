@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -97,23 +98,35 @@ extern "C" {
  */
 
 typedef  struct {
+#ifndef SDT
 	u16 DeviceId;			/**< Unique ID of PCIe IP */
+#else
+	char *Name;			/* Compatible string */
+#endif
 	UINTPTR BaseAddress;		/**< Register base address */
 	u8  LocalBarsNum;		/* The number of local bus (AXI) BARs
 					 * in hardware
 					 */
-#if !defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(XDMA_PCIE_BRIDGE)
+#if !defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(XDMA_PCIE_BRIDGE) || defined(SDT)
 	u8  IncludeBarOffsetReg;	/**<Are BAR Offset registers built in
 					 * hardware
 					 */
 #endif
 	u8  IncludeRootComplex;		/**< Is IP built as root complex */
 #if defined(__aarch64__) || defined(__arch64__)
+#if defined(SDT)
+	u64 Ecam;
+	u32     NpMemBaseAddr;          /**< non prefetchable memory base address */
+	u32     NpMemMaxAddr;   /**< non prefetchable memory max base address*/
+	u64     PMemBaseAddr;           /**< prefetchable memory base address */
+	u64     PMemMaxAddr;    /**< prefetchable memory max base address */
+#else
 	u64 Ecam;
 	u32	NpMemBaseAddr;		/**< non prefetchable memory base address */
 	u64	PMemBaseAddr;		/**< prefetchable memory base address */
 	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
 	u64	PMemMaxAddr;	/**< prefetchable memory max base address */
+#endif
 #else
 	u32 Ecam;
 	u32	NpMemBaseAddr;		/**< non prefetchable memory base address */
@@ -206,7 +219,11 @@ typedef struct {
  * This API is implemented in xdmapcie_sinit.c
  */
 
+#ifndef SDT
 XDmaPcie_Config * XDmaPcie_LookupConfig(u16 DeviceId);
+#else
+XDmaPcie_Config * XDmaPcie_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * PCIe Setup and Configuration Functions.

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xprd.c
-* @addtogroup prd_v2_1
+* @addtogroup prd Overview
 * @{
 *
 * This file contains the implementation of the interface functions for the
@@ -20,7 +21,7 @@
 * Ver  Who    Date          Changes
 * --- ----- ----------  -----------------------------------------------
 * 1.0  ms    07/14/2016     First release
-*
+* 2.2  Nava  06/22/2023     Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -59,7 +60,7 @@
 *
 ******************************************************************************/
 s32 XPrd_CfgInitialize(XPrd *InstancePtr, XPrd_Config *ConfigPtr,
-				u32 EffectiveAddress)
+		       u32 EffectiveAddress)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(ConfigPtr != NULL);
@@ -71,7 +72,9 @@ s32 XPrd_CfgInitialize(XPrd *InstancePtr, XPrd_Config *ConfigPtr,
 	 * successfully.
 	 */
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
+#ifndef SDT
 	InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
+#endif
 
 	/* Indicate the component is now ready to use */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
@@ -105,10 +108,10 @@ void XPrd_SetDecouplerState(XPrd *InstancePtr, XPrd_State DecouplerValue)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid((DecouplerValue == XPRD_DECOUPLER_ON) ||
-			(DecouplerValue == XPRD_DECOUPLER_OFF));
+		       (DecouplerValue == XPRD_DECOUPLER_OFF));
 
 	XPrd_WriteReg(((InstancePtr->Config.BaseAddress) + XPRD_CTRL_OFFSET),
-			DecouplerValue);
+		      DecouplerValue);
 }
 
 /*****************************************************************************/
@@ -133,7 +136,7 @@ XPrd_State XPrd_GetDecouplerState(XPrd *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	Data = XPrd_ReadReg((InstancePtr->Config.BaseAddress) +
-			XPRD_CTRL_OFFSET) & XPRD_CTRL_DECOUPLER_MASK;
+			    XPRD_CTRL_OFFSET) & XPRD_CTRL_DECOUPLER_MASK;
 
 	return (Data) ? XPRD_DECOUPLER_ON : XPRD_DECOUPLER_OFF;
 }

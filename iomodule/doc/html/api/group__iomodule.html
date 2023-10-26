@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">iomodule
    </div>
@@ -512,7 +512,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a>((BaseAddress)) &amp; XUL_SR_RX_FIFO_VALID_DATA) != \</div>
 <div class="line">        XUL_SR_RX_FIFO_VALID_DATA)</div>
-<div class="ttc" id="group__iomodule_html_ga313c2576e159fd472cb0b25b7a395837"><div class="ttname"><a href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a></div><div class="ttdeci">#define XIOModule_GetStatusReg(BaseAddress)</div><div class="ttdoc">Get the contents of the UART status register. </div><div class="ttdef"><b>Definition:</b> xiomodule_l.h:317</div></div>
+<div class="ttc" id="group__iomodule_html_ga313c2576e159fd472cb0b25b7a395837"><div class="ttname"><a href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a></div><div class="ttdeci">#define XIOModule_GetStatusReg(BaseAddress)</div><div class="ttdoc">Get the contents of the UART status register. </div><div class="ttdef"><b>Definition:</b> xiomodule_l.h:323</div></div>
 </div><!-- fragment -->
 <p>Check to see if the UART receiver has data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -543,7 +543,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a>((BaseAddress)) &amp; XUL_SR_TX_FIFO_FULL) == \</div>
 <div class="line">          XUL_SR_TX_FIFO_FULL)</div>
-<div class="ttc" id="group__iomodule_html_ga313c2576e159fd472cb0b25b7a395837"><div class="ttname"><a href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a></div><div class="ttdeci">#define XIOModule_GetStatusReg(BaseAddress)</div><div class="ttdoc">Get the contents of the UART status register. </div><div class="ttdef"><b>Definition:</b> xiomodule_l.h:317</div></div>
+<div class="ttc" id="group__iomodule_html_ga313c2576e159fd472cb0b25b7a395837"><div class="ttname"><a href="group__iomodule.html#ga313c2576e159fd472cb0b25b7a395837">XIOModule_GetStatusReg</a></div><div class="ttdeci">#define XIOModule_GetStatusReg(BaseAddress)</div><div class="ttdoc">Get the contents of the UART status register. </div><div class="ttdef"><b>Definition:</b> xiomodule_l.h:323</div></div>
 </div><!-- fragment -->
 <p>Check to see if the transmitter is full. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1035,7 +1035,7 @@ Variables</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>The constant XPAR_IOMODULE_MAX_INTR_SIZE must be setup for this to compile. Interrupt IDs range from 0 - 31 and correspond to the interrupt input signals for the interrupt controller. XPAR_IOMODULE_MAX_INTR_SIZE specifies the highest numbered interrupt input signal that is used. </p>
 
-<p>References <a class="el" href="struct_x_i_o_module___config.html#ac6ae9a061286b668acd886f7489d62d6">XIOModule_Config::AckBeforeService</a>, <a class="el" href="struct_x_i_o_module___config.html#a96b1120954dbe1fdae2216fa85dac9a8">XIOModule_Config::BaseAddress</a>, <a class="el" href="struct_x_i_o_module___vector_table_entry.html#a6b66994a547223b1df1886a49562b2a7">XIOModule_VectorTableEntry::CallBackRef</a>, <a class="el" href="struct_x_i_o_module___vector_table_entry.html#a48dc3684c70bd12fd9a1fd46c604750a">XIOModule_VectorTableEntry::Handler</a>, <a class="el" href="struct_x_i_o_module___config.html#afcb02fbe1f9b90712964890a1429373d">XIOModule_Config::HandlerTable</a>, <a class="el" href="struct_x_i_o_module___config.html#af918e849ecf4c42ea56df244bde6f7e6">XIOModule_Config::Options</a>, <a class="el" href="group__iomodule.html#gac3f5aa29d205f6221a017a04712c65f0">XIOModule_AckIntr</a>, <a class="el" href="group__iomodule.html#gafab2167a879586e6baa45e8706ed6a6a">XIOModule_ConfigTable</a>, and <a class="el" href="group__iomodule.html#ga128f261df0c50d6e1b090e2a9e9d1874">XIOModule_GetIntrStatus</a>.</p>
+<p>References <a class="el" href="struct_x_i_o_module___vector_table_entry.html#a6b66994a547223b1df1886a49562b2a7">XIOModule_VectorTableEntry::CallBackRef</a>, <a class="el" href="struct_x_i_o_module___vector_table_entry.html#a48dc3684c70bd12fd9a1fd46c604750a">XIOModule_VectorTableEntry::Handler</a>, <a class="el" href="group__iomodule.html#gac3f5aa29d205f6221a017a04712c65f0">XIOModule_AckIntr</a>, <a class="el" href="group__iomodule.html#gafab2167a879586e6baa45e8706ed6a6a">XIOModule_ConfigTable</a>, <a class="el" href="group__iomodule.html#ga128f261df0c50d6e1b090e2a9e9d1874">XIOModule_GetIntrStatus</a>, and <a class="el" href="group__iomodule.html#ga367989ec098fe548ba62b58640490ec7">XIOModule_LookupConfig()</a>.</p>
 
 <p>Referenced by <a class="el" href="xiomodule__intr__example_8c.html#ad5cc5121d53068e10cc77ae24c6423fc">IOModuleSetupIntrSystem()</a>, and <a class="el" href="group__iomodule.html#ga848da9f83ad1188caca777cd324cec10">XIOModule_InterruptHandler()</a>.</p>
 
@@ -1600,7 +1600,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_i_o_module.html#ad44f07ede4a771acec5e5ae601868957">XIOModule::CfgPtr</a>, <a class="el" href="struct_x_i_o_module___config.html#a810c8e527dc561b0591c40ee8da5e8d5">XIOModule_Config::DeviceId</a>, and <a class="el" href="group__iomodule.html#ga2e47bfda481c3ceab60d758f049758ef">XIOModule_DeviceInterruptHandler()</a>.</p>
+<p>References <a class="el" href="struct_x_i_o_module___config.html#a96b1120954dbe1fdae2216fa85dac9a8">XIOModule_Config::BaseAddress</a>, <a class="el" href="struct_x_i_o_module.html#ad44f07ede4a771acec5e5ae601868957">XIOModule::CfgPtr</a>, <a class="el" href="struct_x_i_o_module___config.html#a810c8e527dc561b0591c40ee8da5e8d5">XIOModule_Config::DeviceId</a>, and <a class="el" href="group__iomodule.html#ga2e47bfda481c3ceab60d758f049758ef">XIOModule_DeviceInterruptHandler()</a>.</p>
 
 </div>
 </div>
@@ -1952,7 +1952,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="group__iomodule.html#gafab2167a879586e6baa45e8706ed6a6a">XIOModule_ConfigTable</a>.</p>
 
-<p>Referenced by <a class="el" href="group__iomodule.html#ga81cf0087aeb46a8a78030e964e743314">XIOModule_Initialize()</a>, and <a class="el" href="group__iomodule.html#ga8d32b770ba1aa2fda3d1bb389777212b">XIOModule_Timer_Initialize()</a>.</p>
+<p>Referenced by <a class="el" href="group__iomodule.html#ga2e47bfda481c3ceab60d758f049758ef">XIOModule_DeviceInterruptHandler()</a>, <a class="el" href="group__iomodule.html#ga81cf0087aeb46a8a78030e964e743314">XIOModule_Initialize()</a>, and <a class="el" href="group__iomodule.html#ga8d32b770ba1aa2fda3d1bb389777212b">XIOModule_Timer_Initialize()</a>.</p>
 
 </div>
 </div>

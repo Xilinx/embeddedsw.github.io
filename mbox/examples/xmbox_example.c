@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,6 +37,7 @@
 *                     CR-965028.
 *       ms   04/10/17 Modified filename tag to include the file in doxygen
 *                     examples.
+* 4.6   ht   07/07/23 Added support for system device-tree flow.
 *</pre>
 *******************************************************************************/
 
@@ -57,6 +59,9 @@
 #define MY_CPU_ID XPAR_CPU_ID
 #endif
 
+#ifdef SDT
+#define XMBOX_BASEADDRESS XPAR_XMBOX_0_BASEADDR
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -67,7 +72,8 @@
 /************************** Variable Definitions *****************************/
 
 char *Role[2] = { "PRODUCER",
-		  "CONSUMER" };
+		  "CONSUMER"
+		};
 
 extern char data[];
 char *SendMsg = data;
@@ -143,10 +149,17 @@ int ProdCon ()
 	 * Use this configuration info down below when initializing this
 	 * component.
 	 */
+#ifndef SDT
 	ConfigPtr = XMbox_LookupConfig(XPAR_MBOX_4_DEVICE_ID );
+#else
+	ConfigPtr = XMbox_LookupConfig(XMBOX_BASEADDRESS);
+#endif
+
 	if (ConfigPtr == (XMbox_Config *)NULL) {
+#ifndef SDT
 		printf ("(%s):\tLookupConfig Failed.%8.8x\r\n",
 			Role[MY_CPU_ID], XPAR_MBOX_4_DEVICE_ID );
+#endif
 		return XST_FAILURE;
 	}
 
@@ -162,7 +175,7 @@ int ProdCon ()
 	/* First send the hello */
 	printf ("CPU 0 WriteBlocking call\n");
 	/* Write a message to the Mbox */
-	XMbox_WriteBlocking(&Mbox, (u32*)((u8*)hello), HELLO_SIZE);
+	XMbox_WriteBlocking(&Mbox, (u32 *)((u8 *)hello), HELLO_SIZE);
 
 	printf ("(%s):\tsent %d bytes.\r\n", Role[MY_CPU_ID], HELLO_SIZE);
 
@@ -171,7 +184,7 @@ int ProdCon ()
 	/* First recv the hello */
 	printf ("CPU 1 ReadBlocking call\n");
 	/* Read a message from the Mbox */
-	XMbox_ReadBlocking(&Mbox, (u32*)(RecvMsg), HELLO_SIZE);
+	XMbox_ReadBlocking(&Mbox, (u32 *)(RecvMsg), HELLO_SIZE);
 
 	printf ("(%s):\tSuccessfully Rcvd the message --> \r\n\r\n\t--[%s]--\r\n\r\n", Role[MY_CPU_ID], RecvMsg);
 #endif
@@ -180,7 +193,7 @@ int ProdCon ()
 	/* Now get back a hello */
 	/* Read a message from the Mbox */
 	printf ("CPU 0 ReadBlocking call\n");
-	XMbox_ReadBlocking (&Mbox, (u32*)(RecvMsg), HELLO_SIZE);
+	XMbox_ReadBlocking (&Mbox, (u32 *)(RecvMsg), HELLO_SIZE);
 
 	printf ("(%s):\tSuccessfully Rcvd the message --> \r\n\r\n\t--[%s]--\r\n\r\n", Role[MY_CPU_ID], RecvMsg);
 #else
@@ -188,41 +201,41 @@ int ProdCon ()
 	NumBytes = 0;
 	/* Write a message to the Mbox */
 	printf ("CPU 1 WriteBlocking call\n");
-	XMbox_WriteBlocking (&Mbox, (u32*)((u8*)rhello), HELLO_SIZE);
+	XMbox_WriteBlocking (&Mbox, (u32 *)((u8 *)rhello), HELLO_SIZE);
 
 	printf ("(%s):\tsent %d bytes.\r\n", Role[MY_CPU_ID], Sent);
 
 	printf ("(%s):\tSuccessfully sent the message --> \r\n\r\n\t--[%s]--\r\n\r\n",
-		    Role[MY_CPU_ID], rhello);
+		Role[MY_CPU_ID], rhello);
 #endif
 
 
 #if MY_CPU_ID == 0
 	/* Now send the full message */
 	printf ("(%s):\tNow sending the actual message -->\r\n",
-		    Role[MY_CPU_ID]);
+		Role[MY_CPU_ID]);
 	/* Write a message to the Mbox */
-	XMbox_WriteBlocking (&Mbox, (u32*)(SendMsg), MSGSIZ);
+	XMbox_WriteBlocking (&Mbox, (u32 *)(SendMsg), MSGSIZ);
 
 	printf ("(%s):\tSuccessfully sent the full message.\r\n",
-			Role[MY_CPU_ID]);
+		Role[MY_CPU_ID]);
 #else
 	/* Now recv the full message */
 	printf ("(%s):\tNow receiving the actual message -->\r\n",
-		    Role[MY_CPU_ID]);
+		Role[MY_CPU_ID]);
 	/* Read a message from the Mbox */
-	XMbox_ReadBlocking (&Mbox, (u32*)(RecvMsg), MSGSIZ);
+	XMbox_ReadBlocking (&Mbox, (u32 *)(RecvMsg), MSGSIZ);
 
 	printf ("(%s):\tSuccessfully Rcvd the full message.\r\n",
-		    Role[MY_CPU_ID]);
+		Role[MY_CPU_ID]);
 
 	if (memcmp (RecvMsg, data, MSGSIZ)) {
 		printf ("(%s):\tError! Rcvd message does not match expected.\r\n",
-			    Role[MY_CPU_ID]);
+			Role[MY_CPU_ID]);
 		return XST_FAILURE;
 	} else {
 		printf ("(%s):\tSuccess! Rcvd message does match expected.\r\n",
-			    Role[MY_CPU_ID]);
+			Role[MY_CPU_ID]);
 	}
 #endif
 

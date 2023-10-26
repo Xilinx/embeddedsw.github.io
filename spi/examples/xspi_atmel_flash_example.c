@@ -56,6 +56,7 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 *       ms   04/05/17 Modified Comment lines to follow doxygen rules.
+* 4.11  sb   07/11/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -63,7 +64,11 @@
 /***************************** Include Files *********************************/
 
 #include "xparameters.h"	/* EDK generated parameters */
+#ifndef SDT
 #include "xintc.h"		/* Interrupt controller device driver */
+#else
+#include "xinterrupt_wrap.h"
+#endif
 #include "xspi.h"		/* SPI device driver */
 #include "xil_exception.h"
 #include "xil_printf.h"
@@ -76,9 +81,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_DEVICE_ID		XPAR_SPI_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
 #define SPI_INTR_ID		XPAR_INTC_0_SPI_0_VEC_ID
+#endif
 
 /*
  * The following constant defines the slave select signal that is used to
@@ -144,7 +151,9 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr);
+#endif
 void SpiHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
 int SpiAtmelFlashRead(XSpi *SpiPtr, u32 Address, u16 ByteCount);
 int SpiAtmelFlashWrite(XSpi *SpiPtr, u32 Address, u16 ByteCount);
@@ -158,7 +167,9 @@ static int SpiAtmelFlashWaitForFlashNotBusy(XSpi *SpiPtr);
  * are initialized to zero each time the program runs. They could be local
  * but should at least be static so they are zeroed.
  */
+#ifndef SDT
 static XIntc InterruptController;
+#endif
 static XSpi Spi;
 
 /*
@@ -202,13 +213,17 @@ int main(void)
 	/*
 	 * Initialize the SPI driver so that it is  ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XSpi_LookupConfig(SPI_DEVICE_ID);
+#else
+	ConfigPtr = XSpi_LookupConfig(XPAR_XSPI_0_BASEADDR);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
 
 	Status = XSpi_CfgInitialize(&Spi, ConfigPtr,
-				  ConfigPtr->BaseAddress);
+				    ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -216,8 +231,15 @@ int main(void)
 	 * Connect the SPI driver to the interrupt subsystem such that
 	 * interrupts can occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Spi);
-	if(Status != XST_SUCCESS) {
+#else
+	Status = XSetupInterruptSystem(&Spi, &XSpi_InterruptHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -235,10 +257,10 @@ int main(void)
 	 * transfer, this must be done before the slave select is set.
 	 */
 	Status = XSpi_SetOptions(&Spi, XSP_MASTER_OPTION |
-					XSP_MANUAL_SSELECT_OPTION |
-					XSP_CLK_PHASE_1_OPTION |
-					XSP_CLK_ACTIVE_LOW_OPTION);
-	if(Status != XST_SUCCESS) {
+				 XSP_MANUAL_SSELECT_OPTION |
+				 XSP_CLK_PHASE_1_OPTION |
+				 XSP_CLK_ACTIVE_LOW_OPTION);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -247,7 +269,7 @@ int main(void)
 	 * read and written using the SPI bus.
 	 */
 	Status = XSpi_SetSlaveSelect(&Spi, ATMEL_SPI_SELECT);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -268,7 +290,7 @@ int main(void)
 	 * Erase the Page.
 	 */
 	Status = SpiAtmelFlashPageErase(&Spi, Address);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -277,7 +299,7 @@ int main(void)
 	 * and the Flash is ready for the next command.
 	 */
 	Status = SpiAtmelFlashWaitForFlashNotBusy(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -285,7 +307,7 @@ int main(void)
 	 * Write the data to the Page.
 	 */
 	Status = SpiAtmelFlashWrite(&Spi, Address, ATMEL_PAGE_SIZE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -294,7 +316,7 @@ int main(void)
 	 * and the Flash is ready for the next command.
 	 */
 	Status = SpiAtmelFlashWaitForFlashNotBusy(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -302,7 +324,7 @@ int main(void)
 	 * Read the data from the Page.
 	 */
 	Status = SpiAtmelFlashRead(&Spi, Address, ATMEL_PAGE_SIZE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -311,15 +333,15 @@ int main(void)
 	 * and the Flash is ready for the next command.
 	 */
 	Status = SpiAtmelFlashWaitForFlashNotBusy(&Spi);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 	/*
 	 * Compare the data read with what is written.
 	 */
-	for(Index = ATMEL_READ_WRITE_EXTRA_BYTES; Index < (ATMEL_PAGE_SIZE +
-				ATMEL_READ_WRITE_EXTRA_BYTES); Index++) {
-		if(ReadBuffer[Index] != (u8)(Index + ATMEL_TEST_BYTE)) {
+	for (Index = ATMEL_READ_WRITE_EXTRA_BYTES; Index < (ATMEL_PAGE_SIZE +
+			ATMEL_READ_WRITE_EXTRA_BYTES); Index++) {
+		if (ReadBuffer[Index] != (u8)(Index + ATMEL_TEST_BYTE)) {
 			return XST_FAILURE;
 		}
 	}
@@ -360,8 +382,8 @@ int SpiAtmelFlashRead(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 	/*
 	 * Prepare the write buffer. Fill in some dummy data.
 	 */
-	for(Index = 4; Index < (ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
-				Index++) {
+	for (Index = 4; Index < (ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
+	     Index++) {
 		WriteBuffer[Index] = ATMEL_DUMMYBYTE;
 	}
 
@@ -369,8 +391,8 @@ int SpiAtmelFlashRead(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 	 * Prepare the Read Buffer. Fill in some initialization data into the
 	 * the buffer.
 	 */
-	for(Index = 0; Index < (ByteCount +
-				ATMEL_READ_WRITE_EXTRA_BYTES); Index++) {
+	for (Index = 0; Index < (ByteCount +
+				 ATMEL_READ_WRITE_EXTRA_BYTES); Index++) {
 		ReadBuffer[Index] = ATMEL_INITBYTE;
 	}
 
@@ -380,14 +402,14 @@ int SpiAtmelFlashRead(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 	 */
 	TransferInProgress = TRUE;
 	XSpi_Transfer(SpiPtr, WriteBuffer, ReadBuffer,
-				ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
+		      ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
 
 	/*
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction.
 	 */
 	while (TransferInProgress);
-	if(ErrorCount != 0) {
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -426,8 +448,8 @@ int SpiAtmelFlashWrite(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 	 * Prepare the write buffer. Fill in the data that is to be written into
 	 * the Flash.
 	 */
-	for(Index = 4; Index < (ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
-			Index++) {
+	for (Index = 4; Index < (ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES);
+	     Index++) {
 		WriteBuffer[Index] = (u8)(ATMEL_TEST_BYTE + Index);
 	}
 
@@ -437,15 +459,15 @@ int SpiAtmelFlashWrite(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 	 */
 	TransferInProgress = TRUE;
 	XSpi_Transfer(SpiPtr, WriteBuffer, NULL,
-			ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES)
-							;
+		      ByteCount + ATMEL_READ_WRITE_EXTRA_BYTES)
+	;
 
 	/*
 	 * Wait till the Transfer is complete and check if there are any errors
 	 * in the transaction.
 	 */
 	while (TransferInProgress);
-	if(ErrorCount != 0) {
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -466,7 +488,8 @@ int SpiAtmelFlashWrite(XSpi *SpiPtr, u32 Address, u16 ByteCount)
 * @note		None.
 *
 ******************************************************************************/
-int SpiAtmelFlashPageErase(XSpi *SpiPtr, u32 Address) {
+int SpiAtmelFlashPageErase(XSpi *SpiPtr, u32 Address)
+{
 
 	/*
 	 * Prepare the Write Buffer.
@@ -489,7 +512,7 @@ int SpiAtmelFlashPageErase(XSpi *SpiPtr, u32 Address) {
 	 * in the transaction.
 	 */
 	while (TransferInProgress);
-	if(ErrorCount != 0) {
+	if (ErrorCount != 0) {
 		ErrorCount = 0;
 		return XST_FAILURE;
 	}
@@ -525,29 +548,30 @@ static int SpiAtmelFlashWaitForFlashNotBusy(XSpi *SpiPtr)
 	ReadBuffer[0] = ATMEL_INITBYTE;
 	ReadBuffer[1] = ATMEL_INITBYTE;
 
-	while(1) {
+	while (1) {
 
 		/*
 		 * Transmit the data.
 		 */
 		TransferInProgress = TRUE;
 		XSpi_Transfer(&Spi, WriteBuffer, ReadBuffer,
-					ATMEL_STATUS_READ_BYTES);
+			      ATMEL_STATUS_READ_BYTES);
 
 		/*
 		 * Wait for the transmission to be complete and
 		 * check if there are any errors in the transaction.
 		 */
 		while (TransferInProgress);
-		if(ErrorCount != 0) {
+		if (ErrorCount != 0) {
 			ErrorCount = 0;
 			return XST_FAILURE;
 		}
 
 		StatusReg = ReadBuffer[1];
 
-		if ((StatusReg & ATMEL_FLASH_SR_IS_READY_MASK))
+		if ((StatusReg & ATMEL_FLASH_SR_IS_READY_MASK)) {
 			break;
+		}
 	}
 
 	return XST_SUCCESS;
@@ -607,6 +631,7 @@ void SpiHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
 * @note		None
 *
 ******************************************************************************/
+#ifndef SDT
 static int SetupInterruptSystem(XSpi *SpiPtr)
 {
 
@@ -618,7 +643,7 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * xparameters.h
 	 */
 	Status = XIntc_Initialize(&InterruptController, INTC_DEVICE_ID);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -628,10 +653,10 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * specific interrupt processing for the device
 	 */
 	Status = XIntc_Connect(&InterruptController,
-				SPI_INTR_ID,
-				(XInterruptHandler)XSpi_InterruptHandler,
-				(void *)SpiPtr);
-	if(Status != XST_SUCCESS) {
+			       SPI_INTR_ID,
+			       (XInterruptHandler)XSpi_InterruptHandler,
+			       (void *)SpiPtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -641,7 +666,7 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * the SPI can cause interrupts through the interrupt controller.
 	 */
 	Status = XIntc_Start(&InterruptController, XIN_REAL_MODE);
-	if(Status != XST_SUCCESS) {
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
@@ -660,8 +685,8 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 	 * Register the interrupt controller handler with the exception table.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				 (Xil_ExceptionHandler) XIntc_InterruptHandler,
-				 &InterruptController);
+				     (Xil_ExceptionHandler) XIntc_InterruptHandler,
+				     &InterruptController);
 
 	/*
 	 * Enable non-critical exceptions.
@@ -670,3 +695,4 @@ static int SetupInterruptSystem(XSpi *SpiPtr)
 
 	return XST_SUCCESS;
 }
+#endif

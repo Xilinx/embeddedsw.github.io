@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">scugic
    </div>
@@ -55,6 +55,7 @@
   </div>
   <div id="navrow4" class="tabs3">
     <ul class="tablist">
+      <li><a href="#index_a"><span>a</span></a></li>
       <li><a href="#index_d"><span>d</span></a></li>
       <li><a href="#index_l"><span>l</span></a></li>
       <li><a href="#index_m"><span>m</span></a></li>
@@ -80,7 +81,18 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <div class="contents">
 <div class="textblock">Here is a list of all documented functions, variables, defines, enums, and typedefs with links to the documentation:</div>
 
+<h3><a class="anchor" id="index_a"></a>- a -</h3><ul>
+<li>ARMA9
+: <a class="el" href="group__scugic.html#ga3dde6ae31d569b01dc88903a5340d744">xscugic.h</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
+<li>DEFAULT_PRIORITY
+: <a class="el" href="group__scugic.html#ga0756f011ef667460d583017366823244">xscugic.c</a>
+, <a class="el" href="group__scugic.html#ga0756f011ef667460d583017366823244">xscugic_hw.c</a>
+</li>
 <li>DeviceDriverHandler()
 : <a class="el" href="xscugic__example_8c.html#a2d6264927eb02cdac505c92079fa9e03">xscugic_example.c</a>
 </li>
@@ -113,11 +125,11 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>ScuGicSelfTestExample()
 : <a class="el" href="xscugic__tapp__example_8c.html#acb54aeda1ceadab17fcaf857c8bb083e">xscugic_tapp_example.c</a>
 </li>
-<li>SetUpInterruptSystem()
-: <a class="el" href="xscugic__example_8c.html#a89589e10926b9add4601dac19679feda">xscugic_example.c</a>
-</li>
 <li>SetupInterruptSystem()
 : <a class="el" href="xscugic__low__level__example_8c.html#a41e86f1c34d18e351ce42a5aa0c4ce2e">xscugic_low_level_example.c</a>
+</li>
+<li>SetUpInterruptSystem()
+: <a class="el" href="xscugic__example_8c.html#a89589e10926b9add4601dac19679feda">xscugic_example.c</a>
 </li>
 </ul>
 
@@ -264,8 +276,14 @@ $(document).ready(function(){initNavTree('globals.html','');});
 : <a class="el" href="group__scugic.html#ga0c6a61acf2d5d030542c788a9aa42004">xscugic_hw.c</a>
 , <a class="el" href="group__scugic.html#ga0c6a61acf2d5d030542c788a9aa42004">xscugic_hw.h</a>
 </li>
+<li>XSCUGIC_H
+: <a class="el" href="group__scugic.html#ga9f2c28f54da589ba1000235cfb0929ba">xscugic.h</a>
+</li>
 <li>XSCUGIC_HI_PEND_OFFSET
 : <a class="el" href="group__scugic.html#gaa8f4426fddda8466c267b661457dd54e">xscugic_hw.h</a>
+</li>
+<li>XSCUGIC_HW_H
+: <a class="el" href="group__scugic.html#gac1bc762eba383937d08c41704737091c">xscugic_hw.h</a>
 </li>
 <li>XSCUGIC_IC_TYPE_OFFSET
 : <a class="el" href="group__scugic.html#ga80f182c20ecfcc115bca1ac7aae08889">xscugic_hw.h</a>
@@ -275,6 +293,9 @@ $(document).ready(function(){initNavTree('globals.html','');});
 </li>
 <li>XSCUGIC_INT_ACK_OFFSET
 : <a class="el" href="group__scugic.html#ga5f1418c8f0e05b7f928c2fff42b4514d">xscugic_hw.h</a>
+</li>
+<li>XSCUGIC_INT_CFG_MASK
+: <a class="el" href="group__scugic.html#ga2be546274013a123da9a0a8f21acfbc5">xscugic_hw.h</a>
 </li>
 <li>XSCUGIC_INT_CFG_OFFSET
 : <a class="el" href="group__scugic.html#ga8c3e4a0e11aeeb05a7425826893a48b5">xscugic_hw.h</a>
@@ -308,6 +329,9 @@ $(document).ready(function(){initNavTree('globals.html','');});
 : <a class="el" href="group__scugic.html#gaa02951e223977118dd89dfffc151a966">xscugic_hw.c</a>
 , <a class="el" href="group__scugic.html#gaa02951e223977118dd89dfffc151a966">xscugic_hw.h</a>
 </li>
+<li>XSCUGIC_INTR_PRIO_MASK
+: <a class="el" href="group__scugic.html#ga314e70261cb0c4c4da8019ff78c7e6f8">xscugic_hw.h</a>
+</li>
 <li>XSCUGIC_IROUTER_OFFSET_CALC
 : <a class="el" href="xscugic__hw_8h.html#a68ccffbaf26e88803874e3fd9592bc80">xscugic_hw.h</a>
 </li>
@@ -317,11 +341,23 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XScuGic_LookupConfig()
 : <a class="el" href="group__scugic.html#gab2c0554b809121cc91a96fcd8c749c25">xscugic.h</a>
 </li>
+<li>XScuGic_LookupConfigBaseAddr()
+: <a class="el" href="group__scugic.html#ga805a47295123177a48b07fccfe037702">xscugic.h</a>
+</li>
 <li>XSCUGIC_LSPI_MASK
 : <a class="el" href="group__scugic.html#ga63c9b51176e1db04adbbfa91b517d9a1">xscugic_hw.h</a>
 </li>
+<li>XSCUGIC_MAX_INTR_PRIO_VAL
+: <a class="el" href="group__scugic.html#gaecd562b440bde835a8eee0c8a0e78249">xscugic_hw.h</a>
+</li>
+<li>XSCUGIC_MAX_NUM_INTR_INPUTS
+: <a class="el" href="group__scugic.html#ga1027fc01e0c0efc80eadd0e6bb69f801">xscugic_hw.h</a>
+</li>
 <li>XSCUGIC_NUM_INT_MASK
 : <a class="el" href="group__scugic.html#ga5e47c517a580a243cde47a69d1fe6d50">xscugic_hw.h</a>
+</li>
+<li>XSCUGIC_PCELL_ID
+: <a class="el" href="group__scugic.html#gaeb56c44f88d7770aadf2b1fdbd3c24da">xscugic_selftest.c</a>
 </li>
 <li>XSCUGIC_PCELLID_OFFSET
 : <a class="el" href="group__scugic.html#ga41becddbff3dcc589f4c9d70d0177ff6">xscugic_hw.h</a>
@@ -420,8 +456,8 @@ $(document).ready(function(){initNavTree('globals.html','');});
 : <a class="el" href="xscugic__hw_8h.html#ad67ce957524b208789b863ed9a5c8b44">xscugic_hw.h</a>
 </li>
 <li>XScuGic_RegisterHandler()
-: <a class="el" href="group__scugic.html#ga73f026dbb3a8f29b830fb0a64a42c4bf">xscugic_hw.c</a>
-, <a class="el" href="group__scugic.html#ga73f026dbb3a8f29b830fb0a64a42c4bf">xscugic_hw.h</a>
+: <a class="el" href="group__scugic.html#ga73f026dbb3a8f29b830fb0a64a42c4bf">xscugic_hw.h</a>
+, <a class="el" href="group__scugic.html#ga73f026dbb3a8f29b830fb0a64a42c4bf">xscugic_hw.c</a>
 </li>
 <li>XSCUGIC_REV_MASK
 : <a class="el" href="group__scugic.html#ga0e4e42f499ef03373095daf342ffa988">xscugic_hw.h</a>
@@ -448,8 +484,8 @@ $(document).ready(function(){initNavTree('globals.html','');});
 : <a class="el" href="group__scugic.html#ga79abd6248cb578142e9c475f20dbeb06">xscugic.c</a>
 </li>
 <li>XScuGic_SetPriTrigTypeByDistAddr()
-: <a class="el" href="group__scugic.html#gaf58a00ee3c052d8aec17b179c86388c7">xscugic_hw.h</a>
-, <a class="el" href="group__scugic.html#gaf58a00ee3c052d8aec17b179c86388c7">xscugic_hw.c</a>
+: <a class="el" href="group__scugic.html#gaf58a00ee3c052d8aec17b179c86388c7">xscugic_hw.c</a>
+, <a class="el" href="group__scugic.html#gaf58a00ee3c052d8aec17b179c86388c7">xscugic_hw.h</a>
 </li>
 <li>XSCUGIC_SFI_TRIG_CPU_MASK
 : <a class="el" href="group__scugic.html#gab68476cc3813858c0c809ebfb4e28c74">xscugic_hw.h</a>
@@ -493,6 +529,9 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <li>XSCUGIC_SPI_CPU7_MASK
 : <a class="el" href="group__scugic.html#gade96daa17197385ab3071b1f46591d93">xscugic_hw.h</a>
 </li>
+<li>XSCUGIC_SPI_INT_ID_START
+: <a class="el" href="group__scugic.html#ga1706d457c89d8e76f1d120cc6fad418b">xscugic_hw.h</a>
+</li>
 <li>XSCUGIC_SPI_N_MASK
 : <a class="el" href="group__scugic.html#ga06ee88cda2455e25cd6c1d5b4d7eb7b3">xscugic_hw.h</a>
 </li>
@@ -512,8 +551,8 @@ $(document).ready(function(){initNavTree('globals.html','');});
 : <a class="el" href="group__scugic.html#ga66b2416be64a5e582e530ed9ed7f962c">xscugic.c</a>
 </li>
 <li>XScuGic_UnmapAllInterruptsFromCpuByDistAddr()
-: <a class="el" href="group__scugic.html#ga15a21f6b75030f175dec61355b6ef905">xscugic_hw.h</a>
-, <a class="el" href="group__scugic.html#ga15a21f6b75030f175dec61355b6ef905">xscugic_hw.c</a>
+: <a class="el" href="group__scugic.html#ga15a21f6b75030f175dec61355b6ef905">xscugic_hw.c</a>
+, <a class="el" href="group__scugic.html#ga15a21f6b75030f175dec61355b6ef905">xscugic_hw.h</a>
 </li>
 <li>XScuGic_WriteReg
 : <a class="el" href="xscugic__hw_8h.html#a01c0f85e48858531c313ce22cbfd2dfa">xscugic_hw.h</a>

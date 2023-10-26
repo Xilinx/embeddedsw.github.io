@@ -8,7 +8,7 @@
 /**
 *
 * @file xaxivdma_sinit.c
-* @addtogroup axivdma_v6_12
+* @addtogroup axivdma Overview
 * @{
 *
 * Look up the hardware settings using device ID. The hardware setting is inside
@@ -33,7 +33,9 @@
 /***************************** Include Files *********************************/
 
 #include "xaxivdma.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -52,6 +54,7 @@
  * a NULL pointer is returned.
  *
  ******************************************************************************/
+#ifndef SDT
 XAxiVdma_Config *XAxiVdma_LookupConfig(u16 DeviceId)
 {
 	extern XAxiVdma_Config XAxiVdma_ConfigTable[];
@@ -67,4 +70,22 @@ XAxiVdma_Config *XAxiVdma_LookupConfig(u16 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XAxiVdma_Config *XAxiVdma_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XAxiVdma_Config XAxiVdma_ConfigTable[];
+	XAxiVdma_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = (u32)0x0; XAxiVdma_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XAxiVdma_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XAxiVdma_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /** @} */

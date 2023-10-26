@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">spips
    </div>
@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('xspips__flash__intr__example_8c.html',
                     recognize it as documentation block for doxygen
                     generation.
  3.2  nsk  03/26/19 Add support for versal
+ 3.9  sb   07/05/23 Added support for system device-tree flow.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -177,7 +178,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 <p>This function calls other functions which contain loops that may be infinite if interrupts are not working such that it may not return. If the device slave select is not correct and the device is not responding on bus it will read a status of 0xFF for the status register as the bus is pulled up. </p>
 
-<p>References <a class="el" href="struct_x_spi_ps___config.html#a9b11063c0ae635e0284463e9edf0fdf8">XSpiPs_Config::BaseAddress</a>, <a class="el" href="xspips__flash__intr__example_8c.html#a1d109a356a9f7961da6700eddf5e4127">SpiPsHandler()</a>, <a class="el" href="group__spips.html#gabfabf86279474d10c04bfe97f3386a64">XSpiPs_CfgInitialize()</a>, <a class="el" href="group__spips.html#ga797ea1218c463e962b5bb3e8c1660519">XSPIPS_CLK_PRESCALE_8</a>, <a class="el" href="group__spips.html#gaf0a0da0e20b70ee21a3998117785638e">XSPIPS_FORCE_SSELECT_OPTION</a>, <a class="el" href="group__spips.html#ga70c86f3842f5996d9d7fc874466f4136">XSpiPs_LookupConfig()</a>, <a class="el" href="group__spips.html#ga7e6e32f2a23f47aa9f69c6adccbd2ba3">XSPIPS_MANUAL_START_OPTION</a>, <a class="el" href="group__spips.html#ga1fbe2203de88e79aa3a6c7e70e2f3436">XSPIPS_MASTER_OPTION</a>, <a class="el" href="group__spips.html#gaaa797b9b8184e6f39b0c0038553e48d8">XSpiPs_SelfTest()</a>, <a class="el" href="group__spips.html#ga146ed84d7a6ab3b3f8961697bd78da60">XSpiPs_SetClkPrescaler()</a>, <a class="el" href="group__spips.html#ga4f14bfc3ddd296adb08843dbbe30a306">XSpiPs_SetOptions()</a>, <a class="el" href="group__spips.html#ga1ef5af2211095df5692567fa4721a8d5">XSpiPs_SetSlaveSelect()</a>, and <a class="el" href="group__spips.html#gacafc99130a16e99abb3d86e682f1de09">XSpiPs_SetStatusHandler()</a>.</p>
+<p>References <a class="el" href="struct_x_spi_ps___config.html#a9b11063c0ae635e0284463e9edf0fdf8">XSpiPs_Config::BaseAddress</a>, <a class="el" href="struct_x_spi_ps___config.html#ae8110b04c0f446cd35df029a7e423fd6">XSpiPs_Config::IntrId</a>, <a class="el" href="struct_x_spi_ps___config.html#a67af05f80f2d57b0ea4c07e1ddb65629">XSpiPs_Config::IntrParent</a>, <a class="el" href="xspips__flash__intr__example_8c.html#a1d109a356a9f7961da6700eddf5e4127">SpiPsHandler()</a>, <a class="el" href="group__spips.html#gabfabf86279474d10c04bfe97f3386a64">XSpiPs_CfgInitialize()</a>, <a class="el" href="group__spips.html#ga797ea1218c463e962b5bb3e8c1660519">XSPIPS_CLK_PRESCALE_8</a>, <a class="el" href="group__spips.html#gaf0a0da0e20b70ee21a3998117785638e">XSPIPS_FORCE_SSELECT_OPTION</a>, <a class="el" href="group__spips.html#gac57ccd3fab9a25399bdb8bc234fecc66">XSpiPs_InterruptHandler()</a>, <a class="el" href="group__spips.html#ga70c86f3842f5996d9d7fc874466f4136">XSpiPs_LookupConfig()</a>, <a class="el" href="group__spips.html#ga7e6e32f2a23f47aa9f69c6adccbd2ba3">XSPIPS_MANUAL_START_OPTION</a>, <a class="el" href="group__spips.html#ga1fbe2203de88e79aa3a6c7e70e2f3436">XSPIPS_MASTER_OPTION</a>, <a class="el" href="group__spips.html#gaaa797b9b8184e6f39b0c0038553e48d8">XSpiPs_SelfTest()</a>, <a class="el" href="group__spips.html#ga146ed84d7a6ab3b3f8961697bd78da60">XSpiPs_SetClkPrescaler()</a>, <a class="el" href="group__spips.html#ga4f14bfc3ddd296adb08843dbbe30a306">XSpiPs_SetOptions()</a>, <a class="el" href="group__spips.html#ga1ef5af2211095df5692567fa4721a8d5">XSpiPs_SetSlaveSelect()</a>, and <a class="el" href="group__spips.html#gacafc99130a16e99abb3d86e682f1de09">XSpiPs_SetStatusHandler()</a>.</p>
 
 <p>Referenced by <a class="el" href="xspips__flash__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

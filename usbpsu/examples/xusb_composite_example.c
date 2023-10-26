@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -17,21 +18,33 @@
  * Ver   Who  Date     Changes
  * ----- ---- -------- -------------------------------------------------------
  * 1.0   rb   05/03/18 First release
+ * 1.14  pm   21/06/23 Added support for system device-tree flow.
  *
  * </pre>
  *
  *****************************************************************************/
 
 /***************************** Include Files ********************************/
-#include "xparameters.h"
-#include "xscugic.h"
+
 #include "xusb_ch9_composite.h"
 #include "xusb_class_composite.h"
 
+#include "xparameters.h"
+#include "xscugic.h"
+
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 /************************** Constant Definitions ****************************/
+#ifndef SDT
 #define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define USB_INTR_ID             XPAR_XUSBPS_0_INTR
 #define USB_WAKEUP_INTR_ID      XPAR_XUSBPS_0_WAKE_INTR
+#else
+#define INTRNAME_DWC3USB3	0 /* Interrupt-name - USB */
+#define INTRNAME_HIBER		2 /* Interrupt-name - Hiber */
+#define XUSBPSU_BASEADDRESS	XPAR_XUSBPSU_0_BASEADDR /* USB base address */
+#endif
 
 /************************** Function Prototypes ******************************/
 
@@ -77,7 +90,7 @@ static USBCH9_DATA composite_data = {
 		.Usb_ClassReq = Usb_ClassReq,
 		.Usb_GetDescReply = Usb_GetDescReply,
 	},
-	.data_ptr = (void *)&comp_dev,
+	.data_ptr = (void *) &comp_dev,
 };
 
 /****************************************************************************/
@@ -100,8 +113,8 @@ static void set_audio_transfer_size(struct audio_if *f_audio)
 	 * descriptors
 	 */
 	AudioFreq = (u32)((u8)audio_freq[CUR_AUDIO_FREQ][0] |
-			(u8)audio_freq[CUR_AUDIO_FREQ][1] << 8 |
-			(u8)audio_freq[CUR_AUDIO_FREQ][2] << 16);
+			  (u8)audio_freq[CUR_AUDIO_FREQ][1] << 8 |
+			  (u8)audio_freq[CUR_AUDIO_FREQ][2] << 16);
 
 	/*
 	 * Audio transmission Bytes required to send in one sec
@@ -113,15 +126,16 @@ static void set_audio_transfer_size(struct audio_if *f_audio)
 
 	/* Audio data transfer size to be transferred at every interval */
 	MaxPacketsize = AUDIO_CHANNEL_NUM * AUDIO_FRAME_SIZE *
-		DIV_ROUND_UP(AudioFreq, INTERVAL_PER_SECOND /
-				(1 << (AUDIO_INTERVAL - 1)));
+			DIV_ROUND_UP(AudioFreq, INTERVAL_PER_SECOND /
+				     (1 << (AUDIO_INTERVAL - 1)));
 	f_audio->packetsize = ((Rate / f_audio->interval) < MaxPacketsize) ?
-		(Rate / f_audio->interval) : MaxPacketsize;
+			      (Rate / f_audio->interval) : MaxPacketsize;
 
-	if (f_audio->packetsize < MaxPacketsize)
+	if (f_audio->packetsize < MaxPacketsize) {
 		f_audio->packetresidue = Rate % f_audio->interval;
-	else
+	} else {
 		f_audio->packetresidue = 0;
+	}
 }
 
 /****************************************************************************/
@@ -158,8 +172,9 @@ static void Usb_AudioOutHandler(void *CallBackRef, u32 RequestedBytes, u32 Bytes
 	if (f->firstpkt) {
 		f->firstpkt = 0;
 	} else {
-		if ((f->index + BytesTxed) > f->disksize)
+		if ((f->index + BytesTxed) > f->disksize) {
 			f->index = 0;
+		}
 
 		/* Copy received to RAM array */
 		memcpy(f->disk + f->index, BufferPtrTemp, BytesTxed);
@@ -167,7 +182,7 @@ static void Usb_AudioOutHandler(void *CallBackRef, u32 RequestedBytes, u32 Bytes
 	}
 
 	EpBufferRecv(InstancePtr->PrivateData, ISO_EP,
-			BufferPtrTemp, Size);
+		     BufferPtrTemp, Size);
 }
 
 /*****************************************************************************/
@@ -202,11 +217,12 @@ static void Usb_AudioInHandler(void *CallBackRef, u32 RequestedBytes, u32 BytesT
 	}
 
 	/* Buffer is completed, retransmitting the same file data */
-	if ((f->index + Size) > f->disksize)
+	if ((f->index + Size) > f->disksize) {
 		f->index = 0;
+	}
 
 	if (EpBufferSend(InstancePtr->PrivateData, ISO_EP,
-				f->disk + f->index, Size) == XST_SUCCESS) {
+			 f->disk + f->index, Size) == XST_SUCCESS) {
 		f->index += Size;
 
 		if (f->firstpkt) {
@@ -219,10 +235,11 @@ static void Usb_AudioInHandler(void *CallBackRef, u32 RequestedBytes, u32 BytesT
 			}
 
 			/* Buffer is completed, retransmitting the same file data */
-			if ((f->index + Size) > f->disksize)
+			if ((f->index + Size) > f->disksize) {
 				f->index = 0;
-			else
+			} else {
 				f->index += Size;
+			}
 
 			f->firstpkt = 0;
 		}
@@ -298,7 +315,7 @@ static void Usb_StorageInHandler(void *CallBackRef, u32 RequestedBytes, u32 Byte
 		f->phase = USB_EP_STATE_COMMAND;
 		/* Receive next CBW */
 		EpBufferRecv(InstancePtr->PrivateData, STORAGE_EP,
-				(u8*)&f->cbw, sizeof(f->cbw));
+			     (u8 *)&f->cbw, sizeof(f->cbw));
 	}
 }
 
@@ -321,6 +338,7 @@ static void Usb_KeyboardInHabdler(void *CallBackRef, u32 RequestedBytes, u32 Byt
 	KeySent = 1;
 }
 
+#ifndef SDT
 /****************************************************************************/
 /**
 * This function setups the interrupt system such that interrupts can occur.
@@ -341,7 +359,7 @@ static void Usb_KeyboardInHabdler(void *CallBackRef, u32 RequestedBytes, u32 Byt
 *
 *****************************************************************************/
 static s32 SetupInterruptSystem(struct XUsbPsu *InstancePtr, u16 IntcDeviceID,
-		u16 UsbIntrId, void *IntcPtr)
+				u16 UsbIntrId, void *IntcPtr)
 {
 	s32 Status;
 
@@ -352,27 +370,31 @@ static s32 SetupInterruptSystem(struct XUsbPsu *InstancePtr, u16 IntcDeviceID,
 
 	/* Initialize the interrupt controller driver */
 	IntcConfig = XScuGic_LookupConfig(IntcDeviceID);
-	if (NULL == IntcConfig)
+	if (NULL == IntcConfig) {
 		return XST_FAILURE;
+	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-			IntcConfig->CpuBaseAddress);
-	if (Status != XST_SUCCESS)
+				       IntcConfig->CpuBaseAddress);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
+	}
 
 	/* Connect to the interrupt controller */
 	Status = XScuGic_Connect(IntcInstancePtr, UsbIntrId,
-			(Xil_ExceptionHandler)XUsbPsu_IntrHandler,
-			(void *)InstancePtr);
-	if (Status != XST_SUCCESS)
+				 (Xil_ExceptionHandler)XUsbPsu_IntrHandler,
+				 (void *)InstancePtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
+	}
 
 #ifdef XUSBPSU_HIBERNATION_ENABLE
 	Status = XScuGic_Connect(IntcInstancePtr, USB_WAKEUP_INTR_ID,
-			(Xil_ExceptionHandler)XUsbPsu_WakeUpIntrHandler,
-			(void *)InstancePtr);
-	if (Status != XST_SUCCESS)
+				 (Xil_ExceptionHandler)XUsbPsu_WakeUpIntrHandler,
+				 (void *)InstancePtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
+	}
 #endif
 
 	/* Enable the interrupt for the USB */
@@ -386,16 +408,16 @@ static s32 SetupInterruptSystem(struct XUsbPsu *InstancePtr, u16 IntcDeviceID,
 	 * Wakeup and Overflow events.
 	 */
 	XUsbPsu_EnableIntr(InstancePtr, XUSBPSU_DEVTEN_EVNTOVERFLOWEN |
-			XUSBPSU_DEVTEN_WKUPEVTEN |
-			XUSBPSU_DEVTEN_ULSTCNGEN |
-			XUSBPSU_DEVTEN_CONNECTDONEEN |
-			XUSBPSU_DEVTEN_USBRSTEN |
-			XUSBPSU_DEVTEN_DISCONNEVTEN);
+			   XUSBPSU_DEVTEN_WKUPEVTEN |
+			   XUSBPSU_DEVTEN_ULSTCNGEN |
+			   XUSBPSU_DEVTEN_CONNECTDONEEN |
+			   XUSBPSU_DEVTEN_USBRSTEN |
+			   XUSBPSU_DEVTEN_DISCONNEVTEN);
 
 #ifdef XUSBPSU_HIBERNATION_ENABLE
 	if (InstancePtr->HasHibernation)
 		XUsbPsu_EnableIntr(InstancePtr,
-				XUSBPSU_DEVTEN_HIBERNATIONREQEVTEN);
+				   XUSBPSU_DEVTEN_HIBERNATIONREQEVTEN);
 #endif
 
 	/*
@@ -403,14 +425,15 @@ static s32 SetupInterruptSystem(struct XUsbPsu *InstancePtr, u16 IntcDeviceID,
 	 * interrupt handling logic in the ARM processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-			IntcInstancePtr);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 
 	/* Enable interrupts in the ARM */
 	Xil_ExceptionEnable();
 
 	return XST_SUCCESS;
 }
+#endif
 
 /****************************************************************************/
 /**
@@ -427,22 +450,34 @@ static s32 SetupInterruptSystem(struct XUsbPsu *InstancePtr, u16 IntcDeviceID,
 * @note		None.
 *
 *****************************************************************************/
+#ifndef SDT
 static int XUsbCompositeExample(struct Usb_DevData *UsbInstPtr,
-		XScuGic *IntrInstPtr, u16 DeviceId, u16 IntcDeviceID, u16 UsbIntrId)
+				XScuGic *IntrInstPtr, u16 DeviceId, u16 IntcDeviceID, u16 UsbIntrId)
+#else
+static int XUsbCompositeExample(struct Usb_DevData *UsbInstPtr)
+#endif
 {
 	s32 Status;
 	u8 SendKey = 1;
-	u8 NoKeyData[8]= {0,0,0,0,0,0,0,0};
+	u8 NoKeyData[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	Usb_Config *UsbConfigPtr;
+#ifdef SDT
+	struct XUsbPsu *InstancePtr = UsbInstance.PrivateData;
+#endif
 
 	xil_printf("USB Composite Device Start...\r\n");
 
 	/* Initialize the USB driver so that it's ready to use,
 	 * specify the controller ID that is generated in xparameters.h
 	 */
+#ifndef SDT
 	UsbConfigPtr = LookupConfig(DeviceId);
-	if (NULL == UsbConfigPtr)
+#else
+	UsbConfigPtr = LookupConfig(XUSBPSU_BASEADDRESS);
+#endif
+	if (NULL == UsbConfigPtr) {
 		return XST_FAILURE;
+	}
 
 	/* We are passing the physical base address as the third argument
 	 * because the physical and virtual base address are the same in our
@@ -450,9 +485,10 @@ static int XUsbCompositeExample(struct Usb_DevData *UsbInstPtr,
 	 * argument needs to be the virtual base address.
 	 */
 	Status = CfgInitialize(UsbInstPtr, UsbConfigPtr,
-			UsbConfigPtr->BaseAddress);
-	if (XST_SUCCESS != Status)
+			       UsbConfigPtr->BaseAddress);
+	if (XST_SUCCESS != Status) {
 		return XST_FAILURE;
+	}
 
 	/* hook up chapter9 handler */
 	Set_Ch9Handler(UsbInstPtr->PrivateData, Ch9Handler);
@@ -479,49 +515,92 @@ static int XUsbCompositeExample(struct Usb_DevData *UsbInstPtr,
 
 	/* set handler for in endpoint, will be called when data is sent*/
 	SetEpHandler(UsbInstPtr->PrivateData, ISO_EP, USB_EP_DIR_IN,
-			Usb_AudioInHandler);
+		     Usb_AudioInHandler);
 
 	/* set handler for out endpoint, will be called when data is recv*/
 	SetEpHandler(UsbInstPtr->PrivateData, ISO_EP, USB_EP_DIR_OUT,
-			Usb_AudioOutHandler);
+		     Usb_AudioOutHandler);
 
 	set_audio_transfer_size(&comp_dev.f_audio);
 
 	/* Mass storage endpoint event hadler registration */
 	SetEpHandler(UsbInstance.PrivateData, STORAGE_EP, USB_EP_DIR_OUT,
-			Usb_StorageOutHandler);
+		     Usb_StorageOutHandler);
 	SetEpHandler(UsbInstance.PrivateData, STORAGE_EP, USB_EP_DIR_IN,
-			Usb_StorageInHandler);
+		     Usb_StorageInHandler);
 
 	/* Keyboard endpoint event hadler */
 	SetEpHandler(UsbInstPtr->PrivateData, KEYBOARD_EP, USB_EP_DIR_IN,
-			Usb_KeyboardInHabdler);
+		     Usb_KeyboardInHabdler);
+
+
+#ifndef SDT
 	/* setup interrupts */
 	Status = SetupInterruptSystem(UsbInstPtr->PrivateData, IntcDeviceID,
-			UsbIntrId, (void *)IntrInstPtr);
-	if (Status != XST_SUCCESS)
+				      UsbIntrId, (void *)IntrInstPtr);
+	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
+	}
 
 	/* Start the controller so that Host can see our device */
 	Usb_Start(UsbInstPtr->PrivateData);
+#else
+	Status = XSetupInterruptSystem(UsbInstance.PrivateData,
+				       &XUsbPsu_IntrHandler,
+				       UsbConfigPtr->IntrId[INTRNAME_DWC3USB3],
+				       UsbConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
+#ifdef XUSBPSU_HIBERNATION_ENABLE
+	Status = XSetupInterruptSystem(UsbInstance.PrivateData,
+				       &XUsbPsu_WakeUpIntrHandler,
+				       UsbConfigPtr->IntrId[INTRNAME_HIBER],
+				       UsbConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+#endif
+	/*
+	 * Enable interrupts for Reset, Disconnect, ConnectionDone, Link State
+	 * Wakeup and Overflow events.
+	 */
+	XUsbPsu_EnableIntr(UsbInstance.PrivateData,
+			   XUSBPSU_DEVTEN_EVNTOVERFLOWEN |
+			   XUSBPSU_DEVTEN_WKUPEVTEN |
+			   XUSBPSU_DEVTEN_ULSTCNGEN |
+			   XUSBPSU_DEVTEN_CONNECTDONEEN |
+			   XUSBPSU_DEVTEN_USBRSTEN |
+			   XUSBPSU_DEVTEN_DISCONNEVTEN);
+
+#ifdef XUSBPSU_HIBERNATION_ENABLE
+	if (InstancePtr->HasHibernation)
+		XUsbPsu_EnableIntr(UsbInstance.PrivateData,
+				   XUSBPSU_DEVTEN_HIBERNATIONREQEVTEN);
+#endif
+	/* Start the controller so that Host can see our device */
+	Usb_Start(UsbInstance.PrivateData);
+#endif
 	while (1) {
 
 		/* After configuration done start sending key */
-		while(GetConfigDone(UsbInstPtr->PrivateData)) {
+		while (GetConfigDone(UsbInstPtr->PrivateData)) {
 			if (KeySent) {
 				if (SendKey) {
-					static char KeyData[8] = {2,0,0,0,0,0,0,0};
+					static char KeyData[8] = {2, 0, 0, 0, 0, 0, 0, 0};
 
 					/* get key from serial and send key */
 					KeyData[2] = (inbyte() - ('a' - 4));
 					EpBufferSend(UsbInstance.PrivateData, KEYBOARD_EP,
-							(u8 *)&KeyData[0], 8);
+						     (u8 *)&KeyData[0], 8);
 					SendKey = 0;
 				} else {
 					/* send key release */
 					EpBufferSend(UsbInstance.PrivateData, KEYBOARD_EP,
-							(u8 *)&NoKeyData[0], 8);
+						     (u8 *)&NoKeyData[0], 8);
 					SendKey = 1;
 				}
 				KeySent = 0;
@@ -544,8 +623,12 @@ static int XUsbCompositeExample(struct Usb_DevData *UsbInstPtr,
 *****************************************************************************/
 int main(void)
 {
+#ifndef SDT
 	if (XUsbCompositeExample(&UsbInstance, &InterruptController,
-			USB_DEVICE_ID, INTC_DEVICE_ID, USB_INTR_ID)) {
+				 USB_DEVICE_ID, INTC_DEVICE_ID, USB_INTR_ID)) {
+#else
+	if (XUsbCompositeExample(&UsbInstance)) {
+#endif
 		xil_printf("USB Composite Example failed\r\n");
 		return XST_FAILURE;
 	}

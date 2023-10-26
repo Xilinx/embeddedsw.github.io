@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,7 @@
 * Ver   Who    Date     Changes
 * ----- ------ -------- -----------------------------------------------
 * 1.00  kvn 05/12/15 First Release
+* 1.13  ht  06/21/23 Added support for system device-tree flow.
 *
 * </pre>
 ******************************************************************************/
@@ -37,7 +39,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define RTC_DEVICE_ID              XPAR_XRTCPSU_0_DEVICE_ID
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -45,8 +49,11 @@
 #define ALARM_PERIOD 10U
 
 /************************** Function Prototypes ******************************/
-
+#ifndef SDT
 int RtcPsuAlarmPolledExample(u16 DeviceId);
+#else
+int RtcPsuAlarmPolledExample(UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -72,7 +79,11 @@ int main(void)
 	 * Run the Rtc_Psu polled example , specify the the Device ID that is
 	 * generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = RtcPsuAlarmPolledExample(RTC_DEVICE_ID);
+#else
+	Status = RtcPsuAlarmPolledExample(XPAR_XRTCPSU_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("RTC Alarm Polled Mode Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -99,7 +110,11 @@ int main(void)
 * working correctly.
 *
 ****************************************************************************/
+#ifndef SDT
 int RtcPsuAlarmPolledExample(u16 DeviceId)
+#else
+int RtcPsuAlarmPolledExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XRtcPsu_Config *Config;
@@ -110,7 +125,11 @@ int RtcPsuAlarmPolledExample(u16 DeviceId)
 	 * Initialize the RTC driver so that it's ready to use.
 	 * Look up the configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XRtcPsu_LookupConfig(DeviceId);
+#else
+	Config = XRtcPsu_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -129,13 +148,13 @@ int RtcPsuAlarmPolledExample(u16 DeviceId)
 	xil_printf("\n\rDay Convention : 0-Fri, 1-Sat, 2-Sun, 3-Mon, 4-Tue, 5-Wed, 6-Thur\n\r");
 	xil_printf("Current RTC time is..\n\r");
 	CurrentTime = XRtcPsu_GetCurrentTime(&Rtc_Psu);
-	XRtcPsu_SecToDateTime(CurrentTime,&dt0);
+	XRtcPsu_SecToDateTime(CurrentTime, &dt0);
 	xil_printf("YEAR:MM:DD HR:MM:SS \t %04d:%02d:%02d %02d:%02d:%02d\t Day = %d\n\r",
-			dt0.Year,dt0.Month,dt0.Day,dt0.Hour,dt0.Min,dt0.Sec,dt0.WeekDay);
+		   dt0.Year, dt0.Month, dt0.Day, dt0.Hour, dt0.Min, dt0.Sec, dt0.WeekDay);
 
 	CurrentTime = XRtcPsu_GetCurrentTime(&Rtc_Psu);
 	AlarmTime = CurrentTime + ALARM_PERIOD;
-	XRtcPsu_SetAlarm(&Rtc_Psu,AlarmTime,0U);
+	XRtcPsu_SetAlarm(&Rtc_Psu, AlarmTime, 0U);
 
 	/*
 	 * If Alarm was not generated, then the processor goes into an infinite

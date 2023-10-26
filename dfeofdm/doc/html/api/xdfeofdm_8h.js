@@ -6,6 +6,7 @@ var xdfeofdm_8h =
     [ "XDFEOFDM_FT_SEQ_LENGTH_MAX", "xdfeofdm_8h.html#gad235a4fa132b4f4c9beb9cfee8ddce9e", null ],
     [ "XDFEOFDM_MAX_NUM_INSTANCES", "xdfeofdm_8h.html#ga845d4be1302f35864f7c53001bb4d793", null ],
     [ "XDFEOFDM_NODE_NAME_MAX_LENGTH", "xdfeofdm_8h.html#ga2b1ba159bec0d962b41efafc034d2eae", null ],
+    [ "XDFEOFDM_PHASE_COMPENSATION_MAX", "xdfeofdm_8h.html#ga8781db2b27a846747e58ff160bea6751", null ],
     [ "XST_FAILURE", "xdfeofdm_8h.html#ga9478d2b97aa40e09052dee2571940ef9", null ],
     [ "XST_SUCCESS", "xdfeofdm_8h.html#ga959ffc15251ddc9b3a883a30f97b7715", null ],
     [ "XDfeOfdm_StateId", "xdfeofdm_8h.html#ga8fe9073be4e4298b7c4bf8fe8c565b2a", [
@@ -32,6 +33,7 @@ var xdfeofdm_8h =
     [ "XDfeOfdm_GetStateID", "xdfeofdm_8h.html#ga090de51506092c4ad878aea98e85bec2", null ],
     [ "XDfeOfdm_GetTriggersCfg", "xdfeofdm_8h.html#ga8432ece95eb4a12d2f1eb60e87436809", null ],
     [ "XDfeOfdm_GetTUserDelay", "xdfeofdm_8h.html#ga3f5f28e00b7b56e9ea37d4336543f998", null ],
+    [ "XDfeOfdm_GetTuserOutFrameLocation", "xdfeofdm_8h.html#ga54bde32062a405022c4d2881439f61a2", null ],
     [ "XDfeOfdm_GetVersions", "xdfeofdm_8h.html#ga95bec20efb52b90b2b6a2d96e51e8989", null ],
     [ "XDfeOfdm_Initialize", "xdfeofdm_8h.html#ga01a406ff1a9f5562ee5fc7c7a28ea237", null ],
     [ "XDfeOfdm_InstanceClose", "xdfeofdm_8h.html#ga765082b84acafa5bcef9c2ad92bb7cf6", null ],
@@ -44,6 +46,7 @@ var xdfeofdm_8h =
     [ "XDfeOfdm_SetNextCCCfgAndTrigger", "xdfeofdm_8h.html#ga9daeab383fd324e6812ae53d248ceeaa", null ],
     [ "XDfeOfdm_SetTriggersCfg", "xdfeofdm_8h.html#ga5e4d810d0e04bbad650fbb60115254e4", null ],
     [ "XDfeOfdm_SetTUserDelay", "xdfeofdm_8h.html#ga3233d744d373a9bd445f462a21af6118", null ],
+    [ "XDfeOfdm_SetTuserOutFrameLocation", "xdfeofdm_8h.html#gaef986bcb74ec77dff1a72b67deab3f9e", null ],
     [ "XDfeOfdm_UpdateCC", "xdfeofdm_8h.html#gad480967f4d1a18152e2e324cd8514cef", null ],
     [ "XDfeOfdm_UpdateCCinCCCfg", "xdfeofdm_8h.html#ga38d91645f0bc01f170a6333fb22f47cd", null ]
 ];

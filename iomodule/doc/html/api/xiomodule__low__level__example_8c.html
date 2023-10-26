@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">iomodule
    </div>
@@ -80,6 +80,10 @@ $(document).ready(function(){initNavTree('xiomodule__low__level__example_8c.html
                     ensure that "Successfully ran" and "Failed" strings
                     are available in all examples. This is a fix for
                     CR-965028.
+2.15  sa   01/05/23 Updated example to use generic API Xil_ExceptionEnable
+                    instead of Microblaze specific API
+                    microblaze_enable_interrupts. It is needed to support
+                    RISC-V.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>

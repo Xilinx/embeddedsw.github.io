@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfemix
    </div>
@@ -142,7 +142,7 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gab34312933df1052ca715309a55f912fc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfemix.html#gab34312933df1052ca715309a55f912fc">XDFEMIX_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(5U)</td></tr>
+<tr class="memitem:gab34312933df1052ca715309a55f912fc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfemix.html#gab34312933df1052ca715309a55f912fc">XDFEMIX_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(6U)</td></tr>
 <tr class="memdesc:gab34312933df1052ca715309a55f912fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="#gab34312933df1052ca715309a55f912fc">More...</a><br/></td></tr>
 <tr class="separator:gab34312933df1052ca715309a55f912fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7d4f59b7fe252f45a0bcb9badb6d0bc3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfemix.html#ga7d4f59b7fe252f45a0bcb9badb6d0bc3">XDFEMIX_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -566,7 +566,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDFEMIX_DRIVER_VERSION_MINOR&#160;&#160;&#160;(5U)</td>
+          <td class="memname">#define XDFEMIX_DRIVER_VERSION_MINOR&#160;&#160;&#160;(6U)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -602,8 +602,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maximum number of driver instances running at the same time. </p>
-
-<p>Referenced by <a class="el" href="group__dfemix.html#ga01627e33029344d87e1dce02269309d2">XDfeMix_InstanceClose()</a>, and <a class="el" href="group__dfemix.html#ga1e844159630d803dcc724e998b3d560d">XDfeMix_InstanceInit()</a>.</p>
 
 </div>
 </div>
@@ -973,7 +971,8 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfemix.html#ga3d52fd20ed69e1ee3f54b62c2479fbd8" title="Clears event status. ">XDfeMix_ClearEventStatus()</a> before running this API. </dd>
 <dd>
-For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment. </dd></dl>
+For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeMix_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeMix_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap, CarrierCfg, NCO); XDfeMix_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a35c7833cc86f7fd89ed24c8ba114a75b">XDfeMix_DUCDDCCfg::CCGain</a>, <a class="el" href="struct_x_dfe_mix___carrier_cfg.html#a51f0c310e1f598ab568f5b0c9980d330">XDfeMix_CarrierCfg::DUCDDCCfg</a>, <a class="el" href="struct_x_dfe_mix___n_c_o.html#a68be3477a3fd9cb875234ce4ad916225">XDfeMix_NCO::FrequencyCfg</a>, <a class="el" href="struct_x_dfe_mix___n_c_o.html#a8482f94fbc00e305c1eacd2e78e013ea">XDfeMix_NCO::NCOGain</a>, <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a725d2046d45ee60e61083b1465434308">XDfeMix_DUCDDCCfg::NCOIdx</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a69719f8556d558f91461ecbd6d5251d4">XDfeMix_CCSequence::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix___n_c_o.html#a6ca3c2cbcb844332fdf75e3cf44839d9">XDfeMix_NCO::PhaseCfg</a>, <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a801a3059962d42445f61d81967b9817b">XDfeMix_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga24149324f9641e904101ea11a0f13476">XDFEMIX_CC_GAIN_MAX</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a70bb5386262cd92aff769fcbca86bb0f">XDFEMIX_STATE_OPERATIONAL</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
@@ -1814,7 +1813,7 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_mix.html#a329540ffe939609c3958ec8bc56ad276">XDfeMix::Config</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a79d8904a132c5004b8d0704cbb766d48">XDfeMix_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_mix___trigger.html#a9abab2731f4977a10ab9c9c5ed6df74c">XDfeMix_Trigger::Mode</a>, <a class="el" href="struct_x_dfe_mix___config.html#a91d1290d298a08c340450429e9f4ffda">XDfeMix_Config::Mode</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a854b6f09f9d327bffe80905bc7b73ce0">XDfeMix::NotUsedCCID_UL</a>, <a class="el" href="struct_x_dfe_mix___init.html#a888f7c720f5c48d4106e72f362f01ab4">XDfeMix_Init::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a949baeb8c68db2aa82e27b708b3fe92e">XDfeMix::SequenceLength</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="struct_x_dfe_mix___trigger.html#ace6decffeaedce99afe3f3e840570b35">XDfeMix_Trigger::StateOutput</a>, <a class="el" href="struct_x_dfe_mix___trigger.html#a4314a176214eb6bda57120963ee0285b">XDfeMix_Trigger::TriggerEnable</a>, <a class="el" href="struct_x_dfe_mix___init.html#af9aaa5104c75ff98b732d397fe844f21">XDfeMix_Init::TuserSelect</a>, <a class="el" href="group__dfemix.html#gae396f878fab06b69090f504fee826a38">XDfeMix_SetRegBank()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a6f3d0bee4504ef062f663da95299b5cf">XDFEMIX_STATE_CONFIGURED</a>, and <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a0a14b4358c2766eb9be9a9b06250f343">XDFEMIX_STATE_INITIALISED</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_mix.html#a329540ffe939609c3958ec8bc56ad276">XDfeMix::Config</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a79d8904a132c5004b8d0704cbb766d48">XDfeMix_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_mix___config.html#a91d1290d298a08c340450429e9f4ffda">XDfeMix_Config::Mode</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a854b6f09f9d327bffe80905bc7b73ce0">XDfeMix::NotUsedCCID_UL</a>, <a class="el" href="struct_x_dfe_mix___init.html#a888f7c720f5c48d4106e72f362f01ab4">XDfeMix_Init::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a949baeb8c68db2aa82e27b708b3fe92e">XDfeMix::SequenceLength</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="struct_x_dfe_mix___init.html#af9aaa5104c75ff98b732d397fe844f21">XDfeMix_Init::TuserSelect</a>, <a class="el" href="group__dfemix.html#gae396f878fab06b69090f504fee826a38">XDfeMix_SetRegBank()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a6f3d0bee4504ef062f663da95299b5cf">XDFEMIX_STATE_CONFIGURED</a>, and <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a0a14b4358c2766eb9be9a9b06250f343">XDFEMIX_STATE_INITIALISED</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, and <a class="el" href="xdfemix__one__instance__initialization__example_8c.html#ae2eee6e23955bad5e7f92fa005b0089a">XDfeMix_SelfTestExample()</a>.</p>
 
@@ -1842,7 +1841,7 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_mix.html#a2b3f5e48d819f6f4348f4496f27be8ab">XDfeMix::Device</a>, <a class="el" href="struct_x_dfe_mix.html#a2cb71b0f5ee30bad73933cec8e57b4cc">XDfeMix::NodeName</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga03a4e92dd27b24eef253f7b2ec5185eb">XDFEMIX_MAX_NUM_INSTANCES</a>, and <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a65b0d1fa9b28859b3596dd868c89a434">XDFEMIX_STATE_NOT_READY</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_mix.html#a2b3f5e48d819f6f4348f4496f27be8ab">XDfeMix::Device</a>, <a class="el" href="struct_x_dfe_mix.html#a2cb71b0f5ee30bad73933cec8e57b4cc">XDfeMix::NodeName</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, and <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a65b0d1fa9b28859b3596dd868c89a434">XDFEMIX_STATE_NOT_READY</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, and <a class="el" href="xdfemix__one__instance__initialization__example_8c.html#ae2eee6e23955bad5e7f92fa005b0089a">XDfeMix_SelfTestExample()</a>.</p>
 
@@ -1876,7 +1875,7 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_mix.html#a2b3f5e48d819f6f4348f4496f27be8ab">XDfeMix::Device</a>, <a class="el" href="struct_x_dfe_mix.html#a2cb71b0f5ee30bad73933cec8e57b4cc">XDfeMix::NodeName</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga03a4e92dd27b24eef253f7b2ec5185eb">XDFEMIX_MAX_NUM_INSTANCES</a>, <a class="el" href="group__dfemix.html#gaf3c8743a5ef63e5f36a2f3036f78b87b">XDFEMIX_NODE_NAME_MAX_LENGTH</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a65b0d1fa9b28859b3596dd868c89a434">XDFEMIX_STATE_NOT_READY</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a0d1204c88e8b74ed63c3adb2220493ad">XDFEMIX_STATE_READY</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_mix.html#a2b3f5e48d819f6f4348f4496f27be8ab">XDfeMix::Device</a>, <a class="el" href="struct_x_dfe_mix.html#a2cb71b0f5ee30bad73933cec8e57b4cc">XDfeMix::NodeName</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#gaf3c8743a5ef63e5f36a2f3036f78b87b">XDFEMIX_NODE_NAME_MAX_LENGTH</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a65b0d1fa9b28859b3596dd868c89a434">XDFEMIX_STATE_NOT_READY</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a0d1204c88e8b74ed63c3adb2220493ad">XDFEMIX_STATE_READY</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfemix.html#ga1061d48f6c831d81557dff815fc7ff1f">XDfeMix_AddCCExample()</a>, <a class="el" href="group__dfemix.html#gad11616c20803424abe6edac0f5f4a900">XDfeMix_MultiAddCCExample()</a>, and <a class="el" href="xdfemix__one__instance__initialization__example_8c.html#ae2eee6e23955bad5e7f92fa005b0089a">XDfeMix_SelfTestExample()</a>.</p>
 
@@ -1943,7 +1942,8 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfemix.html#ga3d52fd20ed69e1ee3f54b62c2479fbd8" title="Clears event status. ">XDfeMix_ClearEventStatus()</a> before running this API. </dd>
 <dd>
-For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment. </dd></dl>
+For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeMix_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeMix_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID); XDfeMix_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap, CarrierCfg, NCO); XDfeMix_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_mix.html#a329540ffe939609c3958ec8bc56ad276">XDfeMix::Config</a>, <a class="el" href="struct_x_dfe_mix___config.html#abcd3c56dcb7f5080155544363e3bf872">XDfeMix_Config::MaxUseableCcids</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a69719f8556d558f91461ecbd6d5251d4">XDfeMix_CCSequence::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a801a3059962d42445f61d81967b9817b">XDfeMix_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a70bb5386262cd92aff769fcbca86bb0f">XDFEMIX_STATE_OPERATIONAL</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
@@ -2072,7 +2072,8 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
 <li>XST_FAILURE if error occurs.</li>
 </ul>
 </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfemix.html#ga3d52fd20ed69e1ee3f54b62c2479fbd8" title="Clears event status. ">XDfeMix_ClearEventStatus()</a> before running this API. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfemix.html#ga3d52fd20ed69e1ee3f54b62c2479fbd8" title="Clears event status. ">XDfeMix_ClearEventStatus()</a> before running this API.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeMix_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeMix_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID); XDfeMix_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#accf21aaf93f66c4e0abd1efcbec676be">XDfeMix_CCCfg::DUCDDCCfg</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a69719f8556d558f91461ecbd6d5251d4">XDfeMix_CCSequence::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#aff86ddad939180301220559424eb5c7f">XDfeMix_InternalDUCDDCCfg::Rate</a>, <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a801a3059962d42445f61d81967b9817b">XDfeMix_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a70bb5386262cd92aff769fcbca86bb0f">XDFEMIX_STATE_OPERATIONAL</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
@@ -2589,7 +2590,8 @@ For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfemix.html#ga3d52fd20ed69e1ee3f54b62c2479fbd8" title="Clears event status. ">XDfeMix_ClearEventStatus()</a> before running this API. </dd>
 <dd>
-For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment. </dd></dl>
+For ARCH4/5 mode see <a class="el" href="group__dfemix.html#ga1aaa2f28256b404ea1626f18ba1f2552" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeMix_AddCCtoCCCfg()</a> comment.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeMix_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeMix_UpdateCCinCCCfg(InstancePtr, CCCfg, CCID, CarrierCfg); XDfeMix_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#a35f112e0cf99001a05032b33d1f9923c">XDfeMix_InternalDUCDDCCfg::CCGain</a>, <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a35c7833cc86f7fd89ed24c8ba114a75b">XDfeMix_DUCDDCCfg::CCGain</a>, <a class="el" href="struct_x_dfe_mix___carrier_cfg.html#a51f0c310e1f598ab568f5b0c9980d330">XDfeMix_CarrierCfg::DUCDDCCfg</a>, <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#accf21aaf93f66c4e0abd1efcbec676be">XDfeMix_CCCfg::DUCDDCCfg</a>, <a class="el" href="struct_x_dfe_mix___internal_d_u_c_d_d_c_cfg.html#a87ab8e6957391c4623caf25aa31bb2f5">XDfeMix_InternalDUCDDCCfg::NCOIdx</a>, <a class="el" href="struct_x_dfe_mix___d_u_c_d_d_c_cfg.html#a725d2046d45ee60e61083b1465434308">XDfeMix_DUCDDCCfg::NCOIdx</a>, <a class="el" href="struct_x_dfe_mix___c_c_sequence.html#a69719f8556d558f91461ecbd6d5251d4">XDfeMix_CCSequence::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix.html#a7d583eebea2812c3d98f5de53dcbc940">XDfeMix::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_mix___c_c_cfg.html#a801a3059962d42445f61d81967b9817b">XDfeMix_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_mix.html#a5b2016a2954bac4e922af9d1939d7215">XDfeMix::StateId</a>, <a class="el" href="group__dfemix.html#ga55eacf5f171e7530a27abfd12d2caf0d">XDfeMix_GetCurrentCCCfg()</a>, <a class="el" href="group__dfemix.html#ggad928151f284be6a0860fc5f7d356d182a70bb5386262cd92aff769fcbca86bb0f">XDFEMIX_STATE_OPERATIONAL</a>, <a class="el" href="group__dfemix.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfemix.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 

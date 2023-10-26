@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">uartlite
    </div>
@@ -86,15 +86,13 @@ Ver   Who  Date     Changes
                     ensure that "Successfully ran" and "Failed" strings
                     are available in all examples. This is a fix for
                     CR-965028.
+3.9   gm   07/08/23 Added SDT support
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a189cb51308d09a387e9b48d5fee44136"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xuartlite__intr__example_8c.html#a189cb51308d09a387e9b48d5fee44136">UartLiteIntrExample</a> (u16 DeviceId)</td></tr>
-<tr class="memdesc:a189cb51308d09a387e9b48d5fee44136"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does a minimal test on the UartLite device and driver as a design example.  <a href="#a189cb51308d09a387e9b48d5fee44136">More...</a><br/></td></tr>
-<tr class="separator:a189cb51308d09a387e9b48d5fee44136"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9284857b8764a897d580555ca033813f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xuartlite__intr__example_8c.html#a9284857b8764a897d580555ca033813f">SetupInterruptSystem</a> (<a class="el" href="struct_x_uart_lite.html">XUartLite</a> *UartLitePtr)</td></tr>
-<tr class="memdesc:a9284857b8764a897d580555ca033813f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function setups the interrupt system such that interrupts can occur for the UartLite device.  <a href="#a9284857b8764a897d580555ca033813f">More...</a><br/></td></tr>
-<tr class="separator:a9284857b8764a897d580555ca033813f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d62dabe688beb70acd3dafe1b0491ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xuartlite__intr__example_8c.html#a7d62dabe688beb70acd3dafe1b0491ca">UartLiteIntrExample</a> (INTC *IntcInstancePtr, <a class="el" href="struct_x_uart_lite.html">XUartLite</a> *UartLiteInstPtr, u16 DeviceId, u16 UartLiteIntrId)</td></tr>
+<tr class="memdesc:a7d62dabe688beb70acd3dafe1b0491ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does a minimal test on the UartLite device and driver as a design example.  <a href="#a7d62dabe688beb70acd3dafe1b0491ca">More...</a><br/></td></tr>
+<tr class="separator:a7d62dabe688beb70acd3dafe1b0491ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60e3b0776621ce45f55d94b0fb959ff1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xuartlite__intr__example_8c.html#a60e3b0776621ce45f55d94b0fb959ff1">SendHandler</a> (void *CallBackRef, unsigned int EventData)</td></tr>
 <tr class="memdesc:a60e3b0776621ce45f55d94b0fb959ff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the handler which performs processing to send data to the UartLite.  <a href="#a60e3b0776621ce45f55d94b0fb959ff1">More...</a><br/></td></tr>
 <tr class="separator:a60e3b0776621ce45f55d94b0fb959ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,7 +122,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, XST_FAILURE if unsuccessful</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="xuartlite__intr__example_8c.html#a189cb51308d09a387e9b48d5fee44136">UartLiteIntrExample()</a>.</p>
+<p>References <a class="el" href="xuartlite__intr__example_8c.html#a7d62dabe688beb70acd3dafe1b0491ca">UartLiteIntrExample()</a>.</p>
 
 </div>
 </div>
@@ -165,7 +163,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a189cb51308d09a387e9b48d5fee44136">UartLiteIntrExample()</a>.</p>
+<p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a7d62dabe688beb70acd3dafe1b0491ca">UartLiteIntrExample()</a>.</p>
 
 </div>
 </div>
@@ -206,51 +204,42 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a189cb51308d09a387e9b48d5fee44136">UartLiteIntrExample()</a>.</p>
+<p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a7d62dabe688beb70acd3dafe1b0491ca">UartLiteIntrExample()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9284857b8764a897d580555ca033813f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int SetupInterruptSystem </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_x_uart_lite.html">XUartLite</a> *&#160;</td>
-          <td class="paramname"><em>UartLitePtr</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This function setups the interrupt system such that interrupts can occur for the UartLite device. </p>
-<p>This function is application specific since the actual system may or may not have an interrupt controller. The UartLite could be directly connected to a processor without an interrupt controller. The user should modify this function to fit the application.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">UartLitePtr</td><td>contains a pointer to the instance of the UartLite component which is going to be connected to the interrupt controller.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>References <a class="el" href="group__uartlite.html#ga399463f89d7b4e846a4a4089e9cd54fb">XUartLite_InterruptHandler()</a>.</p>
-
-<p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a189cb51308d09a387e9b48d5fee44136">UartLiteIntrExample()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a189cb51308d09a387e9b48d5fee44136"></a>
+<a class="anchor" id="a7d62dabe688beb70acd3dafe1b0491ca"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">int UartLiteIntrExample </td>
           <td>(</td>
-          <td class="paramtype">u16&#160;</td>
-          <td class="paramname"><em>DeviceId</em></td><td>)</td>
+          <td class="paramtype">INTC *&#160;</td>
+          <td class="paramname"><em>IntcInstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_uart_lite.html">XUartLite</a> *&#160;</td>
+          <td class="paramname"><em>UartLiteInstPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>UartLiteDeviceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>UartLiteIntrId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -267,9 +256,24 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
+<p>This function contains an infinite loop such that if interrupts are not working it may never return.</p>
+<p>The purpose of this function is to illustrate how to use the <a class="el" href="struct_x_uart_lite.html" title="The XUartLite driver instance data. ">XUartLite</a> component.</p>
+<p>This function sends data through the UartLite.</p>
+<p>This function uses the interrupt driver mode of the UartLite. The calls to the UartLite driver in the interrupt handlers, should only use the non-blocking calls.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">IntcInstancePtr</td><td>is a pointer to the instance of INTC driver. </td></tr>
+    <tr><td class="paramname">UartLiteInstPtr</td><td>is a pointer to the instance of UartLite driver. </td></tr>
+    <tr><td class="paramname">UartLiteDeviceId</td><td>is the Device ID of the UartLite Device and is the XPAR_&lt;UARTLITE_instance&gt;_DEVICE_ID value from xparameters.h. </td></tr>
+    <tr><td class="paramname">UartLiteIntrId</td><td>is the Interrupt ID and is typically XPAR_&lt;INTC_instance&gt;_&lt;UARTLITE_instance&gt;_VEC_ID value from xparameters.h.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None.</dd></dl>
 <p>This function contains an infinite loop such that if interrupts are not working it may never return. </p>
 
-<p>References <a class="el" href="xuartlite__intr__example_8c.html#a964ea960d8251912f79e5a9fa9600f3e">RecvHandler()</a>, <a class="el" href="xuartlite__intr__example_8c.html#a60e3b0776621ce45f55d94b0fb959ff1">SendHandler()</a>, <a class="el" href="xuartlite__intr__example_8c.html#a9284857b8764a897d580555ca033813f">SetupInterruptSystem()</a>, <a class="el" href="group__uartlite.html#gaca08a21fa15779ce8dedd2ac9f25971e">XUartLite_EnableInterrupt()</a>, <a class="el" href="group__uartlite.html#gacf1026cbafbd78e1f3a7fd0ee433d001">XUartLite_Initialize()</a>, <a class="el" href="group__uartlite.html#gaa30ed8bfedba1acdc67dc94e77d5a41d">XUartLite_Recv()</a>, <a class="el" href="group__uartlite.html#gabfbfaddf9ab531ff85a1c4f9036631aa">XUartLite_SelfTest()</a>, <a class="el" href="group__uartlite.html#gacd990348cf8483d47934d3263dc6fe90">XUartLite_Send()</a>, <a class="el" href="group__uartlite.html#ga312d1ce48b9e29e08ebb25d942b2ff51">XUartLite_SetRecvHandler()</a>, and <a class="el" href="group__uartlite.html#ga282cca48bbd4c1144c811681854fc780">XUartLite_SetSendHandler()</a>.</p>
+<p>References <a class="el" href="xuartlite__intr__example_8c.html#a964ea960d8251912f79e5a9fa9600f3e">RecvHandler()</a>, <a class="el" href="xuartlite__intr__example_8c.html#a60e3b0776621ce45f55d94b0fb959ff1">SendHandler()</a>, <a class="el" href="group__uartlite.html#gaca08a21fa15779ce8dedd2ac9f25971e">XUartLite_EnableInterrupt()</a>, <a class="el" href="group__uartlite.html#gacf1026cbafbd78e1f3a7fd0ee433d001">XUartLite_Initialize()</a>, <a class="el" href="group__uartlite.html#ga399463f89d7b4e846a4a4089e9cd54fb">XUartLite_InterruptHandler()</a>, <a class="el" href="group__uartlite.html#gaa30ed8bfedba1acdc67dc94e77d5a41d">XUartLite_Recv()</a>, <a class="el" href="group__uartlite.html#gabfbfaddf9ab531ff85a1c4f9036631aa">XUartLite_SelfTest()</a>, <a class="el" href="group__uartlite.html#gacd990348cf8483d47934d3263dc6fe90">XUartLite_Send()</a>, <a class="el" href="group__uartlite.html#ga312d1ce48b9e29e08ebb25d942b2ff51">XUartLite_SetRecvHandler()</a>, and <a class="el" href="group__uartlite.html#ga282cca48bbd4c1144c811681854fc780">XUartLite_SetSendHandler()</a>.</p>
 
 <p>Referenced by <a class="el" href="xuartlite__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

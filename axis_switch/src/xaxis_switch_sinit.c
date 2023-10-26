@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xaxis_switch_sinit.c
-* @addtogroup axis_switch_v1_5
+* @addtogroup axis_switch Overview
 * @{
 *
 * This file contains static initialization method for Xilinx AXI4-Stream
@@ -30,7 +31,9 @@
 /***************************** Include Files *********************************/
 
 #include "xaxis_switch.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -69,6 +72,7 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XAxis_Switch_Config *XAxisScr_LookupConfig(u16 DeviceId)
 {
 	extern XAxis_Switch_Config
@@ -91,4 +95,29 @@ XAxis_Switch_Config *XAxisScr_LookupConfig(u16 DeviceId)
 
 	return (XAxis_Switch_Config *)CfgPtr;
 }
+#else
+XAxis_Switch_Config *XAxisScr_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XAxis_Switch_Config
+		XAxis_Switch_ConfigTable[];
+	XAxis_Switch_Config *CfgPtr = NULL;
+	int Index;
+
+	/* Checking for device id for which instance it is matching */
+	for (Index = (u32)0x0; XAxis_Switch_ConfigTable[Index].Name;
+								Index++) {
+
+		/* Assigning address of config table if both device ids
+		 * are matched
+		 */
+		if ((XAxis_Switch_ConfigTable[Index].BaseAddress == BaseAddress) ||
+			!BaseAddress) {
+			CfgPtr = &XAxis_Switch_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XAxis_Switch_Config *)CfgPtr;
+}
+#endif
 /** @} */

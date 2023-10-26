@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xuartns550_l.c
-* @addtogroup uartns550_v3_8
+* @addtogroup uartns550 Overview
 * @{
 *
 * This file contains low-level driver functions that can be used to access the
@@ -172,4 +173,15 @@ void XUartNs550_SetBaud(UINTPTR BaseAddress, u32 InputClockHz, u32 BaudRate)
 	 */
 	XUartNs550_SetLineControlReg(BaseAddress, LcrRegister);
 }
+#ifdef SDT
+#ifdef XPAR_STDIN_IS_UARTNS550
+void outbyte(char c) {
+         XUartNs550_SendByte(STDOUT_BASEADDRESS, c);
+}
+
+char inbyte(void) {
+         return XUartNs550_RecvByte(STDIN_BASEADDRESS);
+}
+#endif
+#endif
 /** @} */

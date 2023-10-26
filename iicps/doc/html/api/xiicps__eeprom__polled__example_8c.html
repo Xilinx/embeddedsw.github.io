@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">iicps
    </div>
@@ -95,7 +95,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
               boards, scanning for eeprom until found on all I2C
               instances
        rna  03/26/20 Eeprom page size detection support is added.
-</pre> </div><table class="memberdecls">
+3.18   gm   07/14/23 Added SDT support.</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ac8a7f7576834a4b28894a539cdf40dd0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiicps__eeprom__polled__example_8c.html#ac8a7f7576834a4b28894a539cdf40dd0">SLV_MON_LOOP_COUNT</a>&#160;&#160;&#160;0x00FFFFFF</td></tr>
@@ -113,7 +113,7 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a9ed2d75ed25daa69e8ddb94fba5a2ede"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiicps__eeprom__polled__example_8c.html#a9ed2d75ed25daa69e8ddb94fba5a2ede">EepromAddr</a> [] = {0x54,0x55,0}</td></tr>
+<tr class="memitem:a9ed2d75ed25daa69e8ddb94fba5a2ede"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xiicps__eeprom__polled__example_8c.html#a9ed2d75ed25daa69e8ddb94fba5a2ede">EepromAddr</a> [] = {0x54, 0x55, 0}</td></tr>
 <tr class="memdesc:a9ed2d75ed25daa69e8ddb94fba5a2ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searching for the required EEPROM Address and user can also add their own EEPROM Address in the below array list.  <a href="#a9ed2d75ed25daa69e8ddb94fba5a2ede">More...</a><br/></td></tr>
 <tr class="separator:a9ed2d75ed25daa69e8ddb94fba5a2ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -186,7 +186,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u16 EepromAddr[] = {0x54,0x55,0}</td>
+          <td class="memname">u16 EepromAddr[] = {0x54, 0x55, 0}</td>
         </tr>
       </table>
 </div><div class="memdoc">

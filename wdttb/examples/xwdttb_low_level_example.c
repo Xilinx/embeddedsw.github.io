@@ -34,6 +34,7 @@
 *		      condition instead of timer expiry state to avoid a race
 * 		      condition
 * 4.0   sha  02/04/16 Added debug messages.
+* 5.7   sb   07/12/23 Added support for system device-tree flow.
 *</pre>
 ******************************************************************************/
 
@@ -50,7 +51,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define WDTTB_BASEADDR  XPAR_WDTTB_0_BASEADDR
+#endif
 
 
 /**************************** Type Definitions *******************************/
@@ -61,7 +64,11 @@
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress);
+#else
+int XWdtTb_LowLevelExample(UINTPTR WdtTbBaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -86,7 +93,11 @@ int main(void)
 	 * Run the low level example, specify the Base Address that is
 	 * generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = XWdtTb_LowLevelExample(WDTTB_BASEADDR);
+#else
+	Status = XWdtTb_LowLevelExample(XPAR_XWDTTB_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("WDTTB low level example failed.\n\r");
 		return XST_FAILURE;
@@ -120,7 +131,11 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress)
+#else
+int XWdtTb_LowLevelExample(UINTPTR WdtTbBaseAddress)
+#endif
 {
 	int Count = 0;
 
@@ -133,7 +148,7 @@ int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress)
 	 */
 	XWdtTb_WriteReg(WdtTbBaseAddress, XWT_TWCSR0_OFFSET,
 			(XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK |
-			XWT_CSR0_EWDT1_MASK));
+			 XWT_CSR0_EWDT1_MASK));
 
 	XWdtTb_WriteReg(WdtTbBaseAddress, XWT_TWCSR1_OFFSET,
 			XWT_CSRX_EWDT2_MASK);
@@ -148,15 +163,15 @@ int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress)
 		 * If the watchdog timer expired, then restart it.
 		 */
 		if (XWdtTb_ReadReg(WdtTbBaseAddress, XWT_TWCSR0_OFFSET) &
-				XWT_CSR0_WDS_MASK) {
+		    XWT_CSR0_WDS_MASK) {
 
 			/*
 			 * Restart the watchdog timer as a normal application
 			 * would
 			 */
 			XWdtTb_WriteReg(WdtTbBaseAddress, XWT_TWCSR0_OFFSET,
-				(XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK |
-				XWT_CSR0_EWDT1_MASK));
+					(XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK |
+					 XWT_CSR0_EWDT1_MASK));
 			Count++;
 		}
 
@@ -165,7 +180,7 @@ int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress)
 		 * If this is set means then the test has failed
 		 */
 		if (XWdtTb_ReadReg(WdtTbBaseAddress, XWT_TWCSR0_OFFSET) &
-				XWT_CSR0_WRS_MASK) {
+		    XWT_CSR0_WRS_MASK) {
 			return XST_FAILURE;
 		}
 
@@ -173,7 +188,7 @@ int XWdtTb_LowLevelExample(u32 WdtTbBaseAddress)
 		 * Check whether the WatchDog timer expires two times.
 		 * If the timer expires two times then the test is passed.
 		 */
-		if(Count == 2) {
+		if (Count == 2) {
 			break;
 		}
 	}

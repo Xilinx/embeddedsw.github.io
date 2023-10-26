@@ -171,6 +171,11 @@
  * 1.17 akm 10/31/22 Add support for Winbond flash w25q02nw.
  * 1.17 akm 12/16/22 Add timeout in QSPIPSU driver operation.
  * 1.17 akm 01/02/23 Use Xil_WaitForEvent() API for register bit polling.
+ * 1.18 sb  06/07/23 Added support for system device-tree flow.
+ * 1.18 sb  06/19/23 Add memory barrier instruction and convert IsBusy varible
+ *                   to volatile.
+ * 1.18 ht  07/18/23 Fixed GCC warnings.
+ * 1.18 sb  08/01/23 Added support for Feed back clock
  *
  * </pre>
  *
@@ -237,15 +242,26 @@ typedef struct {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
 	u8  ConnectionMode;	/**< Single, Stacked and Parallel mode */
 	u8  BusWidth;		/**< Bus width available on board */
 	u8 IsCacheCoherent;	/**< Describes whether Cache Coherent or not */
-#if defined  (XCLOCKING)
+#ifdef SDT
+	u16 IntrId;             /** Bits[11:0] Interrupt-id Bits[15:12]
+                                * trigger type and level flags */
+	UINTPTR IntrParent;     /** Bit[0] Interrupt parent type Bit[64/32:1]
+                                * Parent base address */
+#endif
+#if defined  (XCLOCKING) || defined (SDT)
 	u32 RefClk;		/**< Input clocks */
 #endif
+	u8 IsFbClock;		/**< Describes whether Feed Back clock or not */
 } XQspiPsu_Config;
 
 /**
@@ -264,7 +280,7 @@ typedef struct {
 	s32 TxBytes;	 /**< Number of bytes to transfer (state) */
 	s32 RxBytes;	 /**< Number of bytes left to transfer(state) */
 	s32 GenFifoEntries;	 /**< Number of Gen FIFO entries remaining */
-	u32 IsBusy;		 /**< A transfer is in progress (state) */
+	volatile u32 IsBusy;		 /**< A transfer is in progress (state) */
 	u32 ReadMode;		 /**< DMA or IO mode */
 	u32 GenFifoCS;		/**< Gen FIFO chip selection */
 	u32 GenFifoBus;		/**< Gen FIFO bus */
@@ -376,20 +392,20 @@ typedef struct {
  */
 #define XQspiPsu_Select(InstancePtr, Mask)	\
 	XQspiPsu_Out32(((InstancePtr)->Config.BaseAddress) + \
-			XQSPIPSU_SEL_OFFSET, (Mask))
+		       XQSPIPSU_SEL_OFFSET, (Mask))
 
 /**
  * Enable QSPI Controller
  */
 #define XQspiPsu_Enable(InstancePtr)	\
 	XQspiPsu_Out32(((InstancePtr)->Config.BaseAddress) + \
-			XQSPIPSU_EN_OFFSET, XQSPIPSU_EN_MASK)
+		       XQSPIPSU_EN_OFFSET, XQSPIPSU_EN_MASK)
 
 /**
  * Disable QSPI controller  */
 #define XQspiPsu_Disable(InstancePtr)	\
 	XQspiPsu_Out32(((InstancePtr)->Config.BaseAddress) + \
-			XQSPIPSU_EN_OFFSET, 0x0U)
+		       XQSPIPSU_EN_OFFSET, 0x0U)
 
 /**
  * Read Configuration register of LQSPI Controller
@@ -397,7 +413,7 @@ typedef struct {
 #if !defined (versal)
 #define XQspiPsu_GetLqspiConfigReg(InstancePtr)	\
 	XQspiPsu_In32((XQSPIPS_BASEADDR) + \
-			XQSPIPSU_LQSPI_CR_OFFSET)
+		      XQSPIPSU_LQSPI_CR_OFFSET)
 #endif
 
 /*****************************************************************************/
@@ -425,8 +441,8 @@ static inline void XQspiPsu_ManualStartEnable(XQspiPsu *InstancePtr)
 		xil_printf("\nManual Start\r\n");
 #endif
 		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
-		XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
-			XQSPIPSU_CFG_START_GEN_FIFO_MASK);
+				  XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
+				  XQSPIPSU_CFG_START_GEN_FIFO_MASK);
 	}
 }
 /*****************************************************************************/
@@ -453,12 +469,12 @@ static inline void XQspiPsu_GenFifoEntryCSAssert(const XQspiPsu *InstancePtr)
 
 	GenFifoEntry = 0x0U;
 	GenFifoEntry |= (XQSPIPSU_GENFIFO_MODE_SPI | InstancePtr->GenFifoCS |
-					 InstancePtr->GenFifoBus | XQSPIPSU_GENFIFO_CS_SETUP);
+			 InstancePtr->GenFifoBus | XQSPIPSU_GENFIFO_CS_SETUP);
 #ifdef DEBUG
 	xil_printf("\nFifoEntry=%08x\r\n", GenFifoEntry);
 #endif
 	XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress,
-		XQSPIPSU_GEN_FIFO_OFFSET, GenFifoEntry);
+			  XQSPIPSU_GEN_FIFO_OFFSET, GenFifoEntry);
 }
 
 /*****************************************************************************/
@@ -485,12 +501,12 @@ static inline void XQspiPsu_GenFifoEntryCSDeAssert(const XQspiPsu *InstancePtr)
 
 	GenFifoEntry = 0x0U;
 	GenFifoEntry |= (XQSPIPSU_GENFIFO_MODE_SPI | InstancePtr->GenFifoBus |
-					XQSPIPSU_GENFIFO_CS_HOLD);
+			 XQSPIPSU_GENFIFO_CS_HOLD);
 #ifdef DEBUG
 	xil_printf("\nFifoEntry=%08x\r\n", GenFifoEntry);
 #endif
 	XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress,
-		XQSPIPSU_GEN_FIFO_OFFSET, GenFifoEntry);
+			  XQSPIPSU_GEN_FIFO_OFFSET, GenFifoEntry);
 }
 
 /*****************************************************************************/
@@ -510,7 +526,7 @@ static inline void XQspiPsu_GenFifoEntryCSDeAssert(const XQspiPsu *InstancePtr)
  *
  ******************************************************************************/
 static inline void StubStatusHandler(const void *CallBackRef, u32 StatusEvent,
-				u32 ByteCount)
+				     u32 ByteCount)
 {
 	(const void) CallBackRef;
 	(void) StatusEvent;
@@ -521,7 +537,11 @@ static inline void StubStatusHandler(const void *CallBackRef, u32 StatusEvent,
 /************************** Function Prototypes ******************************/
 
 /* Initialization and reset */
+#ifndef SDT
 XQspiPsu_Config *XQspiPsu_LookupConfig(u16 DeviceId);
+#else
+XQspiPsu_Config *XQspiPsu_LookupConfig(u32 BaseAddress);
+#endif
 s32 XQspiPsu_CfgInitialize(XQspiPsu *InstancePtr,
 			   const XQspiPsu_Config *ConfigPtr,
 			   UINTPTR EffectiveAddr);
@@ -530,16 +550,16 @@ void XQspiPsu_Abort(XQspiPsu *InstancePtr);
 
 /* Transfer functions and handlers */
 s32 XQspiPsu_PolledTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
-				u32 NumMsg);
+			    u32 NumMsg);
 s32 XQspiPsu_InterruptTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
-				u32 NumMsg);
+			       u32 NumMsg);
 s32 XQspiPsu_InterruptHandler(XQspiPsu *InstancePtr);
 void XQspiPsu_SetStatusHandler(XQspiPsu *InstancePtr, void *CallBackRef,
-				XQspiPsu_StatusHandler FuncPointer);
+			       XQspiPsu_StatusHandler FuncPointer);
 
 /* Non blocking Transfer functions */
 s32 XQspiPsu_StartDmaTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
-				u32 NumMsg);
+			      u32 NumMsg);
 s32 XQspiPsu_CheckDmaDone(XQspiPsu *InstancePtr);
 
 /* Configuration functions */
@@ -559,7 +579,11 @@ void XQspiPsu_Idle(const XQspiPsu *InstancePtr);
  * This table contains configuration information for each QSPIPSU device
  * in the system.
  */
+#ifndef SDT
 extern XQspiPsu_Config XQspiPsu_ConfigTable[XPAR_XQSPIPSU_NUM_INSTANCES];
+#else
+extern XQspiPsu_Config XQspiPsu_ConfigTable[];
+#endif
 
 #ifdef __cplusplus
 }

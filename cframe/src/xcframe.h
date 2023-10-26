@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,6 +21,9 @@
 * 1.01  bsv  06/11/2019 Added XCframe_ClearCframeErr API
 * 1.02  bsv  17/02/2020 XCframe_SafetyWriteReg API added
 * 1.03  bsv  07/15/2021 Fix doxygen warnings
+* 1.04  ng   06/30/23   Added support for system device tree flow
+* 1.5   mss  09/04/2023 Fixed MISRA-C violation 4.6
+*       mss  09/04/2023 Fixed MISRA-C violation 8.13
 *
 * </pre>
 *
@@ -105,9 +109,13 @@ typedef struct
 * Each CFRAME core should have a configuration structure associated.
 */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< DeviceId is the unique ID of the
 				  *  device */
-	u32 BaseAddress;	/**< BaseAddress is the physical base address
+#else
+	char *Name;
+#endif
+	UINTPTR BaseAddress;	/**< BaseAddress is the physical base address
 				  *  of the device's registers */
 } XCframe_Config;
 
@@ -141,24 +149,29 @@ typedef struct {
  */
 
 /************************** Function Prototypes ******************************/
+#ifndef SDT
 XCframe_Config *XCframe_LookupConfig(u16 DeviceId);
-s32 XCframe_CfgInitialize(XCframe *InstancePtr, XCframe_Config *CfgPtr,
+#else
+XCframe_Config *XCframe_LookupConfig(UINTPTR BaseAddress);
+#endif
+
+s32 XCframe_CfgInitialize(XCframe *InstancePtr,const XCframe_Config *CfgPtr,
 			u32 EffectiveAddr);
-s32 XCframe_SelfTest(XCframe *InstancePtr);
-void XCframe_WriteReg(XCframe *InstancePtr, u32 AddrOffset,
-		XCframe_FrameNo FrameNo, Xuint128 *Val);
-void XCframe_WriteCmd(XCframe *InstancePtr,	XCframe_FrameNo CframeNo, u32 Cmd);
-void XCframe_VggTrim(XCframe *InstancePtr,	Xuint128 *TrimVal);
-void XCframe_CramTrim(XCframe *InstancePtr,	u32 TrimValue);
-void XCframe_BramTrim(XCframe *InstancePtr, u32 TrimValue);
-void XCframe_UramTrim(XCframe *InstancePtr, u32 TrimValue);
-void XCframe_SetReadParam(XCframe *InstancePtr,
+s32 XCframe_SelfTest(const XCframe *InstancePtr);
+void XCframe_WriteReg(const XCframe *InstancePtr, u32 AddrOffset,
+		XCframe_FrameNo FrameNo,const Xuint128 *Val);
+void XCframe_WriteCmd(const XCframe *InstancePtr,	XCframe_FrameNo CframeNo, u32 Cmd);
+void XCframe_VggTrim(const XCframe *InstancePtr,const Xuint128 *TrimVal);
+void XCframe_CramTrim(const XCframe *InstancePtr,	u32 TrimValue);
+void XCframe_BramTrim(const XCframe *InstancePtr, u32 TrimValue);
+void XCframe_UramTrim(const XCframe *InstancePtr, u32 TrimValue);
+void XCframe_SetReadParam(const XCframe *InstancePtr,
 			XCframe_FrameNo CframeNo, u32 CframeLen);
-void XCframe_ReadReg(XCframe *InstancePtr, u32 AddrOffset,
+void XCframe_ReadReg(const XCframe *InstancePtr, u32 AddrOffset,
 			XCframe_FrameNo FrameNo, u32* ValPtr);
-void XCframe_ClearCframeErr(XCframe *InstancePtr);
-int XCframe_SafetyWriteReg(XCframe *InstancePtr, u32 AddrOffset,
-		XCframe_FrameNo FrameNo, Xuint128 *Val);
+void XCframe_ClearCframeErr(const XCframe *InstancePtr);
+s32 XCframe_SafetyWriteReg(const XCframe *InstancePtr, u32 AddrOffset,
+		XCframe_FrameNo FrameNo,const Xuint128 *Val);
 #ifdef __cplusplus
 }
 #endif

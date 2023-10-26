@@ -1168,7 +1168,7 @@ static XHdmi_MenuType XHdmi_EdidMenu(XHdmi_Menu *InstancePtr, u8 Input) {
 	    /* Read TX edid */
 	    xil_printf("\r\n");
 
-	    Status = XV_HdmiTxSs1_ReadEdid(&HdmiTxSs, (u8*)&Buffer);
+	    Status = XV_HdmiTxSs1_ReadEdid(&HdmiTxSs, (u8*)&Buffer,sizeof(Buffer));
 	    /* Only Parse the EDID when the Read EDID success */
 	    if (Status == XST_SUCCESS) {
 		XV_VidC_parse_edid((u8*)&Buffer,
@@ -1268,11 +1268,9 @@ void XHdmi_DisplayVideoMenu(void) {
 static XHdmi_MenuType XHdmi_VideoMenu(XHdmi_Menu *InstancePtr, u8 Input) {
     /* Variables */
     XHdmi_MenuType  Menu;
-    XTpg_PatternId NewPattern;
 
     /* Default */
     Menu = XHDMI_VIDEO_MENU;
-    NewPattern = XTPG_BKGND_LAST;
 
     /* Insert carriage return */
     xil_printf("\r\n");
@@ -2160,7 +2158,7 @@ static unsigned ONSEMI_NB7NQ621M_I2cSend(void *IicPtr,
     defined (XPS_BOARD_ZCU104) || \
     defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280_ES)
+	defined (XPS_BOARD_VEK280)
     XIicPs *Iic_Ptr = IicPtr;
     u32 Status;
 
@@ -2228,7 +2226,7 @@ static unsigned TI_TMDS1204_I2cSend(void *IicPtr,
     defined (XPS_BOARD_ZCU104) || \
     defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280_ES))
+	defined (XPS_BOARD_VEK280))
     XIicPs *Iic_Ptr = IicPtr;
     u32 Status;
 
@@ -2296,7 +2294,7 @@ static unsigned ONSEMI_NB7NQ621M_I2cRecv(void *IicPtr,
     defined (XPS_BOARD_ZCU104) || \
     defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280_ES)
+	defined (XPS_BOARD_VEK280)
     XIicPs *Iic_Ptr = IicPtr;
     u32 Status;
 
@@ -2359,7 +2357,7 @@ static unsigned TI_TMDS1204_I2cRecv(void *IicPtr,
     defined (XPS_BOARD_ZCU104) || \
     defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280_ES))
+	defined (XPS_BOARD_VEK280))
     XIicPs *Iic_Ptr = IicPtr;
     u32 Status;
 

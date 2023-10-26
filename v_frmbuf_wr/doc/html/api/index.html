@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">v_frmbuf_wr
    </div>
@@ -82,7 +82,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Layer 1 provides API's to peek/poke registers at HW level.</li>
 <li>Layer 2 provides API's that abstract sub-core functionality, providing an easy to use feature interface</li>
 </ul>
-<p>Before using the layer-2 API's user must initialize the core by calling API <a class="el" href="group__v__frmbuf__wr__v4__6.html#ga5453dda299a1e77ed1c692f31dbcb844" title="This function initializes the core instance. ">XVFrmbufWr_Initialize()</a>. This function will look for a configuration structure for the device and initialize it to defined HW settings. It is recommended user always make use of Layer-2 API to interact with this core. Advanced users always have the capability to directly interact with the IP core using Layer-1 API's that perform low level register peek/poke.</p>
+<p>Before using the layer-2 API's user must initialize the core by calling API <a class="el" href="group__v__frmbuf__wr.html#ga5453dda299a1e77ed1c692f31dbcb844" title="This function initializes the core instance. ">XVFrmbufWr_Initialize()</a>. This function will look for a configuration structure for the device and initialize it to defined HW settings. It is recommended user always make use of Layer-2 API to interact with this core. Advanced users always have the capability to directly interact with the IP core using Layer-1 API's that perform low level register peek/poke.</p>
 <p><b>Pre-Requisite's</b></p>
 <ul>
 <li>Application must set the memory address using provided API Address must be aligned to memory width. This can be computed with following equation Align = 2 * PPC * 4 Bytes (where PPC is the Pixels/Clock selected in IP configuration)</li>
@@ -113,6 +113,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 4.10  vv    02/05/19   Added new pixel formats with 12 and 16 bpc.
 4.50  kp    12/07/21   Added new 3 planar video format Y_U_V8.
 4.60  kp    10/27/21   Added new 3 planar video format Y_U_V10.
+4.70  pg    05/23/23   Added new 3 planar video format Y_U_V8_420.
 </pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

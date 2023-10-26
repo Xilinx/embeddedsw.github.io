@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xclockps_gate.c
-* @addtogroup xclockps_v1_4
+* @addtogroup clockps Overview
 * @{
 *
 * This file handles Gate related definitions and operations
@@ -287,7 +288,7 @@ static void XClock_GateEnableSet(u8 GateIndex)
 
 	if (XST_SUCCESS != XClock_GateIsEnabled(GateIndex, &GateState)) {
 		xil_printf("Warning: Gate state fetch failed for %d\n",
-								GateIndex);
+			   GateIndex);
 		return;
 	}
 
@@ -328,7 +329,7 @@ static void XClock_GateDisableSet(u8 GateIndex)
 
 	if (XST_SUCCESS != XClock_GateIsEnabled(GateIndex, &GateState)) {
 		xil_printf("Warning: Gate state fetch failed for %d\n",
-								GateIndex);
+			   GateIndex);
 		return;
 	}
 
@@ -342,7 +343,7 @@ static void XClock_GateDisableSet(u8 GateIndex)
 	}
 
 	Value &= ~(1 << Gates[GateIndex].BitIndex);
-	if(XST_SUCCESS != XClock_WriteReg(Gates[GateIndex].CtrlReg, Value)) {
+	if (XST_SUCCESS != XClock_WriteReg(Gates[GateIndex].CtrlReg, Value)) {
 		xil_printf("Warning: Gate disable failed for %d\n", GateIndex);
 	}
 }

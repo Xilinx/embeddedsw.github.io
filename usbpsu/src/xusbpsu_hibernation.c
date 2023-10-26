@@ -8,7 +8,7 @@
 /**
 *
 * @file xusbpsu_hibernation.c
-* @addtogroup usbpsu USBPSU v1.12
+* @addtogroup usbpsu Overview
 * @{
 *
 * This patch adds hibernation support to usbpsu driver when dwc3 is operating
@@ -29,6 +29,7 @@
 *	pm     24/07/20 Fixed MISRA-C and Coverity warnings
 * 1.12	pm     10/08/22 Update doxygen tag and addtogroup version
 * 1.13	pm     04/01/23 Use Xil_WaitForEvent() API for register bit polling
+* 1.14	pm     21/06/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -62,33 +63,33 @@ static u8 ScratchBuf[XUSBPSU_HIBER_SCRATCHBUF_SIZE];
 
 /* Registers saved during hibernation and restored at wakeup */
 static u32 SaveRegsAddr[] = {
-        XUSBPSU_DCTL,
-        XUSBPSU_DCFG,
-        XUSBPSU_DEVTEN,
-        XUSBPSU_GSBUSCFG0,
-        XUSBPSU_GSBUSCFG1,
-        XUSBPSU_GCTL,
-        XUSBPSU_GTXTHRCFG,
-        XUSBPSU_GRXTHRCFG,
-        XUSBPSU_GTXFIFOSIZ(0U),
-        XUSBPSU_GTXFIFOSIZ(1U),
-        XUSBPSU_GTXFIFOSIZ(2U),
-        XUSBPSU_GTXFIFOSIZ(3U),
-        XUSBPSU_GTXFIFOSIZ(4U),
-        XUSBPSU_GTXFIFOSIZ(5U),
-        XUSBPSU_GTXFIFOSIZ(6U),
-        XUSBPSU_GTXFIFOSIZ(7U),
-        XUSBPSU_GTXFIFOSIZ(8U),
-        XUSBPSU_GTXFIFOSIZ(9U),
-        XUSBPSU_GTXFIFOSIZ(10U),
-        XUSBPSU_GTXFIFOSIZ(11U),
-        XUSBPSU_GTXFIFOSIZ(12U),
-        XUSBPSU_GTXFIFOSIZ(13U),
-        XUSBPSU_GTXFIFOSIZ(14U),
-        XUSBPSU_GTXFIFOSIZ(15U),
-        XUSBPSU_GRXFIFOSIZ(0U),
-        XUSBPSU_GUSB3PIPECTL(0U),
-        XUSBPSU_GUSB2PHYCFG(0U),
+	XUSBPSU_DCTL,
+	XUSBPSU_DCFG,
+	XUSBPSU_DEVTEN,
+	XUSBPSU_GSBUSCFG0,
+	XUSBPSU_GSBUSCFG1,
+	XUSBPSU_GCTL,
+	XUSBPSU_GTXTHRCFG,
+	XUSBPSU_GRXTHRCFG,
+	XUSBPSU_GTXFIFOSIZ(0U),
+	XUSBPSU_GTXFIFOSIZ(1U),
+	XUSBPSU_GTXFIFOSIZ(2U),
+	XUSBPSU_GTXFIFOSIZ(3U),
+	XUSBPSU_GTXFIFOSIZ(4U),
+	XUSBPSU_GTXFIFOSIZ(5U),
+	XUSBPSU_GTXFIFOSIZ(6U),
+	XUSBPSU_GTXFIFOSIZ(7U),
+	XUSBPSU_GTXFIFOSIZ(8U),
+	XUSBPSU_GTXFIFOSIZ(9U),
+	XUSBPSU_GTXFIFOSIZ(10U),
+	XUSBPSU_GTXFIFOSIZ(11U),
+	XUSBPSU_GTXFIFOSIZ(12U),
+	XUSBPSU_GTXFIFOSIZ(13U),
+	XUSBPSU_GTXFIFOSIZ(14U),
+	XUSBPSU_GTXFIFOSIZ(15U),
+	XUSBPSU_GRXFIFOSIZ(0U),
+	XUSBPSU_GUSB3PIPECTL(0U),
+	XUSBPSU_GUSB2PHYCFG(0U),
 };
 static u32 SavedRegs[NUM_OF_NONSTICKY_REGS];
 
@@ -161,7 +162,7 @@ s32 XUsbPsu_InitHibernation(struct XUsbPsu *InstancePtr)
 
 	if (InstancePtr->ConfigPtr->IsCacheCoherent == (u8)0U) {
 		Xil_DCacheFlushRange((INTPTR)ScratchBuf,
-					XUSBPSU_HIBER_SCRATCHBUF_SIZE);
+				     XUSBPSU_HIBER_SCRATCHBUF_SIZE);
 	}
 
 	if (XUsbPsu_SetupScratchpad(InstancePtr, ScratchBuf) == XST_FAILURE) {
@@ -204,7 +205,7 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 	LinkState = (XusbPsuLinkState)XUsbPsu_GetLinkState(InstancePtr);
 	/* sanity check */
 	if ((LinkState != XUSBPSU_LINK_STATE_SS_DIS) &&
-			(LinkState != XUSBPSU_LINK_STATE_U3)) {
+	    (LinkState != XUSBPSU_LINK_STATE_U3)) {
 		/* fake hiber interrupt */
 #ifdef XUSBPSU_DEBUG
 		xil_printf("got fake interrupt\r\n");
@@ -214,11 +215,11 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 
 	if (InstancePtr->Ep0State == XUSBPSU_EP0_SETUP_PHASE) {
 		XUsbPsu_StopTransfer(InstancePtr, 0U,
-					XUSBPSU_EP_DIR_OUT, (u8)TRUE);
+				     XUSBPSU_EP_DIR_OUT, (u8)TRUE);
 		RetVal = XUsbPsu_RecvSetup(InstancePtr);
 		if (RetVal == XST_FAILURE) {
 #ifdef XUSBPSU_DEBUG
-		xil_printf("Endpoint status busy\r\n");
+			xil_printf("Endpoint status busy\r\n");
 #endif
 		}
 	}
@@ -236,7 +237,7 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 
 		/* stop transfer and save resources index for later use */
 		XUsbPsu_StopTransfer(InstancePtr, Ept->UsbEpNum,
-				Ept->Direction, (u8)FALSE);
+				     Ept->Direction, (u8)FALSE);
 
 		XUsbPsu_SaveEndpointState(InstancePtr, Ept);
 	}
@@ -276,8 +277,8 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 
 	/* wait till core saves */
 	if (XUsbPsu_WaitClearTimeout(InstancePtr, XUSBPSU_DSTS,
-		XUSBPSU_DSTS_SSS, XUSBPSU_NON_STICKY_SAVE_RETRIES) ==
-							XST_FAILURE) {
+				     XUSBPSU_DSTS_SSS, XUSBPSU_NON_STICKY_SAVE_RETRIES) ==
+	    XST_FAILURE) {
 		return (s32)XST_FAILURE;
 	}
 
@@ -302,13 +303,13 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 			     XIL_CUR_PWR_STATE_BITMASK,
 			     XIL_CUR_PWR_STATE_D3,
 			     (u32)XUSBPSU_PWR_STATE_RETRIES) !=
-			     (u32)XST_SUCCESS) {
+	    (u32)XST_SUCCESS) {
 #else
 	if (Xil_WaitForEvent(VSL_CUR_PWR_ST_REG + XIL_CUR_PWR_STATE,
 			     XIL_CUR_PWR_STATE_BITMASK,
 			     XIL_CUR_PWR_STATE_D3,
 			     (u32)XUSBPSU_PWR_STATE_RETRIES) !=
-			     (u32)XST_SUCCESS) {
+	    (u32)XST_SUCCESS) {
 #endif
 		xil_printf("Failed to change power state to D3\r\n");
 		return (s32)XST_FAILURE;
@@ -322,12 +323,16 @@ s32 XUsbPsu_HibernationIntr(struct XUsbPsu *InstancePtr)
 #endif
 
 	RegVal = XUsbPsu_ReadLpdReg(RST_LPD_TOP);
+#ifndef SDT
 	if (InstancePtr->ConfigPtr->DeviceId == (u16)XPAR_XUSBPSU_0_DEVICE_ID) {
+#else
+	if (InstancePtr->ConfigPtr->Name == "snps,dwc3") {
+#endif
 		XUsbPsu_WriteLpdReg(RST_LPD_TOP, RegVal | (u32)USB0_CORE_RST);
 	}
 
 #if defined (XCLOCKING)
-		/* disable ref clocks */
+	/* disable ref clocks */
 	if (InstancePtr->IsHibernated == 0) {
 		Xil_ClockDisable(InstancePtr->ConfigPtr->RefClk);
 	}
@@ -364,8 +369,8 @@ s32 XUsbPsu_CoreRegRestore(struct XUsbPsu *InstancePtr)
 
 	/* wait till non-sticky registers are restored */
 	if (XUsbPsu_WaitClearTimeout(InstancePtr, XUSBPSU_DSTS,
-			XUSBPSU_DSTS_RSS, XUSBPSU_NON_STICKY_SAVE_RETRIES) ==
-							XST_FAILURE) {
+				     XUSBPSU_DSTS_RSS, XUSBPSU_NON_STICKY_SAVE_RETRIES) ==
+	    XST_FAILURE) {
 		return (s32)XST_FAILURE;
 	}
 
@@ -376,7 +381,7 @@ s32 XUsbPsu_CoreRegRestore(struct XUsbPsu *InstancePtr)
 
 	/* nothing to do when in OTG host mode */
 	if ((XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GSTS) &
-					XUSBPSU_GSTS_CUR_MODE) != (u32)0U) {
+	     XUSBPSU_GSTS_CUR_MODE) != (u32)0U) {
 		return (s32)XST_FAILURE;
 	}
 

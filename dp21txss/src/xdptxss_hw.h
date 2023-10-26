@@ -1,6 +1,7 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
 * Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +9,7 @@
 /**
 *
 * @file xdptxss_hw.h
-* @addtogroup dptxss_v6_7
+* @addtogroup dptxss Overview
 * @{
 *
 * This header file contains identifiers and register-level core functions (or
@@ -82,14 +83,14 @@ extern "C" {
 								     * internal
 								     * reference
 								     */
-#define XDPTXSS_LINK_BW_SET_SW_20GBPS	0x22			   /**< 20
+#define XDPTXSS_LINK_BW_SET_SW_20GBPS	0x24			   /**< 20
 								     *  Gbps
 								     * link
 								     * rate.
 								     * internal
 								     * reference
 								     */
-#define XDPTXSS_LINK_BW_SET_SW_135GBPS	0x24			   /**< 13.5
+#define XDPTXSS_LINK_BW_SET_SW_135GBPS	0x22			   /**< 13.5
 								     *  Gbps
 								     * link
 								     * rate.

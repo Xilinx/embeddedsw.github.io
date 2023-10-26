@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023, Advanced Micro Devices, Inc. All Rights
+* Copyright (C) 2022-2023, Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xdp_hw.h
- * @addtogroup dp_v7_6
+ * @addtogroup dp Overview
  * @{
  *
  * This header file contains the identifiers and low-level driver functions (or
@@ -74,8 +74,8 @@
 #define XDP_LINK_BW_SET_UHBR20	0x02	/**< 20Gbps link rate. */
 /*Link rate*/
 #define XDP_TX_LINK_BW_SET_SW_UHBR10	0x20	/**< 10Gbps link rate. */
-#define XDP_TX_LINK_BW_SET_SW_UHBR20	0x22	/**< 20Gbps link rate. */
-#define XDP_TX_LINK_BW_SET_SW_UHBR135	0x24	/**< 13.5Gbps link rate. */
+#define XDP_TX_LINK_BW_SET_SW_UHBR20	0x24	/**< 20Gbps link rate. */
+#define XDP_TX_LINK_BW_SET_SW_UHBR135	0x22	/**< 13.5Gbps link rate. */
 
 #define XDP_LINK_BW_SET_UHBR135	0x04	/**< 13.5Gbps link rate. */
 /* DP2.1 definitions end */
@@ -2378,7 +2378,7 @@
 #define XDP_RX_CDS_SEQ_COUNT_VAL	0x1648	/**< The time till which the DUT
 						 * waits to achieve CDS_DONE in 128/132b.
 						 */
-#define XDP_RX_TPS1_SCORE	0x1648	/**< The time till which the DUT
+#define XDP_RX_TPS1_SCORE	0x164c	/**< The time till which the DUT
 					 * waits to achieve TPS1 in 128/132b.
 					 */
 #endif /* XPAR_XDPRXSS_NUM_INSTANCES */

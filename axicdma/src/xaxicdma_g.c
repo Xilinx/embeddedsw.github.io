@@ -8,7 +8,7 @@
 /**
 *
 * @file xaxicdma_g.c
-* @addtogroup axicdma_v4_10
+* @addtogroup axicdma Overview
 * @{
 *
 * Provide a template for user to define their own hardware settings.
@@ -32,8 +32,7 @@
 #include "xaxicdma.h"
 /************************** Constant Definitions *****************************/
 
-XAxiCdma_Config XAxiCdma_ConfigTable[] =
-{
+XAxiCdma_Config XAxiCdma_ConfigTable[] = {
 	{
 		XPAR_AXICDMA_0_DEVICE_ID,
 		XPAR_AXICDMA_0_BASEADDR,

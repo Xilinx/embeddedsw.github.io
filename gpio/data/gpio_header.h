@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2003 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,8 +11,11 @@
 #include "xil_assert.h"
 #include "xstatus.h"
 
+#ifndef SDT
 int GpioOutputExample(u16 DeviceId, u32 GpioWidth);
 int GpioInputExample(u16 DeviceId, u32 *DataRead);
-
+#else
+int GpioOutputExample(XGpio *GpioOutputPtr, UINTPTR BaseAddress);
+#endif
 #endif
 

@@ -25,6 +25,7 @@
  *       ssc  08/25/22 Updates based on Security best practices, error handling fix in
  * 					XTrngpsv_Generate, moved Xil_SecureRMW32 to BSP.
  * 1.3   kpt  01/31/23 Fixed RGRG sequence
+ * 1.4   ng   06/30/23 Added support for system device-tree flow
  *
  * </pre>
  *
@@ -86,7 +87,7 @@ static inline s32 XTrngpsv_WaitForEvent(UINTPTR BaseAddr, u32 RegOffset, u32 Eve
 static void XTrngpsv_ChangeEndianness(u32 *SrcBuf);
 static s32 XTrngpsv_CheckRandDataPattern(XTrngpsv *InstancePtr, u32 *RandBuf);
 static inline s32 __attribute__((always_inline))  XTrngpsv_WaitForData(const XTrngpsv *InstancePtr);
-static s32 __attribute__ ((noinline)) XTrngpsv_WaitAndCollectData(XTrngpsv *InstancePtr, u32 *RandBuf, u32 CtrlVal);
+static s32 __attribute__ ((noinline)) XTrngpsv_WaitAndCollectData(const XTrngpsv *InstancePtr, u32 *RandBuf, u32 CtrlVal);
 
 /************************************ Variable Definitions ***************************************/
 
@@ -125,7 +126,11 @@ s32 XTrngpsv_CfgInitialize(XTrngpsv *InstancePtr, const XTrngpsv_Config *CfgPtr,
 	}
 
 	/* Populate Config parameters */
+	#ifndef SDT
 	InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+	#else
+	InstancePtr->Config.Name = CfgPtr->Name;
+	#endif
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 
 	InstancePtr->State = XTRNGPSV_UNINITIALIZED;
@@ -176,7 +181,7 @@ END:
 s32 XTrngpsv_Instantiate(XTrngpsv *InstancePtr, const XTrngpsv_UsrCfg *ConfigurValues)
 {
 	volatile s32 Status = XTRNGPSV_FAILURE;
-	u8 *SeedPtr;
+	const u8 *SeedPtr;
 	u8 *PersPtr;
 
 	/* Validate arguments. */
@@ -864,7 +869,7 @@ END:
  *		- XTRNGPSV_ERROR_GENERATE_TIMEOUT if timeout occurred waiting for QCNT to become 4.
  *
  *************************************************************************************************/
-static s32 __attribute__ ((noinline)) XTrngpsv_WaitAndCollectData(XTrngpsv *InstancePtr, u32 *RandBuf, u32 CtrlVal)
+static s32 __attribute__ ((noinline)) XTrngpsv_WaitAndCollectData(const XTrngpsv *InstancePtr, u32 *RandBuf, u32 CtrlVal)
 {
 	volatile s32 Status = XST_FAILURE;
 	u32 *RandGenBuf = RandBuf;
@@ -1280,15 +1285,15 @@ static s32 XTrngpsv_WriteRegs(const XTrngpsv *InstancePtr, u32 StartRegOffset, u
 			RegVal = 0U;
 			for (Count = 0U; Count < XTRNGPSV_BYTES_PER_REG; ++Count) {
 				RegVal = (RegVal << 8U)
-						| InitBuf[Index * XTRNGPSV_BYTES_PER_REG + Count];
+						| (InitBuf[(Index * XTRNGPSV_BYTES_PER_REG) + Count]);
 			}
-			Offset = StartRegOffset
-				+ (XTRNGPSV_NUM_INIT_REGS - 1U - Index) * XTRNGPSV_BYTES_PER_REG;
+			Offset = (StartRegOffset
+				+ ((XTRNGPSV_NUM_INIT_REGS - 1U - Index) * XTRNGPSV_BYTES_PER_REG));
 			XTrngpsv_WriteReg(InstancePtr->Config.BaseAddress, Offset, RegVal);
 		}
 		else {
 			XTrngpsv_WriteReg(InstancePtr->Config.BaseAddress,
-					StartRegOffset + Index * XTRNGPSV_BYTES_PER_REG, 0U);
+					(StartRegOffset + (Index * XTRNGPSV_BYTES_PER_REG)), 0U);
 		}
 	}
 

@@ -7,7 +7,7 @@
 /*****************************************************************************/
 /**
  *  @file xaxicdma.h
-* @addtogroup axicdma_v4_10
+* @addtogroup axicdma Overview
 * @{
 * @details
  *
@@ -380,7 +380,7 @@ extern "C" {
  *        for simple transfer, it is ignored.
  */
 typedef void (*XAxiCdma_CallBackFn)(void *CallBackRef, u32 IrqMask,
-    int *NumBdPtr);
+				    int *NumBdPtr);
 
 /**
  * @name XAxiCdma_IntrHandlerList
@@ -393,7 +393,7 @@ typedef struct {
 	XAxiCdma_CallBackFn CallBackFn; /**< Callback function */
 	void *CallBackRef;              /**< Callback reference pointer */
 	volatile int NumBds;            /**< Number of BDs this handler cares */
-}XAxiCdma_IntrHandlerList;
+} XAxiCdma_IntrHandlerList;
 
 /**
  * @name XAxiCdma_Config
@@ -404,14 +404,22 @@ typedef struct {
  * @{
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId;             /**< Unique ID of this instance */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;          /**< Physical address of this instance */
 	int HasDRE;               /**< Whether support unaligned transfers */
 	int IsLite;               /**< Whether hardware build is lite mode */
 	int DataWidth;            /**< Length of a word in bits */
 	int BurstLen;             /**< Burst length */
 	int AddrWidth;		  /**< Address Width */
-}XAxiCdma_Config;
+#ifdef SDT
+	u16 IntrId; /** Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
+	UINTPTR IntrParent; /** Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
+} XAxiCdma_Config;
 
 /**
  * @name XAxiCdma
@@ -450,6 +458,9 @@ typedef struct {
 	int HwBdCnt;               /**< Number of BDs in work group */
 	int PostBdCnt;             /**< Number of BDs in post-work group */
 	int AllBdCnt;              /**< Total Number of BDs */
+#ifdef SDT
+	int BurstLen;		   /**< Burst length */
+#endif
 
 	/* Callback function for simple transfer*/
 	XAxiCdma_CallBackFn SimpleCallBackFn; /**< Callback function for simple
@@ -459,10 +470,10 @@ typedef struct {
 	int SgHandlerHead;             /**< First active sg transfer handler */
 	int SgHandlerTail;             /**< Last active sg transfer handler */
 	XAxiCdma_IntrHandlerList Handlers[XAXICDMA_MAXIMUM_MAX_HANDLER];
-	                               /**< List of interrupt handlers */
+	/**< List of interrupt handlers */
 	int AddrWidth;		  /**< Address Width */
 
-}XAxiCdma;
+} XAxiCdma;
 /* @} */
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -480,14 +491,14 @@ typedef struct {
 #elif __MICROBLAZE__
 #ifdef XCACHE_FLUSH_DCACHE_RANGE
 #define XAXICDMA_CACHE_FLUSH(BdPtr)               \
-      XCACHE_FLUSH_DCACHE_RANGE((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
+	XCACHE_FLUSH_DCACHE_RANGE((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
 #else
 #define XAXICDMA_CACHE_FLUSH(BdPtr)
 #endif
 
 #ifdef XCACHE_INVALIDATE_DCACHE_RANGE
 #define XAXICDMA_CACHE_INVALIDATE(BdPtr)          \
-      XCACHE_INVALIDATE_DCACHE_RANGE((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
+	XCACHE_INVALIDATE_DCACHE_RANGE((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
 #else
 #define XAXICDMA_CACHE_INVALIDATE(BdPtr)
 #endif
@@ -497,30 +508,34 @@ typedef struct {
 	Xil_DCacheFlushRange((BdPtr), XAXICDMA_BD_HW_NUM_BYTES);
 
 #define XAXICDMA_CACHE_INVALIDATE(BdPtr)          \
-      Xil_DCacheInvalidateRange((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
+	Xil_DCacheInvalidateRange((BdPtr), XAXICDMA_BD_HW_NUM_BYTES)
 
 #endif
 
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 XAxiCdma_Config *XAxiCdma_LookupConfig(u32 DeviceId);
+#else
+XAxiCdma_Config *XAxiCdma_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 u32 XAxiCdma_CfgInitialize(XAxiCdma *InstancePtr, XAxiCdma_Config *CfgPtr,
-        UINTPTR EffectiveAddr);
+			   UINTPTR EffectiveAddr);
 void XAxiCdma_Reset(XAxiCdma *InstancePtr);
 int XAxiCdma_ResetIsDone(XAxiCdma *InstancePtr);
 int XAxiCdma_IsBusy(XAxiCdma *InstancePtr);
 int XAxiCdma_SetCoalesce(XAxiCdma *InstancePtr, u32 Counter, u32 Delay);
 void XAxiCdma_GetCoalesce(XAxiCdma *InstancePtr, u32 *CounterPtr,
-        u32 *DelayPtr);
+			  u32 *DelayPtr);
 u32 XAxiCdma_GetError(XAxiCdma *InstancePtr);
 void XAxiCdma_IntrEnable(XAxiCdma *InstancePtr, u32 Mask);
 u32 XAxiCdma_IntrGetEnabled(XAxiCdma *InstancePtr);
 void XAxiCdma_IntrDisable(XAxiCdma *InstancePtr, u32 Mask);
 void XAxiCdma_IntrHandler(void *HandlerRef);
 u32 XAxiCdma_SimpleTransfer(XAxiCdma *InstancePtr, UINTPTR SrcAddr, UINTPTR DstAddr,
-        int Length, XAxiCdma_CallBackFn SimpleCallBack, void *CallbackRef);
+			    int Length, XAxiCdma_CallBackFn SimpleCallBack, void *CallbackRef);
 int XAxiCdma_SelectKeyHole(XAxiCdma *InstancePtr, u32 Direction, u32 Select);
 
 /* BD ring API functions
@@ -534,19 +549,19 @@ XAxiCdma_Bd *XAxiCdma_BdRingGetCurrBd(XAxiCdma *InstancePtr);
 XAxiCdma_Bd *XAxiCdma_BdRingNext(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr);
 XAxiCdma_Bd *XAxiCdma_BdRingPrev(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr);
 LONG XAxiCdma_BdRingCreate(XAxiCdma *InstancePtr, UINTPTR PhysAddr,
-        UINTPTR VirtAddr, u32 Alignment, int BdCount);
-LONG XAxiCdma_BdRingClone(XAxiCdma *InstancePtr, XAxiCdma_Bd * TemplateBdPtr);
+			   UINTPTR VirtAddr, u32 Alignment, int BdCount);
+LONG XAxiCdma_BdRingClone(XAxiCdma *InstancePtr, XAxiCdma_Bd *TemplateBdPtr);
 LONG XAxiCdma_BdRingAlloc(XAxiCdma *InstancePtr, int NumBd,
-	XAxiCdma_Bd ** BdSetPtr);
+			  XAxiCdma_Bd **BdSetPtr);
 LONG XAxiCdma_BdRingUnAlloc(XAxiCdma *InstancePtr, int NumBd,
-	XAxiCdma_Bd * BdSetPtr);
+			    XAxiCdma_Bd *BdSetPtr);
 LONG XAxiCdma_BdRingToHw(XAxiCdma *InstancePtr, int NumBd,
-        XAxiCdma_Bd * BdSetPtr, XAxiCdma_CallBackFn CallBack,
-        void *CallBackRef);
+			 XAxiCdma_Bd *BdSetPtr, XAxiCdma_CallBackFn CallBack,
+			 void *CallBackRef);
 u32 XAxiCdma_BdRingFromHw(XAxiCdma *InstancePtr, int BdLimit,
-        XAxiCdma_Bd ** BdSetPtr);
+			  XAxiCdma_Bd **BdSetPtr);
 u32 XAxiCdma_BdRingFree(XAxiCdma *InstancePtr, int NumBd,
-        XAxiCdma_Bd * BdSetPtr);
+			XAxiCdma_Bd *BdSetPtr);
 void XAxiCdma_BdSetCurBdPtr(XAxiCdma *InstancePtr, UINTPTR CurBdPtr);
 void XAxiCdma_BdSetTailBdPtr(XAxiCdma *InstancePtr, UINTPTR TailBdPtr);
 

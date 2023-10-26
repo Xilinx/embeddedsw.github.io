@@ -14,7 +14,7 @@ var xspdif_8h =
     [ "XSpdif_GetFs", "xspdif_8h.html#gaf65b0871fbd61f85bff84b47ab5fc397", null ],
     [ "XSpdif_Initialize", "xspdif_8h.html#ga230c28eb5e576f848368c41213997d0a", null ],
     [ "XSpdif_IntrHandler", "xspdif_8h.html#ga6174ad5a016d53a99ddd0b41d0f22377", null ],
-    [ "XSpdif_LookupConfig", "xspdif_8h.html#gae9f10c8c00b8f81df48df55c6594e302", null ],
+    [ "XSpdif_LookupConfig", "xspdif_8h.html#gadd37f55413da6f509988297561746c98", null ],
     [ "XSpdif_ResetFifo", "xspdif_8h.html#gabe3f017617a1beda897955974c20fc9d", null ],
     [ "XSpdif_Rx_GetChA_UserData", "xspdif_8h.html#gab42041ee833dc5963d3d87f83bb05197", null ],
     [ "XSpdif_Rx_GetChB_UserData", "xspdif_8h.html#ga838302566560f7a0aeae1f154b2b615f", null ],

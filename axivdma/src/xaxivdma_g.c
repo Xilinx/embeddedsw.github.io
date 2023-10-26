@@ -8,7 +8,7 @@
 /**
 *
 * @file xaxivdma_g.c
-* @addtogroup axivdma_v6_12
+* @addtogroup axivdma Overview
 * @{
 *
 * Provide a template for user to define their own hardware settings.
@@ -46,8 +46,7 @@
 
 /************************** Constant Definitions *****************************/
 
-XAxiVdma_Config XAxiVdma_ConfigTable[] =
-{
+XAxiVdma_Config XAxiVdma_ConfigTable[] = {
 	{
 #ifdef XPAR_XAXIVDMA_NUM_INSTANCES
 		XPAR_AXIVDMA_0_DEVICE_ID,

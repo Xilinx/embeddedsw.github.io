@@ -90,6 +90,7 @@
 * 4.0   sk     02/25/22 Add support for eMMC5.1.
 *       sk     04/07/22 Add support to read custom tap delay values from design
 *                       for SD/eMMC.
+* 4.2   ro     06/12/23 Added support for system device-tree flow.
 *
 * </pre>
 *
@@ -139,7 +140,7 @@
 *
 ******************************************************************************/
 s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
-				u32 EffectiveAddr)
+			UINTPTR EffectiveAddr)
 {
 	s32 Status;
 
@@ -157,7 +158,9 @@ s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
 	}
 
 	/* Set some default values. */
+#ifndef SDT
 	InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
+#endif
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 	InstancePtr->Config.InputClockHz = ConfigPtr->InputClockHz;
 	InstancePtr->Config.CardDetect =  ConfigPtr->CardDetect;
@@ -185,15 +188,15 @@ s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
 
 	/* Host Controller version is read. */
 	InstancePtr->HC_Version =
-			(u8)(XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
-			XSDPS_HOST_CTRL_VER_OFFSET) & XSDPS_HC_SPEC_VER_MASK);
+		(u8)(XSdPs_ReadReg16(InstancePtr->Config.BaseAddress,
+				     XSDPS_HOST_CTRL_VER_OFFSET) & XSDPS_HC_SPEC_VER_MASK);
 
 	/*
 	 * Read capabilities register and update it in Instance pointer.
 	 * It is sufficient to read this once on power on.
 	 */
 	InstancePtr->Host_Caps = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-						XSDPS_CAPS_OFFSET);
+					       XSDPS_CAPS_OFFSET);
 
 	/* Reset the SD bus lines */
 	Status = XSdPs_ResetConfig(InstancePtr);
@@ -272,7 +275,8 @@ s32 XSdPs_CardInitialize(XSdPs *InstancePtr)
 			Status = XST_FAILURE;
 			goto RETURN_PATH;
 		}
-	} else {
+	}
+	else {
 		Status = XSdPs_MmcCardInitialize(InstancePtr);
 		if (Status != XST_SUCCESS) {
 			Status = XST_FAILURE;
@@ -343,7 +347,7 @@ s32 XSdPs_ReadPolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff)
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)Buff,
-				((INTPTR)BlkCnt * (INTPTR)InstancePtr->BlkSize));
+					  ((INTPTR)BlkCnt * (INTPTR)InstancePtr->BlkSize));
 	}
 
 RETURN_PATH:
@@ -441,8 +445,8 @@ s32 XSdPs_Idle(XSdPs *InstancePtr)
 
 	/* Check if the bus is idle */
 	Status = XSdPs_CheckBusIdle(InstancePtr, XSDPS_PSR_INHIBIT_CMD_MASK
-										| XSDPS_PSR_INHIBIT_DAT_MASK
-										| XSDPS_PSR_DAT_ACTIVE_MASK);
+				    | XSDPS_PSR_INHIBIT_DAT_MASK
+				    | XSDPS_PSR_DAT_ACTIVE_MASK);
 	if (Status != XST_SUCCESS) {
 		Status = XST_FAILURE;
 		goto RETURN_PATH ;
@@ -501,12 +505,12 @@ s32 XSdPs_Erase(XSdPs *InstancePtr, u32 StartAddr, u32 EndAddr)
 	}
 
 	if ((InstancePtr->HC_Version != XSDPS_HC_SPEC_V3) ||
-				((InstancePtr->Host_Caps & XSDPS_CAPS_SLOT_TYPE_MASK)
-				!= XSDPS_CAPS_EMB_SLOT)) {
-		if(InstancePtr->Config.CardDetect != 0U) {
+	    ((InstancePtr->Host_Caps & XSDPS_CAPS_SLOT_TYPE_MASK)
+	     != XSDPS_CAPS_EMB_SLOT)) {
+		if (InstancePtr->Config.CardDetect != 0U) {
 			/* Check status to ensure card is present */
 			PresentStateReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress,
-					XSDPS_PRES_STATE_OFFSET);
+							XSDPS_PRES_STATE_OFFSET);
 			if ((PresentStateReg & XSDPS_PSR_CARD_INSRT_MASK) == 0x0U) {
 				Status = XST_FAILURE;
 				goto RETURN_PATH;

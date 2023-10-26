@@ -16,6 +16,8 @@ var xvphy_8h =
       [ "XVPHY_CHANNEL_ID_TXMMCM", "xvphy_8h.html#gga535e4dd9425d8b7818e02930ce9e2b8ea6db3d866ae72f0819a27ff3abc9046fa", null ],
       [ "XVPHY_CHANNEL_ID_RXMMCM", "xvphy_8h.html#gga535e4dd9425d8b7818e02930ce9e2b8ea331c64d5d7a55c5938aeebe0b0c38fd1", null ],
       [ "XVPHY_CHANNEL_ID_CMN", "xvphy_8h.html#gga535e4dd9425d8b7818e02930ce9e2b8eaf4d9cbcf1a89fb16250377d80aa18c5e", null ],
+      [ "XVPHY_MMCM", "xvphy_8h.html#gga690c46ef37a64b32dfe0c7cadbc33e58a47d95dc855768322cc882569815a173b", null ],
+      [ "XVPHY_PLL", "xvphy_8h.html#gga690c46ef37a64b32dfe0c7cadbc33e58aa0230e76562306328d7fc6da2423aaaa", null ],
       [ "XVPHY_DIR_RX", "xvphy_8h.html#ggaa49c31775e0fbc04cf171bc049567966a5da4ca9b5f1851db8e58fbcf9bf3adb5", null ],
       [ "XVPHY_DIR_TX", "xvphy_8h.html#ggaa49c31775e0fbc04cf171bc049567966ad4061d1b0354205eff538f469f865e79", null ]
     ] ],

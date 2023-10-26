@@ -19,4 +19,3 @@ int XAxiCdma_SgIntrExample(XScuGic *IntcInstancePtr, XAxiCdma *InstancePtr,
 				u16 DeviceId,u32 IntrId);
 #endif
 #endif
-

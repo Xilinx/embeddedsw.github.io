@@ -1,12 +1,13 @@
 /******************************************************************************
-* Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /**
 *
 * @file xxxvethernet.h
-* @addtogroup xxvethernet_v1_7
+* @addtogroup xxvethernet Overview
 * @{
 * @details
 *
@@ -172,10 +173,10 @@ extern "C" {
 #define XXE_RECEIVER_ENABLE_OPTION	0x00000100
 
 #define XXE_DEFAULT_OPTIONS				\
-		(XXE_FCS_INSERT_OPTION |		\
-		 XXE_FCS_STRIP_OPTION |			\
-		 XXE_TRANSMITTER_ENABLE_OPTION | 	\
-		 XXE_RECEIVER_ENABLE_OPTION)
+	(XXE_FCS_INSERT_OPTION |		\
+	 XXE_FCS_STRIP_OPTION |			\
+	 XXE_TRANSMITTER_ENABLE_OPTION | 	\
+	 XXE_RECEIVER_ENABLE_OPTION)
 /**< XXE_DEFAULT_OPTIONS specify the options set in XXxvEthernet_Reset() and
  *   XXxvEthernet_CfgInitialize()
  */
@@ -217,23 +218,32 @@ extern "C" {
  * This typedef contains configuration information for a Xxv Ethernet device.
  */
 typedef struct XXxvEthernet_Config {
+#ifdef SDT
+	char *Name;
+#else
 	u16 DeviceId;	/**< DeviceId is the unique ID  of the device */
+#endif
 	UINTPTR BaseAddress;/**< BaseAddress is the physical base address of the
 			  *  device's registers
 			  */
 	u8 Stats;	/**< Statistics gathering option */
 
+#ifndef SDT
 	int XxvDevType;  /**< XxvDevType is the type of device attached to the
 			  *   Xxv Ethernet's AXI4-Stream interface -
 			  *   MCDMA in this case
 			  */
+#endif
+
 	UINTPTR XxvDevBaseAddress; /**< XxvDevBaseAddress is the base address of
 				 *  the device attached to the Xxv Ethernet's
 				 *  AXI4-Stream interface.
 				 */
+#ifndef SDT
 	u8 AxiMcDmaChan_Cnt;
 	u8 AxiMcDmaRxIntr[16];
 	u8 AxiMcDmaTxIntr[16];
+#endif
 } XXxvEthernet_Config;
 
 
@@ -317,7 +327,7 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_IsTxErr(InstancePtr)			 \
 	((XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,  \
-	XXE_TXSR_OFFSET) & XXE_STS_TX_ERROR_MASK) ? TRUE : FALSE)
+			       XXE_TXSR_OFFSET) & XXE_STS_TX_ERROR_MASK) ? TRUE : FALSE)
 
 /*****************************************************************************/
 /**
@@ -338,7 +348,7 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_IsRxErr(InstancePtr)			 \
 	((XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,  \
-	XXE_RXSR_OFFSET) & XXE_STS_RX_ERROR_MASK) ? TRUE : FALSE
+			       XXE_RXSR_OFFSET) & XXE_STS_RX_ERROR_MASK) ? TRUE : FALSE
 
 /****************************************************************************/
 /**
@@ -355,7 +365,7 @@ typedef struct XXxvEthernet {
 *
 *****************************************************************************/
 #define XXxvEthernet_GetStatus(InstancePtr) \
-	 XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress, XXE_SR_OFFSET)
+	XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress, XXE_SR_OFFSET)
 
 /*****************************************************************************/
 /**
@@ -397,7 +407,7 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_UsxgmiiLinkSts(InstancePtr)			 \
 	((XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,  \
-	XXE_USXGMII_AN_OFFSET) & XXE_USXGMII_LINK_STS_MASK) ? TRUE : FALSE)
+			       XXE_USXGMII_AN_OFFSET) & XXE_USXGMII_LINK_STS_MASK) ? TRUE : FALSE)
 
 /*****************************************************************************/
 /**
@@ -413,9 +423,9 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_SetUsxgmiiAnEnable(InstancePtr)			\
 	(XXxvEthernet_WriteReg((InstancePtr)->Config.BaseAddress,	\
-		XXE_USXGMII_AN_OFFSET,					\
-		XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,	\
-		XXE_USXGMII_AN_OFFSET) | XXE_USXGMII_ANENABLE_MASK));
+			       XXE_USXGMII_AN_OFFSET,					\
+			       XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,	\
+					       XXE_USXGMII_AN_OFFSET) | XXE_USXGMII_ANENABLE_MASK));
 
 /*****************************************************************************/
 /**
@@ -431,9 +441,9 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_SetUsxgmiiAnBypass(InstancePtr)			\
 	(XXxvEthernet_WriteReg((InstancePtr)->Config.BaseAddress,	\
-		XXE_USXGMII_AN_OFFSET,					\
-		XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,	\
-		XXE_USXGMII_AN_OFFSET) | XXE_USXGMII_ANBYPASS_MASK));
+			       XXE_USXGMII_AN_OFFSET,					\
+			       XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,	\
+					       XXE_USXGMII_AN_OFFSET) | XXE_USXGMII_ANBYPASS_MASK));
 
 /*****************************************************************************/
 /**
@@ -450,7 +460,7 @@ typedef struct XXxvEthernet {
 ******************************************************************************/
 #define XXxvEthernet_GetUsxgmiiAnSts(InstancePtr)			\
 	XXxvEthernet_ReadReg((InstancePtr)->Config.BaseAddress,		\
-				XXE_ANSR_OFFSET);
+			     XXE_ANSR_OFFSET);
 
 /*****************************************************************************/
 /**
@@ -476,7 +486,7 @@ typedef struct XXxvEthernet {
  * Initialization functions in xxxvethernet.c
  */
 int XXxvEthernet_CfgInitialize(XXxvEthernet *InstancePtr,
-			XXxvEthernet_Config *CfgPtr,UINTPTR VirtualAddress);
+			       XXxvEthernet_Config *CfgPtr, UINTPTR VirtualAddress);
 int XXxvEthernet_Start(XXxvEthernet *InstancePtr);
 void XXxvEthernet_Stop(XXxvEthernet *InstancePtr);
 void XXxvEthernet_Reset(XXxvEthernet *InstancePtr);
@@ -484,8 +494,12 @@ void XXxvEthernet_Reset(XXxvEthernet *InstancePtr);
 /*
  * Initialization functions in xxxvtemac_sinit.c
  */
+#ifdef SDT
+XXxvEthernet_Config *XXxvEthernet_LookupConfig(UINTPTR BaseAddress);
+#else
 XXxvEthernet_Config *XXxvEthernet_LookupConfig(u16 DeviceId);
 XXxvEthernet_Config *XXxvEthernet_LookupConfigBaseAddr(UINTPTR Baseaddr);
+#endif
 
 /*
  * MAC configuration/control functions in xxxvethernet.c

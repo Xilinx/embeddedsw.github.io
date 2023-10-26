@@ -12,6 +12,5 @@
 #include "xstatus.h"
 
 int XAxiCdma_SimplePollExample(u16 DeviceId);
-
 #endif
 

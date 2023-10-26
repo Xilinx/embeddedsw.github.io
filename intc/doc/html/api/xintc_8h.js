@@ -19,5 +19,6 @@ var xintc_8h =
     [ "XIntc_SimulateIntr", "xintc_8h.html#ga17972363ab5a1a8f5f1d135c5b3c22c7", null ],
     [ "XIntc_Start", "xintc_8h.html#ga863eb58a3ae9419c7ac5da7c9fa9cb50", null ],
     [ "XIntc_Stop", "xintc_8h.html#gafabb05cf2e5b62031524a33d1f88f405", null ],
-    [ "XIntc_TriggerSwIntr", "xintc_8h.html#ga7eb4ea6d2f66a5b3ca32b12ec68bc151", null ]
+    [ "XIntc_TriggerSwIntr", "xintc_8h.html#ga7eb4ea6d2f66a5b3ca32b12ec68bc151", null ],
+    [ "XIntc_ConfigTable", "xintc_8h.html#ga6afbe6b28aa729c753744cba40ecf5b3", null ]
 ];

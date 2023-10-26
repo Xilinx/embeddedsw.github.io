@@ -29,6 +29,7 @@
 *       sk  06/22/20 Fixed Sector Mask value for Micron and ISSI.
 *       sk  02/18/21 Added support for Macronix flash.
 * 1.7   sk  06/28/22 Added Block Protection test for Micron flash.
+* 1.9   sb  06/06/23 Added support for system device-tree flow.
 *
 *</pre>
 *
@@ -37,7 +38,9 @@
 #define XOSPIPSV_FLASH_CONFIG_H
 /***************************** Include Files *********************************/
 
+#ifndef SDT
 #include "xparameters.h"	/* SDK generated parameters */
+#endif
 #include "xospipsv.h"		/* OSPIPSV device driver */
 #include "xil_printf.h"
 #include "xil_cache.h"
@@ -97,7 +100,7 @@
 
 /**************************** Type Definitions *******************************/
 
-typedef struct{
+typedef struct {
 	u32 jedec_id;	/* JEDEC ID */
 	u32 SectSize;		/* Individual sector size or
 						 * combined sector size in case of parallel config*/
@@ -115,45 +118,57 @@ typedef struct{
 	u32 EraseCmd;	/* Erase Command */
 	u8 StatusCmd;	/* Status Command */
 	u8 DummyCycles;	/* Number of Dummy cycles for Read operation */
-}FlashInfo;
+} FlashInfo;
 
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
 FlashInfo Flash_Config_Table[] = {
 	/* Micron */
-	{0x2c5b1a, FLASH_SECTOR_SIZE_128KB, 0x200, FLASH_PAGE_SIZE_256, 0x40000,
-		FLASH_DEVICE_SIZE_512M,0xFFFE0000, 1,
+	{
+		0x2c5b1a, FLASH_SECTOR_SIZE_128KB, 0x200, FLASH_PAGE_SIZE_256, 0x40000,
+		FLASH_DEVICE_SIZE_512M, 0xFFFE0000, 1,
 		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
-		READ_FLAG_STATUS_CMD, 16},
-	{0x2c5b1b, FLASH_SECTOR_SIZE_128KB, 0x400, FLASH_PAGE_SIZE_256, 0x80000,
-		FLASH_DEVICE_SIZE_1G,0xFFFE0000, 1,
+		READ_FLAG_STATUS_CMD, 16
+	},
+	{
+		0x2c5b1b, FLASH_SECTOR_SIZE_128KB, 0x400, FLASH_PAGE_SIZE_256, 0x80000,
+		FLASH_DEVICE_SIZE_1G, 0xFFFE0000, 1,
 		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
-		READ_FLAG_STATUS_CMD, 16},
-	{0x2c5b1c, FLASH_SECTOR_SIZE_128KB, 0x800, FLASH_PAGE_SIZE_256, 0x100000,
-		FLASH_DEVICE_SIZE_2G,0xFFFE0000, 1,
+		READ_FLAG_STATUS_CMD, 16
+	},
+	{
+		0x2c5b1c, FLASH_SECTOR_SIZE_128KB, 0x800, FLASH_PAGE_SIZE_256, 0x100000,
+		FLASH_DEVICE_SIZE_2G, 0xFFFE0000, 1,
 		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
-		READ_FLAG_STATUS_CMD, 16},
+		READ_FLAG_STATUS_CMD, 16
+	},
 	/* GIGADEVICE */
-	{0xc86819, FLASH_SECTOR_SIZE_64KB, 0x200, FLASH_PAGE_SIZE_256, 0x20000,
+	{
+		0xc86819, FLASH_SECTOR_SIZE_64KB, 0x200, FLASH_PAGE_SIZE_256, 0x20000,
 		FLASH_DEVICE_SIZE_256M, 0xFFFF0000, 1,
 		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
-		READ_FLAG_STATUS_CMD, 16},
+		READ_FLAG_STATUS_CMD, 16
+	},
 	/* ISSI */
-	{0x9d5b19, FLASH_SECTOR_SIZE_128KB, 0x100, FLASH_PAGE_SIZE_256, 0x20000,
+	{
+		0x9d5b19, FLASH_SECTOR_SIZE_128KB, 0x100, FLASH_PAGE_SIZE_256, 0x20000,
 		FLASH_DEVICE_SIZE_256M, 0xFFFE0000, 1,
 		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
-		READ_FLAG_STATUS_CMD, 16},
+		READ_FLAG_STATUS_CMD, 16
+	},
 	/* MACRONIX */
-	{0xc2813a, FLASH_SECTOR_SIZE_4KB, 0x4000, FLASH_PAGE_SIZE_256, 0x40000,
+	{
+		0xc2813a, FLASH_SECTOR_SIZE_4KB, 0x4000, FLASH_PAGE_SIZE_256, 0x40000,
 		FLASH_DEVICE_SIZE_512M, 0xFFFFF000, 1,
-		(READ_CMD_OPI_MX << 8) |READ_CMD_4B, WRITE_CMD_4B,
-		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0},
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
+	},
 };
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -162,8 +177,8 @@ static INLINE u32 CalculateFCTIndex(u32 ReadId, u32 *FCTIndex)
 {
 	u32 Index;
 
-	for (Index = 0; Index < sizeof(Flash_Config_Table)/sizeof(Flash_Config_Table[0]);
-				Index++) {
+	for (Index = 0; Index < sizeof(Flash_Config_Table) / sizeof(Flash_Config_Table[0]);
+	     Index++) {
 		if (ReadId == Flash_Config_Table[Index].jedec_id) {
 			*FCTIndex = Index;
 			return XST_SUCCESS;

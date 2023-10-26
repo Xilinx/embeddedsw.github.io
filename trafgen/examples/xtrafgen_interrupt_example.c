@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2013 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -35,6 +36,7 @@
  *                     CR-965028.
  *       ms   04/05/17 Added tabspace for return statements in functions for
  *                     proper documentation while generating doxygen.
+ * 4.5   sd   07/18/23 Fix the disable interrupt
  * </pre>
  *
  * ***************************************************************************
@@ -49,17 +51,24 @@
 #include "xuartns550_l.h"       /* to use uartns550 */
 #endif
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
  #include "xintc.h"
 #else
  #include "xscugic.h"
 #endif
+#endif
 
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
+#ifndef SDT
 #define TRAFGEN_DEV_ID	XPAR_XTRAFGEN_0_DEVICE_ID
+#endif
 
 #ifdef XPAR_V6DDR_0_S_AXI_BASEADDR
 #define DDR_BASE_ADDR	XPAR_V6DDR_0_S_AXI_BASEADDR
@@ -83,12 +92,14 @@
 #define TEST_LENGTH		0x8
 #define MSTRRAM_INDEX	(TEST_LENGTH) * 4
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #define ERR_INTR_ID              XPAR_INTC_0_TRAFGEN_0_ERR_OUT_VEC_ID
 #define CMP_INTR_ID              XPAR_INTC_0_TRAFGEN_0_IRQ_OUT_VEC_ID
 #else
 #define ERR_INTR_ID              XPAR_FABRIC_TRAFGEN_0_ERR_OUT_VEC_ID
 #define CMP_INTR_ID              XPAR_FABRIC_TRAFGEN_0_IRQ_OUT_VEC_ID
+#endif
 #endif
 
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -97,12 +108,14 @@
 #define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
 #endif
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
  #define INTC           XIntc
  #define INTC_HANDLER   XIntc_InterruptHandler
 #else
  #define INTC           XScuGic
  #define INTC_HANDLER   XScuGic_InterruptHandler
+#endif
 #endif
 
 #undef DEBUG
@@ -112,14 +125,18 @@
 static void Uart550_Setup(void);
 #endif
 
+#ifndef SDT
 int XTrafGenInterruptExample(XTrafGen *InstancePtr, u16 DeviceId);
-void InitDefaultCommands(XTrafGen_Cmd *CmdPtr);
-static void MasterCompleteIntrHandler(void *Callback);
-static void ErrIntrHandler(void *Callback);
 static int SetupIntrSystem(INTC * IntcInstancePtr,
                            XTrafGen * InstancePtr, u16 CmpIntrId, u16 ErrIntrId);
 static void DisableIntrSystem(INTC * IntcInstancePtr,
                                         u16 CmpIntrId, u16 ErrIntrId);
+#else
+int XTrafGenInterruptExample(XTrafGen *InstancePtr, UINTPTR BaseAddress);
+#endif
+void InitDefaultCommands(XTrafGen_Cmd *CmdPtr);
+static void MasterCompleteIntrHandler(void *Callback);
+static void ErrIntrHandler(void *Callback);
 
 /************************** Variable Definitions *****************************/
 /*
@@ -130,7 +147,9 @@ XTrafGen XTrafGenInstance;
 /*
  * Instance of the Interrupt Controller
  */
+#ifndef SDT
 static INTC Intc;
+#endif
 
 /*
  * Test Data to write into Master RAM
@@ -177,7 +196,11 @@ int main()
 
 	xil_printf("Entering main\n\r");
 
+#ifndef SDT
 	Status = XTrafGenInterruptExample(&XTrafGenInstance, TRAFGEN_DEV_ID);
+#else
+	Status = XTrafGenInterruptExample(&XTrafGenInstance, XPAR_XTRAFGEN_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Traffic Generator Interrupt Example Test Failed\n\r");
 		xil_printf("--- Exiting main() ---\n\r");
@@ -217,7 +240,11 @@ int main()
 *		-XST_FAILURE to indicate failure
 *
 ******************************************************************************/
+#ifndef SDT
 int XTrafGenInterruptExample(XTrafGen *InstancePtr, u16 DeviceId)
+#else
+int XTrafGenInterruptExample(XTrafGen *InstancePtr, UINTPTR BaseAddress)
+#endif
 {
 
 	XTrafGen_Config *Config;
@@ -235,9 +262,15 @@ int XTrafGenInterruptExample(XTrafGen *InstancePtr, u16 DeviceId)
 #endif
 
 	/* Initialize the Device Configuration Interface driver */
+#ifndef SDT
 	Config = XTrafGen_LookupConfig(DeviceId);
+#else
+	Config = XTrafGen_LookupConfig(BaseAddress);
+#endif
 	if (!Config) {
+#ifndef SDT
 		xil_printf("No config found for %d\r\n", DeviceId);
+#endif
 		return XST_FAILURE;
 	}
 
@@ -353,7 +386,18 @@ int XTrafGenInterruptExample(XTrafGen *InstancePtr, u16 DeviceId)
 	XTrafGen_EnableMasterCmpInterrupt(InstancePtr);
 
 	/* Set up Interrupt system  */
+#ifndef SDT
 	Status = SetupIntrSystem(&Intc, InstancePtr, CMP_INTR_ID, ERR_INTR_ID);
+#else
+	Status = XSetupInterruptSystem(InstancePtr, &MasterCompleteIntrHandler,
+			               InstancePtr->Config.IntId[0],
+				       InstancePtr->Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	Status = XSetupInterruptSystem(InstancePtr, &ErrIntrHandler,
+			               InstancePtr->Config.IntId[1],
+				       InstancePtr->Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Failed intr setup\r\n");
 		return Status;
@@ -385,7 +429,14 @@ int XTrafGenInterruptExample(XTrafGen *InstancePtr, u16 DeviceId)
 		}
 	}
 
+#ifndef SDT
 	DisableIntrSystem(&Intc, CMP_INTR_ID, ERR_INTR_ID);
+#else
+	XDisconnectInterruptCntrl(InstancePtr->Config.IntId[0],
+				       InstancePtr->Config.IntrParent);
+	XDisconnectInterruptCntrl(InstancePtr->Config.IntId[1],
+				       InstancePtr->Config.IntrParent);
+#endif
 	return Status;
 }
 
@@ -523,6 +574,7 @@ static void ErrIntrHandler(void *Callback)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 static int SetupIntrSystem(INTC * IntcInstancePtr,
 			XTrafGen * InstancePtr, u16 CmpIntrId, u16 ErrIntrId)
 {
@@ -617,6 +669,7 @@ static int SetupIntrSystem(INTC * IntcInstancePtr,
 
 	return XST_SUCCESS;
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -634,6 +687,7 @@ static int SetupIntrSystem(INTC * IntcInstancePtr,
 * @note		None
 *
 ******************************************************************************/
+#ifndef SDT
 static void DisableIntrSystem(INTC * IntcInstancePtr,
 				u16 CmpIntrId, u16 ErrIntrId)
 {
@@ -646,3 +700,4 @@ static void DisableIntrSystem(INTC * IntcInstancePtr,
 	XScuGic_Disconnect(IntcInstancePtr, ErrIntrId);
 #endif
 }
+#endif

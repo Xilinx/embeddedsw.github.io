@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -21,7 +21,8 @@
 * 3.00  kvn  02/13/15 Modified code for MISRA-C:2012 compliance.
 * 3.10  mus  07/17/18 Updated file to fix the various coding style issues
 *                     reported by checkpatch. It fixes CR#1006344.
-*
+* 5.2   ml   03/02/23 Add description to fix Doxygen warnings.
+* 5.2   ml   09/07/23 Added comments to fix HIS COMF violations.
 * </pre>
 *
 ******************************************************************************/
@@ -34,7 +35,7 @@
 
 /************************** Constant Definitions *****************************/
 
-#define	XSCUGIC_PCELL_ID	0xB105F00DU
+#define        XSCUGIC_PCELL_ID        0xB105F00DU /**< PCELL ID value */
 
 /**************************** Type Definitions *******************************/
 
@@ -69,7 +70,7 @@ s32  XScuGic_SelfTest(XScuGic *InstancePtr)
 	s32 Status;
 
 	/*
-	 * Assert the arguments
+	 * Validate the input arguments
 	 */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -79,8 +80,8 @@ s32  XScuGic_SelfTest(XScuGic *InstancePtr)
 	 */
 	for (Index = 0U; Index <= 3U; Index++) {
 		RegValue1 |= XScuGic_DistReadReg(InstancePtr,
-			((u32)XSCUGIC_PCELLID_OFFSET + (Index * 4U))) <<
-			(Index * 8U);
+						 ((u32)XSCUGIC_PCELLID_OFFSET + (Index * 4U))) <<
+			     (Index * 8U);
 	}
 
 	if (XSCUGIC_PCELL_ID != RegValue1) {
@@ -88,6 +89,7 @@ s32  XScuGic_SelfTest(XScuGic *InstancePtr)
 	} else {
 		Status = XST_SUCCESS;
 	}
+	/* Return statement */
 	return Status;
 }
 /** @} */

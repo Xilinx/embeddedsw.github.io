@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hwicap
    </div>
@@ -933,7 +933,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>(((InstancePtr)-&gt;HwIcapConfig.BaseAddress),    \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga9f823f835a5a4cc52bb93dd31f88c62c">XHI_WF_OFFSET</a>, (Data)))</div>
+<div class="line">                          <a class="code" href="group__hwicap.html#ga9f823f835a5a4cc52bb93dd31f88c62c">XHI_WF_OFFSET</a>, (Data)))</div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga9f823f835a5a4cc52bb93dd31f88c62c"><div class="ttname"><a href="group__hwicap.html#ga9f823f835a5a4cc52bb93dd31f88c62c">XHI_WF_OFFSET</a></div><div class="ttdeci">#define XHI_WF_OFFSET</div><div class="ttdoc">Write FIFO. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:68</div></div>
 </div><!-- fragment -->
@@ -1085,9 +1085,9 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,       \</div>
-<div class="line">                        <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>, \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>) | ((IntrMask) &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>))</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>, \</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
+<div class="line">                                         <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>) | ((IntrMask) &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>))</div>
 <div class="ttc" id="group__hwicap_html_ga4ff2b0721655b2764bff81449b368478"><div class="ttname"><a href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a></div><div class="ttdeci">#define XHI_IPISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:66</div></div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga7061e53605486f268a5e2205828d5921"><div class="ttname"><a href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a></div><div class="ttdeci">#define XHwIcap_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read from the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:161</div></div>
@@ -1132,10 +1132,10 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,       \</div>
-<div class="line">                        <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>, \</div>
-<div class="line">        <a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>) &amp; (~ (IntrMask &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>)));\</div>
-<div class="line">                (InstancePtr)-&gt;IsPolled = TRUE;</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>, \</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
+<div class="line">                                         <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>) &amp; (~ (IntrMask &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>)));\</div>
+<div class="line">        (InstancePtr)-&gt;IsPolled = TRUE;</div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga8723cf72ecf20356371e6f6d2ce55543"><div class="ttname"><a href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a></div><div class="ttdeci">#define XHI_IPIER_OFFSET</div><div class="ttdoc">Interrupt Enable Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:67</div></div>
 <div class="ttc" id="group__hwicap_html_ga7061e53605486f268a5e2205828d5921"><div class="ttname"><a href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a></div><div class="ttdeci">#define XHwIcap_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read from the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:161</div></div>
@@ -1181,10 +1181,10 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,       \</div>
-<div class="line">                        <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>, \</div>
-<div class="line">        (<a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>) | ((IntrMask) &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>))); \</div>
-<div class="line">                (InstancePtr)-&gt;IsPolled = FALSE;</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>, \</div>
+<div class="line">                         (<a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress, \</div>
+<div class="line">                                          <a class="code" href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a>) | ((IntrMask) &amp; <a class="code" href="group__hwicap.html#ga796c30e8bebadbe5c18ce0af9b10d30a">XHI_IPIXR_ALL_MASK</a>))); \</div>
+<div class="line">        (InstancePtr)-&gt;IsPolled = FALSE;</div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga8723cf72ecf20356371e6f6d2ce55543"><div class="ttname"><a href="group__hwicap.html#ga8723cf72ecf20356371e6f6d2ce55543">XHI_IPIER_OFFSET</a></div><div class="ttdeci">#define XHI_IPIER_OFFSET</div><div class="ttdoc">Interrupt Enable Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:67</div></div>
 <div class="ttc" id="group__hwicap_html_ga7061e53605486f268a5e2205828d5921"><div class="ttname"><a href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a></div><div class="ttdeci">#define XHwIcap_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read from the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:161</div></div>
@@ -1253,7 +1253,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,        \</div>
-<div class="line">                                <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>)</div>
+<div class="line">                        <a class="code" href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a>)</div>
 <div class="ttc" id="group__hwicap_html_ga4ff2b0721655b2764bff81449b368478"><div class="ttname"><a href="group__hwicap.html#ga4ff2b0721655b2764bff81449b368478">XHI_IPISR_OFFSET</a></div><div class="ttdeci">#define XHI_IPISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:66</div></div>
 <div class="ttc" id="group__hwicap_html_ga7061e53605486f268a5e2205828d5921"><div class="ttname"><a href="group__hwicap.html#ga7061e53605486f268a5e2205828d5921">XHwIcap_ReadReg</a></div><div class="ttdeci">#define XHwIcap_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read from the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:161</div></div>
 </div><!-- fragment -->
@@ -1286,7 +1286,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,       \</div>
-<div class="line">                                <a class="code" href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a>, 0x0)</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a>, 0x0)</div>
 <div class="ttc" id="group__hwicap_html_gacc55662e7438a63d17100c391701bca0"><div class="ttname"><a href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a></div><div class="ttdeci">#define XHI_GIER_OFFSET</div><div class="ttdoc">Device Global Interrupt Enable Reg. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:65</div></div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 </div><!-- fragment -->
@@ -1318,7 +1318,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>((InstancePtr)-&gt;HwIcapConfig.BaseAddress,       \</div>
-<div class="line">                                <a class="code" href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a>, <a class="code" href="group__hwicap.html#ga312f920dfd13871dfc397bb734e81542">XHI_GIER_GIE_MASK</a>)</div>
+<div class="line">                         <a class="code" href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a>, <a class="code" href="group__hwicap.html#ga312f920dfd13871dfc397bb734e81542">XHI_GIER_GIE_MASK</a>)</div>
 <div class="ttc" id="group__hwicap_html_gacc55662e7438a63d17100c391701bca0"><div class="ttname"><a href="group__hwicap.html#gacc55662e7438a63d17100c391701bca0">XHI_GIER_OFFSET</a></div><div class="ttdeci">#define XHI_GIER_OFFSET</div><div class="ttdoc">Device Global Interrupt Enable Reg. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:65</div></div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga312f920dfd13871dfc397bb734e81542"><div class="ttname"><a href="group__hwicap.html#ga312f920dfd13871dfc397bb734e81542">XHI_GIER_GIE_MASK</a></div><div class="ttdeci">#define XHI_GIER_GIE_MASK</div><div class="ttdoc">Global Interrupt enable Mask. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:83</div></div>
@@ -1352,8 +1352,8 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hwicap.html#ga656dcfd3edf2dd7e5733af4db36bf69c">XHwIcap_GetStatusReg</a>(InstancePtr) &amp; <a class="code" href="group__hwicap.html#ga5f6dfed1a6cda2d244f7b58ccf734eb3">XHI_SR_DONE_MASK</a>) ? \</div>
-<div class="line">                                FALSE : TRUE)</div>
-<div class="ttc" id="group__hwicap_html_ga656dcfd3edf2dd7e5733af4db36bf69c"><div class="ttname"><a href="group__hwicap.html#ga656dcfd3edf2dd7e5733af4db36bf69c">XHwIcap_GetStatusReg</a></div><div class="ttdeci">#define XHwIcap_GetStatusReg(InstancePtr)</div><div class="ttdoc">Get the contents of the status register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:389</div></div>
+<div class="line">         FALSE : TRUE)</div>
+<div class="ttc" id="group__hwicap_html_ga656dcfd3edf2dd7e5733af4db36bf69c"><div class="ttname"><a href="group__hwicap.html#ga656dcfd3edf2dd7e5733af4db36bf69c">XHwIcap_GetStatusReg</a></div><div class="ttdeci">#define XHwIcap_GetStatusReg(InstancePtr)</div><div class="ttdoc">Get the contents of the status register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:398</div></div>
 <div class="ttc" id="group__hwicap_html_ga5f6dfed1a6cda2d244f7b58ccf734eb3"><div class="ttname"><a href="group__hwicap.html#ga5f6dfed1a6cda2d244f7b58ccf734eb3">XHI_SR_DONE_MASK</a></div><div class="ttdeci">#define XHI_SR_DONE_MASK</div><div class="ttdoc">Done bit Mask. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:133</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the last Read/Write to the ICAP device in the FPGA is completed. </p>
@@ -1469,7 +1469,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>(((InstancePtr)-&gt;HwIcapConfig.BaseAddress), \</div>
-<div class="line">                <a class="code" href="group__hwicap.html#ga61e8525d9e209cad45122af264f276f0">XHI_SZ_OFFSET</a>, (Data)))</div>
+<div class="line">                          <a class="code" href="group__hwicap.html#ga61e8525d9e209cad45122af264f276f0">XHI_SZ_OFFSET</a>, (Data)))</div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga61e8525d9e209cad45122af264f276f0"><div class="ttname"><a href="group__hwicap.html#ga61e8525d9e209cad45122af264f276f0">XHI_SZ_OFFSET</a></div><div class="ttdeci">#define XHI_SZ_OFFSET</div><div class="ttdoc">Size Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:70</div></div>
 </div><!-- fragment -->
@@ -1532,9 +1532,9 @@ Status Register (SR)</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(Block &lt;&lt; XHI_FAR_BLOCK_SHIFT) | \</div>
 <div class="line">        ((Top &lt;&lt; XHI_FAR_TOP_BOTTOM_SHIFT) | \</div>
-<div class="line">        (Row &lt;&lt; XHI_FAR_ROW_ADDR_SHIFT) | \</div>
-<div class="line">        (ColumnAddress &lt;&lt; XHI_FAR_COLUMN_ADDR_SHIFT) | \</div>
-<div class="line">        (MinorAddress &lt;&lt; XHI_FAR_MINOR_ADDR_SHIFT))</div>
+<div class="line">         (Row &lt;&lt; XHI_FAR_ROW_ADDR_SHIFT) | \</div>
+<div class="line">         (ColumnAddress &lt;&lt; XHI_FAR_COLUMN_ADDR_SHIFT) | \</div>
+<div class="line">         (MinorAddress &lt;&lt; XHI_FAR_MINOR_ADDR_SHIFT))</div>
 </div><!-- fragment -->
 <p>Generates a Type 1 packet header that is written to the Frame Address Register (FAR). </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1566,9 +1566,9 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>(((InstancePtr)-&gt;HwIcapConfig.BaseAddress), <a class="code" href="group__hwicap.html#gad7d94ec59e14347684d309b0b6406ab2">XHI_CR_OFFSET</a>, \</div>
-<div class="line">        (<a class="code" href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a>(InstancePtr) &amp;                                 \</div>
-<div class="line">        (~ <a class="code" href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a>)) | <a class="code" href="group__hwicap.html#gaef1da3487a4b5b56304445dd5892855b">XHI_CR_WRITE_MASK</a>))</div>
-<div class="ttc" id="group__hwicap_html_gae175cdfd7a3fd2a9c0a68c1e4968572f"><div class="ttname"><a href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a></div><div class="ttdeci">#define XHwIcap_GetControlReg(InstancePtr)</div><div class="ttdoc">Get the contents of the Control register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:335</div></div>
+<div class="line">                          (<a class="code" href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a>(InstancePtr) &amp;                                       \</div>
+<div class="line">                           (~ <a class="code" href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a>)) | <a class="code" href="group__hwicap.html#gaef1da3487a4b5b56304445dd5892855b">XHI_CR_WRITE_MASK</a>))</div>
+<div class="ttc" id="group__hwicap_html_gae175cdfd7a3fd2a9c0a68c1e4968572f"><div class="ttname"><a href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a></div><div class="ttdeci">#define XHwIcap_GetControlReg(InstancePtr)</div><div class="ttdoc">Get the contents of the Control register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:344</div></div>
 <div class="ttc" id="group__hwicap_html_gad7d94ec59e14347684d309b0b6406ab2"><div class="ttname"><a href="group__hwicap.html#gad7d94ec59e14347684d309b0b6406ab2">XHI_CR_OFFSET</a></div><div class="ttdeci">#define XHI_CR_OFFSET</div><div class="ttdoc">Control Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:71</div></div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga5f79a1af0d4909378342da1723568653"><div class="ttname"><a href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a></div><div class="ttdeci">#define XHI_CR_READ_MASK</div><div class="ttdoc">Read from ICAP to FIFO. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:119</div></div>
@@ -1602,9 +1602,9 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a>(((InstancePtr)-&gt;HwIcapConfig.BaseAddress) , <a class="code" href="group__hwicap.html#gad7d94ec59e14347684d309b0b6406ab2">XHI_CR_OFFSET</a>, \</div>
-<div class="line">        (<a class="code" href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a>(InstancePtr) &amp;                                 \</div>
-<div class="line">        (~ <a class="code" href="group__hwicap.html#gaef1da3487a4b5b56304445dd5892855b">XHI_CR_WRITE_MASK</a>)) | <a class="code" href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a>))</div>
-<div class="ttc" id="group__hwicap_html_gae175cdfd7a3fd2a9c0a68c1e4968572f"><div class="ttname"><a href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a></div><div class="ttdeci">#define XHwIcap_GetControlReg(InstancePtr)</div><div class="ttdoc">Get the contents of the Control register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:335</div></div>
+<div class="line">                          (<a class="code" href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a>(InstancePtr) &amp;                                       \</div>
+<div class="line">                           (~ <a class="code" href="group__hwicap.html#gaef1da3487a4b5b56304445dd5892855b">XHI_CR_WRITE_MASK</a>)) | <a class="code" href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a>))</div>
+<div class="ttc" id="group__hwicap_html_gae175cdfd7a3fd2a9c0a68c1e4968572f"><div class="ttname"><a href="group__hwicap.html#gae175cdfd7a3fd2a9c0a68c1e4968572f">XHwIcap_GetControlReg</a></div><div class="ttdeci">#define XHwIcap_GetControlReg(InstancePtr)</div><div class="ttdoc">Get the contents of the Control register. </div><div class="ttdef"><b>Definition:</b> xhwicap.h:344</div></div>
 <div class="ttc" id="group__hwicap_html_gad7d94ec59e14347684d309b0b6406ab2"><div class="ttname"><a href="group__hwicap.html#gad7d94ec59e14347684d309b0b6406ab2">XHI_CR_OFFSET</a></div><div class="ttdeci">#define XHI_CR_OFFSET</div><div class="ttdoc">Control Register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:71</div></div>
 <div class="ttc" id="group__hwicap_html_ga8abfb8a13021622966d96781cb1a0f86"><div class="ttname"><a href="group__hwicap.html#ga8abfb8a13021622966d96781cb1a0f86">XHwIcap_WriteReg</a></div><div class="ttdeci">#define XHwIcap_WriteReg(BaseAddress, RegOffset, RegisterValue)</div><div class="ttdoc">Write to the specified HwIcap device register. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:180</div></div>
 <div class="ttc" id="group__hwicap_html_ga5f79a1af0d4909378342da1723568653"><div class="ttname"><a href="group__hwicap.html#ga5f79a1af0d4909378342da1723568653">XHI_CR_READ_MASK</a></div><div class="ttdeci">#define XHI_CR_READ_MASK</div><div class="ttdoc">Read from ICAP to FIFO. </div><div class="ttdef"><b>Definition:</b> xhwicap_l.h:119</div></div>
@@ -1638,7 +1638,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">( (XHI_TYPE_1 &lt;&lt; XHI_TYPE_SHIFT) | (Register &lt;&lt; XHI_REGISTER_SHIFT) | \</div>
-<div class="line">        (XHI_OP_READ &lt;&lt; XHI_OP_SHIFT) )</div>
+<div class="line">          (XHI_OP_READ &lt;&lt; XHI_OP_SHIFT) )</div>
 </div><!-- fragment -->
 <p>Generates a Type 1 packet header that reads back the requested Configuration register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1668,7 +1668,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">( (XHI_TYPE_1 &lt;&lt; XHI_TYPE_SHIFT) | (Register &lt;&lt; XHI_REGISTER_SHIFT) | \</div>
-<div class="line">        (XHI_OP_WRITE &lt;&lt; XHI_OP_SHIFT) )</div>
+<div class="line">          (XHI_OP_WRITE &lt;&lt; XHI_OP_SHIFT) )</div>
 </div><!-- fragment -->
 <p>Generates a Type 1 packet header that writes to the requested Configuration register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1724,7 +1724,7 @@ Status Register (SR)</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">( (XHI_TYPE_2 &lt;&lt; XHI_TYPE_SHIFT) | (Register &lt;&lt; XHI_REGISTER_SHIFT) | \</div>
-<div class="line">        (XHI_OP_WRITE &lt;&lt; XHI_OP_SHIFT) )</div>
+<div class="line">          (XHI_OP_WRITE &lt;&lt; XHI_OP_SHIFT) )</div>
 </div><!-- fragment -->
 <p>Generates a Type 2 packet header that writes to the requested Configuration register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -2304,6 +2304,8 @@ Status Register (SR)</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_hw_icap.html#a6f6de856eedef3b63c0df360781984d6">XHwIcap::IsTransferInProgress</a>, <a class="el" href="struct_x_hw_icap.html#a6d23e949e46c1a0d88dd6ea065dc70c0">XHwIcap::RemainingWords</a>, <a class="el" href="struct_x_hw_icap.html#a694bf48b4c008d20e058cb5f610f35f5">XHwIcap::RequestedWords</a>, <a class="el" href="struct_x_hw_icap.html#aab5f5571907cba99091ede9d3cadd039">XHwIcap::StatusHandler</a>, <a class="el" href="struct_x_hw_icap.html#a6b08114ef8b6d6478e9ae4890e68f671">XHwIcap::StatusRef</a>, <a class="el" href="group__hwicap.html#ga3d51a2ca2954770e68e8304c6d45a797">XHI_IPIXR_WRP_MASK</a>, <a class="el" href="group__hwicap.html#ga578d555615b032cd9675c91f60dfb2bd">XHwIcap_FifoWrite</a>, <a class="el" href="group__hwicap.html#gada2fee3cdacf928be46488879f32bf8a">XHwIcap_GetWrFifoVacancy</a>, <a class="el" href="group__hwicap.html#ga161e6cb1deac088c298c11c6400da295">XHwIcap_IntrClear</a>, <a class="el" href="group__hwicap.html#ga9ea29151eef34461b2a964bba048c22f">XHwIcap_IntrGetStatus</a>, <a class="el" href="group__hwicap.html#gad2dd5620c4ac7d9dee393f4e38446685">XHwIcap_IntrGlobalDisable</a>, and <a class="el" href="group__hwicap.html#gac688a85edeec278c8b0c88d00268e19e">XHwIcap_StartConfig</a>.</p>
 
+<p>Referenced by <a class="el" href="xhwicap__intr__example_8c.html#ae0c9d1a60762a9c150b8814b0912a32a">HwIcapIntrExample()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="gadead7aef30c83eb98380b986884b0e6f"></a>
@@ -2482,12 +2484,11 @@ Status Register (SR)</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">{</div>
-<div class="line">    {</div>
-<div class="line">        XPAR_HWICAP_0_DEVICE_ID,    </div>
-<div class="line">        XPAR_HWICAP_0_BASEADDR,     </div>
-<div class="line">    },</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        {</div>
+<div class="line">                XPAR_HWICAP_0_DEVICE_ID,    </div>
+<div class="line">                XPAR_HWICAP_0_BASEADDR,     </div>
+<div class="line">        },</div>
 <div class="line">}</div>
 </div><!-- fragment -->
 <p>The configuration table for opb_hwicap devices. </p>

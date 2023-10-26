@@ -15,8 +15,11 @@ var xdfeofdm__hw_8h =
     [ "XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET", "xdfeofdm__hw_8h.html#gacccf80de05caee9cbab2f53ad168fb9c", null ],
     [ "XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET", "xdfeofdm__hw_8h.html#ga03a024e83b3697ca03df7b4b38fd820e", null ],
     [ "XDFEOFDM_MODEL_PARAM_OFFSET", "xdfeofdm__hw_8h.html#ga6ab8bc5d1f42caa7e8146da1c4d96977", null ],
+    [ "XDFEOFDM_PHASE_COMPENSATION_CURRENT_OFFSET", "xdfeofdm__hw_8h.html#gaf35ef67b2f64ae4e7e24f1ae65f9ebfa", null ],
+    [ "XDFEOFDM_PHASE_COMPENSATION_NEXT_OFFSET", "xdfeofdm__hw_8h.html#gac634ca59f051217073d77db51eae66c4", null ],
     [ "XDFEOFDM_RESET_OFFSET", "xdfeofdm__hw_8h.html#gaf6dac479582d5d7271bd42649efd571e", null ],
     [ "XDFEOFDM_STATE_LOW_POWER_OFFSET", "xdfeofdm__hw_8h.html#ga8c2dcbe1d468362b993722f835791fa1", null ],
+    [ "XDFEOFDM_STATE_OFDM_ENABLE_OFFSET", "xdfeofdm__hw_8h.html#gaea248a7cadbcf63b8acdc413c5162874", null ],
     [ "XDFEOFDM_STATE_OPERATIONAL_OFFSET", "xdfeofdm__hw_8h.html#ga6b292cc9c08f6866ebcd18fb8a89ea65", null ],
     [ "XDFEOFDM_STATUS_IDR_OFFSET", "xdfeofdm__hw_8h.html#ga51dd6e1664ac317ccef183d0973d5337", null ],
     [ "XDFEOFDM_STATUS_IER_OFFSET", "xdfeofdm__hw_8h.html#ga5bfd3c5594caab967abdc33fdbfce0dc", null ],
@@ -26,6 +29,6 @@ var xdfeofdm__hw_8h =
     [ "XDFEOFDM_TRIGGERS_ACTIVATE_OFFSET", "xdfeofdm__hw_8h.html#ga23f908b0a14027e8ea7b9d44fc6f17e9", null ],
     [ "XDFEOFDM_TRIGGERS_CC_UPDATE_OFFSET", "xdfeofdm__hw_8h.html#ga00da3a691a4c29db82ac73dc8cec19e1", null ],
     [ "XDFEOFDM_TRIGGERS_LOW_POWER_OFFSET", "xdfeofdm__hw_8h.html#ga797f271a23a8cbd0eed39006d17db754", null ],
-    [ "XDFEOFDM_TUSER_FRAME_LOC_OFFSET", "xdfeofdm__hw_8h.html#ga1909d9a15274e8f4754baf5a7855c40c", null ],
+    [ "XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET", "xdfeofdm__hw_8h.html#ga328b7b3d83094cce8d3f2a29a4664ebd", null ],
     [ "XDFEOFDM_VERSION_OFFSET", "xdfeofdm__hw_8h.html#gaeafab20b94b13688c3ba2ebb493529e0", null ]
 ];

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscuwdt_selftest.c
-* @addtogroup scuwdt_v2_4
+* @addtogroup Overview
 * @{
 *
 * Contains diagnostic self-test functions for the XScuWdt driver.
@@ -95,8 +96,7 @@ s32 XScuWdt_SelfTest(XScuWdt *InstancePtr)
 
 	if (Register == 0xFFFFFFFFU) {
 		SelfTestStatus = (s32)XST_FAILURE;
-	}
-	else {
+	} else {
 		SelfTestStatus = (s32)XST_SUCCESS;
 	}
 

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -53,6 +54,7 @@ extern XDmaPcie_Config XDmaPcie_ConfigTable[];
 * @note		None
 *
 ******************************************************************************/
+#ifndef SDT
 XDmaPcie_Config *XDmaPcie_LookupConfig(u16 DeviceId)
 {
 	XDmaPcie_Config *CfgPtr = NULL;
@@ -68,3 +70,20 @@ XDmaPcie_Config *XDmaPcie_LookupConfig(u16 DeviceId)
 
 	return (CfgPtr);
 }
+#else
+XDmaPcie_Config *XDmaPcie_LookupConfig(UINTPTR BaseAddress)
+{
+	XDmaPcie_Config *CfgPtr = NULL;
+
+	int Index;
+
+	for (Index = 0; XDmaPcie_ConfigTable[Index].Name != NULL; Index++) {
+		if (XDmaPcie_ConfigTable[Index].BaseAddress == BaseAddress) {
+			CfgPtr = &XDmaPcie_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (CfgPtr);
+}
+#endif

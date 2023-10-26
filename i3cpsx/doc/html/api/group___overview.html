@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">i3cpsx
    </div>
@@ -1415,7 +1415,7 @@ Variables</h2></td></tr>
 
 <p>Register: XI3CPSX_DEVICE_CTRL. </p>
 
-<p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#adaabd6e621bb2a400524d08fe765bc4c">I3cPsxSlaveLoopbackExample()</a>, <a class="el" href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">XI3cPsx_BusInit()</a>, and <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>.</p>
+<p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#adaabd6e621bb2a400524d08fe765bc4c">I3cPsxSlaveLoopbackExample()</a>, <a class="el" href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">XI3cPsx_BusInit()</a>, <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>, and <a class="el" href="group___overview.html#ga1d604f37a4c41d005558d9ba8124875c">XI3cPsx_SlaveRecvPolled()</a>.</p>
 
 </div>
 </div>
@@ -2151,7 +2151,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: void <a class="el" href="group___overview.html#gaf5dfcd37599c05858a5411e3bca3e2ee" title="Write an I3C register. ">XI3cPsx_WriteReg(u32 BaseAddress, int RegOffset, u32 RegisterValue)</a> </dd></dl>
 
-<p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#adaabd6e621bb2a400524d08fe765bc4c">I3cPsxSlaveLoopbackExample()</a>, <a class="el" href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">XI3cPsx_BusInit()</a>, <a class="el" href="group___overview.html#ga804fd6fec118ef2902d1a3cf8893a3b2">XI3cPsx_MasterInterruptHandler()</a>, <a class="el" href="group___overview.html#ga72475e850e3677acf4a32c3a6ba58141">XI3cPsx_Reset()</a>, <a class="el" href="group___overview.html#ga5f5337ebb6a45588fd6c72aeaa87ecc0">XI3cPsx_ResetFifos()</a>, and <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>.</p>
+<p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#adaabd6e621bb2a400524d08fe765bc4c">I3cPsxSlaveLoopbackExample()</a>, <a class="el" href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">XI3cPsx_BusInit()</a>, <a class="el" href="group___overview.html#ga804fd6fec118ef2902d1a3cf8893a3b2">XI3cPsx_MasterInterruptHandler()</a>, <a class="el" href="group___overview.html#ga72475e850e3677acf4a32c3a6ba58141">XI3cPsx_Reset()</a>, <a class="el" href="group___overview.html#ga5f5337ebb6a45588fd6c72aeaa87ecc0">XI3cPsx_ResetFifos()</a>, <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>, and <a class="el" href="group___overview.html#ga1d604f37a4c41d005558d9ba8124875c">XI3cPsx_SlaveRecvPolled()</a>.</p>
 
 </div>
 </div>
@@ -2703,7 +2703,7 @@ Variables</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This receive routine is for polled mode transfer only. </dd></dl>
 
-<p>References <a class="el" href="struct_x_i3c_psx___config.html#a4f4633a41e3d44f839d1d57ab8d5a7c9">XI3cPsx_Config::BaseAddress</a>, <a class="el" href="struct_x_i3c_psx.html#a5e7528b6b541df2aa974296f39df2703">XI3cPsx::Config</a>, <a class="el" href="struct_x_i3c_psx.html#adc6f246947bd9659b30682d0fa9bf606">XI3cPsx::IsReady</a>, <a class="el" href="struct_x_i3c_psx.html#a6c7e8bbb027d3b3db6bcc75d0159ed07">XI3cPsx::RecvBufferPtr</a>, <a class="el" href="group___overview.html#ga3cc0937756ec855318da7766741a9ad6">XI3CPSX_INTR_STATUS</a>, <a class="el" href="group___overview.html#ga0c23540e73dd9de69dac38dfa07b64c0">XI3cPsx_ReadReg</a>, and <a class="el" href="group___overview.html#gab0f7c1045ef078fe138d901ce6f22e76">XI3CPSX_RESPONSE_QUEUE_PORT</a>.</p>
+<p>References <a class="el" href="struct_x_i3c_psx___config.html#a4f4633a41e3d44f839d1d57ab8d5a7c9">XI3cPsx_Config::BaseAddress</a>, <a class="el" href="struct_x_i3c_psx.html#a5e7528b6b541df2aa974296f39df2703">XI3cPsx::Config</a>, <a class="el" href="struct_x_i3c_psx.html#adc6f246947bd9659b30682d0fa9bf606">XI3cPsx::IsReady</a>, <a class="el" href="struct_x_i3c_psx.html#a6c7e8bbb027d3b3db6bcc75d0159ed07">XI3cPsx::RecvBufferPtr</a>, <a class="el" href="group___overview.html#ga86312f4e34f96f61cea41712d0503cf8">XI3CPSX_DEVICE_CTRL</a>, <a class="el" href="group___overview.html#ga3cc0937756ec855318da7766741a9ad6">XI3CPSX_INTR_STATUS</a>, <a class="el" href="group___overview.html#ga0c23540e73dd9de69dac38dfa07b64c0">XI3cPsx_ReadReg</a>, <a class="el" href="group___overview.html#gab0f7c1045ef078fe138d901ce6f22e76">XI3CPSX_RESPONSE_QUEUE_PORT</a>, and <a class="el" href="group___overview.html#gaf5dfcd37599c05858a5411e3bca3e2ee">XI3cPsx_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#adaabd6e621bb2a400524d08fe765bc4c">I3cPsxSlaveLoopbackExample()</a>.</p>
 

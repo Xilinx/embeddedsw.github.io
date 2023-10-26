@@ -42,15 +42,23 @@
 
 #include "xzdma.h"
 #include "xparameters.h"
+#ifndef SDT
 #include "xscugic.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 #include "bspconfig.h"
 #include "xil_util.h"
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 int XZDma_LinkedListExample(u16 DeviceId);
 static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 				XZDma *InstancePtr, u16 IntrId);
+#else
+int XZDma_LinkedListExample(UINTPTR BaseAddress);
+#endif
 static void DoneHandler(void *CallBackRef);
 
 /************************** Constant Definitions ******************************/
@@ -60,10 +68,12 @@ static void DoneHandler(void *CallBackRef);
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define ZDMA_DEVICE_ID		XPAR_XZDMA_0_DEVICE_ID /* ZDMA device Id */
 #define ZDMA_INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
-					/**< SCUGIC Device ID */
+/**< SCUGIC Device ID */
 #define ZDMA_INTR_DEVICE_ID	XPAR_XADMAPS_0_INTR /**< ZDMA Interrupt Id */
+#endif
 #define TESTDATA1		0xABCD1230 /**< Test data */
 #define TESTDATA2		0x00005000 /**< Test data */
 
@@ -78,19 +88,21 @@ static void DoneHandler(void *CallBackRef);
 /************************** Variable Definitions *****************************/
 
 XZDma ZDma;		/**<Instance of the ZDMA Device */
+#ifndef SDT
 XScuGic Intc;		/**< XIntc Instance */
+#endif
 
 #if defined(__ICCARM__)
-    #pragma data_alignment = 64
-	u32 SrcBuf[256];
-    #pragma data_alignment = 64
-	u32 DstBuf[256];
-	#pragma data_alignment = 64
-	u32 Src1Buf[256];
-    #pragma data_alignment = 64
-	u32 Dst1Buf[256];
-	#pragma data_alignment = 64
-	u32 AlloMem[256];
+#pragma data_alignment = 64
+u32 SrcBuf[256];
+#pragma data_alignment = 64
+u32 DstBuf[256];
+#pragma data_alignment = 64
+u32 Src1Buf[256];
+#pragma data_alignment = 64
+u32 Dst1Buf[256];
+#pragma data_alignment = 64
+u32 AlloMem[256];
 #else
 u32 SrcBuf[256] __attribute__ ((aligned (64)));
 u32 DstBuf[256] __attribute__ ((aligned (64)));
@@ -118,7 +130,11 @@ int main(void)
 	int Status;
 
 	/* Run the Linked list example */
+#ifndef SDT
 	Status = XZDma_LinkedListExample((u16)ZDMA_DEVICE_ID);
+#else
+	Status = XZDma_LinkedListExample(XPAR_XZDMA_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("ZDMA Example Failed\r\n");
 		return XST_FAILURE;
@@ -144,7 +160,11 @@ int main(void)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int XZDma_LinkedListExample(u16 DeviceId)
+#else
+int XZDma_LinkedListExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XZDma_Config *Config;
@@ -157,7 +177,11 @@ int XZDma_LinkedListExample(u16 DeviceId)
 	 * Look up the configuration in the config table,
 	 * then initialize it.
 	 */
+#ifndef SDT
 	Config = XZDma_LookupConfig(DeviceId);
+#else
+	Config = XZDma_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -176,12 +200,12 @@ int XZDma_LinkedListExample(u16 DeviceId)
 	}
 	/* Filling the buffers for data transfer */
 	Value = TESTDATA1;
-	for (Index = 0; Index < (DESCRIPTOR1_DATA_SIZE/4); Index++) {
+	for (Index = 0; Index < (DESCRIPTOR1_DATA_SIZE / 4); Index++) {
 		SrcBuf[Index] = Value++;
 	}
 	Value = TESTDATA2;
-	for (Index = 0; Index < (DESCRIPTOR2_DATA_SIZE/4); Index++) {
-		*(Src1Buf+Index) = Value++;
+	for (Index = 0; Index < (DESCRIPTOR2_DATA_SIZE / 4); Index++) {
+		*(Src1Buf + Index) = Value++;
 	}
 
 	/* ZDMA has set in linked list mode for normal transfer */
@@ -195,13 +219,19 @@ int XZDma_LinkedListExample(u16 DeviceId)
 
 	/* Interrupt call back has been set */
 	XZDma_SetCallBack(&ZDma, XZDMA_HANDLER_DONE,
-				(void *)DoneHandler, &ZDma);
+			  (void *)DoneHandler, &ZDma);
 
 	/*
 	 * Connect to the interrupt controller.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&Intc, &(ZDma),
-			ZDMA_INTR_DEVICE_ID);
+				      ZDMA_INTR_DEVICE_ID);
+#else
+	Status = XSetupInterruptSystem(&ZDma, &XZDma_IntrHandler,
+				       Config->IntrId, Config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -256,20 +286,20 @@ int XZDma_LinkedListExample(u16 DeviceId)
 	XZDma_DisableIntr(&ZDma, XZDMA_IXR_DMA_DONE_MASK);
 
 	/* Before the destination buffer data is accessed do one more invalidation
-         * to ensure that the latest data is read. This is as per ARM recommendations.
-         */
+	 * to ensure that the latest data is read. This is as per ARM recommendations.
+	 */
 	if (!Config->IsCacheCoherent) {
 		Xil_DCacheInvalidateRange((INTPTR)Data[0].DstAddr, Data[0].Size);
 		Xil_DCacheInvalidateRange((INTPTR)Data[1].DstAddr, Data[1].Size);
 	}
 
 	/* Validating the data transfer */
-	for (Index = 0; Index < (DESCRIPTOR1_DATA_SIZE/4); Index++) {
+	for (Index = 0; Index < (DESCRIPTOR1_DATA_SIZE / 4); Index++) {
 		if (SrcBuf[Index] != DstBuf[Index]) {
 			return XST_FAILURE;
 		}
 	}
-	for (Index = 0; Index < (DESCRIPTOR2_DATA_SIZE/4); Index++) {
+	for (Index = 0; Index < (DESCRIPTOR2_DATA_SIZE / 4); Index++) {
 		if (Src1Buf[Index] != Dst1Buf[Index]) {
 			return XST_FAILURE;
 		}
@@ -281,7 +311,7 @@ int XZDma_LinkedListExample(u16 DeviceId)
 	return XST_SUCCESS;
 
 }
-
+#ifndef SDT
 /*****************************************************************************/
 /**
 * This function sets up the interrupt system so interrupts can occur for the
@@ -320,7 +350,7 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -330,8 +360,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * hardware interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler) XScuGic_InterruptHandler,
-				IntcInstancePtr);
+				     (Xil_ExceptionHandler) XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 #endif
 
 	/*
@@ -340,8 +370,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * performs the specific interrupt processing for the device
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, IntrId,
-			(Xil_ExceptionHandler) XZDma_IntrHandler,
-				  (void *) InstancePtr);
+				 (Xil_ExceptionHandler) XZDma_IntrHandler,
+				 (void *) InstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -360,7 +390,7 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 
 	return XST_SUCCESS;
 }
-
+#endif
 /*****************************************************************************/
 /**
 * This static function handles ZDMA Done interrupts.

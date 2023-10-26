@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -27,7 +28,7 @@
 *       ms     01/23/17 Modified xil_printf statement in main function to
 *                       ensure that "Successfully ran" and "Failed" strings are
 *                       available in all examples. This is a fix for CR-965028.
-*
+* 6.10  ht     06/23/23 Added support for system device-tree flow.
 * </pre>
 *
 *****************************************************************************/
@@ -36,6 +37,7 @@
 
 #include "xaxipmon.h"
 #include "xil_cache.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions ****************************/
 
@@ -44,7 +46,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define AXIPMON_DEVICE_ID		XPAR_PSU_APM_1_DEVICE_ID
+#endif
 
 /* Sampling interval */
 #define SAMPLE_INTERVAL			0x100
@@ -90,13 +94,17 @@ int main(void)
 	XAxiPmon_Config *ConfigPtr = NULL;
 	u32 Status;
 
+#ifndef SDT
 	ConfigPtr = XAxiPmon_LookupConfig(AXIPMON_DEVICE_ID);
+#else
+	ConfigPtr = XAxiPmon_LookupConfig(XPAR_PERF_MONITOR_OCM_BASEADDR);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 
 	Status = XAxiPmon_CfgInitialize(&AxiPmonInst, ConfigPtr,
-									ConfigPtr->BaseAddress);
+					ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -204,7 +212,7 @@ void OcmTransaction()
 	Xil_Out32(OCM_WRITE_ADDRESS, 0xBAADFACE);
 
 	ReadMetrics(&AxiPmonInst, &MetricsBuffer[0], XAPM_METRIC_COUNTER_0,
-				XAPM_METRIC_COUNTER_1);
+		    XAPM_METRIC_COUNTER_1);
 
 	ApmMetricConfig(&AxiPmonInst, 0, XAPM_METRIC_SET_1, XAPM_METRIC_SET_3);
 
@@ -212,7 +220,7 @@ void OcmTransaction()
 	Xil_In32(OCM_READ_ADDRESS);
 
 	ReadMetrics(&AxiPmonInst, &MetricsBuffer[3], XAPM_METRIC_COUNTER_0,
-				XAPM_METRIC_COUNTER_1);
+		    XAPM_METRIC_COUNTER_1);
 }
 
 /****************************************************************************/
@@ -240,12 +248,12 @@ int ApmMetricConfig(XAxiPmon *InstancePtr, u8 slot, u8 Metric1, u8 Metric2)
 	XAxiPmon_ResetGlobalClkCounter(InstancePtr);
 
 	Status = XAxiPmon_SetMetrics(InstancePtr, slot, Metric1,
-								 XAPM_METRIC_COUNTER_0);
+				     XAPM_METRIC_COUNTER_0);
 	if (Status == XST_FAILURE) {
 		return XST_FAILURE;
 	}
 	Status = XAxiPmon_SetMetrics(InstancePtr, slot, Metric2,
-								XAPM_METRIC_COUNTER_1);
+				     XAPM_METRIC_COUNTER_1);
 	if (Status == XST_FAILURE) {
 		return XST_FAILURE;
 	}
@@ -275,7 +283,7 @@ int ApmMetricConfig(XAxiPmon *InstancePtr, u8 slot, u8 Metric1, u8 Metric2)
 *
 *****************************************************************************/
 void ReadMetrics(XAxiPmon *InstancePtr, u32 *BufferPtr, u8 Counter1,
-				u8 Counter2)
+		 u8 Counter2)
 {
 	/* Stop Counters */
 	XAxiPmon_StopCounters(InstancePtr);

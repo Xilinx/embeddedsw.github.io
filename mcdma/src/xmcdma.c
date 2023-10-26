@@ -8,7 +8,7 @@
 /**
 *
 * @file xmcdma.c
-* @addtogroup mcdma_v1_7
+* @addtogroup mcdma Overview
 * @{
 *
 * This file contains the implementation of the interface functions for MCDMA
@@ -69,7 +69,7 @@ s32 XMcDma_CfgInitialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 
 	while (TimeOut) {
 
-		if(XMcdma_ResetIsDone(InstancePtr)) {
+		if (XMcdma_ResetIsDone(InstancePtr)) {
 			break;
 		}
 
@@ -85,10 +85,12 @@ s32 XMcDma_CfgInitialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 		return XST_DMA_ERROR;
 	}
 
-	if (InstancePtr->Config.IsTxCacheCoherent)
+	if (InstancePtr->Config.IsTxCacheCoherent) {
 		XMcdma_SetARCache(InstancePtr, XMCDMA_AXCACHE);
-	if (InstancePtr->Config.IsRxCacheCoherent)
+	}
+	if (InstancePtr->Config.IsRxCacheCoherent) {
 		XMcdma_SetAWCache(InstancePtr, XMCDMA_AXCACHE);
+	}
 
 	InstancePtr->IsReady = 1;
 
@@ -125,7 +127,9 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 	memset(InstancePtr, 0, sizeof(XMcdma));
 
 	InstancePtr->Config.BaseAddress = CfgPtr->BaseAddress;
+#ifndef SDT
 	InstancePtr->Config.DeviceId = CfgPtr->DeviceId;
+#endif
 	InstancePtr->Config.AddrWidth = CfgPtr->AddrWidth;
 	InstancePtr->Config.Has_SingleIntr = CfgPtr->Has_SingleIntr;
 	InstancePtr->Config.HasMM2S = CfgPtr->HasMM2S;
@@ -135,6 +139,9 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 	InstancePtr->Config.HasRxLength = CfgPtr->HasRxLength;
 	InstancePtr->Config.IsTxCacheCoherent = CfgPtr->IsTxCacheCoherent;
 	InstancePtr->Config.IsRxCacheCoherent = CfgPtr->IsRxCacheCoherent;
+#ifdef SDT
+	InstancePtr->Config.IntrParent = CfgPtr->IntrParent;
+#endif
 
 	InstancePtr->IsReady = (u32)(XIL_COMPONENT_IS_READY);
 
@@ -149,10 +156,14 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 				((unsigned int)CfgPtr->MM2SDataWidth >> 3);
 			InstancePtr->Tx_Chan[i].HasStsCntrlStrm = CfgPtr->HasStsCntrlStrm;
 			InstancePtr->Tx_Chan[i].MaxTransferLen =
-					MAX_TRANSFER_LEN(CfgPtr->MaxTransferlen - 1);
+				MAX_TRANSFER_LEN(CfgPtr->MaxTransferlen - 1);
 			InstancePtr->Tx_Chan[i].IsRxChan = 0;
-			if (InstancePtr->Config.AddrWidth > 32)
+			if (InstancePtr->Config.AddrWidth > 32) {
 				InstancePtr->Tx_Chan[i].ext_addr = 1;
+			}
+			#ifdef SDT
+			InstancePtr->Config.IntrId[i-1]= CfgPtr->IntrId[i-1];
+			#endif
 		}
 	}
 
@@ -161,7 +172,7 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 		InstancePtr->Config.RxNumChannels = CfgPtr->RxNumChannels;
 		for (i = 1; i <= InstancePtr->Config.RxNumChannels; i++) {
 			InstancePtr->Rx_Chan[i].ChanBase = CfgPtr->BaseAddress +
-							XMCDMA_RX_OFFSET;
+							   XMCDMA_RX_OFFSET;
 			InstancePtr->Rx_Chan[i].Has_Rxdre = CfgPtr->HasS2MMDRE;
 			InstancePtr->Rx_Chan[i].HasStsCntrlStrm = CfgPtr->HasStsCntrlStrm;
 			InstancePtr->Rx_Chan[i].HasRxLength = CfgPtr->HasRxLength;
@@ -170,11 +181,16 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 			InstancePtr->Rx_Chan[i].Chan_id = i;
 
 			InstancePtr->Rx_Chan[i].MaxTransferLen =
-				   MAX_TRANSFER_LEN(CfgPtr->MaxTransferlen - 1);
+				MAX_TRANSFER_LEN(CfgPtr->MaxTransferlen - 1);
 
 			InstancePtr->Rx_Chan[i].IsRxChan = 1;
-			if (InstancePtr->Config.AddrWidth > 32)
+			if (InstancePtr->Config.AddrWidth > 32) {
 				InstancePtr->Rx_Chan[i].ext_addr = 1;
+			}
+#ifdef SDT
+			InstancePtr->Config.IntrId[InstancePtr->Config.TxNumChannels + (i - 1)] =
+			CfgPtr->IntrId[InstancePtr->Config.TxNumChannels + (i - 1)];
+#endif
 		}
 	}
 
@@ -201,10 +217,11 @@ void XMcDma_Reset(XMcdma *InstancePtr)
 	/* Verify arguments */
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	if (InstancePtr->Config.HasMM2S)
+	if (InstancePtr->Config.HasMM2S) {
 		RegBase = InstancePtr->Config.BaseAddress;
-	else
+	} else {
 		RegBase = InstancePtr->Config.BaseAddress + XMCDMA_RX_OFFSET;
+	}
 
 	/* Reset the device - In MCDMA Resetting TX or RX will reset the
 	 * Entire MCDMA Engine
@@ -315,8 +332,9 @@ u32 XMcdma_ResetIsDone(XMcdma *InstancePtr)
 		RegisterValue = XMcdma_ReadReg(Chan->ChanBase, XMCDMA_CCR_OFFSET);
 
 		/* Reset is done when the reset bit is low */
-		if (RegisterValue & XMCDMA_CCR_RESET_MASK)
+		if (RegisterValue & XMCDMA_CCR_RESET_MASK) {
 			return 0;
+		}
 	}
 
 	/* Check receive channel */
@@ -325,8 +343,9 @@ u32 XMcdma_ResetIsDone(XMcdma *InstancePtr)
 		RegisterValue = XMcdma_ReadReg(Chan->ChanBase, XMCDMA_CCR_OFFSET);
 
 		/* Reset is done when the reset bit is low */
-		if (RegisterValue & XMCDMA_CCR_RESET_MASK)
+		if (RegisterValue & XMCDMA_CCR_RESET_MASK) {
 			return 0;
+		}
 	}
 
 	return 1;
@@ -355,8 +374,8 @@ u32 XMcdma_Start(XMcdma_ChanCtrl *Chan)
 	RegBase = Chan->ChanBase;
 
 	XMcdma_WriteReg(RegBase, XMCDMA_CCR_OFFSET,
-				XMcdma_ReadReg(RegBase, XMCDMA_CCR_OFFSET)
-				| XMCDMA_CCR_RUNSTOP_MASK);
+			XMcdma_ReadReg(RegBase, XMCDMA_CCR_OFFSET)
+			| XMCDMA_CCR_RUNSTOP_MASK);
 
 	/* At the initialization time, hardware should finish reset quickly */
 	TimeOut = XMCDMA_LOOP_COUNT;
@@ -364,7 +383,7 @@ u32 XMcdma_Start(XMcdma_ChanCtrl *Chan)
 	while (TimeOut) {
 
 		StatReg = XMcdma_ReadReg(RegBase, XMCDMA_CSR_OFFSET);
-		if(!(StatReg & XMCDMA_CSR_HALTED_MASK)) {
+		if (!(StatReg & XMCDMA_CSR_HALTED_MASK)) {
 			break;
 		}
 
@@ -405,8 +424,8 @@ u32 XMcdma_ChanHwStop(XMcdma_ChanCtrl *Chan)
 	Offset = (Chan->Chan_id - 1) * XMCDMA_NXTCHAN_OFFSET;
 
 	XMcdma_WriteReg(RegBase, XMCDMA_CR_OFFSET + Offset,
-				XMcdma_ReadReg(RegBase, XMCDMA_CR_OFFSET + Offset)
-				& ~XMCDMA_CCR_RUNSTOP_MASK);
+			XMcdma_ReadReg(RegBase, XMCDMA_CR_OFFSET + Offset)
+			& ~XMCDMA_CCR_RUNSTOP_MASK);
 
 	/* At the initialization time, hardware should finish reset quickly */
 	TimeOut = XMCDMA_LOOP_COUNT;
@@ -414,7 +433,7 @@ u32 XMcdma_ChanHwStop(XMcdma_ChanCtrl *Chan)
 	while (TimeOut) {
 
 		CtrlReg = XMcdma_ReadReg(RegBase, XMCDMA_CR_OFFSET + Offset);
-		if(!(CtrlReg & XMCDMA_CCR_RUNSTOP_MASK)) {
+		if (!(CtrlReg & XMCDMA_CCR_RUNSTOP_MASK)) {
 			break;
 		}
 
@@ -447,7 +466,7 @@ void XMcdma_EnableCh(XMcdma_ChanCtrl *Chan)
 	u32 Reg;
 
 	Reg = XMcdma_ReadReg((Chan)->ChanBase, XMCDMA_CHEN_OFFSET);
-	Reg |= (1 << (Chan->Chan_id -1));
+	Reg |= (1 << (Chan->Chan_id - 1));
 	XMcdma_WriteReg(Chan->ChanBase, XMCDMA_CHEN_OFFSET, Reg);
 }
 
@@ -472,8 +491,9 @@ u16 XMcdma_GetChanServiced(XMcdma *InstancePtr)
 
 	ServReg = XMcdma_ReadReg(InstancePtr->Config.BaseAddress,
 				 XMCDMA_RX_OFFSET + XMCDMA_CHSER_OFFSET);
-	while(ServReg >>= 1)
+	while (ServReg >>= 1) {
 		Chan_id++;
+	}
 
 	Chan_id += 1;
 
@@ -501,8 +521,9 @@ u16 XMcdma_GetTxChanServiced(XMcdma *InstancePtr)
 
 	ServReg = XMcdma_ReadReg(InstancePtr->Config.BaseAddress,
 				 XMCDMA_CHSER_OFFSET);
-	while(ServReg >>= 1)
+	while (ServReg >>= 1) {
 		Chan_id++;
+	}
 
 	Chan_id += 1;
 
@@ -558,10 +579,11 @@ u32 XMCdma_SetChan_Weight(XMcdma_ChanCtrl *Chan, u8 Weight)
 	Val &= ~XMCDMA_TX_WRRCH_MASK(Chanid);
 	Val |=  Weight << XMCDMA_TX_WRRCH_SHIFT(Chanid);
 
-	if (Chan->Chan_id > 8)
+	if (Chan->Chan_id > 8) {
 		XMcdma_WriteReg(Chan->ChanBase, XMCDMA_TX_WRR_REG1_OFFSET, Val);
-	else
+	} else {
 		XMcdma_WriteReg(Chan->ChanBase, XMCDMA_TX_WRR_REG_OFFSET, Val);
+	}
 
 	return XST_SUCCESS;
 }
@@ -573,10 +595,11 @@ u32 XMCdma_GetChan_PktDoneCnt(XMcdma_ChanCtrl *Chan)
 
 	Offset = (Chan->Chan_id - 1) * XMCDMA_NXTCHAN_OFFSET;
 
-	if (Chan->IsRxChan)
+	if (Chan->IsRxChan) {
 		PktCnt = XMcdma_ReadReg(Chan->ChanBase, XMCDMA_RX_PKTCNT_STAT_OFFSET + Offset);
-	else
+	} else {
 		PktCnt = XMcdma_ReadReg(Chan->ChanBase, XMCDMA_TX_PKTCNT_STAT_OFFSET + Offset);
+	}
 
 	return PktCnt;
 }
@@ -590,7 +613,8 @@ u32 XMCdma_GetChan_PktDoneCnt(XMcdma_ChanCtrl *Chan)
  * @return	None
  *
  *****************************************************************************/
-void XMcdma_DumpChanRegs(XMcdma_ChanCtrl *Chan) {
+void XMcdma_DumpChanRegs(XMcdma_ChanCtrl *Chan)
+{
 	u32 RegBase = Chan->ChanBase;
 	u32 Offset;
 
@@ -598,20 +622,20 @@ void XMcdma_DumpChanRegs(XMcdma_ChanCtrl *Chan) {
 
 	xil_printf("Dump registers %x:\r\n", (unsigned int)RegBase);
 	xil_printf("Control REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CR_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CR_OFFSET + Offset));
 	xil_printf("Status REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_SR_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_SR_OFFSET + Offset));
 
 	xil_printf("Cur BD REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CDESC_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CDESC_OFFSET + Offset));
 	xil_printf("Cur BD MSB REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CDESC_MSB_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_CDESC_MSB_OFFSET + Offset));
 	xil_printf("Tail BD REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_TDESC_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_TDESC_OFFSET + Offset));
 	xil_printf("Tail BD MSB  REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_TDESC_MSB_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_TDESC_MSB_OFFSET + Offset));
 
 	xil_printf("Packet Drop REG: %08x\r\n",
-		(unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_PKTDROP_OFFSET + Offset));
+		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_PKTDROP_OFFSET + Offset));
 	xil_printf("\r\n");
 }

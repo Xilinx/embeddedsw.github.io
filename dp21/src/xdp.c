@@ -8,7 +8,7 @@
 /**
  *
  * @file xdp.c
- * @addtogroup dp_v7_6
+ * @addtogroup dp Overview
  * @{
  *
  * Contains a minimal set of functions for the XDp driver that allow access to
@@ -2211,9 +2211,6 @@ u8 XDp_IsLinkRateValid(XDp *InstancePtr, u8 LinkRate)
 		(LinkRate != XDP_LINK_BW_SET_UHBR20) &&
 		(LinkRate != XDP_LINK_BW_SET_UHBR135)
 	) {
-		Valid = 0;
-	}
-	else if (LinkRate > InstancePtr->Config.MaxLinkRate) {
 		Valid = 0;
 	}
 	else {

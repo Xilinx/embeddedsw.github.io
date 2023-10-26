@@ -1,8 +1,7 @@
 /*******************************************************************
-*
 * Copyright (C) 2010-2020 Xilinx, Inc. All rights reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
-
 *******************************************************************************/
 
 #include "xparameters.h"
@@ -33,7 +32,7 @@ XV_SdiTxSs_Config XV_SdiTxSs_ConfigTable[XPAR_XV_SDITXSS_NUM_INSTANCES] =
 	{
 		XPAR_V_SMPTE_UHDSDI_TX_SS_DEVICE_ID,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_BASEADDR,
-		XPAR_V_SMPTE_UHDSDI_TX_SS_INCLUDE_ADV_FEATURES,
+		(XVidC_PixelsPerClock) XPAR_V_SMPTE_UHDSDI_TX_SS_PIXELS_PER_CLOCK,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_LINE_RATE,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_TX_INSERT_C_STR_ST352,
 		XPAR_V_SMPTE_UHDSDI_TX_SS_BPP,

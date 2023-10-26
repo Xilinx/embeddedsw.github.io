@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite_l.c
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 *
 * This file contains the minimal, polled functions to send and receive Ethernet
@@ -99,8 +100,8 @@ void XEmacLite_SendFrame(UINTPTR BaseAddress, u8 *FramePtr, unsigned ByteCount)
 	 * The frame is in the buffer, now send it
 	 */
 	XEmacLite_WriteReg(BaseAddress,  XEL_TPLR_OFFSET,
-				(ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
-				XEL_TPLR_LENGTH_MASK_LO)));
+			   (ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
+					 XEL_TPLR_LENGTH_MASK_LO)));
 
 
 	Register = XEmacLite_GetTxStatus(BaseAddress);
@@ -170,8 +171,7 @@ u16 XEmacLite_RecvFrame(UINTPTR BaseAddress, u8 *FramePtr)
 		 * let user parse it
 		 */
 		Length = XEL_MAX_FRAME_SIZE;
-	}
-	else {
+	} else {
 		/*
 		 * Use the length in the frame, plus the header and trailer
 		 */
@@ -221,7 +221,7 @@ void XEmacLite_AlignedWrite(void *SrcPtr, UINTPTR *DestPtr, unsigned ByteCount)
 	volatile u8 *To8Ptr;
 	u8 *From8Ptr;
 
-	To32Ptr = (volatile u32*)DestPtr;
+	To32Ptr = (volatile u32 *)DestPtr;
 
 	if ((((u32) SrcPtr) & 0x00000003) == 0) {
 
@@ -250,8 +250,7 @@ void XEmacLite_AlignedWrite(void *SrcPtr, UINTPTR *DestPtr, unsigned ByteCount)
 		To8Ptr = (u8 *) &AlignBuffer;
 		From8Ptr = (u8 *) From32Ptr;
 
-	}
-	else if ((((u32) SrcPtr) & 0x00000001) != 0) {
+	} else if ((((u32) SrcPtr) & 0x00000001) != 0) {
 		/*
 		 * Byte aligned buffer, correct.
 		 */
@@ -286,8 +285,7 @@ void XEmacLite_AlignedWrite(void *SrcPtr, UINTPTR *DestPtr, unsigned ByteCount)
 		AlignBuffer = 0;
 		To8Ptr = (u8 *) &AlignBuffer;
 
-	}
-	else {
+	} else {
 		/*
 		 * Half-Word aligned buffer, correct.
 		 */
@@ -407,8 +405,7 @@ void XEmacLite_AlignedRead(UINTPTR *SrcPtr, void *DestPtr, unsigned ByteCount)
 		 */
 		To8Ptr = (u8 *) To32Ptr;
 
-	}
-	else if ((((u32) DestPtr) & 0x00000001) != 0) {
+	} else if ((((u32) DestPtr) & 0x00000001) != 0) {
 		/*
 		 * Byte aligned buffer, correct.
 		 */
@@ -434,8 +431,7 @@ void XEmacLite_AlignedRead(UINTPTR *SrcPtr, void *DestPtr, unsigned ByteCount)
 			Length -= 4;
 		}
 
-	}
-	else {
+	} else {
 		/*
 		 * Half-Word aligned buffer, correct.
 		 */

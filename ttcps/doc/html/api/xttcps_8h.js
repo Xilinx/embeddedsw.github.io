@@ -26,6 +26,7 @@ var xttcps_8h =
     [ "XTtcPs_GetPrescaler", "xttcps_8h.html#ga9d528bcd850e49f08fc585cb867ca11c", null ],
     [ "XTtcPs_InterruptHandler", "xttcps_8h.html#ga30d6a84844676b794d8cf1a43a727bac", null ],
     [ "XTtcPs_LookupConfig", "xttcps_8h.html#ga88827c48fd065f14c8c0a1383c5da74e", null ],
+    [ "XTtcPs_Release", "xttcps_8h.html#ga82c79564c7d223ff7e63acfdf7b43344", null ],
     [ "XTtcPs_SelfTest", "xttcps_8h.html#ga38ff3b491801add8d2b5faa22e2e0a08", null ],
     [ "XTtcPs_SetMatchValue", "xttcps_8h.html#gaf400713723ba81109ac83fc1800681b2", null ],
     [ "XTtcPs_SetOptions", "xttcps_8h.html#ga7053f4ac8c20f1d1fd335a755960aea9", null ],

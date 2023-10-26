@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2004 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xemaclite.c
-* @addtogroup emaclite_v4_7
+* @addtogroup emaclite Overview
 * @{
 *
 * Functions in this file are the minimum required functions for the EmacLite
@@ -91,8 +92,8 @@ static u16 XEmacLite_GetReceiveDataLength(UINTPTR BaseAddress);
 *
 ******************************************************************************/
 int XEmacLite_CfgInitialize(XEmacLite *InstancePtr,
-				XEmacLite_Config *EmacLiteConfigPtr,
-				UINTPTR EffectiveAddr)
+			    XEmacLite_Config *EmacLiteConfigPtr,
+			    UINTPTR EffectiveAddr)
 {
 
 	/*
@@ -111,11 +112,18 @@ int XEmacLite_CfgInitialize(XEmacLite *InstancePtr,
 	 * is ready to use until everything has been initialized successfully.
 	 */
 	InstancePtr->EmacLiteConfig.BaseAddress = EffectiveAddr;
+#ifndef SDT
 	InstancePtr->EmacLiteConfig.DeviceId = EmacLiteConfigPtr->DeviceId;
+#endif
 	InstancePtr->EmacLiteConfig.TxPingPong = EmacLiteConfigPtr->TxPingPong;
 	InstancePtr->EmacLiteConfig.RxPingPong = EmacLiteConfigPtr->RxPingPong;
 	InstancePtr->EmacLiteConfig.MdioInclude = EmacLiteConfigPtr->MdioInclude;
 	InstancePtr->EmacLiteConfig.Loopback = EmacLiteConfigPtr->Loopback;
+
+#ifdef SDT
+	InstancePtr->EmacLiteConfig.IntrId = EmacLiteConfigPtr->IntrId;
+	InstancePtr->EmacLiteConfig.IntrParent = EmacLiteConfigPtr->IntrParent;
+#endif
 
 	InstancePtr->NextTxBufferToUse = 0x0;
 	InstancePtr->NextRxBufferToUse = 0x0;
@@ -126,9 +134,9 @@ int XEmacLite_CfgInitialize(XEmacLite *InstancePtr,
 	 * Clear the TX CSR's in case this is a restart.
 	 */
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_TSR_OFFSET, 0);
+			   XEL_TSR_OFFSET, 0);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_BUFFER_OFFSET + XEL_TSR_OFFSET, 0);
+			   XEL_BUFFER_OFFSET + XEL_TSR_OFFSET, 0);
 
 	/*
 	 * Since there were no failures, indicate the device is ready to use.
@@ -199,7 +207,7 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount)
 	 * Align if necessary.
 	 */
 	if ((Register & (XEL_TSR_XMIT_BUSY_MASK |
-			XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
+			 XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
 
 		/*
 		 * Switch to next buffer if configured.
@@ -219,8 +227,8 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount)
 		 * The frame is in the buffer, now send it.
 		 */
 		XEmacLite_WriteReg(BaseAddress, XEL_TPLR_OFFSET,
-					(ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
-					XEL_TPLR_LENGTH_MASK_LO)));
+				   (ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
+						 XEL_TPLR_LENGTH_MASK_LO)));
 
 		/*
 		 * Update the Tx Status Register to indicate that there is a
@@ -259,7 +267,7 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount)
 		 * data.
 		 */
 		if ((Register & (XEL_TSR_XMIT_BUSY_MASK |
-				XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
+				 XEL_TSR_XMIT_ACTIVE_MASK)) == 0) {
 
 			/*
 			 * Write the frame to the buffer.
@@ -271,8 +279,8 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount)
 			 * The frame is in the buffer, now send it.
 			 */
 			XEmacLite_WriteReg(BaseAddress, XEL_TPLR_OFFSET,
-					(ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
-					   XEL_TPLR_LENGTH_MASK_LO)));
+					   (ByteCount & (XEL_TPLR_LENGTH_MASK_HI |
+							 XEL_TPLR_LENGTH_MASK_LO)));
 
 			/*
 			 * Update the Tx Status Register to indicate that there
@@ -287,7 +295,7 @@ int XEmacLite_Send(XEmacLite *InstancePtr, u8 *FramePtr, unsigned ByteCount)
 			Register = XEmacLite_GetTxStatus(BaseAddress);
 			Register |= XEL_TSR_XMIT_BUSY_MASK;
 			IntrEnableStatus =
-					XEmacLite_GetTxStatus(EmacBaseAddress);
+				XEmacLite_GetTxStatus(EmacBaseAddress);
 			if ((IntrEnableStatus & XEL_TSR_XMIT_IE_MASK) != 0) {
 				Register |= XEL_TSR_XMIT_ACTIVE_MASK;
 			}
@@ -368,8 +376,7 @@ u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr)
 		if (InstancePtr->EmacLiteConfig.RxPingPong != 0) {
 			InstancePtr->NextRxBufferToUse ^= XEL_BUFFER_OFFSET;
 		}
-	}
-	else {
+	} else {
 		/*
 		 * The instance is out of sync, try other buffer if other
 		 * buffer is configured, return 0 otherwise. If the instance is
@@ -378,8 +385,7 @@ u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr)
 		 */
 		if (InstancePtr->EmacLiteConfig.RxPingPong != 0) {
 			BaseAddress ^= XEL_BUFFER_OFFSET;
-		}
-		else {
+		} else {
 			return 0;	/* No data was available */
 		}
 
@@ -388,7 +394,7 @@ u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr)
 		 */
 		Register = XEmacLite_GetRxStatus(BaseAddress);
 		if ((Register & XEL_RSR_RECV_DONE_MASK) !=
-				XEL_RSR_RECV_DONE_MASK) {
+		    XEL_RSR_RECV_DONE_MASK) {
 			return 0;	/* No data was available */
 		}
 	}
@@ -411,18 +417,18 @@ u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr)
 			 */
 #ifdef __LITTLE_ENDIAN__
 			Length = (XEmacLite_ReadReg((BaseAddress),
-					XEL_HEADER_IP_LENGTH_OFFSET +
-					XEL_RXBUFF_OFFSET) &
-					(XEL_RPLR_LENGTH_MASK_HI |
-					XEL_RPLR_LENGTH_MASK_LO));
+						    XEL_HEADER_IP_LENGTH_OFFSET +
+						    XEL_RXBUFF_OFFSET) &
+				  (XEL_RPLR_LENGTH_MASK_HI |
+				   XEL_RPLR_LENGTH_MASK_LO));
 			Length = (u16) (((Length & 0xFF00) >> 8) | ((Length & 0x00FF) << 8));
 #else
 			Length = ((XEmacLite_ReadReg((BaseAddress),
-					XEL_HEADER_IP_LENGTH_OFFSET +
-					XEL_RXBUFF_OFFSET) >>
-					XEL_HEADER_SHIFT) &
-					(XEL_RPLR_LENGTH_MASK_HI |
-					XEL_RPLR_LENGTH_MASK_LO));
+						     XEL_HEADER_IP_LENGTH_OFFSET +
+						     XEL_RXBUFF_OFFSET) >>
+				   XEL_HEADER_SHIFT) &
+				  (XEL_RPLR_LENGTH_MASK_HI |
+				   XEL_RPLR_LENGTH_MASK_LO));
 #endif
 
 			Length += XEL_HEADER_SIZE + XEL_FCS_SIZE;
@@ -433,7 +439,7 @@ u16 XEmacLite_Recv(XEmacLite *InstancePtr, u8 *FramePtr)
 			 * The packet is an ARP Packet.
 			 */
 			Length = XEL_ARP_PACKET_SIZE + XEL_HEADER_SIZE +
-					XEL_FCS_SIZE;
+				 XEL_FCS_SIZE;
 
 		} else {
 			/*
@@ -507,15 +513,15 @@ void XEmacLite_SetMacAddress(XEmacLite *InstancePtr, u8 *AddressPtr)
 	 * Copy the MAC address to the Transmit buffer.
 	 */
 	XEmacLite_AlignedWrite(AddressPtr,
-				(UINTPTR *) BaseAddress,
-				XEL_MAC_ADDR_SIZE);
+			       (UINTPTR *) BaseAddress,
+			       XEL_MAC_ADDR_SIZE);
 
 	/*
 	 * Set the length.
 	 */
 	XEmacLite_WriteReg(BaseAddress,
-				XEL_TPLR_OFFSET,
-				XEL_MAC_ADDR_SIZE);
+			   XEL_TPLR_OFFSET,
+			   XEL_MAC_ADDR_SIZE);
 
 	/*
 	 * Update the MAC address in the EmacLite.
@@ -527,7 +533,7 @@ void XEmacLite_SetMacAddress(XEmacLite *InstancePtr, u8 *AddressPtr)
 	 * Wait for EmacLite to finish with the MAC address update.
 	 */
 	while ((XEmacLite_GetTxStatus(BaseAddress) &
-			XEL_TSR_PROG_MAC_ADDR) != 0);
+		XEL_TSR_PROG_MAC_ADDR) != 0);
 
 }
 
@@ -582,10 +588,10 @@ int XEmacLite_TxBufferAvailable(XEmacLite *InstancePtr)
 	 * Read the Tx Status and determine if the buffer is available.
 	 */
 	Register = XEmacLite_GetTxStatus(InstancePtr->EmacLiteConfig.
-						BaseAddress);
+					 BaseAddress);
 
 	TxPingBusy = (Register & (XEL_TSR_XMIT_BUSY_MASK |
-				 XEL_TSR_XMIT_ACTIVE_MASK));
+				  XEL_TSR_XMIT_ACTIVE_MASK));
 
 
 	/*
@@ -594,11 +600,11 @@ int XEmacLite_TxBufferAvailable(XEmacLite *InstancePtr)
 	 */
 	if (InstancePtr->EmacLiteConfig.TxPingPong != 0) {
 		Register = XEmacLite_GetTxStatus(InstancePtr->EmacLiteConfig.
-						BaseAddress +
-						XEL_BUFFER_OFFSET);
+						 BaseAddress +
+						 XEL_BUFFER_OFFSET);
 
 		TxPongBusy = (Register & (XEL_TSR_XMIT_BUSY_MASK |
-					XEL_TSR_XMIT_ACTIVE_MASK));
+					  XEL_TSR_XMIT_ACTIVE_MASK));
 
 		return (!(TxPingBusy && TxPongBusy));
 	}
@@ -636,7 +642,7 @@ void XEmacLite_FlushReceive(XEmacLite *InstancePtr)
 	 * available.
 	 */
 	Register = XEmacLite_GetRxStatus(InstancePtr->EmacLiteConfig.
-						BaseAddress);
+					 BaseAddress);
 
 	/*
 	 * Preserve the IE bit.
@@ -647,7 +653,7 @@ void XEmacLite_FlushReceive(XEmacLite *InstancePtr)
 	 * Write out the value to flush the RX buffer.
 	 */
 	XEmacLite_SetRxStatus(InstancePtr->EmacLiteConfig.BaseAddress,
-				Register);
+			      Register);
 
 	/*
 	 * If the pong buffer is available, flush it also.
@@ -658,8 +664,8 @@ void XEmacLite_FlushReceive(XEmacLite *InstancePtr)
 		 * is available.
 		 */
 		Register = XEmacLite_GetRxStatus(InstancePtr->EmacLiteConfig.
-							BaseAddress +
-							XEL_BUFFER_OFFSET);
+						 BaseAddress +
+						 XEL_BUFFER_OFFSET);
 
 		/*
 		 * Preserve the IE bit.
@@ -670,7 +676,7 @@ void XEmacLite_FlushReceive(XEmacLite *InstancePtr)
 		 * Write out the value to flush the RX buffer.
 		 */
 		XEmacLite_SetRxStatus(InstancePtr->EmacLiteConfig.BaseAddress +
-					XEL_BUFFER_OFFSET, Register);
+				      XEL_BUFFER_OFFSET, Register);
 
 	}
 
@@ -697,7 +703,7 @@ void XEmacLite_FlushReceive(XEmacLite *InstancePtr)
 *
 *****************************************************************************/
 int XEmacLite_PhyRead(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
-			u16 *PhyDataPtr)
+		      u16 *PhyDataPtr)
 {
 	u32 PhyAddrReg;
 	u32 MdioCtrlReg;
@@ -715,51 +721,51 @@ int XEmacLite_PhyRead(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
 	 * Verify MDIO master status.
 	 */
 	if (XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET) &
-				XEL_MDIOCNTR_STATUS_MASK) {
+			      XEL_MDIOCNTR_OFFSET) &
+	    XEL_MDIOCNTR_STATUS_MASK) {
 		return XST_DEVICE_BUSY;
 	}
 
 	PhyAddrReg = ((((PhyAddress << XEL_MDIO_ADDRESS_SHIFT) &
 			XEL_MDIO_ADDRESS_MASK) | RegNum) | XEL_MDIO_OP_MASK);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				 XEL_MDIOADDR_OFFSET, PhyAddrReg);
+			   XEL_MDIOADDR_OFFSET, PhyAddrReg);
 
 	/*
 	 * Enable MDIO and start the transfer.
 	 */
 	MdioCtrlReg =
 		XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_MDIOCNTR_OFFSET);
+				  XEL_MDIOCNTR_OFFSET);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET,
-				MdioCtrlReg |
-				XEL_MDIOCNTR_STATUS_MASK |
-				XEL_MDIOCNTR_ENABLE_MASK);
+			   XEL_MDIOCNTR_OFFSET,
+			   MdioCtrlReg |
+			   XEL_MDIOCNTR_STATUS_MASK |
+			   XEL_MDIOCNTR_ENABLE_MASK);
 
 	/*
 	 * Wait till the completion of transfer.
 	 */
 	while ((XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET) &
-				XEL_MDIOCNTR_STATUS_MASK));
+				  XEL_MDIOCNTR_OFFSET) &
+		XEL_MDIOCNTR_STATUS_MASK));
 
 	/*
 	 * Read data from MDIO read data register.
 	 */
 	*PhyDataPtr = (u16)XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_MDIORD_OFFSET);
+					     XEL_MDIORD_OFFSET);
 
 	/*
 	 * Disable the MDIO.
 	 */
 	MdioCtrlReg =
 		XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_MDIOCNTR_OFFSET);
+				  XEL_MDIOCNTR_OFFSET);
 
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET,
-				MdioCtrlReg & ~XEL_MDIOCNTR_ENABLE_MASK);
+			   XEL_MDIOCNTR_OFFSET,
+			   MdioCtrlReg & ~XEL_MDIOCNTR_ENABLE_MASK);
 
 
 	return XST_SUCCESS;
@@ -786,7 +792,7 @@ int XEmacLite_PhyRead(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
 *
 *******************************************************************************/
 int XEmacLite_PhyWrite(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
-			u16 PhyData)
+		       u16 PhyData)
 {
 	u32 PhyAddrReg;
 	u32 MdioCtrlReg;
@@ -803,8 +809,8 @@ int XEmacLite_PhyWrite(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
 	 * Verify MDIO master status.
 	 */
 	if (XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET) &
-				XEL_MDIOCNTR_STATUS_MASK) {
+			      XEL_MDIOCNTR_OFFSET) &
+	    XEL_MDIOCNTR_STATUS_MASK) {
 		return XST_DEVICE_BUSY;
 	}
 
@@ -813,30 +819,30 @@ int XEmacLite_PhyWrite(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
 	PhyAddrReg = ((((PhyAddress << XEL_MDIO_ADDRESS_SHIFT) &
 			XEL_MDIO_ADDRESS_MASK) | RegNum) & ~XEL_MDIO_OP_MASK);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOADDR_OFFSET, PhyAddrReg);
+			   XEL_MDIOADDR_OFFSET, PhyAddrReg);
 
 	/*
 	 * Write data to MDIO write data register.
 	 */
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOWR_OFFSET, (u32)PhyData);
+			   XEL_MDIOWR_OFFSET, (u32)PhyData);
 
 	/*
 	 * Enable MDIO and start the transfer.
 	 */
 	MdioCtrlReg =
 		XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_MDIOCNTR_OFFSET);
+				  XEL_MDIOCNTR_OFFSET);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET,
-				MdioCtrlReg | XEL_MDIOCNTR_STATUS_MASK |
-				XEL_MDIOCNTR_ENABLE_MASK);
+			   XEL_MDIOCNTR_OFFSET,
+			   MdioCtrlReg | XEL_MDIOCNTR_STATUS_MASK |
+			   XEL_MDIOCNTR_ENABLE_MASK);
 
 	/*
 	 * Wait till the completion of transfer.
 	 */
 	while ((XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET) & XEL_MDIOCNTR_STATUS_MASK));
+				  XEL_MDIOCNTR_OFFSET) & XEL_MDIOCNTR_STATUS_MASK));
 
 
 	/*
@@ -844,10 +850,10 @@ int XEmacLite_PhyWrite(XEmacLite *InstancePtr, u32 PhyAddress, u32 RegNum,
 	 */
 	MdioCtrlReg =
 		XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_MDIOCNTR_OFFSET);
+				  XEL_MDIOCNTR_OFFSET);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-				XEL_MDIOCNTR_OFFSET,
-				MdioCtrlReg & ~XEL_MDIOCNTR_ENABLE_MASK);
+			   XEL_MDIOCNTR_OFFSET,
+			   MdioCtrlReg & ~XEL_MDIOCNTR_ENABLE_MASK);
 
 
 
@@ -879,9 +885,9 @@ void XEmacLite_EnableLoopBack(XEmacLite *InstancePtr)
 	Xil_AssertVoid(InstancePtr->EmacLiteConfig.Loopback == TRUE);
 
 	TsrReg = XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_TSR_OFFSET);
+				   XEL_TSR_OFFSET);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-			XEL_TSR_OFFSET,	TsrReg | XEL_TSR_LOOPBACK_MASK);
+			   XEL_TSR_OFFSET,	TsrReg | XEL_TSR_LOOPBACK_MASK);
 }
 
 /****************************************************************************/
@@ -907,9 +913,9 @@ void XEmacLite_DisableLoopBack(XEmacLite *InstancePtr)
 	Xil_AssertVoid(InstancePtr->EmacLiteConfig.Loopback == TRUE);
 
 	TsrReg = XEmacLite_ReadReg(InstancePtr->EmacLiteConfig.BaseAddress,
-					XEL_TSR_OFFSET);
+				   XEL_TSR_OFFSET);
 	XEmacLite_WriteReg(InstancePtr->EmacLiteConfig.BaseAddress,
-			XEL_TSR_OFFSET,	TsrReg & (~XEL_TSR_LOOPBACK_MASK));
+			   XEL_TSR_OFFSET,	TsrReg & (~XEL_TSR_LOOPBACK_MASK));
 }
 
 
@@ -931,14 +937,14 @@ static u16 XEmacLite_GetReceiveDataLength(UINTPTR BaseAddress)
 
 #ifdef __LITTLE_ENDIAN__
 	Length = (XEmacLite_ReadReg((BaseAddress),
-			XEL_HEADER_OFFSET + XEL_RXBUFF_OFFSET) &
-			(XEL_RPLR_LENGTH_MASK_HI | XEL_RPLR_LENGTH_MASK_LO));
+				    XEL_HEADER_OFFSET + XEL_RXBUFF_OFFSET) &
+		  (XEL_RPLR_LENGTH_MASK_HI | XEL_RPLR_LENGTH_MASK_LO));
 	Length = (u16) (((Length & 0xFF00) >> 8) | ((Length & 0x00FF) << 8));
 #else
 	Length = ((XEmacLite_ReadReg((BaseAddress),
-			XEL_HEADER_OFFSET + XEL_RXBUFF_OFFSET) >>
-			XEL_HEADER_SHIFT) &
-			(XEL_RPLR_LENGTH_MASK_HI | XEL_RPLR_LENGTH_MASK_LO));
+				     XEL_HEADER_OFFSET + XEL_RXBUFF_OFFSET) >>
+		   XEL_HEADER_SHIFT) &
+		  (XEL_RPLR_LENGTH_MASK_HI | XEL_RPLR_LENGTH_MASK_LO));
 #endif
 
 	return Length;

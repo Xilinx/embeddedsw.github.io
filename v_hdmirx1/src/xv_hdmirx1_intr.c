@@ -862,6 +862,8 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					XV_HdmiRx1_AuxDisable(InstancePtr);
 					/* Disable the Dynamic HDR Datamover */
 					XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
+					/* Clear the VIC */
+					InstancePtr->Stream.Vic = 0;
 					if (InstancePtr->StreamDownCallback) {
 						InstancePtr->StreamDownCallback(
 							InstancePtr->StreamDownRef);
@@ -1353,6 +1355,8 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 				/* Disable the Dynamic HDR Datamover */
 				XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
+				/* Clear the VIC */
+				InstancePtr->Stream.Vic = 0;
 				/* Call stream down callback*/
 				if (InstancePtr->StreamDownCallback) {
 					InstancePtr->StreamDownCallback(
@@ -1610,6 +1614,18 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 			/* Set stream status to lock */
 			InstancePtr->Stream.State =
 					XV_HDMIRX1_STATE_STREAM_LOCK;
+			if (InstancePtr->Stream.IsFrl == FALSE) {
+				XV_HdmiRx1_Tmr1Start(InstancePtr,
+						TIME_500MS);
+			}
+		} else {
+			if ((InstancePtr->Stream.State ==
+			    XV_HDMIRX1_STATE_STREAM_LOCK) &&
+			   (InstancePtr->Stream.IsFrl == FALSE)) {
+				if (InstancePtr->PhyResetCallback)
+					InstancePtr->PhyResetCallback(InstancePtr->PhyResetRef);
+
+			}
 		}
 	}
 
@@ -1698,6 +1714,8 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 			    /* Disable the Dynamic HDR Datamover */
 			    XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
+			    /* Clear the VIC */
+			    InstancePtr->Stream.Vic = 0;
 				if (InstancePtr->StreamDownCallback) {
 					InstancePtr->StreamDownCallback(
 							InstancePtr->StreamDownRef);
@@ -1799,6 +1817,8 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 			     /* Disable the Dynamic HDR Datamover */
 			     XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
+			     /* Clear the VIC */
+			     InstancePtr->Stream.Vic = 0;
 			     if (InstancePtr->StreamDownCallback) {
 				    InstancePtr->StreamDownCallback(
 						InstancePtr->StreamDownRef);
@@ -1999,6 +2019,8 @@ static void HdmiRx1_FrlIntrHandler(XV_HdmiRx1 *InstancePtr)
 		/* Disable the Dynamic HDR Datamover */
 		XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
+		/* Clear the VIC */
+		InstancePtr->Stream.Vic = 0;
 		if (InstancePtr->StreamDownCallback) {
 			InstancePtr->StreamDownCallback(InstancePtr->StreamDownRef);
 		}
@@ -2147,6 +2169,8 @@ xil_printf(ANSI_COLOR_YELLOW "RX: INTR LTP_DET\r\n" ANSI_COLOR_RESET);
 			/* Disable the Dynamic HDR Datamover */
 			XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
+			/* Clear the VIC */
+			InstancePtr->Stream.Vic = 0;
 			if (InstancePtr->StreamDownCallback) {
 				InstancePtr->StreamDownCallback(InstancePtr->StreamDownRef);
 			}

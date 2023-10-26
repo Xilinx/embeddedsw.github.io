@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">scugic
    </div>
@@ -71,6 +71,21 @@ $(document).ready(function(){initNavTree('xscugic__hw_8h.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:gac1bc762eba383937d08c41704737091c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#gac1bc762eba383937d08c41704737091c">XSCUGIC_HW_H</a></td></tr>
+<tr class="memdesc:gac1bc762eba383937d08c41704737091c"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; prevent circular inclusions  <a href="group__scugic.html#gac1bc762eba383937d08c41704737091c">More...</a><br/></td></tr>
+<tr class="separator:gac1bc762eba383937d08c41704737091c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1027fc01e0c0efc80eadd0e6bb69f801"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga1027fc01e0c0efc80eadd0e6bb69f801">XSCUGIC_MAX_NUM_INTR_INPUTS</a>&#160;&#160;&#160;195U</td></tr>
+<tr class="memdesc:ga1027fc01e0c0efc80eadd0e6bb69f801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of interrupt defined by Zynq Ultrascale Mp.  <a href="group__scugic.html#ga1027fc01e0c0efc80eadd0e6bb69f801">More...</a><br/></td></tr>
+<tr class="separator:ga1027fc01e0c0efc80eadd0e6bb69f801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1706d457c89d8e76f1d120cc6fad418b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga1706d457c89d8e76f1d120cc6fad418b">XSCUGIC_SPI_INT_ID_START</a>&#160;&#160;&#160;0x20U</td></tr>
+<tr class="memdesc:ga1706d457c89d8e76f1d120cc6fad418b"><td class="mdescLeft">&#160;</td><td class="mdescRight">First Interrupt Id for SPI interrupts.  <a href="group__scugic.html#ga1706d457c89d8e76f1d120cc6fad418b">More...</a><br/></td></tr>
+<tr class="separator:ga1706d457c89d8e76f1d120cc6fad418b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaecd562b440bde835a8eee0c8a0e78249"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#gaecd562b440bde835a8eee0c8a0e78249">XSCUGIC_MAX_INTR_PRIO_VAL</a>&#160;&#160;&#160;248U</td></tr>
+<tr class="memdesc:gaecd562b440bde835a8eee0c8a0e78249"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximum priority value that can be used in the GIC.  <a href="group__scugic.html#gaecd562b440bde835a8eee0c8a0e78249">More...</a><br/></td></tr>
+<tr class="separator:gaecd562b440bde835a8eee0c8a0e78249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga314e70261cb0c4c4da8019ff78c7e6f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga314e70261cb0c4c4da8019ff78c7e6f8">XSCUGIC_INTR_PRIO_MASK</a>&#160;&#160;&#160;0x000000F8U</td></tr>
+<tr class="memdesc:ga314e70261cb0c4c4da8019ff78c7e6f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Interrupt priority mask value.  <a href="group__scugic.html#ga314e70261cb0c4c4da8019ff78c7e6f8">More...</a><br/></td></tr>
+<tr class="separator:ga314e70261cb0c4c4da8019ff78c7e6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1aea23f3bd1941b93443e441bd1e8e58"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga1aea23f3bd1941b93443e441bd1e8e58">XSCUGIC_PEND_INTID_MASK</a>&#160;&#160;&#160;0x000003FFU</td></tr>
 <tr class="memdesc:ga1aea23f3bd1941b93443e441bd1e8e58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pending Interrupt ID.  <a href="group__scugic.html#ga1aea23f3bd1941b93443e441bd1e8e58">More...</a><br/></td></tr>
 <tr class="separator:ga1aea23f3bd1941b93443e441bd1e8e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -92,7 +107,7 @@ Macros</h2></td></tr>
 <tr class="memitem:a53759eec986eab489c00e26a566d2b00"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xscugic__hw_8h.html#a53759eec986eab489c00e26a566d2b00">XSCUGIC_RDIST_INT_CONFIG_OFFSET_CALC</a>(InterruptID)&#160;&#160;&#160;((u32)XSCUGIC_RDIST_INT_CONFIG_OFFSET + ((InterruptID /16)*4))</td></tr>
 <tr class="memdesc:a53759eec986eab489c00e26a566d2b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the Re-distributor Interrupt configuration register offset.  <a href="#a53759eec986eab489c00e26a566d2b00">More...</a><br/></td></tr>
 <tr class="separator:a53759eec986eab489c00e26a566d2b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93135e195fabc65c81e26163c8aabcdb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xscugic__hw_8h.html#a93135e195fabc65c81e26163c8aabcdb">XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC</a>(InterruptID)&#160;&#160;&#160;((u32)XSCUGIC_RDIST_IPRIORITYR_OFFSET + (InterruptID * 4))</td></tr>
+<tr class="memitem:a93135e195fabc65c81e26163c8aabcdb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xscugic__hw_8h.html#a93135e195fabc65c81e26163c8aabcdb">XSCUGIC_RDIST_INT_PRIORITY_OFFSET_CALC</a>(InterruptID)&#160;&#160;&#160;((u32)XSCUGIC_RDIST_IPRIORITYR_OFFSET + ((InterruptID/4) * 4))</td></tr>
 <tr class="memdesc:a93135e195fabc65c81e26163c8aabcdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the Re-distributor Interrupt Priority register offset.  <a href="#a93135e195fabc65c81e26163c8aabcdb">More...</a><br/></td></tr>
 <tr class="separator:a93135e195fabc65c81e26163c8aabcdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37b4c6eb0a94fe5e17b6ce5ddc021f5b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xscugic__hw_8h.html#a37b4c6eb0a94fe5e17b6ce5ddc021f5b">XSCUGIC_EN_DIS_OFFSET_CALC</a>(Register, InterruptID)&#160;&#160;&#160;((Register) + (((InterruptID)/32U) * 4U))</td></tr>
@@ -277,8 +292,8 @@ Macros</h2></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>The interrupt configuration registers program an SFI to be active HIGH level sensitive or rising edge sensitive.</p>
 <p>Each bit pair describes the configuration for an INT_ID. SFI Read Only b10 always PPI Read Only depending on how the PPIs are configured. b01 Active HIGH level sensitive b11 Rising edge sensitive SPI LSB is read only. b01 Active HIGH level sensitive b11 Rising edge sensitive/ There are registers for each of the CPU interfaces at offset 0xC00 through 0xC04. With up to 8 registers aliased to each address. A register set for the SPI interrupts is available to all CPU interfaces. There are up to 255 of these registers staring at location 0xC08. </p>
 </div></td></tr>
-<tr class="memitem:ga2be546274013a123da9a0a8f21acfbc5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2be546274013a123da9a0a8f21acfbc5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XSCUGIC_INT_CFG_MASK</b>&#160;&#160;&#160;0x00000003U</td></tr>
+<tr class="memitem:ga2be546274013a123da9a0a8f21acfbc5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__scugic.html#ga2be546274013a123da9a0a8f21acfbc5">XSCUGIC_INT_CFG_MASK</a>&#160;&#160;&#160;0x00000003U</td></tr>
+<tr class="memdesc:ga2be546274013a123da9a0a8f21acfbc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt configuration Mask.  <a href="group__scugic.html#ga2be546274013a123da9a0a8f21acfbc5">More...</a><br/></td></tr>
 <tr class="separator:ga2be546274013a123da9a0a8f21acfbc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">PPI Status Register</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Enables an external AMBA master to access the status of the PPI inputs.</p>
@@ -636,7 +651,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">InterruptID</td><td>)</td>
-          <td>&#160;&#160;&#160;((u32)XSCUGIC_RDIST_IPRIORITYR_OFFSET + (InterruptID * 4))</td>
+          <td>&#160;&#160;&#160;((u32)XSCUGIC_RDIST_IPRIORITYR_OFFSET + ((InterruptID/4) * 4))</td>
         </tr>
       </table>
 </div><div class="memdoc">

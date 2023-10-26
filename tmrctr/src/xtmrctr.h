@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -146,6 +146,7 @@
 * 4.8   dp   02/12/21 Fix compilation errors that arise when -Werror=conversion
 *                     is enabled in compilation flags.
 * 4.10  adk  27/12/22 Updated addtogroup tag.
+* 4.11  adk  04/14/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -215,11 +216,15 @@ extern "C" {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	u32 SysClockFreqHz;	/**< The AXI bus clock frequency */
-#ifdef XIL_INTERRUPT
-	u16 IntrId;
+#if defined(XIL_INTERRUPT) || defined(SDT)
+	u32 IntrId;
 	UINTPTR IntrParent;		/** Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
 #endif
 } XTmrCtr_Config;
@@ -273,37 +278,45 @@ typedef struct {
 
 /* Required functions, in file xtmrctr.c */
 void XTmrCtr_CfgInitialize(XTmrCtr *InstancePtr, XTmrCtr_Config *ConfigPtr,
-		UINTPTR EffectiveAddr);
+			   UINTPTR EffectiveAddr);
 int XTmrCtr_InitHw(XTmrCtr *InstancePtr);
-int XTmrCtr_Initialize(XTmrCtr * InstancePtr, u16 DeviceId);
-void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
-void XTmrCtr_Stop(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
-u32 XTmrCtr_GetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
-void XTmrCtr_SetResetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber,
+#ifndef SDT
+int XTmrCtr_Initialize(XTmrCtr *InstancePtr, u16 DeviceId);
+#else
+int XTmrCtr_Initialize(XTmrCtr *InstancePtr, UINTPTR BaseAddr);
+#endif
+void XTmrCtr_Start(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
+void XTmrCtr_Stop(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
+u32 XTmrCtr_GetValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
+void XTmrCtr_SetResetValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber,
 			   u32 ResetValue);
-u32 XTmrCtr_GetCaptureValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
-int XTmrCtr_IsExpired(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
-void XTmrCtr_Reset(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
+u32 XTmrCtr_GetCaptureValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
+int XTmrCtr_IsExpired(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
+void XTmrCtr_Reset(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
 u8 XTmrCtr_PwmConfigure(XTmrCtr *InstancePtr, u32 PwmPeriod, u32 PwmHighTime);
 void XTmrCtr_PwmEnable(XTmrCtr *InstancePtr);
 void XTmrCtr_PwmDisable(XTmrCtr *InstancePtr);
 
 /* Lookup configuration in xtmrctr_sinit.c */
+#ifndef SDT
 XTmrCtr_Config *XTmrCtr_LookupConfig(u16 DeviceId);
+#else
+XTmrCtr_Config *XTmrCtr_LookupConfig(UINTPTR  BaseAddress);
+#endif
 
 /* Functions for options, in file xtmrctr_options.c */
-void XTmrCtr_SetOptions(XTmrCtr * InstancePtr, u8 TmrCtrNumber, u32 Options);
-u32 XTmrCtr_GetOptions(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
+void XTmrCtr_SetOptions(XTmrCtr *InstancePtr, u8 TmrCtrNumber, u32 Options);
+u32 XTmrCtr_GetOptions(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
 
 /* Functions for statistics, in file xtmrctr_stats.c */
-void XTmrCtr_GetStats(XTmrCtr * InstancePtr, XTmrCtrStats * StatsPtr);
-void XTmrCtr_ClearStats(XTmrCtr * InstancePtr);
+void XTmrCtr_GetStats(XTmrCtr *InstancePtr, XTmrCtrStats *StatsPtr);
+void XTmrCtr_ClearStats(XTmrCtr *InstancePtr);
 
 /* Functions for self-test, in file xtmrctr_selftest.c */
-int XTmrCtr_SelfTest(XTmrCtr * InstancePtr, u8 TmrCtrNumber);
+int XTmrCtr_SelfTest(XTmrCtr *InstancePtr, u8 TmrCtrNumber);
 
 /* Functions for interrupts, in file xtmrctr_intr.c */
-void XTmrCtr_SetHandler(XTmrCtr * InstancePtr, XTmrCtr_Handler FuncPtr,
+void XTmrCtr_SetHandler(XTmrCtr *InstancePtr, XTmrCtr_Handler FuncPtr,
 			void *CallBackRef);
 void XTmrCtr_InterruptHandler(void *InstancePtr);
 

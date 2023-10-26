@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2017 - 2023 Xilinx, Inc. All rights reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xdprxss.c
-* @addtogroup dprxss_v8_1
+* @addtogroup dprxss Overview
 * @{
 *
 * This is the main file for Xilinx DisplayPort Receiver Subsystem driver.
@@ -1442,7 +1443,9 @@ static void DpRxSs_TimeOutCallback(void *InstancePtr, u8 TmrCtrNumber)
 	XDpRxSsPtr->TmrCtrResetDone = 1;
 
 	/* Call HDCP22 Timer handler */
-	XHdcp22Rx_Dp_TimerHandler((void *)XDpRxSsPtr->Hdcp22Ptr, TmrCtrNumber);
+	if (XDpRxSsPtr->Hdcp22Ptr)
+		XHdcp22Rx_Dp_TimerHandler((void *)XDpRxSsPtr->Hdcp22Ptr,
+					  TmrCtrNumber);
 
 }
 

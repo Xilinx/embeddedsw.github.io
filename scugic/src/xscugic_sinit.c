@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,7 +25,8 @@
 *                     reported by checkpatch. It fixes CR#1006344.
 * 4.6	sk   08/05/21 Remove XScuGic_Config variable definition to fix
 * 		      misrac violation.
-*
+* 5.2   ml   03/03/23 Add description to fix Doxygen warnings.
+* 5.2   ml   09/07/23 Added comments to fix HIS COMF violations.
 * </pre>
 *
 ******************************************************************************/
@@ -34,8 +35,10 @@
 
 #include "xil_types.h"
 #include "xil_assert.h"
-#include "xparameters.h"
 #include "xscugic.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -64,32 +67,76 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XScuGic_Config *XScuGic_LookupConfig(u16 DeviceId)
 {
 	XScuGic_Config *CfgPtr = NULL;
 	u32 Index;
 
+	/*
+	 * checks the device Id in configuration table
+	 * whether it matches or not
+	 */
 	for (Index = 0U; Index < (u32)XPAR_SCUGIC_NUM_INSTANCES; Index++) {
 		if (XScuGic_ConfigTable[Index].DeviceId == DeviceId) {
 			CfgPtr = &XScuGic_ConfigTable[Index];
 			break;
 		}
 	}
-
+	/* Return statement */
 	return (XScuGic_Config *)CfgPtr;
 }
+/*****************************************************************************/
 
+/**
+*
+* Looks up the device configuration based on the BaseAddress. The return value
+* will refer to an entry in the device configuration table defined in the
+* xscugic_g.c file.
+*
+* @param        BaseAddress is the base address of the device.
+*
+* @return       A pointer to the XScuGic configuration structure for the
+*               specified device, or NULL if the device was not found.
+*
+* @note         None.
+*
+******************************************************************************/
 XScuGic_Config *XScuGic_LookupConfigBaseAddr(UINTPTR BaseAddress)
 {
-        XScuGic_Config *CfgPtr = NULL;
-        u32 Index;
+	XScuGic_Config *CfgPtr = NULL;
+	u32 Index;
 
-        for (Index = 0U; Index < (u32)XPAR_SCUGIC_NUM_INSTANCES; Index++) {
-                if (XScuGic_ConfigTable[Index].DistBaseAddress == BaseAddress) {
-                        CfgPtr = &XScuGic_ConfigTable[Index];
-                        break;
-                }
-        }
-        return (XScuGic_Config *)CfgPtr;
+	/*
+	 * checks the BaseAddress in configuration table
+		 * whether it matches or not
+		 */
+	for (Index = 0U; Index < (u32)XPAR_SCUGIC_NUM_INSTANCES; Index++) {
+		if (XScuGic_ConfigTable[Index].DistBaseAddress == BaseAddress) {
+			CfgPtr = &XScuGic_ConfigTable[Index];
+			break;
+		}
+	}
+	/* Return statement */
+	return (XScuGic_Config *)CfgPtr;
 }
+#else
+XScuGic_Config *XScuGic_LookupConfig(UINTPTR BaseAddress)
+{
+	XScuGic_Config *CfgPtr = NULL;
+	u32 Index;
+
+	/* checks the BaseAddress in configuration table
+	* whether it matches or not
+	*/
+	for (Index = 0U; XScuGic_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XScuGic_ConfigTable[Index].DistBaseAddress == BaseAddress) || !BaseAddress) {
+			CfgPtr = &XScuGic_ConfigTable[Index];
+			break;
+		}
+	}
+	/* Return statement */
+	return (XScuGic_Config *)CfgPtr;
+}
+#endif
 /** @} */

@@ -6,6 +6,7 @@ var struct_x_axi_pmon___config =
     [ "FifoWidth", "struct_x_axi_pmon___config.html#ac4070ba83d966fa528333daa2a163811", null ],
     [ "GlobalClkCounterWidth", "struct_x_axi_pmon___config.html#addc7b2bfdd7b3252b178c662005af86f", null ],
     [ "HaveSampledCounters", "struct_x_axi_pmon___config.html#a9534df49b2e8964d20255cd5e928dea6", null ],
+    [ "IntId", "struct_x_axi_pmon___config.html#a02858f198ec3f30601b90e3560144ba8", null ],
     [ "Is32BitFiltering", "struct_x_axi_pmon___config.html#aa5bc50b092179302cc0c48ecb840c7d7", null ],
     [ "IsEventCount", "struct_x_axi_pmon___config.html#a5ec6b9f8df296e554b495627bcd70950", null ],
     [ "IsEventLog", "struct_x_axi_pmon___config.html#ad31d04da158d85c4f4c3c7464d96262d", null ],

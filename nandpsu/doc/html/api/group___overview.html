@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">nandpsu
    </div>
@@ -556,7 +556,7 @@ Enumerations</h2></td></tr>
 <tr class="memdesc:ga9382565edcb944d473966aac464a58b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The XNandPsu_EccMode enum contains ECC functionality.  <a href="group___overview.html#ga9382565edcb944d473966aac464a58b9">More...</a><br/></td></tr>
 <tr class="separator:ga9382565edcb944d473966aac464a58b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5cc7c90cb423455c9cbde71127180a6f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga5cc7c90cb423455c9cbde71127180a6f">OnfiCommandList</a> { <br/>
-&#160;&#160;<a class="el" href="group___overview.html#gga5cc7c90cb423455c9cbde71127180a6facb9be765f361bb7efb9073730aac92c6">READ</a> =0, 
+&#160;&#160;<a class="el" href="group___overview.html#gga5cc7c90cb423455c9cbde71127180a6facb9be765f361bb7efb9073730aac92c6">READ</a> = 0, 
 <a class="el" href="group___overview.html#gga5cc7c90cb423455c9cbde71127180a6fac1bb4d3f98660dd9ff544df54865a1a4">MULTIPLANE_READ</a>, 
 <a class="el" href="group___overview.html#gga5cc7c90cb423455c9cbde71127180a6fa5e386fa2aa66aa27acf9e361598e5416">COPYBACK_READ</a>, 
 <a class="el" href="group___overview.html#gga5cc7c90cb423455c9cbde71127180a6fa93048e7702ea73781e031c18191f6aec">CHANGE_READ_COLUMN</a>, 
@@ -2382,11 +2382,11 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress,            \</div>
-<div class="line">                (RegOffset),                                            \</div>
-<div class="line">        ((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,      \</div>
-<div class="line">                (RegOffset)) &amp; ~(BitMask))))</div>
-<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:625</div></div>
-<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:607</div></div>
+<div class="line">                          (RegOffset),                                          \</div>
+<div class="line">                          ((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,    \</div>
+<div class="line">                                          (RegOffset)) &amp; ~(BitMask))))</div>
+<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:626</div></div>
+<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:608</div></div>
 </div><!-- fragment -->
 <p>This macro clears the bitmask in the register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3583,10 +3583,10 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#gac4a7a1715cbf95a1f16b34e6d0041d2d">XNandPsu_ClrBits</a>((InstancePtr),                         \</div>
-<div class="line">                        <a class="code" href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a>,                    \</div>
-<div class="line">                        (Mask))</div>
-<div class="ttc" id="group___overview_html_gac4a7a1715cbf95a1f16b34e6d0041d2d"><div class="ttname"><a href="group___overview.html#gac4a7a1715cbf95a1f16b34e6d0041d2d">XNandPsu_ClrBits</a></div><div class="ttdeci">#define XNandPsu_ClrBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro clears the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:440</div></div>
-<div class="ttc" id="group___overview_html_ga8a25f700e1e33ac4bdb4be3681fdb477"><div class="ttname"><a href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_SIG_EN_OFFSET</div><div class="ttdoc">Interrupt Signal Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:60</div></div>
+<div class="line">                         <a class="code" href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a>,                   \</div>
+<div class="line">                         (Mask))</div>
+<div class="ttc" id="group___overview_html_gac4a7a1715cbf95a1f16b34e6d0041d2d"><div class="ttname"><a href="group___overview.html#gac4a7a1715cbf95a1f16b34e6d0041d2d">XNandPsu_ClrBits</a></div><div class="ttdeci">#define XNandPsu_ClrBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro clears the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:446</div></div>
+<div class="ttc" id="group___overview_html_ga8a25f700e1e33ac4bdb4be3681fdb477"><div class="ttname"><a href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_SIG_EN_OFFSET</div><div class="ttdoc">Interrupt Signal Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:61</div></div>
 </div><!-- fragment -->
 <p>This macro clears bitmask in Interrupt Signal Enable register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3624,10 +3624,10 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a>((InstancePtr),                         \</div>
-<div class="line">                        <a class="code" href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a>,                    \</div>
-<div class="line">                        (Mask))</div>
-<div class="ttc" id="group___overview_html_ga8a25f700e1e33ac4bdb4be3681fdb477"><div class="ttname"><a href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_SIG_EN_OFFSET</div><div class="ttdoc">Interrupt Signal Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:60</div></div>
-<div class="ttc" id="group___overview_html_ga81badc5b18ca1a15e6842549eaeaaaec"><div class="ttname"><a href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a></div><div class="ttdeci">#define XNandPsu_SetBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro sets the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:420</div></div>
+<div class="line">                         <a class="code" href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a>,                   \</div>
+<div class="line">                         (Mask))</div>
+<div class="ttc" id="group___overview_html_ga8a25f700e1e33ac4bdb4be3681fdb477"><div class="ttname"><a href="group___overview.html#ga8a25f700e1e33ac4bdb4be3681fdb477">XNANDPSU_INTR_SIG_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_SIG_EN_OFFSET</div><div class="ttdoc">Interrupt Signal Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:61</div></div>
+<div class="ttc" id="group___overview_html_ga81badc5b18ca1a15e6842549eaeaaaec"><div class="ttname"><a href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a></div><div class="ttdeci">#define XNandPsu_SetBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro sets the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:426</div></div>
 </div><!-- fragment -->
 <p>This macro enables bitmask in Interrupt Signal Enable register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3665,10 +3665,10 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a>((InstancePtr),                         \</div>
-<div class="line">                        <a class="code" href="group___overview.html#gaf3b3c15277fa67d8d1dd55492fa3173a">XNANDPSU_INTR_STS_EN_OFFSET</a>,                    \</div>
-<div class="line">                        (Mask))</div>
-<div class="ttc" id="group___overview_html_gaf3b3c15277fa67d8d1dd55492fa3173a"><div class="ttname"><a href="group___overview.html#gaf3b3c15277fa67d8d1dd55492fa3173a">XNANDPSU_INTR_STS_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_STS_EN_OFFSET</div><div class="ttdoc">Interrupt Status Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:57</div></div>
-<div class="ttc" id="group___overview_html_ga81badc5b18ca1a15e6842549eaeaaaec"><div class="ttname"><a href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a></div><div class="ttdeci">#define XNandPsu_SetBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro sets the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:420</div></div>
+<div class="line">                         <a class="code" href="group___overview.html#gaf3b3c15277fa67d8d1dd55492fa3173a">XNANDPSU_INTR_STS_EN_OFFSET</a>,                   \</div>
+<div class="line">                         (Mask))</div>
+<div class="ttc" id="group___overview_html_gaf3b3c15277fa67d8d1dd55492fa3173a"><div class="ttname"><a href="group___overview.html#gaf3b3c15277fa67d8d1dd55492fa3173a">XNANDPSU_INTR_STS_EN_OFFSET</a></div><div class="ttdeci">#define XNANDPSU_INTR_STS_EN_OFFSET</div><div class="ttdoc">Interrupt Status Enable Register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:58</div></div>
+<div class="ttc" id="group___overview_html_ga81badc5b18ca1a15e6842549eaeaaaec"><div class="ttname"><a href="group___overview.html#ga81badc5b18ca1a15e6842549eaeaaaec">XNandPsu_SetBits</a></div><div class="ttdeci">#define XNandPsu_SetBits(InstancePtr, RegOffset, BitMask)</div><div class="ttdoc">This macro sets the bitmask in the register. </div><div class="ttdef"><b>Definition:</b> xnandpsu.h:426</div></div>
 </div><!-- fragment -->
 <p>This macro enables bitmask in Interrupt Status Enable register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -4574,11 +4574,11 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress,            \</div>
-<div class="line">                (RegOffset),                                            \</div>
-<div class="line">        ((u32)((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,\</div>
-<div class="line">                (u32)(RegOffset)) &amp; (u32)(~(Mask))) | (u32)(Value))))</div>
-<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:625</div></div>
-<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:607</div></div>
+<div class="line">                          (RegOffset),                                          \</div>
+<div class="line">                          ((u32)((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,\</div>
+<div class="line">                                          (u32)(RegOffset)) &amp; (u32)(~(Mask))) | (u32)(Value))))</div>
+<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:626</div></div>
+<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:608</div></div>
 </div><!-- fragment -->
 <p>This macro clears and updates the bitmask in the register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -4675,11 +4675,11 @@ Slave DMA Configuration Register bit definitions and masks</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress,            \</div>
-<div class="line">                (RegOffset),                                            \</div>
-<div class="line">        ((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,      \</div>
-<div class="line">                (RegOffset)) | (BitMask))))</div>
-<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:625</div></div>
-<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:607</div></div>
+<div class="line">                          (RegOffset),                                          \</div>
+<div class="line">                          ((u32)(<a class="code" href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress,    \</div>
+<div class="line">                                          (RegOffset)) | (BitMask))))</div>
+<div class="ttc" id="group___overview_html_ga13968ef2c371ba365d36cfb05c27d1f9"><div class="ttname"><a href="group___overview.html#ga13968ef2c371ba365d36cfb05c27d1f9">XNandPsu_WriteReg</a></div><div class="ttdeci">#define XNandPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:626</div></div>
+<div class="ttc" id="group___overview_html_ga541264d14f94a94ef2db439d66eaef00"><div class="ttname"><a href="group___overview.html#ga541264d14f94a94ef2db439d66eaef00">XNandPsu_ReadReg</a></div><div class="ttdeci">#define XNandPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xnandpsu_hw.h:608</div></div>
 </div><!-- fragment -->
 <p>This macro sets the bitmask in the register. </p>
 <dl class="params"><dt>Parameters</dt><dd>

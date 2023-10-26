@@ -68,10 +68,12 @@
 
 /***************************** Include Files *********************************/
 
-#include "xparameters.h"
 #include "xil_types.h"
 #include "xil_assert.h"
 #include "xintc.h"
+#ifndef SDT
+#include "xparameters.h"
+#endif
 #include "xintc_i.h"
 
 /************************** Constant Definitions *****************************/
@@ -84,7 +86,7 @@
 
 /************************** Function Prototypes ******************************/
 
-static XIntc_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress);
+XIntc_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress);
 
 #if XPAR_INTC_0_INTC_TYPE != XIN_INTC_NOCASCADE
 static void XIntc_CascadeHandler(void *DeviceId);
@@ -175,14 +177,17 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 	XIntc_Config *CfgPtr;
 	u32 Imr;
 
+#if defined(SDT)
+	CfgPtr = LookupConfigByBaseAddress((UINTPTR)DeviceId);
+#else
 	/* Get the configuration data using the device ID */
 	CfgPtr = &XIntc_ConfigTable[(UINTPTR)DeviceId];
+#endif
 
 #if defined (XPAR_INTC_0_INTC_TYPE) && (XPAR_INTC_0_INTC_TYPE != XIN_INTC_NOCASCADE)
 	if (CfgPtr->IntcType != XIN_INTC_NOCASCADE) {
 		XIntc_CascadeHandler(DeviceId);
-	}
-	else
+	} else
 #endif
 	{ /* This extra brace is required for compilation in Cascade Mode */
 
@@ -210,7 +215,7 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 		 * corresponds to an interrupt input signal
 		 */
 		for (IntrNumber = 0; IntrNumber < (CfgPtr->NumberofIntrs + CfgPtr->NumberofSwIntrs);
-								IntrNumber++) {
+		     IntrNumber++) {
 			if (IntrStatus & 1) {
 				XIntc_VectorTableEntry *TablePtr;
 #if defined (XPAR_XINTC_HAS_ILR) && (XPAR_XINTC_HAS_ILR == TRUE)
@@ -218,7 +223,7 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 				* number
 				*/
 				Xil_Out32(CfgPtr->BaseAddress +
-						XIN_ILR_OFFSET, IntrNumber);
+					  XIN_ILR_OFFSET, IntrNumber);
 
 				/* Read back ILR to ensure the value
 				* has been updated and it is safe to
@@ -226,7 +231,7 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 				*/
 
 				Xil_In32(CfgPtr->BaseAddress +
-						XIN_ILR_OFFSET);
+					 XIN_ILR_OFFSET);
 
 				/* Enable interrupts */
 #ifdef __MICROBLAZE__
@@ -240,7 +245,7 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 				 * interrupt, then ack it */
 				if (CfgPtr->AckBeforeService & IntrMask) {
 					XIntc_AckIntr(CfgPtr->BaseAddress,
-								IntrMask);
+						      IntrMask);
 				}
 
 				/* The interrupt is active and enabled, call
@@ -255,9 +260,9 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 				 * then ack it
 				 */
 				if ((CfgPtr->AckBeforeService &
-							IntrMask) == 0) {
+				     IntrMask) == 0) {
 					XIntc_AckIntr(CfgPtr->BaseAddress,
-								IntrMask);
+						      IntrMask);
 				}
 
 #if defined (XPAR_XINTC_HAS_ILR) && (XPAR_XINTC_HAS_ILR == TRUE)
@@ -269,13 +274,13 @@ void XIntc_DeviceInterruptHandler(void *DeviceId)
 #endif
 				/* Restore ILR */
 				Xil_Out32(CfgPtr->BaseAddress + XIN_ILR_OFFSET,
-								ILR_reg);
+					  ILR_reg);
 #endif
 				/*
 				 * Read the ISR again to handle architectures
 				 * with posted write bus access issues.
 				 */
-				 (void) XIntc_GetIntrStatus(CfgPtr->BaseAddress);
+				(void) XIntc_GetIntrStatus(CfgPtr->BaseAddress);
 
 				/*
 				 * If only the highest priority interrupt is to
@@ -349,11 +354,19 @@ void XIntc_SetIntrSvcOption(UINTPTR BaseAddress, int Option)
 		/* If Cascade mode set the option for all Slaves */
 		if (CfgPtr->IntcType != XIN_INTC_NOCASCADE) {
 			int Index;
+#ifndef SDT
 			for (Index = 1; Index <= XPAR_XINTC_NUM_INSTANCES - 1;
-					Index++) {
+			     Index++) {
 				CfgPtr = XIntc_LookupConfig(Index);
 				CfgPtr->Options = Option;
 			}
+#else
+			for (Index = 1;  XIntc_ConfigTable[Index].Name != NULL;
+			     Index++) {
+				CfgPtr = XIntc_LookupConfig(XIntc_ConfigTable[Index].BaseAddress);
+				CfgPtr->Options = Option;
+			}
+#endif
 		}
 	}
 }
@@ -408,18 +421,17 @@ void XIntc_RegisterHandler(UINTPTR BaseAddress, int InterruptId,
 	if (CfgPtr != NULL) {
 
 		if (InterruptId > 31) {
-			CfgPtr = XIntc_LookupConfig(InterruptId/32);
+			CfgPtr = XIntc_LookupConfig(InterruptId / 32);
 			if (CfgPtr == NULL) {
 				return;
 			}
-			CfgPtr->HandlerTable[InterruptId%32].Handler = Handler;
-			CfgPtr->HandlerTable[InterruptId%32].CallBackRef =
-								CallBackRef;
-		}
-		else {
+			CfgPtr->HandlerTable[InterruptId % 32].Handler = Handler;
+			CfgPtr->HandlerTable[InterruptId % 32].CallBackRef =
+				CallBackRef;
+		} else {
 			CfgPtr->HandlerTable[InterruptId].Handler = Handler;
 			CfgPtr->HandlerTable[InterruptId].CallBackRef =
-								CallBackRef;
+				CallBackRef;
 		}
 	}
 }
@@ -441,12 +453,16 @@ void XIntc_RegisterHandler(UINTPTR BaseAddress, int InterruptId,
 * @note		None.
 *
 ******************************************************************************/
-static XIntc_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress)
+XIntc_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress)
 {
 	XIntc_Config *CfgPtr = NULL;
 	int Index;
 
+#ifndef SDT
 	for (Index = 0; Index < XPAR_XINTC_NUM_INSTANCES; Index++) {
+#else
+	for (Index = 0; XIntc_ConfigTable[Index].Name != NULL; Index++) {
+#endif
 		if (XIntc_ConfigTable[Index].BaseAddress == BaseAddress) {
 			CfgPtr = &XIntc_ConfigTable[Index];
 			if (CfgPtr == NULL) {
@@ -482,7 +498,7 @@ static XIntc_Config *LookupConfigByBaseAddress(UINTPTR BaseAddress)
 *
 ******************************************************************************/
 void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
-					XFastInterruptHandler FastHandler)
+			       XFastInterruptHandler FastHandler)
 {
 	u32 CurrentIER;
 	u32 Mask;
@@ -492,7 +508,7 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 
 	if (Id > 31) {
 		/* Enable user required Id in Slave controller */
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
@@ -501,22 +517,22 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 		CurrentIER = XIntc_In32(CfgPtr->BaseAddress + XIN_IER_OFFSET);
 
 		/* Convert from integer id to bit mask */
-		Mask = XIntc_BitPosMask[(Id%32)];
+		Mask = XIntc_BitPosMask[(Id % 32)];
 
 		/* Disable the Interrupt if it was enabled before calling
 		 * this function
 		 */
 		if (CurrentIER & Mask) {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-							(CurrentIER & ~Mask));
+				    (CurrentIER & ~Mask));
 		}
 		if (CfgPtr->VectorAddrWidth >
-			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			XIntc_Out64(CfgPtr->BaseAddress + XIN_IVEAR_OFFSET +
-				((Id%32) * 8), (UINTPTR) FastHandler);
+				    ((Id % 32) * 8), (UINTPTR) FastHandler);
 		} else {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IVAR_OFFSET +
-					((Id%32) * 4), (UINTPTR) FastHandler);
+				    ((Id % 32) * 4), (UINTPTR) FastHandler);
 		}
 
 		/* Slave controllers in Cascade Mode should have all as Fast
@@ -530,10 +546,9 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 		 */
 		if (CurrentIER & Mask) {
 			XIntc_Out32(CfgPtr->BaseAddress + XIN_IER_OFFSET,
-						(CurrentIER | Mask));
+				    (CurrentIER | Mask));
 		}
-	}
-	else {
+	} else {
 
 		CurrentIER = XIntc_In32(BaseAddress + XIN_IER_OFFSET);
 
@@ -544,20 +559,20 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 			/* Disable Interrupt if it was enabled */
 			CurrentIER = XIntc_In32(BaseAddress + XIN_IER_OFFSET);
 			XIntc_Out32(BaseAddress + XIN_IER_OFFSET,
-							(CurrentIER & ~Mask));
+				    (CurrentIER & ~Mask));
 		}
 
-		CfgPtr = XIntc_LookupConfig(Id/32);
+		CfgPtr = XIntc_LookupConfig(Id / 32);
 		if (CfgPtr == NULL) {
 			return;
 		}
 		if (CfgPtr->VectorAddrWidth >
-			XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
+		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			XIntc_Out64(BaseAddress + XIN_IVEAR_OFFSET +
-				(Id * 8), (UINTPTR) FastHandler);
+				    (Id * 8), (UINTPTR) FastHandler);
 		} else {
 			XIntc_Out32(BaseAddress + XIN_IVAR_OFFSET + (Id * 4),
-						(UINTPTR) FastHandler);
+				    (UINTPTR) FastHandler);
 		}
 
 		Imr = XIntc_In32(BaseAddress + XIN_IMR_OFFSET);
@@ -570,7 +585,7 @@ void XIntc_RegisterFastHandler(UINTPTR BaseAddress, u8 Id,
 		if (CurrentIER & Mask) {
 			CurrentIER = XIntc_In32(BaseAddress + XIN_IER_OFFSET);
 			XIntc_Out32(BaseAddress + XIN_IER_OFFSET,
-							(CurrentIER | Mask));
+				    (CurrentIER | Mask));
 		}
 	}
 }
@@ -636,8 +651,8 @@ static void XIntc_CascadeHandler(void *DeviceId)
 			 * instance/controller are handled
 			 */
 			if ((IntrNumber == 31) &&
-			  (CfgPtr->IntcType != XIN_INTC_LAST) &&
-			  (CfgPtr->IntcType != XIN_INTC_NOCASCADE)) {
+			    (CfgPtr->IntcType != XIN_INTC_LAST) &&
+			    (CfgPtr->IntcType != XIN_INTC_NOCASCADE)) {
 				XIntc_CascadeHandler((void *)++Id);
 				Id--;
 			}
@@ -653,8 +668,8 @@ static void XIntc_CascadeHandler(void *DeviceId)
 			 * for Last controller in cascade Mode
 			 */
 			if (!((IntrNumber == 31) &&
-			  (CfgPtr->IntcType != XIN_INTC_LAST) &&
-			  (CfgPtr->IntcType != XIN_INTC_NOCASCADE))) {
+			      (CfgPtr->IntcType != XIN_INTC_LAST) &&
+			      (CfgPtr->IntcType != XIN_INTC_NOCASCADE))) {
 
 				/* The interrupt is active and enabled, call
 				 * the interrupt handler that was setup with
@@ -674,7 +689,7 @@ static void XIntc_CascadeHandler(void *DeviceId)
 			 * Read the ISR again to handle architectures with
 			 * posted write bus access issues.
 			 */
-			 XIntc_GetIntrStatus(CfgPtr->BaseAddress);
+			XIntc_GetIntrStatus(CfgPtr->BaseAddress);
 
 			/*
 			 * If only the highest priority interrupt is to be

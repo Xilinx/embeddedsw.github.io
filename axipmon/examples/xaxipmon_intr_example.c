@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -38,6 +39,7 @@
 * 6.5 ms     01/23/17 Modified xil_printf statement in main function to
 *                     ensure that "Successfully ran" and "Failed" strings are
 *                     available in all examples. This is a fix for CR-965028.
+* 6.10  ht     06/23/23 Added support for system device-tree flow.
 * </pre>
 *
 *****************************************************************************/
@@ -55,6 +57,10 @@
 #else
 #include "xscugic.h"
 #endif
+
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 /************************** Constant Definitions ****************************/
 
 /*
@@ -62,6 +68,7 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #define INTC						XIntc
 #define INTC_HANDLER				XIntc_InterruptHandler
@@ -75,6 +82,7 @@
 #define INTC_DEVICE_ID				XPAR_SCUGIC_0_DEVICE_ID
 #define INTC_AXIPMON_INTERRUPT_ID	XPAR_XAPMPS_0_INTR
 #endif
+#endif
 
 /**************************** Type Definitions ******************************/
 
@@ -83,17 +91,24 @@
 
 /************************** Function Prototypes *****************************/
 
+#ifndef SDT
 int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics);
-
+#else
+int AxiPmonInterruptExample(UINTPTR BaseAddress, u32 *Metrics);
+#endif
 static void AxiPmonInterruptHandler(void *CallBackRef);
 
-static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr,
-					XAxiPmon* InstancePtr, u16 IntrId);
+#ifndef SDT
+static int AxiPmonSetupIntrSystem(INTC *IntcInstancePtr,
+				  XAxiPmon *InstancePtr, u16 IntrId);
+#endif
 
 /************************** Variable Definitions ****************************/
 
 static XAxiPmon AxiPmonInst;	/* AXI Performance Monitor driver instance */
+#ifndef SDT
 INTC Intc;	/* The Instance of the Interrupt Controller Driver */
+#endif
 
 /*
  * Shared variables used to test the callbacks.
@@ -127,7 +142,11 @@ int main(void)
 	 * Run the AxiPmon Interrupt example, specify the Device ID that is
 	 * generated in xparameters.h .
 	 */
+#ifndef SDT
 	Status = AxiPmonInterruptExample(AXIPMON_DEVICE_ID, &Metrics);
+#else
+	Status = AxiPmonInterruptExample(XPAR_XAXIPMON_0_BASEADDR, &Metrics);
+#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("AXI Performance Monitor Interrupt example \
@@ -172,7 +191,11 @@ int main(void)
 * @note   	None
 *
 ******************************************************************************/
+#ifndef SDT
 int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
+#else
+int AxiPmonInterruptExample(UINTPTR BaseAddress, u32 *Metrics)
+#endif
 {
 	int Status;
 	XAxiPmon_Config *ConfigPtr;
@@ -185,12 +208,16 @@ int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
 	/*
 	 * Initialize the AxiPmon driver.
 	 */
+#ifndef SDT
 	ConfigPtr = XAxiPmon_LookupConfig(AxiPmonDeviceId);
+#else
+	ConfigPtr = XAxiPmon_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 	XAxiPmon_CfgInitialize(AxiPmonInstPtr, ConfigPtr,
-				ConfigPtr->BaseAddress);
+			       ConfigPtr->BaseAddress);
 
 	/*
 	 * Self Test the Axi Performance Monitor device
@@ -200,10 +227,18 @@ int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
 		return XST_FAILURE;
 	}
 
-
+#ifndef SDT
 	Status = AxiPmonSetupIntrSystem(&Intc, AxiPmonInstPtr,
 					INTC_AXIPMON_INTERRUPT_ID);
-
+#else
+	Status = XSetupInterruptSystem(&AxiPmonInst, AxiPmonInterruptHandler,
+				       AxiPmonInst.Config.IntId,
+				       AxiPmonInst.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
 	/*
 	 * Select Agent and required set of Metrics for a Counter.
@@ -212,13 +247,13 @@ int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
 	 */
 
 	XAxiPmon_SetMetrics(AxiPmonInstPtr, SlotId, XAPM_METRIC_SET_0,
-				XAPM_METRIC_COUNTER_0);
+			    XAPM_METRIC_COUNTER_0);
 
 	/*
 	 * Set Incrementer Ranges
 	 */
 	XAxiPmon_SetIncrementerRange(AxiPmonInstPtr, XAPM_INCREMENTER_0,
-							Range2, Range1);
+				     Range2, Range1);
 
 
 	XAxiPmon_SetSampleInterval(AxiPmonInstPtr, SampleInterval);
@@ -254,7 +289,7 @@ int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
 
 
 	/** Wait until Sample Interval Overflow occurs */
-	while(!(SampleCounterIntr));
+	while (!(SampleCounterIntr));
 
 
 	/** Disable Sample Interval Counter */
@@ -268,7 +303,7 @@ int AxiPmonInterruptExample(u16 AxiPmonDeviceId, u32 *Metrics)
 
 	/* Get Sampled Metric Counter 0 in Metrics */
 	*Metrics = XAxiPmon_GetSampledMetricCounter(AxiPmonInstPtr,
-					XAPM_METRIC_COUNTER_0);
+			XAPM_METRIC_COUNTER_0);
 	/*
 	 * Disable Metric Counters.
 	 */
@@ -336,11 +371,11 @@ static void AxiPmonInterruptHandler(void *CallBackRef)
 	 */
 	XAxiPmon_IntrClear(AxiPmonPtr, IntrStatus);
 
- }
+}
 
 
 
-
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -359,8 +394,8 @@ static void AxiPmonInterruptHandler(void *CallBackRef)
 * @note		None.
 *
 ******************************************************************************/
-static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
-								u16 IntrId)
+static int AxiPmonSetupIntrSystem(INTC *IntcInstancePtr, XAxiPmon *InstancePtr,
+				  u16 IntrId)
 {
 	int Status;
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -379,7 +414,7 @@ static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
 	 * specific interrupt processing for the device.
 	 */
 	Status = XIntc_Connect(IntcInstancePtr, IntrId,
-		(XInterruptHandler) AxiPmonInterruptHandler, InstancePtr);
+			       (XInterruptHandler) AxiPmonInterruptHandler, InstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -410,7 +445,7 @@ static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
 		return XST_FAILURE;
 	}
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -421,7 +456,7 @@ static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
 	 * specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, IntrId,
-		(XInterruptHandler) AxiPmonInterruptHandler, InstancePtr);
+				 (XInterruptHandler) AxiPmonInterruptHandler, InstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -436,8 +471,8 @@ static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
 	 * Register the interrupt controller handler with the exception table.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				(Xil_ExceptionHandler) INTC_HANDLER,
-					IntcInstancePtr);
+				     (Xil_ExceptionHandler) INTC_HANDLER,
+				     IntcInstancePtr);
 	/*
 	 * Enable exceptions.
 	 */
@@ -445,3 +480,4 @@ static int AxiPmonSetupIntrSystem(INTC* IntcInstancePtr, XAxiPmon* InstancePtr,
 
 	return XST_SUCCESS;
 }
+#endif

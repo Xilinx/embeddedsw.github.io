@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeofdm
    </div>
@@ -121,10 +121,7 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaeafbf7142bebfebc4391dd3bd3b61600">XDFEOFDM_U32_NUM_BITS</a>&#160;&#160;&#160;(32U)</td></tr>
-<tr class="memdesc:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bits in register.  <a href="#gaeafbf7142bebfebc4391dd3bd3b61600">More...</a><br/></td></tr>
-<tr class="separator:gaeafbf7142bebfebc4391dd3bd3b61600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab4ee35983c0d92285d640affefc3dcad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gab4ee35983c0d92285d640affefc3dcad">XDFEOFDM_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(0U)</td></tr>
+<tr class="memitem:gab4ee35983c0d92285d640affefc3dcad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gab4ee35983c0d92285d640affefc3dcad">XDFEOFDM_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(1U)</td></tr>
 <tr class="memdesc:gab4ee35983c0d92285d640affefc3dcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="#gab4ee35983c0d92285d640affefc3dcad">More...</a><br/></td></tr>
 <tr class="separator:gab4ee35983c0d92285d640affefc3dcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca6bdd93682f011cf7af49604858e6c4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaca6bdd93682f011cf7af49604858e6c4">XDFEOFDM_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -154,6 +151,9 @@ Macros</h2></td></tr>
 <tr class="memitem:gad235a4fa132b4f4c9beb9cfee8ddce9e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gad235a4fa132b4f4c9beb9cfee8ddce9e">XDFEOFDM_FT_SEQ_LENGTH_MAX</a>&#160;&#160;&#160;(16U)</td></tr>
 <tr class="memdesc:gad235a4fa132b4f4c9beb9cfee8ddce9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum Fourier transform sequence length.  <a href="#gad235a4fa132b4f4c9beb9cfee8ddce9e">More...</a><br/></td></tr>
 <tr class="separator:gad235a4fa132b4f4c9beb9cfee8ddce9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8781db2b27a846747e58ff160bea6751"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga8781db2b27a846747e58ff160bea6751">XDFEOFDM_PHASE_COMPENSATION_MAX</a>&#160;&#160;&#160;(112U)</td></tr>
+<tr class="memdesc:ga8781db2b27a846747e58ff160bea6751"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum phase compensation weight.  <a href="#ga8781db2b27a846747e58ff160bea6751">More...</a><br/></td></tr>
+<tr class="separator:ga8781db2b27a846747e58ff160bea6751"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaeafab20b94b13688c3ba2ebb493529e0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaeafab20b94b13688c3ba2ebb493529e0">XDFEOFDM_VERSION_OFFSET</a>&#160;&#160;&#160;0x00U</td></tr>
 <tr class="memdesc:gaeafab20b94b13688c3ba2ebb493529e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#gaeafab20b94b13688c3ba2ebb493529e0">More...</a><br/></td></tr>
 <tr class="separator:gaeafab20b94b13688c3ba2ebb493529e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,6 +175,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga8c2dcbe1d468362b993722f835791fa1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga8c2dcbe1d468362b993722f835791fa1">XDFEOFDM_STATE_LOW_POWER_OFFSET</a>&#160;&#160;&#160;0x24U</td></tr>
 <tr class="memdesc:ga8c2dcbe1d468362b993722f835791fa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga8c2dcbe1d468362b993722f835791fa1">More...</a><br/></td></tr>
 <tr class="separator:ga8c2dcbe1d468362b993722f835791fa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaea248a7cadbcf63b8acdc413c5162874"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaea248a7cadbcf63b8acdc413c5162874">XDFEOFDM_STATE_OFDM_ENABLE_OFFSET</a>&#160;&#160;&#160;0x28U</td></tr>
+<tr class="memdesc:gaea248a7cadbcf63b8acdc413c5162874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#gaea248a7cadbcf63b8acdc413c5162874">More...</a><br/></td></tr>
+<tr class="separator:gaea248a7cadbcf63b8acdc413c5162874"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga23f908b0a14027e8ea7b9d44fc6f17e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga23f908b0a14027e8ea7b9d44fc6f17e9">XDFEOFDM_TRIGGERS_ACTIVATE_OFFSET</a>&#160;&#160;&#160;0x30U</td></tr>
 <tr class="memdesc:ga23f908b0a14027e8ea7b9d44fc6f17e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga23f908b0a14027e8ea7b9d44fc6f17e9">More...</a><br/></td></tr>
 <tr class="separator:ga23f908b0a14027e8ea7b9d44fc6f17e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,9 +202,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga6f2e9858a4871fdb4416e7299e48c7ff"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga6f2e9858a4871fdb4416e7299e48c7ff">XDFEOFDM_STATUS_SATURATION_OFFSET</a>&#160;&#160;&#160;0x50U</td></tr>
 <tr class="memdesc:ga6f2e9858a4871fdb4416e7299e48c7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga6f2e9858a4871fdb4416e7299e48c7ff">More...</a><br/></td></tr>
 <tr class="separator:ga6f2e9858a4871fdb4416e7299e48c7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1909d9a15274e8f4754baf5a7855c40c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga1909d9a15274e8f4754baf5a7855c40c">XDFEOFDM_TUSER_FRAME_LOC_OFFSET</a>&#160;&#160;&#160;0x60U</td></tr>
-<tr class="memdesc:ga1909d9a15274e8f4754baf5a7855c40c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga1909d9a15274e8f4754baf5a7855c40c">More...</a><br/></td></tr>
-<tr class="separator:ga1909d9a15274e8f4754baf5a7855c40c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga328b7b3d83094cce8d3f2a29a4664ebd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga328b7b3d83094cce8d3f2a29a4664ebd">XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET</a>&#160;&#160;&#160;0x60U</td></tr>
+<tr class="memdesc:ga328b7b3d83094cce8d3f2a29a4664ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga328b7b3d83094cce8d3f2a29a4664ebd">More...</a><br/></td></tr>
+<tr class="separator:ga328b7b3d83094cce8d3f2a29a4664ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabbba0c8c80b0eac239ccc29f06f65acf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gabbba0c8c80b0eac239ccc29f06f65acf">XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET</a>&#160;&#160;&#160;0x1000U</td></tr>
 <tr class="memdesc:gabbba0c8c80b0eac239ccc29f06f65acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#gabbba0c8c80b0eac239ccc29f06f65acf">More...</a><br/></td></tr>
 <tr class="separator:gabbba0c8c80b0eac239ccc29f06f65acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -238,7 +241,13 @@ Macros</h2></td></tr>
 <tr class="memitem:ga6658c280433797f9088bfded3e11bf92"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga6658c280433797f9088bfded3e11bf92">XDFEOFDM_CARRIER_CONFIGURATION2_NEXT_OFFSET</a>(X)&#160;&#160;&#160;(0x1540U + (X &lt;&lt; 2U))</td></tr>
 <tr class="memdesc:ga6658c280433797f9088bfded3e11bf92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#ga6658c280433797f9088bfded3e11bf92">More...</a><br/></td></tr>
 <tr class="separator:ga6658c280433797f9088bfded3e11bf92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac0365d88ff2b68ab1265a08ced0b8c3e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gac0365d88ff2b68ab1265a08ced0b8c3e">XDFEOFDM_COMPATIBLE_STRING</a>&#160;&#160;&#160;&quot;xlnx,xdfe-ofdm-1.1&quot;</td></tr>
+<tr class="memitem:gaf35ef67b2f64ae4e7e24f1ae65f9ebfa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaf35ef67b2f64ae4e7e24f1ae65f9ebfa">XDFEOFDM_PHASE_COMPENSATION_CURRENT_OFFSET</a>(X)&#160;&#160;&#160;(0x2000U + (X &lt;&lt; 2U))</td></tr>
+<tr class="memdesc:gaf35ef67b2f64ae4e7e24f1ae65f9ebfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#gaf35ef67b2f64ae4e7e24f1ae65f9ebfa">More...</a><br/></td></tr>
+<tr class="separator:gaf35ef67b2f64ae4e7e24f1ae65f9ebfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac634ca59f051217073d77db51eae66c4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gac634ca59f051217073d77db51eae66c4">XDFEOFDM_PHASE_COMPENSATION_NEXT_OFFSET</a>(X)&#160;&#160;&#160;(0x3000U + (X &lt;&lt; 2U))</td></tr>
+<tr class="memdesc:gac634ca59f051217073d77db51eae66c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register offset.  <a href="#gac634ca59f051217073d77db51eae66c4">More...</a><br/></td></tr>
+<tr class="separator:gac634ca59f051217073d77db51eae66c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac0365d88ff2b68ab1265a08ced0b8c3e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gac0365d88ff2b68ab1265a08ced0b8c3e">XDFEOFDM_COMPATIBLE_STRING</a>&#160;&#160;&#160;&quot;xlnx,xdfe-ofdm-2.0&quot;</td></tr>
 <tr class="memdesc:gac0365d88ff2b68ab1265a08ced0b8c3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device name property.  <a href="#gac0365d88ff2b68ab1265a08ced0b8c3e">More...</a><br/></td></tr>
 <tr class="separator:gac0365d88ff2b68ab1265a08ced0b8c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac19ea8ab6170b162ac40927cc7002254"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gac19ea8ab6170b162ac40927cc7002254">XDFEOFDM_PLATFORM_DEVICE_DIR</a>&#160;&#160;&#160;&quot;/sys/bus/platform/devices/&quot;</td></tr>
@@ -339,6 +348,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5e4d810d0e04bbad650fbb60115254e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga5e4d810d0e04bbad650fbb60115254e4">XDfeOfdm_SetTriggersCfg</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, <a class="el" href="struct_x_dfe_ofdm___trigger_cfg.html">XDfeOfdm_TriggerCfg</a> *TriggerCfg)</td></tr>
 <tr class="memdesc:ga5e4d810d0e04bbad650fbb60115254e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets trigger configuration.  <a href="#ga5e4d810d0e04bbad650fbb60115254e4">More...</a><br/></td></tr>
 <tr class="separator:ga5e4d810d0e04bbad650fbb60115254e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#gaef986bcb74ec77dff1a72b67deab3f9e">XDfeOfdm_SetTuserOutFrameLocation</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, u32 TuserOutFrameLocation)</td></tr>
+<tr class="memdesc:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF.  <a href="#gaef986bcb74ec77dff1a72b67deab3f9e">More...</a><br/></td></tr>
+<tr class="separator:gaef986bcb74ec77dff1a72b67deab3f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga54bde32062a405022c4d2881439f61a2"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga54bde32062a405022c4d2881439f61a2">XDfeOfdm_GetTuserOutFrameLocation</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga54bde32062a405022c4d2881439f61a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF.  <a href="#ga54bde32062a405022c4d2881439f61a2">More...</a><br/></td></tr>
+<tr class="separator:ga54bde32062a405022c4d2881439f61a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3233d744d373a9bd445f462a21af6118"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeofdm.html#ga3233d744d373a9bd445f462a21af6118">XDfeOfdm_SetTUserDelay</a> (const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *InstancePtr, u32 Delay)</td></tr>
 <tr class="memdesc:ga3233d744d373a9bd445f462a21af6118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the delay, which will be added to TUSER and TLAST (delay matched through the IP).  <a href="#ga3233d744d373a9bd445f462a21af6118">More...</a><br/></td></tr>
 <tr class="separator:ga3233d744d373a9bd445f462a21af6118"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,7 +462,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -501,7 +516,7 @@ Functions</h2></td></tr>
 
 <p>Maximum CC sequence number. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#ga0f253b33e1be8d4b37bbddf681669a13">XDfeOfdm_GetEmptyCCCfg()</a>, <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#ga0f253b33e1be8d4b37bbddf681669a13">XDfeOfdm_GetEmptyCCCfg()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -517,7 +532,7 @@ Functions</h2></td></tr>
 
 <p>Maximum sequence length. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -553,8 +568,6 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#ga0f253b33e1be8d4b37bbddf681669a13">XDfeOfdm_GetEmptyCCCfg()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ga264b9a7d9a5bb357278d3543cb16cba0"></a>
@@ -569,7 +582,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -589,7 +602,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -612,7 +625,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDFEOFDM_COMPATIBLE_STRING&#160;&#160;&#160;&quot;xlnx,xdfe-ofdm-1.1&quot;</td>
+          <td class="memname">#define XDFEOFDM_COMPATIBLE_STRING&#160;&#160;&#160;&quot;xlnx,xdfe-ofdm-2.0&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -674,7 +687,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDFEOFDM_DRIVER_VERSION_MINOR&#160;&#160;&#160;(0U)</td>
+          <td class="memname">#define XDFEOFDM_DRIVER_VERSION_MINOR&#160;&#160;&#160;(1U)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -697,6 +710,8 @@ Functions</h2></td></tr>
 
 <p>Maximum FT sequence number. </p>
 
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="gad235a4fa132b4f4c9beb9cfee8ddce9e"></a>
@@ -710,8 +725,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maximum Fourier transform sequence length. </p>
-
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>.</p>
 
 </div>
 </div>
@@ -747,7 +760,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, and <a class="el" href="group__dfeofdm.html#ga0f253b33e1be8d4b37bbddf681669a13">XDfeOfdm_GetEmptyCCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -763,7 +776,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -783,7 +796,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>.</p>
 
 </div>
 </div>
@@ -798,8 +811,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maximum number of driver instances running at the same time. </p>
-
-<p>Referenced by <a class="el" href="group__dfeofdm.html#ga765082b84acafa5bcef9c2ad92bb7cf6">XDfeOfdm_InstanceClose()</a>, and <a class="el" href="group__dfeofdm.html#ga432a6579323bb9a5ec591489ffc2ac0f">XDfeOfdm_InstanceInit()</a>.</p>
 
 </div>
 </div>
@@ -832,6 +843,58 @@ Functions</h2></td></tr>
 <p>Node name maximum length. </p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga432a6579323bb9a5ec591489ffc2ac0f">XDfeOfdm_InstanceInit()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf35ef67b2f64ae4e7e24f1ae65f9ebfa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDFEOFDM_PHASE_COMPENSATION_CURRENT_OFFSET</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">X</td><td>)</td>
+          <td>&#160;&#160;&#160;(0x2000U + (X &lt;&lt; 2U))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register offset. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga8781db2b27a846747e58ff160bea6751"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDFEOFDM_PHASE_COMPENSATION_MAX&#160;&#160;&#160;(112U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum phase compensation weight. </p>
+
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gade552f0bcf5ed9eac51ca4fcc4b983fa">XDfeOfdm_AddCCtoCCCfg()</a>, and <a class="el" href="group__dfeofdm.html#ga38d91645f0bc01f170a6333fb22f47cd">XDfeOfdm_UpdateCCinCCCfg()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gac634ca59f051217073d77db51eae66c4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDFEOFDM_PHASE_COMPENSATION_NEXT_OFFSET</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">X</td><td>)</td>
+          <td>&#160;&#160;&#160;(0x3000U + (X &lt;&lt; 2U))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register offset. </p>
 
 </div>
 </div>
@@ -876,6 +939,22 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Register offset. </p>
+
+</div>
+</div>
+<a class="anchor" id="gaea248a7cadbcf63b8acdc413c5162874"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDFEOFDM_STATE_OFDM_ENABLE_OFFSET&#160;&#160;&#160;0x28U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register offset. </p>
+
+<p>Referenced by <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>.</p>
 
 </div>
 </div>
@@ -1003,7 +1082,7 @@ Functions</h2></td></tr>
 
 <p>Register offset. </p>
 
-<p>Referenced by <a class="el" href="group__dfeofdm.html#gac49b03eaed4ce4083b5d51650a121158">XDfeOfdm_EnableCCUpdateTrigger()</a>, <a class="el" href="group__dfeofdm.html#ga8432ece95eb4a12d2f1eb60e87436809">XDfeOfdm_GetTriggersCfg()</a>, <a class="el" href="group__dfeofdm.html#ga01a406ff1a9f5562ee5fc7c7a28ea237">XDfeOfdm_Initialize()</a>, and <a class="el" href="group__dfeofdm.html#ga5e4d810d0e04bbad650fbb60115254e4">XDfeOfdm_SetTriggersCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#gac49b03eaed4ce4083b5d51650a121158">XDfeOfdm_EnableCCUpdateTrigger()</a>, <a class="el" href="group__dfeofdm.html#ga8432ece95eb4a12d2f1eb60e87436809">XDfeOfdm_GetTriggersCfg()</a>, and <a class="el" href="group__dfeofdm.html#ga5e4d810d0e04bbad650fbb60115254e4">XDfeOfdm_SetTriggersCfg()</a>.</p>
 
 </div>
 </div>
@@ -1023,31 +1102,19 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga1909d9a15274e8f4754baf5a7855c40c"></a>
+<a class="anchor" id="ga328b7b3d83094cce8d3f2a29a4664ebd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDFEOFDM_TUSER_FRAME_LOC_OFFSET&#160;&#160;&#160;0x60U</td>
+          <td class="memname">#define XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET&#160;&#160;&#160;0x60U</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Register offset. </p>
 
-</div>
-</div>
-<a class="anchor" id="gaeafbf7142bebfebc4391dd3bd3b61600"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define XDFEOFDM_U32_NUM_BITS&#160;&#160;&#160;(32U)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Number of bits in register. </p>
+<p>Referenced by <a class="el" href="group__dfeofdm.html#ga54bde32062a405022c4d2881439f61a2">XDfeOfdm_GetTuserOutFrameLocation()</a>, and <a class="el" href="group__dfeofdm.html#gaef986bcb74ec77dff1a72b67deab3f9e">XDfeOfdm_SetTuserOutFrameLocation()</a>.</p>
 
 </div>
 </div>
@@ -1231,7 +1298,8 @@ Functions</h2></td></tr>
 <li>XST_FAILURE if error occurs.</li>
 </ul>
 </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeOfdm_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap, CarrierCfg, FTseq); XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#gac49b03eaed4ce4083b5d51650a121158">XDfeOfdm_EnableCCUpdateTrigger()</a>, <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aab5e131c361e68b90e4351670b9b6ec85">XDFEOFDM_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
@@ -1327,7 +1395,7 @@ Functions</h2></td></tr>
 
 <p>Adds specified CCID, with specified configuration, to a local CC configuration structure. </p>
 <p>If there is insufficient capacity for the new CC the function will return an error. Initiates CC update (enable CCUpdate trigger TUSER Single Shot).</p>
-<p>The returned CCCfg.CCSequence is transleted as there is no explicite indication that SEQUENCE[i] is not used - 0 can define the slot as either used or not used. Sequence data that is returned in the CCIDSequence is not the same as what is written in the registers. The translation is:</p>
+<p>The returned CCCfg.CCSequence is transleted as there is no explicit indication that SEQUENCE[i] is not used - 0 can define the slot as either used or not used. Sequence data that is returned in the CCIDSequence is not the same as what is written in the registers. The translation is:</p>
 <ul>
 <li>CCIDSequence.CCID[i] = -1 - if [i] is unused slot</li>
 <li>CCIDSequence.CCID[i] = CCID - if [i] is used slot</li>
@@ -1350,7 +1418,7 @@ Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#aa428f3c890556622538228163b94e266">XDfeOfdm_CarrierCfg::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2162ce8645de30643f71dcd6daeaae15">XDfeOfdm_InternalCarrierCfg::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#ga8781db2b27a846747e58ff160bea6751">XDFEOFDM_PHASE_COMPENSATION_MAX</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -1393,7 +1461,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___status.html#acf8828edf030249444e48a6ddba48600">XDfeOfdm_Status::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#a44d833d3eb4c76c14f844e3e3b3b8b4a">XDfeOfdm_Status::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aace4b8584b3e30af0f4665953329bb93">XDfeOfdm_Status::Saturation</a>, <a class="el" href="group__dfeofdm.html#gacca5da23f0d94e8a3e1e1c2f6f5280cf">XDFEOFDM_STATUS_ISR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga6f2e9858a4871fdb4416e7299e48c7ff">XDFEOFDM_STATUS_SATURATION_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___status.html#acf8828edf030249444e48a6ddba48600">XDfeOfdm_Status::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#a44d833d3eb4c76c14f844e3e3b3b8b4a">XDfeOfdm_Status::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aa2c11c23eceeae6341234d06c19edce8">XDfeOfdm_Status::Overflow</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aace4b8584b3e30af0f4665953329bb93">XDfeOfdm_Status::Saturation</a>, <a class="el" href="group__dfeofdm.html#gacca5da23f0d94e8a3e1e1c2f6f5280cf">XDFEOFDM_STATUS_ISR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga6f2e9858a4871fdb4416e7299e48c7ff">XDFEOFDM_STATUS_SATURATION_OFFSET</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga6d938668e6e1b73a585775cbe0eab471">XDfeOfdm_AddCCExample()</a>, and <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -1433,7 +1501,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___model_parameters.html#ab3eea5fdd0f6aef6e40b19c2a4e9f87a">XDfeOfdm_ModelParameters::AntennaInterleave</a>, <a class="el" href="struct_x_dfe_ofdm___config.html#a7019e60230034c910288a2a3e2523884">XDfeOfdm_Config::AntennaInterleave</a>, <a class="el" href="struct_x_dfe_ofdm.html#a8400ce059751b5bc46dbce6cf9cc8e3f">XDfeOfdm::Config</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a9aa2f3a5d250912399f20e9e781c085b">XDfeOfdm_Version::Major</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#af5fcebc75c34601d4a802e10cce5409c">XDfeOfdm_Version::Minor</a>, <a class="el" href="struct_x_dfe_ofdm___cfg.html#a38c1c79086484df53f2f1a6285f2d9f8">XDfeOfdm_Cfg::ModelParams</a>, <a class="el" href="struct_x_dfe_ofdm___model_parameters.html#adc43d413c0fb6208c2e5562f4b33f157">XDfeOfdm_ModelParameters::NumAntenna</a>, <a class="el" href="struct_x_dfe_ofdm___config.html#aaa5d6fa86588a75218cd3cd5562c2353">XDfeOfdm_Config::NumAntenna</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a07307e027316a832b6234574fc99383f">XDfeOfdm_Version::Patch</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a253dc76cd0f291a746d1daac0ae53486">XDfeOfdm_Version::Revision</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="struct_x_dfe_ofdm___cfg.html#ad9d93d7772122b3375effab5910358a5">XDfeOfdm_Cfg::Version</a>, <a class="el" href="group__dfeofdm.html#ga6ab8bc5d1f42caa7e8146da1c4d96977">XDFEOFDM_MODEL_PARAM_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gaf6dac479582d5d7271bd42649efd571e">XDFEOFDM_RESET_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa80209d129faeae7e529b68c3927db3cf">XDFEOFDM_STATE_CONFIGURED</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa4bb607567495464ddbb620d55a620509">XDFEOFDM_STATE_RESET</a>, and <a class="el" href="group__dfeofdm.html#gaeafab20b94b13688c3ba2ebb493529e0">XDFEOFDM_VERSION_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___model_parameters.html#ab3eea5fdd0f6aef6e40b19c2a4e9f87a">XDfeOfdm_ModelParameters::AntennaInterleave</a>, <a class="el" href="struct_x_dfe_ofdm___config.html#a7019e60230034c910288a2a3e2523884">XDfeOfdm_Config::AntennaInterleave</a>, <a class="el" href="struct_x_dfe_ofdm.html#a8400ce059751b5bc46dbce6cf9cc8e3f">XDfeOfdm::Config</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a9aa2f3a5d250912399f20e9e781c085b">XDfeOfdm_Version::Major</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#af5fcebc75c34601d4a802e10cce5409c">XDfeOfdm_Version::Minor</a>, <a class="el" href="struct_x_dfe_ofdm___cfg.html#a38c1c79086484df53f2f1a6285f2d9f8">XDfeOfdm_Cfg::ModelParams</a>, <a class="el" href="struct_x_dfe_ofdm___model_parameters.html#adc43d413c0fb6208c2e5562f4b33f157">XDfeOfdm_ModelParameters::NumAntenna</a>, <a class="el" href="struct_x_dfe_ofdm___config.html#aaa5d6fa86588a75218cd3cd5562c2353">XDfeOfdm_Config::NumAntenna</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a07307e027316a832b6234574fc99383f">XDfeOfdm_Version::Patch</a>, <a class="el" href="struct_x_dfe_ofdm___model_parameters.html#a6a8b4558e597f67f99f88b09b6ee50d6">XDfeOfdm_ModelParameters::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___config.html#a229f0f20ed45912dbd01cb87341ab877">XDfeOfdm_Config::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___version.html#a253dc76cd0f291a746d1daac0ae53486">XDfeOfdm_Version::Revision</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="struct_x_dfe_ofdm___cfg.html#ad9d93d7772122b3375effab5910358a5">XDfeOfdm_Cfg::Version</a>, <a class="el" href="group__dfeofdm.html#ga6ab8bc5d1f42caa7e8146da1c4d96977">XDFEOFDM_MODEL_PARAM_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gaf6dac479582d5d7271bd42649efd571e">XDFEOFDM_RESET_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa80209d129faeae7e529b68c3927db3cf">XDFEOFDM_STATE_CONFIGURED</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa4bb607567495464ddbb620d55a620509">XDFEOFDM_STATE_RESET</a>, and <a class="el" href="group__dfeofdm.html#gaeafab20b94b13688c3ba2ebb493529e0">XDFEOFDM_VERSION_OFFSET</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga6d938668e6e1b73a585775cbe0eab471">XDfeOfdm_AddCCExample()</a>, and <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -1594,7 +1662,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>For a sequence conversion see <a class="el" href="group__dfeofdm.html#gade552f0bcf5ed9eac51ca4fcc4b983fa" title="Adds specified CCID, with specified configuration, to a local CC configuration structure. ">XDfeOfdm_AddCCtoCCCfg()</a> comment. </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#abb1dfc3322c160a614c6ef1d368767f5">XDfeOfdm_FTSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76ec325f1e745eab6ac9ffeb8f5b8513">XDfeOfdm_CCCfg::FTSequence</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#ad10a1708e5beb766fa2407c3758b1a42">XDfeOfdm_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm.html#a7d4890cb9afbd7f99f1834e5742ac006">XDfeOfdm::NotUsedCCID</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#ga77105f63fdec0adbc177206c0dec7955">XDFEOFDM_CC_SEQUENCE_CURRENT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gabe5a2d3319a496412d5fd1f6748e36e7">XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gac474ad3d13e38f25a68a5178afbf11dd">XDFEOFDM_FT_SEQUENCE_CURRENT_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#gabbba0c8c80b0eac239ccc29f06f65acf">XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#abb1dfc3322c160a614c6ef1d368767f5">XDfeOfdm_FTSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76ec325f1e745eab6ac9ffeb8f5b8513">XDfeOfdm_CCCfg::FTSequence</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#ad10a1708e5beb766fa2407c3758b1a42">XDfeOfdm_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm.html#a7d4890cb9afbd7f99f1834e5742ac006">XDfeOfdm::NotUsedCCID</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#ga77105f63fdec0adbc177206c0dec7955">XDFEOFDM_CC_SEQUENCE_CURRENT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gac474ad3d13e38f25a68a5178afbf11dd">XDFEOFDM_FT_SEQUENCE_CURRENT_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#gabbba0c8c80b0eac239ccc29f06f65acf">XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga1c8d3aa8c1f29eb8df896e023b08b1f8">XDfeOfdm_AddCC()</a>, <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>, <a class="el" href="group__dfeofdm.html#gab4b76205775085efdfab3a9fd3f1b6b6">XDfeOfdm_RemoveCC()</a>, and <a class="el" href="group__dfeofdm.html#gad480967f4d1a18152e2e324cd8514cef">XDfeOfdm_UpdateCC()</a>.</p>
 
@@ -1660,7 +1728,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#abb1dfc3322c160a614c6ef1d368767f5">XDfeOfdm_FTSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76ec325f1e745eab6ac9ffeb8f5b8513">XDfeOfdm_CCCfg::FTSequence</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#ad10a1708e5beb766fa2407c3758b1a42">XDfeOfdm_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#gabe5a2d3319a496412d5fd1f6748e36e7">XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#gabbba0c8c80b0eac239ccc29f06f65acf">XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#abb1dfc3322c160a614c6ef1d368767f5">XDfeOfdm_FTSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76ec325f1e745eab6ac9ffeb8f5b8513">XDfeOfdm_CCCfg::FTSequence</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#ad10a1708e5beb766fa2407c3758b1a42">XDfeOfdm_CCSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, and <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>.</p>
 
 </div>
 </div>
@@ -1697,7 +1765,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___status.html#acf8828edf030249444e48a6ddba48600">XDfeOfdm_Status::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#a44d833d3eb4c76c14f844e3e3b3b8b4a">XDfeOfdm_Status::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aace4b8584b3e30af0f4665953329bb93">XDfeOfdm_Status::Saturation</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#adf029f9a8749eeb0e32c7b746862cc6d">XDfeOfdm_Status::SaturationCCID</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aa08cdef43e5dee673925674a92cd8512">XDfeOfdm_Status::SaturationCount</a>, <a class="el" href="group__dfeofdm.html#gacca5da23f0d94e8a3e1e1c2f6f5280cf">XDFEOFDM_STATUS_ISR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga6f2e9858a4871fdb4416e7299e48c7ff">XDFEOFDM_STATUS_SATURATION_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___status.html#acf8828edf030249444e48a6ddba48600">XDfeOfdm_Status::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#a44d833d3eb4c76c14f844e3e3b3b8b4a">XDfeOfdm_Status::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aa2c11c23eceeae6341234d06c19edce8">XDfeOfdm_Status::Overflow</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aace4b8584b3e30af0f4665953329bb93">XDfeOfdm_Status::Saturation</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#adf029f9a8749eeb0e32c7b746862cc6d">XDfeOfdm_Status::SaturationCCID</a>, <a class="el" href="struct_x_dfe_ofdm___status.html#aa08cdef43e5dee673925674a92cd8512">XDfeOfdm_Status::SaturationCount</a>, <a class="el" href="group__dfeofdm.html#gacca5da23f0d94e8a3e1e1c2f6f5280cf">XDFEOFDM_STATUS_ISR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga6f2e9858a4871fdb4416e7299e48c7ff">XDFEOFDM_STATUS_SATURATION_OFFSET</a>.</p>
 
 </div>
 </div>
@@ -1734,7 +1802,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a5c15043f94d8d6fc50f2adace2b5cf6e">XDfeOfdm_InterruptMask::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a8a4b6b0b25807e006b10f796f370f0d4">XDfeOfdm_InterruptMask::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a3b2fae4f642b7c02b2a3605a69ff3e7d">XDfeOfdm_InterruptMask::Saturation</a>, and <a class="el" href="group__dfeofdm.html#ga069b0f05a4563481ffc7983b9523a89b">XDFEOFDM_STATUS_IMR_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a5c15043f94d8d6fc50f2adace2b5cf6e">XDfeOfdm_InterruptMask::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a8a4b6b0b25807e006b10f796f370f0d4">XDfeOfdm_InterruptMask::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a97ced32c8a8cd23f9ed64f321b9ee337">XDfeOfdm_InterruptMask::Overflow</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a3b2fae4f642b7c02b2a3605a69ff3e7d">XDfeOfdm_InterruptMask::Saturation</a>, and <a class="el" href="group__dfeofdm.html#ga069b0f05a4563481ffc7983b9523a89b">XDFEOFDM_STATUS_IMR_OFFSET</a>.</p>
 
 </div>
 </div>
@@ -1829,6 +1897,34 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga54bde32062a405022c4d2881439f61a2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XDfeOfdm_GetTuserOutFrameLocation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF. </p>
+<p>TUSER bit width is fixed to its default value of 8. Therefore, legal values of FRAME_BIT are 0 to 7.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the OFDM instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>TUSER OutFrame Location </dd></dl>
+
+<p>References <a class="el" href="group__dfeofdm.html#ga328b7b3d83094cce8d3f2a29a4664ebd">XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga95bec20efb52b90b2b6a2d96e51e8989"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1907,7 +2003,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___init.html#a442ea1755b41de1b2b2b8dec54c638f3">XDfeOfdm_Init::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___trigger.html#a7588c100fa85f1c3921c785dc949577b">XDfeOfdm_Trigger::Mode</a>, <a class="el" href="struct_x_dfe_ofdm.html#a7d4890cb9afbd7f99f1834e5742ac006">XDfeOfdm::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="struct_x_dfe_ofdm___trigger.html#a1fa09d1d1e1eb52f107b13c4aee499e0">XDfeOfdm_Trigger::StateOutput</a>, <a class="el" href="struct_x_dfe_ofdm___trigger.html#a37c8475c743bbb66242ae0abdeba3be6">XDfeOfdm_Trigger::TriggerEnable</a>, <a class="el" href="group__dfeofdm.html#gab26ec2f9895f4a72b4dead7e4137d581">XDFEOFDM_CARRIER_CONFIGURATION1_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#gae1b70fbbb2d556355abe4fb78ee9a1ee">XDFEOFDM_CC_SEQ_LENGTH_MAX</a>, <a class="el" href="group__dfeofdm.html#ga264b9a7d9a5bb357278d3543cb16cba0">XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gae5f35c98343c933671d832cd1b441fcd">XDFEOFDM_CC_SEQUENCE_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gad235a4fa132b4f4c9beb9cfee8ddce9e">XDFEOFDM_FT_SEQ_LENGTH_MAX</a>, <a class="el" href="group__dfeofdm.html#gacccf80de05caee9cbab2f53ad168fb9c">XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#ga03a024e83b3697ca03df7b4b38fd820e">XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa80209d129faeae7e529b68c3927db3cf">XDFEOFDM_STATE_CONFIGURED</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa697df6f5fef047d5a215f24b86203c04">XDFEOFDM_STATE_INITIALISED</a>, and <a class="el" href="group__dfeofdm.html#ga00da3a691a4c29db82ac73dc8cec19e1">XDFEOFDM_TRIGGERS_CC_UPDATE_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___init.html#a442ea1755b41de1b2b2b8dec54c638f3">XDfeOfdm_Init::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm.html#a7d4890cb9afbd7f99f1834e5742ac006">XDfeOfdm::NotUsedCCID</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#gacccf80de05caee9cbab2f53ad168fb9c">XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa80209d129faeae7e529b68c3927db3cf">XDFEOFDM_STATE_CONFIGURED</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa697df6f5fef047d5a215f24b86203c04">XDFEOFDM_STATE_INITIALISED</a>, and <a class="el" href="group__dfeofdm.html#gaea248a7cadbcf63b8acdc413c5162874">XDFEOFDM_STATE_OFDM_ENABLE_OFFSET</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga6d938668e6e1b73a585775cbe0eab471">XDfeOfdm_AddCCExample()</a>, and <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -1935,7 +2031,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm.html#a8aa2214cf5d791e9a2992027ede72936">XDfeOfdm::Device</a>, <a class="el" href="struct_x_dfe_ofdm.html#a13700eb62a7a5d65decb22b291f09edb">XDfeOfdm::NodeName</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#ga845d4be1302f35864f7c53001bb4d793">XDFEOFDM_MAX_NUM_INSTANCES</a>, and <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa18fda0537eb680a4d71a6565095c1b1a">XDFEOFDM_STATE_NOT_READY</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm.html#a8aa2214cf5d791e9a2992027ede72936">XDfeOfdm::Device</a>, <a class="el" href="struct_x_dfe_ofdm.html#a13700eb62a7a5d65decb22b291f09edb">XDfeOfdm::NodeName</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, and <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa18fda0537eb680a4d71a6565095c1b1a">XDFEOFDM_STATE_NOT_READY</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga6d938668e6e1b73a585775cbe0eab471">XDfeOfdm_AddCCExample()</a>, and <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -1969,7 +2065,7 @@ Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm.html#a8aa2214cf5d791e9a2992027ede72936">XDfeOfdm::Device</a>, <a class="el" href="struct_x_dfe_ofdm.html#a13700eb62a7a5d65decb22b291f09edb">XDfeOfdm::NodeName</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#ga845d4be1302f35864f7c53001bb4d793">XDFEOFDM_MAX_NUM_INSTANCES</a>, <a class="el" href="group__dfeofdm.html#ga2b1ba159bec0d962b41efafc034d2eae">XDFEOFDM_NODE_NAME_MAX_LENGTH</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa18fda0537eb680a4d71a6565095c1b1a">XDFEOFDM_STATE_NOT_READY</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa56db899ae9d39e13af58ecb472ef9448">XDFEOFDM_STATE_READY</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm.html#a8aa2214cf5d791e9a2992027ede72936">XDfeOfdm::Device</a>, <a class="el" href="struct_x_dfe_ofdm.html#a13700eb62a7a5d65decb22b291f09edb">XDfeOfdm::NodeName</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#ga2b1ba159bec0d962b41efafc034d2eae">XDFEOFDM_NODE_NAME_MAX_LENGTH</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa18fda0537eb680a4d71a6565095c1b1a">XDFEOFDM_STATE_NOT_READY</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aa56db899ae9d39e13af58ecb472ef9448">XDFEOFDM_STATE_READY</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga6d938668e6e1b73a585775cbe0eab471">XDfeOfdm_AddCCExample()</a>, and <a class="el" href="group__dfeofdm.html#gaf304555910bc042c2de8437ac0b448d3">XDfeOfdm_MultiAddCCExample()</a>.</p>
 
@@ -2057,7 +2153,8 @@ Functions</h2></td></tr>
 <li>XST_FAILURE if error occurs.</li>
 </ul>
 </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeOfdm_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID, FTseq); XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#gac49b03eaed4ce4083b5d51650a121158">XDfeOfdm_EnableCCUpdateTrigger()</a>, <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aab5e131c361e68b90e4351670b9b6ec85">XDFEOFDM_STATE_OPERATIONAL</a>, and <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>.</p>
 
@@ -2184,7 +2281,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a5c15043f94d8d6fc50f2adace2b5cf6e">XDfeOfdm_InterruptMask::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a8a4b6b0b25807e006b10f796f370f0d4">XDfeOfdm_InterruptMask::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a3b2fae4f642b7c02b2a3605a69ff3e7d">XDfeOfdm_InterruptMask::Saturation</a>, <a class="el" href="group__dfeofdm.html#ga51dd6e1664ac317ccef183d0973d5337">XDFEOFDM_STATUS_IDR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga5bfd3c5594caab967abdc33fdbfce0dc">XDFEOFDM_STATUS_IER_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a5c15043f94d8d6fc50f2adace2b5cf6e">XDfeOfdm_InterruptMask::CCUpdate</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a8a4b6b0b25807e006b10f796f370f0d4">XDfeOfdm_InterruptMask::FTCCSequenceError</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a97ced32c8a8cd23f9ed64f321b9ee337">XDfeOfdm_InterruptMask::Overflow</a>, <a class="el" href="struct_x_dfe_ofdm___interrupt_mask.html#a3b2fae4f642b7c02b2a3605a69ff3e7d">XDfeOfdm_InterruptMask::Saturation</a>, <a class="el" href="group__dfeofdm.html#ga51dd6e1664ac317ccef183d0973d5337">XDFEOFDM_STATUS_IDR_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga5bfd3c5594caab967abdc33fdbfce0dc">XDFEOFDM_STATUS_IER_OFFSET</a>.</p>
 
 </div>
 </div>
@@ -2221,7 +2318,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#gab26ec2f9895f4a72b4dead7e4137d581">XDFEOFDM_CARRIER_CONFIGURATION1_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#ga6658c280433797f9088bfded3e11bf92">XDFEOFDM_CARRIER_CONFIGURATION2_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#gae1b70fbbb2d556355abe4fb78ee9a1ee">XDFEOFDM_CC_SEQ_LENGTH_MAX</a>, <a class="el" href="group__dfeofdm.html#gabe5a2d3319a496412d5fd1f6748e36e7">XDFEOFDM_CC_SEQUENCE_LENGTH_CURRENT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#ga264b9a7d9a5bb357278d3543cb16cba0">XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#gae5f35c98343c933671d832cd1b441fcd">XDFEOFDM_CC_SEQUENCE_NEXT_OFFSET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_sequence.html#aaab78fa8bb86d61092ca378481dabe8b">XDfeOfdm_CCSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#abb1dfc3322c160a614c6ef1d368767f5">XDfeOfdm_FTSequence::CCID</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76a6f2071855ae642f660f362342666e">XDfeOfdm_CCCfg::CCSequence</a>, <a class="el" href="struct_x_dfe_ofdm.html#aa1738ac34100b358af36b726814d1d09">XDfeOfdm::CCSequenceLength</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad7d569669e17596881cc055545c38334">XDfeOfdm_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#a76ec325f1e745eab6ac9ffeb8f5b8513">XDfeOfdm_CCCfg::FTSequence</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#gab26ec2f9895f4a72b4dead7e4137d581">XDFEOFDM_CARRIER_CONFIGURATION1_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#ga6658c280433797f9088bfded3e11bf92">XDFEOFDM_CARRIER_CONFIGURATION2_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gab8b2ac9b5c081fc45107e1e5f682b157">XDFEOFDM_CC_NUM</a>, <a class="el" href="group__dfeofdm.html#gae1b70fbbb2d556355abe4fb78ee9a1ee">XDFEOFDM_CC_SEQ_LENGTH_MAX</a>, <a class="el" href="group__dfeofdm.html#ga264b9a7d9a5bb357278d3543cb16cba0">XDFEOFDM_CC_SEQUENCE_LENGTH_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#gae5f35c98343c933671d832cd1b441fcd">XDFEOFDM_CC_SEQUENCE_NEXT_OFFSET</a>, <a class="el" href="group__dfeofdm.html#ga9f3b3e7ef1ded7f8fdb9019cc06945c7">XDFEOFDM_FT_NUM</a>, <a class="el" href="group__dfeofdm.html#gacccf80de05caee9cbab2f53ad168fb9c">XDFEOFDM_FT_SEQUENCE_LENGTH_NEXT_OFFSET</a>, and <a class="el" href="group__dfeofdm.html#ga03a024e83b3697ca03df7b4b38fd820e">XDFEOFDM_FT_SEQUENCE_NEXT_OFFSET</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeofdm.html#ga1c8d3aa8c1f29eb8df896e023b08b1f8">XDfeOfdm_AddCC()</a>, <a class="el" href="group__dfeofdm.html#gab4b76205775085efdfab3a9fd3f1b6b6">XDfeOfdm_RemoveCC()</a>, <a class="el" href="group__dfeofdm.html#ga9daeab383fd324e6812ae53d248ceeaa">XDfeOfdm_SetNextCCCfgAndTrigger()</a>, and <a class="el" href="group__dfeofdm.html#gad480967f4d1a18152e2e324cd8514cef">XDfeOfdm_UpdateCC()</a>.</p>
 
@@ -2347,6 +2444,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gaef986bcb74ec77dff1a72b67deab3f9e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDfeOfdm_SetTuserOutFrameLocation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_x_dfe_ofdm.html">XDfeOfdm</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>TuserOutFrameLocation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets TUSER Framing bit Location register where bit location indicates which bit to be used for sending framing information on DL_DOUT IF and M_AXIS_TBASE IF. </p>
+<p>TUSER bit width is fixed to its default value of 8. Therefore, legal values of FRAME_BIT are 0 to 7.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the OFDM instance. </td></tr>
+    <tr><td class="paramname">TuserOutFrameLocation</td><td>Requested TUSER OutFrame Location. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aab5e131c361e68b90e4351670b9b6ec85">XDFEOFDM_STATE_OPERATIONAL</a>, and <a class="el" href="group__dfeofdm.html#ga328b7b3d83094cce8d3f2a29a4664ebd">XDFEOFDM_TUSER_OUTFRAME_LOCATION_OFFSET</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gad480967f4d1a18152e2e324cd8514cef"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2398,7 +2533,8 @@ Functions</h2></td></tr>
 <li>XST_FAILURE if error occurs.</li>
 </ul>
 </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeofdm.html#gaba6f602fc482a8c8fd22320d2ba34356" title="Clears events status. ">XDfeOfdm_ClearEventStatus()</a> before running this API.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfeOfdm_GetCurrentCCCfg(InstancePtr, CCCfg); XDfeOfdm_UpdateCCinCCCfg(InstancePtr, CCCfg, CCID, CarrierCfg, FTseq); XDfeOfdm_SetNextCCCfgAndTrigger(InstancePtr, CCCfg); </dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm.html#a1e567a49d18d5f25268062a28bb0e7a4">XDfeOfdm::StateId</a>, <a class="el" href="group__dfeofdm.html#gac49b03eaed4ce4083b5d51650a121158">XDfeOfdm_EnableCCUpdateTrigger()</a>, <a class="el" href="group__dfeofdm.html#ga895d37558bb4351d118f1970d79a2d7b">XDfeOfdm_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gaef40749e07cdc3a4a00a2e8228d5d8b8">XDfeOfdm_SetNextCCCfg()</a>, <a class="el" href="group__dfeofdm.html#gga8fe9073be4e4298b7c4bf8fe8c565b2aab5e131c361e68b90e4351670b9b6ec85">XDFEOFDM_STATE_OPERATIONAL</a>, and <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>.</p>
 
@@ -2463,7 +2599,7 @@ Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_ofdm___c_c_cfg.html#af8215954862eaa1ceb1cdf785003abb5">XDfeOfdm_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a686973c0ebb9efea76c75f12c751c797">XDfeOfdm_CarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2be0adf2857f6b06b6b016fea30a8d34">XDfeOfdm_InternalCarrierCfg::CommsStandard</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a28c3b141657d28642106a2dc91ccba60">XDfeOfdm_CarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a1b001fa194a4d3fe13c200a4f491324e">XDfeOfdm_InternalCarrierCfg::FftSize</a>, <a class="el" href="struct_x_dfe_ofdm___f_t_sequence.html#a1c5d8cfef8f5dbaff69b2a110bc6b9f9">XDfeOfdm_FTSequence::Length</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a9c5b2618474f9abfff97ce4d6cb8e04a">XDfeOfdm_CarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#af5a13d6f57aadd11848a84273fd57046">XDfeOfdm_InternalCarrierCfg::Numerology</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a8e89be7280a23bf544fe02ea64627477">XDfeOfdm_CarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a6c1777dfb0d4cc4573474a717cc58c98">XDfeOfdm_InternalCarrierCfg::NumSubcarriers</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#aa428f3c890556622538228163b94e266">XDfeOfdm_CarrierCfg::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#a2162ce8645de30643f71dcd6daeaae15">XDfeOfdm_InternalCarrierCfg::PhaseCompensation</a>, <a class="el" href="struct_x_dfe_ofdm___carrier_cfg.html#a5e7eccd516549e6547c4881c74bf578c">XDfeOfdm_CarrierCfg::ScaleFactor</a>, <a class="el" href="struct_x_dfe_ofdm___internal_carrier_cfg.html#ad9ec683d3980800f0a067b0e329f749c">XDfeOfdm_InternalCarrierCfg::ScaleFactor</a>, <a class="el" href="group__dfeofdm.html#ga8781db2b27a846747e58ff160bea6751">XDFEOFDM_PHASE_COMPENSATION_MAX</a>, <a class="el" href="group__dfeofdm.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeofdm.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 </div>
 </div>

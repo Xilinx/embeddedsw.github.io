@@ -5,7 +5,7 @@ var struct_x_qspi_psu =
     [ "GenFifoBus", "struct_x_qspi_psu.html#a04675183fe2c3b312d0866a2a2f9b906", null ],
     [ "GenFifoCS", "struct_x_qspi_psu.html#adbe5c279e1de1f98d3f63bc30cd2d2a4", null ],
     [ "GenFifoEntries", "struct_x_qspi_psu.html#ac08fabd6f7822d5aeffe328e45266196", null ],
-    [ "IsBusy", "struct_x_qspi_psu.html#ab6f2b5a35423f4a2c34053eaeec3dcd6", null ],
+    [ "IsBusy", "struct_x_qspi_psu.html#ad253a7c807935d5b3178966e74f6821c", null ],
     [ "IsManualstart", "struct_x_qspi_psu.html#a159f22a8fb11877c4b4b2888d8153fd2", null ],
     [ "IsReady", "struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31", null ],
     [ "IsUnaligned", "struct_x_qspi_psu.html#a1e1d64fc74cfc2442eedaf0eb3f97263", null ],

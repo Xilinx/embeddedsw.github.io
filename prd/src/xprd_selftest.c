@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xprd_selftest.c
-* @addtogroup prd_v2_1
+* @addtogroup prd Overview
 * @{
 *
 * This file contains the self-test functions for the XPrd driver.
@@ -62,7 +63,7 @@ s32 XPrd_SelfTest(XPrd *InstancePtr)
 
 	/* Read the value from the status register */
 	Data = XPrd_ReadReg((InstancePtr->Config.BaseAddress) +
-			XPRD_CTRL_OFFSET);
+			    XPRD_CTRL_OFFSET);
 
 	return XST_SUCCESS;
 }

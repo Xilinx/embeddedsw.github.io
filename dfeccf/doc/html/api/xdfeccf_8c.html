@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">dfeccf
    </div>
@@ -110,7 +110,12 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 1.4   dc     04/08/22 Update documentation
 1.5   dc     10/28/22 Switching Uplink/Downlink support
       dc     11/11/22 Align AddCC to switchable UL/DL algorithm
-      dc     11/25/22 Update macro of SW version Minor number</pre><pre></pre> </div><table class="memberdecls">
+      dc     11/25/22 Update macro of SW version Minor number
+1.6   dc     06/15/23 Function comment update
+      dc     06/20/23 Depricate obsolete APIs
+      cog    07/04/23 Add support for SDT
+      dc     08/29/23 Remove immediate trigger
+</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:gaf1ffcef735a004f30f8dd892ec39c0eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaf1ffcef735a004f30f8dd892ec39c0eb">XDFECCF_ACTIVE_SET_NUM</a>&#160;&#160;&#160;(8U)</td></tr>
@@ -122,7 +127,7 @@ Macros</h2></td></tr>
 <tr class="memitem:gad31524f178963c8fcccf0686fee63fec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gad31524f178963c8fcccf0686fee63fec">XDFECCF_TAP_NUMBER_MAX</a>&#160;&#160;&#160;(256U)</td></tr>
 <tr class="memdesc:gad31524f178963c8fcccf0686fee63fec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum tap number.  <a href="group__dfeccf.html#gad31524f178963c8fcccf0686fee63fec">More...</a><br/></td></tr>
 <tr class="separator:gad31524f178963c8fcccf0686fee63fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">XDFECCF_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(5U)</td></tr>
+<tr class="memitem:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">XDFECCF_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(6U)</td></tr>
 <tr class="memdesc:gaa2f6335105623e17b2cc8a465d4319c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="group__dfeccf.html#gaa2f6335105623e17b2cc8a465d4319c1">More...</a><br/></td></tr>
 <tr class="separator:gaa2f6335105623e17b2cc8a465d4319c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae3d3aae158a4f739a39c87e623c410e3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#gae3d3aae158a4f739a39c87e623c410e3">XDFECCF_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -159,7 +164,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga31a32e74a6fef543927f191eed1fbbb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC configuration in non-switchable mode.  <a href="group__dfeccf.html#ga31a32e74a6fef543927f191eed1fbbb0">More...</a><br/></td></tr>
 <tr class="separator:ga31a32e74a6fef543927f191eed1fbbb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9dabb47e081bcecd0c865126daa6a92a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">XDfeCcf_GetCurrentCCCfgSwitchable</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgDownlink, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfgUplink)</td></tr>
-<tr class="memdesc:ga9dabb47e081bcecd0c865126daa6a92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC and NCO configuration for Downlink and Uplink in switchable mode.  <a href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">More...</a><br/></td></tr>
+<tr class="memdesc:ga9dabb47e081bcecd0c865126daa6a92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current CC configuration for Downlink and Uplink in switchable mode.  <a href="group__dfeccf.html#ga9dabb47e081bcecd0c865126daa6a92a">More...</a><br/></td></tr>
 <tr class="separator:ga9dabb47e081bcecd0c865126daa6a92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga699c8f140720fcbf22543c7758ace5d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeccf.html#ga699c8f140720fcbf22543c7758ace5d5">XDfeCcf_GetEmptyCCCfg</a> (const <a class="el" href="struct_x_dfe_ccf.html">XDfeCcf</a> *InstancePtr, <a class="el" href="struct_x_dfe_ccf___c_c_cfg.html">XDfeCcf_CCCfg</a> *CCCfg)</td></tr>
 <tr class="memdesc:ga699c8f140720fcbf22543c7758ace5d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns configuration structure CCCfg with CCCfg-&gt;Sequence.Length value set in <a class="el" href="group__dfeccf.html#ga59ba4de329a470946d9fc2a040d7a492" title="Reads configuration from device tree/xparameters.h and IP registers. ">XDfeCcf_Configure()</a>, array CCCfg-&gt;Sequence.CCID[] members are set to not used value (-1) and the other CCCfg members are set to 0.  <a href="group__dfeccf.html#ga699c8f140720fcbf22543c7758ace5d5">More...</a><br/></td></tr>

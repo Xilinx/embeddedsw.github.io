@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -30,10 +31,9 @@
 *****************************************************************************/
 
 /***************************** Include Files ********************************/
-
-#include "xparameters.h"
 #include "xtmrctr.h"
 #include "xil_printf.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions ****************************/
 
@@ -42,7 +42,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define TMRCTR_DEVICE_ID  XPAR_TMRCTR_0_DEVICE_ID
+#else
+#define XTMRCTR_BASEADDRESS XPAR_XTMRCTR_0_BASEADDR
+#endif
 
 /*
  * This example only uses the 1st of the 2 timer counters contained in a
@@ -57,8 +61,11 @@
 
 
 /************************** Function Prototypes ****************************/
-
-int TmrCtrSelfTestExample(u16 DeviceId, u8 TmrCtrNumber);
+#ifndef SDT
+int TmrCtrSelfTestExample(u16 DeviceId);
+#else
+int TmrCtrSelfTestExample(UINTPTR BaseAddr);
+#endif
 
 /************************** Variable Definitions **************************/
 
@@ -82,8 +89,11 @@ XTmrCtr TimerCounter; /* The instance of the timer counter */
 int main(void)
 {
 	int Status;
-
-	Status = TmrCtrSelfTestExample(TMRCTR_DEVICE_ID, TIMER_COUNTER_0);
+#ifndef SDT
+	Status = TmrCtrSelfTestExample(TMRCTR_DEVICE_ID);
+#else
+	Status = TmrCtrSelfTestExample(XTMRCTR_BASEADDRESS);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Tmrctr selftest Example Failed\r\n");
 		return XST_FAILURE;
@@ -115,15 +125,24 @@ int main(void)
 * @note		None
 *
 ****************************************************************************/
-int TmrCtrSelfTestExample(u16 DeviceId, u8 TmrCtrNumber)
+#ifndef SDT
+int TmrCtrSelfTestExample(u16 DeviceId)
+#else
+int TmrCtrSelfTestExample(UINTPTR BaseAddr)
+#endif
 {
 	int Status;
+	u8 TmrCtrNumber = TIMER_COUNTER_0;
 	XTmrCtr *TmrCtrInstancePtr = &TimerCounter;
 
 	/*
 	 * Initialize the TmrCtr driver so that it iss ready to use
 	 */
+#ifndef SDT
 	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, DeviceId);
+#else
+	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, BaseAddr);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}

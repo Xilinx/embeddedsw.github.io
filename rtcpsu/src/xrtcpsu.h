@@ -1,12 +1,13 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
  * @file xrtcpsu.h
- * @addtogroup rtcpsu_v1_11
+ * @addtogroup rtcpsu Overview
  * @{
  * @details
  *
@@ -100,7 +101,7 @@
  *                       Array has no bounds specified,Logical conjunctions need brackets.
  * 1.10	 sne    08/28/20 Modify Makefile to support parallel make execution.
  * 1.11	 sne	04/23/21 Fixed doxygen warnings.
- *
+ * 1.13  ht	06/22/23 Added support for system device-tree flow.
  * </pre>
  *
  ******************************************************************************/
@@ -159,8 +160,18 @@ typedef void (*XRtcPsu_Handler) (void *CallBackRef, u32 Event);
  * This typedef contains configuration information for a device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;	/**< Register base address */
+#ifdef SDT
+	u16 IntrId[2];          /**< Bits[11:0] Interrupt-id Bits[15:12]
+				 * trigger type and level flags */
+	UINTPTR IntrParent;     /**< Bit[0] Interrupt parent type Bit[64/32:1]
+				 * Parent base address */
+#endif
 } XRtcPsu_Config;
 
 /**
@@ -222,7 +233,7 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *****************************************************************************/
 #define XRtcPsu_WriteSetTime(InstancePtr, Time) \
 	XRtcPsu_WriteReg(((InstancePtr)->RtcConfig.BaseAddr + \
-				XRTC_SET_TIME_WR_OFFSET), (Time))
+			  XRTC_SET_TIME_WR_OFFSET), (Time))
 
 /****************************************************************************/
 /**
@@ -240,7 +251,7 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *****************************************************************************/
 #define XRtcPsu_GetLastSetTime(InstancePtr) \
 	XRtcPsu_ReadReg((InstancePtr)->RtcConfig.BaseAddr + \
-		XRTC_SET_TIME_RD_OFFSET)
+			XRTC_SET_TIME_RD_OFFSET)
 
 /****************************************************************************/
 /**
@@ -291,7 +302,7 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *****************************************************************************/
 #define XRtcPsu_SetControlRegister(InstancePtr, Value) \
 	XRtcPsu_WriteReg((InstancePtr)->RtcConfig.BaseAddr + \
-		XRTC_CTL_OFFSET, (Value))
+			 XRTC_CTL_OFFSET, (Value))
 
 /****************************************************************************/
 /**
@@ -325,7 +336,7 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *****************************************************************************/
 #define XRtcPsu_SetSafetyCheck(InstancePtr, Value)	\
 	XRtcPsu_WriteReg((InstancePtr)->RtcConfig.BaseAddr + \
-			XRTC_SFTY_CHK_OFFSET, (Value))
+			 XRTC_SFTY_CHK_OFFSET, (Value))
 
 /****************************************************************************/
 /**
@@ -341,8 +352,8 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *
  *****************************************************************************/
 #define XRtcPsu_ResetAlarm(InstancePtr) \
-		XRtcPsu_WriteReg((InstancePtr)->RtcConfig.BaseAddr + \
-			XRTC_ALRM_OFFSET, XRTC_ALRM_RSTVAL)
+	XRtcPsu_WriteReg((InstancePtr)->RtcConfig.BaseAddr + \
+			 XRTC_ALRM_OFFSET, XRTC_ALRM_RSTVAL)
 
 /****************************************************************************/
 /**
@@ -359,7 +370,7 @@ extern XRtcPsu_Config XRtcPsu_ConfigTable[];
  *****************************************************************************/
 #define XRtcPsu_RoundOff(Number) \
 	(u32)(((Number) < (float)0) ? ((Number) - (float)0.5) : \
-		((Number) + (float)0.5))
+	      ((Number) + (float)0.5))
 
 /************************** Function Prototypes ******************************/
 
@@ -371,7 +382,7 @@ void XRtcPsu_SetAlarm(XRtcPsu *InstancePtr, u32 Alarm, u32 Periodic);
 void XRtcPsu_SecToDateTime(u32 Seconds, XRtcPsu_DT *dt);
 u32 XRtcPsu_DateTimeToSec(XRtcPsu_DT *dt);
 void XRtcPsu_CalculateCalibration(XRtcPsu *InstancePtr, u32 TimeReal,
-		u32 CrystalOscFreq);
+				  u32 CrystalOscFreq);
 u32 XRtcPsu_IsSecondsEventGenerated(XRtcPsu *InstancePtr);
 u32 XRtcPsu_IsAlarmEventGenerated(XRtcPsu *InstancePtr);
 u32 XRtcPsu_GetCurrentTime(XRtcPsu *InstancePtr);
@@ -382,13 +393,17 @@ void XRtcPsu_SetInterruptMask(XRtcPsu *InstancePtr, u32 Mask);
 void XRtcPsu_ClearInterruptMask(XRtcPsu *InstancePtr, u32 Mask);
 void XRtcPsu_InterruptHandler(XRtcPsu *InstancePtr);
 void XRtcPsu_SetHandler(XRtcPsu *InstancePtr, XRtcPsu_Handler FunctionPtr,
-			 void *CallBackRef);
+			void *CallBackRef);
 
 /* Functions in xrtcpsu_selftest.c */
 s32 XRtcPsu_SelfTest(XRtcPsu *InstancePtr);
 
 /* Functions in xrtcpsu_sinit.c */
+#ifndef SDT
 XRtcPsu_Config *XRtcPsu_LookupConfig(u16 DeviceId);
+#else
+XRtcPsu_Config *XRtcPsu_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 #ifdef __cplusplus
 }

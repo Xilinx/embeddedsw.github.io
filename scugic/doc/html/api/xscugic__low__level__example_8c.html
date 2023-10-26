@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">scugic
    </div>
@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('xscugic__low__level__example_8c.html',
       adk  20/07/22 Update the Xil_WaitForEventSet() API arguments as
                       per latest API.
 5.1   mus  02/15/23 Added support for VERSAL_NET.
+5.2   dp   06/20/23 Make interrupt as Group1 interrupt for Cortex-R52.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -124,7 +125,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__scugic.html#gad9945cea79930d883f977fc97e1aa292">XSCUGIC_ACK_INTID_MASK</a>, <a class="el" href="group__scugic.html#gaa65c329712b1a7f3ab12b0bf4ada058d">XSCUGIC_EOI_OFFSET</a>, <a class="el" href="group__scugic.html#ga5f1418c8f0e05b7f928c2fff42b4514d">XSCUGIC_INT_ACK_OFFSET</a>, <a class="el" href="xscugic__hw_8h.html#af5fb346faf5dff7820e4ce87c86f8eca">XScuGic_ReadReg</a>, and <a class="el" href="xscugic__hw_8h.html#a01c0f85e48858531c313ce22cbfd2dfa">XScuGic_WriteReg</a>.</p>
+<p>References <a class="el" href="group__scugic.html#gad9945cea79930d883f977fc97e1aa292">XSCUGIC_ACK_INTID_MASK</a>, <a class="el" href="group__scugic.html#gaa65c329712b1a7f3ab12b0bf4ada058d">XSCUGIC_EOI_OFFSET</a>, <a class="el" href="group__scugic.html#ga5f1418c8f0e05b7f928c2fff42b4514d">XSCUGIC_INT_ACK_OFFSET</a>, <a class="el" href="group__scugic.html#ga1027fc01e0c0efc80eadd0e6bb69f801">XSCUGIC_MAX_NUM_INTR_INPUTS</a>, <a class="el" href="xscugic__hw_8h.html#af5fb346faf5dff7820e4ce87c86f8eca">XScuGic_ReadReg</a>, and <a class="el" href="xscugic__hw_8h.html#a01c0f85e48858531c313ce22cbfd2dfa">XScuGic_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xscugic__low__level__example_8c.html#a41e86f1c34d18e351ce42a5aa0c4ce2e">SetupInterruptSystem()</a>.</p>
 

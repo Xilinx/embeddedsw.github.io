@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -21,6 +22,11 @@
 * 1.02  bsv  11/06/2019 XCframe_ClearCframeErr API added
 * 1.03  bsv  02/17/2020 XCframe_SafetyWriteReg API added
 * 1.04  bsv  07/15/2021 Fix doxygen warnings
+* 1.5   mss  09/04/2023 Fixed MISRA-C violation 10.1
+*       mss  09/04/2023 Fixed MISRA-C violation 10.4
+*       mss  09/04/2023 Fixed MISRA-C violation 7.2
+*       mss  09/04/2023 Fixed MISRA-C violation 4.6
+*       mss  09/04/2023 Fixed MISRA-C violation 8.13
 *
 * </pre>
 *
@@ -65,7 +71,7 @@
 * @note		None.
 *
 ******************************************************************************/
-s32 XCframe_CfgInitialize(XCframe *InstancePtr, XCframe_Config *CfgPtr,
+s32 XCframe_CfgInitialize(XCframe *InstancePtr,const XCframe_Config *CfgPtr,
 			u32 EffectiveAddr)
 {
 	/* Verify arguments. */
@@ -95,22 +101,22 @@ s32 XCframe_CfgInitialize(XCframe *InstancePtr, XCframe_Config *CfgPtr,
  * @return	None
  *
  ******************************************************************************/
-void XCframe_WriteReg(XCframe *InstancePtr, u32 AddrOffset,
-		XCframe_FrameNo FrameNo, Xuint128 *Val)
+void XCframe_WriteReg(const XCframe *InstancePtr, u32 AddrOffset,
+		XCframe_FrameNo FrameNo,const Xuint128 *Val)
 {
 	/* TODO check if we need to disable interrupts */
 	XCframe_WriteReg32(InstancePtr->Config.BaseAddress +
-			(FrameNo*XCFRAME_FRAME_OFFSET),
+			((u32)FrameNo*XCFRAME_FRAME_OFFSET),
 			AddrOffset, Val->Word0);
 	XCframe_WriteReg32(InstancePtr->Config.BaseAddress +
-			(FrameNo*XCFRAME_FRAME_OFFSET) ,
-			AddrOffset+4, Val->Word1);
+			((u32)FrameNo*XCFRAME_FRAME_OFFSET) ,
+			AddrOffset+4U, Val->Word1);
 	XCframe_WriteReg32(InstancePtr->Config.BaseAddress +
-			(FrameNo*XCFRAME_FRAME_OFFSET),
-			AddrOffset+8, Val->Word2);
+			((u32)FrameNo*XCFRAME_FRAME_OFFSET),
+			AddrOffset+8U, Val->Word2);
 	XCframe_WriteReg32(InstancePtr->Config.BaseAddress +
-			(FrameNo*XCFRAME_FRAME_OFFSET),
-			AddrOffset+12, Val->Word3);
+			((u32)FrameNo*XCFRAME_FRAME_OFFSET),
+			AddrOffset+12U, Val->Word3);
 }
 
 /*****************************************************************************/
@@ -125,17 +131,17 @@ void XCframe_WriteReg(XCframe *InstancePtr, u32 AddrOffset,
  * @return      None
  *
  ******************************************************************************/
-void XCframe_ReadReg(XCframe *InstancePtr, u32 AddrOffset,
+void XCframe_ReadReg(const XCframe *InstancePtr, u32 AddrOffset,
                 XCframe_FrameNo FrameNo, u32* ValPtr)
 {
         ValPtr[0] = XCframe_ReadReg32(InstancePtr->Config.BaseAddress +
-                        (FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset);
+                        ((u32)FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset);
         ValPtr[1] = XCframe_ReadReg32(InstancePtr->Config.BaseAddress +
-                        (FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+4);
+                        ((u32)FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+4U);
         ValPtr[2] = XCframe_ReadReg32(InstancePtr->Config.BaseAddress +
-                        (FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+8);
+                        ((u32)FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+8U);
         ValPtr[3] = XCframe_ReadReg32(InstancePtr->Config.BaseAddress +
-                        (FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+12);
+                        ((u32)FrameNo*XCFRAME_FRAME_OFFSET), AddrOffset+12U);
 }
 
 /*****************************************************************************/
@@ -151,10 +157,10 @@ void XCframe_ReadReg(XCframe *InstancePtr, u32 AddrOffset,
  * @return	Success or Failure
  *
  ******************************************************************************/
-int XCframe_SafetyWriteReg(XCframe *InstancePtr, u32 AddrOffset,
-		XCframe_FrameNo FrameNo, Xuint128 *Val)
+s32 XCframe_SafetyWriteReg(const XCframe *InstancePtr, u32 AddrOffset,
+		XCframe_FrameNo FrameNo,const Xuint128 *Val)
 {
-	int Status = XST_FAILURE;
+	s32 Status = XST_FAILURE;
 	u32 ReadVal[4U];
 
 	XCframe_WriteReg(InstancePtr, AddrOffset, FrameNo, Val);
@@ -177,7 +183,7 @@ int XCframe_SafetyWriteReg(XCframe *InstancePtr, u32 AddrOffset,
  * @return	None
  *
  ******************************************************************************/
-void XCframe_WriteCmd(XCframe *InstancePtr, XCframe_FrameNo CframeNo, u32 Cmd)
+void XCframe_WriteCmd(const XCframe *InstancePtr, XCframe_FrameNo CframeNo, u32 Cmd)
 {
 	Xuint128 CfrCmd={0};
 
@@ -197,13 +203,13 @@ void XCframe_WriteCmd(XCframe *InstancePtr, XCframe_FrameNo CframeNo, u32 Cmd)
  * @return	None
  *
  ******************************************************************************/
-void XCframe_VggTrim(XCframe *InstancePtr, Xuint128 *TrimVal)
+void XCframe_VggTrim(const XCframe *InstancePtr,const Xuint128 *TrimVal)
 {
 	Xuint128 MaskVal={0};
 
-        MaskVal.Word0 = 0xFFFFFFFF;
-        MaskVal.Word1 = 0xFFFFFFFF;
-        MaskVal.Word2 = 0xFFFFFFFF;
+        MaskVal.Word0 = XCFRAME_MASK_DEFVAL;
+        MaskVal.Word1 = XCFRAME_MASK_DEFVAL;
+        MaskVal.Word2 = XCFRAME_MASK_DEFVAL;
         XCframe_WriteReg(InstancePtr, XCFRAME_MASK_OFFSET,
                         XCFRAME_FRAME_BCAST, &MaskVal);
 
@@ -221,12 +227,12 @@ void XCframe_VggTrim(XCframe *InstancePtr, Xuint128 *TrimVal)
  * @return	None
  *
  ******************************************************************************/
-void XCframe_CramTrim(XCframe *InstancePtr, u32 TrimValue)
+void XCframe_CramTrim(const XCframe *InstancePtr, u32 TrimValue)
 {
 	Xuint128 TrimVal={0};
 	Xuint128 MaskVal={0};
 
-	MaskVal.Word0 = 0xFFFFFFFF;
+	MaskVal.Word0 = XCFRAME_MASK_DEFVAL;
 	XCframe_WriteReg(InstancePtr, XCFRAME_MASK_OFFSET,
 			XCFRAME_FRAME_BCAST, &MaskVal);
 
@@ -245,13 +251,13 @@ void XCframe_CramTrim(XCframe *InstancePtr, u32 TrimValue)
  * @return	None
  *
  ******************************************************************************/
-void XCframe_BramTrim(XCframe *InstancePtr, u32 TrimValue)
+void XCframe_BramTrim(const XCframe *InstancePtr, u32 TrimValue)
 {
 	Xuint128 TrimVal={0};
 	Xuint128 MaskVal={0};
 
-	MaskVal.Word0 = 0xFFFFFFFF;
-	MaskVal.Word1 = 0xFFFFFFFF;
+	MaskVal.Word0 = XCFRAME_MASK_DEFVAL;
+	MaskVal.Word1 = XCFRAME_MASK_DEFVAL;
 	XCframe_WriteReg(InstancePtr, XCFRAME_MASK_OFFSET,
 			XCFRAME_FRAME_BCAST, &MaskVal);
 
@@ -272,13 +278,13 @@ void XCframe_BramTrim(XCframe *InstancePtr, u32 TrimValue)
  * @return	None
  *
  ******************************************************************************/
-void XCframe_UramTrim(XCframe *InstancePtr, u32 TrimValue)
+void XCframe_UramTrim(const XCframe *InstancePtr, u32 TrimValue)
 {
 	Xuint128 TrimVal={0};
 	Xuint128 MaskVal={0};
 
-        MaskVal.Word0 = 0xFFFFFFFF;
-        MaskVal.Word1 = 0xFFFFFFFF;
+        MaskVal.Word0 = XCFRAME_MASK_DEFVAL;
+        MaskVal.Word1 = XCFRAME_MASK_DEFVAL;
         XCframe_WriteReg(InstancePtr, XCFRAME_MASK_OFFSET,
                         XCFRAME_FRAME_BCAST, &MaskVal);
 
@@ -301,7 +307,7 @@ void XCframe_UramTrim(XCframe *InstancePtr, u32 TrimValue)
  * @return	None
  *
  ******************************************************************************/
-void XCframe_SetReadParam(XCframe *InstancePtr,
+void XCframe_SetReadParam(const XCframe *InstancePtr,
 		XCframe_FrameNo CframeNo, u32 CframeLen)
 {
 	Xuint128 Value128={0};
@@ -311,7 +317,7 @@ void XCframe_SetReadParam(XCframe *InstancePtr,
 	XCframe_WriteCmd(InstancePtr, CframeNo,	XCFRAME_CMD_REG_RCFG);
 	XCframe_WriteReg(InstancePtr, XCFRAME_FAR_OFFSET, CframeNo, &Value128);
 
-	Value128.Word0=CframeLen/4;
+	Value128.Word0=CframeLen/4U;
 	XCframe_WriteReg(InstancePtr, XCFRAME_FRCNT_OFFSET, CframeNo, &Value128);
 }
 
@@ -324,7 +330,7 @@ void XCframe_SetReadParam(XCframe *InstancePtr,
  * @return	None
  *
  ******************************************************************************/
-void XCframe_ClearCframeErr(XCframe *InstancePtr)
+void XCframe_ClearCframeErr(const XCframe *InstancePtr)
 {
 	Xuint128 Value128={0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU};
 	Xil_AssertVoid(InstancePtr != NULL);

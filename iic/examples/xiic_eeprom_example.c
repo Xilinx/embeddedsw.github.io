@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2006 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2006 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -97,6 +98,7 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
+* 3.10  gm   07/09/23 Added SDT support
 *
 * </pre>
 *
@@ -108,11 +110,15 @@
 #include "xiic.h"
 #include "xil_exception.h"
 #include "xil_printf.h"
-
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
- #include "xintc.h"
+#include "xintc.h"
 #else
- #include "xscugic.h"
+#include "xscugic.h"
+#endif
 #endif
 
 /************************** Constant Definitions *****************************/
@@ -122,20 +128,24 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define IIC_DEVICE_ID	XPAR_IIC_0_DEVICE_ID
-
-
-
-#ifdef XPAR_INTC_0_DEVICE_ID
- #define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
- #define IIC_INTR_ID	XPAR_INTC_0_IIC_0_VEC_ID
- #define INTC			XIntc
- #define INTC_HANDLER	XIntc_InterruptHandler
 #else
- #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
- #define IIC_INTR_ID		XPAR_FABRIC_IIC_0_VEC_ID
- #define INTC			 	XScuGic
- #define INTC_HANDLER		XScuGic_InterruptHandler
+#define	XIIC_BASEADDRESS		XPAR_XIIC_0_BASEADDR
+#endif
+
+#ifndef SDT
+#ifdef XPAR_INTC_0_DEVICE_ID
+#define INTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
+#define IIC_INTR_ID	XPAR_INTC_0_IIC_0_VEC_ID
+#define INTC			XIntc
+#define INTC_HANDLER	XIntc_InterruptHandler
+#else
+#define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define IIC_INTR_ID		XPAR_FABRIC_IIC_0_VEC_ID
+#define INTC			 	XScuGic
+#define INTC_HANDLER		XScuGic_InterruptHandler
+#endif
 #endif
 
 
@@ -151,7 +161,6 @@
  */
 #define EEPROM_ADDRESS 		0x54	/* 0xA0 as an 8 bit number. */
 
-
 /*
  * The IIC_MUX_ADDRESS defines the address of the IIC MUX device on the
  * IIC bus. Note that since the address is only 7 bits, this constant is the
@@ -163,13 +172,13 @@
  * boards for further information about the Channel number to use EEPROM.
  */
 #define IIC_MUX_ADDRESS 		0x74
-#define IIC_EEPROM_CHANNEL		0x08
+#define IIC_EEPROM_CHANNEL		0x01
 
 /*
  * This define should be uncommented if there is IIC MUX on the board to which
  * this EEPROM is connected. The boards that have IIC MUX are KC705/ZC702/ZC706.
  */
-/* #define IIC_MUX_ENABLE */
+#define IIC_MUX_ENABLE
 
 /*
  * The page size determines how much data should be written at a time.
@@ -204,7 +213,9 @@ int EepromWriteData(u16 ByteCount);
 
 int EepromReadData(u8 *BufferPtr, u16 ByteCount);
 
+#ifndef SDT
 static int SetupInterruptSystem(XIic *IicInstPtr);
+#endif
 
 static void SendHandler(XIic *InstancePtr);
 
@@ -218,7 +229,9 @@ static int MuxInit(void);
 /************************** Variable Definitions *****************************/
 
 XIic IicInstance;	/* The instance of the IIC device. */
+#ifndef SDT
 INTC Intc; 	/* The instance of the Interrupt Controller Driver */
+#endif
 
 /*
  * Write buffer for writing a page.
@@ -247,6 +260,8 @@ u8 EepromIicAddr;		/* Variable for storing Eeprom IIC address */
 int main(void)
 {
 	int Status;
+
+	xil_printf("IIC eeprom Example\r\n");
 
 	/*
 	 * Run the EEPROM example.
@@ -282,13 +297,17 @@ int IicEepromExample(void)
 	/*
 	 * Initialize the IIC driver so that it is ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XIic_LookupConfig(IIC_DEVICE_ID);
+#else
+	ConfigPtr = XIic_LookupConfig(XIIC_BASEADDRESS);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_FAILURE;
 	}
 
 	Status = XIic_CfgInitialize(&IicInstance, ConfigPtr,
-			ConfigPtr->BaseAddress);
+				    ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -296,7 +315,13 @@ int IicEepromExample(void)
 	/*
 	 * Setup the Interrupt System.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&IicInstance);
+#else
+	Status = XSetupInterruptSystem(&IicInstance, &XIic_InterruptHandler,
+				       ConfigPtr->IntrId, ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -305,11 +330,11 @@ int IicEepromExample(void)
 	 * Set the Handlers for transmit and reception.
 	 */
 	XIic_SetSendHandler(&IicInstance, &IicInstance,
-				(XIic_Handler) SendHandler);
+			    (XIic_Handler) SendHandler);
 	XIic_SetRecvHandler(&IicInstance, &IicInstance,
-				(XIic_Handler) ReceiveHandler);
+			    (XIic_Handler) ReceiveHandler);
 	XIic_SetStatusHandler(&IicInstance, &IicInstance,
-				  (XIic_StatusHandler) StatusHandler);
+			      (XIic_StatusHandler) StatusHandler);
 
 
 #ifdef IIC_MUX_ENABLE
@@ -497,8 +522,7 @@ int EepromWriteData(u16 ByteCount)
 							 ByteCount);
 				if (Status == XST_SUCCESS) {
 					IicInstance.Stats.TxErrors = 0;
-				}
-				else {
+				} else {
 				}
 			}
 		}
@@ -542,8 +566,7 @@ int EepromReadData(u8 *BufferPtr, u16 ByteCount)
 	 */
 	if (sizeof(Address) == 1) {
 		WriteBuffer[0] = (u8) (EEPROM_TEST_START_ADDRESS);
-	}
-	else {
+	} else {
 		WriteBuffer[0] = (u8) (EEPROM_TEST_START_ADDRESS >> 8);
 		WriteBuffer[1] = (u8) (EEPROM_TEST_START_ADDRESS);
 	}
@@ -587,6 +610,7 @@ int EepromReadData(u8 *BufferPtr, u16 ByteCount)
 	return XST_SUCCESS;
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
 * This function setups the interrupt system so interrupts can occur for the
@@ -624,8 +648,8 @@ static int SetupInterruptSystem(XIic *IicInstPtr)
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XIntc_Connect(&Intc, IIC_INTR_ID,
-				   (XInterruptHandler) XIic_InterruptHandler,
-				   IicInstPtr);
+			       (XInterruptHandler) XIic_InterruptHandler,
+			       IicInstPtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -658,13 +682,13 @@ static int SetupInterruptSystem(XIic *IicInstPtr)
 	}
 
 	Status = XScuGic_CfgInitialize(&Intc, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	XScuGic_SetPriorityTriggerType(&Intc, IIC_INTR_ID,
-					0xA0, 0x3);
+				       0xA0, 0x3);
 
 	/*
 	 * Connect the interrupt handler that will be called when an
@@ -691,7 +715,7 @@ static int SetupInterruptSystem(XIic *IicInstPtr)
 	Xil_ExceptionInit();
 
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)INTC_HANDLER, &Intc);
+				     (Xil_ExceptionHandler)INTC_HANDLER, &Intc);
 
 	/* Enable non-critical exceptions */
 	Xil_ExceptionEnable();
@@ -700,6 +724,7 @@ static int SetupInterruptSystem(XIic *IicInstPtr)
 
 	return XST_SUCCESS;
 }
+#endif
 
 /*****************************************************************************/
 /**

@@ -2,7 +2,6 @@ var xdfeofdm_8c =
 [
     [ "XDFEOFDM_DRIVER_VERSION_MAJOR", "xdfeofdm_8c.html#gaca6bdd93682f011cf7af49604858e6c4", null ],
     [ "XDFEOFDM_DRIVER_VERSION_MINOR", "xdfeofdm_8c.html#gab4ee35983c0d92285d640affefc3dcad", null ],
-    [ "XDFEOFDM_U32_NUM_BITS", "xdfeofdm_8c.html#gaeafbf7142bebfebc4391dd3bd3b61600", null ],
     [ "XDfeOfdm_Activate", "xdfeofdm_8c.html#ga17cc3a5b3f29a0dc0065018d0fe3ec98", null ],
     [ "XDfeOfdm_AddCC", "xdfeofdm_8c.html#ga1c8d3aa8c1f29eb8df896e023b08b1f8", null ],
     [ "XDfeOfdm_AddCCtoCCCfg", "xdfeofdm_8c.html#gade552f0bcf5ed9eac51ca4fcc4b983fa", null ],
@@ -16,6 +15,7 @@ var xdfeofdm_8c =
     [ "XDfeOfdm_GetStateID", "xdfeofdm_8c.html#ga090de51506092c4ad878aea98e85bec2", null ],
     [ "XDfeOfdm_GetTriggersCfg", "xdfeofdm_8c.html#ga8432ece95eb4a12d2f1eb60e87436809", null ],
     [ "XDfeOfdm_GetTUserDelay", "xdfeofdm_8c.html#ga3f5f28e00b7b56e9ea37d4336543f998", null ],
+    [ "XDfeOfdm_GetTuserOutFrameLocation", "xdfeofdm_8c.html#ga54bde32062a405022c4d2881439f61a2", null ],
     [ "XDfeOfdm_GetVersions", "xdfeofdm_8c.html#ga95bec20efb52b90b2b6a2d96e51e8989", null ],
     [ "XDfeOfdm_Initialize", "xdfeofdm_8c.html#ga01a406ff1a9f5562ee5fc7c7a28ea237", null ],
     [ "XDfeOfdm_InstanceClose", "xdfeofdm_8c.html#ga765082b84acafa5bcef9c2ad92bb7cf6", null ],
@@ -27,6 +27,7 @@ var xdfeofdm_8c =
     [ "XDfeOfdm_SetNextCCCfgAndTrigger", "xdfeofdm_8c.html#ga9daeab383fd324e6812ae53d248ceeaa", null ],
     [ "XDfeOfdm_SetTriggersCfg", "xdfeofdm_8c.html#ga5e4d810d0e04bbad650fbb60115254e4", null ],
     [ "XDfeOfdm_SetTUserDelay", "xdfeofdm_8c.html#ga3233d744d373a9bd445f462a21af6118", null ],
+    [ "XDfeOfdm_SetTuserOutFrameLocation", "xdfeofdm_8c.html#gaef986bcb74ec77dff1a72b67deab3f9e", null ],
     [ "XDfeOfdm_UpdateCC", "xdfeofdm_8c.html#gad480967f4d1a18152e2e324cd8514cef", null ],
     [ "XDfeOfdm_UpdateCCinCCCfg", "xdfeofdm_8c.html#ga38d91645f0bc01f170a6333fb22f47cd", null ]
 ];

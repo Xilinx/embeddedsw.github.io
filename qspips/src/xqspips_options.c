@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xqspips_options.c
-* @addtogroup qspips_v3_10
+* @addtogroup qspips Overview
 * @{
 *
 * Contains functions for the configuration of the XQspiPs driver component.
@@ -116,7 +117,7 @@ s32 XQspiPs_SetOptions(XQspiPs *InstancePtr, u32 Options)
 	Options &= ~XQSPIPS_LQSPI_MODE_OPTION;
 
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_CR_OFFSET);
+				    XQSPIPS_CR_OFFSET);
 
 	/*
 	 * Loop through the options table, turning the option on or off
@@ -143,18 +144,18 @@ s32 XQspiPs_SetOptions(XQspiPs *InstancePtr, u32 Options)
 	 * Check for the LQSPI configuration options.
 	 */
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_LQSPI_CR_OFFSET);
+				    XQSPIPS_LQSPI_CR_OFFSET);
 
 
 	if (QspiOptions & XQSPIPS_LQSPI_MODE_OPTION) {
 		XQspiPs_WriteReg(InstancePtr->Config.BaseAddress,
-				  XQSPIPS_LQSPI_CR_OFFSET,
-				  XQSPIPS_LQSPI_CR_RST_STATE);
+				 XQSPIPS_LQSPI_CR_OFFSET,
+				 XQSPIPS_LQSPI_CR_RST_STATE);
 		XQspiPs_SetSlaveSelect(InstancePtr);
 	} else {
 		ConfigReg &= ~XQSPIPS_LQSPI_CR_LINEAR_MASK;
 		XQspiPs_WriteReg(InstancePtr->Config.BaseAddress,
-				  XQSPIPS_LQSPI_CR_OFFSET, ConfigReg);
+				 XQSPIPS_LQSPI_CR_OFFSET, ConfigReg);
 	}
 
 	return XST_SUCCESS;
@@ -190,7 +191,7 @@ u32 XQspiPs_GetOptions(XQspiPs *InstancePtr)
 	 * Get the current options from QSPI configuration register.
 	 */
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_CR_OFFSET);
+				    XQSPIPS_CR_OFFSET);
 
 	/*
 	 * Loop through the options table to grab options
@@ -205,7 +206,7 @@ u32 XQspiPs_GetOptions(XQspiPs *InstancePtr)
 	 * Check for the LQSPI configuration options.
 	 */
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_LQSPI_CR_OFFSET);
+				    XQSPIPS_LQSPI_CR_OFFSET);
 
 	if ((ConfigReg & XQSPIPS_LQSPI_CR_LINEAR_MASK) != 0) {
 		OptionsFlag |= XQSPIPS_LQSPI_MODE_OPTION;
@@ -257,15 +258,15 @@ s32 XQspiPs_SetClkPrescaler(XQspiPs *InstancePtr, u8 Prescaler)
 	 * results back to the configuration register.
 	 */
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_CR_OFFSET);
+				    XQSPIPS_CR_OFFSET);
 
 	ConfigReg &= ~XQSPIPS_CR_PRESC_MASK;
 	ConfigReg |= (u32) (Prescaler & XQSPIPS_CR_PRESC_MAXIMUM) <<
-			    XQSPIPS_CR_PRESC_SHIFT;
+		     XQSPIPS_CR_PRESC_SHIFT;
 
 	XQspiPs_WriteReg(InstancePtr->Config.BaseAddress,
-			  XQSPIPS_CR_OFFSET,
-			  ConfigReg);
+			 XQSPIPS_CR_OFFSET,
+			 ConfigReg);
 
 	return XST_SUCCESS;
 }
@@ -291,7 +292,7 @@ u8 XQspiPs_GetClkPrescaler(XQspiPs *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	ConfigReg = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-				      XQSPIPS_CR_OFFSET);
+				    XQSPIPS_CR_OFFSET);
 
 	ConfigReg &= XQSPIPS_CR_PRESC_MASK;
 
@@ -330,7 +331,7 @@ u8 XQspiPs_GetClkPrescaler(XQspiPs *InstancePtr)
 *
 ******************************************************************************/
 int XQspiPs_SetDelays(XQspiPs *InstancePtr, u8 DelayNss, u8 DelayBtwn,
-			 u8 DelayAfter, u8 DelayInit)
+		      u8 DelayAfter, u8 DelayInit)
 {
 	u32 DelayRegister;
 
@@ -352,7 +353,7 @@ int XQspiPs_SetDelays(XQspiPs *InstancePtr, u8 DelayNss, u8 DelayBtwn,
 	DelayRegister |= (u32) DelayInit;
 
 	XQspiPs_WriteReg(InstancePtr->Config.BaseAddress,
-			  XQSPIPS_DR_OFFSET, DelayRegister);
+			 XQSPIPS_DR_OFFSET, DelayRegister);
 
 	return XST_SUCCESS;
 }
@@ -380,7 +381,7 @@ int XQspiPs_SetDelays(XQspiPs *InstancePtr, u8 DelayNss, u8 DelayBtwn,
 *
 ******************************************************************************/
 void XQspiPs_GetDelays(XQspiPs *InstancePtr, u8 *DelayNss, u8 *DelayBtwn,
-			 u8 *DelayAfter, u8 *DelayInit)
+		       u8 *DelayAfter, u8 *DelayInit)
 {
 	u32 DelayRegister;
 
@@ -388,7 +389,7 @@ void XQspiPs_GetDelays(XQspiPs *InstancePtr, u8 *DelayNss, u8 *DelayBtwn,
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	DelayRegister = XQspiPs_ReadReg(InstancePtr->Config.BaseAddress,
-					 XQSPIPS_DR_OFFSET);
+					XQSPIPS_DR_OFFSET);
 
 	*DelayInit = (u8)(DelayRegister & XQSPIPS_DR_INIT_MASK);
 
@@ -399,6 +400,6 @@ void XQspiPs_GetDelays(XQspiPs *InstancePtr, u8 *DelayNss, u8 *DelayBtwn,
 			  XQSPIPS_DR_BTWN_SHIFT);
 
 	*DelayNss = (u8)((DelayRegister & XQSPIPS_DR_NSS_MASK) >>
-			  XQSPIPS_DR_NSS_SHIFT);
+			 XQSPIPS_DR_NSS_SHIFT);
 }
 /** @} */

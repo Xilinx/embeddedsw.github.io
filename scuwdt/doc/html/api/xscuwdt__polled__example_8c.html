@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">scuwdt
    </div>
@@ -78,6 +78,9 @@ $(document).ready(function(){initNavTree('xscuwdt__polled__example_8c.html','');
 <hr/>
 <p>
   1.00a sdm  01/15/10 First release
+  2.5   asa  07/18/23 Added support for workflow decouplig flow.
+                      Interrupt wrapper support has also been added.
+  2.5   dp   09/08/23 Update example to stop wdt at end of the test
 *</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -147,7 +150,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_scu_wdt___config.html#ac52347221ee482b6f07615f406193dc1">XScuWdt_Config::BaseAddr</a>, <a class="el" href="group__scuwdt__v2__4.html#ga1fee56fc3ec3c8b003e6ae0528703b1c">XScuWdt_CfgInitialize()</a>, <a class="el" href="group__scuwdt__v2__4.html#ga7dca99f7a6158d27399eb355f40e3367">XScuWdt_LoadWdt</a>, <a class="el" href="group__scuwdt__v2__4.html#ga899e316b67b7eab6cec1f5b99df25e4d">XScuWdt_LookupConfig()</a>, <a class="el" href="group__scuwdt__v2__4.html#ga9487e2c385d8dc9cf5f1f27539ca079f">XScuWdt_RestartWdt</a>, <a class="el" href="group__scuwdt__v2__4.html#ga8813e9f9df643de43359defc1a7a48bc">XScuWdt_SetWdMode</a>, and <a class="el" href="group__scuwdt__v2__4.html#ga87a7a8230fc5fa80f64cb66210e596b8">XScuWdt_Start()</a>.</p>
+<p>References <a class="el" href="struct_x_scu_wdt___config.html#ade7297db74ccde96bfc2e94f451b5a56">XScuWdt_Config::BaseAddr</a>, <a class="el" href="group___overview.html#ga1fee56fc3ec3c8b003e6ae0528703b1c">XScuWdt_CfgInitialize()</a>, <a class="el" href="group___overview.html#ga7dca99f7a6158d27399eb355f40e3367">XScuWdt_LoadWdt</a>, <a class="el" href="group___overview.html#ga899e316b67b7eab6cec1f5b99df25e4d">XScuWdt_LookupConfig()</a>, <a class="el" href="group___overview.html#ga9487e2c385d8dc9cf5f1f27539ca079f">XScuWdt_RestartWdt</a>, <a class="el" href="group___overview.html#ga8813e9f9df643de43359defc1a7a48bc">XScuWdt_SetWdMode</a>, <a class="el" href="group___overview.html#ga87a7a8230fc5fa80f64cb66210e596b8">XScuWdt_Start()</a>, and <a class="el" href="group___overview.html#gae1493503cc6e52afa681f23329e9abef">XScuWdt_Stop()</a>.</p>
 
 <p>Referenced by <a class="el" href="xscuwdt__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

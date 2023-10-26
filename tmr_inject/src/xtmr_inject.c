@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,6 +23,9 @@
 * 1.1   mus  10/25/18 Updated XTMR_Inject_CfgInitialize to support
 *                     64 bit fault address.
 * 1.4   adk  02/24/22 While updating the IIR offset apply the mask.
+* 1.6   sa   01/05/23 Added support for Microblaze RISC-V.
+* 1.6   asa  07/27/23 Updated to fix compilation error while
+*                     initializing xtmr_inject_addr.
 *
 * </pre>
 *
@@ -43,11 +46,24 @@
 /************************** Variable Definitions ****************************/
 
 extern UINTPTR xtmr_inject_instr;
-static UINTPTR xtmr_inject_addr = (UINTPTR)&xtmr_inject_instr;
-
+static UINTPTR xtmr_inject_addr;
 
 /***************** Macros (Inline Functions) Definitions ********************/
 
+#ifdef __riscv
+#define xor(data, mask) ({		\
+  u32 _rval;				\
+  __asm__ __volatile__ (		\
+    "\t.global xtmr_inject_instr\n"	\
+    "\tnop\n"				\
+    "xtmr_inject_instr:\n"		\
+    "\txor\t%0,%1,%2\n"			\
+    : "=r"(_rval) : "r" (data), "r" (mask) \
+  ); \
+  _rval; \
+})
+
+#else
 #define xor(data, mask) ({		\
   u32 _rval;				\
   __asm__ __volatile__ (		\
@@ -59,6 +75,7 @@ static UINTPTR xtmr_inject_addr = (UINTPTR)&xtmr_inject_instr;
   ); \
   _rval; \
 })
+#endif
 
 
 /************************** Function Prototypes *****************************/
@@ -113,6 +130,7 @@ int XTMR_Inject_CfgInitialize(XTMR_Inject *InstancePtr,
 	 */
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
+	xtmr_inject_addr = (UINTPTR)&xtmr_inject_instr;
 	/*
 	 * Set some default values.
 	 */
@@ -226,6 +244,7 @@ void XTMR_Inject_Disable(XTMR_Inject *InstancePtr)
 *****************************************************************************/
 u32 XTMR_Inject_InjectBit(XTMR_Inject *InstancePtr, u32 Value, u8 Bit)
 {
+	(void)InstancePtr;
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(Bit < 32);
@@ -260,6 +279,7 @@ u32 XTMR_Inject_InjectBit(XTMR_Inject *InstancePtr, u32 Value, u8 Bit)
 *****************************************************************************/
 u32 XTMR_Inject_InjectMask(XTMR_Inject *InstancePtr, u32 Value, u32 Mask)
 {
+	(void)InstancePtr;
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 

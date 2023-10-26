@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -28,7 +29,8 @@
 *                     ensure that "Successfully ran" and "Failed" strings
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
-*4.5    sne  06/12/19 Fixed IAR compiler warning.
+* 4.5   sne  06/12/19 Fixed IAR compiler warning.
+* 4.10  gm   07/11/23 Added SDT support.
 *
 * </pre>
 *
@@ -49,7 +51,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define GPIO_REG_BASEADDR	XPAR_GPIO_0_BASEADDR
+#else
+#define GPIO_REG_BASEADDR	XPAR_XGPIO_0_BASEADDR
+#endif
 
 /*
  * The following constant is used to wait after an LED is turned on to make
@@ -97,8 +103,8 @@ int main(void)
 	 * Set the direction for all signals to be inputs except the LED output
 	 */
 	XGpio_WriteReg((GPIO_REG_BASEADDR),
-			((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
-			XGPIO_TRI_OFFSET, (~LED));
+		       ((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
+		       XGPIO_TRI_OFFSET, (~LED));
 
 
 	/* Loop forever blinking the LED */
@@ -109,8 +115,8 @@ int main(void)
 		 * modified
 		 */
 		Data = XGpio_ReadReg(GPIO_REG_BASEADDR,
-				((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
-				  XGPIO_DATA_OFFSET);
+				     ((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
+				     XGPIO_DATA_OFFSET);
 
 
 		/* Set the LED to the opposite state such that it blinks */
@@ -118,14 +124,14 @@ int main(void)
 		if (Data & LED) {
 
 			XGpio_WriteReg((GPIO_REG_BASEADDR),
-				((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
-				XGPIO_DATA_OFFSET, Data & ~LED);
+				       ((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
+				       XGPIO_DATA_OFFSET, Data & ~LED);
 
 		} else {
 
 			XGpio_WriteReg((GPIO_REG_BASEADDR),
-				((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
-				XGPIO_DATA_OFFSET, Data | LED);
+				       ((LED_CHANNEL - 1) * XGPIO_CHAN_OFFSET) +
+				       XGPIO_DATA_OFFSET, Data | LED);
 		}
 
 		/* Wait a small amount of time so that the LED is visible */

@@ -34,6 +34,7 @@
 *      		      per latest API.
 * 5.1   mus  02/13/23 Support example for each core of APU/RPU clusters in
 *                     VERSAL_NET SoC.
+* 5.2   mus  07/27/23 Removed dependency on XPAR_CPU_ID.
 * </pre>
 ******************************************************************************/
 
@@ -49,9 +50,7 @@
 #include "xil_types.h"
 #include "xscugic.h"
 #include "xil_util.h"
-#if defined (VERSAL_NET)
 #include "xplatform_info.h"
-#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -63,7 +62,6 @@
 #define INTC_DEVICE_ID		XPAR_SCUGIC_0_DEVICE_ID
 #define INTC_DEVICE_INT_ID	0x0E
 
-#define XSCUGIC_SPI_CPU_MASK	(XSCUGIC_SPI_CPU0_MASK << XPAR_CPU_ID)
 #define XSCUGIC_SW_TIMEOUT_VAL	10000000U /* Wait for 10 sec */
 
 /**************************** Type Definitions *******************************/
@@ -87,9 +85,10 @@ static XScuGic_Config *GicConfig;    /* The configuration parameters of the
  */
 volatile static u32 InterruptProcessed = FALSE;
 
-static void AssertPrint(const char8 *FilenamePtr, s32 LineNumber){
+static void AssertPrint(const char8 *FilenamePtr, s32 LineNumber)
+{
 	xil_printf("ASSERT: File Name: %s ", FilenamePtr);
-	xil_printf("Line Number: %d\r\n",LineNumber);
+	xil_printf("Line Number: %d\r\n", LineNumber);
 }
 
 /*****************************************************************************/
@@ -154,9 +153,10 @@ int main(void)
 int ScuGicExample(u16 DeviceId)
 {
 	int Status;
-	#if defined (VERSAL_NET)
-	u32 CoreId, ClusterId;
-	#endif
+	u32 CoreId;
+#if defined (VERSAL_NET)
+	u32 ClusterId;
+#endif
 
 	/*
 	 * Initialize the interrupt controller driver so that it is ready to
@@ -168,7 +168,7 @@ int ScuGicExample(u16 DeviceId)
 	}
 
 	Status = XScuGic_CfgInitialize(&InterruptController, GicConfig,
-					GicConfig->CpuBaseAddress);
+				       GicConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -198,8 +198,8 @@ int ScuGicExample(u16 DeviceId)
 	 * the specific interrupt processing for the device
 	 */
 	Status = XScuGic_Connect(&InterruptController, INTC_DEVICE_INT_ID,
-			   (Xil_ExceptionHandler)DeviceDriverHandler,
-			   (void *)&InterruptController);
+				 (Xil_ExceptionHandler)DeviceDriverHandler,
+				 (void *)&InterruptController);
 
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
@@ -214,22 +214,21 @@ int ScuGicExample(u16 DeviceId)
 	/*
 	 *  Simulate the Interrupt
 	 */
-#if defined (VERSAL_NET)
-
 	CoreId = XGetCoreId();
+#if defined (VERSAL_NET)
 	ClusterId = XGetClusterId();
 
-	#if defined (ARMR52)
+#if defined (ARMR52)
 	CoreId = (1 << CoreId);
-	#endif
+#endif
 
 	Status = XScuGic_SoftwareIntr(&InterruptController,
-                                        INTC_DEVICE_INT_ID,
-                                        ((ClusterId << XSCUGIC_CLUSTERID_SHIFT ) | CoreId));
+				      INTC_DEVICE_INT_ID,
+				      ((ClusterId << XSCUGIC_CLUSTERID_SHIFT ) | CoreId));
 #else
 	Status = XScuGic_SoftwareIntr(&InterruptController,
 					INTC_DEVICE_INT_ID,
-					XSCUGIC_SPI_CPU_MASK);
+					(XSCUGIC_SPI_CPU0_MASK << CoreId));
 #endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
@@ -272,8 +271,8 @@ int SetUpInterruptSystem(XScuGic *XScuGicInstancePtr)
 	 * interrupt handling logic in the ARM processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler) XScuGic_InterruptHandler,
-			XScuGicInstancePtr);
+				     (Xil_ExceptionHandler) XScuGic_InterruptHandler,
+				     XScuGicInstancePtr);
 
 	/*
 	 * Enable interrupts in the ARM

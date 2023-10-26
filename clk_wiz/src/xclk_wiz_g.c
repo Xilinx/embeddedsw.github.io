@@ -1,5 +1,6 @@
 /*******************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************/
 
@@ -11,8 +12,7 @@
 * The configuration table for devices
 */
 
-XClk_Wiz_Config XClk_Wiz_ConfigTable[] =
-{
+XClk_Wiz_Config XClk_Wiz_ConfigTable[] = {
 	{
 		XPAR_CLK_MONITOR_DEVICE_ID,
 		XPAR_CLK_MONITOR_BASEADDR,

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -28,6 +29,7 @@
 *                     recognize it as documentation block for doxygen
 *                     generation and also modified filename tag to include
 *                     the file in doxygen examples.
+* 3.9   sb   07/05/23 Added support for system device-tree flow.
 *</pre>
 *
 ******************************************************************************/
@@ -45,7 +47,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define SPI_DEVICE_ID		XPAR_XSPIPS_0_DEVICE_ID
+#endif
 
 /*
  * The following constants define the commands which may be sent to the EEPROM
@@ -123,7 +127,11 @@ void EepromRead(XSpiPs *SpiPtr, u16 Address, int ByteCount,
 void EepromWrite(XSpiPs *SpiPtr, u16 Address, u8 ByteCount,
 		 EepromBuffer Buffer);
 
+#ifndef SDT
 int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId);
+#else
+int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -168,7 +176,11 @@ int main(void)
 	/*
 	 * Run the Spi Interrupt example.
 	 */
+#ifndef SDT
 	Status = SpiPsEepromPolledExample(&SpiInstance, SPI_DEVICE_ID);
+#else
+	Status = SpiPsEepromPolledExample(&SpiInstance, XPAR_XSPIPS_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("SPI EEPROM Polled Mode Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -199,7 +211,11 @@ int main(void)
 * read a status of 0xFF for the status register as the bus is pulled up.
 *
 *****************************************************************************/
+#ifndef	SDT
 int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId)
+#else
+int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	u8 *BufferPtr;
@@ -211,13 +227,17 @@ int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId)
 	/*
 	 * Initialize the SPI driver so that it's ready to use
 	 */
+#ifndef SDT
 	SpiConfig = XSpiPs_LookupConfig(SpiDeviceId);
+#else
+	SpiConfig = XSpiPs_LookupConfig(BaseAddress);
+#endif
 	if (NULL == SpiConfig) {
 		return XST_FAILURE;
 	}
 
 	Status = XSpiPs_CfgInitialize(SpiInstancePtr, SpiConfig,
-				       SpiConfig->BaseAddress);
+				      SpiConfig->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -234,7 +254,7 @@ int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId)
 	 * Set the Spi device as a master. External loopback is required.
 	 */
 	XSpiPs_SetOptions(SpiInstancePtr, XSPIPS_MASTER_OPTION |
-			   XSPIPS_FORCE_SSELECT_OPTION);
+			  XSPIPS_FORCE_SSELECT_OPTION);
 
 	XSpiPs_SetClkPrescaler(SpiInstancePtr, XSPIPS_CLK_PRESCALE_64);
 
@@ -245,9 +265,9 @@ int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId)
 	 * changed in a debug environment to guarantee
 	 */
 	for (UniqueValue = 13, Count = 0; Count < MAX_DATA;
-					Count++, UniqueValue++) {
+	     Count++, UniqueValue++) {
 		WriteBuffer[WRITE_DATA_OFFSET + Count] =
-					(u8)(UniqueValue + Test);
+			(u8)(UniqueValue + Test);
 		ReadBuffer[READ_DATA_OFFSET + Count] = 0xA5;
 	}
 
@@ -263,9 +283,9 @@ int SpiPsEepromPolledExample(XSpiPs *SpiInstancePtr, u16 SpiDeviceId)
 	UniqueValue = 13;
 	for (Page = 0; Page < PAGE_COUNT; Page++) {
 		EepromWrite(SpiInstancePtr, Page * PAGE_SIZE, PAGE_SIZE,
-				&WriteBuffer[Page * PAGE_SIZE]);
+			    &WriteBuffer[Page * PAGE_SIZE]);
 		EepromRead(SpiInstancePtr, Page * PAGE_SIZE, PAGE_SIZE,
-				ReadBuffer);
+			   ReadBuffer);
 
 		BufferPtr = &ReadBuffer[READ_DATA_OFFSET];
 		for (Count = 0; Count < PAGE_SIZE; Count++, UniqueValue++) {
@@ -310,7 +330,7 @@ void EepromRead(XSpiPs *SpiPtr, u16 Address, int ByteCount,
 	 * receive the specified number of bytes of data in the data buffer
 	 */
 	XSpiPs_PolledTransfer(SpiPtr, Buffer, &Buffer[DATA_OFFSET],
-				ByteCount + OVERHEAD_SIZE);
+			      ByteCount + OVERHEAD_SIZE);
 }
 
 /*****************************************************************************/
@@ -347,7 +367,7 @@ void EepromWrite(XSpiPs *SpiPtr, u16 Address, u8 ByteCount,
 	 * the write
 	 */
 	XSpiPs_PolledTransfer(SpiPtr, &WriteEnableCmd, NULL,
-				sizeof(WriteEnableCmd));
+			      sizeof(WriteEnableCmd));
 
 	/*
 	 * Setup the write command with the specified address and data for the
@@ -384,7 +404,7 @@ void EepromWrite(XSpiPs *SpiPtr, u16 Address, u8 ByteCount,
 		 * status byte
 		 */
 		XSpiPs_PolledTransfer(SpiPtr, ReadStatusCmd, EepromStatus,
-					sizeof(ReadStatusCmd));
+				      sizeof(ReadStatusCmd));
 
 		/*
 		 * If the status indicates the write is done, then stop waiting,

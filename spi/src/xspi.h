@@ -248,7 +248,7 @@
 *		      Modified such that C_FIFO_EXIST will be updated based
 *		      on C_FIFO_DEPTH for compatibility of the driver with
 *		      Axi Spi.
-* 3.05a adk  18/04/13 Updated the code to avoid unused variable 
+* 3.05a adk  18/04/13 Updated the code to avoid unused variable
 *			 warnings when compiling with the -Wextra -Wall flags
 *			 In the file xspi.c. CR:705005.
 * 3.06a adk  07/08/13 Added a dummy read in the CfgInitialize(), if startup
@@ -288,6 +288,7 @@
 * 		      made in the interrupt app tcl file.
 * 4.10  akm  02/21/23 Avoid data loss in interrupt mode with TX HALF EMPTY
 *                     Interrupt enabled.
+* 4.11  sb   07/11/23 Added support for system device-tree flow.
 * </pre>
 *
 ******************************************************************************/
@@ -372,7 +373,7 @@ extern "C" {
 *
 *******************************************************************************/
 typedef void (*XSpi_StatusHandler) (void *CallBackRef, u32 StatusEvent,
-					unsigned int ByteCount);
+				    unsigned int ByteCount);
 
 /**
  * XSpi statistics
@@ -390,7 +391,11 @@ typedef struct {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddress;	/**< Base address of the device */
 	int HasFifos;		/**< Does device have FIFOs? */
 	u32 SlaveOnly;		/**< Is the device slave only? */
@@ -403,6 +408,12 @@ typedef struct {
 	u8 XipMode;             /**< 0 if Non-XIP, 1 if XIP Mode */
 	u8 Use_Startup;		/**< 1 if Starup block is used in h/w */
 	u16 FifosDepth;		/**< TX and RX FIFO Depth */
+#ifdef SDT
+	u16 IntrId;             /**< Bits[11:0] Interrupt-id Bits[15:12]
+	                        * trigger type and level flags */
+	UINTPTR IntrParent;     /**< Bit[0] Interrupt parent type Bit[64/32:1]
+	                        * Parent base address */
+#endif
 } XSpi_Config;
 
 /**
@@ -457,7 +468,7 @@ typedef struct {
 ******************************************************************************/
 #define XSpi_IntrGlobalEnable(InstancePtr)				\
 	XSpi_WriteReg(((InstancePtr)->BaseAddr),  XSP_DGIER_OFFSET, 	\
-			XSP_GINTR_ENABLE_MASK)
+		      XSP_GINTR_ENABLE_MASK)
 
 /******************************************************************************/
 /**
@@ -494,7 +505,7 @@ typedef struct {
 ******************************************************************************/
 #define XSpi_IsIntrGlobalEnabled(InstancePtr)				\
 	(XSpi_ReadReg(((InstancePtr)->BaseAddr), XSP_DGIER_OFFSET) ==  \
-		XSP_GINTR_ENABLE_MASK)
+	 XSP_GINTR_ENABLE_MASK)
 
 /*****************************************************************************/
 /**
@@ -543,7 +554,7 @@ typedef struct {
 ******************************************************************************/
 #define XSpi_IntrClear(InstancePtr, ClearMask) 			\
 	XSpi_WriteReg(((InstancePtr)->BaseAddr),  XSP_IISR_OFFSET,	\
-		XSpi_IntrGetStatus(InstancePtr) | (ClearMask))
+		      XSpi_IntrGetStatus(InstancePtr) | (ClearMask))
 
 
 /******************************************************************************/
@@ -565,8 +576,8 @@ typedef struct {
 ******************************************************************************/
 #define XSpi_IntrEnable(InstancePtr, EnableMask)			\
 	XSpi_WriteReg(((InstancePtr)->BaseAddr), XSP_IIER_OFFSET,	\
-		(XSpi_ReadReg(((InstancePtr)->BaseAddr), 		\
-			XSP_IIER_OFFSET)) | (((EnableMask) & XSP_INTR_ALL )))
+		      (XSpi_ReadReg(((InstancePtr)->BaseAddr), 		\
+				    XSP_IIER_OFFSET)) | (((EnableMask) & XSP_INTR_ALL )))
 
 /****************************************************************************/
 /**
@@ -587,8 +598,8 @@ typedef struct {
 ******************************************************************************/
 #define XSpi_IntrDisable(InstancePtr, DisableMask) 			\
 	XSpi_WriteReg(((InstancePtr)->BaseAddr), XSP_IIER_OFFSET,	\
-		XSpi_ReadReg(((InstancePtr)->BaseAddr), 		\
-			XSP_IIER_OFFSET) & (~ ((DisableMask) & XSP_INTR_ALL )))
+		      XSpi_ReadReg(((InstancePtr)->BaseAddr), 		\
+				   XSP_IIER_OFFSET) & (~ ((DisableMask) & XSP_INTR_ALL )))
 
 
 /*****************************************************************************/
@@ -767,13 +778,13 @@ typedef struct {
 *
 *****************************************************************************/
 #define XSpi_Enable(InstancePtr) \
-{ \
-	u16 Control; \
-	Control = XSpi_GetControlReg((InstancePtr)); \
-	Control |= XSP_CR_ENABLE_MASK; \
-	Control &= ~XSP_CR_TRANS_INHIBIT_MASK; \
-	XSpi_SetControlReg((InstancePtr), Control); \
-}
+	{ \
+		u16 Control; \
+		Control = XSpi_GetControlReg((InstancePtr)); \
+		Control |= XSP_CR_ENABLE_MASK; \
+		Control &= ~XSP_CR_TRANS_INHIBIT_MASK; \
+		XSpi_SetControlReg((InstancePtr), Control); \
+	}
 
 /****************************************************************************/
 /**
@@ -790,20 +801,25 @@ typedef struct {
 *****************************************************************************/
 #define XSpi_Disable(InstancePtr) \
 	XSpi_SetControlReg((InstancePtr), \
-	XSpi_GetControlReg((InstancePtr)) & ~XSP_CR_ENABLE_MASK)
+			   XSpi_GetControlReg((InstancePtr)) & ~XSP_CR_ENABLE_MASK)
 
 /************************** Function Prototypes ******************************/
 
 /*
  * Initialization functions in xspi_sinit.c
  */
+#ifndef SDT
 int XSpi_Initialize(XSpi *InstancePtr, u16 DeviceId);
 XSpi_Config *XSpi_LookupConfig(u16 DeviceId);
+#else
+int XSpi_Initialize(XSpi *InstancePtr, UINTPTR BaseAddress);
+XSpi_Config *XSpi_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * Functions, in xspi.c
  */
-int XSpi_CfgInitialize(XSpi *InstancePtr, XSpi_Config * Config,
+int XSpi_CfgInitialize(XSpi *InstancePtr, XSpi_Config *Config,
 		       UINTPTR EffectiveAddr);
 
 int XSpi_Start(XSpi *InstancePtr);

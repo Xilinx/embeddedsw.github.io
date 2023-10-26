@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -51,7 +51,9 @@
 /***************************** Include Files *********************************/
 
 #include "xstatus.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 #include "xtmrctr.h"
 #include "xtmrctr_i.h"
 
@@ -89,7 +91,7 @@ static void XTmrCtr_StubCallback(void *CallBackRef, u8 TmrCtrNumber);
 *
 ******************************************************************************/
 void XTmrCtr_CfgInitialize(XTmrCtr *InstancePtr, XTmrCtr_Config *ConfigPtr,
-		UINTPTR EffectiveAddr)
+			   UINTPTR EffectiveAddr)
 {
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -143,14 +145,14 @@ int XTmrCtr_InitHw(XTmrCtr *InstancePtr)
 
 		/* Set the compare register to 0. */
 		XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrIndex,
-				  XTC_TLR_OFFSET, 0);
+				 XTC_TLR_OFFSET, 0);
 		/* Reset the timer and the interrupt. */
 		XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrIndex,
-				  XTC_TCSR_OFFSET,
-				  XTC_CSR_INT_OCCURED_MASK | XTC_CSR_LOAD_MASK);
+				 XTC_TCSR_OFFSET,
+				 XTC_CSR_INT_OCCURED_MASK | XTC_CSR_LOAD_MASK);
 		/* Release the reset. */
 		XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrIndex,
-				  XTC_TCSR_OFFSET, 0);
+				 XTC_TCSR_OFFSET, 0);
 
 		/* Indicate that at least one timer is not running and has been
 		 * initialized. */
@@ -181,7 +183,11 @@ int XTmrCtr_InitHw(XTmrCtr *InstancePtr)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int XTmrCtr_Initialize(XTmrCtr *InstancePtr, u16 DeviceId)
+#else
+int XTmrCtr_Initialize(XTmrCtr *InstancePtr, UINTPTR BaseAddr)
+#endif
 {
 	XTmrCtr_Config *ConfigPtr;
 
@@ -195,7 +201,11 @@ int XTmrCtr_Initialize(XTmrCtr *InstancePtr, u16 DeviceId)
 	}
 
 	/* Retrieve configuration of timer counter core with matching ID. */
+#ifndef SDT
 	ConfigPtr = XTmrCtr_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XTmrCtr_LookupConfig(BaseAddr);
+#endif
 	if (!ConfigPtr) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -228,7 +238,7 @@ int XTmrCtr_Initialize(XTmrCtr *InstancePtr, u16 DeviceId)
 * @note		None.
 *
 ******************************************************************************/
-void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+void XTmrCtr_Start(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 	u32 ControlStatusReg;
 
@@ -241,7 +251,7 @@ void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * of the register are modified in the following operations
 	 */
 	ControlStatusReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					      TmrCtrNumber, XTC_TCSR_OFFSET);
+					   TmrCtrNumber, XTC_TCSR_OFFSET);
 	/*
 	 * Reset the timer counter such that it reloads from the compare
 	 * register and the interrupt is cleared simultaneously, the interrupt
@@ -249,8 +259,8 @@ void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * cleared
 	 */
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TCSR_OFFSET,
-			  XTC_CSR_LOAD_MASK);
+			 XTC_TCSR_OFFSET,
+			 XTC_CSR_LOAD_MASK);
 
 
 
@@ -269,8 +279,8 @@ void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * with the value loaded from the compare register
 	 */
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TCSR_OFFSET,
-			  ControlStatusReg | XTC_CSR_ENABLE_TMR_MASK);
+			 XTC_TCSR_OFFSET,
+			 ControlStatusReg | XTC_CSR_ENABLE_TMR_MASK);
 }
 
 /*****************************************************************************/
@@ -293,7 +303,7 @@ void XTmrCtr_Start(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 * @note		None.
 *
 ******************************************************************************/
-void XTmrCtr_Stop(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+void XTmrCtr_Stop(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 	u32 ControlStatusReg;
 
@@ -305,7 +315,7 @@ void XTmrCtr_Stop(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * Read the current register contents
 	 */
 	ControlStatusReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					      TmrCtrNumber, XTC_TCSR_OFFSET);
+					   TmrCtrNumber, XTC_TCSR_OFFSET);
 	/*
 	 * Disable the timer counter such that it's not running
 	 */
@@ -315,7 +325,7 @@ void XTmrCtr_Stop(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * Write out the updated value to the actual register.
 	 */
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TCSR_OFFSET, ControlStatusReg);
+			 XTC_TCSR_OFFSET, ControlStatusReg);
 
 	/*
 	 * Indicate that the timer is stopped
@@ -345,7 +355,7 @@ void XTmrCtr_Stop(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 * @note		None.
 *
 ******************************************************************************/
-u32 XTmrCtr_GetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+u32 XTmrCtr_GetValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -353,7 +363,7 @@ u32 XTmrCtr_GetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	return XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-				  TmrCtrNumber, XTC_TCR_OFFSET);
+			       TmrCtrNumber, XTC_TCR_OFFSET);
 }
 
 /*****************************************************************************/
@@ -376,7 +386,7 @@ u32 XTmrCtr_GetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 * @note		None.
 *
 ******************************************************************************/
-void XTmrCtr_SetResetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber,
+void XTmrCtr_SetResetValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber,
 			   u32 ResetValue)
 {
 
@@ -385,7 +395,7 @@ void XTmrCtr_SetResetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber,
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TLR_OFFSET, ResetValue);
+			 XTC_TLR_OFFSET, ResetValue);
 }
 
 /*****************************************************************************/
@@ -405,7 +415,7 @@ void XTmrCtr_SetResetValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber,
 * @note		None.
 *
 *******************************************************************************/
-u32 XTmrCtr_GetCaptureValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+u32 XTmrCtr_GetCaptureValue(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -413,7 +423,7 @@ u32 XTmrCtr_GetCaptureValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	return XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-				  TmrCtrNumber, XTC_TLR_OFFSET);
+			       TmrCtrNumber, XTC_TLR_OFFSET);
 }
 
 /*****************************************************************************/
@@ -433,7 +443,7 @@ u32 XTmrCtr_GetCaptureValue(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 * @note		None.
 *
 ******************************************************************************/
-void XTmrCtr_Reset(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+void XTmrCtr_Reset(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 	u32 CounterControlReg;
 
@@ -445,16 +455,16 @@ void XTmrCtr_Reset(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * Read current contents of the register so it won't be destroyed
 	 */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					       TmrCtrNumber, XTC_TCSR_OFFSET);
+					    TmrCtrNumber, XTC_TCSR_OFFSET);
 	/*
 	 * Reset the timer by toggling the reset bit in the register
 	 */
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TCSR_OFFSET,
-			  CounterControlReg | XTC_CSR_LOAD_MASK);
+			 XTC_TCSR_OFFSET,
+			 CounterControlReg | XTC_CSR_LOAD_MASK);
 
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, TmrCtrNumber,
-			  XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 }
 
 /*****************************************************************************/
@@ -478,7 +488,7 @@ void XTmrCtr_Reset(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 * @note		None.
 *
 ******************************************************************************/
-int XTmrCtr_IsExpired(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
+int XTmrCtr_IsExpired(XTmrCtr *InstancePtr, u8 TmrCtrNumber)
 {
 	u32 CounterControlReg;
 
@@ -490,7 +500,7 @@ int XTmrCtr_IsExpired(XTmrCtr * InstancePtr, u8 TmrCtrNumber)
 	 * Check if timer is expired
 	 */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					       TmrCtrNumber, XTC_TCSR_OFFSET);
+					    TmrCtrNumber, XTC_TCSR_OFFSET);
 
 	return ((CounterControlReg & XTC_CSR_INT_OCCURED_MASK) ==
 		XTC_CSR_INT_OCCURED_MASK);
@@ -532,26 +542,26 @@ u8 XTmrCtr_PwmConfigure(XTmrCtr *InstancePtr, u32 PwmPeriod, u32 PwmHighTime)
 
 	/* Configure timers modes to be used for PWM */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_0, XTC_TCSR_OFFSET);
+					    XTC_TIMER_0, XTC_TCSR_OFFSET);
 	CounterControlReg |=
 		(XTC_CSR_DOWN_COUNT_MASK | XTC_CSR_AUTO_RELOAD_MASK);
 	CounterControlReg &= (u32)~(XTC_CSR_CASC_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_1, XTC_TCSR_OFFSET);
+					    XTC_TIMER_1, XTC_TCSR_OFFSET);
 	CounterControlReg |=
 		(XTC_CSR_DOWN_COUNT_MASK | XTC_CSR_AUTO_RELOAD_MASK);
 	CounterControlReg &= (u32)~(XTC_CSR_CASC_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_1,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	/* Set period and high time for PWM */
 	SysClkPeriod = XTC_HZ_TO_NS(InstancePtr->Config.SysClockFreqHz);
 	if (PwmPeriod < PwmHighTime ||
-		PwmPeriod < (2 * SysClkPeriod) ||
-		PwmHighTime < (2 * SysClkPeriod)) {
+	    PwmPeriod < (2 * SysClkPeriod) ||
+	    PwmHighTime < (2 * SysClkPeriod)) {
 		return XST_INVALID_PARAM;
 	}
 
@@ -562,21 +572,21 @@ u8 XTmrCtr_PwmConfigure(XTmrCtr *InstancePtr, u32 PwmPeriod, u32 PwmHighTime)
 	}
 
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-						XTC_TLR_OFFSET, (u32)Period);
+			 XTC_TLR_OFFSET, (u32)Period);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_1,
-						XTC_TLR_OFFSET, (u32)High);
+			 XTC_TLR_OFFSET, (u32)High);
 
 	/* Configure timers in generate mode */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_0, XTC_TCSR_OFFSET);
+					    XTC_TIMER_0, XTC_TCSR_OFFSET);
 	CounterControlReg &= (u32)~(XTC_CSR_CAPTURE_MODE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_1, XTC_TCSR_OFFSET);
+					    XTC_TIMER_1, XTC_TCSR_OFFSET);
 	CounterControlReg &= (u32)~(XTC_CSR_CAPTURE_MODE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_1,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	return (u8)XTC_ROUND_DIV(High * 100, Period);
 }
@@ -606,18 +616,18 @@ void XTmrCtr_PwmEnable(XTmrCtr *InstancePtr)
 
 	/* Enable PWM, Generate Out */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_0, XTC_TCSR_OFFSET);
+					    XTC_TIMER_0, XTC_TCSR_OFFSET);
 	CounterControlReg |=
-			(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
+		(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_1, XTC_TCSR_OFFSET);
+					    XTC_TIMER_1, XTC_TCSR_OFFSET);
 	CounterControlReg |=
-			(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
+		(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_1,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	/* Reset Counters */
 	XTmrCtr_Reset(InstancePtr, XTC_TIMER_0);
@@ -625,10 +635,10 @@ void XTmrCtr_PwmEnable(XTmrCtr *InstancePtr)
 
 	/* Enable all timers */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_0, XTC_TCSR_OFFSET);
+					    XTC_TIMER_0, XTC_TCSR_OFFSET);
 	CounterControlReg |= XTC_CSR_ENABLE_ALL_MASK;
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	InstancePtr->IsPwmEnabled = TRUE;
 }
@@ -668,18 +678,18 @@ void XTmrCtr_PwmDisable(XTmrCtr *InstancePtr)
 
 	/* Disable PWM, Generate Out */
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_0, XTC_TCSR_OFFSET);
+					    XTC_TIMER_0, XTC_TCSR_OFFSET);
 	CounterControlReg &=
-			(u32)~(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
+		(u32)~(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_0,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	CounterControlReg = XTmrCtr_ReadReg(InstancePtr->BaseAddress,
-					XTC_TIMER_1, XTC_TCSR_OFFSET);
+					    XTC_TIMER_1, XTC_TCSR_OFFSET);
 	CounterControlReg &=
-			(u32)~(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
+		(u32)~(XTC_CSR_ENABLE_PWM_MASK | XTC_CSR_EXT_GENERATE_MASK);
 	XTmrCtr_WriteReg(InstancePtr->BaseAddress, XTC_TIMER_1,
-					XTC_TCSR_OFFSET, CounterControlReg);
+			 XTC_TCSR_OFFSET, CounterControlReg);
 
 	InstancePtr->IsPwmEnabled = FALSE;
 }

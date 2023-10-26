@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -90,7 +91,7 @@ extern "C" {
 #define XDMAPCIE_CFG_P_LIMIT_MEM_T1_REG 0X000B
 
 #define XDMAPCIE_CFG_FUN_NOT_IMP_MASK 	0xFFFF
-#define XDMAPCIE_CFG_HEADER_TYPE_MASK 	0x00EF0000
+#define XDMAPCIE_CFG_HEADER_TYPE_MASK 	0x00010000
 #define XDMAPCIE_CFG_MUL_FUN_DEV_MASK 	0x00800000
 
 #define XDMAPCIE_CFG_MAX_NUM_OF_BUS 	256

@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xcan.c
-* @addtogroup can_v3_6
+* @addtogroup can Overview
 * @{
 *
 * The XCan driver. Functions in this file are the minimum required functions
@@ -25,6 +26,7 @@
 *		      all the driver files.
 * 3.2   sk   11/10/15 Used UINTPTR instead of u32 for Baseaddress CR# 867425.
 *                     Changed the prototype of XCan_VmInitialize API.
+* 3.7   ht   07/04/23 Added support for system device-tree flow.
 * </pre>
 ******************************************************************************/
 
@@ -35,7 +37,9 @@
 #include "xil_io.h"
 #include "xenv.h"
 #include "xcan.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -49,7 +53,7 @@ extern XCan_Config XCan_ConfigTable[];
 
 /************************** Function Prototypes ******************************/
 
-static void Initialize(XCan *InstancePtr, XCan_Config * ConfigPtr);
+static void Initialize(XCan *InstancePtr, XCan_Config *ConfigPtr);
 static void StubHandler(void);
 
 /*****************************************************************************/
@@ -81,7 +85,11 @@ static void StubHandler(void);
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int XCan_Initialize(XCan *InstancePtr, u16 DeviceId)
+#else
+int XCan_Initialize(XCan *InstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	XCan_Config *ConfigPtr;
 
@@ -95,7 +103,11 @@ int XCan_Initialize(XCan *InstancePtr, u16 DeviceId)
 	 * configuration info down below when initializing this instance of
 	 * the driver.
 	 */
+#ifndef SDT
 	ConfigPtr = XCan_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XCan_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -150,7 +162,11 @@ int XCan_Initialize(XCan *InstancePtr, u16 DeviceId)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int XCan_VmInitialize(XCan *InstancePtr, u16 DeviceId, UINTPTR VirtAddr)
+#else
+int XCan_VmInitialize(XCan *InstancePtr, UINTPTR BaseAddress, UINTPTR VirtAddr)
+#endif
 {
 	XCan_Config *ConfigPtr;
 
@@ -166,7 +182,11 @@ int XCan_VmInitialize(XCan *InstancePtr, u16 DeviceId, UINTPTR VirtAddr)
 	 * configuration info down below when initializing this instance of the
 	 * driver.
 	 */
+#ifndef SDT
 	ConfigPtr = XCan_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XCan_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -216,7 +236,7 @@ void XCan_Reset(XCan *InstancePtr)
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
-			XCAN_SRR_SRST_MASK);
+		      XCAN_SRR_SRST_MASK);
 }
 
 /****************************************************************************/
@@ -246,14 +266,11 @@ u8 XCan_GetMode(XCan *InstancePtr)
 
 	if (Value & XCAN_SR_CONFIG_MASK) {	/* Configuration Mode */
 		return XCAN_MODE_CONFIG;
-	}
-	else if (Value & XCAN_SR_SLEEP_MASK) {	/* Sleep Mode */
+	} else if (Value & XCAN_SR_SLEEP_MASK) {	/* Sleep Mode */
 		return XCAN_MODE_SLEEP;
-	}
-	else if (Value & XCAN_SR_NORMAL_MASK) {	/* Normal Mode */
+	} else if (Value & XCAN_SR_NORMAL_MASK) {	/* Normal Mode */
 		return XCAN_MODE_NORMAL;
-	}
-	else {	/* If this line is reached, the device is in Loop Back Mode. */
+	} else {	/* If this line is reached, the device is in Loop Back Mode. */
 
 		return XCAN_MODE_LOOPBACK;
 	}
@@ -294,9 +311,9 @@ void XCan_EnterMode(XCan *InstancePtr, u8 OperationMode)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid((OperationMode == XCAN_MODE_CONFIG) ||
-			(OperationMode == XCAN_MODE_SLEEP) ||
-			(OperationMode == XCAN_MODE_NORMAL) ||
-			(OperationMode == XCAN_MODE_LOOPBACK));
+		       (OperationMode == XCAN_MODE_SLEEP) ||
+		       (OperationMode == XCAN_MODE_NORMAL) ||
+		       (OperationMode == XCAN_MODE_LOOPBACK));
 
 	/* Get current mode */
 
@@ -308,13 +325,13 @@ void XCan_EnterMode(XCan *InstancePtr, u8 OperationMode)
 	 * Mode, no transition through Configuration Mode is needed.
 	 */
 	if ((CurrentMode == XCAN_MODE_NORMAL) &&
-		(OperationMode == XCAN_MODE_SLEEP)) {
+	    (OperationMode == XCAN_MODE_SLEEP)) {
 
 		/*
 		 * Normal Mode ---> Sleep Mode
 		 */
 		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET,
-				XCAN_MSR_SLEEP_MASK);
+			      XCAN_MSR_SLEEP_MASK);
 
 		/*
 		 * Mode transition is finished in this case and return to the
@@ -352,43 +369,43 @@ void XCan_EnterMode(XCan *InstancePtr, u8 OperationMode)
 	}
 
 	switch (OperationMode) {
-	case XCAN_MODE_CONFIG:	/* Configuration Mode */
+		case XCAN_MODE_CONFIG:	/* Configuration Mode */
 
-		/*
-		 * As CAN is in Configuration Mode already.
-		 * Nothing is needed to be done here
-		 */
+			/*
+			 * As CAN is in Configuration Mode already.
+			 * Nothing is needed to be done here
+			 */
 
-		break;
+			break;
 
-	case XCAN_MODE_SLEEP:	/* Sleep Mode */
+		case XCAN_MODE_SLEEP:	/* Sleep Mode */
 
-		/* Switch the device into Sleep Mode */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET,
-				XCAN_MSR_SLEEP_MASK);
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
-				XCAN_SRR_CEN_MASK);
+			/* Switch the device into Sleep Mode */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET,
+				      XCAN_MSR_SLEEP_MASK);
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
+				      XCAN_SRR_CEN_MASK);
 
-		break;
+			break;
 
-	case XCAN_MODE_NORMAL:	/* Normal Mode */
+		case XCAN_MODE_NORMAL:	/* Normal Mode */
 
-		/* Switch the device into Normal Mode */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET, 0);
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
-				XCAN_SRR_CEN_MASK);
+			/* Switch the device into Normal Mode */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET, 0);
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
+				      XCAN_SRR_CEN_MASK);
 
-		break;
+			break;
 
-	case XCAN_MODE_LOOPBACK:	/* Loop back Mode */
+		case XCAN_MODE_LOOPBACK:	/* Loop back Mode */
 
-		/* Switch the device into Loop back Mode */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET,
-				XCAN_MSR_LBACK_MASK);
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
-				XCAN_SRR_CEN_MASK);
+			/* Switch the device into Loop back Mode */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_MSR_OFFSET,
+				      XCAN_MSR_LBACK_MASK);
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_SRR_OFFSET,
+				      XCAN_SRR_CEN_MASK);
 
-		break;
+			break;
 	}
 }
 
@@ -434,7 +451,7 @@ u32 XCan_GetStatus(XCan *InstancePtr)
 *
 ******************************************************************************/
 void XCan_GetBusErrorCounter(XCan *InstancePtr, u8 *RxErrorCount,
-				 u8 *TxErrorCount)
+			     u8 *TxErrorCount)
 {
 	u32 Result;
 
@@ -534,19 +551,19 @@ int XCan_Send(XCan *InstancePtr, u32 *FramePtr)
 
 	/* Write IDR */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXFIFO_ID_OFFSET,
-			FramePtr[0]);
+		      FramePtr[0]);
 
 	/* Write DLC */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXFIFO_DLC_OFFSET,
-			FramePtr[1]);
+		      FramePtr[1]);
 
 	/* Write Data Word 1 */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXFIFO_DW1_OFFSET,
-			FramePtr[2]);
+		      FramePtr[2]);
 
 	/* Write Data Word 2 */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXFIFO_DW2_OFFSET,
-			FramePtr[3]);
+		      FramePtr[3]);
 
 	return XST_SUCCESS;
 }
@@ -648,19 +665,19 @@ int XCan_SendHighPriority(XCan *InstancePtr, u32 *FramePtr)
 
 	/* Write IDR */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXBUF_ID_OFFSET,
-			FramePtr[0]);
+		      FramePtr[0]);
 
 	/* Write DLC */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXBUF_DLC_OFFSET,
-			FramePtr[1]);
+		      FramePtr[1]);
 
 	/* Write Data Word 1 */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXBUF_DW1_OFFSET,
-			FramePtr[2]);
+		      FramePtr[2]);
 
 	/* Write Data Word 2 */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_TXBUF_DW2_OFFSET,
-			FramePtr[3]);
+		      FramePtr[3]);
 
 	return XST_SUCCESS;
 }
@@ -708,7 +725,7 @@ void XCan_AcceptFilterEnable(XCan *InstancePtr, u32 FilterIndexes)
 
 	/* Write AFR */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFR_OFFSET,
-			EnabledFilters);
+		      EnabledFilters);
 }
 
 /*****************************************************************************/
@@ -755,7 +772,7 @@ void XCan_AcceptFilterDisable(XCan *InstancePtr, u32 FilterIndexes)
 
 	/* Write AFR */
 	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFR_OFFSET,
-			EnabledFilters);
+		      EnabledFilters);
 }
 
 /*****************************************************************************/
@@ -831,9 +848,9 @@ int XCan_AcceptFilterSet(XCan *InstancePtr, u32 FilterIndex,
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(InstancePtr->NumOfAcceptFilters > 0);
 	Xil_AssertNonvoid((FilterIndex == XCAN_AFR_UAF4_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF3_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF2_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF1_MASK));
+			  (FilterIndex == XCAN_AFR_UAF3_MASK) ||
+			  (FilterIndex == XCAN_AFR_UAF2_MASK) ||
+			  (FilterIndex == XCAN_AFR_UAF1_MASK));
 
 	/*
 	 * Check if the given filter is currently enabled. If yes, return error
@@ -855,38 +872,38 @@ int XCan_AcceptFilterSet(XCan *InstancePtr, u32 FilterIndex,
 	/* Write AFMR and AFIR of the given filter */
 
 	switch (FilterIndex) {
-	case XCAN_AFR_UAF1_MASK:	/* Acceptance Filter No. 1 */
-		/* Write Mask Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR1_OFFSET,
-				MaskValue);
-		/* Write ID Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR1_OFFSET,
-				IdValue);
-		break;
-	case XCAN_AFR_UAF2_MASK:	/* Acceptance Filter No. 2 */
-		/* Write Mask Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR2_OFFSET,
-				MaskValue);
-		/* Write ID Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR2_OFFSET,
-				   IdValue);
-		break;
-	case XCAN_AFR_UAF3_MASK:	/* Acceptance Filter No. 3 */
-		/* Write Mask Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR3_OFFSET,
-				MaskValue);
-		/* Write ID Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR3_OFFSET,
-				IdValue);
-		break;
-	case XCAN_AFR_UAF4_MASK:	/* Acceptance Filter No. 4 */
-		/* Write Mask Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR4_OFFSET,
-				MaskValue);
-		/* Write ID Register */
-		XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR4_OFFSET,
-				IdValue);
-		break;
+		case XCAN_AFR_UAF1_MASK:	/* Acceptance Filter No. 1 */
+			/* Write Mask Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR1_OFFSET,
+				      MaskValue);
+			/* Write ID Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR1_OFFSET,
+				      IdValue);
+			break;
+		case XCAN_AFR_UAF2_MASK:	/* Acceptance Filter No. 2 */
+			/* Write Mask Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR2_OFFSET,
+				      MaskValue);
+			/* Write ID Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR2_OFFSET,
+				      IdValue);
+			break;
+		case XCAN_AFR_UAF3_MASK:	/* Acceptance Filter No. 3 */
+			/* Write Mask Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR3_OFFSET,
+				      MaskValue);
+			/* Write ID Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR3_OFFSET,
+				      IdValue);
+			break;
+		case XCAN_AFR_UAF4_MASK:	/* Acceptance Filter No. 4 */
+			/* Write Mask Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFMR4_OFFSET,
+				      MaskValue);
+			/* Write ID Register */
+			XCan_WriteReg(InstancePtr->BaseAddress, XCAN_AFIR4_OFFSET,
+				      IdValue);
+			break;
 	}
 
 	return XST_SUCCESS;
@@ -923,51 +940,51 @@ void XCan_AcceptFilterGet(XCan *InstancePtr, u32 FilterIndex,
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid(InstancePtr->NumOfAcceptFilters > 0);
 	Xil_AssertVoid((FilterIndex == XCAN_AFR_UAF4_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF3_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF2_MASK) ||
-			(FilterIndex == XCAN_AFR_UAF1_MASK));
+		       (FilterIndex == XCAN_AFR_UAF3_MASK) ||
+		       (FilterIndex == XCAN_AFR_UAF2_MASK) ||
+		       (FilterIndex == XCAN_AFR_UAF1_MASK));
 
 	switch (FilterIndex) {
-	case XCAN_AFR_UAF1_MASK:	/* Acceptance Filter No. 1 */
-		/* Read Mask Register */
-		*MaskValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFMR1_OFFSET);
-		/* Read ID Register */
-		*IdValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFIR1_OFFSET);
-		break;
-	case XCAN_AFR_UAF2_MASK:	/* Acceptance Filter No. 2 */
-		/* Read Mask Register */
-		*MaskValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFMR2_OFFSET);
-		/* Read ID Register */
-		*IdValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFIR2_OFFSET);
-		break;
-	case XCAN_AFR_UAF3_MASK:	/* Acceptance Filter No. 3 */
-		/* Read Mask Register */
-		*MaskValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFMR3_OFFSET);
-		/* Read ID Register */
-		*IdValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFIR3_OFFSET);
-		break;
-	case XCAN_AFR_UAF4_MASK:	/* Acceptance Filter No. 4 */
-		/* Read Mask Register */
-		*MaskValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFMR4_OFFSET);
-		/* Read ID Register */
-		*IdValue =
-			XCan_ReadReg(InstancePtr->BaseAddress,
-					  XCAN_AFIR4_OFFSET);
-		break;
+		case XCAN_AFR_UAF1_MASK:	/* Acceptance Filter No. 1 */
+			/* Read Mask Register */
+			*MaskValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFMR1_OFFSET);
+			/* Read ID Register */
+			*IdValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFIR1_OFFSET);
+			break;
+		case XCAN_AFR_UAF2_MASK:	/* Acceptance Filter No. 2 */
+			/* Read Mask Register */
+			*MaskValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFMR2_OFFSET);
+			/* Read ID Register */
+			*IdValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFIR2_OFFSET);
+			break;
+		case XCAN_AFR_UAF3_MASK:	/* Acceptance Filter No. 3 */
+			/* Read Mask Register */
+			*MaskValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFMR3_OFFSET);
+			/* Read ID Register */
+			*IdValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFIR3_OFFSET);
+			break;
+		case XCAN_AFR_UAF4_MASK:	/* Acceptance Filter No. 4 */
+			/* Read Mask Register */
+			*MaskValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFMR4_OFFSET);
+			/* Read ID Register */
+			*IdValue =
+				XCan_ReadReg(InstancePtr->BaseAddress,
+					     XCAN_AFIR4_OFFSET);
+			break;
 	}
 }
 
@@ -986,6 +1003,7 @@ void XCan_AcceptFilterGet(XCan *InstancePtr, u32 FilterIndex,
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XCan_Config *XCan_LookupConfig(u16 DeviceId)
 {
 	XCan_Config *CfgPtr = NULL;
@@ -1000,7 +1018,23 @@ XCan_Config *XCan_LookupConfig(u16 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XCan_Config *XCan_LookupConfig(UINTPTR BaseAddress)
+{
+	XCan_Config *CfgPtr = NULL;
+	int Index;
 
+	for (Index = 0U; XCan_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XCan_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XCan_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /*****************************************************************************/
 /**
 *
@@ -1019,13 +1053,24 @@ XCan_Config *XCan_LookupConfig(u16 DeviceId)
 ******************************************************************************/
 XCan_Config *XCan_GetConfig(unsigned int InstanceIndex)
 {
-	XCan_Config *CfgPtr;
+	XCan_Config *CfgPtr = NULL;
 
+#ifndef SDT
 	/* Check parameter */
-	if (InstanceIndex >= XPAR_XCAN_NUM_INSTANCES)
-		return NULL;
+	if (InstanceIndex < XPAR_XCAN_NUM_INSTANCES) {
+		CfgPtr = &XCan_ConfigTable[InstanceIndex];
+	}
 
-	CfgPtr = &XCan_ConfigTable[InstanceIndex];
+#else
+	int Index;
+
+	for (Index = 0U; XCan_ConfigTable[Index].Name != NULL; Index++) {
+		if (Index == InstanceIndex) {
+			CfgPtr = &XCan_ConfigTable[Index];
+			break;
+		}
+	}
+#endif
 
 	return CfgPtr;
 }
@@ -1053,7 +1098,7 @@ XCan_Config *XCan_GetConfig(unsigned int InstanceIndex)
 * @note		None.
 *
 ******************************************************************************/
-static void Initialize(XCan *InstancePtr, XCan_Config * ConfigPtr)
+static void Initialize(XCan *InstancePtr, XCan_Config *ConfigPtr)
 {
 	/*
 	 * Set some default values

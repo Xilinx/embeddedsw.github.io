@@ -8,7 +8,7 @@
 /**
 *
 * @file xusbpsu_device.c
-* @addtogroup usbpsu USBPSU v1.12
+* @addtogroup usbpsu Overview
 * @{
 *
 * <pre>
@@ -23,6 +23,9 @@
 *	pm    24/08/20 Fixed MISRA-C and Coverity warnings
 * 1.12	pm    10/08/22 Update doxygen tag and addtogroup version
 * 1.13	pm    04/01/23 Use Xil_WaitForEvent() API for register bit polling
+* 1.14	pm    09/09/23 Fixed HIS_VOCF metric violation - created common
+*		       functions for set and clear register bits.
+* 1.14	pm    12/09/23 Fixed HIS RETURN Violations
 *
 * </pre>
 *
@@ -61,13 +64,16 @@ void XUsbPsu_PhyReset(struct XUsbPsu *InstancePtr);
 *
 ******************************************************************************/
 s32 XUsbPsu_WaitClearTimeout(struct XUsbPsu *InstancePtr, u32 Offset,
-		u32 BitMask, u32 Timeout)
+			     u32 BitMask, u32 Timeout)
 {
-	if (Xil_WaitForEvent(InstancePtr->ConfigPtr->BaseAddress + Offset,
-			     BitMask, 0x00U, Timeout) != (u32)XST_SUCCESS)
-		return (s32)XST_FAILURE;
+	s32 Status = (s32)XST_SUCCESS;
 
-	return (s32)XST_SUCCESS;
+	if (Xil_WaitForEvent(InstancePtr->ConfigPtr->BaseAddress + Offset,
+			     BitMask, 0x00U, Timeout) != (u32)XST_SUCCESS) {
+		Status = (s32)XST_FAILURE;
+	}
+
+	return Status;
 }
 
 /*****************************************************************************/
@@ -85,13 +91,58 @@ s32 XUsbPsu_WaitClearTimeout(struct XUsbPsu *InstancePtr, u32 Offset,
 *
 ******************************************************************************/
 s32 XUsbPsu_WaitSetTimeout(struct XUsbPsu *InstancePtr, u32 Offset,
-		u32 BitMask, u32 Timeout)
+			   u32 BitMask, u32 Timeout)
 {
-	if (Xil_WaitForEvent(InstancePtr->ConfigPtr->BaseAddress + Offset,
-			     BitMask, BitMask, Timeout) != (u32)XST_SUCCESS)
-		return (s32)XST_FAILURE;
+	s32 Status = (s32)XST_SUCCESS;
 
-	return (s32)XST_SUCCESS;
+	if (Xil_WaitForEvent(InstancePtr->ConfigPtr->BaseAddress + Offset,
+			     BitMask, BitMask, Timeout) != (u32)XST_SUCCESS) {
+		Status = (s32)XST_FAILURE;
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* Set the register bits with the bit mask value
+*
+* @param	InstancePtr is a pointer to the XUsbPsu instance to be worked on
+* @param	Offset is register offset.
+* @param	BitMask is bit mask of required bit to be checked.
+*
+* @return  None
+*
+******************************************************************************/
+static INLINE void XUsbPsu_SetRegVal(struct XUsbPsu *InstancePtr, u32 Offset,
+				     u32 BitMask)
+{
+	u32             RegVal;
+
+	RegVal = XUsbPsu_ReadReg(InstancePtr, Offset);
+	RegVal |= BitMask;
+	XUsbPsu_WriteReg(InstancePtr, Offset, RegVal);
+}
+
+/*****************************************************************************/
+/**
+* Clear the register bits with the bit mask value
+*
+* @param	InstancePtr is a pointer to the XUsbPsu instance to be worked on
+* @param	Offset is register offset.
+* @param	BitMask is bit mask of required bit to be checked.
+*
+* @return  None
+*
+******************************************************************************/
+static INLINE void XUsbPsu_ClearRegVal(struct XUsbPsu *InstancePtr, u32 Offset,
+				       u32 BitMask)
+{
+	u32             RegVal;
+
+	RegVal = XUsbPsu_ReadReg(InstancePtr, Offset);
+	RegVal &= ~BitMask;
+	XUsbPsu_WriteReg(InstancePtr, Offset, RegVal);
 }
 
 /*****************************************************************************/
@@ -108,8 +159,8 @@ static INLINE void XUsbPsu_EventBuffersReset(struct XUsbPsu *InstancePtr)
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTADRLO(0U), 0U);
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTADRHI(0U), 0U);
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTSIZ(0U),
-			(u32)XUSBPSU_GEVNTSIZ_INTMASK |
-						XUSBPSU_GEVNTSIZ_SIZE(0U));
+			 (u32)XUSBPSU_GEVNTSIZ_INTMASK |
+			 XUSBPSU_GEVNTSIZ_SIZE(0U));
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTCOUNT(0U), 0U);
 }
 
@@ -138,7 +189,7 @@ u32 XUsbPsu_ReadHwParams(struct XUsbPsu *InstancePtr, u8 RegIndex)
 	Xil_AssertNonvoid(RegIndex <= (u8)XUSBPSU_GHWPARAMS7);
 
 	RegVal = XUsbPsu_ReadReg(InstancePtr, ((u32)XUSBPSU_GHWPARAMS0_OFFSET +
-				((u32)RegIndex * (u32)4U)));
+					       ((u32)RegIndex * (u32)4U)));
 	return RegVal;
 }
 
@@ -153,41 +204,33 @@ u32 XUsbPsu_ReadHwParams(struct XUsbPsu *InstancePtr, u8 RegIndex)
 ******************************************************************************/
 void XUsbPsu_PhyReset(struct XUsbPsu *InstancePtr)
 {
-	u32             RegVal;
-
 	/* Before Resetting PHY, put Core in Reset */
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GCTL);
-	RegVal |= XUSBPSU_GCTL_CORESOFTRESET;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GCTL, RegVal);
+	XUsbPsu_SetRegVal(InstancePtr, XUSBPSU_GCTL,
+			  XUSBPSU_GCTL_CORESOFTRESET);
 
 	/* Assert USB3 PHY reset */
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U));
-	RegVal |= XUSBPSU_GUSB3PIPECTL_PHYSOFTRST;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U), RegVal);
+	XUsbPsu_SetRegVal(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U),
+			  XUSBPSU_GUSB3PIPECTL_PHYSOFTRST);
 
 	/* Assert USB2 PHY reset */
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U));
-	RegVal |= XUSBPSU_GUSB2PHYCFG_PHYSOFTRST;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U), RegVal);
+	XUsbPsu_SetRegVal(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U),
+			  XUSBPSU_GUSB2PHYCFG_PHYSOFTRST);
 
 	XUsbPsu_Sleep(XUSBPSU_PHY_TIMEOUT);
 
 	/* Clear USB3 PHY reset */
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U));
-	RegVal &= ~XUSBPSU_GUSB3PIPECTL_PHYSOFTRST;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U), RegVal);
+	XUsbPsu_ClearRegVal(InstancePtr, XUSBPSU_GUSB3PIPECTL(0U),
+			    XUSBPSU_GUSB3PIPECTL_PHYSOFTRST);
 
 	/* Clear USB2 PHY reset */
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U));
-	RegVal &= ~XUSBPSU_GUSB2PHYCFG_PHYSOFTRST;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U), RegVal);
+	XUsbPsu_ClearRegVal(InstancePtr, XUSBPSU_GUSB2PHYCFG(0U),
+			    XUSBPSU_GUSB2PHYCFG_PHYSOFTRST);
 
 	XUsbPsu_Sleep(XUSBPSU_PHY_TIMEOUT);
 
 	/* Take Core out of reset state after PHYS are stable*/
-	RegVal = XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GCTL);
-	RegVal &= ~XUSBPSU_GCTL_CORESOFTRESET;
-	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GCTL, RegVal);
+	XUsbPsu_ClearRegVal(InstancePtr, XUSBPSU_GCTL,
+			    XUSBPSU_GCTL_CORESOFTRESET);
 }
 
 /****************************************************************************/
@@ -283,17 +326,17 @@ s32 XUsbPsu_SetTestMode(struct XUsbPsu *InstancePtr, u32 Mode)
 
 	switch (Mode) {
 
-	case XUSBPSU_TEST_J:
-	case XUSBPSU_TEST_K:
-	case XUSBPSU_TEST_SE0_NAK:
-	case XUSBPSU_TEST_PACKET:
-	case XUSBPSU_TEST_FORCE_ENABLE:
-		RegVal |= (u32)Mode << 1;
-		break;
+		case XUSBPSU_TEST_J:
+		case XUSBPSU_TEST_K:
+		case XUSBPSU_TEST_SE0_NAK:
+		case XUSBPSU_TEST_PACKET:
+		case XUSBPSU_TEST_FORCE_ENABLE:
+			RegVal |= (u32)Mode << 1;
+			break;
 
-	default:
-		Status = (s32)XST_FAILURE;
-		break;
+		default:
+			Status = (s32)XST_FAILURE;
+			break;
 	}
 
 	if (Status != (s32)XST_FAILURE) {
@@ -322,7 +365,7 @@ void XUsbPsu_Idle(struct XUsbPsu *InstancePtr)
 
 	/* Stop the transfers when in peripheral mode */
 	if ((XUsbPsu_ReadReg(InstancePtr, XUSBPSU_GSTS) &
-				XUSBPSU_GSTS_CUR_MODE) == 0U) {
+	     XUSBPSU_GSTS_CUR_MODE) == 0U) {
 		u32 RegVal;
 		u32 EpNums, CurEpNum, InEpNums, OutEpNums, PhyEpNum;
 
@@ -337,19 +380,19 @@ void XUsbPsu_Idle(struct XUsbPsu *InstancePtr)
 		for (CurEpNum = 0U; CurEpNum < OutEpNums; CurEpNum++) {
 
 			PhyEpNum = XUSBPSU_PhysicalEp(CurEpNum,
-					XUSBPSU_EP_DIR_OUT);
+						      XUSBPSU_EP_DIR_OUT);
 
 			XUsbPsu_StopTransfer(InstancePtr, (u8)CurEpNum,
-					XUSBPSU_EP_DIR_OUT, (u8)FALSE);
+					     XUSBPSU_EP_DIR_OUT, (u8)FALSE);
 
 			/* Wait until CMD ACT bit is cleared */
 			if (XUsbPsu_WaitClearTimeout(InstancePtr,
-					XUSBPSU_DEPCMD(PhyEpNum),
-					XUSBPSU_DEPCMD_CMDACT, 500U) ==
-					XST_FAILURE) {
+						     XUSBPSU_DEPCMD(PhyEpNum),
+						     XUSBPSU_DEPCMD_CMDACT, 500U) ==
+			    XST_FAILURE) {
 #ifdef XUSBPSU_DEBUG
 				xil_printf(
-				"End Transfer on Endpoint %dOUT failed\n\r",
+					"End Transfer on Endpoint %dOUT failed\n\r",
 					CurEpNum);
 #endif
 			}
@@ -359,19 +402,19 @@ void XUsbPsu_Idle(struct XUsbPsu *InstancePtr)
 		for (CurEpNum = 0U; CurEpNum < InEpNums; CurEpNum++) {
 
 			PhyEpNum = XUSBPSU_PhysicalEp(CurEpNum,
-					XUSBPSU_EP_DIR_IN);
+						      XUSBPSU_EP_DIR_IN);
 
 			XUsbPsu_StopTransfer(InstancePtr, (u8)CurEpNum,
-					XUSBPSU_EP_DIR_IN, (u8)FALSE);
+					     XUSBPSU_EP_DIR_IN, (u8)FALSE);
 
 			/* Wait until CMD ACT bit is cleared */
 			if (XUsbPsu_WaitClearTimeout(InstancePtr,
-					XUSBPSU_DEPCMD(PhyEpNum),
-					XUSBPSU_DEPCMD_CMDACT, 500U) ==
-					XST_FAILURE) {
+						     XUSBPSU_DEPCMD(PhyEpNum),
+						     XUSBPSU_DEPCMD_CMDACT, 500U) ==
+			    XST_FAILURE) {
 #ifdef XUSBPSU_DEBUG
 				xil_printf(
-				"End Transfer on Endpoint %dIN failed\n\r",
+					"End Transfer on Endpoint %dIN failed\n\r",
 					CurEpNum);
 #endif
 			}
@@ -381,7 +424,7 @@ void XUsbPsu_Idle(struct XUsbPsu *InstancePtr)
 		for (CurEpNum = 0U; CurEpNum < OutEpNums; CurEpNum++) {
 
 			XUsbPsu_EpTransferDeactive(InstancePtr, (u8)CurEpNum,
-					XUSBPSU_EP_DIR_OUT);
+						   XUSBPSU_EP_DIR_OUT);
 
 		}
 
@@ -389,7 +432,7 @@ void XUsbPsu_Idle(struct XUsbPsu *InstancePtr)
 		for (CurEpNum = 0U; CurEpNum < InEpNums; CurEpNum++) {
 
 			XUsbPsu_EpTransferDeactive(InstancePtr, (u8)CurEpNum,
-					XUSBPSU_EP_DIR_IN);
+						   XUSBPSU_EP_DIR_IN);
 
 		}
 
@@ -425,7 +468,7 @@ s32 XUsbPsu_CoreInit(struct XUsbPsu *InstancePtr)
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_DCTL, XUSBPSU_DCTL_CSFTRST);
 
 	if (XUsbPsu_WaitClearTimeout(InstancePtr, XUSBPSU_DCTL,
-				XUSBPSU_DCTL_CSFTRST, 500U) == XST_FAILURE) {
+				     XUSBPSU_DCTL_CSFTRST, 500U) == XST_FAILURE) {
 		/* timed out return failure */
 		return (s32)XST_FAILURE;
 	}
@@ -440,25 +483,25 @@ s32 XUsbPsu_CoreInit(struct XUsbPsu *InstancePtr)
 	Hwparams1 = XUsbPsu_ReadHwParams(InstancePtr, 1U);
 
 	switch (XUSBPSU_GHWPARAMS1_EN_PWROPT(Hwparams1)) {
-	case XUSBPSU_GHWPARAMS1_EN_PWROPT_CLK:
-		RegVal &= ~XUSBPSU_GCTL_DSBLCLKGTNG;
-		break;
+		case XUSBPSU_GHWPARAMS1_EN_PWROPT_CLK:
+			RegVal &= ~XUSBPSU_GCTL_DSBLCLKGTNG;
+			break;
 
-	case XUSBPSU_GHWPARAMS1_EN_PWROPT_HIB:
-		/* enable ref clocks */
+		case XUSBPSU_GHWPARAMS1_EN_PWROPT_HIB:
+			/* enable ref clocks */
 #if defined (XCLOCKING)
-		Xil_ClockEnable(InstancePtr->ConfigPtr->RefClk);
+			Xil_ClockEnable(InstancePtr->ConfigPtr->RefClk);
 #endif
-		/* enable hibernation here */
+			/* enable hibernation here */
 #ifdef XUSBPSU_HIBERNATION_ENABLE
-		RegVal |= XUSBPSU_GCTL_GBLHIBERNATIONEN;
-		InstancePtr->HasHibernation = 1U;
+			RegVal |= XUSBPSU_GCTL_GBLHIBERNATIONEN;
+			InstancePtr->HasHibernation = 1U;
 #endif
-		break;
+			break;
 
-	default:
-		/* Made for Misra-C Compliance. */
-		break;
+		default:
+			/* Made for Misra-C Compliance. */
+			break;
 	}
 
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GCTL, RegVal);
@@ -478,7 +521,7 @@ s32 XUsbPsu_CoreInit(struct XUsbPsu *InstancePtr)
 		XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GSBUSCFG0, RegVal);
 
 		XUsbPsu_WriteVendorReg(XUSBPSU_COHERENCY,
-					XUSBPSU_COHERENCY_MODE_ENABLE);
+				       XUSBPSU_COHERENCY_MODE_ENABLE);
 	}
 
 	return (s32)XST_SUCCESS;
@@ -502,12 +545,12 @@ void XUsbPsu_EventBuffersSetup(struct XUsbPsu *InstancePtr)
 	Evt->Offset = 0U;
 
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTADRLO(0U),
-			(UINTPTR)InstancePtr->EventBuffer);
+			 (UINTPTR)InstancePtr->EventBuffer);
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTADRHI(0U),
-			((UINTPTR)(InstancePtr->EventBuffer) >> 16U) >> 16U);
+			 ((UINTPTR)(InstancePtr->EventBuffer) >> 16U) >> 16U);
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTSIZ(0U),
-			XUSBPSU_GEVNTSIZ_SIZE(
-					sizeof(InstancePtr->EventBuffer)));
+			 XUSBPSU_GEVNTSIZ_SIZE(
+				 sizeof(InstancePtr->EventBuffer)));
 	XUsbPsu_WriteReg(InstancePtr, XUSBPSU_GEVNTCOUNT(0U), 0U);
 }
 
@@ -546,16 +589,16 @@ s32 XUsbPsu_SetupScratchpad(struct XUsbPsu *InstancePtr, u8 *ScratchBuf)
 {
 	s32 Ret;
 	Ret = XUsbPsu_SendGadgetGenericCmd(InstancePtr,
-			XUSBPSU_DGCMD_SET_SCRATCHPAD_ADDR_LO,
-				(u32)((UINTPTR)ScratchBuf & 0xFFFFFFFFU));
+					   XUSBPSU_DGCMD_SET_SCRATCHPAD_ADDR_LO,
+					   (u32)((UINTPTR)ScratchBuf & 0xFFFFFFFFU));
 	if (Ret == XST_FAILURE) {
 		xil_printf("Failed to set scratchpad low addr: %d\n", Ret);
 		return Ret;
 	}
 
 	Ret = XUsbPsu_SendGadgetGenericCmd(InstancePtr,
-			XUSBPSU_DGCMD_SET_SCRATCHPAD_ADDR_HI,
-				(u32)(((UINTPTR)ScratchBuf >> 16U) >> 16U));
+					   XUSBPSU_DGCMD_SET_SCRATCHPAD_ADDR_HI,
+					   (u32)(((UINTPTR)ScratchBuf >> 16U) >> 16U));
 	if (Ret == XST_FAILURE) {
 		xil_printf("Failed to set scratchpad high addr: %d\n", Ret);
 		return Ret;

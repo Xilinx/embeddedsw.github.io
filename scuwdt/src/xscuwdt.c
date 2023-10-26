@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xscuwdt.c
-* @addtogroup scuwdt_v2_4
+* @addtogroup Overview
 * @{
 *
 * Contains the implementation of interface functions of the XScuWdt driver.
@@ -20,6 +21,7 @@
 * ----- --- -------- ---------------------------------------------
 * 1.00a sdm 01/15/10 First release
 * 2.1 	sk  02/26/15 Modified the code for MISRA-C:2012 compliance.
+* 2.5   asa 07/18/23 Made updates for workflow decoupling flow.
 * </pre>
 *
 ******************************************************************************/
@@ -58,7 +60,7 @@
 *
 ******************************************************************************/
 s32 XScuWdt_CfgInitialize(XScuWdt *InstancePtr,
-			 XScuWdt_Config *ConfigPtr, u32 EffectiveAddress)
+			  XScuWdt_Config *ConfigPtr, u32 EffectiveAddress)
 {
 	s32 CfgStatus;
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -73,12 +75,13 @@ s32 XScuWdt_CfgInitialize(XScuWdt *InstancePtr,
 	 */
 	if (InstancePtr->IsStarted == XIL_COMPONENT_IS_STARTED) {
 		CfgStatus = (s32)XST_DEVICE_IS_STARTED;
-	}
-	else {
+	} else {
 		/*
 		 * Copy configuration into instance.
 		 */
+#ifndef SDT
 		InstancePtr->Config.DeviceId = ConfigPtr->DeviceId;
+#endif
 
 		/*
 		 * Save the base address pointer such that the registers of the block
@@ -97,7 +100,7 @@ s32 XScuWdt_CfgInitialize(XScuWdt *InstancePtr,
 		 */
 		InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 
-		CfgStatus =(s32)XST_SUCCESS;
+		CfgStatus = (s32)XST_SUCCESS;
 	}
 	return CfgStatus;
 }
@@ -128,7 +131,7 @@ void XScuWdt_Start(XScuWdt *InstancePtr)
 	 * Read the contents of the Control register.
 	 */
 	Register = XScuWdt_ReadReg(InstancePtr->Config.BaseAddr,
-				  XSCUWDT_CONTROL_OFFSET);
+				   XSCUWDT_CONTROL_OFFSET);
 
 	/*
 	 * Set the 'watchdog enable' bit in the register.
@@ -139,7 +142,7 @@ void XScuWdt_Start(XScuWdt *InstancePtr)
 	 * Update the Control register with the new value.
 	 */
 	XScuWdt_WriteReg(InstancePtr->Config.BaseAddr,
-			XSCUWDT_CONTROL_OFFSET, Register);
+			 XSCUWDT_CONTROL_OFFSET, Register);
 
 	/*
 	 * Indicate that the device is started.
@@ -170,7 +173,7 @@ void XScuWdt_Stop(XScuWdt *InstancePtr)
 	 * Read the contents of the Control register.
 	 */
 	Register = XScuWdt_ReadReg(InstancePtr->Config.BaseAddr,
-				  XSCUWDT_CONTROL_OFFSET);
+				   XSCUWDT_CONTROL_OFFSET);
 
 	/*
 	 * Clear the 'watchdog enable' bit in the register.
@@ -181,7 +184,7 @@ void XScuWdt_Stop(XScuWdt *InstancePtr)
 	 * Update the Control register with the new value.
 	 */
 	XScuWdt_WriteReg(InstancePtr->Config.BaseAddr,
-			XSCUWDT_CONTROL_OFFSET, Register);
+			 XSCUWDT_CONTROL_OFFSET, Register);
 
 	/*
 	 * Indicate that the device is stopped.

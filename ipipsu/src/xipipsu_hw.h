@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,6 +24,7 @@
 * 2.11  ma   01/17/22 Added XIPIPSU_BASE_ADDR macro
 * 2.12  sd   02/24/22 Added support for VERSAL NET
 *       sd   05/05/22 Added xparameters.h
+* 2.14  sd   07/27/23 Update the target count
 *
 * </pre>
 *
@@ -56,7 +58,11 @@ extern "C" {
 #define XIPIPSU_BUFFER_OFFSET_RESPONSE		(32U) /**< Buffer offset for response */
 
 /* Number of IPI slots enabled on the device */
-#define XIPIPSU_MAX_TARGETS	XPAR_XIPIPSU_NUM_TARGETS /**< Maximum number of targets */
+#ifndef SDT
+#define XIPIPSU_MAX_TARGETS    XPAR_XIPIPSU_NUM_TARGETS /**< Maximum number of targets */
+#else
+#define XIPIPSU_MAX_TARGETS    XPAR_XIPIPSU_0_IPI_TARGET_COUNT /**< Maximum number of targets */
+#endif
 
 /* Register Offsets for each member  of IPI Register Set */
 #define XIPIPSU_TRIG_OFFSET 0x00U /**< Offset for Trigger register */

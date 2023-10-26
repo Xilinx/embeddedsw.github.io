@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -49,10 +50,14 @@
 #include "xil_cache.h"
 #include "xil_printf.h"
 #include "xemacps.h"		/* defines XEmacPs API */
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#else
 #ifdef XPAR_INTC_0_DEVICE_ID
 #include "xintc.h"
 #else
 #include "xscugic.h"
+#endif
 #endif
 
 #ifndef __MICROBLAZE__
@@ -90,7 +95,7 @@
 typedef char EthernetFrame[XEMACPS_MAX_VLAN_FRAME_SIZE_JUMBO];
 #else
 typedef char EthernetFrame[XEMACPS_MAX_VLAN_FRAME_SIZE_JUMBO]
-	__attribute__ ((aligned(64)));
+__attribute__ ((aligned(64)));
 #endif
 
 /************************** Function Prototypes *****************************/
@@ -101,13 +106,13 @@ typedef char EthernetFrame[XEMACPS_MAX_VLAN_FRAME_SIZE_JUMBO]
  * Utility functions implemented in xemacps_example_util.c
  */
 void EmacPsUtilSetupUart(void);
-void EmacPsUtilFrameHdrFormatMAC(EthernetFrame * FramePtr, char *DestAddr);
-void EmacPsUtilFrameHdrFormatType(EthernetFrame * FramePtr, u16 FrameType);
-void EmacPsUtilFrameSetPayloadData(EthernetFrame * FramePtr, u32 PayloadSize);
-LONG EmacPsUtilFrameVerify(EthernetFrame * CheckFrame,
-			   EthernetFrame * ActualFrame);
-void EmacPsUtilFrameMemClear(EthernetFrame * FramePtr);
-LONG EmacPsUtilEnterLoopback(XEmacPs * XEmacPsInstancePtr, u32 Speed);
+void EmacPsUtilFrameHdrFormatMAC(EthernetFrame *FramePtr, char *DestAddr);
+void EmacPsUtilFrameHdrFormatType(EthernetFrame *FramePtr, u16 FrameType);
+void EmacPsUtilFrameSetPayloadData(EthernetFrame *FramePtr, u32 PayloadSize);
+LONG EmacPsUtilFrameVerify(EthernetFrame *CheckFrame,
+			   EthernetFrame *ActualFrame);
+void EmacPsUtilFrameMemClear(EthernetFrame *FramePtr);
+LONG EmacPsUtilEnterLoopback(XEmacPs *XEmacPsInstancePtr, u32 Speed);
 void EmacPsUtilstrncpy(char *Destination, const char *Source, u32 n);
 void EmacPsUtilErrorTrap(const char *Message);
 void EmacpsDelay(u32 delay);

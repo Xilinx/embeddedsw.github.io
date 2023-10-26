@@ -17,7 +17,5 @@ int XAxiCdma_SimpleIntrExample(XIntc *IntcInstancePtr, XAxiCdma *InstancePtr,
 #else
 int XAxiCdma_SimpleIntrExample(XScuGic *IntcInstancePtr, XAxiCdma *InstancePtr,
 	u16 DeviceId,u32 IntrId);
-
 #endif
 #endif
-

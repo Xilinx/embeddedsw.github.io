@@ -73,8 +73,12 @@ extern void xil_printf(const char *format, ...);
  * change all the needed parameters in one place.
  */
 
+#ifndef SDT
 #ifndef TESTAPP_GEN
 #define DMA_CTRL_DEVICE_ID	XPAR_AXICDMA_0_DEVICE_ID
+#endif
+#else
+#define AXICDMA_BASE_ADDR       XPAR_XAXICDMA_0_BASEADDR
 #endif
 
 #define BUFFER_BYTESIZE		64	/* Length of the buffers for DMA
@@ -101,7 +105,11 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries);
 
 static int CheckData(u8 *SrcPtr, u8 *DestPtr, int Length);
 
+#ifndef SDT
 int XAxiCdma_SimplePollExample(u16 DeviceId);
+#else
+int XAxiCdma_SimplePollExample(XAxiCdma *InstancePtr, UINTPTR BaseAddress);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -140,7 +148,11 @@ int main()
 	xil_printf("\r\n--- Entering main() --- \r\n");
 
 	/* Run the poll example for simple transfer */
+#ifndef SDT
 	Status = XAxiCdma_SimplePollExample(DMA_CTRL_DEVICE_ID);
+#else
+	Status = XAxiCdma_SimplePollExample(&AxiCdmaInstance, AXICDMA_BASE_ADDR);
+#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("AxiCdma_SimplePoll Example Failed\r\n");
@@ -172,7 +184,11 @@ int main()
 *
 *
 ******************************************************************************/
+#ifndef SDT
 int XAxiCdma_SimplePollExample(u16 DeviceId)
+#else
+int XAxiCdma_SimplePollExample(XAxiCdma *InstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	XAxiCdma_Config *CfgPtr;
 	int Status;
@@ -182,13 +198,17 @@ int XAxiCdma_SimplePollExample(u16 DeviceId)
 
 	/* Initialize the XAxiCdma device.
 	 */
+#ifndef SDT
 	CfgPtr = XAxiCdma_LookupConfig(DeviceId);
+#else
+	CfgPtr = XAxiCdma_LookupConfig(BaseAddress);
+#endif
 	if (!CfgPtr) {
 		return XST_FAILURE;
 	}
 
 	Status = XAxiCdma_CfgInitialize(&AxiCdmaInstance, CfgPtr,
-		CfgPtr->BaseAddress);
+					CfgPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -199,9 +219,9 @@ int XAxiCdma_SimplePollExample(u16 DeviceId)
 
 	for (Index = 0; Index < Tries; Index++) {
 		Status = DoSimplePollTransfer(&AxiCdmaInstance,
-			BUFFER_BYTESIZE, SubmitTries);
+					      BUFFER_BYTESIZE, SubmitTries);
 		if (Status != XST_SUCCESS) {
-				return XST_FAILURE;
+			return XST_FAILURE;
 		}
 	}
 
@@ -256,7 +276,7 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 		Retries -= 1;
 
 		Status = XAxiCdma_SimpleTransfer(InstancePtr, (UINTPTR)SrcBuffer,
-			(UINTPTR)DestBuffer, Length, NULL, NULL);
+						 (UINTPTR)DestBuffer, Length, NULL, NULL);
 		if (Status == XST_SUCCESS) {
 			break;
 		}
@@ -273,10 +293,10 @@ static int DoSimplePollTransfer(XAxiCdma *InstancePtr, int Length, int Retries)
 	/* Wait until the DMA transfer is done or timeout
 	 */
 	Status = Xil_WaitForEvent(InstancePtr->BaseAddr + XAXICDMA_SR_OFFSET,
-                       XAXICDMA_SR_IDLE_MASK, XAXICDMA_SR_IDLE_MASK, POLL_TIMEOUT_COUNTER);
+				  XAXICDMA_SR_IDLE_MASK, XAXICDMA_SR_IDLE_MASK, POLL_TIMEOUT_COUNTER);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
-				"Failed to complete the transfer with %d\r\n", Status);
+			    "Failed to complete the transfer with %d\r\n", Status);
 		return XST_FAILURE;
 	}
 
@@ -343,8 +363,8 @@ static int CheckData(u8 *SrcPtr, u8 *DestPtr, int Length)
 	for (Index = 0; Index < Length; Index++) {
 		if ( DestPtr[Index] != SrcPtr[Index]) {
 			xdbg_printf(XDBG_DEBUG_ERROR,
-			    "Data check failure %d: %x/%x\r\n",
-			    Index, DestPtr[Index], SrcPtr[Index]);
+				    "Data check failure %d: %x/%x\r\n",
+				    Index, DestPtr[Index], SrcPtr[Index]);
 			return XST_FAILURE;
 		}
 	}

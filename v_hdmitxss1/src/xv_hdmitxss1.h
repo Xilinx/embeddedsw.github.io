@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -73,6 +74,7 @@ extern "C" {
 #endif
 
 
+#define XV_HDMITXSS1_DDC_EDID_LENGTH	256
 
 /****************************** Type Definitions ******************************/
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -518,7 +520,7 @@ int XV_HdmiTxSs1_SetLogCallback(XV_HdmiTxSs1 *InstancePtr,
 	u64 *CallbackFunc,
 	void *CallbackRef);
 int XV_HdmiTxSs1_SendCvtemAuxPackets(XV_HdmiTxSs1 *InstancePtr, XHdmiC_Aux *DscAuxFifo);
-int XV_HdmiTxSs1_ReadEdid(XV_HdmiTxSs1 *InstancePtr, u8 *BufferPtr);
+int XV_HdmiTxSs1_ReadEdid(XV_HdmiTxSs1 *InstancePtr, u8 *BufferPtr, u32 BufferSize);
 int XV_HdmiTxSs1_ReadEdidSegment(XV_HdmiTxSs1 *InstancePtr, u8 *Buffer, u8 segment);
 void XV_HdmiTxSs1_ShowEdid(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetScrambler(XV_HdmiTxSs1 *InstancePtr, u8 Enable);
@@ -584,6 +586,9 @@ void XV_HdmiTxSS1_SetVrrVfpStretch(XV_HdmiTxSs1 *InstancePtr,
 void XV_HdmiTxSS1_DisableVrr(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetVrrIf(XV_HdmiTxSs1 *InstancePtr,
 			XV_HdmiC_VrrInfoFrame *VrrIF);
+void XV_HdmiTxSs1_SetCustomVrrIf(XV_HdmiTxSs1 *InstancePtr,
+				 XV_HdmiC_VrrInfoFrame *VrrIF, u16 Sync,
+				 u16 DataSetLen);
 
 /* Dynamic HDR related APIs */
 void XV_HdmiTxSs1_DynHdr_Control(XV_HdmiTxSs1 *InstancePtr, u8 Flag);

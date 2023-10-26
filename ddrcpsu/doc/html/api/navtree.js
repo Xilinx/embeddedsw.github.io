@@ -1,11 +1,13 @@
 var NAVTREE =
 [
-  [ "ddrcpsu", "index.html", ]
+  [ "ddrcpsu", "index.html", [
+    [ "File List", "files.html", "files" ]
+  ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"files.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

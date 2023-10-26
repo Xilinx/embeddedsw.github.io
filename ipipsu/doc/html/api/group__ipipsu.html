@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">ipipsu
    </div>
@@ -85,21 +85,6 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga751759b2dc7ce3aa9ec903acab7e240b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga751759b2dc7ce3aa9ec903acab7e240b">POLYNOM</a>&#160;&#160;&#160;0x8005U</td></tr>
-<tr class="memdesc:ga751759b2dc7ce3aa9ec903acab7e240b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polynomial.  <a href="#ga751759b2dc7ce3aa9ec903acab7e240b">More...</a><br/></td></tr>
-<tr class="separator:ga751759b2dc7ce3aa9ec903acab7e240b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga09a17cb2b8327cfeb22e0ae54f96f312"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga09a17cb2b8327cfeb22e0ae54f96f312">INITIAL_CRC_VAL</a>&#160;&#160;&#160;0x4F4EU</td></tr>
-<tr class="memdesc:ga09a17cb2b8327cfeb22e0ae54f96f312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial crc value.  <a href="#ga09a17cb2b8327cfeb22e0ae54f96f312">More...</a><br/></td></tr>
-<tr class="separator:ga09a17cb2b8327cfeb22e0ae54f96f312"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0e0a12afc9ca6390b4514954e9e96466"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga0e0a12afc9ca6390b4514954e9e96466">CRC16_MASK</a>&#160;&#160;&#160;0xFFFFU</td></tr>
-<tr class="memdesc:ga0e0a12afc9ca6390b4514954e9e96466"><td class="mdescLeft">&#160;</td><td class="mdescRight">CRC mask.  <a href="#ga0e0a12afc9ca6390b4514954e9e96466">More...</a><br/></td></tr>
-<tr class="separator:ga0e0a12afc9ca6390b4514954e9e96466"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga701bae53f507dd09573a7903fadfa8ff"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga701bae53f507dd09573a7903fadfa8ff">CRC16_HIGH_BIT_MASK</a>&#160;&#160;&#160;0x8000U</td></tr>
-<tr class="memdesc:ga701bae53f507dd09573a7903fadfa8ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">CRC high bit mask.  <a href="#ga701bae53f507dd09573a7903fadfa8ff">More...</a><br/></td></tr>
-<tr class="separator:ga701bae53f507dd09573a7903fadfa8ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga841cb3c466aac756464f315408a0e7bc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga841cb3c466aac756464f315408a0e7bc">NUM_BITS_IN_BYTE</a>&#160;&#160;&#160;0x8U</td></tr>
-<tr class="memdesc:ga841cb3c466aac756464f315408a0e7bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">8 bits in a byte  <a href="#ga841cb3c466aac756464f315408a0e7bc">More...</a><br/></td></tr>
-<tr class="separator:ga841cb3c466aac756464f315408a0e7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaad130b0ac7cc7a948fa636e7a2000bed"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#gaad130b0ac7cc7a948fa636e7a2000bed">XIPIPSU_BUF_TYPE_MSG</a>&#160;&#160;&#160;(0x001U)</td></tr>
 <tr class="memdesc:gaad130b0ac7cc7a948fa636e7a2000bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message type buffer.  <a href="#gaad130b0ac7cc7a948fa636e7a2000bed">More...</a><br/></td></tr>
 <tr class="separator:gaad130b0ac7cc7a948fa636e7a2000bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,6 +205,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga1404a6dc6d1ff0a6baf80a74e6bdb6e5"><td class="memItemLeft" align="right" valign="top">u32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga1404a6dc6d1ff0a6baf80a74e6bdb6e5">XIpiPsu_GetBufferAddress</a> (<a class="el" href="struct_x_ipi_psu.html">XIpiPsu</a> *InstancePtr, u32 SrcCpuMask, u32 DestCpuMask, u32 BufferType)</td></tr>
 <tr class="memdesc:ga1404a6dc6d1ff0a6baf80a74e6bdb6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Buffer Address for a given pair of CPUs.  <a href="#ga1404a6dc6d1ff0a6baf80a74e6bdb6e5">More...</a><br/></td></tr>
 <tr class="separator:ga1404a6dc6d1ff0a6baf80a74e6bdb6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7d429daed621ef6c33656d873e31d9b3"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ipipsu.html#ga7d429daed621ef6c33656d873e31d9b3">XIpiPsu_GetBufferIndex</a> (const <a class="el" href="struct_x_ipi_psu.html">XIpiPsu</a> *InstancePtr, u32 CpuMask)</td></tr>
+<tr class="memdesc:ga7d429daed621ef6c33656d873e31d9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Buffer Index for a CPU specified by Mask.  <a href="#ga7d429daed621ef6c33656d873e31d9b3">More...</a><br/></td></tr>
+<tr class="separator:ga7d429daed621ef6c33656d873e31d9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -228,34 +216,6 @@ Variables</h2></td></tr>
 <tr class="separator:gaf954c1864f8c4c66c0a887d8868cbc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="ga701bae53f507dd09573a7903fadfa8ff"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CRC16_HIGH_BIT_MASK&#160;&#160;&#160;0x8000U</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>CRC high bit mask. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga0e0a12afc9ca6390b4514954e9e96466"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CRC16_MASK&#160;&#160;&#160;0xFFFFU</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>CRC mask. </p>
-
-</div>
-</div>
 <a class="anchor" id="ga2d1f1a28e0f7355b25520ccb9ff0a77b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -267,48 +227,6 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Enable CRC. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga09a17cb2b8327cfeb22e0ae54f96f312"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define INITIAL_CRC_VAL&#160;&#160;&#160;0x4F4EU</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initial crc value. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga841cb3c466aac756464f315408a0e7bc"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define NUM_BITS_IN_BYTE&#160;&#160;&#160;0x8U</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>8 bits in a byte </p>
-
-</div>
-</div>
-<a class="anchor" id="ga751759b2dc7ce3aa9ec903acab7e240b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define POLYNOM&#160;&#160;&#160;0x8005U</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Polynomial. </p>
 
 </div>
 </div>
@@ -432,11 +350,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a>, \</div>
-<div class="line">                ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
-<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:195</div></div>
-<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:81</div></div>
-<div class="ttc" id="group__ipipsu_html_ga5c9abd1d0247d6b28268131d90b62a05"><div class="ttname"><a href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_ISR_OFFSET</div><div class="ttdoc">Offset for ISR register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:64</div></div>
+<div class="line">                         <a class="code" href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a>, \</div>
+<div class="line">                         ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
+<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:233</div></div>
+<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:87</div></div>
+<div class="ttc" id="group__ipipsu_html_ga5c9abd1d0247d6b28268131d90b62a05"><div class="ttname"><a href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_ISR_OFFSET</div><div class="ttdoc">Offset for ISR register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:70</div></div>
 </div><!-- fragment -->
 <p>Clear the <em>STATUS REGISTER</em> of the current IPI instance. </p>
 <p>The corresponding interrupt status for each bit set to 1 in <em>Mask</em>, will be cleared</p>
@@ -513,9 +431,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a>)</div>
-<div class="ttc" id="group__ipipsu_html_ga5c9abd1d0247d6b28268131d90b62a05"><div class="ttname"><a href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_ISR_OFFSET</div><div class="ttdoc">Offset for ISR register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:64</div></div>
-<div class="ttc" id="group__ipipsu_html_gac400a6861c1d0ee565ad5fac914a7220"><div class="ttname"><a href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a></div><div class="ttdeci">#define XIpiPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read the register specified by the base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:177</div></div>
+<div class="line">                        <a class="code" href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a>)</div>
+<div class="ttc" id="group__ipipsu_html_ga5c9abd1d0247d6b28268131d90b62a05"><div class="ttname"><a href="group__ipipsu.html#ga5c9abd1d0247d6b28268131d90b62a05">XIPIPSU_ISR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_ISR_OFFSET</div><div class="ttdoc">Offset for ISR register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:70</div></div>
+<div class="ttc" id="group__ipipsu_html_gac400a6861c1d0ee565ad5fac914a7220"><div class="ttname"><a href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a></div><div class="ttdeci">#define XIpiPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read the register specified by the base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:215</div></div>
 </div><!-- fragment -->
 <p>Get the <em>STATUS REGISTER</em> of the current IPI instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -545,9 +463,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__ipipsu.html#ga1ca8515703f72eb2194a408cfa5b4a18">XIPIPSU_OBS_OFFSET</a>)</div>
-<div class="ttc" id="group__ipipsu_html_ga1ca8515703f72eb2194a408cfa5b4a18"><div class="ttname"><a href="group__ipipsu.html#ga1ca8515703f72eb2194a408cfa5b4a18">XIPIPSU_OBS_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_OBS_OFFSET</div><div class="ttdoc">Offset for Observation register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:63</div></div>
-<div class="ttc" id="group__ipipsu_html_gac400a6861c1d0ee565ad5fac914a7220"><div class="ttname"><a href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a></div><div class="ttdeci">#define XIpiPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read the register specified by the base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:177</div></div>
+<div class="line">                        <a class="code" href="group__ipipsu.html#ga1ca8515703f72eb2194a408cfa5b4a18">XIPIPSU_OBS_OFFSET</a>)</div>
+<div class="ttc" id="group__ipipsu_html_ga1ca8515703f72eb2194a408cfa5b4a18"><div class="ttname"><a href="group__ipipsu.html#ga1ca8515703f72eb2194a408cfa5b4a18">XIPIPSU_OBS_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_OBS_OFFSET</div><div class="ttdoc">Offset for Observation register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:69</div></div>
+<div class="ttc" id="group__ipipsu_html_gac400a6861c1d0ee565ad5fac914a7220"><div class="ttname"><a href="group__ipipsu.html#gac400a6861c1d0ee565ad5fac914a7220">XIpiPsu_ReadReg</a></div><div class="ttdeci">#define XIpiPsu_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">Read the register specified by the base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:215</div></div>
 </div><!-- fragment -->
 <p>Get the <em>OBSERVATION REGISTER</em> of the current IPI instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -644,11 +562,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__ipipsu.html#ga81c99cede6902a231b207281d9a6e212">XIPIPSU_IDR_OFFSET</a>, \</div>
-<div class="line">                ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
-<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:195</div></div>
-<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:81</div></div>
-<div class="ttc" id="group__ipipsu_html_ga81c99cede6902a231b207281d9a6e212"><div class="ttname"><a href="group__ipipsu.html#ga81c99cede6902a231b207281d9a6e212">XIPIPSU_IDR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_IDR_OFFSET</div><div class="ttdoc">Offset for Interrupt Disable Register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:67</div></div>
+<div class="line">                         <a class="code" href="group__ipipsu.html#ga81c99cede6902a231b207281d9a6e212">XIPIPSU_IDR_OFFSET</a>, \</div>
+<div class="line">                         ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
+<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:233</div></div>
+<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:87</div></div>
+<div class="ttc" id="group__ipipsu_html_ga81c99cede6902a231b207281d9a6e212"><div class="ttname"><a href="group__ipipsu.html#ga81c99cede6902a231b207281d9a6e212">XIPIPSU_IDR_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_IDR_OFFSET</div><div class="ttdoc">Offset for Interrupt Disable Register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:73</div></div>
 </div><!-- fragment -->
 <p>Disable interrupts specified in <em>Mask</em>. </p>
 <p>The corresponding interrupt for each bit set to 1 in <em>Mask</em>, will be disabled.</p>
@@ -687,11 +605,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
-<div class="line">                <a class="code" href="group__ipipsu.html#gab20d7be8c5dd6ca941862eb1ff40289d">XIPIPSU_IER_OFFSET</a>, \</div>
-<div class="line">                ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
-<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:195</div></div>
-<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:81</div></div>
-<div class="ttc" id="group__ipipsu_html_gab20d7be8c5dd6ca941862eb1ff40289d"><div class="ttname"><a href="group__ipipsu.html#gab20d7be8c5dd6ca941862eb1ff40289d">XIPIPSU_IER_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_IER_OFFSET</div><div class="ttdoc">Offset for Interrupt Enable Register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:66</div></div>
+<div class="line">                         <a class="code" href="group__ipipsu.html#gab20d7be8c5dd6ca941862eb1ff40289d">XIPIPSU_IER_OFFSET</a>, \</div>
+<div class="line">                         ((Mask) &amp; <a class="code" href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a>));</div>
+<div class="ttc" id="group__ipipsu_html_ga72bcaac2f32ad480f79204f868309c31"><div class="ttname"><a href="group__ipipsu.html#ga72bcaac2f32ad480f79204f868309c31">XIpiPsu_WriteReg</a></div><div class="ttdeci">#define XIpiPsu_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">Write a value into a register specified by base address and offset. </div><div class="ttdef"><b>Definition:</b> xipipsu.h:233</div></div>
+<div class="ttc" id="group__ipipsu_html_ga708ab6017d3971d9f9c0bf052fcdfd2f"><div class="ttname"><a href="group__ipipsu.html#ga708ab6017d3971d9f9c0bf052fcdfd2f">XIPIPSU_ALL_MASK</a></div><div class="ttdeci">#define XIPIPSU_ALL_MASK</div><div class="ttdoc">All valid bit mask. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:87</div></div>
+<div class="ttc" id="group__ipipsu_html_gab20d7be8c5dd6ca941862eb1ff40289d"><div class="ttname"><a href="group__ipipsu.html#gab20d7be8c5dd6ca941862eb1ff40289d">XIPIPSU_IER_OFFSET</a></div><div class="ttdeci">#define XIPIPSU_IER_OFFSET</div><div class="ttdoc">Offset for Interrupt Enable Register. </div><div class="ttdef"><b>Definition:</b> xipipsu_hw.h:72</div></div>
 </div><!-- fragment -->
 <p>Enable interrupts specified in <em>Mask</em>. </p>
 <p>The corresponding interrupt for each bit set to 1 in <em>Mask</em>, will be enabled.</p>
@@ -736,7 +654,7 @@ Variables</h2></td></tr>
 
 <p>Maximum Buffer Index. </p>
 
-<p>Referenced by <a class="el" href="group__ipipsu.html#ga1404a6dc6d1ff0a6baf80a74e6bdb6e5">XIpiPsu_GetBufferAddress()</a>.</p>
+<p>Referenced by <a class="el" href="group__ipipsu.html#ga1404a6dc6d1ff0a6baf80a74e6bdb6e5">XIpiPsu_GetBufferAddress()</a>, and <a class="el" href="group__ipipsu.html#ga7d429daed621ef6c33656d873e31d9b3">XIpiPsu_GetBufferIndex()</a>.</p>
 
 </div>
 </div>
@@ -1028,9 +946,49 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Valid Buffer Address if no error NULL if an error occurred in calculating Address </dd></dl>
 
-<p>References <a class="el" href="group__ipipsu.html#gaad130b0ac7cc7a948fa636e7a2000bed">XIPIPSU_BUF_TYPE_MSG</a>, <a class="el" href="group__ipipsu.html#gad0b378b86976236e743f8a75ed9f8d8d">XIPIPSU_BUF_TYPE_RESP</a>, <a class="el" href="group__ipipsu.html#gae0907003c35118f6135e65877227d15e">XIPIPSU_BUFFER_OFFSET_GROUP</a>, <a class="el" href="group__ipipsu.html#gaf2361ea49ab17d6cc10e53ea607a9e9f">XIPIPSU_BUFFER_OFFSET_RESPONSE</a>, <a class="el" href="group__ipipsu.html#ga1b15715fa2640ed4fd66146d328bbbba">XIPIPSU_BUFFER_OFFSET_TARGET</a>, <a class="el" href="group__ipipsu.html#gad6677575d97c6c8df0a1776fdbd94b7e">XIPIPSU_MAX_BUFF_INDEX</a>, and <a class="el" href="group__ipipsu.html#ga7c62207cd1bb028fe62103eee40477f2">XIPIPSU_MSG_RAM_BASE</a>.</p>
+<p>References <a class="el" href="group__ipipsu.html#gaad130b0ac7cc7a948fa636e7a2000bed">XIPIPSU_BUF_TYPE_MSG</a>, <a class="el" href="group__ipipsu.html#gad0b378b86976236e743f8a75ed9f8d8d">XIPIPSU_BUF_TYPE_RESP</a>, <a class="el" href="group__ipipsu.html#gae0907003c35118f6135e65877227d15e">XIPIPSU_BUFFER_OFFSET_GROUP</a>, <a class="el" href="group__ipipsu.html#gaf2361ea49ab17d6cc10e53ea607a9e9f">XIPIPSU_BUFFER_OFFSET_RESPONSE</a>, <a class="el" href="group__ipipsu.html#ga1b15715fa2640ed4fd66146d328bbbba">XIPIPSU_BUFFER_OFFSET_TARGET</a>, <a class="el" href="group__ipipsu.html#ga7d429daed621ef6c33656d873e31d9b3">XIpiPsu_GetBufferIndex()</a>, <a class="el" href="group__ipipsu.html#gad6677575d97c6c8df0a1776fdbd94b7e">XIPIPSU_MAX_BUFF_INDEX</a>, and <a class="el" href="group__ipipsu.html#ga7c62207cd1bb028fe62103eee40477f2">XIPIPSU_MSG_RAM_BASE</a>.</p>
 
 <p>Referenced by <a class="el" href="group__ipipsu.html#ga64113249dac23760b5cc0e9d038f8361">XIpiPsu_ReadMessage()</a>, and <a class="el" href="group__ipipsu.html#ga429d934e93e38c71d92ad98775b9cd92">XIpiPsu_WriteMessage()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga7d429daed621ef6c33656d873e31d9b3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XIpiPsu_GetBufferIndex </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_x_ipi_psu.html">XIpiPsu</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>CpuMask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the Buffer Index for a CPU specified by Mask. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the pointer to current IPI instance </td></tr>
+    <tr><td class="paramname">CpuMask</td><td>is the Mask of the CPU form which Index is required</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Buffer Index value if CPU Mask is valid XIPIPSU_MAX_BUFF_INDEX+1 if not valid </dd></dl>
+
+<p>References <a class="el" href="struct_x_ipi_psu___target.html#ad8cf0011981eb538784e520195585e74">XIpiPsu_Target::BufferIndex</a>, <a class="el" href="struct_x_ipi_psu.html#ad9074c920ef0af4db9ea831e463d65ad">XIpiPsu::Config</a>, <a class="el" href="struct_x_ipi_psu___target.html#a4ac80767ed4dcfd90d9a02db6a2a8eb4">XIpiPsu_Target::Mask</a>, <a class="el" href="struct_x_ipi_psu___config.html#a8df4537dada42c7a73d1072ad59d2626">XIpiPsu_Config::TargetCount</a>, <a class="el" href="struct_x_ipi_psu___config.html#af7eb9b8148ebf278905b19dbd404b727">XIpiPsu_Config::TargetList</a>, and <a class="el" href="group__ipipsu.html#gad6677575d97c6c8df0a1776fdbd94b7e">XIPIPSU_MAX_BUFF_INDEX</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ipipsu.html#ga1404a6dc6d1ff0a6baf80a74e6bdb6e5">XIpiPsu_GetBufferAddress()</a>.</p>
 
 </div>
 </div>

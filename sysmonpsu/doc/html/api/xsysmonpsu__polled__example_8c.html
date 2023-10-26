@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.gif"/></td>
+  <td id="projectlogo"><img alt="Logo" src="xlogo_bg.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">sysmonpsu
    </div>
@@ -84,12 +84,13 @@ $(document).ready(function(){initNavTree('xsysmonpsu__polled__example_8c.html','
       mn    03/08/18 Update code to run at higher frequency and remove sleep
 2.6   aad   11/21/19 Removed reading of AUX channels
       aad   11/22/19 Added support for XSYSMON_PL
+2.9   cog    07/20/23 Added support for SDT flow
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab7bffb94efc79e4cb24275177d2674fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu__polled__example_8c.html#ab7bffb94efc79e4cb24275177d2674fe">SysMonPsuPolledPrintfExample</a> (u16 SysMonDeviceId)</td></tr>
-<tr class="memdesc:ab7bffb94efc79e4cb24275177d2674fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a test on the System Monitor device using the driver APIs.  <a href="#ab7bffb94efc79e4cb24275177d2674fe">More...</a><br/></td></tr>
-<tr class="separator:ab7bffb94efc79e4cb24275177d2674fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae53b4649b4f9335a87072df7e5e579c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu__polled__example_8c.html#ae53b4649b4f9335a87072df7e5e579c4">SysMonPsuPolledPrintfExample</a> (u32 SysMonDeviceId)</td></tr>
+<tr class="memdesc:ae53b4649b4f9335a87072df7e5e579c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a test on the System Monitor device using the driver APIs.  <a href="#ae53b4649b4f9335a87072df7e5e579c4">More...</a><br/></td></tr>
+<tr class="separator:ae53b4649b4f9335a87072df7e5e579c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
 <tr class="memdesc:a840291bc02cba5474a4cb46a9b9566fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main function that invokes the polled example in this file.  <a href="#a840291bc02cba5474a4cb46a9b9566fe">More...</a><br/></td></tr>
 <tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,18 +124,18 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xsysmonpsu__polled__example_8c.html#ab7bffb94efc79e4cb24275177d2674fe">SysMonPsuPolledPrintfExample()</a>.</p>
+<p>References <a class="el" href="xsysmonpsu__polled__example_8c.html#ae53b4649b4f9335a87072df7e5e579c4">SysMonPsuPolledPrintfExample()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ab7bffb94efc79e4cb24275177d2674fe"></a>
+<a class="anchor" id="ae53b4649b4f9335a87072df7e5e579c4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">int SysMonPsuPolledPrintfExample </td>
           <td>(</td>
-          <td class="paramtype">u16&#160;</td>
+          <td class="paramtype">u32&#160;</td>
           <td class="paramname"><em>SysMonDeviceId</em></td><td>)</td>
           <td></td>
         </tr>

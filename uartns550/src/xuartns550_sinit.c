@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xuartns550_sinit.c
-* @addtogroup uartns550_v3_8
+* @addtogroup uartns550 Overview
 * @{
 *
 * The implementation of the XUartNs550 component's static initialization
@@ -21,6 +22,7 @@
 * 1.01a jvb  10/13/05 First release
 * 1.11a sv   03/20/07 Updated to use the new coding guidelines.
 * 2.00a ktn  10/20/09 Updated to use HAL Processor APIs.
+* 3.9   gm   07/09/23 Added SDT support
 *
 * </pre>
 *
@@ -64,6 +66,7 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XUartNs550_Config *XUartNs550_LookupConfig(u16 DeviceId)
 {
 	XUartNs550_Config *CfgPtr = NULL;
@@ -78,7 +81,23 @@ XUartNs550_Config *XUartNs550_LookupConfig(u16 DeviceId)
 
 	return CfgPtr;
 }
+#else
+XUartNs550_Config *XUartNs550_LookupConfig(UINTPTR BaseAddress)
+{
+	XUartNs550_Config *CfgPtr = NULL;
+	u32 Index;
 
+	for (Index = 0U; XUartNs550_ConfigTable[Index].Name != NULL; Index++) {
+		if ((XUartNs550_ConfigTable[Index].BaseAddress == BaseAddress) ||
+		    !BaseAddress) {
+			CfgPtr = &XUartNs550_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return CfgPtr;
+}
+#endif
 /****************************************************************************/
 /**
 *
@@ -108,7 +127,11 @@ XUartNs550_Config *XUartNs550_LookupConfig(u16 DeviceId)
 * @note		None.
 *
 *****************************************************************************/
+#ifndef SDT
 int XUartNs550_Initialize(XUartNs550 *InstancePtr, u16 DeviceId)
+#else
+int XUartNs550_Initialize(XUartNs550 *InstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	XUartNs550_Config *ConfigPtr;
 
@@ -121,7 +144,11 @@ int XUartNs550_Initialize(XUartNs550 *InstancePtr, u16 DeviceId)
 	 * Lookup the device configuration in the temporary CROM table. Use this
 	 * configuration info down below when initializing this component
 	 */
+#ifndef SDT
 	ConfigPtr = XUartNs550_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XUartNs550_LookupConfig(BaseAddress);
+#endif
 	if (ConfigPtr == (XUartNs550_Config *)NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}

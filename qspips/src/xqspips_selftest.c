@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xqspips_selftest.c
-* @addtogroup qspips_v3_10
+* @addtogroup qspips Overview
 * @{
 *
 * This file contains the implementation of selftest function for the QSPI
@@ -86,15 +87,15 @@ int XQspiPs_SelfTest(XQspiPs *InstancePtr)
 	 * hardware out there.
 	 */
 	Status = XQspiPs_SetDelays(InstancePtr, DelayTestNss, DelayTestBtwn,
-				DelayTestAfter, DelayTestInit);
+				   DelayTestAfter, DelayTestInit);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}
 
 	XQspiPs_GetDelays(InstancePtr, &DelayTestNss, &DelayTestBtwn,
-				&DelayTestAfter, &DelayTestInit);
+			  &DelayTestAfter, &DelayTestInit);
 	if ((0x5A != DelayTestNss) || (0xA5 != DelayTestBtwn) ||
-		(0xAA != DelayTestAfter) || (0x55 != DelayTestInit)) {
+	    (0xAA != DelayTestAfter) || (0x55 != DelayTestInit)) {
 		return XST_REGISTER_ERROR;
 	}
 

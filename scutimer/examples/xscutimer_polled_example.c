@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,6 +20,8 @@
 * Ver   Who  Date     Changes
 * ----- ---- -------- ---------------------------------------------
 * 1.00a nm   03/10/10 First release
+* 2.5   dp   07/11/23 Add Support for system device tree flow
+* 2.5   dp   09/08/23 Update example to stop timer at the end of the test
 *</pre>
 ******************************************************************************/
 
@@ -35,7 +38,9 @@
  * xparameters.h file. They are only defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define TIMER_DEVICE_ID		XPAR_XSCUTIMER_0_DEVICE_ID
+#endif
 #define TIMER_LOAD_VALUE	0xFF
 
 /**************************** Type Definitions *******************************/
@@ -43,9 +48,11 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Function Prototypes ******************************/
-
+#ifndef SDT
 int ScuTimerPolledExample(u16 DeviceId);
-
+#else
+int ScuTimerPolledExample(XScuTimer *TimerInstancePtr, UINTPTR BaseAddress);
+#endif
 /************************** Variable Definitions *****************************/
 
 XScuTimer Timer;		/* Cortex A9 SCU Private Timer Instance */
@@ -73,7 +80,11 @@ int main(void)
 	 * Call the polled example, specify the device ID that is generated in
 	 * xparameters.h.
 	 */
-	Status = ScuTimerPolledExample(TIMER_DEVICE_ID);
+#ifndef SDT
+   Status = ScuTimerPolledExample(TIMER_DEVICE_ID);
+#else
+	Status = ScuTimerPolledExample(&Timer, XPAR_SCUTIMER_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("SCU Timer Polled Mode Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -97,19 +108,28 @@ int main(void)
 * @note		None.
 *
 ****************************************************************************/
+#ifndef SDT
 int ScuTimerPolledExample(u16 DeviceId)
+#else
+int ScuTimerPolledExample(XScuTimer *TimerInstancePtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	volatile u32 CntValue1 = 0;
 	volatile u32 CntValue2 = 0;
 	XScuTimer_Config *ConfigPtr;
+#ifndef SDT
 	XScuTimer *TimerInstancePtr = &Timer;
+#endif
 
 	/*
 	 * Initialize the Scu Private Timer so that it is ready to use.
 	 */
+#ifndef SDT
 	ConfigPtr = XScuTimer_LookupConfig(DeviceId);
-
+#else
+	ConfigPtr = XScuTimer_LookupConfig(BaseAddress);
+#endif
 	/*
 	 * This is where the virtual address would be used, this example
 	 * uses physical address.
@@ -148,5 +168,8 @@ int ScuTimerPolledExample(u16 DeviceId)
 			break;
 		}
 	}
+
+   XScuTimer_Stop(TimerInstancePtr);
+
 	return XST_SUCCESS;
 }

@@ -1,5 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xdmaps_selftest.c
-* @addtogroup dmaps_v2_8
+* @addtogroup dmaps Overview
 * @{
 *
 * This file contains the self-test functions for the XDmaPs driver.
@@ -71,13 +72,15 @@ int XDmaPs_SelfTest(XDmaPs *InstPtr)
 	int i;
 
 	if (XDmaPs_ReadReg(BaseAddr, XDMAPS_DBGSTATUS_OFFSET)
-	    & XDMAPS_DBGSTATUS_BUSY)
+	    & XDMAPS_DBGSTATUS_BUSY) {
 		return XST_FAILURE;
+	}
 
 	for (i = 0; i < XDMAPS_CHANNELS_PER_DEV; i++) {
 		if (XDmaPs_ReadReg(BaseAddr,
-				    XDmaPs_CSn_OFFSET(i)))
+				   XDmaPs_CSn_OFFSET(i))) {
 			return XST_FAILURE;
+		}
 	}
 	return XST_SUCCESS;
 }

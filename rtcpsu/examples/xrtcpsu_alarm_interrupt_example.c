@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -24,6 +25,7 @@
 *       ms  04/10/17 Modified filename tag to include the file in doxygen
 *                    examples.
 * 1.12  sne 04/25/22 Added volatile keyword for IsAlarmGen variable.
+* 1.13  ht  06/22/23  Added support for system device-tree flow.
 * </pre>
 ****************************************************************************/
 
@@ -34,6 +36,9 @@
 #include "xscugic.h"		/* Interrupt controller device driver */
 #include "xil_exception.h"
 #include "xil_printf.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions **************************/
 
@@ -42,10 +47,11 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-
+#ifndef SDT
 #define RTC_DEVICE_ID         XPAR_XRTCPSU_0_DEVICE_ID
 #define INTC_DEVICE_ID			XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define RTC_ALARM_INT_IRQ_ID	XPAR_XRTCPSU_ALARM_INTR
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -53,14 +59,17 @@
 #define ALARM_PERIOD 10U
 
 /************************** Function Prototypes *****************************/
-
+#ifndef SDT
 int RtcPsuAlarmIntrExample(XScuGic *IntcInstPtr, XRtcPsu *RtcInstPtr,
-			u16 DeviceId, u16 RtcIntrId);
+			   u16 DeviceId, u16 RtcIntrId);
 
 
 static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 				XRtcPsu *RtcInstancePtr,
 				u16 RtcIntrId);
+#else
+int RtcPsuAlarmIntrExample(XRtcPsu *RtcInstPtr, UINTPTR BaseAddress);
+#endif
 
 void Handler(void *CallBackRef, u32 Event);
 
@@ -68,7 +77,9 @@ void Handler(void *CallBackRef, u32 Event);
 /************************** Variable Definitions ***************************/
 
 XRtcPsu RtcPsu;		/* Instance of the RTC Device */
+#ifndef SDT
 XScuGic InterruptController;	/* Instance of the Interrupt Controller */
+#endif
 volatile u32 IsAlarmGen = 0;
 
 
@@ -89,8 +100,12 @@ int main(void)
 	int Status;
 
 	/* Run the RtcPsu Interrupt example, specify the the Device ID */
+#ifndef SDT
 	Status = RtcPsuAlarmIntrExample(&InterruptController, &RtcPsu,
-				RTC_DEVICE_ID, RTC_ALARM_INT_IRQ_ID);
+					RTC_DEVICE_ID, RTC_ALARM_INT_IRQ_ID);
+#else
+	Status = RtcPsuAlarmIntrExample(&RtcPsu, XPAR_XRTCPSU_0_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("RTC Alarm Interrupt Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -126,8 +141,12 @@ int main(void)
 * working it may never return.
 *
 **************************************************************************/
+#ifndef SDT
 int RtcPsuAlarmIntrExample(XScuGic *IntcInstPtr, XRtcPsu *RtcInstPtr,
-			u16 DeviceId, u16 RtcIntrId)
+			   u16 DeviceId, u16 RtcIntrId)
+#else
+int RtcPsuAlarmIntrExample(XRtcPsu *RtcInstPtr, UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	XRtcPsu_Config *Config;
@@ -138,7 +157,11 @@ int RtcPsuAlarmIntrExample(XScuGic *IntcInstPtr, XRtcPsu *RtcInstPtr,
 	 * Initialize the RTC driver so that it's ready to use
 	 * Look up the configuration in the config table, then initialize it.
 	 */
+#ifndef SDT
 	Config = XRtcPsu_LookupConfig(DeviceId);
+#else
+	Config = XRtcPsu_LookupConfig(BaseAddress);
+#endif
 	if (NULL == Config) {
 		return XST_FAILURE;
 	}
@@ -157,15 +180,22 @@ int RtcPsuAlarmIntrExample(XScuGic *IntcInstPtr, XRtcPsu *RtcInstPtr,
 	xil_printf("\n\rDay Convention : 0-Fri, 1-Sat, 2-Sun, 3-Mon, 4-Tue, 5-Wed, 6-Thur\n\r");
 	xil_printf("Current RTC time is..\n\r");
 	CurrentTime = XRtcPsu_GetCurrentTime(RtcInstPtr);
-	XRtcPsu_SecToDateTime(CurrentTime,&dt0);
+	XRtcPsu_SecToDateTime(CurrentTime, &dt0);
 	xil_printf("YEAR:MM:DD HR:MM:SS \t %04d:%02d:%02d %02d:%02d:%02d\t Day = %d\n\r",
-			dt0.Year,dt0.Month,dt0.Day,dt0.Hour,dt0.Min,dt0.Sec,dt0.WeekDay);
+		   dt0.Year, dt0.Month, dt0.Day, dt0.Hour, dt0.Min, dt0.Sec, dt0.WeekDay);
 
 	/*
 	 * Connect the RTC to the interrupt subsystem such that interrupts
 	 * can occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(IntcInstPtr, RtcInstPtr, RtcIntrId);
+#else
+	Status = XSetupInterruptSystem(RtcInstPtr, &XRtcPsu_InterruptHandler,
+				       Config->IntrId[0],
+				       Config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -185,14 +215,14 @@ int RtcPsuAlarmIntrExample(XScuGic *IntcInstPtr, XRtcPsu *RtcInstPtr,
 
 	CurrentTime = XRtcPsu_GetCurrentTime(RtcInstPtr);
 	Alarm = CurrentTime + ALARM_PERIOD;
-	XRtcPsu_SetAlarm(RtcInstPtr,Alarm,0);
+	XRtcPsu_SetAlarm(RtcInstPtr, Alarm, 0);
 
-	while( IsAlarmGen != 1);
+	while ( IsAlarmGen != 1);
 
 	/*
 	 * Disable the interrupt of the RTC device so interrupts will not occur.
 	 */
-	XRtcPsu_ClearInterruptMask(RtcInstPtr,XRTC_INT_DIS_ALRM_MASK);
+	XRtcPsu_ClearInterruptMask(RtcInstPtr, XRTC_INT_DIS_ALRM_MASK);
 
 	return XST_SUCCESS;
 }
@@ -225,7 +255,7 @@ void Handler(void *CallBackRef, u32 Event)
 	}
 }
 
-
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -261,7 +291,7 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -271,8 +301,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * hardware interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				(Xil_ExceptionHandler) XScuGic_InterruptHandler,
-				IntcInstancePtr);
+				     (Xil_ExceptionHandler) XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 #endif
 
 	/*
@@ -281,8 +311,8 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 	 * performs the specific interrupt processing for the device
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, RtcIntrId,
-				  (Xil_ExceptionHandler) XRtcPsu_InterruptHandler,
-				  (void *) RtcInstancePtr);
+				 (Xil_ExceptionHandler) XRtcPsu_InterruptHandler,
+				 (void *) RtcInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -293,8 +323,9 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 
 #ifndef TESTAPP_GEN
 	/* Enable interrupts */
-	 Xil_ExceptionEnable();
+	Xil_ExceptionEnable();
 #endif
 
 	return XST_SUCCESS;
 }
+#endif

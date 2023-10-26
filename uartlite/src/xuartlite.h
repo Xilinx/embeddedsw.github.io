@@ -128,6 +128,8 @@
 * 		      designs don't pull the driver examples when uartlite is
 * 		      configured as a TMR SEM fix for CR-1121291, changes are
 * 		      made in the uartlite_tapp.tcl file.
+* 3.9	ht  07/18/23  Fixed GCC warnings.
+*
 * </pre>
 *
 *****************************************************************************/
@@ -186,13 +188,23 @@ typedef struct {
  * This typedef contains configuration information for the device.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR RegBaseAddr;	/**< Register base address */
 	u32 BaudRate;		/**< Fixed baud rate */
 	u8  UseParity;		/**< Parity generator enabled when TRUE */
 	u8  ParityOdd;		/**< Parity generated is odd when TRUE, even
 					when FALSE */
 	u8  DataBits;		/**< Fixed data bits */
+#ifdef SDT
+	u16 IntrId;             /** Bits[11:0] Interrupt-id Bits[15:12]
+				 * trigger type and level flags */
+	UINTPTR IntrParent;     /** Bit[0] Interrupt parent type Bit[64/32:1]
+				 * Parent base address */
+#endif
 } XUartLite_Config;
 
 /**
@@ -223,8 +235,13 @@ typedef struct {
 /*
  * Initialization functions in xuartlite_sinit.c
  */
+#ifndef SDT
 int XUartLite_Initialize(XUartLite *InstancePtr, u16 DeviceId);
 XUartLite_Config *XUartLite_LookupConfig(u16 DeviceId);
+#else
+int XUartLite_Initialize(XUartLite *InstancePtr, UINTPTR BaseAddress);
+XUartLite_Config *XUartLite_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * Required functions, in file xuart.c

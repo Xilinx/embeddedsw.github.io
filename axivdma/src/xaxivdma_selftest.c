@@ -8,7 +8,7 @@
 /**
 *
 * @file xaxivdma_selftest.c
-* @addtogroup axivdma_v6_12
+* @addtogroup axivdma Overview
 * @{
 *
 * Contains diagnostic/self-test functions for the XAxiVdma component.
@@ -60,7 +60,7 @@
 *     None.
 *
 ******************************************************************************/
-int XAxiVdma_Selftest(XAxiVdma * InstancePtr)
+int XAxiVdma_Selftest(XAxiVdma *InstancePtr)
 {
 	XAxiVdma_Channel *RdChannel;
 	XAxiVdma_Channel *WrChannel;

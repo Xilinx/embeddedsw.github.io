@@ -15,6 +15,7 @@ var xv__frmbufwr__l2_8h =
     [ "XVFrmbufWr_IsY16Enabled", "xv__frmbufwr__l2_8h.html#a1ca50a2b60ee7ba60504c6321efe1e78", null ],
     [ "XVFrmbufWr_IsY8Enabled", "xv__frmbufwr__l2_8h.html#aa1e55cb22cc4068c537c46a90ac92780", null ],
     [ "XVFrmbufWr_IsY_U_V10Enabled", "xv__frmbufwr__l2_8h.html#abe23878ea66a281da4f2d821ed9a2d65", null ],
+    [ "XVFrmbufWr_IsY_U_V8_420Enabled", "xv__frmbufwr__l2_8h.html#a09e410360830349a5bca4514100c5545", null ],
     [ "XVFrmbufWr_IsY_U_V8Enabled", "xv__frmbufwr__l2_8h.html#a30d57ef8f9b7a9b5f592dfccdd2b4db2", null ],
     [ "XVFrmbufWr_IsY_UV10_420Enabled", "xv__frmbufwr__l2_8h.html#a545f80fb4a287747fa9d6dc835841779", null ],
     [ "XVFrmbufWr_IsY_UV10Enabled", "xv__frmbufwr__l2_8h.html#a4c43d86c33361db3072a00a0f196dbea", null ],

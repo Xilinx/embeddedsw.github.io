@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -45,6 +46,8 @@
 * 2.1	nsk  03/09/19 Fix build error in example
 * 2.3	sne  07/11/19 Added Protocol Exception support in EventHandler and updated
 *		      Bus Off EventHandler.
+* 2.8	ht   06/19/23 Added support for system device-tree flow
+*
 *
 * </pre>
 *
@@ -53,11 +56,15 @@
 /***************************** Include Files *********************************/
 
 #include "xcanfd.h"
-#include "xparameters.h"
 #include "xstatus.h"
 #include "xil_exception.h"
 #include "sleep.h"
+#include "xparameters.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #include "xintc.h"
 #include <stdio.h>
@@ -73,19 +80,24 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define CANFD_DEVICE_ID		XPAR_CANFD_0_DEVICE_ID
+#endif
 
 #ifdef XPAR_INTC_0_DEVICE_ID
- #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
- #define CAN_INTR_VEC_ID	XPAR_INTC_0_CANFD_0_VEC_ID
+#define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
+#define CAN_INTR_VEC_ID	XPAR_INTC_0_CANFD_0_VEC_ID
 #else
- #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
- #ifdef XPAR_CANFD_ISPS
-  #define CAN_INTR_VEC_ID	XPAR_XCANPS_0_INTR
- #else
-  #define CAN_INTR_VEC_ID	XPAR_FABRIC_CANFD_0_VEC_ID
- #endif
+#define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
+#ifdef XPAR_CANFD_ISPS
+#define CAN_INTR_VEC_ID	XPAR_XCANPS_0_INTR
+#else
+#define CAN_INTR_VEC_ID	XPAR_FABRIC_CANFD_0_VEC_ID
+#endif
 #endif /* XPAR_INTC_0_DEVICE_ID */
+#else
+#define XCANFD_BASEADDRESS XPAR_XCANFD_0_BASEADDR
+#endif
 
 /* Maximum CAN frame length in Bytes */
 #define XCANFD_MAX_FRAME_SIZE_IN_BYTES 72
@@ -123,6 +135,7 @@
 #define MAX_TIMEOUT 			100
 #define MAX_USLEEP_VAL                  10*1000
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #define INTC		XIntc
 #define INTC_HANDLER	XIntc_InterruptHandler
@@ -130,7 +143,7 @@
 #define INTC		XScuGic
 #define INTC_HANDLER	XScuGic_InterruptHandler
 #endif /* XPAR_INTC_0_DEVICE_ID */
-
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -139,8 +152,12 @@
 
 
 /************************** Function Prototypes ******************************/
-
+#ifndef SDT
 static int XCanFdIntrExample(u16 DeviceId);
+static int SetupInterruptSystem(XCanFd  *InstancePtr);
+#else
+static int XCanFdIntrExample(UINTPTR BaseAddress);
+#endif
 static void Config(XCanFd  *InstancePtr);
 static int SendFrame(XCanFd  *InstancePtr);
 
@@ -149,7 +166,6 @@ static void RecvHandler(void *CallBackRef);
 static void ErrorHandler(void *CallBackRef, u32 ErrorMask);
 static void EventHandler(void *CallBackRef, u32 Mask);
 
-static int SetupInterruptSystem(XCanFd  *InstancePtr);
 
 /************************** Variable Definitions *****************************/
 /* Allocate an instance of the XCan driver */
@@ -186,7 +202,11 @@ volatile static int SendDone;
 int main(void)
 {
 	/* Run the Can interrupt example */
+#ifndef SDT
 	if (XCanFdIntrExample(CANFD_DEVICE_ID)) {
+#else
+	if (XCanFdIntrExample(XCANFD_BASEADDRESS)) {
+#endif
 		xil_printf("XCanFd Interrupt Mode example Failed\n\r");
 		return XST_FAILURE;
 	}
@@ -209,7 +229,11 @@ int main(void)
 *		an infinite loop and will never return to the caller.
 *
 ******************************************************************************/
+#ifndef SDT
 static int XCanFdIntrExample(u16 DeviceId)
+#else
+static int XCanFdIntrExample(UINTPTR BaseAddress)
+#endif
 {
 	int Status;
 	int TimeOut;
@@ -217,12 +241,16 @@ static int XCanFdIntrExample(u16 DeviceId)
 	XCanFd_Config *ConfigPtr;
 
 	/* Initialize the XCan driver */
+#ifndef SDT
 	ConfigPtr = XCanFd_LookupConfig(DeviceId);
+#else
+	ConfigPtr = XCanFd_LookupConfig(BaseAddress);
+#endif
 	if (CanFdInstPtr == NULL) {
 		return XST_FAILURE;
 	}
 	Status = XCanFd_CfgInitialize(CanFdInstPtr,
-				ConfigPtr,ConfigPtr->BaseAddress);
+				      ConfigPtr, ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -239,13 +267,13 @@ static int XCanFdIntrExample(u16 DeviceId)
 	Config(CanFdInstPtr);
 
 	XCanFd_SetHandler(CanFdInstPtr, XCANFD_HANDLER_SEND,
-			(void *)SendHandler, (void *)CanFdInstPtr);
+			  (void *)SendHandler, (void *)CanFdInstPtr);
 	XCanFd_SetHandler(CanFdInstPtr, XCANFD_HANDLER_RECV,
-			(void *)RecvHandler, (void *)CanFdInstPtr);
+			  (void *)RecvHandler, (void *)CanFdInstPtr);
 	XCanFd_SetHandler(CanFdInstPtr, XCANFD_HANDLER_ERROR,
-			(void *)ErrorHandler, (void *)CanFdInstPtr);
+			  (void *)ErrorHandler, (void *)CanFdInstPtr);
 	XCanFd_SetHandler(CanFdInstPtr, XCANFD_HANDLER_EVENT,
-			(void *)EventHandler, (void *)CanFdInstPtr);
+			  (void *)EventHandler, (void *)CanFdInstPtr);
 
 	/* Initialize flags */
 	SendDone = FALSE;
@@ -253,7 +281,14 @@ static int XCanFdIntrExample(u16 DeviceId)
 	LoopbackError = FALSE;
 
 	/* Connect to the interrupt controller */
+#ifndef SDT
 	Status = SetupInterruptSystem(CanFdInstPtr);
+#else
+	Status = XSetupInterruptSystem(CanFdInstPtr, &XCanFd_IntrHandler,
+				       ConfigPtr->IntrId,
+				       ConfigPtr->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -266,26 +301,29 @@ static int XCanFdIntrExample(u16 DeviceId)
 	while (XCanFd_GetMode(CanFdInstPtr) != XCANFD_MODE_LOOPBACK);
 
 	Status = SendFrame(CanFdInstPtr);
-	if (Status != XST_SUCCESS)
+	if (Status != XST_SUCCESS) {
 		return Status;
+	}
 
 	/*Wait for a second*/
 	TimeOut = MAX_TIMEOUT;
 
 	while ((SendDone != TRUE) || (RecvDone != TRUE)) {
 
-			if(TimeOut)
-				usleep(MAX_USLEEP_VAL);
-			else
-				break;
+		if (TimeOut) {
+			usleep(MAX_USLEEP_VAL);
+		} else {
+			break;
+		}
 
 		TimeOut--;
 	}
 	if (!TimeOut) {
-		if(SendDone != TRUE)
+		if (SendDone != TRUE) {
 			return XST_SEND_ERROR;
-		else
+		} else {
 			return XST_RECV_ERROR;
+		}
 	}
 	/* Check for errors found in the callbacks */
 	if (LoopbackError == TRUE) {
@@ -324,15 +362,15 @@ static void Config(XCanFd *InstancePtr)
 	XCanFd_SetBaudRatePrescaler(InstancePtr, TEST_BRPR_BAUD_PRESCALAR);
 
 	/* Configure the Bit Timing Values in Arbitration Phase */
-	XCanFd_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH,\
-			TEST_BTR_SECOND_TIMESEGMENT,TEST_BTR_FIRST_TIMESEGMENT);
+	XCanFd_SetBitTiming(InstancePtr, TEST_BTR_SYNCJUMPWIDTH, \
+			    TEST_BTR_SECOND_TIMESEGMENT, TEST_BTR_FIRST_TIMESEGMENT);
 
 	/* Configure the Baud Rate Prescalar in Data Phase */
 	XCanFd_SetFBaudRatePrescaler(InstancePtr, TEST_FBRPR_BAUD_PRESCALAR);
 
 	/* Configure the Bit Timing Values in Data Phase */
-	XCanFd_SetFBitTiming(InstancePtr,TEST_FBTR_SYNCJUMPWIDTH,\
-			TEST_FBTR_SECOND_TIMESEGMENT,TEST_FBTR_FIRST_TIMESEGMENT);
+	XCanFd_SetFBitTiming(InstancePtr, TEST_FBTR_SYNCJUMPWIDTH, \
+			     TEST_FBTR_SECOND_TIMESEGMENT, TEST_FBTR_FIRST_TIMESEGMENT);
 
 	/*
 	 * Disable the Global BRS Disable so that at the time of sending the can
@@ -342,22 +380,21 @@ static void Config(XCanFd *InstancePtr)
 
 	/* Configure Acceptance Filter/Mail box depends on design */
 	if (XCANFD_GET_RX_MODE(InstancePtr) == 0) {
-		XCanFd_AcceptFilterDisable(InstancePtr,XCANFD_AFR_UAF_ALL_MASK);
-		XCanFd_AcceptFilterEnable(InstancePtr,XCANFD_AFR_UAF_ALL_MASK);
-	}
-	else {
+		XCanFd_AcceptFilterDisable(InstancePtr, XCANFD_AFR_UAF_ALL_MASK);
+		XCanFd_AcceptFilterEnable(InstancePtr, XCANFD_AFR_UAF_ALL_MASK);
+	} else {
 		RxBuffers = XCanFd_Get_RxBuffers(InstancePtr);
 		IdValue = XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0);
-		for (RxBuffer = 0;RxBuffer < RxBuffers;RxBuffer++) {
-			XCanFd_RxBuff_MailBox_DeActive(InstancePtr,RxBuffer);
-			XCanFd_Set_MailBox_IdMask(InstancePtr,RxBuffer,\
-					TEST_MAILBOX_MASK,IdValue);
-			XCanFd_RxBuff_MailBox_Active(InstancePtr,RxBuffer);
+		for (RxBuffer = 0; RxBuffer < RxBuffers; RxBuffer++) {
+			XCanFd_RxBuff_MailBox_DeActive(InstancePtr, RxBuffer);
+			XCanFd_Set_MailBox_IdMask(InstancePtr, RxBuffer, \
+						  TEST_MAILBOX_MASK, IdValue);
+			XCanFd_RxBuff_MailBox_Active(InstancePtr, RxBuffer);
 		}
 	}
-	 /* Configure the CAN Device to Enter Loop Back Mode */
-	 XCanFd_EnterMode(InstancePtr, XCANFD_MODE_LOOPBACK);
-	 while (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_LOOPBACK);
+	/* Configure the CAN Device to Enter Loop Back Mode */
+	XCanFd_EnterMode(InstancePtr, XCANFD_MODE_LOOPBACK);
+	while (XCanFd_GetMode(InstancePtr) != XCANFD_MODE_LOOPBACK);
 }
 
 /*****************************************************************************/
@@ -388,7 +425,7 @@ static int SendFrame(XCanFd *InstancePtr)
 	TxFrame[0] = XCanFd_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0);
 	TxFrame[1] = XCanFd_Create_CanFD_Dlc_BrsValue(TEST_CANFD_DLC);
 	NofBytes = XCanFd_GetDlc2len(TxFrame[1] & XCANFD_DLCR_DLC_MASK,
-			EDL_CANFD);
+				     EDL_CANFD);
 	/*
 	 * Now fill in the data field with known values so we can verify them
 	 * on receive.
@@ -399,9 +436,10 @@ static int SendFrame(XCanFd *InstancePtr)
 	}
 
 	/* Now send the frame */
-	Status = XCanFd_Send(InstancePtr, TxFrame,&TxBufferNumber);
-	if (Status == XST_FIFO_NO_ROOM)
+	Status = XCanFd_Send(InstancePtr, TxFrame, &TxBufferNumber);
+	if (Status == XST_FIFO_NO_ROOM) {
 		return Status;
+	}
 
 	if (Status != XST_SUCCESS) {
 		/* The frame could not be sent successfully */
@@ -461,14 +499,13 @@ static void RecvHandler(void *CallBackRef)
 	/* Check for the design 1 - MailBox 0 - Sequential */
 	if (XCANFD_GET_RX_MODE(CanPtr) == 1) {
 		Status = XCanFd_Recv_Mailbox(CanPtr, RxFrame);
-	}
-	else {
+	} else {
 		Status = XCanFd_Recv_Sequential(CanPtr, RxFrame);
 	}
 
 	/* Get the Dlc inthe form of bytes */
 	Dlc = XCanFd_GetDlc2len(RxFrame[1] & XCANFD_DLCR_DLC_MASK,
-		EDL_CANFD);
+				EDL_CANFD);
 	if (Status != XST_SUCCESS) {
 		LoopbackError = TRUE;
 		RecvDone = TRUE;
@@ -523,13 +560,13 @@ static void ErrorHandler(void *CallBackRef, u32 ErrorMask)
 
 	if (ErrorMask & XCANFD_ESR_ACKER_MASK) {
 
-		 /* ACK Error handling code should be put here */
+		/* ACK Error handling code should be put here */
 
 	}
 
 	if (ErrorMask & XCANFD_ESR_BERR_MASK) {
 
-		 /* Bit Error handling code should be put here */
+		/* Bit Error handling code should be put here */
 	}
 
 	if (ErrorMask & XCANFD_ESR_STER_MASK) {
@@ -684,6 +721,7 @@ static void EventHandler(void *CallBackRef, u32 IntrMask)
 
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -723,9 +761,9 @@ static int SetupInterruptSystem(XCanFd *InstancePtr)
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XIntc_Connect(&InterruptController,
-				CAN_INTR_VEC_ID,
-				(XInterruptHandler)XCanFd_IntrHandler,
-				InstancePtr);
+			       CAN_INTR_VEC_ID,
+			       (XInterruptHandler)XCanFd_IntrHandler,
+			       InstancePtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -757,14 +795,14 @@ static int SetupInterruptSystem(XCanFd *InstancePtr)
 	}
 
 	Status = XScuGic_CfgInitialize(&InterruptController, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 
 	XScuGic_SetPriorityTriggerType(&InterruptController, CAN_INTR_VEC_ID,
-					0xA0, 0x3);
+				       0xA0, 0x3);
 
 	/*
 	 * Connect the interrupt handler that will be called when an
@@ -789,11 +827,12 @@ static int SetupInterruptSystem(XCanFd *InstancePtr)
 	 * Register the interrupt controller handler with the exception table.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)INTC_HANDLER,
-			 &InterruptController);
+				     (Xil_ExceptionHandler)INTC_HANDLER,
+				     &InterruptController);
 
 	/* Enable exceptions */
 	Xil_ExceptionEnable();
 
 	return XST_SUCCESS;
 }
+#endif

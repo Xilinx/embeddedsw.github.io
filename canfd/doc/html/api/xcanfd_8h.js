@@ -119,6 +119,7 @@ var xcanfd_8h =
     [ "XCanFd_SetRxIntrWatermark", "xcanfd_8h.html#ga30a1745f0967ac96948b137a8adaf15c", null ],
     [ "XCanFd_SetRxIntrWatermarkFifo1", "xcanfd_8h.html#gaa0f9930ac4d2eadeead51c66825c78e7", null ],
     [ "XCanFd_SetTxEventIntrWatermark", "xcanfd_8h.html#gada4f8e428b96e82d87ed30cf397cfb5e", null ],
+    [ "XCanFd_stop", "xcanfd_8h.html#gadb3b0ba459b2c4dd17bc9ae471f766ad", null ],
     [ "XCanFd_TxBuffer_Cancel_Request", "xcanfd_8h.html#ga1fe72efb3ab8437545ac8df29dff89f5", null ],
     [ "XCanFd_ConfigTable", "xcanfd_8h.html#ga79b0b11bcc2c742ec2a76df69245c07b", null ]
 ];

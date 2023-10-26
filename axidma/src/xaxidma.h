@@ -507,7 +507,11 @@ typedef struct XAxiDma {
  * This structure passes the hardware building information to the driver
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId;
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;
 
 	int HasStsCntrlStrm;
@@ -525,6 +529,10 @@ typedef struct {
 	int MicroDmaMode;
 	int AddrWidth;		  /**< Address Width */
 	int SgLengthWidth;
+#ifdef SDT
+	u16 IntrId[2]; /** Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
+	UINTPTR IntrParent; /** Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
 } XAxiDma_Config;
 
 
@@ -547,7 +555,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XAxiDma_GetTxRing(InstancePtr) \
-			(&((InstancePtr)->TxBdRing))
+	(&((InstancePtr)->TxBdRing))
 
 /*****************************************************************************/
 /**
@@ -568,7 +576,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XAxiDma_GetRxRing(InstancePtr) \
-			(&((InstancePtr)->RxBdRing[0]))
+	(&((InstancePtr)->RxBdRing[0]))
 
 /*****************************************************************************/
 /**
@@ -591,7 +599,7 @@ typedef struct {
 *
 *****************************************************************************/
 #define XAxiDma_GetRxIndexRing(InstancePtr, RingIndex) \
-			(&((InstancePtr)->RxBdRing[RingIndex]))
+	(&((InstancePtr)->RxBdRing[RingIndex]))
 
 /*****************************************************************************/
 /**
@@ -627,10 +635,10 @@ typedef struct {
  *****************************************************************************/
 #define  XAxiDma_IntrEnable(InstancePtr, Mask, Direction) 	\
 	XAxiDma_WriteReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET, \
-			(XAxiDma_ReadReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET)) \
-			| (Mask & XAXIDMA_IRQ_ALL_MASK))
+			 (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET, \
+			 (XAxiDma_ReadReg((InstancePtr)->RegBase + \
+					  (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET)) \
+			 | (Mask & XAXIDMA_IRQ_ALL_MASK))
 
 
 /*****************************************************************************/
@@ -648,9 +656,9 @@ typedef struct {
  *
  *****************************************************************************/
 #define   XAxiDma_IntrGetEnabled(InstancePtr, Direction)	\
-			(XAxiDma_ReadReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET) &\
-							XAXIDMA_IRQ_ALL_MASK)
+	(XAxiDma_ReadReg((InstancePtr)->RegBase + \
+			 (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET) &\
+	 XAXIDMA_IRQ_ALL_MASK)
 
 
 
@@ -669,12 +677,12 @@ typedef struct {
  * @note	None
  *
  *****************************************************************************/
- #define XAxiDma_IntrDisable(InstancePtr, Mask, Direction)	\
-		XAxiDma_WriteReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET, \
-			(XAxiDma_ReadReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET)) \
-			& ~(Mask & XAXIDMA_IRQ_ALL_MASK))
+#define XAxiDma_IntrDisable(InstancePtr, Mask, Direction)	\
+	XAxiDma_WriteReg((InstancePtr)->RegBase + \
+			 (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET, \
+			 (XAxiDma_ReadReg((InstancePtr)->RegBase + \
+					  (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_CR_OFFSET)) \
+			 & ~(Mask & XAXIDMA_IRQ_ALL_MASK))
 
 
 /*****************************************************************************/
@@ -692,9 +700,9 @@ typedef struct {
  *
  *****************************************************************************/
 #define  XAxiDma_IntrGetIrq(InstancePtr, Direction)	\
-			(XAxiDma_ReadReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_SR_OFFSET) &\
-							XAXIDMA_IRQ_ALL_MASK)
+	(XAxiDma_ReadReg((InstancePtr)->RegBase + \
+			 (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_SR_OFFSET) &\
+	 XAXIDMA_IRQ_ALL_MASK)
 
 /*****************************************************************************/
 /**
@@ -712,9 +720,9 @@ typedef struct {
  *
  *****************************************************************************/
 #define  XAxiDma_IntrAckIrq(InstancePtr, Mask, Direction)	\
-			XAxiDma_WriteReg((InstancePtr)->RegBase + \
-			(XAXIDMA_RX_OFFSET * Direction), XAXIDMA_SR_OFFSET, \
-			(Mask) & XAXIDMA_IRQ_ALL_MASK)
+	XAxiDma_WriteReg((InstancePtr)->RegBase + \
+			 (XAXIDMA_RX_OFFSET * Direction), XAXIDMA_SR_OFFSET, \
+			 (Mask) & XAXIDMA_IRQ_ALL_MASK)
 
 
 
@@ -723,19 +731,23 @@ typedef struct {
 /*
  * Initialization and control functions in xaxidma.c
  */
+#ifndef SDT
 XAxiDma_Config *XAxiDma_LookupConfig(u32 DeviceId);
 XAxiDma_Config *XAxiDma_LookupConfigBaseAddr(UINTPTR Baseaddr);
-int XAxiDma_CfgInitialize(XAxiDma * InstancePtr, XAxiDma_Config *Config);
-void XAxiDma_Reset(XAxiDma * InstancePtr);
-int XAxiDma_ResetIsDone(XAxiDma * InstancePtr);
-int XAxiDma_Pause(XAxiDma * InstancePtr);
-int XAxiDma_Resume(XAxiDma * InstancePtr);
-u32 XAxiDma_Busy(XAxiDma *InstancePtr,int Direction);
+#else
+XAxiDma_Config *XAxiDma_LookupConfig(UINTPTR BaseAddress);
+#endif
+int XAxiDma_CfgInitialize(XAxiDma *InstancePtr, XAxiDma_Config *Config);
+void XAxiDma_Reset(XAxiDma *InstancePtr);
+int XAxiDma_ResetIsDone(XAxiDma *InstancePtr);
+int XAxiDma_Pause(XAxiDma *InstancePtr);
+int XAxiDma_Resume(XAxiDma *InstancePtr);
+u32 XAxiDma_Busy(XAxiDma *InstancePtr, int Direction);
 u32 XAxiDma_SimpleTransfer(XAxiDma *InstancePtr, UINTPTR BuffAddr, u32 Length,
-	int Direction);
+			   int Direction);
 int XAxiDma_SelectKeyHole(XAxiDma *InstancePtr, int Direction, int Select);
 int XAxiDma_SelectCyclicMode(XAxiDma *InstancePtr, int Direction, int Select);
-int XAxiDma_Selftest(XAxiDma * InstancePtr);
+int XAxiDma_Selftest(XAxiDma *InstancePtr);
 #ifdef __cplusplus
 }
 #endif
