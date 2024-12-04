@@ -34,11 +34,15 @@
 #include "xparameters.h"
 
 /************************** Constant Definitions *****************************/
-
+#ifdef SDT
+#ifndef XPAR_XDUAL_SPLITTER_NUM_INSTANCES
+#define XPAR_XDUAL_SPLITTER_NUM_INSTANCES	0
+#endif
+#else
 #ifndef XPAR_XDUALSPLITTER_NUM_INSTANCES
 #define XPAR_XDUALSPLITTER_NUM_INSTANCES	0
 #endif
-
+#endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
@@ -71,6 +75,7 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XDualSplitter_Config *XDualSplitter_LookupConfig(u16 DeviceId)
 {
 	extern XDualSplitter_Config
@@ -92,4 +97,28 @@ XDualSplitter_Config *XDualSplitter_LookupConfig(u16 DeviceId)
 
 	return (XDualSplitter_Config *)CfgPtr;
 }
+#else
+XDualSplitter_Config *XDualSplitter_LookupConfig(UINTPTR BaseAddress)
+{
+	extern XDualSplitter_Config
+		XDualSplitter_ConfigTable[XPAR_XDUALSPLITTER_NUM_INSTANCES];
+	XDualSplitter_Config *CfgPtr = NULL;
+	int Index;
+
+	/* Checking for device id for which instance it is matching */
+	for (Index = 0x0; XDualSplitter_ConfigTable[Index].Name != NULL; Index++) {
+
+		/* Assigning address of config table if both device ids
+		 * are matched
+		 */
+		if ( (XDualSplitter_ConfigTable[Index].BaseAddress == BaseAddress)
+            || (!BaseAddress)) {
+			CfgPtr = &XDualSplitter_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XDualSplitter_Config *)CfgPtr;
+}
+#endif
 /** @} */

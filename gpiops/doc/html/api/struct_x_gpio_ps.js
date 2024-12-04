@@ -1,6 +1,7 @@
 var struct_x_gpio_ps =
 [
     [ "CallBackRef", "struct_x_gpio_ps.html#a7bb5325d472614845866cb7abf370ce9", null ],
+    [ "CoreIntrMask", "struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b", null ],
     [ "GpioConfig", "struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921", null ],
     [ "Handler", "struct_x_gpio_ps.html#aca8b8269a2bd384f19de77e312de684a", null ],
     [ "IsReady", "struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b", null ],

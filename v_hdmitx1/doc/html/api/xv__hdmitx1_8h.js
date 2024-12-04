@@ -137,6 +137,7 @@ var xv__hdmitx1_8h =
     [ "XV_HdmiTx1_IsStreamConnected", "xv__hdmitx1_8h.html#aa0ee62f31bc2ceaa6b7dd92618560a0a", null ],
     [ "XV_HdmiTx1_IsStreamScrambled", "xv__hdmitx1_8h.html#ad3a48e290c617a6ede63a42f1d586364", null ],
     [ "XV_HdmiTx1_LookupConfig", "xv__hdmitx1_8h.html#a91a4f806f19c4269cafee965b92359c1", null ],
+    [ "XV_HdmiTx1_LookupVic", "xv__hdmitx1_8h.html#abc7b6f6ccf8cebbdbd102c9ce612cd96", null ],
     [ "XV_HdmiTx1_RegisterDebug", "xv__hdmitx1_8h.html#a7bd42ae44563fd0dc91d40c0dfe8d7c3", null ],
     [ "XV_HdmiTx1_Scrambler", "xv__hdmitx1_8h.html#a83f6939b0f5205344a276489afe45223", null ],
     [ "XV_HdmiTx1_SelfTest", "xv__hdmitx1_8h.html#af29db67dfae3a2ae507640836c23847a", null ],

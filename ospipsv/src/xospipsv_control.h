@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,10 @@
 /**
 *
 * @file xospipsv_control.h
-* @addtogroup ospipsv Overview
+* @addtogroup ospipsv_api OSPIPSV APIs
 * @{
 *
-* This is the header file for the low-level functions of OSPIPSV driver.
+* The xospipsv_control.h header file for the low-level functions of OSPIPSV driver.
 * These functions will be used internally by the user API's.
 *
 * <pre>
@@ -24,6 +24,7 @@
 * 1.8   sk   11/29/22 Added support for Indirect Non-Dma write.
 * 1.8   akm  01/03/23 Use Xil_WaitForEvent() API for register bit polling.
 * 1.9   sb   26/04/23 Updated address calculation logic in DAC read and write API's
+* 1.11  ng  08/20/24 Add spartanup device support
 *
 * </pre>
 *
@@ -45,9 +46,9 @@ extern "C" {
 /*****************************************************************************/
 /**
 * @brief
-* Disable the OSPIPSV device.
+* Disables the OSPIPSV device.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None.
 *
@@ -67,9 +68,9 @@ static inline void XOspiPsv_Disable(const XOspiPsv *InstancePtr)
 /*****************************************************************************/
 /**
 * @brief
-* Enable the OSPIPSV device.
+* Enables the OSPIPSV device.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None.
 *
@@ -89,7 +90,7 @@ static inline void XOspiPsv_Enable(const XOspiPsv *InstancePtr)
 * @brief
 * Configures the OSPI MUX to Linear mode
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None.
 *
@@ -110,6 +111,9 @@ static inline void XOspiPsv_ConfigureMux_Linear(const XOspiPsv *InstancePtr)
 	Xil_Smc(PM_IOCTL_SMC_FID, (((u64)PM_IOCTL_OSPI_MUX_SELECT << 32) | OSPI_NODE_ID) , PM_OSPI_MUX_SEL_LINEAR, 0,0,0,0,0);
 	/* Release OSPI node */
 	Xil_Smc(PM_RELEASE_DEVICE_SMC_FID,OSPI_NODE_ID,0, 0,0,0,0,0);
+#elif defined(SPARTANUP)
+	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, OSPI_AXI_MODE_SEL,
+		OSPI_AXI_MODE_SEL_AXIS_MODE_SEL_MASK);
 #else
 	XOspiPsv_WriteReg(XPMC_IOU_SLCR_BASEADDR, XPMC_IOU_SLCR_OSPI_MUX_SEL,
 		XOspiPsv_ReadReg(XPMC_IOU_SLCR_BASEADDR, XPMC_IOU_SLCR_OSPI_MUX_SEL) |
@@ -124,7 +128,7 @@ static inline void XOspiPsv_ConfigureMux_Linear(const XOspiPsv *InstancePtr)
 * @brief
 * Configures the OSPI MUX to DMA mode
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None.
 *
@@ -140,6 +144,9 @@ static inline void XOspiPsv_ConfigureMux_Dma(const XOspiPsv *InstancePtr)
 	Xil_Smc(PM_IOCTL_SMC_FID, (((u64)PM_IOCTL_OSPI_MUX_SELECT << 32) | OSPI_NODE_ID), PM_OSPI_MUX_SEL_DMA, 0, 0, 0, 0, 0);
 	/* Release OSPI node */
 	Xil_Smc(PM_RELEASE_DEVICE_SMC_FID,OSPI_NODE_ID, 0, 0, 0, 0, 0, 0);
+#elif defined(SPARTANUP)
+	XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, OSPI_AXI_MODE_SEL,
+		OSPI_AXI_MODE_SEL_AXIS_MODE_SEL_MASK);
 #else
 	XOspiPsv_WriteReg(XPMC_IOU_SLCR_BASEADDR, XPMC_IOU_SLCR_OSPI_MUX_SEL,
 			XOspiPsv_ReadReg(XPMC_IOU_SLCR_BASEADDR, XPMC_IOU_SLCR_OSPI_MUX_SEL) &

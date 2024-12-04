@@ -1,6 +1,9 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"example.html":[1],
+"example.html#ex1":[1,0],
+"example.html#ex2":[1,1],
 "functions.html":[0,1,0],
 "functions_vars.html":[0,1,1],
 "index.html":[],

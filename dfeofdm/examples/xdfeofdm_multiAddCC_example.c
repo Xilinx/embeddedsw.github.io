@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,6 +19,8 @@
 * ----- -----  -------- -----------------------------------------------------
 * 1.0   dc     11/21/22 Initial version
 * 1.1   dc     07/27/23 Output delay in ccid slots
+* 1.3   dc     06/18/24 Add FR1 and FR2 frequency range
+*       dc     09/23/24 Add frequency range MODEL_PARAM
 *
 * </pre>
 * @addtogroup dfeofdm Overview

@@ -1,7 +1,7 @@
 
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -33,15 +33,11 @@
 
 /************************** Constant Definitions *****************************/
 
-
 /**************************** Type Definitions *******************************/
-
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-
 /************************** Function Prototypes ******************************/
-
 
 /************************** Variable Definitions *****************************/
 s32 XI3cPsx_SetSClk(XI3cPsx *InstancePtr)
@@ -56,15 +52,17 @@ s32 XI3cPsx_SetSClk(XI3cPsx *InstancePtr)
 	CoreRate = InstancePtr->Config.InputClockHz;
 	BaseAddress = InstancePtr->Config.BaseAddress;
 
-	CorePeriod = XI3CPSX_CEIL_DIV(1000000000, CoreRate);
+	CorePeriod = XI3CPSX_CEIL_DIV(XI3CPSX_NS_1SEC, CoreRate);
 
 	Hcnt = XI3CPSX_CEIL_DIV(I3C_BUS_THIGH_MAX_NS, CorePeriod) - 1;
-	if (Hcnt < SCL_I3C_TIMING_CNT_MIN)
+	if (Hcnt < SCL_I3C_TIMING_CNT_MIN) {
 		Hcnt = SCL_I3C_TIMING_CNT_MIN;
+	}
 
 	Lcnt = XI3CPSX_CEIL_DIV(CoreRate, I3C_BUS_TYP_I3C_SCL_RATE) - Hcnt;
-	if (Lcnt < SCL_I3C_TIMING_CNT_MIN)
+	if (Lcnt < SCL_I3C_TIMING_CNT_MIN) {
 		Lcnt = SCL_I3C_TIMING_CNT_MIN;
+	}
 
 	SclTiming = SCL_I3C_TIMING_HCNT(Hcnt) | (Lcnt & XI3CPSX_SCL_I3C_PP_TIMING_I3C_PP_LCNT_MASK);
 	XI3cPsx_WriteReg(BaseAddress, XI3CPSX_SCL_I3C_PP_TIMING, SclTiming);

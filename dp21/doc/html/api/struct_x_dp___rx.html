@@ -92,6 +92,9 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a38c21c078b5ddbbe3257e0c08258be14"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment"> An array of pointers to
 </pre><p> the user data passed to the video mode change callback functions.  <a href="#a38c21c078b5ddbbe3257e0c08258be14">More...</a><br/></td></tr>
 <tr class="separator:a38c21c078b5ddbbe3257e0c08258be14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7eeb5ff058fbfec8fcaef17abb8c634"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_dp___main_stream_attributes.html">XDp_MainStreamAttributes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___rx.html#ad7eeb5ff058fbfec8fcaef17abb8c634">MsaConfig</a> [4]</td></tr>
+<tr class="memdesc:ad7eeb5ff058fbfec8fcaef17abb8c634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration structure for the main stream attributes (MSA).  <a href="#ad7eeb5ff058fbfec8fcaef17abb8c634">More...</a><br/></td></tr>
+<tr class="separator:ad7eeb5ff058fbfec8fcaef17abb8c634"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5f28ace80643a0b860f4058c28d01ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__dp.html#gaf3faa5ed2b3acfa7dd063f3afddda551">XDp_IntrHandler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___rx.html#aa5f28ace80643a0b860f4058c28d01ff">IntrPowerStateHandler</a></td></tr>
 <tr class="memdesc:aa5f28ace80643a0b860f4058c28d01ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function for power state change interrupts.  <a href="#aa5f28ace80643a0b860f4058c28d01ff">More...</a><br/></td></tr>
 <tr class="separator:aa5f28ace80643a0b860f4058c28d01ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1678,6 +1681,21 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Configuration structure for the main link. </p>
+
+</div>
+</div>
+<a class="anchor" id="ad7eeb5ff058fbfec8fcaef17abb8c634"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_x_dp___main_stream_attributes.html">XDp_MainStreamAttributes</a> XDp_Rx::MsaConfig[4]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configuration structure for the main stream attributes (MSA). </p>
+<p>Each stream has its own set of attributes. When MST mode is disabled, only MsaConfig[0] is used. </p>
 
 </div>
 </div>

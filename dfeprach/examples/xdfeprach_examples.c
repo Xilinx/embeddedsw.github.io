@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -32,6 +32,8 @@
 * 1.3   dc     02/07/22 Configure 2 CC and 3 RC examples
 *       dc     03/21/22 Add prefix to global variables
 * 1.4   dc     04/26/22 Add dynamic config example
+* 1.7   cog    19/02/24 SDT Support
+*       cog    04/20/24 Configure si570 in Linux examples
 *
 * </pre>
 *
@@ -53,12 +55,12 @@ extern int XDfePrach_2CC3RCDynamicTestExample();
 /************************** Variable Definitions ****************************/
 #ifdef __BAREMETAL__
 metal_phys_addr_t XDfePrach_metal_phys[XDFEPRACH_MAX_NUM_INSTANCES] = {
-	XPAR_XDFEPRACH_0_BASEADDR,
+	XDFEPRACH_NODE_BASE,
 };
 
 struct metal_device XDfePrach_CustomDevice[XDFEPRACH_MAX_NUM_INSTANCES] = {
-	XDFEPRACH_CUSTOM_DEV(XPAR_XDFEPRACH_0_DEV_NAME,
-			     XPAR_XDFEPRACH_0_BASEADDR, 0),
+	XDFEPRACH_CUSTOM_DEV(XDFEPRACH_NODE_NAME,
+			     XDFEPRACH_NODE_BASE, 0),
 };
 #endif
 
@@ -78,14 +80,12 @@ int main(void)
 {
 	printf("\r\n\nDFE Prach (PRACH) Selftest Examples: Start\r\n");
 
-#ifdef __BAREMETAL__
 	if (XST_SUCCESS !=
 	    XDfeSi570_SetMgtOscillator(XDFESI570_CURRENT_FREQUENCY,
 				       XDFESI570_NEW_FREQUENCY)) {
 		printf("Setting MGT oscillator failed\r\n");
 		return XST_FAILURE;
 	}
-#endif
 
 	/*
 	 * Run the DFE Prach init/close example. Specify the Device ID

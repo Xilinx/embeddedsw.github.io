@@ -1,6 +1,6 @@
 ###############################################################################
 # Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-# Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -23,7 +23,7 @@
 set fbclk_status 2
 
 proc generate {drv_handle} {
-    ::hsi::utils::define_zynq_include_file $drv_handle "xparameters.h" "XQspiPsu" "NUM_INSTANCES" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_S_AXI_HIGHADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH"
+    ::hsi::utils::define_zynq_include_file $drv_handle "xparameters.h" "XQspiPsu" "NUM_INSTANCES" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_S_AXI_HIGHADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "C_QSPI_BAUD_RATE_DIV"
     generate_cci_params $drv_handle "xparameters.h"
 
 	set clocking [common::get_property CONFIG.clocking [hsi::get_os]]
@@ -32,11 +32,11 @@ proc generate {drv_handle} {
 	set isclocking [check_clocking]
 
 	if { $isclocking == 1 &&  $is_zynqmp_fsbl_bsp != true   &&  [llength $cortexa53proc] > 0 && [string match -nocase $clocking "true"] > 0} {
-    ::hsi::utils::define_zynq_config_file $drv_handle "xqspipsu_g.c" "XQspiPsu"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT" "REF_CLK" "QSPI_FBCLK"
+    ::hsi::utils::define_zynq_config_file $drv_handle "xqspipsu_g.c" "XQspiPsu"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT" "REF_CLK" "QSPI_FBCLK" "C_QSPI_BAUD_RATE_DIV"
 	} else {
-    ::hsi::utils::define_zynq_config_file $drv_handle "xqspipsu_g.c" "XQspiPsu"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT" "QSPI_FBCLK"
+    ::hsi::utils::define_zynq_config_file $drv_handle "xqspipsu_g.c" "XQspiPsu"  "DEVICE_ID" "C_S_AXI_BASEADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT" "QSPI_FBCLK" "C_QSPI_BAUD_RATE_DIV"
 	}
-    ::hsi::utils::define_zynq_canonical_xpars $drv_handle "xparameters.h" "XQspiPsu" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_S_AXI_HIGHADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT"
+    ::hsi::utils::define_zynq_canonical_xpars $drv_handle "xparameters.h" "XQspiPsu" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_S_AXI_HIGHADDR" "C_QSPI_CLK_FREQ_HZ" "C_QSPI_MODE" "C_QSPI_BUS_WIDTH" "IS_CACHE_COHERENT" "C_QSPI_BAUD_RATE_DIV"
     generate_canonical_fbclk_params $drv_handle "xparameters.h"
 
 }
@@ -84,8 +84,9 @@ proc generate_cci_params {drv_handle file_name} {
 		if { $isclocking == 1 } {
 			puts $file_handle "\#define [::hsi::utils::get_driver_param_name $ip "REF_CLK"] $ref_tag"
 		}
-		if {$processor_type == "psv_cortexa72" || $processor_type == "psu_cortexa78" } {
-			set fbclk [get_property CONFIG.PMC_QSPI_FBCLK [get_cells -hier -filter {IP_NAME =~ "*pspmc*"}]]
+		set ipname [get_cells -hier -filter {IP_NAME == "pspmc" || IP_NAME == "pmcps" || IP_NAME == "psx_wizard"}]
+		if {[llength $ipname]} {
+			set fbclk [get_property CONFIG.PMC_QSPI_FBCLK [get_cells -hier $ipname]]
 			if {[regexp "ENABLE 1" $fbclk matched]} {
 				puts $file_handle "\#define [::hsi::utils::get_driver_param_name $ip "QSPI_FBCLK"] 1$uSuffix"
 				set fbclk_status 1

@@ -108,6 +108,12 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">No BAR allocation for Bridge.  <a href="#a11bdbeb0f844db1d203f2b8f6f29ca5c">More...</a><br/></td></tr>
+<tr class="separator:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acad74e57979d6bc62e24ddaa31ed11e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8h.html#acad74e57979d6bc62e24ddaa31ed11e9">REQ_SIZE</a>&#160;&#160;&#160;(<a class="el" href="xdmapcie_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a> * sizeof(unsigned long))</td></tr>
+<tr class="memdesc:acad74e57979d6bc62e24ddaa31ed11e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Required size for BAR Alignment.  <a href="#acad74e57979d6bc62e24ddaa31ed11e9">More...</a><br/></td></tr>
+<tr class="separator:acad74e57979d6bc62e24ddaa31ed11e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b0bb20942845552762a968ec77c293d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8h.html#a2b0bb20942845552762a968ec77c293d">XDMAPCIE_VSEC1</a>&#160;&#160;&#160;0x00</td></tr>
 <tr class="memdesc:a2b0bb20942845552762a968ec77c293d"><td class="mdescLeft">&#160;</td><td class="mdescRight">First VSEC Register.  <a href="#a2b0bb20942845552762a968ec77c293d">More...</a><br/></td></tr>
 <tr class="separator:a2b0bb20942845552762a968ec77c293d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,6 +224,34 @@ Functions</h2></td></tr>
 <tr class="separator:a7106f923ba6532a0533e39afdf6728c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a11bdbeb0f844db1d203f2b8f6f29ca5c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_BARS&#160;&#160;&#160;6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>No BAR allocation for Bridge. </p>
+
+</div>
+</div>
+<a class="anchor" id="acad74e57979d6bc62e24ddaa31ed11e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define REQ_SIZE&#160;&#160;&#160;(<a class="el" href="xdmapcie_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a> * sizeof(unsigned long))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Required size for BAR Alignment. </p>
+
+</div>
+</div>
 <a class="anchor" id="aa0a061bd0519f5b946c0abe0d4b6bddd"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1077,10 +1111,10 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
     <tr><td class="paramname">ReqIdPtr</td><td>is a variable where the driver will pass back the requester Id of error message. </td></tr>
-    <tr><td class="paramname">MsiAddr</td><td>is a variable where the driver will pass back the MSI address for which interrupt message recieved. </td></tr>
-    <tr><td class="paramname">MsiInt</td><td>is a variable where the driver will pass back the type of interrupt message recieved (MSI/INTx). </td></tr>
+    <tr><td class="paramname">MsiAddr</td><td>is a variable where the driver will pass back the MSI address for which interrupt message received. </td></tr>
+    <tr><td class="paramname">MsiInt</td><td>is a variable where the driver will pass back the type of interrupt message received (MSI/INTx). </td></tr>
     <tr><td class="paramname">IntValid</td><td>is a variable where the driver will pass back the status of read operation of interrupt message. </td></tr>
-    <tr><td class="paramname">MsiMsgData</td><td>is a variable where the driver will pass back the MSI data recieved.</td></tr>
+    <tr><td class="paramname">MsiMsgData</td><td>is a variable where the driver will pass back the MSI data received.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1500,7 +1534,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Read 32-bit value from external PCIe Function's configuration space. </p>
-<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the begginning of the configuration space.</p>
+<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
@@ -1676,7 +1710,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write 32-bit value to one of this IP own configuration space. </p>
-<p>Location is identified by its offset from the begginning of the configuration space.</p>
+<p>Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
@@ -1743,7 +1777,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write 32-bit value to external PCIe function's configuration space. </p>
-<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the begginning of the configuration space.</p>
+<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>

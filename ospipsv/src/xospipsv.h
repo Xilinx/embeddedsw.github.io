@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,41 +8,10 @@
 /**
 *
 * @file xospipsv.h
-* @addtogroup ospipsv Overview
+* @addtogroup ospipsv_api OSPIPSV APIs
 * @{
 * @details
 *
-* This section contains information about the driver structures, user
-* API prototypes and all the defines required for the user to interact
-* with the driver. OspiPsv driver supports the OSPI controller in Versal
-* SoC platform.
-*
-* <b>Initialization & Configuration</b>
-*
-* The XOspiPsv_Config structure is used by the driver to configure. This
-* configuration structure is typically created by the tool-chain based on HW
-* build properties.
-*
-* To support multiple runtime loading and initialization strategies employed by
-* various operating systems, the driver instance can be initialized in the
-* following way:
-*
-*    - XOspiPsv_LookupConfig(u16 DeviceId) - Use the device identifier to find
-*      the static configuration structure defined in xospipsv_g.c.
-*
-*    - XOspiPsv_CfgInitialize(InstancePtr, ConfigPtr) - Uses a
-*      configuration structure provided by the caller. This will initialize
-*      the XOspiPsv driver structure.
-*
-* <b>Supported features</b>
-*
-* This driver supports following features
-*    - SDR-NON-PHY mode.
-*    - SDR-PHY mode.
-*    - DDR-PHY mode.
-*    - INDAC mode of operations.
-*    - DAC mode of operations.
-*    - Polled and Interrupt mode transfers.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -85,6 +54,11 @@
 * 1.8   sk   11/11/22 Enable Master DLL mode by default for Versal Net.
 *       sk   11/29/22 Added support for Indirect Non-Dma write.
 * 1.9   sb   06/06/23 Added support for system device-tree flow.
+* 1.10	akm  01/31/24 Use OSPI controller reset for resetting flash device.
+* 1.10	akm  02/06/24 Increase the delay after device reset.
+* 1.10	akm  02/01/24 Update OSPI TX tap delay element to 0x26 for DDR mode.
+* 1.11	akm  05/15/24 Added support for x2/x4 operations.
+* 1.11  ng  08/20/24 Add spartanup device support
 *
 * </pre>
 *
@@ -109,16 +83,16 @@ extern "C" {
 /**************************** Type Definitions *******************************/
 /**
  * The handler data type allows the user to define a callback function to
- * handle the asynchronous processing for the OSPIPSV device.  The application
+ * handle the asynchronous processing for the OSPIPSV device. The application
  * using this driver is expected to define a handler of this type to support
- * interrupt driven mode.  The handler executes in an interrupt context, so
+ * interrupt driven mode. The handler executes in an interrupt context, so
  * only minimal processing should be performed.
  *
- * @param	CallBackRef is the callback reference passed in by the upper
+ * @param	CallBackRef Callback reference passed in by the upper
  *		layer when setting the callback functions, and passed back to
  *		the upper layer when the callback is invoked. Its type is
  *		not important to the driver, so it is a void pointer.
- * @param 	StatusEvent holds one or more status events that have occurred.
+ * @param 	StatusEvent Holds one or more status events that have occurred.
  *		See the XOspiPsv_SetStatusHandler() for details on the status
  *		events that can be passed in the callback.
  */
@@ -188,7 +162,10 @@ typedef struct {
 	u32 DeviceIdData;	/**< Contains Device Id Data information */
 	u8 Extra_DummyCycle;	/**< Contains extra dummy cycle data */
 	u8 DllMode;		/**< DLL mode */
-	u8 DualByteOpcodeEn;	/**< Flag to indicate Dual Byte Opcode */
+	u8 DualByteOpcodeEn;	/**< Flag to indicate Dual Byte Opcode
+				* 0 - DualByte opcode is disabled
+				* 1 - DualByte opcode is enabled with inverted opcode
+				* 2 - DualByte opcode is enabled with same opcode */
 #ifdef __ICCARM__
 #pragma pack(push, 8)
 	u8 UnalignReadBuffer[4];	/**< Buffer used to read the unaligned bytes in DMA */
@@ -264,19 +241,25 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
  * Macros to select Read and Write prototype.
  */
 #define XOSPIPSV_READ_1_1_1	0U
+#define XOSPIPSV_READ_1_1_2	1U
+#define XOSPIPSV_READ_1_1_4	2U
 #define XOSPIPSV_READ_1_1_8	3U
 #define XOSPIPSV_READ_1_8_8	4U
 #define XOSPIPSV_READ_8_8_8	5U
 #define XOSPIPSV_READ_8_0_8	6U
+#define XOSPIPSV_READ_4_4_4	7U
 
 #define XOSPIPSV_WRITE_1_1_1	0U
 #define XOSPIPSV_WRITE_1_0_1	1U
+#define XOSPIPSV_WRITE_1_1_2	2U
 #define XOSPIPSV_WRITE_1_1_8	3U
 #define XOSPIPSV_WRITE_1_8_8	4U
 #define XOSPIPSV_WRITE_8_8_8	5U
 #define XOSPIPSV_WRITE_8_0_0	6U
 #define XOSPIPSV_WRITE_8_8_0	7U
 #define XOSPIPSV_WRITE_8_0_8	8U
+#define XOSPIPSV_WRITE_1_1_4	9U
+#define XOSPIPSV_WRITE_4_4_4	10U
 /** @} */
 
 /**
@@ -363,7 +346,11 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
  */
 #define XOSPIPSV_SDR_TX_VAL			0x5U
 #define XOSPIPSV_DDR_TX_VAL			0x0U
+#if defined (VERSAL_NET)
+#define XOSPIPSV_DDR_TX_VAL_MASTER		0x26U
+#else
 #define XOSPIPSV_DDR_TX_VAL_MASTER		0x1EU
+#endif
 #define XOSPIPSV_SDR_TX_VAL_MASTER		0x3CU
 #define XOSPIPSV_DLL_MAX_TAPS			0x7FU
 /** @} */
@@ -410,10 +397,17 @@ extern XOspiPsv_Config XOspiPsv_ConfigTable[];
  */
 #define XOSPIPSV_DUAL_BYTE_OP_DISABLE	0x0U
 #define XOSPIPSV_DUAL_BYTE_OP_ENABLE	0x1U
+#define XOSPIPSV_DUAL_BYTE_OP_SAME	0x2U
 /** @} */
 
 /**< Macro used for more than 32-bit address */
 #define XOSPIPSV_RXADDR_OVER_32BIT	0x100000000U
+
+/**
+ * Minimum frequency for Tap grain selection.
+ */
+#define XOSPIPSV_TAP_GRAN_SEL_MIN_FREQ	120000000U
+
 
 /* Initialization and reset */
 #ifndef SDT
@@ -437,6 +431,7 @@ u32 XOspiPsv_SetSdrDdrMode(XOspiPsv *InstancePtr, u32 Mode);
 void XOspiPsv_ConfigureAutoPolling(const XOspiPsv *InstancePtr, u32 FlashMode);
 void XOspiPsv_Idle(const XOspiPsv *InstancePtr);
 u32 XOspiPsv_DeviceReset(u8 Type);
+u32 XOspiPsv_DeviceResetViaOspi(const XOspiPsv *InstancePtr, u8 Type);
 u32 XOspiPsv_StartDmaTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);
 u32 XOspiPsv_CheckDmaDone(XOspiPsv *InstancePtr);
 u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr);

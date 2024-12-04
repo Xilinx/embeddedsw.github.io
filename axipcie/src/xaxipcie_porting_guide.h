@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xaxipcie_porting_guide.h
-* @addtogroup axipcie_v3_3
+* @addtogroup axipcie Overview
 * @{
 *
 * This is a guide on how to move from using the plbv46pcie driver to use

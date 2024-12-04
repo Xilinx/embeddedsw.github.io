@@ -112,6 +112,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga0408e2c4fba6d9237aeb72db5c38164b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr, u64 SetRate)</td></tr>
 <tr class="memdesc:ga0408e2c4fba6d9237aeb72db5c38164b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the frequency to the given rate in Hz.  <a href="#ga0408e2c4fba6d9237aeb72db5c38164b">More...</a><br/></td></tr>
 <tr class="separator:ga0408e2c4fba6d9237aeb72db5c38164b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5da48627691e7e979b7c4fbcb608796a"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga5da48627691e7e979b7c4fbcb608796a">XClk_Wiz_GetRate</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr, u32 ClockId, u64 *Rate)</td></tr>
+<tr class="memdesc:ga5da48627691e7e979b7c4fbcb608796a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the clock frequency for the given ClockId.  <a href="#ga5da48627691e7e979b7c4fbcb608796a">More...</a><br/></td></tr>
+<tr class="separator:ga5da48627691e7e979b7c4fbcb608796a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad966194a45d93fa34d0eb8ab8c2de08d"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gad966194a45d93fa34d0eb8ab8c2de08d">XClk_Wiz_SetLeafRateHz</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr, u32 ClockId, u64 SetRate)</td></tr>
+<tr class="memdesc:gad966194a45d93fa34d0eb8ab8c2de08d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the clock rate frequency for the given ClockId.  <a href="#gad966194a45d93fa34d0eb8ab8c2de08d">More...</a><br/></td></tr>
+<tr class="separator:gad966194a45d93fa34d0eb8ab8c2de08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadaf78e2da6e9c9dc9bd7a86f97d6b79e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr, u64 SetRate)</td></tr>
 <tr class="memdesc:gadaf78e2da6e9c9dc9bd7a86f97d6b79e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the frequency to the given rate.  <a href="#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">More...</a><br/></td></tr>
 <tr class="separator:gadaf78e2da6e9c9dc9bd7a86f97d6b79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,6 +291,48 @@ Device registers</h2></td></tr>
 <tr class="memitem:ga83482bf9fdb74d48dd564b9d83f3a4f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga83482bf9fdb74d48dd564b9d83f3a4f5"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_ZYNQMP_REG2_OFFSET</b>&#160;&#160;&#160;0x00000208</td></tr>
 <tr class="separator:ga83482bf9fdb74d48dd564b9d83f3a4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6da1e217985fa8bf4f9dcb7fee746f2c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6da1e217985fa8bf4f9dcb7fee746f2c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG0_FBMULT_SHIFT</b>&#160;&#160;&#160;8</td></tr>
+<tr class="separator:ga6da1e217985fa8bf4f9dcb7fee746f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafbc45a9f25d2d1193770eb76c372cd59"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafbc45a9f25d2d1193770eb76c372cd59"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG0_FBMULT_WIDTH</b>&#160;&#160;&#160;8</td></tr>
+<tr class="separator:gafbc45a9f25d2d1193770eb76c372cd59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9e4d6e887019342a03e245ab8bd4770c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9e4d6e887019342a03e245ab8bd4770c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG0_FBMULT_MASK</b>&#160;&#160;&#160;0xFF00</td></tr>
+<tr class="separator:ga9e4d6e887019342a03e245ab8bd4770c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga62a9d31adf2d12521dbbd98cc6aac307"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga62a9d31adf2d12521dbbd98cc6aac307"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG0_DIV_MASK</b>&#160;&#160;&#160;0xFF</td></tr>
+<tr class="separator:ga62a9d31adf2d12521dbbd98cc6aac307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4ca7e08a4b9c730f7243b0f080a5f36c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4ca7e08a4b9c730f7243b0f080a5f36c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG0_DIV_WIDTH</b>&#160;&#160;&#160;8</td></tr>
+<tr class="separator:ga4ca7e08a4b9c730f7243b0f080a5f36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae58427074588814d172bd522786e0410"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae58427074588814d172bd522786e0410"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG2_DIV_MASK</b>&#160;&#160;&#160;0xFF</td></tr>
+<tr class="separator:gae58427074588814d172bd522786e0410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gafa257e031d2c60c9fdd568df2fa023d0">XCLK_WIZ_REG1_EDGE_SHIFT</a>&#160;&#160;&#160;8</td></tr>
+<tr class="memdesc:gafa257e031d2c60c9fdd568df2fa023d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for Edge.  <a href="#gafa257e031d2c60c9fdd568df2fa023d0">More...</a><br/></td></tr>
+<tr class="separator:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gafa257e031d2c60c9fdd568df2fa023d0">XCLK_WIZ_REG1_EDGE_SHIFT</a>&#160;&#160;&#160;8</td></tr>
+<tr class="memdesc:gafa257e031d2c60c9fdd568df2fa023d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for Edge.  <a href="#gafa257e031d2c60c9fdd568df2fa023d0">More...</a><br/></td></tr>
+<tr class="separator:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga99acc131620a3cad06a7500f478f5c96"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga99acc131620a3cad06a7500f478f5c96"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG1_EDGE_MASK</b>&#160;&#160;&#160;0x100</td></tr>
+<tr class="separator:ga99acc131620a3cad06a7500f478f5c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc89856fec13ca7e805cf8f952ab0c71"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadc89856fec13ca7e805cf8f952ab0c71"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_CLKFBOUT_L_MASK</b>&#160;&#160;&#160;0xFF</td></tr>
+<tr class="separator:gadc89856fec13ca7e805cf8f952ab0c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaad78547ca013fac05670bc7c4024ad4d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaad78547ca013fac05670bc7c4024ad4d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_CLKFBOUT_H_MASK</b>&#160;&#160;&#160;0xFF00</td></tr>
+<tr class="separator:gaad78547ca013fac05670bc7c4024ad4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28d8bf4ce4bf53f003f77e0fae443759"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga28d8bf4ce4bf53f003f77e0fae443759"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_CLKFBOUT_H_SHIFT</b>&#160;&#160;&#160;8</td></tr>
+<tr class="separator:ga28d8bf4ce4bf53f003f77e0fae443759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga54a3a8ae461408ea4561c64230ceddbe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga54a3a8ae461408ea4561c64230ceddbe"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_EDGE_MASK</b>&#160;&#160;&#160;(1 &lt;&lt; 10) /** Edge */</td></tr>
+<tr class="separator:ga54a3a8ae461408ea4561c64230ceddbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac5d8620b5660eebc6714828b27d58bc4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac5d8620b5660eebc6714828b27d58bc4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_P5EN_MASK</b>&#160;&#160;&#160;(1 &lt;&lt; 8)  /** p5en */</td></tr>
+<tr class="separator:gac5d8620b5660eebc6714828b27d58bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2aa4f4906d0adf01130e806e3dcc29aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2aa4f4906d0adf01130e806e3dcc29aa"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_LOCK</b>&#160;&#160;&#160;1    /** Lock */</td></tr>
 <tr class="separator:ga2aa4f4906d0adf01130e806e3dcc29aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,12 +372,12 @@ Device registers</h2></td></tr>
 <tr class="memitem:gae49b1d691b76f209b89e751b7d091d43"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gae49b1d691b76f209b89e751b7d091d43">XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT</a>&#160;&#160;&#160;15</td></tr>
 <tr class="memdesc:gae49b1d691b76f209b89e751b7d091d43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for P5EDGE.  <a href="#gae49b1d691b76f209b89e751b7d091d43">More...</a><br/></td></tr>
 <tr class="separator:gae49b1d691b76f209b89e751b7d091d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae826d18d7971be10836d3804ad4ed38e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gae826d18d7971be10836d3804ad4ed38e">XCLK_WIZ_CLKOUT0_P5FEDGE_MASK</a>&#160;&#160;&#160;(1 &lt;&lt; 15)</td></tr>
+<tr class="memdesc:gae826d18d7971be10836d3804ad4ed38e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for P5EDGE.  <a href="#gae826d18d7971be10836d3804ad4ed38e">More...</a><br/></td></tr>
+<tr class="separator:gae826d18d7971be10836d3804ad4ed38e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga142028c206e507df8633d0b91b0ef273"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga142028c206e507df8633d0b91b0ef273">XCLK_WIZ_REG12_EDGE_SHIFT</a>&#160;&#160;&#160;10</td></tr>
 <tr class="memdesc:ga142028c206e507df8633d0b91b0ef273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for Edge.  <a href="#ga142028c206e507df8633d0b91b0ef273">More...</a><br/></td></tr>
 <tr class="separator:ga142028c206e507df8633d0b91b0ef273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gafa257e031d2c60c9fdd568df2fa023d0">XCLK_WIZ_REG1_EDGE_SHIFT</a>&#160;&#160;&#160;8</td></tr>
-<tr class="memdesc:gafa257e031d2c60c9fdd568df2fa023d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift bits for Edge.  <a href="#gafa257e031d2c60c9fdd568df2fa023d0">More...</a><br/></td></tr>
-<tr class="separator:gafa257e031d2c60c9fdd568df2fa023d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Bitmasks and offsets of XCLK_WIZ_ISR_OFFSET register</h2></td></tr>
@@ -572,7 +620,21 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Shift bits for P5EN. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="gae826d18d7971be10836d3804ad4ed38e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCLK_WIZ_CLKOUT0_P5FEDGE_MASK&#160;&#160;&#160;(1 &lt;&lt; 15)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mask for P5EDGE. </p>
+
+<p>Referenced by <a class="el" href="group___overview.html#ga5da48627691e7e979b7c4fbcb608796a">XClk_Wiz_GetRate()</a>.</p>
 
 </div>
 </div>
@@ -587,8 +649,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Shift bits for P5EDGE. </p>
-
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1780,19 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Shift bits for Edge. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="gafa257e031d2c60c9fdd568df2fa023d0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCLK_WIZ_REG1_EDGE_SHIFT&#160;&#160;&#160;8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shift bits for Edge. </p>
 
 </div>
 </div>
@@ -1736,8 +1808,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Shift bits for Edge. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ga8162c60bfa65bf8e6856f4ab94845337"></a>
@@ -1751,8 +1821,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 </div><div class="memdoc">
 
 <p>FBout enable. </p>
-
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
 
 </div>
 </div>
@@ -1768,8 +1836,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>MX 3. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ga92d4bacb8f557d499888a14e1c48b3c9"></a>
@@ -1783,8 +1849,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Prediv2 3. </p>
-
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
 
 </div>
 </div>
@@ -1800,8 +1864,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>MX. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ga0e335ce1a067f54477c247e74a4dbc3d"></a>
@@ -1816,7 +1878,7 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Prediv2 3. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
+<p>Referenced by <a class="el" href="group___overview.html#ga5da48627691e7e979b7c4fbcb608796a">XClk_Wiz_GetRate()</a>.</p>
 
 </div>
 </div>
@@ -1832,7 +1894,7 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Prediv2 3. </p>
 
-<p>Referenced by <a class="el" href="group___overview.html#gac6b82e8b7e00bc66dd233345a4cb5c41">XClk_Wiz_DisableClock()</a>, <a class="el" href="group___overview.html#ga0965f9b5b43c453ca70e8b43f03490ca">XClk_Wiz_EnableClock()</a>, <a class="el" href="group___overview.html#gadaf78e2da6e9c9dc9bd7a86f97d6b79e">XClk_Wiz_SetRate()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
+<p>Referenced by <a class="el" href="group___overview.html#gac6b82e8b7e00bc66dd233345a4cb5c41">XClk_Wiz_DisableClock()</a>, and <a class="el" href="group___overview.html#ga0965f9b5b43c453ca70e8b43f03490ca">XClk_Wiz_EnableClock()</a>.</p>
 
 </div>
 </div>
@@ -2037,6 +2099,57 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
 <p>References <a class="el" href="struct_x_clk___wiz.html#a46c660b9cf4d9720d60887b9a02677ae">XClk_Wiz::ClkIntrEnable</a>, <a class="el" href="struct_x_clk___wiz.html#a6f13187ddd0c7ff4e949d9fba7368a2a">XClk_Wiz::ClkWizIntrStatus</a>, <a class="el" href="group___overview.html#gaa454fd2cfc7ed730c52b747b72de71ef">XCLK_WIZ_IER_ALLINTR_MASK</a>, <a class="el" href="group___overview.html#ga18e65431f48acae3734420b5f3ffa490">XCLK_WIZ_IER_ALLINTR_SHIFT</a>, <a class="el" href="group___overview.html#gaab5f77647fad82a4c02eb29b8180f89b">XCLK_WIZ_IER_OFFSET</a>, <a class="el" href="group___overview.html#ga8e1db287d69d02c673140eae664c1a34">XCLK_WIZ_ISR_ALLINTR_MASK</a>, <a class="el" href="group___overview.html#ga757264554263d3e4035a7433e43ade17">XCLK_WIZ_ISR_ALLINTR_SHIFT</a>, and <a class="el" href="group___overview.html#ga54bfc49d1a188b798cb96cfd40a0dc54">XCLK_WIZ_ISR_OFFSET</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga5da48627691e7e979b7c4fbcb608796a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XClk_Wiz_GetRate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>ClockId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64 *&#160;</td>
+          <td class="paramname"><em>Rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the clock frequency for the given ClockId. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> instance to operate on. </td></tr>
+    <tr><td class="paramname">ClockId</td><td>is the output clock. </td></tr>
+    <tr><td class="paramname">Rate</td><td>clock rate in Hz.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS getting the frequency was successful.</li>
+<li>XST_FAILURE getting the frequency failed. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>, <a class="el" href="group___overview.html#gae826d18d7971be10836d3804ad4ed38e">XCLK_WIZ_CLKOUT0_P5FEDGE_MASK</a>, and <a class="el" href="group___overview.html#ga0e335ce1a067f54477c247e74a4dbc3d">XCLK_WIZ_REG3_PREDIV2</a>.</p>
+
+<p>Referenced by <a class="el" href="xclk__wiz__setrate__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
 
 </div>
 </div>
@@ -2381,6 +2494,57 @@ XCLK_WIZ_HANDLER_OTHERERROR             Any other type of interrupts
 
 </div>
 </div>
+<a class="anchor" id="gad966194a45d93fa34d0eb8ab8c2de08d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">s32 XClk_Wiz_SetLeafRateHz </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>ClockId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64&#160;</td>
+          <td class="paramname"><em>SetRate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the clock rate frequency for the given ClockId. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> instance to operate on. </td></tr>
+    <tr><td class="paramname">ClockId</td><td>is the output clock. </td></tr>
+    <tr><td class="paramname">SetRate</td><td>clock rate in Hz.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS Setting the rate was successful.</li>
+<li>XST_FAILURE Setting rate was failed. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>.</p>
+
+<p>Referenced by <a class="el" href="xclk__wiz__setrate__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga7cee7daf22c90c1209ffb89da7dbc5bb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2448,7 +2612,7 @@ XCLK_WIZ_HANDLER_OTHERERROR             Any other type of interrupts
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> instance to operate on. </td></tr>
-    <tr><td class="paramname">SetRate</td><td>is the frequency for which is desired.</td></tr>
+    <tr><td class="paramname">SetRate</td><td>is the frequency for which is requested in MHz.</td></tr>
   </table>
   </dd>
 </dl>
@@ -2459,9 +2623,7 @@ XCLK_WIZ_HANDLER_OTHERERROR             Any other type of interrupts
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Should be called only if there is only one output clock. </dd></dl>
 
-<p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>, <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>, <a class="el" href="group___overview.html#gac7482b3e0a5b624637346bee0811515d">XCLK_WIZ_CLKOUT0_P5EN_SHIFT</a>, <a class="el" href="group___overview.html#gae49b1d691b76f209b89e751b7d091d43">XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT</a>, <a class="el" href="group___overview.html#ga142028c206e507df8633d0b91b0ef273">XCLK_WIZ_REG12_EDGE_SHIFT</a>, <a class="el" href="group___overview.html#gafa257e031d2c60c9fdd568df2fa023d0">XCLK_WIZ_REG1_EDGE_SHIFT</a>, <a class="el" href="group___overview.html#ga8162c60bfa65bf8e6856f4ab94845337">XCLK_WIZ_REG1_EN</a>, <a class="el" href="group___overview.html#ga901c3adb5465cdf153c4b0d1a51e3bd9">XCLK_WIZ_REG1_MX</a>, <a class="el" href="group___overview.html#ga92d4bacb8f557d499888a14e1c48b3c9">XCLK_WIZ_REG1_PREDIV2</a>, <a class="el" href="group___overview.html#ga2ce6c2a6375c78f8b9923d2330941dae">XCLK_WIZ_REG3_MX</a>, <a class="el" href="group___overview.html#ga0e335ce1a067f54477c247e74a4dbc3d">XCLK_WIZ_REG3_PREDIV2</a>, and <a class="el" href="group___overview.html#ga9c0c8a7ada27a0cfba39c0f3aa922c7d">XCLK_WIZ_REG3_USED</a>.</p>
-
-<p>Referenced by <a class="el" href="xclk__wiz__setrate__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
+<p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>, and <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>.</p>
 
 </div>
 </div>
@@ -2504,7 +2666,9 @@ XCLK_WIZ_HANDLER_OTHERERROR             Any other type of interrupts
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Should be called only if there is only one output clock. </dd></dl>
 
-<p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>, <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>, <a class="el" href="group___overview.html#gac7482b3e0a5b624637346bee0811515d">XCLK_WIZ_CLKOUT0_P5EN_SHIFT</a>, <a class="el" href="group___overview.html#gae49b1d691b76f209b89e751b7d091d43">XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT</a>, <a class="el" href="group___overview.html#ga142028c206e507df8633d0b91b0ef273">XCLK_WIZ_REG12_EDGE_SHIFT</a>, <a class="el" href="group___overview.html#gafa257e031d2c60c9fdd568df2fa023d0">XCLK_WIZ_REG1_EDGE_SHIFT</a>, <a class="el" href="group___overview.html#ga8162c60bfa65bf8e6856f4ab94845337">XCLK_WIZ_REG1_EN</a>, <a class="el" href="group___overview.html#ga901c3adb5465cdf153c4b0d1a51e3bd9">XCLK_WIZ_REG1_MX</a>, <a class="el" href="group___overview.html#ga92d4bacb8f557d499888a14e1c48b3c9">XCLK_WIZ_REG1_PREDIV2</a>, <a class="el" href="group___overview.html#ga2ce6c2a6375c78f8b9923d2330941dae">XCLK_WIZ_REG3_MX</a>, <a class="el" href="group___overview.html#ga0e335ce1a067f54477c247e74a4dbc3d">XCLK_WIZ_REG3_PREDIV2</a>, and <a class="el" href="group___overview.html#ga9c0c8a7ada27a0cfba39c0f3aa922c7d">XCLK_WIZ_REG3_USED</a>.</p>
+<p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>, and <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>.</p>
+
+<p>Referenced by <a class="el" href="xclk__wiz__setrate__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
 
 </div>
 </div>

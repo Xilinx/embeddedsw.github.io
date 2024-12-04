@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,12 +8,11 @@
 /**
 *
 * @file xsysmonpsv_hw.h
-* @addtogroup Overview
+* @addtogroup sysmonpsv_api SYSMONPSV APIs
 * @{
 *
-* This header file contains the identifiers and basic driver functions (or
-* macros) that can be used to access the device. Other driver functions
-* are defined in xsysmonpsv.h.
+* The xsysmonpsv_hw.h header file contains the identifiers and basic driver functions (or
+* macros) that can be used to access the device.
 *
 * <pre>
 *
@@ -27,6 +27,8 @@
 * 2.3   aad    07/26/21 Added doxygen comments for Macros
 *       aad    07/26/21 Removed unsed Macros
 * 3.0   cog    03/25/21 Driver Restructure
+* 5.0   se     08/01/24 Added new APIs to enable, set and get averaging for
+*                       voltage supplies and temperature satellites.
 *
 * </pre>
 *
@@ -465,6 +467,25 @@ extern "C" {
  */
 #define XSYSMONPSV_CONFIG0 0X00000100U /**< Config0 register */
 
+#define XSYSMONPSV_CONFIG0_TEMP_AVERAGE_SHIFT 24U /**< Temp Average Shift */
+#define XSYSMONPSV_CONFIG0_TEMP_AVERAGE_MASK                                   \
+        0x0F000000U /**< Temp Average Mask */
+#define XSYSMONPSV_CONFIG0_SUPPLY_AVERAGE_SHIFT                                \
+        14U /**< Supply Average Shift */
+#define XSYSMONPSV_CONFIG0_SUPPLY_AVERAGE_MASK                                 \
+        0x0001C000U /**< Supply Average Mask */
+
+#define XSYSMONPSV_AVERAGE_0_SAMPLES                                           \
+        0U /**< No Averaging, Full sample rate */
+#define XSYSMONPSV_AVERAGE_2_SAMPLES                                           \
+        1U /**< Average 2 samples, Full sample rate/2 */
+#define XSYSMONPSV_AVERAGE_4_SAMPLES                                           \
+        2U /**< Average 4 samples, Full sample rate/4 */
+#define XSYSMONPSV_AVERAGE_8_SAMPLES                                           \
+        4U /**< Average 8 samples, Full sample rate/8 */
+#define XSYSMONPSV_AVERAGE_16_SAMPLES                                          \
+        8U /**< Average 16 samples, Full sample rate/16 */
+
 #define XSYSMONPSV_CONFIG0_I2C_NOT_PMBUS_SHIFT 9U /**< I2C Select Shift */
 #define XSYSMONPSV_CONFIG0_I2C_NOT_PMBUS_MASK 0X00000200U
 /**< I2C Select Mask */
@@ -715,6 +736,51 @@ extern "C" {
 /*@}*/
 
 /**
+ * @name Register: XSYSMONPSV_EN_AVG_REG0
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG0                                                  \
+	0X00001958U /**< Enable Average for Supply Reg
+                                                Supply[0-31] Offset */
+/*@}*/
+
+/**
+ * @name Register: XSYSMONPSV_EN_AVG_REG1
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG1                                                  \
+	0X0000195CU /**< Enable Average for Supply Reg
+                                                Supply[32-63] Offset */
+/*@}*/
+
+/**
+ * @name Register: XSYSMONPSV_EN_AVG_REG2
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG2                                                  \
+	0X00001960U /**< Enable Average for Supply Reg
+                                                Supply[64-95] Offset */
+/*@}*/
+
+/**
+ * @name Register: XSYSMONPSV_EN_AVG_REG3
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG3                                                  \
+	0X00001964U /**< Enable Average for Supply Reg
+                                                Supply[96-127] Offset */
+/*@}*/
+
+/**
+ * @name Register: XSYSMONPSV_EN_AVG_REG4
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG4                                                  \
+	0X00001968U /**< Enable Average for Supply Reg
+                                                Supply[127-159] Offset */
+/*@}*/
+
+/**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_TH
  * @{
  */
@@ -893,6 +959,24 @@ extern "C" {
 /*@}*/
 
 /**
+ * @name Register: XSYSMONPSV_EN_AVG_REG8
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG8                                                  \
+	0X000024B4U /**< Enable Average for Temp Satellite Reg
+                                                Satellite[1-32] Offset */
+/*@}*/
+
+/**
+ * @name Register: XSYSMONPSV_EN_AVG_REG9
+ * @{
+ */
+#define XSYSMONPSV_EN_AVG_REG9                                                  \
+	0X000024B8U /**< Enable Average for Temp Satellite Reg
+                                                Satellite[33-64] Offset */
+/*@}*/
+
+/**
  * @name Register: XSYSMONPSV_TEMP_SAT
  */
 #define XSYSMONPSV_TEMP_SAT 0X00001FACU /**< Internal Temp Reg */
@@ -942,12 +1026,11 @@ extern "C" {
 *
 * This macro reads the given register.
 *
-* @param        RegisterAddr is the register address in the address
+* @param        RegisterAddr Register address in the address
 *               space of the SYSMONPSV device.
 *
 * @return       The 32-bit value of the register
 *
-* @note         None.
 *
 *****************************************************************************/
 #define XSysMonPsv_ReadReg(RegisterAddr) Xil_In32(RegisterAddr)
@@ -957,13 +1040,12 @@ extern "C" {
 *
 * This macro writes the given register.
 *
-* @param        RegisterAddr is the register address in the address
+* @param        RegisterAddr Register address in the address
 *               space of the SYSMONPSV device.
-* @param        Data is the 32-bit value to write to the register.
+* @param        Data 32-bit value to write to the register.
 *
 * @return       None.
 *
-* @note         None.
 *
 *****************************************************************************/
 #define XSysMonPsv_WriteReg(RegisterAddr, Data)                 \

@@ -1,4 +1,4 @@
 var xipipsu__sinit_8c =
 [
-    [ "XIpiPsu_LookupConfig", "xipipsu__sinit_8c.html#gaaafe5e7a11e3d1fdd01a255521332272", null ]
+    [ "XIpiPsu_LookupConfig", "xipipsu__sinit_8c.html#ga156d31f0b6ec62b917d9ce4a2d3684e3", null ]
 ];

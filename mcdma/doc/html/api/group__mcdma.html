@@ -442,7 +442,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a>((BdPtr), XMCDMA_BD_STS_OFFSET) &amp; \</div>
 <div class="line">         LengthMask)</div>
-<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:62</div></div>
+<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:66</div></div>
 </div><!-- fragment -->
 <p>Get the actual transfer length of a Ingress (S2MM)BD. </p>
 <p>The BD has completed in hw.</p>
@@ -474,7 +474,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a>((BdPtr), XMCDMA_BD_CTRL_OFFSET)  \</div>
 <div class="line">         &amp; XMCDMA_BD_CTRL_ALL_MASK)</div>
-<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:62</div></div>
+<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:66</div></div>
 </div><!-- fragment -->
 <p>Gets the control bits of a BD. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -555,7 +555,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a>((BdPtr), XMCDMA_BD_STS_OFFSET) &amp; \</div>
 <div class="line">         XMCDMA_BD_STS_COMPLETE_MASK)</div>
-<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:62</div></div>
+<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:66</div></div>
 </div><!-- fragment -->
 <p>Check whether a Ingress(S2MM) BD has completed in hardware. </p>
 <p>This BD has been submitted to hardware. The application can use this function To poll for the Completion of the BD.</p>
@@ -682,7 +682,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__mcdma.html#ga2e9ebef9ab28ab4e942a1c6415cebc08">XMcdma_BdWrite</a>((BdPtr), XMCDMA_BD_CTRL_SBAND_OFFSET, \</div>
 <div class="line">                       Tid &lt;&lt; XMCDMA_BD_CTRL_SBAND_SHIFT | Tuser)</div>
-<div class="ttc" id="group__mcdma_html_ga2e9ebef9ab28ab4e942a1c6415cebc08"><div class="ttname"><a href="group__mcdma.html#ga2e9ebef9ab28ab4e942a1c6415cebc08">XMcdma_BdWrite</a></div><div class="ttdeci">#define XMcdma_BdWrite(BaseAddress, Offset, Data)</div><div class="ttdoc">Write the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:99</div></div>
+<div class="ttc" id="group__mcdma_html_ga2e9ebef9ab28ab4e942a1c6415cebc08"><div class="ttname"><a href="group__mcdma.html#ga2e9ebef9ab28ab4e942a1c6415cebc08">XMcdma_BdWrite</a></div><div class="ttdeci">#define XMcdma_BdWrite(BaseAddress, Offset, Data)</div><div class="ttdoc">Write the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:103</div></div>
 </div><!-- fragment -->
 <p>Set the Tid and Tuser fields of a BD with the user provided values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1571,7 +1571,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a>((BdPtr), XMCDMA_BD_SIDEBAND_STS_OFFSET) &amp; \</div>
 <div class="line">         LengthMask)</div>
-<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:62</div></div>
+<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:66</div></div>
 </div><!-- fragment -->
 <p>Get the actual transfer length of a Egress(MM2S) BD. </p>
 <p>The BD has completed in hw.</p>
@@ -1629,7 +1629,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a>((BdPtr), XMCDMA_BD_SIDEBAND_STS_OFFSET) &amp; \</div>
 <div class="line">         XMCDMA_BD_STS_COMPLETE_MASK)</div>
-<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:62</div></div>
+<div class="ttc" id="group__mcdma_html_ga4a9c2fa82ee0b3c7518b7b9125a447e0"><div class="ttname"><a href="group__mcdma.html#ga4a9c2fa82ee0b3c7518b7b9125a447e0">XMcdma_BdRead</a></div><div class="ttdeci">#define XMcdma_BdRead(BaseAddress, Offset)</div><div class="ttdoc">Read the given Buffer Descriptor word. </div><div class="ttdef"><b>Definition:</b> xmcdma_bd.h:66</div></div>
 </div><!-- fragment -->
 <p>Check whether a Egress(MM2S) BD has completed in hardware. </p>
 <p>This BD has been submitted to hardware. The application can use this function To poll for the Completion of the BD.</p>

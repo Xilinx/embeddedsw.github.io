@@ -65,25 +65,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">gpio Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This section explains the implementation of the <a class="el" href="struct_x_gpio.html" title="The XGpio driver instance data. ">XGpio</a> driver's basic functionality.This header file contains the software API definition of the Xilinx General Purpose I/O (<a class="el" href="struct_x_gpio.html" title="The XGpio driver instance data. ">XGpio</a>) device driver.</p>
-<p>The Xilinx GPIO controller is a soft IP core designed for Xilinx FPGAs and contains the following general features:</p>
-<ul>
-<li>Support for up to 32 I/O discretes for each channel (64 bits total).</li>
-<li>Each of the discretes can be configured for input or output.</li>
-<li>Configurable support for dual channels and interrupt generation.</li>
-</ul>
-<p>The driver provides interrupt management functions. Implementation of interrupt handlers is left to the user. Refer to the provided interrupt example in the examples directory for details.</p>
-<p>This driver is intended to be RTOS and processor independent. Any needs for dynamic memory management, threads or thread mutual exclusion, virtual memory, or cache control must be satisfied by the layer above this driver.</p>
-<p><b>Initialization &amp; Configuration</b></p>
-<p>The <a class="el" href="struct_x_gpio___config.html" title="This typedef contains configuration information for the device. ">XGpio_Config</a> structure is used by the driver to configure itself. This configuration structure is typically created by the tool-chain based on HW build properties.</p>
-<p>To support multiple runtime loading and initialization strategies employed by various operating systems, the driver instance can be initialized in one of the following ways:</p>
-<ul>
-<li>XGpio_Initialize(InstancePtr, DeviceId) - The driver looks up its own configuration structure created by the tool-chain based on an ID provided by the tool-chain.</li>
-<li>XGpio_CfgInitialize(InstancePtr, CfgPtr, EffectiveAddr) - Uses a configuration structure provided by the caller. If running in a system with address translation, the provided virtual memory base address replaces the physical address present in the configuration structure.</li>
-</ul>
-<dl class="section note"><dt>Note</dt><dd></dd></dl>
-<p>This API utilizes 32 bit I/O to the GPIO registers. With less than 32 bits, the unused bits from registers are read as zero and written as don't cares.</p>
-<pre>
+<div class="textblock"><pre>
 MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 </p>
 <hr/>

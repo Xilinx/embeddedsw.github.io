@@ -3,6 +3,8 @@ var xcsudma_8h =
     [ "XCsuDma_Config", "struct_x_csu_dma___config.html", "struct_x_csu_dma___config" ],
     [ "XCsuDma", "struct_x_csu_dma.html", "struct_x_csu_dma" ],
     [ "XCsuDma_Configure", "struct_x_csu_dma___configure.html", "struct_x_csu_dma___configure" ],
+    [ "XCSUDMA_DMATYPEIS_ASUDMA0", "xcsudma_8h.html#a6bb92ac777bd1f10d3a1e71aa3f78c78", null ],
+    [ "XCSUDMA_DMATYPEIS_ASUDMA1", "xcsudma_8h.html#aa8be6af2cc9347ba3b9f23e8dc209e34", null ],
     [ "XCSUDMA_DMATYPEIS_CSUDMA", "xcsudma_8h.html#a8f5460a8a6a1848b2c4c2988f7428e73", null ],
     [ "XCSUDMA_DMATYPEIS_PMCDMA0", "xcsudma_8h.html#af785114e3c13162c421d9e996904439d", null ],
     [ "XCSUDMA_DMATYPEIS_PMCDMA1", "xcsudma_8h.html#aa507d47c1f38cdce062c5215c47f6eb3", null ],

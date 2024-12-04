@@ -71,13 +71,16 @@ $(document).ready(function(){initNavTree('xi3cpsx__slave__loopback_8c.html','');
 <p>The master recives the data and also sends the data to the slave.</p>
 <p>This code assumes that no Operating System is being used.</p>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
-<p>None.</p>
+<p>It's a reference example and the data size should be less than or equal to FIFO size.</p>
 <pre>
 MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 </p>
 <hr/>
 <p>
 1.00a sd  06/10/22 First release
+1.3   sd   11/17/23 Added support for system device-tree flow
+1.4   gm   10/06/24 Added return statements, remove resetfifos and remove
+                    hard coded values.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -116,7 +119,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if successful, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
 
-<p>References <a class="el" href="struct_x_i3c_psx___config.html#a4f4633a41e3d44f839d1d57ab8d5a7c9">XI3cPsx_Config::BaseAddress</a>, <a class="el" href="struct_x_i3c_psx.html#a5e7528b6b541df2aa974296f39df2703">XI3cPsx::Config</a>, <a class="el" href="group___overview.html#ga86312f4e34f96f61cea41712d0503cf8">XI3CPSX_DEVICE_CTRL</a>, <a class="el" href="group___overview.html#ga759bdfcbba7cff4248e1a490f9b2b8c2">XI3cPsx_MasterRecvPolled()</a>, <a class="el" href="group___overview.html#gaaaf31be44492b9baf96f0fc8659af975">XI3cPsx_MasterSendPolled()</a>, <a class="el" href="group___overview.html#ga5f5337ebb6a45588fd6c72aeaa87ecc0">XI3cPsx_ResetFifos()</a>, <a class="el" href="group___overview.html#gaee8fde7c3ffa489ee7e96352c6d7c322">XI3cPsx_SendTransferCmd()</a>, <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>, <a class="el" href="group___overview.html#ga1d604f37a4c41d005558d9ba8124875c">XI3cPsx_SlaveRecvPolled()</a>, <a class="el" href="group___overview.html#ga752cebd71adb1580f43247b84b52c2fb">XI3cPsx_SlaveSendPolled()</a>, and <a class="el" href="group___overview.html#gaf5dfcd37599c05858a5411e3bca3e2ee">XI3cPsx_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_i3c_psx___config.html#a4f4633a41e3d44f839d1d57ab8d5a7c9">XI3cPsx_Config::BaseAddress</a>, <a class="el" href="group___overview.html#gac782c97edc12d91318ab4984cc34d842">XI3cPsx_CfgInitialize()</a>, <a class="el" href="group___overview.html#gaaaf31be44492b9baf96f0fc8659af975">XI3cPsx_MasterSendPolled()</a>, <a class="el" href="group___overview.html#ga5f5337ebb6a45588fd6c72aeaa87ecc0">XI3cPsx_ResetFifos()</a>, <a class="el" href="group___overview.html#ga9cba8edc454d81b6aefdc5381d4da2a8">XI3cPsx_SetupSlave()</a>, and <a class="el" href="group___overview.html#ga1d604f37a4c41d005558d9ba8124875c">XI3cPsx_SlaveRecvPolled()</a>.</p>
 
 <p>Referenced by <a class="el" href="xi3cpsx__slave__loopback_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

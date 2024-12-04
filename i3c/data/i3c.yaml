@@ -1,0 +1,57 @@
+# Copyright (C) 2024 Advanced Micro Devices, Inc.  All rights reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for I3C controller
+
+maintainers:
+  - Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,axi-i3c-1.0
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,axi-clk-freq:
+      Input clock frequency
+  xlnx,wr-rd-fifo-depth:
+      Read write fifo depth
+  xlnx,wr-fifo-prog-full-threshold:
+      Write fifo programmable threshold
+  xlnx,num-targets:
+      Number of target devices connected to I3C bus
+  xlnx,ibi-capable:
+      IBI capability
+  xlnx,hj-capable:
+      Hot join capability
+
+config:
+    - XI3c_Config
+
+required:
+    - compatible
+    - reg
+    - interrupts
+    - interrupt-parent
+    - xlnx,axi-clk-freq
+    - xlnx,wr-rd-fifo-depth
+    - xlnx,wr-fifo-prog-full-threshold
+    - xlnx,num-targets
+    - xlnx,ibi-capable
+    - xlnx,hj-capable
+
+examples:
+    xi3c_intr_example.c:
+        - interrupts
+
+    xi3c_polled_example.c:
+        - reg
+
+    xi3c_daa_example.c:
+        - reg
+...

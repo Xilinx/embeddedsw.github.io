@@ -1,5 +1,6 @@
 ###############################################################################
 # Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -19,6 +20,7 @@
 #			   getting overwritten for the tmr_sem IP validation
 #			   check, due to which wrong instance name being
 #			   generated in the testperiph.c file.
+# 3.10     ap     11/12/23 Added support for microblaze risc-v
 ##############################################################################
 
 ## BEGIN_CHANGELOG EDK_I
@@ -61,7 +63,7 @@ proc gen_include_files {swproj mhsinst} {
     if {${isStdout} == 0} {
 	set ifuartliteintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
         if {$ifuartliteintr == 1} {
-		if {$ipname == "mdm"} {
+		if {$ipname == "mdm" || $ipname == "mdm_riscv"} {
 			set inc_file_lines {uartlite_header.h}
 		} else {
 			set inc_file_lines {xuartlite.h uartlite_header.h uartlite_intr_header.h}
@@ -91,7 +93,7 @@ proc gen_src_files {swproj mhsinst} {
 	if {${isStdout} == 0} {
 	    set ifuartliteintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
 	    if {$ifuartliteintr == 1} {
-		if {$ipname == "mdm"} {
+		if {$ipname == "mdm" || $ipname == "mdm_riscv"} {
 			set inc_file_lines {examples/xuartlite_selftest_example.c data/uartlite_header.h}    
 		} else {
 			set inc_file_lines {examples/xuartlite_selftest_example.c examples/xuartlite_intr_tapp_example.c data/uartlite_header.h data/uartlite_intr_header.h}
@@ -129,7 +131,7 @@ proc gen_init_code {swproj mhsinst} {
 	    set ifuartliteintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
 	    set mdm_name [common::get_property IP_NAME $mhsinst]
 	    if {$ifuartliteintr == 1} {
-		if {$mdm_name == "mdm"} {
+		if {$mdm_name == "mdm" || $mdm_name == "mdm_riscv"} {
 			return ""
 		}
 		set decl "   static XUartLite ${ipname}_UartLite;"
@@ -199,11 +201,11 @@ proc gen_testfunc_call {swproj mhsinst} {
    }"
 
        if {$ifuartliteintr == 1} {
-	if {$mdm_name == "mdm"} {
+	if {$mdm_name == "mdm" || $mdm_name == "mdm_riscv"} {
 		 return $testfunc_call
 	}
 	if {
-           $proc == "microblaze"
+           $proc == "microblaze" || $proc == "microblaze_riscv"
 	} then {
 		set intr_id "XPAR_${intcname}_${ipname}_${intr_pin_name}_INTR"
 	} else {
@@ -239,11 +241,11 @@ proc gen_testfunc_call {swproj mhsinst} {
       
    }"
        if {$ifuartliteintr == 1} {
-        if {$mdm_name == "mdm"} {
+        if {$mdm_name == "mdm" || $mdm_name == "mdm_riscv"} {
 		 return $testfunc_call
 	}
 	if {
-            $proc == "microblaze"
+            $proc == "microblaze" || $proc == "microblaze_riscv"
 	} then {
 		set intr_id "XPAR_${intcname}_${ipname}_${intr_pin_name}_INTR"
 	} else {

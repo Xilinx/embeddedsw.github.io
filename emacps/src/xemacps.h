@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -521,8 +521,14 @@ typedef struct {
 	u16 IntrId;
 	UINTPTR IntrParent;
 #endif
-#if defined  (XCLOCKING)
+#if defined  (XCLOCKING) || defined (SDT)
 	u32 RefClk;	/**< Input clock */
+#endif
+#ifdef SDT
+	char *PhyType;     /**< PhyType indicates which type of PHY interface is
+			     *  used (MII, GMII, RGMII, etc.
+			     */
+        u32 PhyAddr;
 #endif
 	u16 S1GDiv0;	/**< 1Gbps Clock Divider 0 */
 	u8 S1GDiv1;	/**< 1Gbps Clock Divider 1 */
@@ -559,6 +565,7 @@ typedef struct XEmacPs_Instance {
 	u32 MaxMtuSize;
 	u32 MaxFrameSize;
 	u32 MaxVlanFrameSize;
+	u32 MaxQueues;
 
 } XEmacPs;
 
@@ -642,44 +649,48 @@ typedef struct XEmacPs_Instance {
 /****************************************************************************/
 /**
 *
-* Enable interrupts specified in <i>Mask</i>. The corresponding interrupt for
-* each bit set to 1 in <i>Mask</i>, will be enabled.
+* Enable interrupts of queue <i>Queue</i> specified in <i>Mask</i>.
+* The corresponding interrupt for each bit set to 1 in <i>Mask</i>,
+* will be enabled.
 *
 * @param InstancePtr is a pointer to the instance to be worked on.
+* @param Indx of Queue, it should be from 1.
 * @param Mask contains a bit mask of interrupts to enable. The mask can
 *        be formed using a set of bitwise or'd values.
 *
 * @note
 * The state of the transmitter and receiver are not modified by this function.
 * C-style signature
-*     void XEmacPs_IntQ1Enable(XEmacPs *InstancePtr, u32 Mask)
+*     void XEmacPs_IntQiEnable(XEmacPs *InstancePtr, u8 Queue, u32 Mask)
 *
 *****************************************************************************/
-#define XEmacPs_IntQ1Enable(InstancePtr, Mask)                            \
+#define XEmacPs_IntQiEnable(InstancePtr, Queue, Mask)                       \
 	XEmacPs_WriteReg((InstancePtr)->Config.BaseAddress,             \
-			 XEMACPS_INTQ1_IER_OFFSET,                                \
-			 ((Mask) & XEMACPS_INTQ1_IXR_ALL_MASK));
+			 XEmacPs_GetQxOffset(INTQI_IER, Queue),		\
+			 ((Mask) & XEMACPS_INTQ_IXR_ALL_MASK));
 
 /****************************************************************************/
 /**
 *
-* Disable interrupts specified in <i>Mask</i>. The corresponding interrupt for
-* each bit set to 1 in <i>Mask</i>, will be enabled.
+* Disable interrupts of queue <i>Queue</i> specified in <i>Mask</i>.
+* The corresponding interrupt for each bit set to 1 in <i>Mask</i>,
+* will be enabled.
 *
 * @param InstancePtr is a pointer to the instance to be worked on.
+* @param Index of Queue, it should be from 1.
 * @param Mask contains a bit mask of interrupts to disable. The mask can
 *        be formed using a set of bitwise or'd values.
 *
 * @note
 * The state of the transmitter and receiver are not modified by this function.
 * C-style signature
-*     void XEmacPs_IntDisable(XEmacPs *InstancePtr, u32 Mask)
+*     void XEmacPs_IntDisable(XEmacPs *InstancePtr, u8 Queue, u32 Mask)
 *
 *****************************************************************************/
-#define XEmacPs_IntQ1Disable(InstancePtr, Mask)                           \
+#define XEmacPs_IntQiDisable(InstancePtr, Queue, Mask)                      \
 	XEmacPs_WriteReg((InstancePtr)->Config.BaseAddress,             \
-			 XEMACPS_INTQ1_IDR_OFFSET,                               \
-			 ((Mask) & XEMACPS_INTQ1_IXR_ALL_MASK));
+			 XEmacPs_GetQxOffset(INTQI_IDR, Queue),		\
+			 ((Mask) & XEMACPS_INTQ_IXR_ALL_MASK));
 
 /****************************************************************************/
 /**
@@ -792,6 +803,23 @@ typedef struct XEmacPs_Instance {
 #define XEmacPs_GetRXWatermark(InstancePtr)                     \
 	XEmacPs_ReadReg((InstancePtr)->Config.BaseAddress,                \
 			XEMACPS_RXWATERMARK_OFFSET)
+
+/******************************************************************************/
+#define BIT(n)			(1U << n)
+#define SET_BIT(x, n)		(x | BIT(n))
+#define GET_BIT(x, n)		((x >> n) & 1U)
+#define CLEAR_BIT(x, n)		(x & (~BIT(n)))
+#define GENMASK(h, l)		(((~0U) << (l)) & \
+				(~0U >> (sizeof(int) * 8 - 1 - (h))))
+INLINE u32 get_num_set_bits(u32 n)	{
+	u8 count = 0;
+	while(n) {
+		n &= (n - 1);
+		count++;
+	}
+	return count;
+}
+/******************************************************************************/
 /*
  * Initialization functions in xemacps.c
  */

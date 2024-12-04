@@ -10,6 +10,7 @@ var xiomodule_8c =
     [ "XIOModule_Enable", "xiomodule_8c.html#ga0c2fe0ab1367af43b603cd896e306737", null ],
     [ "XIOModule_GetCaptureValue", "xiomodule_8c.html#gaf4281a3f3f5e5620d4e78dc904ab04cf", null ],
     [ "XIOModule_GetValue", "xiomodule_8c.html#ga826357a58aeda0b2d1bfc42efd6bb94c", null ],
+    [ "XIOModule_HandlerTable_Initialize", "xiomodule_8c.html#ga964f5bae2572929b40d1f630118e36ac", null ],
     [ "XIOModule_Initialize", "xiomodule_8c.html#ga81cf0087aeb46a8a78030e964e743314", null ],
     [ "XIOModule_IoReadByte", "xiomodule_8c.html#gab5ec0ed139e0e9629ec1b542dfec3989", null ],
     [ "XIOModule_IoReadHalfword", "xiomodule_8c.html#ga7ff8a4fabcb27bc42957503761602439", null ],

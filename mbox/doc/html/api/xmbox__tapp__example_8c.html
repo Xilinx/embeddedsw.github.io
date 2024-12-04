@@ -69,7 +69,7 @@ $(document).ready(function(){initNavTree('xmbox__tapp__example_8c.html','');});
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <div class="textblock"><p>This file contains a design example for using the Mailbox hardware and driver <a class="el" href="struct_x_mbox.html" title="The XMbox driver instance data. ">XMbox</a>. </p>
-<p>This example attempts to send a known message through the mailbox from the processor identified as 0 (XPAR_CPU_ID=0) to the other processor. The message is received by the receiver and the test passes. Since the application is running on two seperate processors, the initiator declares success when the message is sent and the receiver declares success when the message is received. There is no feedback to the initiator so a terminal is required for each processor to verify that the test passed for both sides.</p>
+<p>This example attempts to send a known message through the mailbox from the processor identified as 0 (XPAR_CPU_ID=0) to the other processor. The message is received by the receiver and the test passes. Since the application is running on two separate processors, the initiator declares success when the message is sent and the receiver declares success when the message is received. There is no feedback to the initiator so a terminal is required for each processor to verify that the test passed for both sides.</p>
 <p>The example assumes there are two processors availabile in the system that are expected to inter-communicate. If Mailbox is connected to only one Processor then Data has to be sent from one port and should be received from another port.</p>
 <p>This example has been tested on ML505 Hardware Evaluation board.</p>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
@@ -97,6 +97,8 @@ $(document).ready(function(){initNavTree('xmbox__tapp__example_8c.html','');});
         ms   04/05/17 Added tabspace for return statements in functions for
                       proper documentation while generating doxygen.
   4.6   ht   07/07/23 Added support for system device-tree flow.
+  4.8   ht   08/08/24 Optimize wait time with timeout reduction and usleep()
+                      inclusion.
 *</pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>

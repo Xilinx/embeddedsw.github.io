@@ -1,6 +1,7 @@
 var xpciepsu_8c =
 [
     [ "XPciePsu_CfgInitialize", "xpciepsu_8c.html#a3d54a4fe188343ce59d689901c2b88c6", null ],
+    [ "XPciePsu_CompareSizes", "xpciepsu_8c.html#a415e854d3ec3600b6f14150b68b332b6", null ],
     [ "XPciePsu_ComposeExternalConfigAddress", "xpciepsu_8c.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24", null ],
     [ "XPciePsu_EnumerateBus", "xpciepsu_8c.html#a862b72cd0796d429f122b5b83603f1d3", null ],
     [ "XPciePsu_ReadConfigSpace", "xpciepsu_8c.html#a2c102ea980dacfdcfdfde291b60986be", null ],

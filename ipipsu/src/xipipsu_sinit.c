@@ -7,7 +7,7 @@
 /**
 *
 * @file xipipsu_sinit.c
-* @addtogroup ipipsu Overview
+* @addtogroup ipipsu_api IPIPSU APIs
 * @{
 *
 * The xipipsu_sinit.c file contains the implementation of the XIpiPsu
@@ -37,9 +37,9 @@
 /**
 *
 * Looks up the device configuration based on the unique device ID. A table
-* contains the configuration info for each device in the system.
+* contains the configuration information for each device in the system.
 *
-* @param	DeviceId contains the ID of the device to look up the
+* @param	DeviceId Contains the ID of the device to look up the
 *			configuration for.
 *
 * @return	A pointer to the configuration found or NULL if the specified
@@ -55,6 +55,7 @@ XIpiPsu_Config *XIpiPsu_LookupConfig(u32 DeviceId)
 	XIpiPsu_Config *CfgPtr = NULL;
 	u32 Index;
 
+#if XPAR_XIPIPSU_NUM_INSTANCES != 0
 	/* Checks all the instances */
 	for (Index = 0U; Index < XPAR_XIPIPSU_NUM_INSTANCES; Index++) {
 		if (XIpiPsu_ConfigTable[Index].DeviceId == DeviceId) {
@@ -63,6 +64,10 @@ XIpiPsu_Config *XIpiPsu_LookupConfig(u32 DeviceId)
 		}
 	}
 
+#else
+	(void)DeviceId;
+	(void)Index;
+#endif
 	/* Returns reference to config record if found, else NULL*/
 	return (XIpiPsu_Config *) CfgPtr;
 }

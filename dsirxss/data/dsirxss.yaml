@@ -1,0 +1,68 @@
+# Copyright 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for dsirxss Sub system controller Driver
+
+maintainers:
+  - Kunal Rane <kvrane@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,mipi-dsi2-rx-subsystem-1.0
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,highaddr:
+    description: HighAddress is the physical MAX address of the subsystem address range
+  xlnx,dsi-datatype:
+    description: DSI data type.
+  xlnx,dsi-pixels:
+    description: DSI no of pixels.
+  xlnx,dphy-linerate:
+    description: DPhy line rate.
+  xlnx,dphy-en-reg-if:
+    description: Dphy enable register interface.
+  dphy-present:
+    description: Dphy is present.
+  dphy-connected:
+    description: Dphy is connected flag.
+  dsi-rx-present:
+    description: DSI RX controller present flag.
+  dsi-rx-connected:
+    description: DSI RX controller present flag.
+  interrupts:
+    description: Interrupt number
+  interrupt-parent:
+    description: Parent interrupt
+
+required:
+  - compatible
+  - reg
+  - xlnx,highaddr
+  - xlnx,dsi-datatype
+  - xlnx,dsi-pixels
+  - xlnx,dphy-linerate
+  - xlnx,dphy-en-reg-if
+  - dphy-present
+  - dphy-connected: phandle
+  - dsi-rx-present
+  - dsi-rx-connected: phandle
+  - interrupts
+  - interrupt-parent
+
+config:
+  - XDsi2RxSs_Config
+
+depends:
+    video_common: []
+    dphy: []
+
+examples:
+    xdsi2rxss_selftest_example.c:
+        - reg
+...

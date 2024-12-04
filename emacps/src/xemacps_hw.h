@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -279,16 +279,22 @@ typedef enum { MDC_DIV_8 = 0U, MDC_DIV_16, MDC_DIV_32, MDC_DIV_48,
 #define XEMACPS_PCS_CONTROL_OFFSET	0x00000200U /** PCS control register */
 #define XEMACPS_PCS_STATUS_OFFSET	0x00000204U /** PCS status register */
 
+#define XEMACPS_DCFG6_OFFSET		0x00000294U /** designcfg_debug6 register */
+
 #define XEMACPS_INTQ1_STS_OFFSET     0x00000400U /**< Interrupt Q1 Status
 							reg */
 #define XEMACPS_TXQ1BASE_OFFSET	     0x00000440U /**< TX Q1 Base address
 							reg */
 #define XEMACPS_RXQ1BASE_OFFSET	     0x00000480U /**< RX Q1 Base address
 							reg */
+#define XEMACPS_DMA_RXQ1_BUFSIZE_OFFSET	0x000004A0U /**< RX Q1 DMA buffer size
+							reg */
 #define XEMACPS_MSBBUF_TXQBASE_OFFSET  0x000004C8U /**< MSB Buffer TX Q Base
 							reg */
 #define XEMACPS_MSBBUF_RXQBASE_OFFSET  0x000004D4U /**< MSB Buffer RX Q Base
 							reg */
+#define XEMACPS_SCREEN_TYPE2_REG0       0x00000540U /** Screening Type2 Reg0 **/
+
 #define XEMACPS_INTQ1_IER_OFFSET     0x00000600U /**< Interrupt Q1 Enable
 							reg */
 #define XEMACPS_INTQ1_IDR_OFFSET     0x00000620U /**< Interrupt Q1 Disable
@@ -463,9 +469,21 @@ typedef enum { MDC_DIV_8 = 0U, MDC_DIV_16, MDC_DIV_32, MDC_DIV_48,
  */
 #define XEMACPS_INTQ1SR_TXCOMPL_MASK	0x00000080U /**< Transmit completed OK */
 #define XEMACPS_INTQ1SR_TXERR_MASK	0x00000040U /**< Transmit AMBA Error */
+#define XEMACPS_INTQ1SR_RXCOMPL_MASK	0x00000002U /**< Receive completed OK */
 
 #define XEMACPS_INTQ1_IXR_ALL_MASK	((u32)XEMACPS_INTQ1SR_TXCOMPL_MASK | \
+					 (u32)XEMACPS_INTQ1SR_TXERR_MASK | \
+                                         (u32)XEMACPS_INTQ1SR_RXCOMPL_MASK)
+
+#define XEMACPS_INTQ1_IXR_TX_MASK	((u32)XEMACPS_INTQ1SR_TXCOMPL_MASK | \
 					 (u32)XEMACPS_INTQ1SR_TXERR_MASK)
+#define XEMACPS_INTQ1_IXR_RX_MASK	(u32)XEMACPS_INTQ1SR_RXCOMPL_MASK
+
+/* Common Masks for all Queues */
+#define XEMACPS_INTQISR_RXCOMPL_MASK	XEMACPS_INTQ1SR_RXCOMPL_MASK
+#define XEMACPS_INTQISR_TXCOMPL_MASK	XEMACPS_INTQ1SR_TXCOMPL_MASK
+#define XEMACPS_INTQSR_TXERR_MASK	XEMACPS_INTQ1SR_TXERR_MASK
+#define XEMACPS_INTQ_IXR_ALL_MASK	XEMACPS_INTQ1_IXR_ALL_MASK
 
 /*@}*/
 
@@ -532,6 +550,13 @@ typedef enum { MDC_DIV_8 = 0U, MDC_DIV_16, MDC_DIV_32, MDC_DIV_48,
 #define XEMACPS_RXWM_HIGH_MASK		0x0000FFFFU	/**< RXWM high mask */
 #define XEMACPS_RXWM_LOW_MASK		0xFFFF0000U	/**< RXWM low mask */
 #define XEMACPS_RXWM_LOW_SHFT_MSK	16U	/**< Shift for RXWM low */
+/*@}*/
+
+/** @name Screening Type2 bit definitions
+ * @{
+ */
+#define XEMACPS_CMPA_ENABLE_MASK	0x00040000U	/**< Enable Compare A */
+#define XEMACPS_CMPA_MASK		0x0003E000U	/**< Compare reg number */
 /*@}*/
 
 /* Transmit buffer descriptor status words offset
@@ -602,6 +627,16 @@ typedef enum { MDC_DIV_8 = 0U, MDC_DIV_16, MDC_DIV_32, MDC_DIV_48,
  * @}
  */
 
+/**  @name Queue Registers Offset
+ * @{
+ */
+#define MAX_QUEUES_FEASIBLE		2 /* Max queues possible on latest device */
+typedef enum { TXQIBASE = 0U, RXQIBASE, DMA_RXQI_BUFSIZE,
+	       INTQI_STS, INTQI_IER, INTQI_IDR, REG_END
+} XEmacPs_QxRegOffset;
+
+/*@}*/
+
 /*
  * Define appropriate I/O access method to memory mapped I/O or other
  * interface if necessary.
@@ -655,6 +690,7 @@ typedef enum { MDC_DIV_8 = 0U, MDC_DIV_16, MDC_DIV_32, MDC_DIV_48,
  * Perform reset operation to the emacps interface
  */
 void XEmacPs_ResetHw(u32 BaseAddr);
+u32 XEmacPs_GetQxOffset(XEmacPs_QxRegOffset RegName, u8 Queue);
 
 #ifdef __cplusplus
   }

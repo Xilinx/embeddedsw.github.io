@@ -29,7 +29,5 @@ var files =
     [ "xdptxss_sinit.c", "xdptxss__sinit_8c.html", "xdptxss__sinit_8c" ],
     [ "xdptxss_vtc.c", "xdptxss__vtc_8c.html", "xdptxss__vtc_8c" ],
     [ "xdptxss_vtc.h", "xdptxss__vtc_8h.html", "xdptxss__vtc_8h" ],
-    [ "xedid_print_example.h", "xedid__print__example_8h.html", "xedid__print__example_8h" ],
-    [ "xvidframe_crc.c", "xvidframe__crc_8c.html", "xvidframe__crc_8c" ],
-    [ "xvidframe_crc.h", "xvidframe__crc_8h.html", "xvidframe__crc_8h" ]
+    [ "xedid_print_example.h", "xedid__print__example_8h.html", "xedid__print__example_8h" ]
 ];

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -30,12 +30,20 @@
 *       sk  02/18/21 Added support for Macronix flash.
 * 1.7   sk  06/28/22 Added Block Protection test for Micron flash.
 * 1.9   sb  06/06/23 Added support for system device-tree flow.
+* 1.10  sb  11/21/23 Added support for Macronix flash mx66um2g45g.
+* 1.10  sb  01/04/24 Added support for ISSI flash is25lx512m.
+* 1.10  sb  02/09/24 Add support for Infineon flash part S28HS02G.
+* 1.11  sb  05/02/24 Add support for Macronix flash part mx66uw2g345gxrix0.
 *
 *</pre>
 *
 ******************************************************************************/
 #ifndef XOSPIPSV_FLASH_CONFIG_H
 #define XOSPIPSV_FLASH_CONFIG_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /***************************** Include Files *********************************/
 
 #ifndef SDT
@@ -76,6 +84,12 @@
 #define READ_CONFIG_REG		0x85
 #define WRITE_CONFIG2_REG_MX	0x72
 #define READ_CONFIG2_REG_MX		0x71
+#define WRITE_CONFIG_REG_SPN	0x71
+#define READ_CONFIG_REG_SPN	0x65
+#define STATUS_REG_1_ADDR_SPN	0x800000
+#define CONFIG_REG_4_ADDR_SPN	0x800005
+#define CONFIG_REG_5_ADDR_SPN	0x800006
+#define DDR_READ_CMD_4B_SPN	0xEE
 
 /*
  * Sixteen MB
@@ -84,6 +98,7 @@
 
 #define FLASH_PAGE_SIZE_256		256
 #define FLASH_SECTOR_SIZE_4KB		0x1000
+#define FLASH_SECTOR_SIZE_256KB 	0x40000
 #define FLASH_SECTOR_SIZE_64KB		0x10000
 #define FLASH_SECTOR_SIZE_128KB		0x20000
 #define FLASH_DEVICE_SIZE_256M		0x2000000
@@ -95,8 +110,10 @@
 #define GIGADEVICE_OCTAL_ID_BYTE0	0xc8
 #define ISSI_OCTAL_ID_BYTE0		0x9d
 #define MACRONIX_OCTAL_ID_BYTE0		0xc2
+#define SPANSION_OCTAL_ID_BYTE0		0x34
 
 #define MICRON_BP_BITS_MASK		0x7C
+#define CONFIG_REG2_VOLATILE_ADDR_MX 	0x00000300
 
 /**************************** Type Definitions *******************************/
 
@@ -162,12 +179,42 @@ FlashInfo Flash_Config_Table[] = {
 		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
 		READ_FLAG_STATUS_CMD, 16
 	},
+	/*is25lx512m*/
+	{
+		0x9d5a1a, FLASH_SECTOR_SIZE_128KB, 0x200, FLASH_PAGE_SIZE_256, 0x40000,
+		FLASH_DEVICE_SIZE_512M, 0xFFFE0000, 2,
+		READ_CMD_OCTAL_IO_4B, (WRITE_CMD_OCTAL_4B << 8) | WRITE_CMD_4B,
+		(DIE_ERASE_CMD << 16) | (BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B,
+		READ_FLAG_STATUS_CMD, 16
+	},
 	/* MACRONIX */
 	{
 		0xc2813a, FLASH_SECTOR_SIZE_4KB, 0x4000, FLASH_PAGE_SIZE_256, 0x40000,
 		FLASH_DEVICE_SIZE_512M, 0xFFFFF000, 1,
 		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
 		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
+	},
+	/*mx66um2g45g*/
+	{
+		0xc2803c, FLASH_SECTOR_SIZE_4KB, 0x10000, FLASH_PAGE_SIZE_256, 0x100000,
+		FLASH_DEVICE_SIZE_2G, 0xFFFFF000, 1,
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
+	},
+	/*mx66uw2g345gxrix0*/
+	{
+		0xc2943c, FLASH_SECTOR_SIZE_4KB, 0x10000, FLASH_PAGE_SIZE_256, 0x100000,
+		FLASH_DEVICE_SIZE_2G, 0xFFFFF000, 1,
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
+	},
+	/* Infineon */
+	/*s28hs02gt*/
+	{
+		0x345b1c, FLASH_SECTOR_SIZE_256KB, 0x400, FLASH_PAGE_SIZE_256, 0x100000,
+		FLASH_DEVICE_SIZE_2G, 0xFFFC0000, 2,
+		(DDR_READ_CMD_4B_SPN  << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B, READ_STATUS_CMD, 0
 	},
 };
 
@@ -187,5 +234,9 @@ static INLINE u32 CalculateFCTIndex(u32 ReadId, u32 *FCTIndex)
 
 	return XST_FAILURE;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* XOSPIPSV_FLASH_CONFIG_H */

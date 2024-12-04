@@ -31,9 +31,13 @@ var xdp__hw_8h =
     [ "XDP_TX_LINK_BW_SET_SW_UHBR20", "xdp__hw_8h.html#ga489b5993d3520afa453be9ef4bf738bd", null ],
     [ "XDP_TX_TP_SET_TRAINING_AUX_RD_INTERVAL", "xdp__hw_8h.html#ga0f65d02a105f8151694227732d69b74b", null ],
     [ "XDP_TX_V2_0_CONFIG", "xdp__hw_8h.html#ga99a3c266ccfa4ed4ac5ea6fa4964690d", null ],
-    [ "XDP_TX_VFREQ_STREAM1", "xdp__hw_8h.html#gacd5b6874a281604989f19b9f228c213f", null ],
-    [ "XDP_TX_VFREQ_STREAM2", "xdp__hw_8h.html#ga65de8bbe02bd5cce4d824aff64c5a69d", null ],
-    [ "XDP_TX_VFREQ_STREAM3", "xdp__hw_8h.html#ga99124d536d5ae4143e32f7116801460c", null ],
-    [ "XDP_TX_VFREQ_STREAM4", "xdp__hw_8h.html#ga31b14d96107aeb6dbd471c94623edbe3", null ],
+    [ "XDP_TX_VFREQ_STREAM1_HIGH", "xdp__hw_8h.html#gac1497d645e214c5e8b0a7207526ce8c1", null ],
+    [ "XDP_TX_VFREQ_STREAM1_LOW", "xdp__hw_8h.html#gaef6bf3ac2934a43fa0b1b4c75f67c41f", null ],
+    [ "XDP_TX_VFREQ_STREAM2_HIGH", "xdp__hw_8h.html#ga0453d460b4cb67873308133e74c0354e", null ],
+    [ "XDP_TX_VFREQ_STREAM2_LOW", "xdp__hw_8h.html#gac910e42b86b52d8a32f9c0edffae57e5", null ],
+    [ "XDP_TX_VFREQ_STREAM3_HIGH", "xdp__hw_8h.html#gaaf56159d23905f0daf82fe8564936ec0", null ],
+    [ "XDP_TX_VFREQ_STREAM3_LOW", "xdp__hw_8h.html#ga20ffaffb095e43bd7acdef9de9b0054c", null ],
+    [ "XDP_TX_VFREQ_STREAM4_HIGH", "xdp__hw_8h.html#ga0f0900a7357ab6c4790e011026cc2f38", null ],
+    [ "XDP_TX_VFREQ_STREAM4_LOW", "xdp__hw_8h.html#gaee1defbec3d383b55cead6ab0db5b841", null ],
     [ "XDp_WriteReg", "xdp__hw_8h.html#ga37923d04a0f4bff0d0e3a392d226b83e", null ]
 ];

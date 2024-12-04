@@ -142,7 +142,7 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga6733ba35637c3335f68fb977b9671ff4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga6733ba35637c3335f68fb977b9671ff4">XDFEPRACH_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(6U)</td></tr>
+<tr class="memitem:ga6733ba35637c3335f68fb977b9671ff4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga6733ba35637c3335f68fb977b9671ff4">XDFEPRACH_DRIVER_VERSION_MINOR</a>&#160;&#160;&#160;(7U)</td></tr>
 <tr class="memdesc:ga6733ba35637c3335f68fb977b9671ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver's minor version number.  <a href="#ga6733ba35637c3335f68fb977b9671ff4">More...</a><br/></td></tr>
 <tr class="separator:ga6733ba35637c3335f68fb977b9671ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga638d910e01e951777fa643415f0830c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga638d910e01e951777fa643415f0830c0">XDFEPRACH_DRIVER_VERSION_MAJOR</a>&#160;&#160;&#160;(1U)</td></tr>
@@ -250,6 +250,9 @@ Macros</h2></td></tr>
 <tr class="memitem:gae6f048e4fe165c4a050e87b7e1e2d1eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gae6f048e4fe165c4a050e87b7e1e2d1eb">XDFEPRACH_NUM_RACH_CHANNELS_CFG</a>&#160;&#160;&#160;&quot;xlnx,num-rach-channels&quot;</td></tr>
 <tr class="memdesc:gae6f048e4fe165c4a050e87b7e1e2d1eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of RACH Channels channels 1-16.  <a href="#gae6f048e4fe165c4a050e87b7e1e2d1eb">More...</a><br/></td></tr>
 <tr class="separator:gae6f048e4fe165c4a050e87b7e1e2d1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadee50f81b4ce982c5af21c812cc4bdd4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gadee50f81b4ce982c5af21c812cc4bdd4">XDFEPRACH_HAS_CONTINUOUS_SCHED_CFG</a>&#160;&#160;&#160;&quot;xlnx,is-always-on&quot;</td></tr>
+<tr class="memdesc:gadee50f81b4ce982c5af21c812cc4bdd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The continuous scheduling is present.  <a href="#gadee50f81b4ce982c5af21c812cc4bdd4">More...</a><br/></td></tr>
+<tr class="separator:gadee50f81b4ce982c5af21c812cc4bdd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafd80e4c5a1957e69ae6401b2d8549f39"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gafd80e4c5a1957e69ae6401b2d8549f39">XDFEPRACH_HAS_AXIS_CTRL_CFG</a>&#160;&#160;&#160;&quot;xlnx,has-axis-ctrl&quot;</td></tr>
 <tr class="memdesc:gafd80e4c5a1957e69ae6401b2d8549f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">The AXIS dynamic scheduling control interface is present.  <a href="#gafd80e4c5a1957e69ae6401b2d8549f39">More...</a><br/></td></tr>
 <tr class="separator:gafd80e4c5a1957e69ae6401b2d8549f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -336,15 +339,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga6d425cd9949a65526ff83c0a5403f53a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, const <a class="el" href="struct_x_dfe_prach___c_c_cfg.html">XDfePrach_CCCfg</a> *NextCCCfg, XDfePrach_RCCfg *NextRCCfg)</td></tr>
 <tr class="memdesc:ga6d425cd9949a65526ff83c0a5403f53a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes local CC configuration to the shadow (NEXT) registers and triggers copying from shadow to operational registers.  <a href="#ga6d425cd9949a65526ff83c0a5403f53a">More...</a><br/></td></tr>
 <tr class="separator:ga6d425cd9949a65526ff83c0a5403f53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga26927bb4b2d13f652f01ae34f859c794"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC</a> (<a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, s32 CCID, u32 CCSeqBitmap, const <a class="el" href="struct_x_dfe_prach___carrier_cfg.html">XDfePrach_CarrierCfg</a> *CarrierCfg)</td></tr>
-<tr class="memdesc:ga26927bb4b2d13f652f01ae34f859c794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds specified CCID, with specified configuration for band id 0.  <a href="#ga26927bb4b2d13f652f01ae34f859c794">More...</a><br/></td></tr>
-<tr class="separator:ga26927bb4b2d13f652f01ae34f859c794"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaca26d7d36bafc163e4279dc62a623f44"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC</a> (<a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, s32 CCID)</td></tr>
-<tr class="memdesc:gaca26d7d36bafc163e4279dc62a623f44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes CCID from sequence for band id 0.  <a href="#gaca26d7d36bafc163e4279dc62a623f44">More...</a><br/></td></tr>
-<tr class="separator:gaca26d7d36bafc163e4279dc62a623f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga366cebf3720b6839a879841dd7889987"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, s32 CCID, const <a class="el" href="struct_x_dfe_prach___carrier_cfg.html">XDfePrach_CarrierCfg</a> *CarrierCfg)</td></tr>
-<tr class="memdesc:ga366cebf3720b6839a879841dd7889987"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates a CCID sequence for band id 0.  <a href="#ga366cebf3720b6839a879841dd7889987">More...</a><br/></td></tr>
-<tr class="separator:ga366cebf3720b6839a879841dd7889987"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf4b664ff6c4bae527db476f4f900032e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, XDfePrach_RCCfg *RCCfg)</td></tr>
 <tr class="memdesc:gaf4b664ff6c4bae527db476f4f900032e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads all of the RC configuration back.  <a href="#gaf4b664ff6c4bae527db476f4f900032e">More...</a><br/></td></tr>
 <tr class="separator:gaf4b664ff6c4bae527db476f4f900032e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -375,15 +369,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3bb2cfd7166cbee2d702cb1682b55868"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga3bb2cfd7166cbee2d702cb1682b55868">XDfePrach_UpdateRCinRCCfg</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, XDfePrach_RCCfg *CurrentRCCfg, s32 CCID, u32 RCId, u32 RachChan, <a class="el" href="struct_x_dfe_prach___d_d_c_cfg.html">XDfePrach_DDCCfg</a> *DdcCfg, <a class="el" href="struct_x_dfe_prach___n_c_o.html">XDfePrach_NCO</a> *NcoCfg, <a class="el" href="struct_x_dfe_prach___schedule.html">XDfePrach_Schedule</a> *StaticSchedule, <a class="el" href="struct_x_dfe_prach___c_c_cfg.html">XDfePrach_CCCfg</a> *NextCCCfg)</td></tr>
 <tr class="memdesc:ga3bb2cfd7166cbee2d702cb1682b55868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates an RC entry to the RC_CONFIGURATION on band id 0.  <a href="#ga3bb2cfd7166cbee2d702cb1682b55868">More...</a><br/></td></tr>
 <tr class="separator:ga3bb2cfd7166cbee2d702cb1682b55868"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8a98018390cffa95a3695e620bbcae40"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, s32 CCID, u32 RCId, u32 RachChan, <a class="el" href="struct_x_dfe_prach___d_d_c_cfg.html">XDfePrach_DDCCfg</a> *DdcCfg, <a class="el" href="struct_x_dfe_prach___n_c_o.html">XDfePrach_NCO</a> *NcoCfg, <a class="el" href="struct_x_dfe_prach___schedule.html">XDfePrach_Schedule</a> *StaticSchedule)</td></tr>
-<tr class="memdesc:ga8a98018390cffa95a3695e620bbcae40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new RC entry to the RC_CONFIGURATION.  <a href="#ga8a98018390cffa95a3695e620bbcae40">More...</a><br/></td></tr>
-<tr class="separator:ga8a98018390cffa95a3695e620bbcae40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga083c6692edbba9e1e9417cf043d28c0a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, u32 RCId)</td></tr>
-<tr class="memdesc:ga083c6692edbba9e1e9417cf043d28c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an RC configuration entry from the RC_CONFIGURATION.  <a href="#ga083c6692edbba9e1e9417cf043d28c0a">More...</a><br/></td></tr>
-<tr class="separator:ga083c6692edbba9e1e9417cf043d28c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga87c87dd99441fea2c6991a18967da1f4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, s32 CCID, u32 RCId, u32 RachChan, <a class="el" href="struct_x_dfe_prach___d_d_c_cfg.html">XDfePrach_DDCCfg</a> *DdcCfg, <a class="el" href="struct_x_dfe_prach___n_c_o.html">XDfePrach_NCO</a> *NcoCfg, <a class="el" href="struct_x_dfe_prach___schedule.html">XDfePrach_Schedule</a> *StaticSchedule)</td></tr>
-<tr class="memdesc:ga87c87dd99441fea2c6991a18967da1f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates an RC entry to the RC_CONFIGURATION.  <a href="#ga87c87dd99441fea2c6991a18967da1f4">More...</a><br/></td></tr>
-<tr class="separator:ga87c87dd99441fea2c6991a18967da1f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacf492c219241322da9b4c271863c15cd"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC</a> (const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *InstancePtr, u32 RCId, u32 ToChannel)</td></tr>
 <tr class="memdesc:gacf492c219241322da9b4c271863c15cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves the specified RCID from one NCO &amp; Decimation Channel to another NCO Decimation Channel.  <a href="#gacf492c219241322da9b4c271863c15cd">More...</a><br/></td></tr>
 <tr class="separator:gacf492c219241322da9b4c271863c15cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -572,7 +557,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDFEPRACH_DRIVER_VERSION_MINOR&#160;&#160;&#160;(6U)</td>
+          <td class="memname">#define XDFEPRACH_DRIVER_VERSION_MINOR&#160;&#160;&#160;(7U)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -636,6 +621,20 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The AXIS dynamic scheduling control interface is present. </p>
+
+</div>
+</div>
+<a class="anchor" id="gadee50f81b4ce982c5af21c812cc4bdd4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDFEPRACH_HAS_CONTINUOUS_SCHED_CFG&#160;&#160;&#160;&quot;xlnx,is-always-on&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The continuous scheduling is present. </p>
 
 </div>
 </div>
@@ -963,7 +962,7 @@ Functions</h2></td></tr>
 
 <p>Maximum number of RACH channels. </p>
 
-<p>Referenced by <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf76b8fc9f6e3b779f2592d3404cc8582">XDfePrach_AddRCtoRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga33f53d844fcfc45cfaa452a4de1cf026">XDfePrach_AddRCtoRCCfgDynamic()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#gafe346328ed61f363a42a46f743b7a83d">XDfePrach_GetCapturePhase()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group__dfeprach.html#ga23d3e2b70270c352134fa0ff075869c3">XDfePrach_RemoveRCfromRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga3bb2cfd7166cbee2d702cb1682b55868">XDfePrach_UpdateRCinRCCfg()</a>, and <a class="el" href="group__dfeprach.html#gaebfe67fa5c7d8b79ea15e1d965235483">XDfePrach_UpdateRCinRCCfgMB()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeprach.html#gaf76b8fc9f6e3b779f2592d3404cc8582">XDfePrach_AddRCtoRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga33f53d844fcfc45cfaa452a4de1cf026">XDfePrach_AddRCtoRCCfgDynamic()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#ga23d3e2b70270c352134fa0ff075869c3">XDfePrach_RemoveRCfromRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#ga3bb2cfd7166cbee2d702cb1682b55868">XDfePrach_UpdateRCinRCCfg()</a>, and <a class="el" href="group__dfeprach.html#gaebfe67fa5c7d8b79ea15e1d965235483">XDfePrach_UpdateRCinRCCfgMB()</a>.</p>
 
 </div>
 </div>
@@ -993,7 +992,7 @@ Functions</h2></td></tr>
 
 <p>Failure flag. </p>
 
-<p>Referenced by <a class="el" href="xdfeprach__examples_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, <a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC()</a>, <a class="el" href="group__dfeprach.html#ga845bf47ab36b74fa4de75447b7436740">XDfePrach_AddCCtoCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#ga0469995710f4c55a0769c1c0cac8b1ea">XDfePrach_InstanceInit()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC()</a>, <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>, and <a class="el" href="xdfeprach__examples_8c.html#a0ddb0f8ca495eb4e99eabc79fc0d41d1">XDfeSi570_SetMgtOscillator()</a>.</p>
+<p>Referenced by <a class="el" href="xdfeprach__examples_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, <a class="el" href="group__dfeprach.html#ga845bf47ab36b74fa4de75447b7436740">XDfePrach_AddCCtoCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#ga0469995710f4c55a0769c1c0cac8b1ea">XDfePrach_InstanceInit()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, and <a class="el" href="xdfeprach__examples_8c.html#a0ddb0f8ca495eb4e99eabc79fc0d41d1">XDfeSi570_SetMgtOscillator()</a>.</p>
 
 </div>
 </div>
@@ -1009,7 +1008,7 @@ Functions</h2></td></tr>
 
 <p>Success flag. </p>
 
-<p>Referenced by <a class="el" href="xdfeprach__examples_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, <a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC()</a>, <a class="el" href="group__dfeprach.html#ga845bf47ab36b74fa4de75447b7436740">XDfePrach_AddCCtoCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#ga0469995710f4c55a0769c1c0cac8b1ea">XDfePrach_InstanceInit()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC()</a>, <a class="el" href="group__dfeprach.html#gae8a50582ea8e6fcf4a3316719028dea0">XDfePrach_RemoveCCfromCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group__dfeprach.html#ga23d3e2b70270c352134fa0ff075869c3">XDfePrach_RemoveRCfromRCCfg()</a>, <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC()</a>, <a class="el" href="group__dfeprach.html#ga78670773998ae979bef41149fd8bc950">XDfePrach_UpdateCCinCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>, and <a class="el" href="xdfeprach__examples_8c.html#a0ddb0f8ca495eb4e99eabc79fc0d41d1">XDfeSi570_SetMgtOscillator()</a>.</p>
+<p>Referenced by <a class="el" href="xdfeprach__examples_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, <a class="el" href="group__dfeprach.html#ga845bf47ab36b74fa4de75447b7436740">XDfePrach_AddCCtoCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga1dcc5ea59a80a27798b2935e5fa83473">XDfePrach_AddRCtoRCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga8b13eaf1a6ab7c829bd4d203edd5064a">XDfePrach_AddRCtoRCCfgMBDynamic()</a>, <a class="el" href="group__dfeprach.html#ga0469995710f4c55a0769c1c0cac8b1ea">XDfePrach_InstanceInit()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gae8a50582ea8e6fcf4a3316719028dea0">XDfePrach_RemoveCCfromCCCfgMB()</a>, <a class="el" href="group__dfeprach.html#ga23d3e2b70270c352134fa0ff075869c3">XDfePrach_RemoveRCfromRCCfg()</a>, <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#ga78670773998ae979bef41149fd8bc950">XDfePrach_UpdateCCinCCCfgMB()</a>, and <a class="el" href="xdfeprach__examples_8c.html#a0ddb0f8ca495eb4e99eabc79fc0d41d1">XDfeSi570_SetMgtOscillator()</a>.</p>
 
 </div>
 </div>
@@ -1083,67 +1082,6 @@ Functions</h2></td></tr>
 <p>References <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50afc4cbf571fa9064a15aa3c7dbf2f53a7">XDFEPRACH_STATE_INITIALISED</a>, and <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>.</p>
 
 <p>Referenced by <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, and <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga26927bb4b2d13f652f01ae34f859c794"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_AddCC </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">s32&#160;</td>
-          <td class="paramname"><em>CCID</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>CCSeqBitmap</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach___carrier_cfg.html">XDfePrach_CarrierCfg</a> *&#160;</td>
-          <td class="paramname"><em>CarrierCfg</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Adds specified CCID, with specified configuration for band id 0. </p>
-<p>If there is insufficient capacity for the new CC the function will return an error. Initiates CC update (enable CCUpdate trigger TUSER Single Shot).</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">CCID</td><td>CC ID [0-15]. </td></tr>
-    <tr><td class="paramname">CCSeqBitmap</td><td>- up to 16 defined slots into which a CC can be allocated. The number of slots can be from 1 to 16 depending on system initialization. The number of slots is defined by the "sequence length" parameter which is provided during initialization. The Bit offset within the CCSeqBitmap indicates the equivalent Slot number to allocate. e.g. 0x0003 means the caller wants the passed component carrier (CC) to be allocated to slots 0 and 1. </td></tr>
-    <tr><td class="paramname">CarrierCfg</td><td>CC configuration container.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS if successful.</li>
-<li>XST_FAILURE if error occurs.</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd>
-<dd>
-Does not support multi-band option.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); XDfePrach_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap, CarrierCfg); XDfePrach_SetNextCfg(InstancePtr, &amp;CCCfg, &amp;RCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a29b52790cfad7bcdc50770cddb4431cf">XDfePrach_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a0e94cb0447ecf7d3dd2799926ce3d80c">XDfePrach_InternalCarrierCfg::CCRate</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a8c6eb3fd95388139e2b44f655803043e">XDfePrach_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a498e8db8822d426a821a872935be35e5">XDfePrach_InternalCarrierCfg::SCS</a>, <a class="el" href="struct_x_dfe_prach___carrier_cfg.html#a01aaf3cbd14eeda39de0a970f19cba0b">XDfePrach_CarrierCfg::SCS</a>, <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a5df37012a5ffdb76fde6dd34aa6c8430">XDfePrach_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 </div>
 </div>
@@ -1298,90 +1236,6 @@ Does not support multi-band option.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga8a98018390cffa95a3695e620bbcae40"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_AddRCCfg </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">s32&#160;</td>
-          <td class="paramname"><em>CCID</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>RCId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>RachChan</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___d_d_c_cfg.html">XDfePrach_DDCCfg</a> *&#160;</td>
-          <td class="paramname"><em>DdcCfg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___n_c_o.html">XDfePrach_NCO</a> *&#160;</td>
-          <td class="paramname"><em>NcoCfg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___schedule.html">XDfePrach_Schedule</a> *&#160;</td>
-          <td class="paramname"><em>StaticSchedule</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Adds a new RC entry to the RC_CONFIGURATION. </p>
-<p>RCId must be same as the physical channel RachChan for band id 0.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">CCID</td><td>CC Id [0-15]. </td></tr>
-    <tr><td class="paramname">RCId</td><td>RC Id [0-15]. </td></tr>
-    <tr><td class="paramname">RachChan</td><td>RACH channel [0-15]. </td></tr>
-    <tr><td class="paramname">DdcCfg</td><td>DDC data container. </td></tr>
-    <tr><td class="paramname">NcoCfg</td><td>NCO data container. </td></tr>
-    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS on success</li>
-<li>XST_FAILURE on failure</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd>
-<dd>
-This API must be executed only after all CC configuration are done with the API XDfePrach_AddCCCfg.</dd>
-<dd>
-The api does not support multi-band option.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); XDfePrach_AddRC(InstancePtr, RCId, RachChan, CCID, &amp;CurrentRCCfg, DdcCfg, NcoCfg, StaticSchedule, &amp;CurrentCCCfg, BandId); XDfePrach_SetNextCfg(InstancePtr, CCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="gaf76b8fc9f6e3b779f2592d3404cc8582"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1459,7 +1313,7 @@ The api does not support multi-band option.</dd></dl>
     <tr><td class="paramname">RachChan</td><td>RACH channel [0-15]. </td></tr>
     <tr><td class="paramname">DdcCfg</td><td>DDC data container. </td></tr>
     <tr><td class="paramname">NcoCfg</td><td>NCO data container. </td></tr>
-    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container. </td></tr>
+    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container (ignore it if module parameter HAS_CONTINUOUS_SCHED == 1) </td></tr>
     <tr><td class="paramname">NextCCCfg</td><td>CC configuration container.</td></tr>
   </table>
   </dd>
@@ -1632,7 +1486,7 @@ The api does not support multi-band option.</dd></dl>
     <tr><td class="paramname">RachChan</td><td>RACH channel [0-15]. </td></tr>
     <tr><td class="paramname">DdcCfg</td><td>DDC data container. </td></tr>
     <tr><td class="paramname">NcoCfg</td><td>NCO data container. </td></tr>
-    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container. </td></tr>
+    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container (ignore it if module parameter HAS_CONTINUOUS_SCHED == 1) </td></tr>
     <tr><td class="paramname">NextCCCfg</td><td>CC configuration container. </td></tr>
     <tr><td class="paramname">BandId</td><td>Band id.</td></tr>
   </table>
@@ -1859,7 +1713,7 @@ The api does not support multi-band option.</dd></dl>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_prach.html#a56d255b7ad1d309033438bbaee6b0a3f">XDfePrach::Config</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#ab5d74453fa3a1174a6cae4833968d6e5">XDfePrach_ModelParameters::HasAxisCtrl</a>, <a class="el" href="struct_x_dfe_prach___config.html#a227cca8522f031786fa3b993a1deb0a9">XDfePrach_Config::HasAxisCtrl</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a326b6bbf7981158027c835f24f351c83">XDfePrach_ModelParameters::HasIrq</a>, <a class="el" href="struct_x_dfe_prach___config.html#ab0e5055767539ed61c50cafe3dcdf7e6">XDfePrach_Config::HasIrq</a>, <a class="el" href="struct_x_dfe_prach___version.html#a34574818514aae357209a0231ef15297">XDfePrach_Version::Major</a>, <a class="el" href="struct_x_dfe_prach___version.html#a46b63d0733af4550f9b0f86de898deb9">XDfePrach_Version::Minor</a>, <a class="el" href="struct_x_dfe_prach___cfg.html#a116125ccd0dc1840bd02b91fcbabb5fb">XDfePrach_Cfg::ModelParams</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#aef90889bbc26a4d0afeb671b1259100f">XDfePrach_ModelParameters::NumAntenna</a>, <a class="el" href="struct_x_dfe_prach___config.html#afd4d255f310794af1bc1264f4aa7ec88">XDfePrach_Config::NumAntenna</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a18299f02890be420ebcb646435bca36f">XDfePrach_ModelParameters::NumAntennaChannels</a>, <a class="el" href="struct_x_dfe_prach___config.html#a2a023450d84be955fc49c7162d20d4c7">XDfePrach_Config::NumAntennaChannels</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#af26b5325f41da9dce51fa92eb5acdecf">XDfePrach_ModelParameters::NumAntennaSlots</a>, <a class="el" href="struct_x_dfe_prach___config.html#a0f47a6f7ea926ce198a1f35f80d3c283">XDfePrach_Config::NumAntennaSlots</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a5718829bd3f793168c5932ed2b596b40">XDfePrach_ModelParameters::NumBands</a>, <a class="el" href="struct_x_dfe_prach___config.html#a9bde70f27819c1fd765beeec0e1b999d">XDfePrach_Config::NumBands</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a7c83ea10306a01f63996acb058378b47">XDfePrach_ModelParameters::NumCCPerAntenna</a>, <a class="el" href="struct_x_dfe_prach___config.html#ae427e06376fc7b1eaf4c89994a46edff">XDfePrach_Config::NumCCPerAntenna</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a387389e1af990ccab60474ec2f86b106">XDfePrach_ModelParameters::NumRachChannels</a>, <a class="el" href="struct_x_dfe_prach___config.html#ad3df7398ad15f400416c34c7eb944883">XDfePrach_Config::NumRachChannels</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a0ad888206d10215203e5ec6c08439d69">XDfePrach_ModelParameters::NumRachLanes</a>, <a class="el" href="struct_x_dfe_prach___config.html#a0e9df6fd5885667f02700d302a3463bf">XDfePrach_Config::NumRachLanes</a>, <a class="el" href="struct_x_dfe_prach___version.html#ab7b1f37828108f8cb59f1aed37509618">XDfePrach_Version::Patch</a>, <a class="el" href="struct_x_dfe_prach___version.html#a2d34b3053902241c4585a551e3c7a8b7">XDfePrach_Version::Revision</a>, <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="struct_x_dfe_prach___cfg.html#a49194e09c3f812a73fd279ee3be53774">XDfePrach_Cfg::Version</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a93966bfd888e35de80bbe77dee739ad8">XDFEPRACH_STATE_CONFIGURED</a>, and <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50aaa7861a3016098fd966fb158970955f5">XDFEPRACH_STATE_RESET</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_prach.html#a56d255b7ad1d309033438bbaee6b0a3f">XDfePrach::Config</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#ab5d74453fa3a1174a6cae4833968d6e5">XDfePrach_ModelParameters::HasAxisCtrl</a>, <a class="el" href="struct_x_dfe_prach___config.html#a227cca8522f031786fa3b993a1deb0a9">XDfePrach_Config::HasAxisCtrl</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a6dfb4da5a1b0fcd545d5e8630cc65c4b">XDfePrach_ModelParameters::HasContinuousSched</a>, <a class="el" href="struct_x_dfe_prach___config.html#af2084b18da662eb8c08ed53221ec9e02">XDfePrach_Config::HasContinuousSched</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a326b6bbf7981158027c835f24f351c83">XDfePrach_ModelParameters::HasIrq</a>, <a class="el" href="struct_x_dfe_prach___config.html#ab0e5055767539ed61c50cafe3dcdf7e6">XDfePrach_Config::HasIrq</a>, <a class="el" href="struct_x_dfe_prach___version.html#a34574818514aae357209a0231ef15297">XDfePrach_Version::Major</a>, <a class="el" href="struct_x_dfe_prach___version.html#a46b63d0733af4550f9b0f86de898deb9">XDfePrach_Version::Minor</a>, <a class="el" href="struct_x_dfe_prach___cfg.html#a116125ccd0dc1840bd02b91fcbabb5fb">XDfePrach_Cfg::ModelParams</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#aef90889bbc26a4d0afeb671b1259100f">XDfePrach_ModelParameters::NumAntenna</a>, <a class="el" href="struct_x_dfe_prach___config.html#afd4d255f310794af1bc1264f4aa7ec88">XDfePrach_Config::NumAntenna</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a18299f02890be420ebcb646435bca36f">XDfePrach_ModelParameters::NumAntennaChannels</a>, <a class="el" href="struct_x_dfe_prach___config.html#a2a023450d84be955fc49c7162d20d4c7">XDfePrach_Config::NumAntennaChannels</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#af26b5325f41da9dce51fa92eb5acdecf">XDfePrach_ModelParameters::NumAntennaSlots</a>, <a class="el" href="struct_x_dfe_prach___config.html#a0f47a6f7ea926ce198a1f35f80d3c283">XDfePrach_Config::NumAntennaSlots</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a5718829bd3f793168c5932ed2b596b40">XDfePrach_ModelParameters::NumBands</a>, <a class="el" href="struct_x_dfe_prach___config.html#a9bde70f27819c1fd765beeec0e1b999d">XDfePrach_Config::NumBands</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a7c83ea10306a01f63996acb058378b47">XDfePrach_ModelParameters::NumCCPerAntenna</a>, <a class="el" href="struct_x_dfe_prach___config.html#ae427e06376fc7b1eaf4c89994a46edff">XDfePrach_Config::NumCCPerAntenna</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a387389e1af990ccab60474ec2f86b106">XDfePrach_ModelParameters::NumRachChannels</a>, <a class="el" href="struct_x_dfe_prach___config.html#ad3df7398ad15f400416c34c7eb944883">XDfePrach_Config::NumRachChannels</a>, <a class="el" href="struct_x_dfe_prach___model_parameters.html#a0ad888206d10215203e5ec6c08439d69">XDfePrach_ModelParameters::NumRachLanes</a>, <a class="el" href="struct_x_dfe_prach___config.html#a0e9df6fd5885667f02700d302a3463bf">XDfePrach_Config::NumRachLanes</a>, <a class="el" href="struct_x_dfe_prach___version.html#ab7b1f37828108f8cb59f1aed37509618">XDfePrach_Version::Patch</a>, <a class="el" href="struct_x_dfe_prach___version.html#a2d34b3053902241c4585a551e3c7a8b7">XDfePrach_Version::Revision</a>, <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="struct_x_dfe_prach___cfg.html#a49194e09c3f812a73fd279ee3be53774">XDfePrach_Cfg::Version</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a93966bfd888e35de80bbe77dee739ad8">XDFEPRACH_STATE_CONFIGURED</a>, and <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50aaa7861a3016098fd966fb158970955f5">XDFEPRACH_STATE_RESET</a>.</p>
 
 <p>Referenced by <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, and <a class="el" href="group___overview.html#ga210a566fa6dbed1e7c36d8b2a2f9696b">XDfePrach_SelfTestExample()</a>.</p>
 
@@ -1933,7 +1787,7 @@ The api does not support multi-band option.</dd></dl>
   </dd>
 </dl>
 
-<p>References <a class="el" href="struct_x_dfe_prach___n_c_o.html#aafb16e37434841de906c93a9846b1090">XDfePrach_NCO::DualModCount</a>, <a class="el" href="struct_x_dfe_prach___n_c_o.html#a7dc99e4741b7693489d6d6b5799de490">XDfePrach_NCO::DualModSel</a>, <a class="el" href="struct_x_dfe_prach___n_c_o.html#a1e85da023c1c88ceb56ed748ae727e12">XDfePrach_NCO::PhaseAcc</a>, and <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>.</p>
+<p>References <a class="el" href="struct_x_dfe_prach___n_c_o.html#aafb16e37434841de906c93a9846b1090">XDfePrach_NCO::DualModCount</a>, <a class="el" href="struct_x_dfe_prach___n_c_o.html#a7dc99e4741b7693489d6d6b5799de490">XDfePrach_NCO::DualModSel</a>, and <a class="el" href="struct_x_dfe_prach___n_c_o.html#a1e85da023c1c88ceb56ed748ae727e12">XDfePrach_NCO::PhaseAcc</a>.</p>
 
 </div>
 </div>
@@ -2257,7 +2111,7 @@ The api does not support multi-band option.</dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_prach.html#a56d255b7ad1d309033438bbaee6b0a3f">XDfePrach::Config</a>, and <a class="el" href="struct_x_dfe_prach___config.html#a9bde70f27819c1fd765beeec0e1b999d">XDfePrach_Config::NumBands</a>.</p>
 
-<p>Referenced by <a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC()</a>, <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC()</a>, and <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>.</p>
 
 </div>
 </div>
@@ -2296,7 +2150,7 @@ The api does not support multi-band option.</dd></dl>
 
 <p>References <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>.</p>
 
-<p>Referenced by <a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC()</a>, <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC()</a>, and <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>.</p>
 
 </div>
 </div>
@@ -2870,52 +2724,6 @@ The api does not support multi-band option.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="gaca26d7d36bafc163e4279dc62a623f44"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_RemoveCC </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">s32&#160;</td>
-          <td class="paramname"><em>CCID</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Removes CCID from sequence for band id 0. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">CCID</td><td>CC ID [0-15].</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS if successful.</li>
-<li>XST_FAILURE if error occurs.</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd>
-<dd>
-Does not support multi-band option.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); XDfePrach_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID); XDfePrach_SetNextCfg(InstancePtr, &amp;CCCfg, &amp;RCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a29b52790cfad7bcdc50770cddb4431cf">XDfePrach_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a8c6eb3fd95388139e2b44f655803043e">XDfePrach_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a5df37012a5ffdb76fde6dd34aa6c8430">XDfePrach_CCCfg::Sequence</a>, <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ga441f789abaf25f45007d3ec56ca9a18b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3022,50 +2830,6 @@ Does not support multi-band option.</dd></dl>
 <p>References <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a29b52790cfad7bcdc50770cddb4431cf">XDfePrach_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a8c6eb3fd95388139e2b44f655803043e">XDfePrach_InternalCarrierCfg::Enable</a>, <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a5df37012a5ffdb76fde6dd34aa6c8430">XDfePrach_CCCfg::Sequence</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeprach.html#ga441f789abaf25f45007d3ec56ca9a18b">XDfePrach_RemoveCCfromCCCfg()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga083c6692edbba9e1e9417cf043d28c0a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_RemoveRC </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>RCId</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Removes an RC configuration entry from the RC_CONFIGURATION. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">RCId</td><td>RC Id [0-15].</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS on success</li>
-<li>XST_FAILURE on failure</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); XDfePrach_RemoveRC(InstancePtr, RCId); XDfePrach_SetNextCfg(InstancePtr, CCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 </div>
 </div>
@@ -3281,7 +3045,7 @@ Does not support multi-band option.</dd></dl>
 
 <p>References <a class="el" href="struct_x_dfe_prach.html#a56d255b7ad1d309033438bbaee6b0a3f">XDfePrach::Config</a>, <a class="el" href="struct_x_dfe_prach___config.html#a9bde70f27819c1fd765beeec0e1b999d">XDfePrach_Config::NumBands</a>, <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
-<p>Referenced by <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, <a class="el" href="group__dfeprach.html#ga26927bb4b2d13f652f01ae34f859c794">XDfePrach_AddCC()</a>, <a class="el" href="group__dfeprach.html#ga8a98018390cffa95a3695e620bbcae40">XDfePrach_AddRCCfg()</a>, <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>, <a class="el" href="group__dfeprach.html#gaca26d7d36bafc163e4279dc62a623f44">XDfePrach_RemoveCC()</a>, <a class="el" href="group__dfeprach.html#ga083c6692edbba9e1e9417cf043d28c0a">XDfePrach_RemoveRC()</a>, <a class="el" href="group__dfeprach.html#ga366cebf3720b6839a879841dd7889987">XDfePrach_UpdateCC()</a>, and <a class="el" href="group__dfeprach.html#ga87c87dd99441fea2c6991a18967da1f4">XDfePrach_UpdateRCCfg()</a>.</p>
+<p>Referenced by <a class="el" href="group___overview.html#ga1287a30b7e83158a48088593234ab1e4">XDfePrach_2CC3RCDynamicTestExample()</a>, <a class="el" href="group___overview.html#ga80c73e89a6fc66abac088bbc45431dc3">XDfePrach_2CC3RCReconfigureTestExample()</a>, <a class="el" href="group___overview.html#gabd47bf94fdf2e70c66193ba7d36baded">XDfePrach_2CC3RCTestExample()</a>, and <a class="el" href="group__dfeprach.html#gacf492c219241322da9b4c271863c15cd">XDfePrach_MoveRC()</a>.</p>
 
 </div>
 </div>
@@ -3405,59 +3169,6 @@ Does not support multi-band option.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ga366cebf3720b6839a879841dd7889987"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_UpdateCC </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">s32&#160;</td>
-          <td class="paramname"><em>CCID</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach___carrier_cfg.html">XDfePrach_CarrierCfg</a> *&#160;</td>
-          <td class="paramname"><em>CarrierCfg</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Updates a CCID sequence for band id 0. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">CCID</td><td>CC ID [0-15]. </td></tr>
-    <tr><td class="paramname">CarrierCfg</td><td>Carrier data container.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS if successful.</li>
-<li>XST_FAILURE if error occurs.</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd>
-<dd>
-Does not support multi-band option.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); CCCfg.CarrierCfg[BandId][CCID].SCS = CarrierCfg-&gt;SCS; XDfePrach_SetNextCfg(InstancePtr, &amp;CCCfg, &amp;RCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a29b52790cfad7bcdc50770cddb4431cf">XDfePrach_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a498e8db8822d426a821a872935be35e5">XDfePrach_InternalCarrierCfg::SCS</a>, <a class="el" href="struct_x_dfe_prach___carrier_cfg.html#a01aaf3cbd14eeda39de0a970f19cba0b">XDfePrach_CarrierCfg::SCS</a>, <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ga4f6a001a560ce89af46acc0391d267c0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3578,90 +3289,6 @@ Does not support multi-band option.</dd></dl>
 <p>References <a class="el" href="struct_x_dfe_prach___c_c_cfg.html#a29b52790cfad7bcdc50770cddb4431cf">XDfePrach_CCCfg::CarrierCfg</a>, <a class="el" href="struct_x_dfe_prach___internal_carrier_cfg.html#a498e8db8822d426a821a872935be35e5">XDfePrach_InternalCarrierCfg::SCS</a>, <a class="el" href="struct_x_dfe_prach___carrier_cfg.html#a01aaf3cbd14eeda39de0a970f19cba0b">XDfePrach_CarrierCfg::SCS</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 <p>Referenced by <a class="el" href="group__dfeprach.html#ga4f6a001a560ce89af46acc0391d267c0">XDfePrach_UpdateCCinCCCfg()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga87c87dd99441fea2c6991a18967da1f4"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 XDfePrach_UpdateRCCfg </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_dfe_prach.html">XDfePrach</a> *&#160;</td>
-          <td class="paramname"><em>InstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">s32&#160;</td>
-          <td class="paramname"><em>CCID</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>RCId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>RachChan</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___d_d_c_cfg.html">XDfePrach_DDCCfg</a> *&#160;</td>
-          <td class="paramname"><em>DdcCfg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___n_c_o.html">XDfePrach_NCO</a> *&#160;</td>
-          <td class="paramname"><em>NcoCfg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_x_dfe_prach___schedule.html">XDfePrach_Schedule</a> *&#160;</td>
-          <td class="paramname"><em>StaticSchedule</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Updates an RC entry to the RC_CONFIGURATION. </p>
-<p>RCId must be same as the physical channel RachChan for band id 0.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Pointer to the PRACH instance. </td></tr>
-    <tr><td class="paramname">CCID</td><td>CC Id [0-15]. </td></tr>
-    <tr><td class="paramname">RCId</td><td>RC Id [0-15]. </td></tr>
-    <tr><td class="paramname">RachChan</td><td>RACH channel [0-15]. </td></tr>
-    <tr><td class="paramname">DdcCfg</td><td>DDC data container. </td></tr>
-    <tr><td class="paramname">NcoCfg</td><td>NCO data container. </td></tr>
-    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>XST_SUCCESS on success</li>
-<li>XST_FAILURE on failure</li>
-</ul>
-</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Clear event status with <a class="el" href="group__dfeprach.html#gaa00484ddc6d5256a6844b2b99ceb0586" title="Clears event status. ">XDfePrach_ClearEventStatus()</a> before running this API.</dd>
-<dd>
-This API must be executed only after all CC configuration are done with the API XDfePrach_AddCCCfg and XDfePrach_UpdateCCCfg.</dd>
-<dd>
-The api does not support multi-band option.</dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>: This API is deprecated in the release 2023.2. Source code will be removed from in the release 2024.1 release. The functionality of this API can be reproduced with the following API sequence: XDfePrach_GetCurrentCCCfg(InstancePtr, &amp;CurrentCCCfg); XDfePrach_GetCurrentRCCfg(InstancePtr, &amp;CurrentRCCfg); XDfePrach_UpdateRC(InstancePtr, RCId, RachChan, CCID, &amp;CurrentRCCfg, DdcCfg, NcoCfg, StaticSchedule, &amp;CurrentCCCfg, BandId); XDfePrach_SetNextCfg(InstancePtr, CCCfg); </dd></dl>
-
-<p>References <a class="el" href="struct_x_dfe_prach.html#a2db7298e87cae5a18a2bef99857a6db1">XDfePrach::StateId</a>, <a class="el" href="group__dfeprach.html#ga07ea3a4239457b89c7c99fb1a6e35672">XDfePrach_GetCurrentCCCfg()</a>, <a class="el" href="group__dfeprach.html#gaf4b664ff6c4bae527db476f4f900032e">XDfePrach_GetCurrentRCCfg()</a>, <a class="el" href="group__dfeprach.html#ga89e993d0d977c2c549a4276dc8797855">XDFEPRACH_RC_NUM_MAX</a>, <a class="el" href="group__dfeprach.html#ga6d425cd9949a65526ff83c0a5403f53a">XDfePrach_SetNextCfg()</a>, <a class="el" href="group__dfeprach.html#gga2a0c2ae57514875896de5f061cbe5a50a0bd475a3b3b5ceb8ca5b3c051c0deedd">XDFEPRACH_STATE_OPERATIONAL</a>, <a class="el" href="group__dfeprach.html#ga9478d2b97aa40e09052dee2571940ef9">XST_FAILURE</a>, and <a class="el" href="group__dfeprach.html#ga959ffc15251ddc9b3a883a30f97b7715">XST_SUCCESS</a>.</p>
 
 </div>
 </div>
@@ -3834,7 +3461,7 @@ The api does not support multi-band option.</dd></dl>
     <tr><td class="paramname">RachChan</td><td>RACH channel [0-15]. </td></tr>
     <tr><td class="paramname">DdcCfg</td><td>DDC data container. </td></tr>
     <tr><td class="paramname">NcoCfg</td><td>NCO data container. </td></tr>
-    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container. </td></tr>
+    <tr><td class="paramname">StaticSchedule</td><td>Schedule data container (ignore it if module parameter HAS_CONTINUOUS_SCHED == 1) </td></tr>
     <tr><td class="paramname">NextCCCfg</td><td>CC configuration container. </td></tr>
     <tr><td class="paramname">BandId</td><td>Band id.</td></tr>
   </table>

@@ -85,9 +85,15 @@ Macros</h2></td></tr>
 <tr class="memitem:a380d87507652a19d453b20e6d7655d65"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a380d87507652a19d453b20e6d7655d65">XSysMonPsu_RawToTemperature_OnChip</a>(AdcData)&#160;&#160;&#160;((((float)(AdcData)/65536.0f)/0.00196342531f ) - 280.2309f)</td></tr>
 <tr class="memdesc:a380d87507652a19d453b20e6d7655d65"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts System Monitor Raw Data to Temperature(centigrades) for On-Chip Sensors.  <a href="#a380d87507652a19d453b20e6d7655d65">More...</a><br/></td></tr>
 <tr class="separator:a380d87507652a19d453b20e6d7655d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8deda750d363495fc0fa7a98167cb418"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a8deda750d363495fc0fa7a98167cb418">XSysMonPsu_RawToTemperature_OT_OnChip</a>(AdcData)&#160;&#160;&#160;((((float)(AdcData)/4096.0f)/0.00196342531f ) - 280.2309f)</td></tr>
+<tr class="memdesc:a8deda750d363495fc0fa7a98167cb418"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for On-Chip Sensors.  <a href="#a8deda750d363495fc0fa7a98167cb418">More...</a><br/></td></tr>
+<tr class="separator:a8deda750d363495fc0fa7a98167cb418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ab3e135004e7d5995a827caa045883e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a9ab3e135004e7d5995a827caa045883e">XSysMonPsu_RawToTemperature_ExternalRef</a>(AdcData)&#160;&#160;&#160;((((float)(AdcData)/65536.0f)/0.00197008621f ) - 279.4266f)</td></tr>
 <tr class="memdesc:a9ab3e135004e7d5995a827caa045883e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts System Monitor Raw Data to Temperature(centigrades) for external reference.  <a href="#a9ab3e135004e7d5995a827caa045883e">More...</a><br/></td></tr>
 <tr class="separator:a9ab3e135004e7d5995a827caa045883e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fe15f60a0a540ef004786090d750ad8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a4fe15f60a0a540ef004786090d750ad8">XSysMonPsu_RawToTemperature_OT_ExternalRef</a>(AdcData)&#160;&#160;&#160;((((float)(AdcData)/4096.0f)/0.00197008621f ) - 279.4266f)</td></tr>
+<tr class="memdesc:a4fe15f60a0a540ef004786090d750ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for external reference.  <a href="#a4fe15f60a0a540ef004786090d750ad8">More...</a><br/></td></tr>
+<tr class="separator:a4fe15f60a0a540ef004786090d750ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ce87fd508744ddc0de0c9954f71e1f7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a8ce87fd508744ddc0de0c9954f71e1f7">XSysMonPsu_VpVnRawToVoltage</a>(AdcData)&#160;&#160;&#160;((((float)(AdcData))* (1.0f))/65536.0f)</td></tr>
 <tr class="memdesc:a8ce87fd508744ddc0de0c9954f71e1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts System Monitor Raw Data to Voltage(volts) for VpVn supply.  <a href="#a8ce87fd508744ddc0de0c9954f71e1f7">More...</a><br/></td></tr>
 <tr class="separator:a8ce87fd508744ddc0de0c9954f71e1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -100,9 +106,15 @@ Macros</h2></td></tr>
 <tr class="memitem:a977b419288fae23364d46bc87d6976ce"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a977b419288fae23364d46bc87d6976ce">XSysMonPsu_TemperatureToRaw_OnChip</a>(Temperature)&#160;&#160;&#160;((s32)(((Temperature) + 280.2309f)*65536.0f*0.00196342531f))</td></tr>
 <tr class="memdesc:a977b419288fae23364d46bc87d6976ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts Temperature in centigrades to System Monitor Raw Data for On-Chip Sensors.  <a href="#a977b419288fae23364d46bc87d6976ce">More...</a><br/></td></tr>
 <tr class="separator:a977b419288fae23364d46bc87d6976ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5f6e0d4b6f0d119ef0b6b0318f12025"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#aa5f6e0d4b6f0d119ef0b6b0318f12025">XSysMonPsu_TemperatureToRaw_OT_OnChip</a>(Temperature)&#160;&#160;&#160;((s32)(((Temperature) + 280.2309f)*4096.0f*0.00196342531f))</td></tr>
+<tr class="memdesc:aa5f6e0d4b6f0d119ef0b6b0318f12025"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for On-Chip Sensors.  <a href="#aa5f6e0d4b6f0d119ef0b6b0318f12025">More...</a><br/></td></tr>
+<tr class="separator:aa5f6e0d4b6f0d119ef0b6b0318f12025"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50b32ba6617a306fd1f12c7d34151722"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a50b32ba6617a306fd1f12c7d34151722">XSysMonPsu_TemperatureToRaw_ExternalRef</a>(Temperature)&#160;&#160;&#160;((s32)(((Temperature) + 279.4266f)*65536.0f*0.00197008621f))</td></tr>
 <tr class="memdesc:a50b32ba6617a306fd1f12c7d34151722"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts Temperature in centigrades to System Monitor Raw Data for external reference.  <a href="#a50b32ba6617a306fd1f12c7d34151722">More...</a><br/></td></tr>
 <tr class="separator:a50b32ba6617a306fd1f12c7d34151722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78a467243193029ee49fc2144a1bb38a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a78a467243193029ee49fc2144a1bb38a">XSysMonPsu_TemperatureToRaw_OT_ExternalRef</a>(Temperature)&#160;&#160;&#160;((s32)(((Temperature) + 279.4266f)*4096.0f*0.00197008621f))</td></tr>
+<tr class="memdesc:a78a467243193029ee49fc2144a1bb38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for external reference.  <a href="#a78a467243193029ee49fc2144a1bb38a">More...</a><br/></td></tr>
+<tr class="separator:a78a467243193029ee49fc2144a1bb38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a986f164c3c1f811ea27713adf9dace4c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a986f164c3c1f811ea27713adf9dace4c">XSysMonPsu_VoltageToRaw</a>(Voltage)&#160;&#160;&#160;((s32)((Voltage)*65536.0f/3.0f))</td></tr>
 <tr class="memdesc:a986f164c3c1f811ea27713adf9dace4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro converts Voltage in Volts to System Monitor Raw Data other than VCCO_PSIO supply.  <a href="#a986f164c3c1f811ea27713adf9dace4c">More...</a><br/></td></tr>
 <tr class="separator:a986f164c3c1f811ea27713adf9dace4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -529,9 +541,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af6c7d46d66608863cf7b859238e44e13"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#af6c7d46d66608863cf7b859238e44e13">XSysMonPsu_GetAdcClkDivisor</a> (<a class="el" href="struct_x_sys_mon_psu.html">XSysMonPsu</a> *InstancePtr, u32 SysmonBlk)</td></tr>
 <tr class="memdesc:af6c7d46d66608863cf7b859238e44e13"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function gets the ADCCLK divisor from the Configuration Register 2.  <a href="#af6c7d46d66608863cf7b859238e44e13">More...</a><br/></td></tr>
 <tr class="separator:af6c7d46d66608863cf7b859238e44e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c7ebcfb5e5e7014deaabaa8f6261eb"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#a15c7ebcfb5e5e7014deaabaa8f6261eb">XSysMonPsu_UpdateAdcClkDivisor</a> (<a class="el" href="struct_x_sys_mon_psu.html">XSysMonPsu</a> *InstancePtr, u32 SysmonBlk)</td></tr>
-<tr class="memdesc:a15c7ebcfb5e5e7014deaabaa8f6261eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function update the ADCCLK divisor to the Configuration Register 2.  <a href="#a15c7ebcfb5e5e7014deaabaa8f6261eb">More...</a><br/></td></tr>
-<tr class="separator:a15c7ebcfb5e5e7014deaabaa8f6261eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad850523d0e0f5f54fcde1f2a6ecd8aa1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#ad850523d0e0f5f54fcde1f2a6ecd8aa1">XSysMonPsu_UpdateAdcClkDivisor</a> (<a class="el" href="struct_x_sys_mon_psu.html">XSysMonPsu</a> *InstancePtr, u32 SysmonBlk, u8 *DivCode)</td></tr>
+<tr class="memdesc:ad850523d0e0f5f54fcde1f2a6ecd8aa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function update the ADCCLK divisor to the Configuration Register 2.  <a href="#ad850523d0e0f5f54fcde1f2a6ecd8aa1">More...</a><br/></td></tr>
+<tr class="separator:ad850523d0e0f5f54fcde1f2a6ecd8aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac51295c525a507a8f334c97f02a84221"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xsysmonpsu_8h.html#ac51295c525a507a8f334c97f02a84221">XSysMonPsu_SetSeqChEnables</a> (<a class="el" href="struct_x_sys_mon_psu.html">XSysMonPsu</a> *InstancePtr, u64 ChEnableMask, u32 SysmonBlk)</td></tr>
 <tr class="memdesc:ac51295c525a507a8f334c97f02a84221"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the specified channels in the ADC Channel Selection Sequencer Registers.  <a href="#ac51295c525a507a8f334c97f02a84221">More...</a><br/></td></tr>
 <tr class="separator:ac51295c525a507a8f334c97f02a84221"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2348,6 +2360,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4fe15f60a0a540ef004786090d750ad8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSysMonPsu_RawToTemperature_OT_ExternalRef</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">AdcData</td><td>)</td>
+          <td>&#160;&#160;&#160;((((float)(AdcData)/4096.0f)/0.00197008621f ) - 279.4266f)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for external reference. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">AdcData</td><td>is the SysMon 12-bit Raw ADC Data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Temperature in centigrades.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: float <a class="el" href="xsysmonpsu_8h.html#a4fe15f60a0a540ef004786090d750ad8" title="This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for external refere...">XSysMonPsu_RawToTemperature_OT_ExternalRef(u32 AdcData)</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8deda750d363495fc0fa7a98167cb418"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSysMonPsu_RawToTemperature_OT_OnChip</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">AdcData</td><td>)</td>
+          <td>&#160;&#160;&#160;((((float)(AdcData)/4096.0f)/0.00196342531f ) - 280.2309f)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for On-Chip Sensors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">AdcData</td><td>is the SysMon 12-bit Raw ADC Data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Temperature in centigrades.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: float <a class="el" href="xsysmonpsu_8h.html#a8deda750d363495fc0fa7a98167cb418" title="This macro converts System Monitor 12-bit OT Raw Data to Temperature(centigrades) for On-Chip Sensors...">XSysMonPsu_RawToTemperature_OT_OnChip(u32 AdcData)</a> </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="af6667f0fcc65dda4a7af897b2924143c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2427,6 +2491,58 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: int XSysMon_TemperatureToRaw_OnChip(float Temperature) </dd></dl>
 
 <p>Referenced by <a class="el" href="xsysmonpsu__intr__example_8c.html#a26b92e20e1b2b69c588591b91d185d12">SysMonPsuIntrExample()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a78a467243193029ee49fc2144a1bb38a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSysMonPsu_TemperatureToRaw_OT_ExternalRef</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Temperature</td><td>)</td>
+          <td>&#160;&#160;&#160;((s32)(((Temperature) + 279.4266f)*4096.0f*0.00197008621f))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for external reference. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Temperature</td><td>is the Temperature in centigrades to be converted to System Monitor ADC 12-bit Raw Data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The System Monitor ADC 12-bit Raw Data.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: int <a class="el" href="xsysmonpsu_8h.html#a78a467243193029ee49fc2144a1bb38a" title="This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for external refe...">XSysMonPsu_TemperatureToRaw_OT_ExternalRef(float Temperature)</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa5f6e0d4b6f0d119ef0b6b0318f12025"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XSysMonPsu_TemperatureToRaw_OT_OnChip</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Temperature</td><td>)</td>
+          <td>&#160;&#160;&#160;((s32)(((Temperature) + 280.2309f)*4096.0f*0.00196342531f))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for On-Chip Sensors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Temperature</td><td>is the Temperature in centigrades to be converted to System Monitor ADC 12-bit Raw Data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The System Monitor ADC 12-bit Raw Data.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: int <a class="el" href="xsysmonpsu_8h.html#aa5f6e0d4b6f0d119ef0b6b0318f12025" title="This macro converts Temperature in centigrades to System Monitor 12-bit OT Raw Data for On-Chip Senso...">XSysMonPsu_TemperatureToRaw_OT_OnChip(float Temperature)</a> </dd></dl>
 
 </div>
 </div>
@@ -2604,7 +2720,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The user needs to first call the <a class="el" href="xsysmonpsu_8h.html#a948f08280b6195869015382d92ba8a50" title="This function looks for the device configuration based on the unique device ID. ">XSysMonPsu_LookupConfig()</a> API which returns the Configuration structure pointer which is passed as a parameter to the <a class="el" href="xsysmonpsu_8c.html#a8cd0584410c0931f931aa4da1e3e151b" title="This function initializes XSysMonPsu device/instance. ">XSysMonPsu_CfgInitialize()</a> API. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu___config.html#abc6dabd175ea52cdf0dbf5b32798f62d">XSysMonPsu_Config::DeviceId</a>, <a class="el" href="struct_x_sys_mon_psu___config.html#a7ff0bfe3d5f7cb06792fe7ed481711ad">XSysMonPsu_Config::InputClockMHz</a>, <a class="el" href="struct_x_sys_mon_psu.html#aa71eec0e2a0e06244feded448d359278">XSysMonPsu::IsPlAccessibleByPs</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a7c41996bf95cd7119dba302246345a9d">XSysMonPsu_IntrClear()</a>, <a class="el" href="xsysmonpsu_8h.html#a3ef44a74426b13480363747a5dedc5d0">XSysMonPsu_IntrGetStatus()</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a4107b908b0a66ed314fa19c9458e10dd">XSYSMONPSU_PL_SYSMON_CSTS_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a5652827d8f6d892c11c0a1a5aa03217d">XSYSMONPSU_PS_SYSMON_CSTS_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>, <a class="el" href="xsysmonpsu_8c.html#ad6fc9daa41e50955a71e2fe7a107a0e5">XSysMonPsu_Reset()</a>, and <a class="el" href="xsysmonpsu_8c.html#a15c7ebcfb5e5e7014deaabaa8f6261eb">XSysMonPsu_UpdateAdcClkDivisor()</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu___config.html#abc6dabd175ea52cdf0dbf5b32798f62d">XSysMonPsu_Config::DeviceId</a>, <a class="el" href="struct_x_sys_mon_psu___config.html#a7ff0bfe3d5f7cb06792fe7ed481711ad">XSysMonPsu_Config::InputClockMHz</a>, <a class="el" href="struct_x_sys_mon_psu.html#aa71eec0e2a0e06244feded448d359278">XSysMonPsu::IsPlAccessibleByPs</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a7c41996bf95cd7119dba302246345a9d">XSysMonPsu_IntrClear()</a>, <a class="el" href="xsysmonpsu_8h.html#a3ef44a74426b13480363747a5dedc5d0">XSysMonPsu_IntrGetStatus()</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a4107b908b0a66ed314fa19c9458e10dd">XSYSMONPSU_PL_SYSMON_CSTS_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a5652827d8f6d892c11c0a1a5aa03217d">XSYSMONPSU_PS_SYSMON_CSTS_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>, <a class="el" href="xsysmonpsu_8c.html#ad6fc9daa41e50955a71e2fe7a107a0e5">XSysMonPsu_Reset()</a>, and <a class="el" href="xsysmonpsu_8c.html#ad850523d0e0f5f54fcde1f2a6ecd8aa1">XSysMonPsu_UpdateAdcClkDivisor()</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsu__ams__example_8c.html#a811838a7c15bd01594742f2aef90b628">SysMonPsuAMSExample()</a>, <a class="el" href="xsysmonpsu__intr__example_8c.html#a26b92e20e1b2b69c588591b91d185d12">SysMonPsuIntrExample()</a>, <a class="el" href="xsysmonpsu__polled__example_8c.html#ae53b4649b4f9335a87072df7e5e579c4">SysMonPsuPolledPrintfExample()</a>, and <a class="el" href="xsysmonpsu__single__ch__intr__example_8c.html#a6f2a932c9e346a5009826057a3e7bd69">SysMonPsuSingleChannelIntrExample()</a>.</p>
 
@@ -2779,7 +2895,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A 16-bit value representing the contents of the selected Alarm Threshold Register.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a9cd13eee75fe9d48b9d004652cb12e1f">XSM_ATR_SUP7_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#a9b816bc88f59e9b497fa66f336babd99">XSM_ATR_TEMP_RMTE_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#ad1eb3b0945f7c93a178c67fe0bb66d9f">XSM_ATR_TEMP_RMTE_UPPER</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a531009f056913bfecb5b591d9f91385c">XSYSMONPSU_ALRM_TEMP_UPR_OFFSET</a>, and <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a9cd13eee75fe9d48b9d004652cb12e1f">XSM_ATR_SUP7_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#a9b816bc88f59e9b497fa66f336babd99">XSM_ATR_TEMP_RMTE_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#ad1eb3b0945f7c93a178c67fe0bb66d9f">XSM_ATR_TEMP_RMTE_UPPER</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a48d9768880b97656a28ca1dd02473921">XSYSMONPSU_ALRM_OT_LWR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a9edd87b14e6d03ff5de1ab73ffe263b1">XSYSMONPSU_ALRM_OT_UPR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a93336d7a91ec064b47ad3f208492b813">XSYSMONPSU_ALRM_TEMP_LWR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a531009f056913bfecb5b591d9f91385c">XSYSMONPSU_ALRM_TEMP_UPR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a031801c06824957a3bec3f47dfea028a">XSYSMONPSU_ALRM_TREMOTE_LWR_OFFSET</a>, and <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsu__intr__example_8c.html#a26b92e20e1b2b69c588591b91d185d12">SysMonPsuIntrExample()</a>, and <a class="el" href="xsysmonpsu__selftest_8c.html#a39d8d59cc35fe4151b51b5bbafdca2ca">XSysMonPsu_SelfTest()</a>.</p>
 
@@ -3756,7 +3872,7 @@ None.</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a9cd13eee75fe9d48b9d004652cb12e1f">XSM_ATR_SUP7_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#a9b816bc88f59e9b497fa66f336babd99">XSM_ATR_TEMP_RMTE_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#ad1eb3b0945f7c93a178c67fe0bb66d9f">XSM_ATR_TEMP_RMTE_UPPER</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a531009f056913bfecb5b591d9f91385c">XSYSMONPSU_ALRM_TEMP_UPR_OFFSET</a>, and <a class="el" href="xsysmonpsu__hw_8h.html#a918c709fe6f8486844b998136fdb2310">XSysmonPsu_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu.html#ae4e48efa3298714b2e190f2dbfc9566a">XSysMonPsu::IsReady</a>, <a class="el" href="xsysmonpsu_8h.html#a9cd13eee75fe9d48b9d004652cb12e1f">XSM_ATR_SUP7_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#a9b816bc88f59e9b497fa66f336babd99">XSM_ATR_TEMP_RMTE_LOWER</a>, <a class="el" href="xsysmonpsu_8h.html#ad1eb3b0945f7c93a178c67fe0bb66d9f">XSM_ATR_TEMP_RMTE_UPPER</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a48d9768880b97656a28ca1dd02473921">XSYSMONPSU_ALRM_OT_LWR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a9edd87b14e6d03ff5de1ab73ffe263b1">XSYSMONPSU_ALRM_OT_UPR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a93336d7a91ec064b47ad3f208492b813">XSYSMONPSU_ALRM_TEMP_LWR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a531009f056913bfecb5b591d9f91385c">XSYSMONPSU_ALRM_TEMP_UPR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a031801c06824957a3bec3f47dfea028a">XSYSMONPSU_ALRM_TREMOTE_LWR_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>, and <a class="el" href="xsysmonpsu__hw_8h.html#a918c709fe6f8486844b998136fdb2310">XSysmonPsu_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xsysmonpsu__intr__example_8c.html#a26b92e20e1b2b69c588591b91d185d12">SysMonPsuIntrExample()</a>, <a class="el" href="xsysmonpsu__single__ch__intr__example_8c.html#a6f2a932c9e346a5009826057a3e7bd69">SysMonPsuSingleChannelIntrExample()</a>, and <a class="el" href="xsysmonpsu__selftest_8c.html#a39d8d59cc35fe4151b51b5bbafdca2ca">XSysMonPsu_SelfTest()</a>.</p>
 
@@ -4307,12 +4423,12 @@ None.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a15c7ebcfb5e5e7014deaabaa8f6261eb"></a>
+<a class="anchor" id="ad850523d0e0f5f54fcde1f2a6ecd8aa1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">u8 XSysMonPsu_UpdateAdcClkDivisor </td>
+          <td class="memname">u32 XSysMonPsu_UpdateAdcClkDivisor </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_x_sys_mon_psu.html">XSysMonPsu</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
@@ -4321,7 +4437,13 @@ None.</dd></dl>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>SysmonBlk</em>&#160;</td>
+          <td class="paramname"><em>SysmonBlk</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8 *&#160;</td>
+          <td class="paramname"><em>DivCode</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -4335,11 +4457,15 @@ None.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XSysMon instance. </td></tr>
-    <tr><td class="paramname">SysmonBlk</td><td>is the value that tells whether it is for PS Sysmon block or PL Sysmon block register region.</td></tr>
+    <tr><td class="paramname">SysmonBlk</td><td>is the value that tells whether it is for PS Sysmon block or PL Sysmon block register region. </td></tr>
+    <tr><td class="paramname">DivCode</td><td>is a pointer to be populated with the divisor code.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The divisor update the Configuration Register 2.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>- XST_SUCCESS if valid divisor found and applied.<ul>
+<li>XST_FAILURE if valid divisor does not exist.</li>
+</ul>
+</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The ADCCLK is an internal clock used by the ADC and is synchronized to the DCLK clock. The ADCCLK is equal to DCLK divided by the user selection in the Configuration Register 2. </dd></dl>
 
 <p>References <a class="el" href="struct_x_sys_mon_psu___config.html#a0166b8968529950a2b997038b7d99f16">XSysMonPsu_Config::BaseAddress</a>, <a class="el" href="struct_x_sys_mon_psu.html#a37b1b3b387db33d8aedcbe611b27e45b">XSysMonPsu::Config</a>, <a class="el" href="struct_x_sys_mon_psu___config.html#a7ff0bfe3d5f7cb06792fe7ed481711ad">XSysMonPsu_Config::InputClockMHz</a>, <a class="el" href="xsysmonpsu__hw_8h.html#a5a77bafe25ef83d49e8091cbe661d974">XSYSMONPSU_CFG_REG2_OFFSET</a>, <a class="el" href="xsysmonpsu__hw_8h.html#ae9106d31caad5928fff1fc352968f9c1">XSysmonPsu_ReadReg</a>, and <a class="el" href="xsysmonpsu__hw_8h.html#a918c709fe6f8486844b998136fdb2310">XSysmonPsu_WriteReg</a>.</p>

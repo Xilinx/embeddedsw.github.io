@@ -24,7 +24,8 @@ var xtrngpsx_8h =
       [ "XTRNGPSX_CATASTROPHIC_CTF_ERROR", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a83efeb211988308d8f9b07bbbe8c23b3", null ],
       [ "XTRNGPSX_CATASTROPHIC_DTF_ERROR", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a2929b58685ab788ea0107d339657632d", null ],
       [ "XTRNGPSX_KAT_FAILED_ERROR", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a16fc12b7986ebaee8fe81ae27042988a", null ],
-      [ "XTRNGPSX_WRITE_ERROR", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a8b29809ecc7cba250e0961eb2e8f4ce6", null ]
+      [ "XTRNGPSX_WRITE_ERROR", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a8b29809ecc7cba250e0961eb2e8f4ce6", null ],
+      [ "XTRNGPSX_INVALID_BLOCKING_MODE", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a07e0d5857d20d9872791857be99cd964", null ]
     ] ],
     [ "XTrngpsx_ErrorState", "xtrngpsx_8h.html#gabf665f37f1800c3d3859681db4fb46c2", [
       [ "XTRNGPSX_UNHEALTHY", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2af33a5bf5d37571fefcdaa758930d6c5b", null ],

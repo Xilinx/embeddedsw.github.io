@@ -57,6 +57,7 @@ var xsdps_8h =
     [ "XSdPs_LookupConfig", "xsdps_8h.html#ga27d6bd37204cdb0c26430efedd8e97eb", null ],
     [ "XSdPs_Pullup", "xsdps_8h.html#ga0be8518af877aa1fe5f7c6b86ac4f7f8", null ],
     [ "XSdPs_ReadPolled", "xsdps_8h.html#ga8dfe3686ed74d09a2a46a7b5cddcde47", null ],
+    [ "XSdPs_Sanitize", "xsdps_8h.html#gad748650bd8ac568583551f6ef14b498a", null ],
     [ "XSdPs_Select_Card", "xsdps_8h.html#ga17d43f52a8948d5ec4f315641336d115", null ],
     [ "XSdPs_Set_Mmc_ExtCsd", "xsdps_8h.html#gaee773eef8e260b4498dc607061eb18f6", null ],
     [ "XSdPs_SetBlkSize", "xsdps_8h.html#ga1af3178b4b24c991b431eb7a0aa3b23b", null ],

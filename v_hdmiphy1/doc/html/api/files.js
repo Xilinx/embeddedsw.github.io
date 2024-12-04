@@ -2,6 +2,7 @@ var files =
 [
     [ "xhdmiphy1.c", "xhdmiphy1_8c.html", "xhdmiphy1_8c" ],
     [ "xhdmiphy1.h", "xhdmiphy1_8h.html", "xhdmiphy1_8h" ],
+    [ "xhdmiphy1_dplle5.c", "xhdmiphy1__dplle5_8c.html", null ],
     [ "xhdmiphy1_gt.h", "xhdmiphy1__gt_8h.html", null ],
     [ "xhdmiphy1_gthe4.c", "xhdmiphy1__gthe4_8c.html", null ],
     [ "xhdmiphy1_gtye4.c", "xhdmiphy1__gtye4_8c.html", null ],

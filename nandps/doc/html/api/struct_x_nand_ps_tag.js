@@ -13,6 +13,7 @@ var struct_x_nand_ps_tag =
     [ "EccConfig", "struct_x_nand_ps_tag.html#a84179f6ef408a639b0486c2df7561728", null ],
     [ "EccMode", "struct_x_nand_ps_tag.html#a91ba66b90e531f68b393e22dc1e6fab5", null ],
     [ "Features", "struct_x_nand_ps_tag.html#aaef39c1b3d681967d9097bdae9069a27", null ],
+    [ "FlashBbt", "struct_x_nand_ps_tag.html#a4e5782e2042c2ae489e1a267bce79d12", null ],
     [ "Geometry", "struct_x_nand_ps_tag.html#ae87fd6bcc9622ee7d41abdbdaad61c35", null ],
     [ "IsReady", "struct_x_nand_ps_tag.html#aad4084a7b6b1ea6b1ec350dd22203e50", null ],
     [ "ReadPage", "struct_x_nand_ps_tag.html#aa589f70667fa1b52e24e2384e421aa01", null ],

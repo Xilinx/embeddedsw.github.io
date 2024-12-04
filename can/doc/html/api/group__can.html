@@ -197,6 +197,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gae77955cacd567dcbbaa4594e7a12438c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_can___config.html">XCan_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gae77955cacd567dcbbaa4594e7a12438c">XCan_GetConfig</a> (unsigned int InstanceIndex)</td></tr>
 <tr class="memdesc:gae77955cacd567dcbbaa4594e7a12438c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function looks for the device configuration based on the device index.  <a href="#gae77955cacd567dcbbaa4594e7a12438c">More...</a><br/></td></tr>
 <tr class="separator:gae77955cacd567dcbbaa4594e7a12438c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b5089d7561e88dec96e54fa618a6da4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga0b5089d7561e88dec96e54fa618a6da4">XCan_ResetECC</a> (<a class="el" href="struct_x_can.html">XCan</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga0b5089d7561e88dec96e54fa618a6da4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function resets the ECC counters.  <a href="#ga0b5089d7561e88dec96e54fa618a6da4">More...</a><br/></td></tr>
+<tr class="separator:ga0b5089d7561e88dec96e54fa618a6da4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5cf8f7db6b6726cd217e58e6224d56ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount</a> (<a class="el" href="struct_x_can.html">XCan</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga5cf8f7db6b6726cd217e58e6224d56ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gets the count of ECC error count for one and two bit error in TX_TL FIFO, TX_OL FIFO, RX FIFO.  <a href="#ga5cf8f7db6b6726cd217e58e6224d56ad">More...</a><br/></td></tr>
+<tr class="separator:ga5cf8f7db6b6726cd217e58e6224d56ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga75aabbb82d96151cadfd3c26a2a285e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga75aabbb82d96151cadfd3c26a2a285e9">XCan_SetBaudRatePrescaler</a> (<a class="el" href="struct_x_can.html">XCan</a> *InstancePtr, u8 Prescaler)</td></tr>
 <tr class="memdesc:ga75aabbb82d96151cadfd3c26a2a285e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine sets Baud Rate Prescaler value.  <a href="#ga75aabbb82d96151cadfd3c26a2a285e9">More...</a><br/></td></tr>
 <tr class="separator:ga75aabbb82d96151cadfd3c26a2a285e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -368,6 +374,18 @@ Register offsets for the CAN. Each register is 32 bits.</h2></td></tr>
 <tr class="memitem:gad1359d3b320efecc87aa3dba24a0c4fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gad1359d3b320efecc87aa3dba24a0c4fa">XCAN_AFIR4_OFFSET</a>&#160;&#160;&#160;0x080</td></tr>
 <tr class="memdesc:gad1359d3b320efecc87aa3dba24a0c4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acceptance Filter ID Register 4.  <a href="#gad1359d3b320efecc87aa3dba24a0c4fa">More...</a><br/></td></tr>
 <tr class="separator:gad1359d3b320efecc87aa3dba24a0c4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga078754fce159d323c3cdd60c0842b8f3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga078754fce159d323c3cdd60c0842b8f3">XCAN_ECC_CFG_OFFSET</a>&#160;&#160;&#160;0x0C8</td></tr>
+<tr class="memdesc:ga078754fce159d323c3cdd60c0842b8f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECC Configuration register.  <a href="#ga078754fce159d323c3cdd60c0842b8f3">More...</a><br/></td></tr>
+<tr class="separator:ga078754fce159d323c3cdd60c0842b8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga093ec0385610ae9e0a7861e06921bb5d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga093ec0385610ae9e0a7861e06921bb5d">XCAN_TXTLFIFO_ECC_OFFSET</a>&#160;&#160;&#160;0x0CC</td></tr>
+<tr class="memdesc:ga093ec0385610ae9e0a7861e06921bb5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXTL FIFO ECC error counter.  <a href="#ga093ec0385610ae9e0a7861e06921bb5d">More...</a><br/></td></tr>
+<tr class="separator:ga093ec0385610ae9e0a7861e06921bb5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeed70ad0a591fb1f8c44a83f358a5842"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gaeed70ad0a591fb1f8c44a83f358a5842">XCAN_TXOLFIFO_ECC_OFFSET</a>&#160;&#160;&#160;0x0D0</td></tr>
+<tr class="memdesc:gaeed70ad0a591fb1f8c44a83f358a5842"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXOL FIFO ECC error counter.  <a href="#gaeed70ad0a591fb1f8c44a83f358a5842">More...</a><br/></td></tr>
+<tr class="separator:gaeed70ad0a591fb1f8c44a83f358a5842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga05a0b3283999fc56204a5afbb013e048"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga05a0b3283999fc56204a5afbb013e048">XCAN_RXFIFO_ECC_OFFSET</a>&#160;&#160;&#160;0X0D4</td></tr>
+<tr class="memdesc:ga05a0b3283999fc56204a5afbb013e048"><td class="mdescLeft">&#160;</td><td class="mdescRight">RX FIFO ECC error counter.  <a href="#ga05a0b3283999fc56204a5afbb013e048">More...</a><br/></td></tr>
+<tr class="separator:ga05a0b3283999fc56204a5afbb013e048"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Software Reset Register</h2></td></tr>
@@ -482,6 +500,24 @@ Status Register</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Interrupt Status/Enable/Clear Register</h2></td></tr>
+<tr class="memitem:ga67744d34a2a65666e55116e2fdb8479b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga67744d34a2a65666e55116e2fdb8479b">XCAN_IXR_E2BERX_MASK</a>&#160;&#160;&#160;0x00800000</td></tr>
+<tr class="memdesc:ga67744d34a2a65666e55116e2fdb8479b"><td class="mdescLeft">&#160;</td><td class="mdescRight">RX FIFO two bit ECC error.  <a href="#ga67744d34a2a65666e55116e2fdb8479b">More...</a><br/></td></tr>
+<tr class="separator:ga67744d34a2a65666e55116e2fdb8479b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga35a9f71ee627fea1fc8cc35c4128cef9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga35a9f71ee627fea1fc8cc35c4128cef9">XCAN_IXR_E1BERX_MASK</a>&#160;&#160;&#160;0x00400000</td></tr>
+<tr class="memdesc:ga35a9f71ee627fea1fc8cc35c4128cef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">RX FIFO one bit ECC error.  <a href="#ga35a9f71ee627fea1fc8cc35c4128cef9">More...</a><br/></td></tr>
+<tr class="separator:ga35a9f71ee627fea1fc8cc35c4128cef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga590c7e3aa7a7f5aad88f562bdef58cdb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga590c7e3aa7a7f5aad88f562bdef58cdb">XCAN_IXR_E2BETXOL_MASK</a>&#160;&#160;&#160;0x00200000</td></tr>
+<tr class="memdesc:ga590c7e3aa7a7f5aad88f562bdef58cdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXOL FIFO two bit ECC error.  <a href="#ga590c7e3aa7a7f5aad88f562bdef58cdb">More...</a><br/></td></tr>
+<tr class="separator:ga590c7e3aa7a7f5aad88f562bdef58cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabcb177002d5f1ec095045b081b539181"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gabcb177002d5f1ec095045b081b539181">XCAN_IXR_E1BETXOL_MASK</a>&#160;&#160;&#160;0x00100000</td></tr>
+<tr class="memdesc:gabcb177002d5f1ec095045b081b539181"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXOL FIFO one bit ECC error.  <a href="#gabcb177002d5f1ec095045b081b539181">More...</a><br/></td></tr>
+<tr class="separator:gabcb177002d5f1ec095045b081b539181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3d731cf466c57dfba1ca0ac76d9864ed"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga3d731cf466c57dfba1ca0ac76d9864ed">XCAN_IXR_E2BETXTL_MASK</a>&#160;&#160;&#160;0x00080000</td></tr>
+<tr class="memdesc:ga3d731cf466c57dfba1ca0ac76d9864ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXTL FIFO two bit ECC error.  <a href="#ga3d731cf466c57dfba1ca0ac76d9864ed">More...</a><br/></td></tr>
+<tr class="separator:ga3d731cf466c57dfba1ca0ac76d9864ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga18a7f430a8d8e99d185b2e8e0b09f908"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga18a7f430a8d8e99d185b2e8e0b09f908">XCAN_IXR_E1BETXTL_MASK</a>&#160;&#160;&#160;0x00040000</td></tr>
+<tr class="memdesc:ga18a7f430a8d8e99d185b2e8e0b09f908"><td class="mdescLeft">&#160;</td><td class="mdescRight">TXTL FIFO one bit ECC error.  <a href="#ga18a7f430a8d8e99d185b2e8e0b09f908">More...</a><br/></td></tr>
+<tr class="separator:ga18a7f430a8d8e99d185b2e8e0b09f908"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaea1b2f81446269b8b30267bf840b3c31"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a>&#160;&#160;&#160;0x00000800</td></tr>
 <tr class="memdesc:gaea1b2f81446269b8b30267bf840b3c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wake up Interrupt Mask.  <a href="#gaea1b2f81446269b8b30267bf840b3c31">More...</a><br/></td></tr>
 <tr class="separator:gaea1b2f81446269b8b30267bf840b3c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -518,6 +554,9 @@ Interrupt Status/Enable/Clear Register</h2></td></tr>
 <tr class="memitem:ga519a0e1365d4237932311c794a9f3286"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga519a0e1365d4237932311c794a9f3286">XCAN_IXR_ARBLST_MASK</a>&#160;&#160;&#160;0x00000001</td></tr>
 <tr class="memdesc:ga519a0e1365d4237932311c794a9f3286"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arbitration Lost Intr Mask.  <a href="#ga519a0e1365d4237932311c794a9f3286">More...</a><br/></td></tr>
 <tr class="separator:ga519a0e1365d4237932311c794a9f3286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab3ff6f454fae07e0b637ad85e2564b72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gab3ff6f454fae07e0b637ad85e2564b72">XCAN_IXR_ECC_MASK</a></td></tr>
+<tr class="memdesc:gab3ff6f454fae07e0b637ad85e2564b72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for ECC interrupts.  <a href="#gab3ff6f454fae07e0b637ad85e2564b72">More...</a><br/></td></tr>
+<tr class="separator:gab3ff6f454fae07e0b637ad85e2564b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga553b29006c0052225803342e61f63918"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga553b29006c0052225803342e61f63918">XCAN_IXR_ALL</a></td></tr>
 <tr class="memdesc:ga553b29006c0052225803342e61f63918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for basic interrupts.  <a href="#ga553b29006c0052225803342e61f63918">More...</a><br/></td></tr>
 <tr class="separator:ga553b29006c0052225803342e61f63918"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -630,10 +669,37 @@ Acceptance Filter Register</h2></td></tr>
 <tr class="separator:gac441a14e138a5e9828289afbe87e97ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
+ECC Configuration register</h2></td></tr>
+<tr class="memitem:gad823154b65050d0fd92e0df09f0b1ca0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gad823154b65050d0fd92e0df09f0b1ca0">XCAN_ECC_CFG_RST_MASK</a>&#160;&#160;&#160;0x00000007</td></tr>
+<tr class="memdesc:gad823154b65050d0fd92e0df09f0b1ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset Mask for ECC configuration register.  <a href="#gad823154b65050d0fd92e0df09f0b1ca0">More...</a><br/></td></tr>
+<tr class="separator:gad823154b65050d0fd92e0df09f0b1ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga25f76cffe03cc4827d00b9b9f92b6f21"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga25f76cffe03cc4827d00b9b9f92b6f21">XCAN_ECC_CFG_REECRX_MASK</a>&#160;&#160;&#160;0x00000004</td></tr>
+<tr class="memdesc:ga25f76cffe03cc4827d00b9b9f92b6f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset RX FIFO ECC error counters.  <a href="#ga25f76cffe03cc4827d00b9b9f92b6f21">More...</a><br/></td></tr>
+<tr class="separator:ga25f76cffe03cc4827d00b9b9f92b6f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca8ac8116f9aab163d71daa768e53876"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gaca8ac8116f9aab163d71daa768e53876">XCAN_ECC_CFG_REECTXOL_MASK</a>&#160;&#160;&#160;0x00000002</td></tr>
+<tr class="memdesc:gaca8ac8116f9aab163d71daa768e53876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset TXOL FIFO ECC error counters.  <a href="#gaca8ac8116f9aab163d71daa768e53876">More...</a><br/></td></tr>
+<tr class="separator:gaca8ac8116f9aab163d71daa768e53876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75f2a9e53470228a60bd1b7ca1ed9645"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga75f2a9e53470228a60bd1b7ca1ed9645">XCAN_ECC_CFG_REECTXTL_MASK</a>&#160;&#160;&#160;0x00000001</td></tr>
+<tr class="memdesc:ga75f2a9e53470228a60bd1b7ca1ed9645"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset TXTL FIFO ECC error counters.  <a href="#ga75f2a9e53470228a60bd1b7ca1ed9645">More...</a><br/></td></tr>
+<tr class="separator:ga75f2a9e53470228a60bd1b7ca1ed9645"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga18758fa4d22f6632b4d474a3629d21cd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga18758fa4d22f6632b4d474a3629d21cd">XCAN_ECC_2BIT_SHIFT</a>&#160;&#160;&#160;16</td></tr>
+<tr class="memdesc:ga18758fa4d22f6632b4d474a3629d21cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECC 2bit error counter shift.  <a href="#ga18758fa4d22f6632b4d474a3629d21cd">More...</a><br/></td></tr>
+<tr class="separator:ga18758fa4d22f6632b4d474a3629d21cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 CAN frame length constants</h2></td></tr>
 <tr class="memitem:ga0d49049d96621520fa9afe22db2a8a34"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga0d49049d96621520fa9afe22db2a8a34">XCAN_MAX_FRAME_SIZE</a>&#160;&#160;&#160;16</td></tr>
 <tr class="memdesc:ga0d49049d96621520fa9afe22db2a8a34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum CAN frame length in bytes.  <a href="#ga0d49049d96621520fa9afe22db2a8a34">More...</a><br/></td></tr>
 <tr class="separator:ga0d49049d96621520fa9afe22db2a8a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
+Mask for Low 16bits and High 16 bits</h2></td></tr>
+<tr class="memitem:ga1f4ae13d03284afb0c4574d52d139e10"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#ga1f4ae13d03284afb0c4574d52d139e10">XCAN_MASK_LOW_16BITS</a>&#160;&#160;&#160;0x0000FFFF</td></tr>
+<tr class="memdesc:ga1f4ae13d03284afb0c4574d52d139e10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask to obtain lower 16bits.  <a href="#ga1f4ae13d03284afb0c4574d52d139e10">More...</a><br/></td></tr>
+<tr class="separator:ga1f4ae13d03284afb0c4574d52d139e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac9b2db5b4abc4a1ee2154108702776d1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__can.html#gac9b2db5b4abc4a1ee2154108702776d1">XCAN_MASK_HIGH_16BITS</a>&#160;&#160;&#160;0XFFFF0000</td></tr>
+<tr class="memdesc:gac9b2db5b4abc4a1ee2154108702776d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask to obtain higher 16bits.  <a href="#gac9b2db5b4abc4a1ee2154108702776d1">More...</a><br/></td></tr>
+<tr class="separator:gac9b2db5b4abc4a1ee2154108702776d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="gad5fc0782d81797d868c6a0f86e56d1a6"></a>
@@ -887,10 +953,10 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__can.html#gab5671b822a0a80731f0e5052eee1767c">XCAN_AFR_UAF4_MASK</a> | <a class="code" href="group__can.html#ga540f1efcafa2d70618be48c52e7637ff">XCAN_AFR_UAF3_MASK</a> | <a class="code" href="group__can.html#ga32a8c92478c1129bd0b81f921f7e5e0d">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga32a8c92478c1129bd0b81f921f7e5e0d">				 XCAN_AFR_UAF2_MASK</a> | <a class="code" href="group__can.html#ga381e95f0585ebeb9aec90d553c9bca05">XCAN_AFR_UAF1_MASK</a>)</div>
-<div class="ttc" id="group__can_html_ga32a8c92478c1129bd0b81f921f7e5e0d"><div class="ttname"><a href="group__can.html#ga32a8c92478c1129bd0b81f921f7e5e0d">XCAN_AFR_UAF2_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF2_MASK</div><div class="ttdoc">Use Acceptance Filter No.2. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:235</div></div>
-<div class="ttc" id="group__can_html_ga540f1efcafa2d70618be48c52e7637ff"><div class="ttname"><a href="group__can.html#ga540f1efcafa2d70618be48c52e7637ff">XCAN_AFR_UAF3_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF3_MASK</div><div class="ttdoc">Use Acceptance Filter No.3. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:234</div></div>
-<div class="ttc" id="group__can_html_gab5671b822a0a80731f0e5052eee1767c"><div class="ttname"><a href="group__can.html#gab5671b822a0a80731f0e5052eee1767c">XCAN_AFR_UAF4_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF4_MASK</div><div class="ttdoc">Use Acceptance Filter No.4. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:233</div></div>
-<div class="ttc" id="group__can_html_ga381e95f0585ebeb9aec90d553c9bca05"><div class="ttname"><a href="group__can.html#ga381e95f0585ebeb9aec90d553c9bca05">XCAN_AFR_UAF1_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF1_MASK</div><div class="ttdoc">Use Acceptance Filter No.1. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:236</div></div>
+<div class="ttc" id="group__can_html_ga32a8c92478c1129bd0b81f921f7e5e0d"><div class="ttname"><a href="group__can.html#ga32a8c92478c1129bd0b81f921f7e5e0d">XCAN_AFR_UAF2_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF2_MASK</div><div class="ttdoc">Use Acceptance Filter No.2. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:260</div></div>
+<div class="ttc" id="group__can_html_ga540f1efcafa2d70618be48c52e7637ff"><div class="ttname"><a href="group__can.html#ga540f1efcafa2d70618be48c52e7637ff">XCAN_AFR_UAF3_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF3_MASK</div><div class="ttdoc">Use Acceptance Filter No.3. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:259</div></div>
+<div class="ttc" id="group__can_html_gab5671b822a0a80731f0e5052eee1767c"><div class="ttname"><a href="group__can.html#gab5671b822a0a80731f0e5052eee1767c">XCAN_AFR_UAF4_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF4_MASK</div><div class="ttdoc">Use Acceptance Filter No.4. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:258</div></div>
+<div class="ttc" id="group__can_html_ga381e95f0585ebeb9aec90d553c9bca05"><div class="ttname"><a href="group__can.html#ga381e95f0585ebeb9aec90d553c9bca05">XCAN_AFR_UAF1_MASK</a></div><div class="ttdeci">#define XCAN_AFR_UAF1_MASK</div><div class="ttdoc">Use Acceptance Filter No.1. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:261</div></div>
 </div><!-- fragment -->
 <p>Mask for Acceptance Filters. </p>
 
@@ -1098,15 +1164,15 @@ CAN frame length constants</h2></td></tr>
 <div class="line"> (((IdExtension) &lt;&lt; <a class="code" href="group__can.html#ga5a37127b76e4f9356f56edd8f3b0d178">XCAN_IDR_IDE_SHIFT</a>) &amp; <a class="code" href="group__can.html#gaf39813df4090219175f47904f099c617">XCAN_IDR_IDE_MASK</a>) | \</div>
 <div class="line"> (((ExtendedId) &lt;&lt; <a class="code" href="group__can.html#gab713a9e27487c69a7672da10f97b7019">XCAN_IDR_ID2_SHIFT</a>) &amp; <a class="code" href="group__can.html#ga7fd399769caeac6b7a857eb608ded32d">XCAN_IDR_ID2_MASK</a>) | \</div>
 <div class="line"> ((RemoteTransReq) &amp; <a class="code" href="group__can.html#ga5c4236ed24ee27b58a4068b14455535d">XCAN_IDR_RTR_MASK</a>))</div>
-<div class="ttc" id="group__can_html_gaf39813df4090219175f47904f099c617"><div class="ttname"><a href="group__can.html#gaf39813df4090219175f47904f099c617">XCAN_IDR_IDE_MASK</a></div><div class="ttdeci">#define XCAN_IDR_IDE_MASK</div><div class="ttdoc">Identifier Extension Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:192</div></div>
-<div class="ttc" id="group__can_html_gab713a9e27487c69a7672da10f97b7019"><div class="ttname"><a href="group__can.html#gab713a9e27487c69a7672da10f97b7019">XCAN_IDR_ID2_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_ID2_SHIFT</div><div class="ttdoc">Extended Message Ident Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:195</div></div>
-<div class="ttc" id="group__can_html_ga8f9c7951fae58fd2cf90131e0631304e"><div class="ttname"><a href="group__can.html#ga8f9c7951fae58fd2cf90131e0631304e">XCAN_IDR_ID1_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_ID1_SHIFT</div><div class="ttdoc">Standard Messg Ident Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:189</div></div>
-<div class="ttc" id="group__can_html_ga2525f6a15bbfb9db8502779b1f876a49"><div class="ttname"><a href="group__can.html#ga2525f6a15bbfb9db8502779b1f876a49">XCAN_IDR_SRR_MASK</a></div><div class="ttdeci">#define XCAN_IDR_SRR_MASK</div><div class="ttdoc">Substitute Remote TX Req. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:190</div></div>
-<div class="ttc" id="group__can_html_ga392ae006c23ac043f35d7381b769a466"><div class="ttname"><a href="group__can.html#ga392ae006c23ac043f35d7381b769a466">XCAN_IDR_SRR_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_SRR_SHIFT</div><div class="ttdoc">Shift Value for SRR. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:191</div></div>
-<div class="ttc" id="group__can_html_ga5a37127b76e4f9356f56edd8f3b0d178"><div class="ttname"><a href="group__can.html#ga5a37127b76e4f9356f56edd8f3b0d178">XCAN_IDR_IDE_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_IDE_SHIFT</div><div class="ttdoc">Identifier Extension Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:193</div></div>
-<div class="ttc" id="group__can_html_gada1163dd1ad028100277856729da0c76"><div class="ttname"><a href="group__can.html#gada1163dd1ad028100277856729da0c76">XCAN_IDR_ID1_MASK</a></div><div class="ttdeci">#define XCAN_IDR_ID1_MASK</div><div class="ttdoc">Standard Messg Ident Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:188</div></div>
-<div class="ttc" id="group__can_html_ga5c4236ed24ee27b58a4068b14455535d"><div class="ttname"><a href="group__can.html#ga5c4236ed24ee27b58a4068b14455535d">XCAN_IDR_RTR_MASK</a></div><div class="ttdeci">#define XCAN_IDR_RTR_MASK</div><div class="ttdoc">Remote TX Request Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:196</div></div>
-<div class="ttc" id="group__can_html_ga7fd399769caeac6b7a857eb608ded32d"><div class="ttname"><a href="group__can.html#ga7fd399769caeac6b7a857eb608ded32d">XCAN_IDR_ID2_MASK</a></div><div class="ttdeci">#define XCAN_IDR_ID2_MASK</div><div class="ttdoc">Extended Message Ident Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:194</div></div>
+<div class="ttc" id="group__can_html_gaf39813df4090219175f47904f099c617"><div class="ttname"><a href="group__can.html#gaf39813df4090219175f47904f099c617">XCAN_IDR_IDE_MASK</a></div><div class="ttdeci">#define XCAN_IDR_IDE_MASK</div><div class="ttdoc">Identifier Extension Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:217</div></div>
+<div class="ttc" id="group__can_html_gab713a9e27487c69a7672da10f97b7019"><div class="ttname"><a href="group__can.html#gab713a9e27487c69a7672da10f97b7019">XCAN_IDR_ID2_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_ID2_SHIFT</div><div class="ttdoc">Extended Message Ident Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:220</div></div>
+<div class="ttc" id="group__can_html_ga8f9c7951fae58fd2cf90131e0631304e"><div class="ttname"><a href="group__can.html#ga8f9c7951fae58fd2cf90131e0631304e">XCAN_IDR_ID1_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_ID1_SHIFT</div><div class="ttdoc">Standard Messg Ident Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:214</div></div>
+<div class="ttc" id="group__can_html_ga2525f6a15bbfb9db8502779b1f876a49"><div class="ttname"><a href="group__can.html#ga2525f6a15bbfb9db8502779b1f876a49">XCAN_IDR_SRR_MASK</a></div><div class="ttdeci">#define XCAN_IDR_SRR_MASK</div><div class="ttdoc">Substitute Remote TX Req. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:215</div></div>
+<div class="ttc" id="group__can_html_ga392ae006c23ac043f35d7381b769a466"><div class="ttname"><a href="group__can.html#ga392ae006c23ac043f35d7381b769a466">XCAN_IDR_SRR_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_SRR_SHIFT</div><div class="ttdoc">Shift Value for SRR. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:216</div></div>
+<div class="ttc" id="group__can_html_ga5a37127b76e4f9356f56edd8f3b0d178"><div class="ttname"><a href="group__can.html#ga5a37127b76e4f9356f56edd8f3b0d178">XCAN_IDR_IDE_SHIFT</a></div><div class="ttdeci">#define XCAN_IDR_IDE_SHIFT</div><div class="ttdoc">Identifier Extension Shift. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:218</div></div>
+<div class="ttc" id="group__can_html_gada1163dd1ad028100277856729da0c76"><div class="ttname"><a href="group__can.html#gada1163dd1ad028100277856729da0c76">XCAN_IDR_ID1_MASK</a></div><div class="ttdeci">#define XCAN_IDR_ID1_MASK</div><div class="ttdoc">Standard Messg Ident Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:213</div></div>
+<div class="ttc" id="group__can_html_ga5c4236ed24ee27b58a4068b14455535d"><div class="ttname"><a href="group__can.html#ga5c4236ed24ee27b58a4068b14455535d">XCAN_IDR_RTR_MASK</a></div><div class="ttdeci">#define XCAN_IDR_RTR_MASK</div><div class="ttdoc">Remote TX Request Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:221</div></div>
+<div class="ttc" id="group__can_html_ga7fd399769caeac6b7a857eb608ded32d"><div class="ttname"><a href="group__can.html#ga7fd399769caeac6b7a857eb608ded32d">XCAN_IDR_ID2_MASK</a></div><div class="ttdeci">#define XCAN_IDR_ID2_MASK</div><div class="ttdoc">Extended Message Ident Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:219</div></div>
 </div><!-- fragment -->
 <p>This macro calculates CAN message identifier value given identifier field values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1348,6 +1414,96 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Data Byte 7. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga18758fa4d22f6632b4d474a3629d21cd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_2BIT_SHIFT&#160;&#160;&#160;16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>ECC 2bit error counter shift. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga078754fce159d323c3cdd60c0842b8f3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_CFG_OFFSET&#160;&#160;&#160;0x0C8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>ECC Configuration register. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga0b5089d7561e88dec96e54fa618a6da4">XCan_ResetECC()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga25f76cffe03cc4827d00b9b9f92b6f21"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_CFG_REECRX_MASK&#160;&#160;&#160;0x00000004</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset RX FIFO ECC error counters. </p>
+
+</div>
+</div>
+<a class="anchor" id="gaca8ac8116f9aab163d71daa768e53876"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_CFG_REECTXOL_MASK&#160;&#160;&#160;0x00000002</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset TXOL FIFO ECC error counters. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga75f2a9e53470228a60bd1b7ca1ed9645"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_CFG_REECTXTL_MASK&#160;&#160;&#160;0x00000001</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset TXTL FIFO ECC error counters. </p>
+
+</div>
+</div>
+<a class="anchor" id="gad823154b65050d0fd92e0df09f0b1ca0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_ECC_CFG_RST_MASK&#160;&#160;&#160;0x00000007</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset Mask for ECC configuration register. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga0b5089d7561e88dec96e54fa618a6da4">XCan_ResetECC()</a>.</p>
 
 </div>
 </div>
@@ -1762,9 +1918,9 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>(((InstancePtr)-&gt;BaseAddress), <a class="code" href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a>) &amp; <a class="code" href="group__can.html#ga73da923dd04f1f036ca7e24e6fdc14b7">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga73da923dd04f1f036ca7e24e6fdc14b7">	  XCAN_SR_ACFBSY_MASK</a>) ? TRUE : FALSE)</div>
-<div class="ttc" id="group__can_html_ga73da923dd04f1f036ca7e24e6fdc14b7"><div class="ttname"><a href="group__can.html#ga73da923dd04f1f036ca7e24e6fdc14b7">XCAN_SR_ACFBSY_MASK</a></div><div class="ttdeci">#define XCAN_SR_ACFBSY_MASK</div><div class="ttdoc">Acceptance Filter busy Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:140</div></div>
-<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:57</div></div>
-<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:266</div></div>
+<div class="ttc" id="group__can_html_ga73da923dd04f1f036ca7e24e6fdc14b7"><div class="ttname"><a href="group__can.html#ga73da923dd04f1f036ca7e24e6fdc14b7">XCAN_SR_ACFBSY_MASK</a></div><div class="ttdeci">#define XCAN_SR_ACFBSY_MASK</div><div class="ttdoc">Acceptance Filter busy Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:147</div></div>
+<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:58</div></div>
+<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:308</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the CAN device is ready for the driver to change Acceptance Filter Identifier Registers (AFIR) and Acceptance Filter Mask Registers (AFMR). </p>
 <p>AFIR and AFMR for a filter are changeable only after the filter is disabled and this routine returns FALSE.</p>
@@ -1800,9 +1956,9 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>(((InstancePtr)-&gt;BaseAddress), <a class="code" href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a>) &amp; <a class="code" href="group__can.html#gae3786b56d4ddf066d41dd3ecbbee85b8">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gae3786b56d4ddf066d41dd3ecbbee85b8">	  XCAN_SR_TXBFLL_MASK</a>) ? TRUE : FALSE)</div>
-<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:57</div></div>
-<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:266</div></div>
-<div class="ttc" id="group__can_html_gae3786b56d4ddf066d41dd3ecbbee85b8"><div class="ttname"><a href="group__can.html#gae3786b56d4ddf066d41dd3ecbbee85b8">XCAN_SR_TXBFLL_MASK</a></div><div class="ttdeci">#define XCAN_SR_TXBFLL_MASK</div><div class="ttdoc">TX High Priority Buffer full. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:142</div></div>
+<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:58</div></div>
+<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:308</div></div>
+<div class="ttc" id="group__can_html_gae3786b56d4ddf066d41dd3ecbbee85b8"><div class="ttname"><a href="group__can.html#gae3786b56d4ddf066d41dd3ecbbee85b8">XCAN_SR_TXBFLL_MASK</a></div><div class="ttdeci">#define XCAN_SR_TXBFLL_MASK</div><div class="ttdoc">TX High Priority Buffer full. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:149</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the Transmission High Priority Buffer is full. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1853,9 +2009,9 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>(((InstancePtr)-&gt;BaseAddress), <a class="code" href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a>) &amp; <a class="code" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">	  XCAN_IXR_RXNEMP_MASK</a>) ? FALSE : TRUE)</div>
-<div class="ttc" id="group__can_html_ga5b1cb15de038ddda4b5a500ae3d829f4"><div class="ttname"><a href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXNEMP_MASK</div><div class="ttdoc">RX FIFO Not Empty Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:161</div></div>
-<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:266</div></div>
-<div class="ttc" id="group__can_html_ga0816aca8c9bca41953439ad0c14cbf4a"><div class="ttname"><a href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a></div><div class="ttdeci">#define XCAN_ISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:59</div></div>
+<div class="ttc" id="group__can_html_ga5b1cb15de038ddda4b5a500ae3d829f4"><div class="ttname"><a href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXNEMP_MASK</div><div class="ttdoc">RX FIFO Not Empty Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:175</div></div>
+<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:308</div></div>
+<div class="ttc" id="group__can_html_ga0816aca8c9bca41953439ad0c14cbf4a"><div class="ttname"><a href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a></div><div class="ttdeci">#define XCAN_ISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:60</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the receive FIFO is empty. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1890,9 +2046,9 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>(((InstancePtr)-&gt;BaseAddress), <a class="code" href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a>) &amp; <a class="code" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">	  XCAN_IXR_TXOK_MASK</a>) ? TRUE : FALSE)</div>
-<div class="ttc" id="group__can_html_gaa3b70e481b672854a2a8436dfaad2ed2"><div class="ttname"><a href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXOK_MASK</div><div class="ttdoc">TX Successful Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:167</div></div>
-<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:266</div></div>
-<div class="ttc" id="group__can_html_ga0816aca8c9bca41953439ad0c14cbf4a"><div class="ttname"><a href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a></div><div class="ttdeci">#define XCAN_ISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:59</div></div>
+<div class="ttc" id="group__can_html_gaa3b70e481b672854a2a8436dfaad2ed2"><div class="ttname"><a href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXOK_MASK</div><div class="ttdoc">TX Successful Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:181</div></div>
+<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:308</div></div>
+<div class="ttc" id="group__can_html_ga0816aca8c9bca41953439ad0c14cbf4a"><div class="ttname"><a href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a></div><div class="ttdeci">#define XCAN_ISR_OFFSET</div><div class="ttdoc">Interrupt Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:60</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the transmission is complete. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1925,9 +2081,9 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>(((InstancePtr)-&gt;BaseAddress), <a class="code" href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a>) &amp; <a class="code" href="group__can.html#gad1399331118c8dd22db86571ce270096">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gad1399331118c8dd22db86571ce270096">	  XCAN_SR_TXFLL_MASK</a>) ? TRUE : FALSE)</div>
-<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:57</div></div>
-<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:266</div></div>
-<div class="ttc" id="group__can_html_gad1399331118c8dd22db86571ce270096"><div class="ttname"><a href="group__can.html#gad1399331118c8dd22db86571ce270096">XCAN_SR_TXFLL_MASK</a></div><div class="ttdeci">#define XCAN_SR_TXFLL_MASK</div><div class="ttdoc">TX FIFO is full Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:141</div></div>
+<div class="ttc" id="group__can_html_ga64573916e0c04f2a49f77e20801a41bf"><div class="ttname"><a href="group__can.html#ga64573916e0c04f2a49f77e20801a41bf">XCAN_SR_OFFSET</a></div><div class="ttdeci">#define XCAN_SR_OFFSET</div><div class="ttdoc">Status Register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:58</div></div>
+<div class="ttc" id="group__can_html_ga2ee91da70cd3c92169c780186a9d6c51"><div class="ttname"><a href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a></div><div class="ttdeci">#define XCan_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads the given register. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:308</div></div>
+<div class="ttc" id="group__can_html_gad1399331118c8dd22db86571ce270096"><div class="ttname"><a href="group__can.html#gad1399331118c8dd22db86571ce270096">XCAN_SR_TXFLL_MASK</a></div><div class="ttdeci">#define XCAN_SR_TXFLL_MASK</div><div class="ttdoc">TX FIFO is full Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:148</div></div>
 </div><!-- fragment -->
 <p>This macro checks if the transmission FIFO is full. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1957,33 +2113,33 @@ CAN frame length constants</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a>   | <a class="code" href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">\</a></div>
-<div class="line"><a class="code" href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">				XCAN_IXR_SLP_MASK</a>   | <a class="code" href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">				XCAN_IXR_SLP_MASK</a>    | <a class="code" href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">				XCAN_IXR_BSOFF_MASK</a>  | <a class="code" href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">				XCAN_IXR_ERROR_MASK</a>  | <a class="code" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">				XCAN_IXR_RXNEMP_MASK</a> | <a class="code" href="group__can.html#ga269318cb287c11f639cf185dce640191">\</a></div>
-<div class="line"><a class="code" href="group__can.html#ga269318cb287c11f639cf185dce640191"> 				XCAN_IXR_RXOFLW_MASK</a> | <a class="code" href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga269318cb287c11f639cf185dce640191">				XCAN_IXR_RXOFLW_MASK</a> | <a class="code" href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">				XCAN_IXR_RXUFLW_MASK</a> | <a class="code" href="group__can.html#ga473f195ede2bde98dedda9eecfc5efdb">\</a></div>
-<div class="line"><a class="code" href="group__can.html#ga473f195ede2bde98dedda9eecfc5efdb">	 			XCAN_IXR_RXOK_MASK</a>   | <a class="code" href="group__can.html#gaccb86502df2129af8cbddd4da45db912">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga473f195ede2bde98dedda9eecfc5efdb">				XCAN_IXR_RXOK_MASK</a>   | <a class="code" href="group__can.html#gaccb86502df2129af8cbddd4da45db912">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gaccb86502df2129af8cbddd4da45db912">				XCAN_IXR_TXBFLL_MASK</a> | <a class="code" href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">				XCAN_IXR_TXFLL_MASK</a>  | <a class="code" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">\</a></div>
 <div class="line"><a class="code" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">				XCAN_IXR_TXOK_MASK</a>   | <a class="code" href="group__can.html#ga519a0e1365d4237932311c794a9f3286">\</a></div>
 <div class="line"><a class="code" href="group__can.html#ga519a0e1365d4237932311c794a9f3286">				XCAN_IXR_ARBLST_MASK</a>)</div>
-<div class="ttc" id="group__can_html_gaa8801f97438a944cb1b76ccaa1d3ac38"><div class="ttname"><a href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">XCAN_IXR_ERROR_MASK</a></div><div class="ttdeci">#define XCAN_IXR_ERROR_MASK</div><div class="ttdoc">Error Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:160</div></div>
-<div class="ttc" id="group__can_html_ga054d2d002f9141d9d937d262f5b637de"><div class="ttname"><a href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">XCAN_IXR_RXUFLW_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXUFLW_MASK</div><div class="ttdoc">RX FIFO Underflow Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:163</div></div>
-<div class="ttc" id="group__can_html_ga5fce703c1f3a145620255809ecf422bb"><div class="ttname"><a href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">XCAN_IXR_SLP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_SLP_MASK</div><div class="ttdoc">Sleep Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:158</div></div>
-<div class="ttc" id="group__can_html_ga5b1cb15de038ddda4b5a500ae3d829f4"><div class="ttname"><a href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXNEMP_MASK</div><div class="ttdoc">RX FIFO Not Empty Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:161</div></div>
-<div class="ttc" id="group__can_html_gaea1b2f81446269b8b30267bf840b3c31"><div class="ttname"><a href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_WKUP_MASK</div><div class="ttdoc">Wake up Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:157</div></div>
-<div class="ttc" id="group__can_html_ga269318cb287c11f639cf185dce640191"><div class="ttname"><a href="group__can.html#ga269318cb287c11f639cf185dce640191">XCAN_IXR_RXOFLW_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXOFLW_MASK</div><div class="ttdoc">RX FIFO Overflow Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:162</div></div>
-<div class="ttc" id="group__can_html_gaa3b70e481b672854a2a8436dfaad2ed2"><div class="ttname"><a href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXOK_MASK</div><div class="ttdoc">TX Successful Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:167</div></div>
-<div class="ttc" id="group__can_html_gaccb86502df2129af8cbddd4da45db912"><div class="ttname"><a href="group__can.html#gaccb86502df2129af8cbddd4da45db912">XCAN_IXR_TXBFLL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXBFLL_MASK</div><div class="ttdoc">TX High Priority Buf Full. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:165</div></div>
-<div class="ttc" id="group__can_html_ga519a0e1365d4237932311c794a9f3286"><div class="ttname"><a href="group__can.html#ga519a0e1365d4237932311c794a9f3286">XCAN_IXR_ARBLST_MASK</a></div><div class="ttdeci">#define XCAN_IXR_ARBLST_MASK</div><div class="ttdoc">Arbitration Lost Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:168</div></div>
-<div class="ttc" id="group__can_html_ga43b89eddb5c487830ab99f876eaf5a34"><div class="ttname"><a href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">XCAN_IXR_BSOFF_MASK</a></div><div class="ttdeci">#define XCAN_IXR_BSOFF_MASK</div><div class="ttdoc">Bus Off Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:159</div></div>
-<div class="ttc" id="group__can_html_ga3436502be0f71ac99a60299c73b86f1f"><div class="ttname"><a href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">XCAN_IXR_TXFLL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXFLL_MASK</div><div class="ttdoc">TX FIFO Full Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:166</div></div>
-<div class="ttc" id="group__can_html_ga473f195ede2bde98dedda9eecfc5efdb"><div class="ttname"><a href="group__can.html#ga473f195ede2bde98dedda9eecfc5efdb">XCAN_IXR_RXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXOK_MASK</div><div class="ttdoc">New Message Received Intr. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:164</div></div>
+<div class="ttc" id="group__can_html_gaa8801f97438a944cb1b76ccaa1d3ac38"><div class="ttname"><a href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">XCAN_IXR_ERROR_MASK</a></div><div class="ttdeci">#define XCAN_IXR_ERROR_MASK</div><div class="ttdoc">Error Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:174</div></div>
+<div class="ttc" id="group__can_html_ga054d2d002f9141d9d937d262f5b637de"><div class="ttname"><a href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">XCAN_IXR_RXUFLW_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXUFLW_MASK</div><div class="ttdoc">RX FIFO Underflow Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:177</div></div>
+<div class="ttc" id="group__can_html_ga5fce703c1f3a145620255809ecf422bb"><div class="ttname"><a href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">XCAN_IXR_SLP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_SLP_MASK</div><div class="ttdoc">Sleep Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:172</div></div>
+<div class="ttc" id="group__can_html_ga5b1cb15de038ddda4b5a500ae3d829f4"><div class="ttname"><a href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXNEMP_MASK</div><div class="ttdoc">RX FIFO Not Empty Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:175</div></div>
+<div class="ttc" id="group__can_html_gaea1b2f81446269b8b30267bf840b3c31"><div class="ttname"><a href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a></div><div class="ttdeci">#define XCAN_IXR_WKUP_MASK</div><div class="ttdoc">Wake up Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:171</div></div>
+<div class="ttc" id="group__can_html_ga269318cb287c11f639cf185dce640191"><div class="ttname"><a href="group__can.html#ga269318cb287c11f639cf185dce640191">XCAN_IXR_RXOFLW_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXOFLW_MASK</div><div class="ttdoc">RX FIFO Overflow Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:176</div></div>
+<div class="ttc" id="group__can_html_gaa3b70e481b672854a2a8436dfaad2ed2"><div class="ttname"><a href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXOK_MASK</div><div class="ttdoc">TX Successful Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:181</div></div>
+<div class="ttc" id="group__can_html_gaccb86502df2129af8cbddd4da45db912"><div class="ttname"><a href="group__can.html#gaccb86502df2129af8cbddd4da45db912">XCAN_IXR_TXBFLL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXBFLL_MASK</div><div class="ttdoc">TX High Priority Buf Full. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:179</div></div>
+<div class="ttc" id="group__can_html_ga519a0e1365d4237932311c794a9f3286"><div class="ttname"><a href="group__can.html#ga519a0e1365d4237932311c794a9f3286">XCAN_IXR_ARBLST_MASK</a></div><div class="ttdeci">#define XCAN_IXR_ARBLST_MASK</div><div class="ttdoc">Arbitration Lost Intr Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:182</div></div>
+<div class="ttc" id="group__can_html_ga43b89eddb5c487830ab99f876eaf5a34"><div class="ttname"><a href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">XCAN_IXR_BSOFF_MASK</a></div><div class="ttdeci">#define XCAN_IXR_BSOFF_MASK</div><div class="ttdoc">Bus Off Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:173</div></div>
+<div class="ttc" id="group__can_html_ga3436502be0f71ac99a60299c73b86f1f"><div class="ttname"><a href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">XCAN_IXR_TXFLL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_TXFLL_MASK</div><div class="ttdoc">TX FIFO Full Interrupt Mask. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:180</div></div>
+<div class="ttc" id="group__can_html_ga473f195ede2bde98dedda9eecfc5efdb"><div class="ttname"><a href="group__can.html#ga473f195ede2bde98dedda9eecfc5efdb">XCAN_IXR_RXOK_MASK</a></div><div class="ttdeci">#define XCAN_IXR_RXOK_MASK</div><div class="ttdoc">New Message Received Intr. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:178</div></div>
 </div><!-- fragment -->
 <p>Mask for basic interrupts. </p>
 
-<p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__can.html#ga1abd3a018094fd4d586599d708c33e4f">XCan_InterruptEnable()</a>.</p>
+<p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
 </div>
 </div>
@@ -2014,6 +2170,130 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Bus Off Interrupt Mask. </p>
+
+<p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga35a9f71ee627fea1fc8cc35c4128cef9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E1BERX_MASK&#160;&#160;&#160;0x00400000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RX FIFO one bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gabcb177002d5f1ec095045b081b539181"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E1BETXOL_MASK&#160;&#160;&#160;0x00100000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXOL FIFO one bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga18a7f430a8d8e99d185b2e8e0b09f908"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E1BETXTL_MASK&#160;&#160;&#160;0x00040000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXTL FIFO one bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga67744d34a2a65666e55116e2fdb8479b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E2BERX_MASK&#160;&#160;&#160;0x00800000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RX FIFO two bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga590c7e3aa7a7f5aad88f562bdef58cdb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E2BETXOL_MASK&#160;&#160;&#160;0x00200000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXOL FIFO two bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga3d731cf466c57dfba1ca0ac76d9864ed"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_E2BETXTL_MASK&#160;&#160;&#160;0x00080000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXTL FIFO two bit ECC error. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gab3ff6f454fae07e0b637ad85e2564b72"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_IXR_ECC_MASK</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__can.html#ga67744d34a2a65666e55116e2fdb8479b">XCAN_IXR_E2BERX_MASK</a>   | <a class="code" href="group__can.html#ga35a9f71ee627fea1fc8cc35c4128cef9">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga35a9f71ee627fea1fc8cc35c4128cef9">				XCAN_IXR_E1BERX_MASK</a>    | <a class="code" href="group__can.html#ga590c7e3aa7a7f5aad88f562bdef58cdb">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga590c7e3aa7a7f5aad88f562bdef58cdb">				XCAN_IXR_E2BETXOL_MASK</a>   | <a class="code" href="group__can.html#gabcb177002d5f1ec095045b081b539181">\</a></div>
+<div class="line"><a class="code" href="group__can.html#gabcb177002d5f1ec095045b081b539181">				XCAN_IXR_E1BETXOL_MASK</a>   | <a class="code" href="group__can.html#ga3d731cf466c57dfba1ca0ac76d9864ed">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga3d731cf466c57dfba1ca0ac76d9864ed">				XCAN_IXR_E2BETXTL_MASK</a>   | <a class="code" href="group__can.html#ga18a7f430a8d8e99d185b2e8e0b09f908">\</a></div>
+<div class="line"><a class="code" href="group__can.html#ga18a7f430a8d8e99d185b2e8e0b09f908">				XCAN_IXR_E1BETXTL_MASK</a>)</div>
+<div class="ttc" id="group__can_html_gabcb177002d5f1ec095045b081b539181"><div class="ttname"><a href="group__can.html#gabcb177002d5f1ec095045b081b539181">XCAN_IXR_E1BETXOL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E1BETXOL_MASK</div><div class="ttdoc">TXOL FIFO one bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:167</div></div>
+<div class="ttc" id="group__can_html_ga67744d34a2a65666e55116e2fdb8479b"><div class="ttname"><a href="group__can.html#ga67744d34a2a65666e55116e2fdb8479b">XCAN_IXR_E2BERX_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E2BERX_MASK</div><div class="ttdoc">RX FIFO two bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:164</div></div>
+<div class="ttc" id="group__can_html_ga18a7f430a8d8e99d185b2e8e0b09f908"><div class="ttname"><a href="group__can.html#ga18a7f430a8d8e99d185b2e8e0b09f908">XCAN_IXR_E1BETXTL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E1BETXTL_MASK</div><div class="ttdoc">TXTL FIFO one bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:169</div></div>
+<div class="ttc" id="group__can_html_ga590c7e3aa7a7f5aad88f562bdef58cdb"><div class="ttname"><a href="group__can.html#ga590c7e3aa7a7f5aad88f562bdef58cdb">XCAN_IXR_E2BETXOL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E2BETXOL_MASK</div><div class="ttdoc">TXOL FIFO two bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:166</div></div>
+<div class="ttc" id="group__can_html_ga3d731cf466c57dfba1ca0ac76d9864ed"><div class="ttname"><a href="group__can.html#ga3d731cf466c57dfba1ca0ac76d9864ed">XCAN_IXR_E2BETXTL_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E2BETXTL_MASK</div><div class="ttdoc">TXTL FIFO two bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:168</div></div>
+<div class="ttc" id="group__can_html_ga35a9f71ee627fea1fc8cc35c4128cef9"><div class="ttname"><a href="group__can.html#ga35a9f71ee627fea1fc8cc35c4128cef9">XCAN_IXR_E1BERX_MASK</a></div><div class="ttdeci">#define XCAN_IXR_E1BERX_MASK</div><div class="ttdoc">RX FIFO one bit ECC error. </div><div class="ttdef"><b>Definition:</b> xcan_l.h:165</div></div>
+</div><!-- fragment -->
+<p>Mask for ECC interrupts. </p>
 
 <p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
 
@@ -2188,6 +2468,38 @@ CAN frame length constants</h2></td></tr>
 </div><div class="memdoc">
 
 <p>by using protection macros </p>
+
+</div>
+</div>
+<a class="anchor" id="gac9b2db5b4abc4a1ee2154108702776d1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_MASK_HIGH_16BITS&#160;&#160;&#160;0XFFFF0000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mask to obtain higher 16bits. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga1f4ae13d03284afb0c4574d52d139e10"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_MASK_LOW_16BITS&#160;&#160;&#160;0x0000FFFF</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mask to obtain lower 16bits. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
 
 </div>
 </div>
@@ -2368,7 +2680,7 @@ CAN frame length constants</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The 32-bit value of the register</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51" title="This macro reads the given register. ">XCan_ReadReg(u32 BaseAddress, u32 RegOffset)</a>; </dd></dl>
 
-<p>Referenced by <a class="el" href="group__can.html#ga8bc758e3b0a5fc41bcb17b49fa1e7ed4">XCan_AcceptFilterDisable()</a>, <a class="el" href="group__can.html#gae04419e368e843d5bf7384b8f32ba9b6">XCan_AcceptFilterEnable()</a>, <a class="el" href="group__can.html#gab2385a83eb4e0e5f7bae366ac8ec86ec">XCan_AcceptFilterGet()</a>, <a class="el" href="group__can.html#ga02c9fb502d3fd8a0537c9efdf456defd">XCan_AcceptFilterGetEnabled()</a>, <a class="el" href="group__can.html#gaee29a9e04aa8993561e0c11d1222c1f9">XCan_GetBaudRatePrescaler()</a>, <a class="el" href="group__can.html#gab70138a7e54403355ec194f468f945fd">XCan_GetBitTiming()</a>, <a class="el" href="group__can.html#ga1a905b9f2f47e605267817c58edd1112">XCan_GetBusErrorCounter()</a>, <a class="el" href="group__can.html#ga242ec83578f9966bd7d562ed7f5dedd3">XCan_GetBusErrorStatus()</a>, <a class="el" href="group__can.html#ga502a294405726d96834c2abf574a96e8">XCan_GetStatus()</a>, <a class="el" href="group__can.html#ga5670f843250e65969ce6ef36d0e06e24">XCan_InterruptGetEnabled()</a>, <a class="el" href="group__can.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d">XCan_InterruptGetStatus()</a>, and <a class="el" href="group__can.html#ga1d8ac17789423c440872ffd4585b8c3c">XCan_Recv()</a>.</p>
+<p>Referenced by <a class="el" href="group__can.html#ga8bc758e3b0a5fc41bcb17b49fa1e7ed4">XCan_AcceptFilterDisable()</a>, <a class="el" href="group__can.html#gae04419e368e843d5bf7384b8f32ba9b6">XCan_AcceptFilterEnable()</a>, <a class="el" href="group__can.html#gab2385a83eb4e0e5f7bae366ac8ec86ec">XCan_AcceptFilterGet()</a>, <a class="el" href="group__can.html#ga02c9fb502d3fd8a0537c9efdf456defd">XCan_AcceptFilterGetEnabled()</a>, <a class="el" href="group__can.html#gaee29a9e04aa8993561e0c11d1222c1f9">XCan_GetBaudRatePrescaler()</a>, <a class="el" href="group__can.html#gab70138a7e54403355ec194f468f945fd">XCan_GetBitTiming()</a>, <a class="el" href="group__can.html#ga1a905b9f2f47e605267817c58edd1112">XCan_GetBusErrorCounter()</a>, <a class="el" href="group__can.html#ga242ec83578f9966bd7d562ed7f5dedd3">XCan_GetBusErrorStatus()</a>, <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>, <a class="el" href="group__can.html#ga502a294405726d96834c2abf574a96e8">XCan_GetStatus()</a>, <a class="el" href="group__can.html#ga5670f843250e65969ce6ef36d0e06e24">XCan_InterruptGetEnabled()</a>, <a class="el" href="group__can.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d">XCan_InterruptGetStatus()</a>, and <a class="el" href="group__can.html#ga1d8ac17789423c440872ffd4585b8c3c">XCan_Recv()</a>.</p>
 
 </div>
 </div>
@@ -2417,6 +2729,22 @@ CAN frame length constants</h2></td></tr>
 <p>RX FIFO Data Word 2. </p>
 
 <p>Referenced by <a class="el" href="group__can.html#ga1d8ac17789423c440872ffd4585b8c3c">XCan_Recv()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga05a0b3283999fc56204a5afbb013e048"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_RXFIFO_ECC_OFFSET&#160;&#160;&#160;0X0D4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RX FIFO ECC error counter. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
 
 </div>
 </div>
@@ -2802,6 +3130,38 @@ CAN frame length constants</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gaeed70ad0a591fb1f8c44a83f358a5842"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_TXOLFIFO_ECC_OFFSET&#160;&#160;&#160;0x0D0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXOL FIFO ECC error counter. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga093ec0385610ae9e0a7861e06921bb5d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XCAN_TXTLFIFO_ECC_OFFSET&#160;&#160;&#160;0x0CC</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TXTL FIFO ECC error counter. </p>
+
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga4b58327ea939610d5b1816a686ffd6c7"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2844,7 +3204,7 @@ CAN frame length constants</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__can.html#ga4b58327ea939610d5b1816a686ffd6c7" title="This macro writes the given register. ">XCan_WriteReg(u32 BaseAddress, u32 RegOffset, u32 Data)</a>; </dd></dl>
 
-<p>Referenced by <a class="el" href="group__can.html#ga8bc758e3b0a5fc41bcb17b49fa1e7ed4">XCan_AcceptFilterDisable()</a>, <a class="el" href="group__can.html#gae04419e368e843d5bf7384b8f32ba9b6">XCan_AcceptFilterEnable()</a>, <a class="el" href="group__can.html#ga3079df9559ea328b414b0f8438c7991e">XCan_AcceptFilterSet()</a>, <a class="el" href="group__can.html#ga757aecce4c0c06ff8f4cb3dd4d0c79fa">XCan_ClearBusErrorStatus()</a>, <a class="el" href="group__can.html#ga994a0b0bd9c938e99de9d7ffceb10ef3">XCan_EnterMode()</a>, <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, <a class="el" href="group__can.html#ga163cd737c7421ddbd0ff492883e32558">XCan_InterruptDisable()</a>, <a class="el" href="group__can.html#ga1abd3a018094fd4d586599d708c33e4f">XCan_InterruptEnable()</a>, <a class="el" href="group__can.html#ga6c52fb4d4b12d62e3e713ad182f00d8b">XCan_Reset()</a>, <a class="el" href="group__can.html#gad4717011f46b8e9d5e15c0bfb04c33c8">XCan_Send()</a>, <a class="el" href="group__can.html#ga8ba9b10678fbc6bd6093fdc5e9eb3edd">XCan_SendHighPriority()</a>, <a class="el" href="group__can.html#ga75aabbb82d96151cadfd3c26a2a285e9">XCan_SetBaudRatePrescaler()</a>, and <a class="el" href="group__can.html#gaf60120410396727f6e9304ce9ba65980">XCan_SetBitTiming()</a>.</p>
+<p>Referenced by <a class="el" href="group__can.html#ga8bc758e3b0a5fc41bcb17b49fa1e7ed4">XCan_AcceptFilterDisable()</a>, <a class="el" href="group__can.html#gae04419e368e843d5bf7384b8f32ba9b6">XCan_AcceptFilterEnable()</a>, <a class="el" href="group__can.html#ga3079df9559ea328b414b0f8438c7991e">XCan_AcceptFilterSet()</a>, <a class="el" href="group__can.html#ga757aecce4c0c06ff8f4cb3dd4d0c79fa">XCan_ClearBusErrorStatus()</a>, <a class="el" href="group__can.html#ga994a0b0bd9c938e99de9d7ffceb10ef3">XCan_EnterMode()</a>, <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, <a class="el" href="group__can.html#ga163cd737c7421ddbd0ff492883e32558">XCan_InterruptDisable()</a>, <a class="el" href="group__can.html#ga1abd3a018094fd4d586599d708c33e4f">XCan_InterruptEnable()</a>, <a class="el" href="group__can.html#ga6c52fb4d4b12d62e3e713ad182f00d8b">XCan_Reset()</a>, <a class="el" href="group__can.html#ga0b5089d7561e88dec96e54fa618a6da4">XCan_ResetECC()</a>, <a class="el" href="group__can.html#gad4717011f46b8e9d5e15c0bfb04c33c8">XCan_Send()</a>, <a class="el" href="group__can.html#ga8ba9b10678fbc6bd6093fdc5e9eb3edd">XCan_SendHighPriority()</a>, <a class="el" href="group__can.html#ga75aabbb82d96151cadfd3c26a2a285e9">XCan_SetBaudRatePrescaler()</a>, and <a class="el" href="group__can.html#gaf60120410396727f6e9304ce9ba65980">XCan_SetBitTiming()</a>.</p>
 
 </div>
 </div>
@@ -3422,6 +3782,36 @@ CAN frame length constants</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga5cf8f7db6b6726cd217e58e6224d56ad"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XCan_GetECCCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_can.html">XCan</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function gets the count of ECC error count for one and two bit error in TX_TL FIFO, TX_OL FIFO, RX FIFO. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_can.html" title="The XCan driver instance data. ">XCan</a> instance to be worked on.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#af0b4e5ccbd492654934cea6e75f0d6d0">XCan::ecc_1bit_rxfifo_cnt</a>, <a class="el" href="struct_x_can.html#a0309ac9be44b592655714b4e6e30dcfd">XCan::ecc_1bit_txolfifo_cnt</a>, <a class="el" href="struct_x_can.html#a3cc5989a39ce47d7eaeb1dc2ee29570d">XCan::ecc_1bit_txtlfifo_cnt</a>, <a class="el" href="struct_x_can.html#a02d7f8dee1f68f1d4481f3adfcac85ce">XCan::ecc_2bit_rxfifo_cnt</a>, <a class="el" href="struct_x_can.html#a67495bb45f05f78eceb23941c5566984">XCan::ecc_2bit_txolfifo_cnt</a>, <a class="el" href="struct_x_can.html#ac0e6fa8153f1209587d9304c3370efa7">XCan::ecc_2bit_txtlfifo_cnt</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga18758fa4d22f6632b4d474a3629d21cd">XCAN_ECC_2BIT_SHIFT</a>, <a class="el" href="group__can.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d">XCan_InterruptGetStatus()</a>, <a class="el" href="group__can.html#ga35a9f71ee627fea1fc8cc35c4128cef9">XCAN_IXR_E1BERX_MASK</a>, <a class="el" href="group__can.html#gabcb177002d5f1ec095045b081b539181">XCAN_IXR_E1BETXOL_MASK</a>, <a class="el" href="group__can.html#ga18a7f430a8d8e99d185b2e8e0b09f908">XCAN_IXR_E1BETXTL_MASK</a>, <a class="el" href="group__can.html#ga67744d34a2a65666e55116e2fdb8479b">XCAN_IXR_E2BERX_MASK</a>, <a class="el" href="group__can.html#ga590c7e3aa7a7f5aad88f562bdef58cdb">XCAN_IXR_E2BETXOL_MASK</a>, <a class="el" href="group__can.html#ga3d731cf466c57dfba1ca0ac76d9864ed">XCAN_IXR_E2BETXTL_MASK</a>, <a class="el" href="group__can.html#gac9b2db5b4abc4a1ee2154108702776d1">XCAN_MASK_HIGH_16BITS</a>, <a class="el" href="group__can.html#ga1f4ae13d03284afb0c4574d52d139e10">XCAN_MASK_LOW_16BITS</a>, <a class="el" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>, <a class="el" href="group__can.html#ga05a0b3283999fc56204a5afbb013e048">XCAN_RXFIFO_ECC_OFFSET</a>, <a class="el" href="group__can.html#gaeed70ad0a591fb1f8c44a83f358a5842">XCAN_TXOLFIFO_ECC_OFFSET</a>, and <a class="el" href="group__can.html#ga093ec0385610ae9e0a7861e06921bb5d">XCAN_TXTLFIFO_ECC_OFFSET</a>.</p>
+
+<p>Referenced by <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga6b437133a6a2f40f56cf3c80102f5b0d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3661,7 +4051,7 @@ CAN frame length constants</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga1da1e22f27800aaa28b46b39fa2d6fd0">XCAN_IER_OFFSET</a>, <a class="el" href="group__can.html#ga5670f843250e65969ce6ef36d0e06e24">XCan_InterruptGetEnabled()</a>, <a class="el" href="group__can.html#ga553b29006c0052225803342e61f63918">XCAN_IXR_ALL</a>, and <a class="el" href="group__can.html#ga4b58327ea939610d5b1816a686ffd6c7">XCan_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga1da1e22f27800aaa28b46b39fa2d6fd0">XCAN_IER_OFFSET</a>, and <a class="el" href="group__can.html#ga4b58327ea939610d5b1816a686ffd6c7">XCan_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -3694,7 +4084,7 @@ CAN frame length constants</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga1da1e22f27800aaa28b46b39fa2d6fd0">XCAN_IER_OFFSET</a>, and <a class="el" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__can.html#ga163cd737c7421ddbd0ff492883e32558">XCan_InterruptDisable()</a>, <a class="el" href="group__can.html#ga1abd3a018094fd4d586599d708c33e4f">XCan_InterruptEnable()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
+<p>Referenced by <a class="el" href="group__can.html#ga163cd737c7421ddbd0ff492883e32558">XCan_InterruptDisable()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
 
 </div>
 </div>
@@ -3725,7 +4115,7 @@ CAN frame length constants</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga0816aca8c9bca41953439ad0c14cbf4a">XCAN_ISR_OFFSET</a>, and <a class="el" href="group__can.html#ga2ee91da70cd3c92169c780186a9d6c51">XCan_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
+<p>Referenced by <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>, <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, and <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
 
 </div>
 </div>
@@ -3755,7 +4145,7 @@ CAN frame length constants</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_can.html#a85a35a86e926f2f6c881b919323e1a8a">XCan::ErrorHandler</a>, <a class="el" href="struct_x_can.html#acc444eee1192bc6a921d264b452c507c">XCan::ErrorRef</a>, <a class="el" href="struct_x_can.html#acc72a94f8c346fdf0925fab5ed957a79">XCan::EventHandler</a>, <a class="el" href="struct_x_can.html#aba90fb0e2c69978d21a8b53358c7f8b6">XCan::EventRef</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="struct_x_can.html#a8f2d0f6050bb89ce5854b703caceb883">XCan::RecvHandler</a>, <a class="el" href="struct_x_can.html#a6bbcd54ab93e47c5cf5ba20194667760">XCan::RecvRef</a>, <a class="el" href="struct_x_can.html#a1860cf3346043b070b289f09f38ee6d5">XCan::SendHandler</a>, <a class="el" href="struct_x_can.html#a9f878dac03d57becb449745f0e443907">XCan::SendRef</a>, <a class="el" href="group__can.html#ga757aecce4c0c06ff8f4cb3dd4d0c79fa">XCan_ClearBusErrorStatus()</a>, <a class="el" href="group__can.html#ga242ec83578f9966bd7d562ed7f5dedd3">XCan_GetBusErrorStatus()</a>, <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, <a class="el" href="group__can.html#ga5670f843250e65969ce6ef36d0e06e24">XCan_InterruptGetEnabled()</a>, <a class="el" href="group__can.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d">XCan_InterruptGetStatus()</a>, <a class="el" href="group__can.html#ga519a0e1365d4237932311c794a9f3286">XCAN_IXR_ARBLST_MASK</a>, <a class="el" href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">XCAN_IXR_BSOFF_MASK</a>, <a class="el" href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">XCAN_IXR_ERROR_MASK</a>, <a class="el" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a>, <a class="el" href="group__can.html#ga269318cb287c11f639cf185dce640191">XCAN_IXR_RXOFLW_MASK</a>, <a class="el" href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">XCAN_IXR_RXUFLW_MASK</a>, <a class="el" href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">XCAN_IXR_SLP_MASK</a>, <a class="el" href="group__can.html#gaccb86502df2129af8cbddd4da45db912">XCAN_IXR_TXBFLL_MASK</a>, <a class="el" href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">XCAN_IXR_TXFLL_MASK</a>, <a class="el" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a>, and <a class="el" href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a>.</p>
+<p>References <a class="el" href="struct_x_can.html#ad1b7e8246d4595ef6bde028a562c08fa">XCan::EnableECC</a>, <a class="el" href="struct_x_can.html#a85a35a86e926f2f6c881b919323e1a8a">XCan::ErrorHandler</a>, <a class="el" href="struct_x_can.html#acc444eee1192bc6a921d264b452c507c">XCan::ErrorRef</a>, <a class="el" href="struct_x_can.html#acc72a94f8c346fdf0925fab5ed957a79">XCan::EventHandler</a>, <a class="el" href="struct_x_can.html#aba90fb0e2c69978d21a8b53358c7f8b6">XCan::EventRef</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="struct_x_can.html#a8f2d0f6050bb89ce5854b703caceb883">XCan::RecvHandler</a>, <a class="el" href="struct_x_can.html#a6bbcd54ab93e47c5cf5ba20194667760">XCan::RecvRef</a>, <a class="el" href="struct_x_can.html#a1860cf3346043b070b289f09f38ee6d5">XCan::SendHandler</a>, <a class="el" href="struct_x_can.html#a9f878dac03d57becb449745f0e443907">XCan::SendRef</a>, <a class="el" href="group__can.html#ga757aecce4c0c06ff8f4cb3dd4d0c79fa">XCan_ClearBusErrorStatus()</a>, <a class="el" href="group__can.html#ga242ec83578f9966bd7d562ed7f5dedd3">XCan_GetBusErrorStatus()</a>, <a class="el" href="group__can.html#ga5cf8f7db6b6726cd217e58e6224d56ad">XCan_GetECCCount()</a>, <a class="el" href="group__can.html#gac53101769980d4aa036844100ac732af">XCan_InterruptClear()</a>, <a class="el" href="group__can.html#ga5670f843250e65969ce6ef36d0e06e24">XCan_InterruptGetEnabled()</a>, <a class="el" href="group__can.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d">XCan_InterruptGetStatus()</a>, <a class="el" href="group__can.html#ga519a0e1365d4237932311c794a9f3286">XCAN_IXR_ARBLST_MASK</a>, <a class="el" href="group__can.html#ga43b89eddb5c487830ab99f876eaf5a34">XCAN_IXR_BSOFF_MASK</a>, <a class="el" href="group__can.html#gab3ff6f454fae07e0b637ad85e2564b72">XCAN_IXR_ECC_MASK</a>, <a class="el" href="group__can.html#gaa8801f97438a944cb1b76ccaa1d3ac38">XCAN_IXR_ERROR_MASK</a>, <a class="el" href="group__can.html#ga5b1cb15de038ddda4b5a500ae3d829f4">XCAN_IXR_RXNEMP_MASK</a>, <a class="el" href="group__can.html#ga269318cb287c11f639cf185dce640191">XCAN_IXR_RXOFLW_MASK</a>, <a class="el" href="group__can.html#ga054d2d002f9141d9d937d262f5b637de">XCAN_IXR_RXUFLW_MASK</a>, <a class="el" href="group__can.html#ga5fce703c1f3a145620255809ecf422bb">XCAN_IXR_SLP_MASK</a>, <a class="el" href="group__can.html#gaccb86502df2129af8cbddd4da45db912">XCAN_IXR_TXBFLL_MASK</a>, <a class="el" href="group__can.html#ga3436502be0f71ac99a60299c73b86f1f">XCAN_IXR_TXFLL_MASK</a>, <a class="el" href="group__can.html#gaa3b70e481b672854a2a8436dfaad2ed2">XCAN_IXR_TXOK_MASK</a>, <a class="el" href="group__can.html#gaea1b2f81446269b8b30267bf840b3c31">XCAN_IXR_WKUP_MASK</a>, and <a class="el" href="group__can.html#ga0b5089d7561e88dec96e54fa618a6da4">XCan_ResetECC()</a>.</p>
 
 <p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 
@@ -3866,6 +4256,37 @@ CAN frame length constants</h2></td></tr>
 <p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga183cc527b562ba6494c84f9dc56ed83f">XCAN_SRR_OFFSET</a>, <a class="el" href="group__can.html#ga4eb9794178ded7bbea3907075d6c12c8">XCAN_SRR_SRST_MASK</a>, and <a class="el" href="group__can.html#ga4b58327ea939610d5b1816a686ffd6c7">XCan_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xcan__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__can.html#gaa18e848a6ffc670e024972ffc71b2ba8">XCan_SelfTest()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga0b5089d7561e88dec96e54fa618a6da4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XCan_ResetECC </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_can.html">XCan</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function resets the ECC counters. </p>
+<p>Calling this function resets all the ECC counters immediately. The register is reset to default value, and no previous status will be restored.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_can.html" title="The XCan driver instance data. ">XCan</a> instance to be worked on.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_can.html#a8fa6a2c1022499c19ac3777e6f338ba5">XCan::BaseAddress</a>, <a class="el" href="struct_x_can.html#a6c2d9a0f9e4d91891e67e9204dbb7094">XCan::IsReady</a>, <a class="el" href="group__can.html#ga078754fce159d323c3cdd60c0842b8f3">XCAN_ECC_CFG_OFFSET</a>, <a class="el" href="group__can.html#gad823154b65050d0fd92e0df09f0b1ca0">XCAN_ECC_CFG_RST_MASK</a>, and <a class="el" href="group__can.html#ga4b58327ea939610d5b1816a686ffd6c7">XCan_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__can.html#gaafc4a0e025e8e3eb800778eba5a00c66">XCan_IntrHandler()</a>.</p>
 
 </div>
 </div>
@@ -4254,7 +4675,8 @@ XCAN_HANDLER_SEND        A frame transmitted by a call to
 <div class="line">        {</div>
 <div class="line">                XPAR_OPB_CAN_0_DEVICE_ID,   </div>
 <div class="line">                XPAR_OPB_CAN_0_BASEADDR,    </div>
-<div class="line">                XPAR_OPB_CAN_0_CAN_NUM_ACF  </div>
+<div class="line">                XPAR_OPB_CAN_0_CAN_NUM_ACF,  </div>
+<div class="line">                XPAR_OPB_CAN_0_ENABLE_ECC,  </div>
 <div class="line">         }</div>
 <div class="line">}</div>
 </div><!-- fragment -->

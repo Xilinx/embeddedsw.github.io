@@ -5,6 +5,7 @@ var xzdma__hw_8h =
     [ "XZDMA_CH_DBG_CMN_BUF_MASK", "xzdma__hw_8h.html#ga0876c52b246b078b952127de1c6db4e7", null ],
     [ "XZDMA_CH_IRQ_ACCT_MASK", "xzdma__hw_8h.html#gaae2ef41062c0004503031e155538ffa6", null ],
     [ "XZDMA_CH_RATE_CNTL_MASK", "xzdma__hw_8h.html#ga88b8a953147eb61c544be509076c84e3", null ],
+    [ "XZDMA_CH_WR_ONLY_RESET_VALUE", "xzdma__hw_8h.html#gac4e0bd4cf99586a764ac52fdd43c4a0c", null ],
     [ "XZDMA_CTRL0_CONT_ADDR_MASK", "xzdma__hw_8h.html#ga7eca536c9dac7c46bb03eadd6a391402", null ],
     [ "XZDMA_CTRL0_CONT_MASK", "xzdma__hw_8h.html#gaa10c98a9560919004f43cbcbe665b5b3", null ],
     [ "XZDMA_CTRL0_MODE_MASK", "xzdma__hw_8h.html#gaec1a986d8168e84618d9513a2c56541b", null ],

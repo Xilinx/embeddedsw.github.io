@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <xstatus.h>
 #include "xil_cache.h"
 #include "xparameters.h"
-#include "xscugic.h"
 #include "xil_types.h"
 #include "xil_io.h"
 #include "sleep.h"
@@ -21,6 +21,11 @@
 #include "xwarp_input_configs.h"
 #include "inputs.h"
 #include "xgpio.h"
+#ifndef SDT
+#include "xscugic.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Local Constants *********************************/
 XGpio              Gpio_WarpInit_resetn;
@@ -83,7 +88,7 @@ void ResetFilter(void)
 /*****************************************************************************/
 int main(void)
 {
-	u32 status;
+	u32 status, error = 0;
 	XVWarpFilter_InputConfigs		*filter_configs_ptr;
 	u32 valid_seg;
 	u32 lblock_count;
@@ -100,14 +105,19 @@ int main(void)
 	Xil_ExceptionDisable();
 
 	xil_printf("\r\n-----------------------------------------------\r\n");
-	xil_printf("	(c) 2020 by Xilinx Inc.\r\n");
+	xil_printf("	(c) 2020 - 2024 by Xilinx Inc.\r\n");
 	xil_printf("-----------------------------------------------\r\n");
 
+	xil_printf("\n\rWarp exdes test is started\n\r");
 	/**************V_WARP_REMAP_GEN*************************/
 	/* Initialize GPIO for WarpInit Reset */
+#ifndef SDT
 	Gpio_WarpInit_resetn_ConfigPtr =
 		XGpio_LookupConfig(XPAR_AXI_GPIO_1_DEVICE_ID);
-
+#else
+	Gpio_WarpInit_resetn_ConfigPtr =
+		XGpio_LookupConfig(XPAR_AXI_GPIO_1_BASEADDR);
+#endif
 	if(Gpio_WarpInit_resetn_ConfigPtr == NULL) {
 		Gpio_WarpInit_resetn.IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -122,8 +132,13 @@ int main(void)
 		return(XST_FAILURE);
 	}
 
+#ifndef SDT
 	status = XV_warp_init_Initialize(&WarpInitInst,
 			XPAR_V_WARP_INIT_0_DEVICE_ID);
+#else
+	status = XV_warp_init_Initialize(&WarpInitInst,
+			XPAR_V_WARP_INIT_0_BASEADDR);
+#endif
 	if (status != XST_SUCCESS) {
 		xil_printf("Warp Initializer IP initialization failed.\n\r");
 		return XST_FAILURE;
@@ -134,8 +149,13 @@ int main(void)
 
 	/**************V_WARP_FILTER*************************/
 	/* Initialize GPIO for WarpFilter Reset */
+#ifndef SDT
 	Gpio_Filter_resetn_ConfigPtr =
 		XGpio_LookupConfig(XPAR_AXI_GPIO_0_DEVICE_ID);
+#else
+	Gpio_Filter_resetn_ConfigPtr =
+		XGpio_LookupConfig(XPAR_AXI_GPIO_0_BASEADDR);
+#endif
 
 	if(Gpio_Filter_resetn_ConfigPtr == NULL) {
 		Gpio_Filter_resetn.IsReady = 0;
@@ -151,7 +171,11 @@ int main(void)
 		return(XST_FAILURE);
 	}
 
+#ifndef SDT
 	status = XV_warp_filter_Initialize(&WarpInst, XPAR_V_WARP_FILTER_0_DEVICE_ID);
+#else
+	status = XV_warp_filter_Initialize(&WarpInst, XPAR_V_WARP_FILTER_0_BASEADDR);
+#endif
 	if (status != XST_SUCCESS) {
 		xil_printf("Warp Filter initialization failed.\n\r");
 		return XST_FAILURE;
@@ -161,12 +185,40 @@ int main(void)
 
 
 	/* Initialize IRQ */
+#ifndef SDT
 	status = SetupInterruptSystem();
 	if (status == XST_FAILURE) {
 		xil_printf("IRQ init failed.\n\r\r");
 		return XST_FAILURE;
 	}
+#else
+    status = XSetupInterruptSystem(&WarpInst,&XVWarpFilter_IntrHandler,
+				       WarpInst.config->IntrId,
+				       WarpInst.config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (status == XST_FAILURE) {
+		xil_printf("WarpInst IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+    status = XSetupInterruptSystem(&WarpInitInst,&XVWarpInit_IntrHandler,
+				       WarpInitInst.config->IntrId,
+				       WarpInitInst.config->IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (status == XST_FAILURE) {
+		xil_printf("WarpInitInst IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+#endif
 
+	Xil_ExceptionEnable();
+
+	XVWarpInit_SetCallback(&WarpInitInst,
+				(void *)XWarpInit_callback,
+				(void *)&WarpInitInst);
+
+	XVWarpFilter_SetCallback(&WarpInst,
+                    XBInterruptHandler,
+                    &WarpInst);
 
 	get_init_vect_input_configs(&warp_drv_configs, &input_configs);
 
@@ -195,6 +247,13 @@ int main(void)
     xil_printf("Valid_Segs = %d, lblk_count = %d, line_num = %d\n\r",
                valid_seg, lblock_count, line_num);
 
+    if (!valid_seg || !lblock_count || !line_num) {
+        xil_printf("\n\rWarning: Invalid warp input configurations.");
+        xil_printf("\n\rPlease check.");
+        xil_printf("\n\r*******************************************\n\r");
+        return XST_INVALID_PARAM;
+    }
+
 	filter_configs_ptr = &warp_drv_configs.filterConfigs;
 	filter_configs_ptr->src_buf_addr = SRC_BUF_START_ADDR;
 	filter_configs_ptr->dest_buf_addr = DST_BUF_START_ADDR;
@@ -213,30 +272,10 @@ int main(void)
 	/* Start the IP */
 	XVWarpFilter_Start(&WarpInst);
 
-	while (1) {
+    while (frame_done_interrupt != 1);
+    frame_done_interrupt = 0;
+    stop_timer();
 
-		while (frame_done_interrupt != 1);
-		frame_done_interrupt = 0;
-
-		frame_done_intr_count++;
-		if (frame_done_intr_count >= 1) {
-			stop_timer();
-			break;
-		} else {
-			/*Moving the dst frame address to next available mem location*/
-			if (filter_configs_ptr->dest_buf_addr >= BUFF_QUEUE_SIZE) {
-				filter_configs_ptr->dest_buf_addr = DST_BUF_START_ADDR;
-			} else {
-				filter_configs_ptr->dest_buf_addr += MAX_SIZE_OF_4K_FRAME_IN_MEM;
-			}
-			XVWarpFilter_update_src_frame_addr(&WarpInst, 0,
-					filter_configs_ptr->src_buf_addr);
-			XVWarpFilter_update_dst_frame_addr(&WarpInst, 0,
-					filter_configs_ptr->dest_buf_addr);
-			/*Restart the IP*/
-			XVWarpFilter_Start(&WarpInst);
-		}
-	}
 
 	xil_printf("Got Frame done Interrupt...Time taken = %u\n\r",
 			((tmrctr_1_value * (0xFFFFFFFF/322)) + tmrctr_value/322));
@@ -244,7 +283,9 @@ int main(void)
 	XVWarpInit_ClearNumOfDescriptors(&WarpInitInst);
 	XVWarpFilter_ClearNumOfDescriptors(&WarpInst);
 
-	return 0;
+    xil_printf("\n\rWarp exdes test is Passed\n\r");
+
+	return XST_SUCCESS;
 }
 
 /***********************Staic Funtction definitions***************************/
@@ -277,6 +318,7 @@ static void XBInterruptHandler(void *CallbackRef)
 }
 
 
+#ifndef SDT
 /*****************************************************************************/
 /**
  *
@@ -324,10 +366,6 @@ static int SetupInterruptSystem(void)
 		(Xil_ExceptionHandler) XScuGic_InterruptHandler,
 		(XScuGic *)IntcInstPtr);
 
-
-	XVWarpInit_SetCallback(&WarpInitInst,
-				(void *)XWarpInit_callback,
-				(void *)&WarpInitInst);
 	Status = XScuGic_Connect(&Intc,
 			XPAR_FABRIC_V_WARP_INIT_0_INTERRUPT_INTR,
 			(XV_warp_init_Callback)XVWarpInit_IntrHandler,
@@ -340,7 +378,6 @@ static int SetupInterruptSystem(void)
 		return XST_FAILURE;
 	}
 
-	XVWarpFilter_SetCallback(&WarpInst, XBInterruptHandler, &WarpInst);
 	Status = XScuGic_Connect(&Intc,
 			XPAR_FABRIC_V_WARP_FILTER_0_INTERRUPT_INTR,
 			(XV_warp_filter_Callback)XVWarpFilter_IntrHandler,
@@ -357,6 +394,7 @@ static int SetupInterruptSystem(void)
 
 	return XST_SUCCESS;
 }
+#endif
 
 #if 0
 static void XV_Reset_Warp(void)

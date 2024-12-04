@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -37,6 +37,7 @@
  *       ms   04/05/17 Added tabspace for return statements in functions for
  *                     proper documentation while generating doxygen.
  * 4.5   sd   07/18/23 Fix the disable interrupt
+ * 4.7   ar   03/07/24 Fix the interrupt ID sequence in the SDT flow.
  * </pre>
  *
  * ***************************************************************************
@@ -100,12 +101,12 @@
 #define ERR_INTR_ID              XPAR_FABRIC_TRAFGEN_0_ERR_OUT_VEC_ID
 #define CMP_INTR_ID              XPAR_FABRIC_TRAFGEN_0_IRQ_OUT_VEC_ID
 #endif
-#endif
 
 #ifdef XPAR_INTC_0_DEVICE_ID
 #define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
 #else
 #define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
+#endif
 #endif
 
 #ifndef SDT
@@ -390,11 +391,11 @@ int XTrafGenInterruptExample(XTrafGen *InstancePtr, UINTPTR BaseAddress)
 	Status = SetupIntrSystem(&Intc, InstancePtr, CMP_INTR_ID, ERR_INTR_ID);
 #else
 	Status = XSetupInterruptSystem(InstancePtr, &MasterCompleteIntrHandler,
-			               InstancePtr->Config.IntId[0],
+			               InstancePtr->Config.IntId[MASTER_INTRID],
 				       InstancePtr->Config.IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
 	Status = XSetupInterruptSystem(InstancePtr, &ErrIntrHandler,
-			               InstancePtr->Config.IntId[1],
+			               InstancePtr->Config.IntId[ERROR_INTRID],
 				       InstancePtr->Config.IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
 #endif

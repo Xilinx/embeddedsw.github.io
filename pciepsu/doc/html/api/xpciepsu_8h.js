@@ -1,5 +1,7 @@
 var xpciepsu_8h =
 [
+    [ "MAX_BARS", "xpciepsu_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c", null ],
+    [ "REQ_SIZE", "xpciepsu_8h.html#acad74e57979d6bc62e24ddaa31ed11e9", null ],
     [ "XPciePsu_CfgInitialize", "xpciepsu_8h.html#a3d54a4fe188343ce59d689901c2b88c6", null ],
     [ "XPciePsu_ComposeExternalConfigAddress", "xpciepsu_8h.html#ac2d7bc13d9f1da8d6e67b88a1c37ed24", null ],
     [ "XPciePsu_EnumerateBus", "xpciepsu_8h.html#a862b72cd0796d429f122b5b83603f1d3", null ],

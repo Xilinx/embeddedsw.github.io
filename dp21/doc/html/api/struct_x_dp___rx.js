@@ -91,5 +91,6 @@ var struct_x_dp___rx =
     [ "IntrVmChangeCallbackRef", "struct_x_dp___rx.html#a38c21c078b5ddbbe3257e0c08258be14", null ],
     [ "IntrVmChangeHandler", "struct_x_dp___rx.html#aa24e840ed527de833df8707bb5a31b35", null ],
     [ "LinkConfig", "struct_x_dp___rx.html#a5a1317bed7459b6cd3f8c73288aa8eaf", null ],
+    [ "MsaConfig", "struct_x_dp___rx.html#ad7eeb5ff058fbfec8fcaef17abb8c634", null ],
     [ "Topology", "struct_x_dp___rx.html#aa49701850b5a4085a92f16082faa7639", null ]
 ];

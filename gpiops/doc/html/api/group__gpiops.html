@@ -113,6 +113,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga27b466ba78cf142027ca998d0d67d2e0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga27b466ba78cf142027ca998d0d67d2e0">XGPIOPS_MAX_BANKS</a>&#160;&#160;&#160;0x04U</td></tr>
 <tr class="memdesc:ga27b466ba78cf142027ca998d0d67d2e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max banks in a Zynq GPIO device.  <a href="#ga27b466ba78cf142027ca998d0d67d2e0">More...</a><br/></td></tr>
 <tr class="separator:ga27b466ba78cf142027ca998d0d67d2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2a4b2e730c0c6dee73b64f9914de6861"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga2a4b2e730c0c6dee73b64f9914de6861">XGPIOPS_MAX_BANKS_CNT</a>&#160;&#160;&#160;0x06U</td></tr>
+<tr class="memdesc:ga2a4b2e730c0c6dee73b64f9914de6861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max banks number of all platforms.  <a href="#ga2a4b2e730c0c6dee73b64f9914de6861">More...</a><br/></td></tr>
+<tr class="separator:ga2a4b2e730c0c6dee73b64f9914de6861"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8f80173cb28cbac5bab53c4fc7c7dd96"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga8f80173cb28cbac5bab53c4fc7c7dd96">XGPIOPS_DEVICE_MAX_PIN_NUM_ZYNQMP</a>&#160;&#160;&#160;(u32)174</td></tr>
 <tr class="memdesc:ga8f80173cb28cbac5bab53c4fc7c7dd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max pins in the Zynq Ultrascale+ MP GPIO device 0 - 25, Bank 0 26 - 51, Bank 1 52 - 77, Bank 2 78 - 109, Bank 3 110 - 141, Bank 4 142 - 173, Bank 5.  <a href="#ga8f80173cb28cbac5bab53c4fc7c7dd96">More...</a><br/></td></tr>
 <tr class="separator:ga8f80173cb28cbac5bab53c4fc7c7dd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,15 +209,15 @@ Functions</h2></td></tr>
 <tr class="memitem:gaefc766e08002c191864802d6e3a3434e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin</a> (u8 PinNumber, u8 *BankNumber, u8 *PinNumberInBank)</td></tr>
 <tr class="memdesc:gaefc766e08002c191864802d6e3a3434e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Bank number and the Pin number in the Bank, for the given PinNumber in the GPIO device.  <a href="#gaefc766e08002c191864802d6e3a3434e">More...</a><br/></td></tr>
 <tr class="separator:gaefc766e08002c191864802d6e3a3434e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga07d1a36c4d70788e5ebf2ae583fc93e7"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga07d1a36c4d70788e5ebf2ae583fc93e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the GPIO driver/device.  <a href="#ga07d1a36c4d70788e5ebf2ae583fc93e7">More...</a><br/></td></tr>
-<tr class="separator:ga07d1a36c4d70788e5ebf2ae583fc93e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga46cd4bf296c2706642dec85d0f0752be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u8 Bank, u32 Mask)</td></tr>
-<tr class="memdesc:ga46cd4bf296c2706642dec85d0f0752be"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the interrupts for the specified pins in the specified bank.  <a href="#ga46cd4bf296c2706642dec85d0f0752be">More...</a><br/></td></tr>
-<tr class="separator:ga46cd4bf296c2706642dec85d0f0752be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6d609e179e7167128bb6517e735c4cf7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u8 Bank, u32 Mask)</td></tr>
-<tr class="memdesc:ga6d609e179e7167128bb6517e735c4cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables the interrupts for the specified pins in the specified bank.  <a href="#ga6d609e179e7167128bb6517e735c4cf7">More...</a><br/></td></tr>
-<tr class="separator:ga6d609e179e7167128bb6517e735c4cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga173133193aeba362fa0a5c6e7cdd8dfa"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest</a> (<a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga173133193aeba362fa0a5c6e7cdd8dfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the GPIO driver/device.  <a href="#ga173133193aeba362fa0a5c6e7cdd8dfa">More...</a><br/></td></tr>
+<tr class="separator:ga173133193aeba362fa0a5c6e7cdd8dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga812e5a4df20dcae1a95ec4b15d36f039"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable</a> (<a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u8 Bank, u32 Mask)</td></tr>
+<tr class="memdesc:ga812e5a4df20dcae1a95ec4b15d36f039"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the interrupts for the specified pins in the specified bank.  <a href="#ga812e5a4df20dcae1a95ec4b15d36f039">More...</a><br/></td></tr>
+<tr class="separator:ga812e5a4df20dcae1a95ec4b15d36f039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5b84f2cbaaa08abf138209b975192326"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable</a> (<a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u8 Bank, u32 Mask)</td></tr>
+<tr class="memdesc:ga5b84f2cbaaa08abf138209b975192326"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables the interrupts for the specified pins in the specified bank.  <a href="#ga5b84f2cbaaa08abf138209b975192326">More...</a><br/></td></tr>
+<tr class="separator:ga5b84f2cbaaa08abf138209b975192326"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaad995f8c0ff2801d22cc405dacb3ed19"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u8 Bank)</td></tr>
 <tr class="memdesc:gaad995f8c0ff2801d22cc405dacb3ed19"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the interrupt enable status for a bank.  <a href="#gaad995f8c0ff2801d22cc405dacb3ed19">More...</a><br/></td></tr>
 <tr class="separator:gaad995f8c0ff2801d22cc405dacb3ed19"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -242,12 +245,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga848274dc058043932e802a3caa39db3e"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga848274dc058043932e802a3caa39db3e">XGpioPs_GetIntrTypePin</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
 <tr class="memdesc:ga848274dc058043932e802a3caa39db3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the IRQ Type of a given GPIO pin.  <a href="#ga848274dc058043932e802a3caa39db3e">More...</a><br/></td></tr>
 <tr class="separator:ga848274dc058043932e802a3caa39db3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2611a2a677a92a057ec8dd4ae8273766"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga2611a2a677a92a057ec8dd4ae8273766">XGpioPs_IntrEnablePin</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
-<tr class="memdesc:ga2611a2a677a92a057ec8dd4ae8273766"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the interrupt for the specified pin.  <a href="#ga2611a2a677a92a057ec8dd4ae8273766">More...</a><br/></td></tr>
-<tr class="separator:ga2611a2a677a92a057ec8dd4ae8273766"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga975ad0c4e61d3b92c3f9886a24ff2c1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga975ad0c4e61d3b92c3f9886a24ff2c1f">XGpioPs_IntrDisablePin</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
-<tr class="memdesc:ga975ad0c4e61d3b92c3f9886a24ff2c1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables the interrupts for the specified pin.  <a href="#ga975ad0c4e61d3b92c3f9886a24ff2c1f">More...</a><br/></td></tr>
-<tr class="separator:ga975ad0c4e61d3b92c3f9886a24ff2c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc4ea201a1c488a1b667a77f3c6fd23b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#gadc4ea201a1c488a1b667a77f3c6fd23b">XGpioPs_IntrEnablePin</a> (<a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
+<tr class="memdesc:gadc4ea201a1c488a1b667a77f3c6fd23b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the interrupt for the specified pin.  <a href="#gadc4ea201a1c488a1b667a77f3c6fd23b">More...</a><br/></td></tr>
+<tr class="separator:gadc4ea201a1c488a1b667a77f3c6fd23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8a00fd131bf76eab2dcdd48079845b37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga8a00fd131bf76eab2dcdd48079845b37">XGpioPs_IntrDisablePin</a> (<a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
+<tr class="memdesc:ga8a00fd131bf76eab2dcdd48079845b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables the interrupts for the specified pin.  <a href="#ga8a00fd131bf76eab2dcdd48079845b37">More...</a><br/></td></tr>
+<tr class="separator:ga8a00fd131bf76eab2dcdd48079845b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga323857757f17a313a984de0b522341e3"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpiops.html#ga323857757f17a313a984de0b522341e3">XGpioPs_IntrGetEnabledPin</a> (const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *InstancePtr, u32 Pin)</td></tr>
 <tr class="memdesc:ga323857757f17a313a984de0b522341e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns whether interrupts are enabled for the specified pin.  <a href="#ga323857757f17a313a984de0b522341e3">More...</a><br/></td></tr>
 <tr class="separator:ga323857757f17a313a984de0b522341e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -381,7 +384,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>GPIO Bank 0. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>
@@ -695,7 +698,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>Interrupt Disable Register, WO. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga975ad0c4e61d3b92c3f9886a24ff2c1f">XGpioPs_IntrDisablePin()</a>, and <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga8a00fd131bf76eab2dcdd48079845b37">XGpioPs_IntrDisablePin()</a>, and <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>.</p>
 
 </div>
 </div>
@@ -711,7 +714,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>Interrupt Enable Register, WO. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#ga2611a2a677a92a057ec8dd4ae8273766">XGpioPs_IntrEnablePin()</a>, and <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gadc4ea201a1c488a1b667a77f3c6fd23b">XGpioPs_IntrEnablePin()</a>, and <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>.</p>
 
 </div>
 </div>
@@ -969,6 +972,20 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga2a4b2e730c0c6dee73b64f9914de6861"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XGPIOPS_MAX_BANKS_CNT&#160;&#160;&#160;0x06U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max banks number of all platforms. </p>
+
+</div>
+</div>
 <a class="anchor" id="gab8661a0444fd67d2b87a14b3c196e571"></a>
 <div class="memitem">
 <div class="memproto">
@@ -995,7 +1012,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>Flag for 1 Value. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, <a class="el" href="group__gpiops.html#gaac891da3a0b1ed5697644d621483ed62">XGpioPs_Read()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, <a class="el" href="group__gpiops.html#gaac891da3a0b1ed5697644d621483ed62">XGpioPs_Read()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>.</p>
 
 </div>
 </div>
@@ -1082,7 +1099,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>Registers offset. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaa3bacad17006e4b01ff91f6f14e5d3f7">XGpioPs_GetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga848274dc058043932e802a3caa39db3e">XGpioPs_GetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#ga17714eeb15fff954fc42d6008e67af17">XGpioPs_GetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga975ad0c4e61d3b92c3f9886a24ff2c1f">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#ga2611a2a677a92a057ec8dd4ae8273766">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga323857757f17a313a984de0b522341e3">XGpioPs_IntrGetEnabledPin()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#ga405556c1d1bc856dd35f8a4a92f50345">XGpioPs_IntrGetStatusPin()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaa3bacad17006e4b01ff91f6f14e5d3f7">XGpioPs_GetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga848274dc058043932e802a3caa39db3e">XGpioPs_GetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#ga17714eeb15fff954fc42d6008e67af17">XGpioPs_GetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga8a00fd131bf76eab2dcdd48079845b37">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gadc4ea201a1c488a1b667a77f3c6fd23b">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga323857757f17a313a984de0b522341e3">XGpioPs_IntrGetEnabledPin()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#ga405556c1d1bc856dd35f8a4a92f50345">XGpioPs_IntrGetStatusPin()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>.</p>
 
 </div>
 </div>
@@ -1130,7 +1147,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>Flag for 2 Value. </p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, <a class="el" href="group__gpiops.html#gaac891da3a0b1ed5697644d621483ed62">XGpioPs_Read()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga7eb1bb1c621ea32f0b14c9ee47c23319">XGpioPs_GetDirection()</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7977b334cb165a1cc2859b1bc1ac43df">XGpioPs_GetOutputEnable()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, <a class="el" href="group__gpiops.html#gaac891da3a0b1ed5697644d621483ed62">XGpioPs_Read()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, and <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>.</p>
 
 </div>
 </div>
@@ -1176,7 +1193,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga975ad0c4e61d3b92c3f9886a24ff2c1f">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#ga2611a2a677a92a057ec8dd4ae8273766">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>, and <a class="el" href="group__gpiops.html#gab9ff633d57fb32cac3424571ba690332">XGpioPs_WritePin()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaf25c8d3ce00f3c6904a8286a997c8960">XGpioPs_CfgInitialize()</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga8a00fd131bf76eab2dcdd48079845b37">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gadc4ea201a1c488a1b667a77f3c6fd23b">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#gafc3c808cbcebdad62fd51dae3721d832">XGpioPs_ResetHw()</a>, <a class="el" href="group__gpiops.html#gaab9fbd0037438e57fa33d096ac724613">XGpioPs_SetDirection()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga7c1ae54b29cedd921fbe9f6ef503ceef">XGpioPs_SetOutputEnable()</a>, <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#ga0f55b3804d13293880455a79d4f45e37">XGpioPs_Write()</a>, and <a class="el" href="group__gpiops.html#gab9ff633d57fb32cac3424571ba690332">XGpioPs_WritePin()</a>.</p>
 
 </div>
 </div>
@@ -1312,7 +1329,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS always.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps___config.html#ae94ff5663c4e00bc5703bf1ed238ba75">XGpioPs_Config::DeviceId</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#aca8b8269a2bd384f19de77e312de684a">XGpioPs::Handler</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#aea00d5eac94a0ae4b17d3ec0061afba1">XGpioPs::MaxBanks</a>, <a class="el" href="struct_x_gpio_ps.html#a368edfc22c9496c1d17391f32d02ad97">XGpioPs::MaxPinNum</a>, <a class="el" href="struct_x_gpio_ps.html#a0a8db89a7698f5647d7421bd2d9947b0">XGpioPs::Platform</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga33d678e910c69c63487773ca55abff47">StubHandler()</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps___config.html#ae94ff5663c4e00bc5703bf1ed238ba75">XGpioPs_Config::DeviceId</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#aca8b8269a2bd384f19de77e312de684a">XGpioPs::Handler</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#aea00d5eac94a0ae4b17d3ec0061afba1">XGpioPs::MaxBanks</a>, <a class="el" href="struct_x_gpio_ps.html#a368edfc22c9496c1d17391f32d02ad97">XGpioPs::MaxPinNum</a>, <a class="el" href="struct_x_gpio_ps.html#a0a8db89a7698f5647d7421bd2d9947b0">XGpioPs::Platform</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga33d678e910c69c63487773ca55abff47">StubHandler()</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xgpiops__polled__example_8c.html#ab92c6abab68712971c3b15511c0b6f24">GpioPolledExample()</a>.</p>
 
@@ -1362,7 +1379,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga5e6bff389611d55cc6ca4d3f21a7e4d2">XGPIOPS_FOUR</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga720e46128be37b99f48c07ed2f8587b3">XGPIOPS_SIX</a>, <a class="el" href="group__gpiops.html#gae7e81604ed741912fbaf1dac2b17d90c">XGPIOPS_THREE</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga7bd601d046958f33b4fcd879f4fd6e5d">XGPIOPS_ZERO</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gaa3bacad17006e4b01ff91f6f14e5d3f7">XGpioPs_GetDirectionPin()</a>, <a class="el" href="group__gpiops.html#ga848274dc058043932e802a3caa39db3e">XGpioPs_GetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga17714eeb15fff954fc42d6008e67af17">XGpioPs_GetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga975ad0c4e61d3b92c3f9886a24ff2c1f">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#ga2611a2a677a92a057ec8dd4ae8273766">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#ga323857757f17a313a984de0b522341e3">XGpioPs_IntrGetEnabledPin()</a>, <a class="el" href="group__gpiops.html#ga405556c1d1bc856dd35f8a4a92f50345">XGpioPs_IntrGetStatusPin()</a>, <a class="el" href="group__gpiops.html#ga5af7399d35110ae5f71be57316a2b9ee">XGpioPs_ReadPin()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>, and <a class="el" href="group__gpiops.html#gab9ff633d57fb32cac3424571ba690332">XGpioPs_WritePin()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gaa3bacad17006e4b01ff91f6f14e5d3f7">XGpioPs_GetDirectionPin()</a>, <a class="el" href="group__gpiops.html#ga848274dc058043932e802a3caa39db3e">XGpioPs_GetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga17714eeb15fff954fc42d6008e67af17">XGpioPs_GetOutputEnablePin()</a>, <a class="el" href="group__gpiops.html#ga1b7365f4849c4bc37dbd0cee7df2b73b">XGpioPs_IntrClearPin()</a>, <a class="el" href="group__gpiops.html#ga8a00fd131bf76eab2dcdd48079845b37">XGpioPs_IntrDisablePin()</a>, <a class="el" href="group__gpiops.html#gadc4ea201a1c488a1b667a77f3c6fd23b">XGpioPs_IntrEnablePin()</a>, <a class="el" href="group__gpiops.html#ga323857757f17a313a984de0b522341e3">XGpioPs_IntrGetEnabledPin()</a>, <a class="el" href="group__gpiops.html#ga405556c1d1bc856dd35f8a4a92f50345">XGpioPs_IntrGetStatusPin()</a>, <a class="el" href="group__gpiops.html#ga5af7399d35110ae5f71be57316a2b9ee">XGpioPs_ReadPin()</a>, <a class="el" href="group__gpiops.html#ga7cbd9e1081b8ed84d38b475fc89271cf">XGpioPs_SetDirectionPin()</a>, <a class="el" href="group__gpiops.html#ga4ef808e6f8e113ba1371f44c35b1d0d9">XGpioPs_SetIntrTypePin()</a>, <a class="el" href="group__gpiops.html#ga841cc1098a21bdedec893545f15b025a">XGpioPs_SetOutputEnablePin()</a>, and <a class="el" href="group__gpiops.html#gab9ff633d57fb32cac3424571ba690332">XGpioPs_WritePin()</a>.</p>
 
 </div>
 </div>
@@ -1506,7 +1523,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga9ba60ac847a2c6ad66240cf1a849afba">XGPIOPS_INTANY_OFFSET</a>, <a class="el" href="group__gpiops.html#gafd48f3262cc46cf828f219edcdb08920">XGPIOPS_INTPOL_OFFSET</a>, <a class="el" href="group__gpiops.html#gad50a2feb73c4055285aa11d1de90c402">XGPIOPS_INTTYPE_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#gaff08ac5be0729f046324cae2706aaf9a">XGpioPs_ReadReg</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>
@@ -1718,14 +1735,14 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga6d609e179e7167128bb6517e735c4cf7"></a>
+<a class="anchor" id="ga5b84f2cbaaa08abf138209b975192326"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void XGpioPs_IntrDisable </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -1760,20 +1777,20 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga975ad0c4e61d3b92c3f9886a24ff2c1f"></a>
+<a class="anchor" id="ga8a00fd131bf76eab2dcdd48079845b37"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void XGpioPs_IntrDisablePin </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -1801,18 +1818,18 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga457b603b9dda39af3aad037e3fb7fe89">XGPIOPS_INTDIS_OFFSET</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga46cd4bf296c2706642dec85d0f0752be"></a>
+<a class="anchor" id="ga812e5a4df20dcae1a95ec4b15d36f039"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void XGpioPs_IntrEnable </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -1847,20 +1864,20 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga090dab3e38b9493eb63a30c4cc9a9267">XGPIOPS_INTEN_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga090dab3e38b9493eb63a30c4cc9a9267">XGPIOPS_INTEN_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga2611a2a677a92a057ec8dd4ae8273766"></a>
+<a class="anchor" id="gadc4ea201a1c488a1b667a77f3c6fd23b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void XGpioPs_IntrEnablePin </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em>, </td>
         </tr>
         <tr>
@@ -1888,7 +1905,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga090dab3e38b9493eb63a30c4cc9a9267">XGPIOPS_INTEN_OFFSET</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gaefc766e08002c191864802d6e3a3434e">XGpioPs_GetBankPin()</a>, <a class="el" href="group__gpiops.html#ga090dab3e38b9493eb63a30c4cc9a9267">XGPIOPS_INTEN_OFFSET</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
 </div>
 </div>
@@ -1929,7 +1946,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga63ee987794c805429f6e0c34b62ae5b9">XGPIOPS_INTMASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#gaff08ac5be0729f046324cae2706aaf9a">XGpioPs_ReadReg</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, and <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, and <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#gafd0478d095fee0db04a29b43436306ef">XGpioPs_IntrHandler()</a>, and <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>
@@ -2085,7 +2102,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function does not save and restore the processor context such that the user must provide this processing. </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps.html#aca8b8269a2bd384f19de77e312de684a">XGpioPs::Handler</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#aea00d5eac94a0ae4b17d3ec0061afba1">XGpioPs::MaxBanks</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, and <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps.html#a7bb5325d472614845866cb7abf370ce9">XGpioPs::CallBackRef</a>, <a class="el" href="struct_x_gpio_ps.html#a1f5502ab9e469d502a476a7433b2de9b">XGpioPs::CoreIntrMask</a>, <a class="el" href="struct_x_gpio_ps.html#aca8b8269a2bd384f19de77e312de684a">XGpioPs::Handler</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#aea00d5eac94a0ae4b17d3ec0061afba1">XGpioPs::MaxBanks</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#gace8ee040fe190af86afe59ec1bc3201c">XGpioPs_IntrClear()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, <a class="el" href="group__gpiops.html#ga47fc6f53355030ef41927f38fe37753f">XGpioPs_IntrGetStatus()</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, and <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>.</p>
 
 </div>
 </div>
@@ -2226,14 +2243,14 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga07d1a36c4d70788e5ebf2ae583fc93e7"></a>
+<a class="anchor" id="ga173133193aeba362fa0a5c6e7cdd8dfa"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">s32 XGpioPs_SelfTest </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_x_gpio_ps.html">XGpioPs</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em></td><td>)</td>
           <td></td>
         </tr>
@@ -2256,7 +2273,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gac5c6fe277747f034cd30c3f3e770dc5b">XGPIOPS_BANK0</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga6d609e179e7167128bb6517e735c4cf7">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga46cd4bf296c2706642dec85d0f0752be">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, and <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>.</p>
+<p>References <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="group__gpiops.html#gac5c6fe277747f034cd30c3f3e770dc5b">XGPIOPS_BANK0</a>, <a class="el" href="group__gpiops.html#gaed18cb81aceda214dba440cf6ff3d0ec">XGpioPs_GetIntrType()</a>, <a class="el" href="group__gpiops.html#ga5b84f2cbaaa08abf138209b975192326">XGpioPs_IntrDisable()</a>, <a class="el" href="group__gpiops.html#ga812e5a4df20dcae1a95ec4b15d36f039">XGpioPs_IntrEnable()</a>, <a class="el" href="group__gpiops.html#gaad995f8c0ff2801d22cc405dacb3ed19">XGpioPs_IntrGetEnabled()</a>, and <a class="el" href="group__gpiops.html#gac729652384b6d04711a9d1f2a62aee1d">XGpioPs_SetIntrType()</a>.</p>
 
 </div>
 </div>
@@ -2456,7 +2473,7 @@ Interrupt type reset values for each bank</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_gpio_ps___config.html#aa74cd33dca7de750beea6adbe0b69ae8">XGpioPs_Config::BaseAddr</a>, <a class="el" href="struct_x_gpio_ps.html#a312cec02e6e2550ba15824fad0596921">XGpioPs::GpioConfig</a>, <a class="el" href="struct_x_gpio_ps.html#a3acad7612d69a3b801cea87a78aaa60b">XGpioPs::IsReady</a>, <a class="el" href="struct_x_gpio_ps.html#a50fe90cdd869323ac83d27f1439c58ea">XGpioPs::PmcGpio</a>, <a class="el" href="group__gpiops.html#ga9ba60ac847a2c6ad66240cf1a849afba">XGPIOPS_INTANY_OFFSET</a>, <a class="el" href="group__gpiops.html#gafd48f3262cc46cf828f219edcdb08920">XGPIOPS_INTPOL_OFFSET</a>, <a class="el" href="group__gpiops.html#gad50a2feb73c4055285aa11d1de90c402">XGPIOPS_INTTYPE_OFFSET</a>, <a class="el" href="group__gpiops.html#ga39c1b071b7df6679f0d1450de2b3bb48">XGPIOPS_ONE</a>, <a class="el" href="group__gpiops.html#ga9ba138bbcd05d5e10978166741a8184b">XGPIOPS_REG_MASK_OFFSET</a>, <a class="el" href="group__gpiops.html#ga2bbdd623677a2984b1d0eb497337f559">XGPIOPS_TWO</a>, and <a class="el" href="group__gpiops.html#ga3ad586332c0958c5044450d735127337">XGpioPs_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__gpiops.html#ga07d1a36c4d70788e5ebf2ae583fc93e7">XGpioPs_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__gpiops.html#ga173133193aeba362fa0a5c6e7cdd8dfa">XGpioPs_SelfTest()</a>.</p>
 
 </div>
 </div>

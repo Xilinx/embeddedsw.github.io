@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xsrio_g.c
-* @addtogroup srio_v1_4
+* @addtogroup srio Overview
 * @{
 *
 * This file contains a configuration table that specifies the configuration of
@@ -32,8 +33,7 @@
 
 /************************** Constant Definitions *****************************/
 
-XSrio_Config XSrio_ConfigTable[] =
-{
+XSrio_Config XSrio_ConfigTable[] = {
 	{
 		XPAR_SRIO_0_DEVICE_ID,
 		XPAR_SRIO_0_BASEADDR,

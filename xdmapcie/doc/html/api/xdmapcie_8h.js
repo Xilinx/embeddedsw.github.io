@@ -3,6 +3,8 @@ var xdmapcie_8h =
     [ "XDmaPcie_Config", "struct_x_dma_pcie___config.html", "struct_x_dma_pcie___config" ],
     [ "XDmaPcie", "struct_x_dma_pcie.html", "struct_x_dma_pcie" ],
     [ "XDmaPcie_BarAddr", "struct_x_dma_pcie___bar_addr.html", "struct_x_dma_pcie___bar_addr" ],
+    [ "MAX_BARS", "xdmapcie_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c", null ],
+    [ "REQ_SIZE", "xdmapcie_8h.html#acad74e57979d6bc62e24ddaa31ed11e9", null ],
     [ "XDmaPcie_IsEcamBusy", "xdmapcie_8h.html#aa0a061bd0519f5b946c0abe0d4b6bddd", null ],
     [ "XDmaPcie_IsLinkUp", "xdmapcie_8h.html#abb2f08fcc93b4783bec918f9a607fe21", null ],
     [ "XDMAPCIE_VSEC1", "xdmapcie_8h.html#a2b0bb20942845552762a968ec77c293d", null ],

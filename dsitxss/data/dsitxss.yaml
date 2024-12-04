@@ -1,0 +1,71 @@
+# Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for dsitxss Sub system controller Driver
+
+maintainers:
+  - Kunal Rane <kvrane@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,mipi-dsi-tx-subsystem-2.3
+          - xlnx,dsi
+          - xlnx,mipi-dsi-tx-subsystem-3.0
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,highaddr:
+    description: HighAddress is the physical MAX address of the subsystem address range
+  xlnx,dsi-lanes:
+    description: DSI no of lanes.
+  xlnx,dsi-datatype:
+    description: DSI data type.
+  xlnx,dsi-byte-fifo:
+    description: DSI byte FIFO size.
+  xlnx,dsi-crc-gen:
+    description: DSI CRC generate flag.
+  xlnx,dsi-pixels:
+    description: DSI no of pixels.
+  xlnx,dphy-linerate:
+    description: DPhy line rate.
+  xlnx,dphy-en-reg-if:
+    description: Dphy enable register interface.
+  dphy-present:
+    description: Dphy is present.
+  dphy-connected:
+    description: Dphy is connected flag.
+  dsi-tx-present:
+    description: DSI TX controller present flag.
+  dsi-tx-connected:
+    description: DSI TX controller present flag.
+  interrupts:
+    description: Interrupt number
+  interrupt-parent:
+    description: Parent interrupt
+
+required:
+  - compatible
+  - reg
+  - xlnx,highaddr
+  - xlnx,dsi-lanes
+  - xlnx,dsi-datatype
+  - xlnx,dsi-byte-fifo
+  - xlnx,dsi-crc-gen
+  - xlnx,dsi-pixels
+  - xlnx,dphy-linerate
+  - xlnx,dphy-en-reg-if
+  - dphy-present
+  - dphy-connected: phandle
+  - dsi-tx-present
+  - dsi-tx-connected: phandle
+  - interrupts
+  - interrupt-parent
+
+config:
+  - XDsiTxSs_Config
+...

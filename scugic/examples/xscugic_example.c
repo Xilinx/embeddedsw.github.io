@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -35,6 +35,8 @@
 * 5.1   mus  02/13/23 Support example for each core of APU/RPU clusters in
 *                     VERSAL_NET SoC.
 * 5.2   mus  07/27/23 Removed dependency on XPAR_CPU_ID.
+* 5.2   ml   02/21/24 Fix compilation error reported by C++ compiler.
+* 5.2   mus  04/33/34 Use interrupt wrapper APIs in case of SDT flow.
 * </pre>
 ******************************************************************************/
 
@@ -50,6 +52,9 @@
 #include "xil_types.h"
 #include "xscugic.h"
 #include "xil_util.h"
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 #include "xplatform_info.h"
 
 /************************** Constant Definitions *****************************/
@@ -59,9 +64,14 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+#ifndef SDT
 #define INTC_DEVICE_ID		XPAR_SCUGIC_0_DEVICE_ID
+#else
+#define XSCUGiC_DIST_BASEADDR 	XPAR_XSCUGIC_0_BASEADDR
+#endif
 #define INTC_DEVICE_INT_ID	0x0E
 
+#define XSCUGIC_SPI_CPU_MASK	(XSCUGIC_SPI_CPU0_MASK << XPAR_CPU_ID)
 #define XSCUGIC_SW_TIMEOUT_VAL	10000000U /* Wait for 10 sec */
 
 /**************************** Type Definitions *******************************/
@@ -69,7 +79,11 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Function Prototypes ******************************/
+#ifndef SDT
 int ScuGicExample(u16 DeviceId);
+#else
+int ScuGicExample(u32 BaseAddr);
+#endif
 int SetUpInterruptSystem(XScuGic *XScuGicInstancePtr);
 void DeviceDriverHandler(void *CallbackRef);
 
@@ -107,7 +121,6 @@ int main(void)
 {
 	int Status;
 
-
 	/*
 	 * Setup an assert call back to get some info if we assert.
 	 */
@@ -118,7 +131,11 @@ int main(void)
 	/*
 	 *  Run the Gic example , specify the Device ID generated in xparameters.h
 	 */
+#ifndef SDT
 	Status = ScuGicExample(INTC_DEVICE_ID);
+#else
+	Status = ScuGicExample(XSCUGiC_DIST_BASEADDR);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("GIC Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -150,10 +167,14 @@ int main(void)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 int ScuGicExample(u16 DeviceId)
+#else
+int ScuGicExample(u32 BaseAddr)
+#endif
 {
 	int Status;
-	u32 CoreId;
+	u32 CoreId, CpuId;
 #if defined (VERSAL_NET)
 	u32 ClusterId;
 #endif
@@ -162,6 +183,7 @@ int ScuGicExample(u16 DeviceId)
 	 * Initialize the interrupt controller driver so that it is ready to
 	 * use.
 	 */
+#ifndef SDT
 	GicConfig = XScuGic_LookupConfig(DeviceId);
 	if (NULL == GicConfig) {
 		return XST_FAILURE;
@@ -173,7 +195,6 @@ int ScuGicExample(u16 DeviceId)
 		return XST_FAILURE;
 	}
 
-
 	/*
 	 * Perform a self-test to ensure that the hardware was built
 	 * correctly
@@ -182,7 +203,6 @@ int ScuGicExample(u16 DeviceId)
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
-
 
 	/*
 	 * Setup the Interrupt System
@@ -210,7 +230,24 @@ int ScuGicExample(u16 DeviceId)
 	 * interrupt so the handlers will be called
 	 */
 	XScuGic_Enable(&InterruptController, INTC_DEVICE_INT_ID);
+#else
+	u32 IntrId;
+	UINTPTR IntcBaseAddr;
 
+	Status = XGetEncodedIntrId(INTC_DEVICE_INT_ID,XINTR_IS_EDGE_TRIGGERED,XINTR_IS_SGI,XINTC_TYPE_IS_SCUGIC, &IntrId);
+
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+        }
+
+	IntcBaseAddr = XGetEncodedIntcBaseAddr(XPAR_XSCUGIC_0_BASEADDR, XINTC_TYPE_IS_SCUGIC);
+
+	Status =  XSetupInterruptSystem(&InterruptController, DeviceDriverHandler, IntrId, IntcBaseAddr, XINTERRUPT_DEFAULT_PRIORITY);
+
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+        }
+#endif
 	/*
 	 *  Simulate the Interrupt
 	 */
@@ -222,14 +259,20 @@ int ScuGicExample(u16 DeviceId)
 	CoreId = (1 << CoreId);
 #endif
 
-	Status = XScuGic_SoftwareIntr(&InterruptController,
-				      INTC_DEVICE_INT_ID,
-				      ((ClusterId << XSCUGIC_CLUSTERID_SHIFT ) | CoreId));
+	CpuId = ((ClusterId << XSCUGIC_CLUSTERID_SHIFT ) | CoreId);
 #else
-	Status = XScuGic_SoftwareIntr(&InterruptController,
-					INTC_DEVICE_INT_ID,
-					(XSCUGIC_SPI_CPU0_MASK << CoreId));
+	CpuId = (XSCUGIC_SPI_CPU0_MASK << CoreId);
 #endif
+
+#ifndef SDT
+        Status = XScuGic_SoftwareIntr(&InterruptController,
+                                      INTC_DEVICE_INT_ID,
+                                      CpuId);
+#else
+        Status = XTriggerSoftwareIntr(IntrId, IntcBaseAddr,
+                                      CpuId);
+#endif
+
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}

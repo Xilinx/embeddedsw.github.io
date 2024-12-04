@@ -78,7 +78,9 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date        Changes
 1.03  bsv  07/15/2021 Fix doxygen warnings
 1.04  ng   06/30/23   Added support for system device tree flow
 1.5   mss  09/04/2023 Fixed MISRA-C violation 4.6
-      mss  09/04/2023 Fixed MISRA-C violation 8.13</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
+      mss  09/04/2023 Fixed MISRA-C violation 8.13
+      pre  08/22/2024 Added XCframe_GetLastFrameAddr function and modified
+                      XCframe_SetReadParam function</pre><pre></pre><dl class="section note"><dt>Note</dt><dd></dd></dl>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -91,14 +93,14 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga8251535b86bf918ab9b32b1073ce61a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_cframe___config.html">XCframe_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cframe__v1__3.html#ga8251535b86bf918ab9b32b1073ce61a4">XCframe_LookupConfig</a> (u16 DeviceId)</td></tr>
-<tr class="memdesc:ga8251535b86bf918ab9b32b1073ce61a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">XCframe_LookupConfig returns a reference to an <a class="el" href="struct_x_cframe___config.html" title="This typedef contains configuration information for a CFRAME core. ">XCframe_Config</a> structure based on the unique device id, <em>DeviceId</em>.  <a href="group__cframe__v1__3.html#ga8251535b86bf918ab9b32b1073ce61a4">More...</a><br/></td></tr>
+<tr class="memitem:ga8251535b86bf918ab9b32b1073ce61a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_cframe___config.html">XCframe_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cframe.html#ga8251535b86bf918ab9b32b1073ce61a4">XCframe_LookupConfig</a> (u16 DeviceId)</td></tr>
+<tr class="memdesc:ga8251535b86bf918ab9b32b1073ce61a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">XCframe_LookupConfig returns a reference to an <a class="el" href="struct_x_cframe___config.html" title="This typedef contains configuration information for a CFRAME core. ">XCframe_Config</a> structure based on the unique device id, <em>DeviceId</em>.  <a href="group__cframe.html#ga8251535b86bf918ab9b32b1073ce61a4">More...</a><br/></td></tr>
 <tr class="separator:ga8251535b86bf918ab9b32b1073ce61a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9951a1fa7e1ea6fbed8febcda865134"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#ab9951a1fa7e1ea6fbed8febcda865134">XCframe_CfgInitialize</a> (<a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, const <a class="el" href="struct_x_cframe___config.html">XCframe_Config</a> *CfgPtr, u32 EffectiveAddr)</td></tr>
 <tr class="memdesc:ab9951a1fa7e1ea6fbed8febcda865134"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes an CFRAME core.  <a href="#ab9951a1fa7e1ea6fbed8febcda865134">More...</a><br/></td></tr>
 <tr class="separator:ab9951a1fa7e1ea6fbed8febcda865134"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5b2374130f27db3762e3854b0744a96"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cframe__v1__3.html#gaf5b2374130f27db3762e3854b0744a96">XCframe_SelfTest</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr)</td></tr>
-<tr class="memdesc:gaf5b2374130f27db3762e3854b0744a96"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the driver and hardware device.  <a href="group__cframe__v1__3.html#gaf5b2374130f27db3762e3854b0744a96">More...</a><br/></td></tr>
+<tr class="memitem:gaf5b2374130f27db3762e3854b0744a96"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cframe.html#gaf5b2374130f27db3762e3854b0744a96">XCframe_SelfTest</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaf5b2374130f27db3762e3854b0744a96"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs a self-test on the driver and hardware device.  <a href="group__cframe.html#gaf5b2374130f27db3762e3854b0744a96">More...</a><br/></td></tr>
 <tr class="separator:gaf5b2374130f27db3762e3854b0744a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fe587ad348d15faccd9fcefd765af44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, u32 AddrOffset, XCframe_FrameNo FrameNo, const Xuint128 *Val)</td></tr>
 <tr class="memdesc:a0fe587ad348d15faccd9fcefd765af44"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes to 128 bit CFRAME register.  <a href="#a0fe587ad348d15faccd9fcefd765af44">More...</a><br/></td></tr>
@@ -118,9 +120,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a15aec289f8e36b8c163da0026c16d7fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#a15aec289f8e36b8c163da0026c16d7fd">XCframe_UramTrim</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, u32 TrimValue)</td></tr>
 <tr class="memdesc:a15aec289f8e36b8c163da0026c16d7fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes the BRAM TRIM value.  <a href="#a15aec289f8e36b8c163da0026c16d7fd">More...</a><br/></td></tr>
 <tr class="separator:a15aec289f8e36b8c163da0026c16d7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a869a2ed235d8e63ffa6b79f1361e04de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#a869a2ed235d8e63ffa6b79f1361e04de">XCframe_SetReadParam</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, XCframe_FrameNo CframeNo, u32 CframeLen)</td></tr>
-<tr class="memdesc:a869a2ed235d8e63ffa6b79f1361e04de"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the CFRAME read parameters with mentioned CFRAME length and frame number.  <a href="#a869a2ed235d8e63ffa6b79f1361e04de">More...</a><br/></td></tr>
-<tr class="separator:a869a2ed235d8e63ffa6b79f1361e04de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae27e1bdd1d64c2aadabadfdc99e47b95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#ae27e1bdd1d64c2aadabadfdc99e47b95">XCframe_SetReadParam</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, XCframe_FrameNo CframeNo, u32 CframeLen, u32 FrameAddr)</td></tr>
+<tr class="memdesc:ae27e1bdd1d64c2aadabadfdc99e47b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the CFRAME read parameters with mentioned CFRAME length and frame number.  <a href="#ae27e1bdd1d64c2aadabadfdc99e47b95">More...</a><br/></td></tr>
+<tr class="separator:ae27e1bdd1d64c2aadabadfdc99e47b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91ddf5ccf6f3a8005683d2a56373145d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#a91ddf5ccf6f3a8005683d2a56373145d">XCframe_ReadReg</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, u32 AddrOffset, XCframe_FrameNo FrameNo, u32 *ValPtr)</td></tr>
 <tr class="memdesc:a91ddf5ccf6f3a8005683d2a56373145d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the 128 bit CFRAME register.  <a href="#a91ddf5ccf6f3a8005683d2a56373145d">More...</a><br/></td></tr>
 <tr class="separator:a91ddf5ccf6f3a8005683d2a56373145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +132,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af70a9f3c08ec391872f0a81e067d9bf4"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#af70a9f3c08ec391872f0a81e067d9bf4">XCframe_SafetyWriteReg</a> (const <a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, u32 AddrOffset, XCframe_FrameNo FrameNo, const Xuint128 *Val)</td></tr>
 <tr class="memdesc:af70a9f3c08ec391872f0a81e067d9bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes to 128 bit CFRAME register and reads it back to validate the write operation.  <a href="#af70a9f3c08ec391872f0a81e067d9bf4">More...</a><br/></td></tr>
 <tr class="separator:af70a9f3c08ec391872f0a81e067d9bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5245d5418200c023e4a39ea591374da"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xcframe_8h.html#ad5245d5418200c023e4a39ea591374da">XCframe_GetLastFrameAddr</a> (<a class="el" href="struct_x_cframe.html">XCframe</a> *InstancePtr, u32 BlockType, XCframe_FrameNo CframeNo)</td></tr>
+<tr class="memdesc:ad5245d5418200c023e4a39ea591374da"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the last Cframe address of given cframeno and blocktype.  <a href="#ad5245d5418200c023e4a39ea591374da">More...</a><br/></td></tr>
+<tr class="separator:ad5245d5418200c023e4a39ea591374da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a65d6668bf9168f51452fd8e4fbbe70da"></a>
@@ -165,8 +170,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="xcframe_8c.html#a61d26dca381aff614de588980622e127">XCframe_WriteCmd()</a>, and <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
 
 </div>
 </div>
@@ -216,8 +219,6 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_cframe___config.html#a15a21d609bd9150e508d30e922c1e2ae">XCframe_Config::BaseAddress</a>, <a class="el" href="struct_x_cframe.html#a486c412ee6a68a6ee6d78075d3236f32">XCframe::Config</a>, and <a class="el" href="struct_x_cframe.html#a4255c03da2812c3c90357df63cd5f2dc">XCframe::IsReady</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="afe8587be9cc39c028b74977aab82906a"></a>
@@ -242,8 +243,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
 
 </div>
 </div>
@@ -281,7 +280,48 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
+</div>
+</div>
+<a class="anchor" id="ad5245d5418200c023e4a39ea591374da"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XCframe_GetLastFrameAddr </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_cframe.html">XCframe</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>BlockType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XCframe_FrameNo&#160;</td>
+          <td class="paramname"><em>CframeNo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function returns the last Cframe address of given cframeno and blocktype. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_cframe.html" title="The XCframe driver instance data structure. ">XCframe</a> instance </td></tr>
+    <tr><td class="paramname">BlockType</td><td>is block type </td></tr>
+    <tr><td class="paramname">CframeNo</td><td>is the index of cframe</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Last Frame Address </dd></dl>
 
 </div>
 </div>
@@ -333,10 +373,6 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_cframe___config.html#a15a21d609bd9150e508d30e922c1e2ae">XCframe_Config::BaseAddress</a>, and <a class="el" href="struct_x_cframe.html#a486c412ee6a68a6ee6d78075d3236f32">XCframe::Config</a>.</p>
-
-<p>Referenced by <a class="el" href="xcframe_8h.html#af70a9f3c08ec391872f0a81e067d9bf4">XCframe_SafetyWriteReg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="af70a9f3c08ec391872f0a81e067d9bf4"></a>
@@ -387,11 +423,9 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Success or Failure </dd></dl>
 
-<p>References <a class="el" href="xcframe_8c.html#a91ddf5ccf6f3a8005683d2a56373145d">XCframe_ReadReg()</a>, and <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
-
 </div>
 </div>
-<a class="anchor" id="a869a2ed235d8e63ffa6b79f1361e04de"></a>
+<a class="anchor" id="ae27e1bdd1d64c2aadabadfdc99e47b95"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -411,7 +445,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>CframeLen</em>&#160;</td>
+          <td class="paramname"><em>CframeLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>FrameAddr</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -426,13 +466,12 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_cframe.html" title="The XCframe driver instance data structure. ">XCframe</a> instance. </td></tr>
     <tr><td class="paramname">CframeNo</td><td>is the index of frame </td></tr>
-    <tr><td class="paramname">CframeLen</td><td>is total length of Cframes</td></tr>
+    <tr><td class="paramname">CframeLen</td><td>is total length of Cframes </td></tr>
+    <tr><td class="paramname">FrameAddr</td><td>is frame address</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="xcframe_8c.html#a61d26dca381aff614de588980622e127">XCframe_WriteCmd()</a>, and <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
 
 </div>
 </div>
@@ -470,8 +509,6 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="xcframe_8c.html#a61d26dca381aff614de588980622e127">XCframe_WriteCmd()</a>, and <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a240996c8e6b20583088fd17d40058a6e"></a>
@@ -507,8 +544,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
 
 </div>
 </div>
@@ -552,10 +587,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44">XCframe_WriteReg()</a>.</p>
-
-<p>Referenced by <a class="el" href="xcframe_8h.html#a65d6668bf9168f51452fd8e4fbbe70da">XCframe_BramTrim()</a>, <a class="el" href="xcframe_8h.html#a869a2ed235d8e63ffa6b79f1361e04de">XCframe_SetReadParam()</a>, and <a class="el" href="xcframe_8h.html#a15aec289f8e36b8c163da0026c16d7fd">XCframe_UramTrim()</a>.</p>
 
 </div>
 </div>
@@ -606,10 +637,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
-
-<p>References <a class="el" href="struct_x_cframe___config.html#a15a21d609bd9150e508d30e922c1e2ae">XCframe_Config::BaseAddress</a>, and <a class="el" href="struct_x_cframe.html#a486c412ee6a68a6ee6d78075d3236f32">XCframe::Config</a>.</p>
-
-<p>Referenced by <a class="el" href="xcframe_8h.html#a65d6668bf9168f51452fd8e4fbbe70da">XCframe_BramTrim()</a>, <a class="el" href="xcframe_8h.html#afe8587be9cc39c028b74977aab82906a">XCframe_ClearCframeErr()</a>, <a class="el" href="xcframe_8h.html#a2718ef1f8cd748e9eb889297dc945a2f">XCframe_CramTrim()</a>, <a class="el" href="xcframe_8h.html#af70a9f3c08ec391872f0a81e067d9bf4">XCframe_SafetyWriteReg()</a>, <a class="el" href="xcframe_8h.html#a869a2ed235d8e63ffa6b79f1361e04de">XCframe_SetReadParam()</a>, <a class="el" href="xcframe_8h.html#a15aec289f8e36b8c163da0026c16d7fd">XCframe_UramTrim()</a>, <a class="el" href="xcframe_8h.html#a240996c8e6b20583088fd17d40058a6e">XCframe_VggTrim()</a>, and <a class="el" href="xcframe_8h.html#a61d26dca381aff614de588980622e127">XCframe_WriteCmd()</a>.</p>
 
 </div>
 </div>

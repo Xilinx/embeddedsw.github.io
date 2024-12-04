@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,11 @@
 /**
 *
 * @file xcsudma_hw.h
-* @addtogroup Overview
+* @addtogroup csuma_api CSUDMA APIs
 * @{
 *
 * The xcsudma_hw.h header file contains identifiers and register-level driver
-* functions (or macros) that can be used to access the Xilinx CSU_DMA core.
+* functions (or macros) that can be used to access the CSU_DMA core.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -26,6 +26,7 @@
 * 1.11	sk     03/03/22 Update Overview section based on review comments.
 * 1.11	sk     03/03/22 Add cond INTERNAL to avoid internal macros.
 * 1.12	sk     03/03/22 Added support for VERSAL NET.
+* 1.16  ng     08/20/24 Added spartanup device support
 * </pre>
 *
 ******************************************************************************/
@@ -84,6 +85,17 @@ extern "C" {
 #endif
 /*@}*/
 
+#if defined(SPARTANUP)
+/** @name PMCL DMA, base address, reset offset and reset set mask
+ * @{
+ */
+#define PMC_GLOBAL_BASEADDR	(0x040A0000U)
+#define PMC_GLOBAL_RST_DMA	(PMC_GLOBAL_BASEADDR + 0x00000054U)
+#define PMC_GLOBAL_RST_DMA_RESET_SET_MASK	(0x00000001U)
+#define PMC_GLOBAL_RST_DMA_RESET_UNSET_MASK	(0x00000000U)
+/*@}*/
+#endif
+
 /** @name CRP PMC_DMA reset offset
  * @{
  */
@@ -108,7 +120,7 @@ extern "C" {
 /** @name Address register bit masks
  * @{
  */
-#if defined (VERSAL_NET)
+#if defined(VERSAL_NET) || defined(VERSAL_AIEPG2)
 #define XCSUDMA_ADDR_MASK	0xFFFFFFFFU	/**< Address mask */
 #else
 #define XCSUDMA_ADDR_MASK	0xFFFFFFFCU	/**< Address mask */
@@ -122,7 +134,7 @@ extern "C" {
  * @{
  */
 #define XCSUDMA_SIZE_MASK	0x1FFFFFFCU	/**< Mask for size */
-#if defined (VERSAL_NET)
+#if defined(VERSAL_NET) || defined(VERSAL_AIEPG2)
 #define XCSUDMA_LAST_WORD_MASK	0x20000000U	/**< Last word check bit mask*/
 #define XCSUDMA_SIZE_SHIFT	0U		/**< Shift for size */
 #else
@@ -159,7 +171,7 @@ extern "C" {
 #define XCSUDMA_CTRL_APB_ERR_MASK	0x01000000U	/**< APB register
 							  *  access error
 							  *  mask */
-#define XCSUDMA_CTRL_ENDIAN_MASK	0x00800000U	/**< Endianess mask */
+#define XCSUDMA_CTRL_ENDIAN_MASK	0x00800000U	/**< Endianness mask */
 #define XCSUDMA_CTRL_BURST_MASK		0x00400000U	/**< AXI burst type
 							  *  mask */
 #define XCSUDMA_CTRL_TIMEOUT_MASK	0x003FFC00U	/**< Time out value
@@ -173,7 +185,7 @@ extern "C" {
 #define XCSUDMA_CTRL_SSS_FIFOTHRESH_SHIFT 25U		/**< SSS FIFO threshold
 							  *  shift */
 #define XCSUDMA_CTRL_APB_ERR_SHIFT	24U		/**< APB error shift */
-#define XCSUDMA_CTRL_ENDIAN_SHIFT	23U		/**< Endianess shift */
+#define XCSUDMA_CTRL_ENDIAN_SHIFT	23U		/**< Endianness shift */
 #define XCSUDMA_CTRL_BURST_SHIFT	22U		/**< AXI burst type
 							  *  shift */
 #define XCSUDMA_CTRL_TIMEOUT_SHIFT	10U		/**< Time out value
@@ -288,8 +300,8 @@ extern "C" {
 *
 * This macro reads the given register.
 *
-* @param	BaseAddress is the Xilinx base address of the CSU_DMA core.
-* @param	RegOffset is the register offset of the register.
+* @param	BaseAddress Base address of the CSU_DMA core.
+* @param	RegOffset Register offset of the register.
 *
 * @return	The 32-bit value of the register.
 *
@@ -305,9 +317,9 @@ extern "C" {
 *
 * This macro writes the value into the given register.
 *
-* @param	BaseAddress is the Xilinx base address of the CSU_DMA core.
-* @param	RegOffset is the register offset of the register.
-* @param	Data is the 32-bit value to write to the register.
+* @param	BaseAddress Base address of the CSU_DMA core.
+* @param	RegOffset Register offset of the register.
+* @param	Data 32-bit value to write to the register.
 *
 * @return	None.
 *

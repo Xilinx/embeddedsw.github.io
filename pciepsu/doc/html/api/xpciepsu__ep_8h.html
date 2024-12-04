@@ -105,8 +105,71 @@ Functions</h2></td></tr>
 <tr class="memitem:a60670dca0dbddb37079e9917e41eae40"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress</a> (XPciePsu *PciePsuPtr, u32 IngressNum, u32 BarNum, u64 Dst)</td></tr>
 <tr class="memdesc:a60670dca0dbddb37079e9917e41eae40"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets up ingress translation.  <a href="#a60670dca0dbddb37079e9917e41eae40">More...</a><br/></td></tr>
 <tr class="separator:a60670dca0dbddb37079e9917e41eae40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6486e8d86d93762e998010aa29efd100"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8h.html#a6486e8d86d93762e998010aa29efd100">XPciePsu_Egress_EP_BridgeInitialize</a> (XPciePsu *PciePsuPtr)</td></tr>
+<tr class="memdesc:a6486e8d86d93762e998010aa29efd100"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes Egress PCIe bridge.  <a href="#a6486e8d86d93762e998010aa29efd100">More...</a><br/></td></tr>
+<tr class="separator:a6486e8d86d93762e998010aa29efd100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44c30122a4a391b9c486f9646e7cf2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8h.html#af44c30122a4a391b9c486f9646e7cf2e">Do_Egress_Test</a> (u32 *egress_src_lo)</td></tr>
+<tr class="memdesc:af44c30122a4a391b9c486f9646e7cf2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does Egress test.  <a href="#af44c30122a4a391b9c486f9646e7cf2e">More...</a><br/></td></tr>
+<tr class="separator:af44c30122a4a391b9c486f9646e7cf2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0ab59afa2bae270a5be2f4496945dde"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu__ep_8h.html#ad0ab59afa2bae270a5be2f4496945dde">XPciePsu_EP_SetupEgress</a> (XPciePsu *PciePsuPtr, u32 IngressNum)</td></tr>
+<tr class="memdesc:ad0ab59afa2bae270a5be2f4496945dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets up Egress translation.  <a href="#ad0ab59afa2bae270a5be2f4496945dde">More...</a><br/></td></tr>
+<tr class="separator:ad0ab59afa2bae270a5be2f4496945dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="af44c30122a4a391b9c486f9646e7cf2e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Do_Egress_Test </td>
+          <td>(</td>
+          <td class="paramtype">u32 *&#160;</td>
+          <td class="paramname"><em>egress_src_lo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function does Egress test. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">egress</td><td>source address </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#ad0ab59afa2bae270a5be2f4496945dde">XPciePsu_EP_SetupEgress()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6486e8d86d93762e998010aa29efd100"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XPciePsu_Egress_EP_BridgeInitialize </td>
+          <td>(</td>
+          <td class="paramtype">XPciePsu *&#160;</td>
+          <td class="paramname"><em>PciePsuPtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function initializes Egress PCIe bridge. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">PciePsuPtr</td><td>pointer to XPciePsu Instance Pointer </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
+
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a99474c575ca291a93548797b66df45b8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -130,8 +193,6 @@ Functions</h2></td></tr>
 </dl>
 
 <p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
-
-<p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
 </div>
@@ -169,7 +230,47 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS on success err on failure </dd></dl>
 
-<p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#a71de060d9b164f1bcc1a31f0dea4fe07">XPciePsu_InitEndPoint()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#a71de060d9b164f1bcc1a31f0dea4fe07">XPciePsu_InitEndPoint()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad0ab59afa2bae270a5be2f4496945dde"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XPciePsu_EP_SetupEgress </td>
+          <td>(</td>
+          <td class="paramtype">XPciePsu *&#160;</td>
+          <td class="paramname"><em>PciePsuPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>EgressNum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets up Egress translation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">PciePsuPtr</td><td>pointer to XPciePsu_Config Instance Pointer </td></tr>
+    <tr><td class="paramname">EgressNum</td><td>ingress must be 0 to 7</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if setup is successful XST_FAILURE if setup is fail </dd></dl>
+
+<p>References <a class="el" href="xpciepsu__ep_8c.html#af44c30122a4a391b9c486f9646e7cf2e">Do_Egress_Test()</a>, <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
+
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
 </div>
@@ -219,11 +320,9 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>XST_SUCCESS if setup is successful XST_FAILURE if setup is fail </p>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if setup is successful XST_FAILURE if setup is fail </dd></dl>
 
 <p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>, and <a class="el" href="xpciepsu_8c.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg()</a>.</p>
-
-<p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
 </div>
@@ -252,8 +351,6 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>.</p>
 
-<p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="aca1b71a1574b91939ee539c11556ce88"></a>
@@ -280,7 +377,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xpciepsu_8c.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg()</a>.</p>
 
-<p>Referenced by <a class="el" href="xpciepsu__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
 </div>
 </div>

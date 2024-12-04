@@ -337,9 +337,9 @@ HDMI TX CTS and N Source</h2></td></tr>
 <tr class="memitem:a626c53ccaef2fea0d712d363e80691ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8h.html#a626c53ccaef2fea0d712d363e80691ac">XV_HdmiTx1_Clear</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a626c53ccaef2fea0d712d363e80691ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function clear the HDMI TX variables and sets it to the defaults.  <a href="#a626c53ccaef2fea0d712d363e80691ac">More...</a><br/></td></tr>
 <tr class="separator:a626c53ccaef2fea0d712d363e80691ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49a7156e8be955b84d5cdb0ea7522038"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a49a7156e8be955b84d5cdb0ea7522038"></a>
-u8&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GetVic</b> (XVidC_VideoMode VideoMode)</td></tr>
-<tr class="separator:a49a7156e8be955b84d5cdb0ea7522038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7b6f6ccf8cebbdbd102c9ce612cd96"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8h.html#abc7b6f6ccf8cebbdbd102c9ce612cd96">XV_HdmiTx1_LookupVic</a> (XVidC_VideoMode VideoMode)</td></tr>
+<tr class="memdesc:abc7b6f6ccf8cebbdbd102c9ce612cd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function provides video identification code of video mode.  <a href="#abc7b6f6ccf8cebbdbd102c9ce612cd96">More...</a><br/></td></tr>
+<tr class="separator:abc7b6f6ccf8cebbdbd102c9ce612cd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba2f50da08ab46699dcee07db1d106c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba2f50da08ab46699dcee07db1d106c1"></a>
 XVidC_VideoMode&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GetVideoModeFromVic</b> (u8 Vic)</td></tr>
 <tr class="separator:aba2f50da08ab46699dcee07db1d106c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1097,8 +1097,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GenerateSr
 <div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
 <div class="ttc" id="xv__hdmitx1__hw_8h_html_aa238147ea10632c793db777b956f97ea"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#aa238147ea10632c793db777b956f97ea">XV_HDMITX1_AUX_CTRL_DYNHDR_EN_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_AUX_CTRL_DYNHDR_EN_MASK</div><div class="ttdoc">AUX Control Enable Dynamic HDR mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:384</div></div>
 <div class="ttc" id="xv__hdmitx1__hw_8h_html_a97406fdf0b5b815f1a99e48f9f769ab9"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a97406fdf0b5b815f1a99e48f9f769ab9">XV_HDMITX1_AUX_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_AUX_CTRL_SET_OFFSET</div><div class="ttdoc">AUX Control Register Set * offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:357</div></div>
-<div class="ttc" id="xv__hdmitx1_8h_html_ae2165f794a177f55510c8352ecc9a98b"><div class="ttname"><a href="xv__hdmitx1_8h.html#ae2165f794a177f55510c8352ecc9a98b">XV_HdmiTx1_DynHdr_DM_Enable</a></div><div class="ttdeci">#define XV_HdmiTx1_DynHdr_DM_Enable(InstancePtr)</div><div class="ttdoc">This macro enables the data mover for Dynamic HDR in HDMI Tx. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1.h:888</div></div>
-<div class="ttc" id="xv__hdmitx1_8h_html_a18b2a682a5a6928c3cdee2456563227c"><div class="ttname"><a href="xv__hdmitx1_8h.html#a18b2a682a5a6928c3cdee2456563227c">XV_HdmiTx1_DynHdr_DM_Disable</a></div><div class="ttdeci">#define XV_HdmiTx1_DynHdr_DM_Disable(InstancePtr)</div><div class="ttdoc">This macro disables the data mover for Dynamic HDR in HDMI Tx. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1.h:910</div></div>
+<div class="ttc" id="xv__hdmitx1_8h_html_ae2165f794a177f55510c8352ecc9a98b"><div class="ttname"><a href="xv__hdmitx1_8h.html#ae2165f794a177f55510c8352ecc9a98b">XV_HdmiTx1_DynHdr_DM_Enable</a></div><div class="ttdeci">#define XV_HdmiTx1_DynHdr_DM_Enable(InstancePtr)</div><div class="ttdoc">This macro enables the data mover for Dynamic HDR in HDMI Tx. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1.h:892</div></div>
+<div class="ttc" id="xv__hdmitx1_8h_html_a18b2a682a5a6928c3cdee2456563227c"><div class="ttname"><a href="xv__hdmitx1_8h.html#a18b2a682a5a6928c3cdee2456563227c">XV_HdmiTx1_DynHdr_DM_Disable</a></div><div class="ttdeci">#define XV_HdmiTx1_DynHdr_DM_Disable(InstancePtr)</div><div class="ttdoc">This macro disables the data mover for Dynamic HDR in HDMI Tx. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1.h:914</div></div>
 <div class="ttc" id="xv__hdmitx1__hw_8h_html_a93a082440892ddad44f45085a507d526"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a93a082440892ddad44f45085a507d526">XV_HDMITX1_AUX_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_AUX_CTRL_CLR_OFFSET</div><div class="ttdoc">AUX Control Register Clear * offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:360</div></div>
 </div><!-- fragment -->
 <p>This macro allows enabling/disabling of Dynamic HDR in HDMI Tx. </p>
@@ -3999,6 +3999,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_GenerateSr
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XV_HdmiTx1_LookupConfig returns a reference to a config record in the configuration table (in xv_hdmitx1_g.c) corresponding to <em>DeviceId</em>, or NULL if no match is found.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="abc7b6f6ccf8cebbdbd102c9ce612cd96"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XV_HdmiTx1_LookupVic </td>
+          <td>(</td>
+          <td class="paramtype">XVidC_VideoMode&#160;</td>
+          <td class="paramname"><em>VideoMode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function provides video identification code of video mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">VideoMode</td><td>specifies resolution identifier.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Video identification code defined in the VIC table.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 </div>

@@ -1,7 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2017 - 2023 Xilinx, Inc. All rights reserved.
+* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -149,27 +148,50 @@ typedef struct {
 #ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic IicInst;
 #endif
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	XHdcp1x Hdcp1xInst;
+#endif
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+			(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	XTmrCtr TmrCtrInst;
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	XHdcp22_Rx_Dp Hdcp22Inst;
+#endif
 } XDpRxSs_SubCores;
 
 /************************** Function Prototypes ******************************/
-
+#ifndef SDT
 static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr);
+#else
+static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr,
+                                 UINTPTR BaseAddress);
+#endif
 static void DpRxSs_PopulateDpRxPorts(XDpRxSs *InstancePtr);
 static void StubTp1Callback(void *InstancePtr);
 static void StubTp2Callback(void *InstancePtr);
 static void StubUnplugCallback(void *InstancePtr);
 static void StubAccessLaneSetCallback(void *InstancePtr);
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 static int DpRxSs_HdcpStartTimer(void *InstancePtr, u16 TimeoutInMs);
 static int DpRxSs_HdcpStopTimer(void *InstancePtr);
 static int DpRxSs_HdcpBusyDelay(void *InstancePtr, u16 DelayInMs);
 static void DpRxSs_TimerCallback(void *InstancePtr, u8 TmrCtrNumber);
 static u32 DpRxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq);
+#endif
+
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+			(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 static void DpRxSs_TimeOutCallback(void *InstancePtr, u8 TmrCtrNumber);
+#endif
+
+#if ((XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0))
 static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr);
+#endif
+
 static void XDpRxSs_Set_Dec_Clk(XDpRxSs *InstancePtr);
 
 /************************** Variable Definitions *****************************/
@@ -231,7 +253,9 @@ XDpRxSs_SubCores DpRxSsSubCores[XPAR_XDPRXSS_NUM_INSTANCES];
 u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 				UINTPTR EffectiveAddr)
 {
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	XHdcp1x_Config *Hdcp1xConfig;
+#endif
 #ifdef XPAR_XIIC_NUM_INSTANCES
 	XIic_Config IicConfig;
 #endif
@@ -249,13 +273,23 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 
-	/* Get included sub-cores in the DisplayPort RX Subsystem */
+#ifndef SDT
 	DpRxSs_GetIncludedSubCores(InstancePtr);
+#else
+	/* Get included sub-cores in the DisplayPort RX Subsystem */
+	DpRxSs_GetIncludedSubCores(InstancePtr, InstancePtr->Config.BaseAddress);
+#endif
 
 	if (InstancePtr->Config.IncludeClkWiz)
+#ifndef SDT
 		InstancePtr->clk_wiz_abs_addr =
 			InstancePtr->Config.BaseAddress +
 			InstancePtr->Config.ClkWizSubCore.ClkWizConfig.AbsAddr;
+#else
+		InstancePtr->clk_wiz_abs_addr =
+			InstancePtr->Config.BaseAddress +
+			InstancePtr->Config.ClkWizSubCore.ClkWizConfig.BaseAddress;
+#endif
 
 	/* Check for IIC availability */
 #ifdef XPAR_XIIC_NUM_INSTANCES
@@ -369,15 +403,23 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		DpRxSs_PopulateDpRxPorts(InstancePtr);
 	}
 
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+			(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	/* Check for Timer Counter availability */
 	XTmrCtr_Config *ConfigPtr;
 	if (InstancePtr->TmrCtrPtr != NULL) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Initializing Timer "
 				"Counter IP \n\r");
-
+#ifndef SDT
 		ConfigPtr = XTmrCtr_LookupConfig(
 				InstancePtr->Config.TmrCtrSubCore.
 				TmrCtrConfig.DeviceId);
+#else
+		ConfigPtr = XTmrCtr_LookupConfig(
+				InstancePtr->Config.TmrCtrSubCore.
+				TmrCtrConfig.BaseAddress);
+#endif
 		if (!ConfigPtr) {
 			return XST_DEVICE_NOT_FOUND;
 		}
@@ -405,7 +447,7 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		/* Set the reset value to Timer Counter zero */
 		XTmrCtr_SetResetValue(InstancePtr->TmrCtrPtr, 0,
 				XDPRXSS_TMRCTR_RST_VAL);
-
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 		if (InstancePtr->Hdcp1xPtr != NULL) {
 			/* Initialize the HDCP timer functions */
 			XHdcp1x_SetTimerStart(InstancePtr->Hdcp1xPtr,
@@ -415,17 +457,24 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			XHdcp1x_SetTimerDelay(InstancePtr->Hdcp1xPtr,
 					&DpRxSs_HdcpBusyDelay);
 		}
+#endif
 	}
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	/* Check for HDCP availability */
 	if ((InstancePtr->Hdcp1xPtr != NULL) &&
 					(InstancePtr->Config.HdcpEnable)) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Initializing HDCP IP "
 				"\n\r");
-
+#ifndef SDT
 		Hdcp1xConfig = XHdcp1x_LookupConfig(
 				InstancePtr->Config.Hdcp1xSubCore.Hdcp1xConfig.DeviceId);
-		if (!ConfigPtr) {
+#else
+		Hdcp1xConfig = XHdcp1x_LookupConfig(
+				InstancePtr->Config.Hdcp1xSubCore.Hdcp1xConfig.BaseAddress);
+#endif
+		if (!Hdcp1xConfig) {
 			return XST_DEVICE_NOT_FOUND;
 		}
 
@@ -446,7 +495,9 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 
 		XHdcp1x_LateInit(InstancePtr->Hdcp1xPtr);
 	}
+#endif
 
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	/* HDCP 2.2 */
 	if (InstancePtr->Hdcp22Ptr && InstancePtr->Config.Hdcp22Enable)
 	{
@@ -464,10 +515,14 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		XHdcp22Rx_Dp_SetHdcp22OverProtocol(InstancePtr->Hdcp22Ptr,
 				XHDCP22_RX_DP);
 	}
+#endif
 
+#if ((XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0))
 	/* Default value */
 	InstancePtr->HdcpIsReady = FALSE;
+#endif
 
+#if ((XPAR_XHDCP_NUM_INSTANCES > 0) && (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0))
 	/*
 	 * Set default HDCP protocol.
 	 * Setting HDCP1x as default if both HDCP1x
@@ -489,17 +544,19 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 	}
+#elif (XPAR_XHDCP_NUM_INSTANCES > 0)
 	/*
 	 * HDCP1X.
 	 * HDCP is ready when only the HDCP 1.4 core is
 	 * instantiated and the key is loaded
 	 */
-	else if (InstancePtr->Hdcp1xPtr) {
+	if (InstancePtr->Hdcp1xPtr) {
 		InstancePtr->HdcpIsReady = TRUE;
 
 		/* Set default HDCP content protection scheme */
 		XDpRxSs_HdcpSetProtocol(InstancePtr, XDPRXSS_HDCP_14);
 	}
+#elif (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	/*HDCP22*/
 	if (InstancePtr->Hdcp22Ptr &&
 			InstancePtr->Hdcp22Lc128Ptr &&
@@ -509,6 +566,8 @@ u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 		/* Set default HDCP content protection scheme */
 		XDpRxSs_HdcpSetProtocol(InstancePtr, XDPRXSS_HDCP_22);
 	}
+#endif
+
 	/* Set the flag to indicate the subsystem is ready */
 	InstancePtr->IsReady = (u32)(XIL_COMPONENT_IS_READY);
 
@@ -538,14 +597,21 @@ void XDpRxSs_Reset(XDpRxSs *InstancePtr)
 {
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
+
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	/* Reset HDCP interface */
 	if ((InstancePtr->Hdcp1xPtr) && (InstancePtr->Config.HdcpEnable)) {
 		XHdcp1x_Reset(InstancePtr->Hdcp1xPtr);
 	}
+#endif
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+	(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	/* Reset Timer Counter zero */
 	if (InstancePtr->TmrCtrPtr) {
 		XTmrCtr_Reset(InstancePtr->TmrCtrPtr, 0);
 	}
+#endif
 	/* Reset the video and AUX logic from DP RX */
 	XDpRxSs_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
 			XDP_RX_SOFT_RESET, XDP_RX_SOFT_RESET_VIDEO_MASK |
@@ -854,6 +920,37 @@ u8 XDpRxss_GetBpc(XDpRxSs *InstancePtr, u8 Stream)
 
 /******************************************************************************/
 /**
+ * This function extracts the incoming video stream is Progressive or Interlace mode. *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @param	Stream is the stream number to make the calculations for.
+ *
+ * @return	Video timing is Progressive or Interlace.
+ *
+ * @note	RX clock must be stable.
+ *
+ *******************************************************************************/
+u8 XDpRxss_GetInterlace(XDpRxSs *InstancePtr, u8 Stream)
+{
+	u8 interlace;
+
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+			  (Stream == XDP_TX_STREAM_ID2) ||
+			  (Stream == XDP_TX_STREAM_ID3) ||
+			  (Stream == XDP_TX_STREAM_ID4));
+
+	interlace =
+		XDp_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_VBID);
+
+	interlace = interlace >> 1;
+
+	return interlace;
+}
+
+/******************************************************************************/
+/**
  * This function extracts the color component format from MISC0 or VSC SDP packet
  * based on whether reception of colorimetry information through VSC SDP packets or
  * through MISC registers of the stream.
@@ -943,6 +1040,230 @@ u8 XDpRxss_GetDynamicRange(XDpRxSs *InstancePtr, u8 Stream)
 }
 
 /*****************************************************************************/
+/**	 This function gives the main stream attributes (MSA).
+ *
+ *	@param		InstancePtr is a pointer to the XDpRxSs instance.
+ *
+ *	@return		MSA Config structure
+ *
+ *****************************************************************************/
+XDp_MainStreamAttributes *XDPRxss_GetMsa(XDpRxSs *DpRxSsInst)
+{
+	u8 Stream;
+	u32 DpHres = 0, i = 0;
+	u32 DpVres = 0;
+	u32 DpHres_total = 0;
+	u32 DpVres_total = 0;
+	u32 rxMsamisc0 = 0;
+	u32 rxMsamisc1 = 0;
+	u32 rxMsaMVid = 0;
+	u32 rxMsaNVid = 0;
+	u8 bpc;
+	char *color;
+	u8 color_mode = 0;
+	XDp_MainStreamAttributes *Msa_Config =
+			(XDp_MainStreamAttributes *)&DpRxSsInst->DpPtr->RxInstance.MsaConfig;
+
+	for (Stream = 1; Stream <= DpRxSsInst->Config.NumMstStreams; Stream++) {
+		while ((DpHres == 0 || i < 300) && DpRxSsInst->link_up_trigger == 1) {
+			DpHres = XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+					     XDP_RX_MSA_HRES);
+			i++;
+		}
+		while ((DpVres == 0 || i < 300) && DpRxSsInst->link_up_trigger == 1) {
+			DpVres = XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+					     XDP_RX_MSA_VHEIGHT);
+			i++;
+		}
+
+		DpHres_total =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_HTOTAL);
+		DpVres_total =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_VTOTAL);
+		rxMsamisc0 =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_MISC0);
+		rxMsamisc1 =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_MISC1);
+		rxMsaMVid =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_MVID);
+		rxMsaNVid =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_NVID);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Misc0 = rxMsamisc0;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Misc1 = rxMsamisc1;
+
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.HActive = DpHres;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.VActive = DpVres;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.HTotal =
+									DpHres_total;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.F0PVTotal =
+									DpVres_total;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].MVid = rxMsaMVid;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].NVid = rxMsaNVid;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].HStart =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_HSTART);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].VStart =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_VSTART);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.HSyncWidth =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_HSWIDTH);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.F0PVSyncWidth =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_VSWIDTH);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.HSyncPolarity =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_HSPOL);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.Timing.VSyncPolarity =
+		XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+			    XDP_RX_STREAM_MSA_OFFSET((Stream - 1)) + XDP_RX_INDIVIDUAL_MSA_VSPOL);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].SynchronousClockMode =
+				rxMsamisc0 & 1;
+
+		bpc = XDpRxss_GetBpc(DpRxSsInst, XDP_TX_STREAM_ID1);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].BitsPerColor = bpc;
+
+		color_mode = XDpRxss_GetColorComponent(DpRxSsInst, Stream);
+
+		/* Calculate the pixel clock frequency based on channel coding set(8/10b or 128/132b) */
+		u32 Channel_Coding = XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+									XDP_RX_DPCD_MAIN_LINK_CHANNEL_CODING_SET);
+		u32 recv_clk_freq=0;
+		float recv_frame_clk=0;
+
+		if((Channel_Coding & 0x3) == 0x1){ //dp1.4 linkrates
+			recv_clk_freq =
+					(((int)DpRxSsInst->UsrOpt.LinkRate*27)*rxMsaMVid)/rxMsaNVid;
+
+			recv_frame_clk =
+				(int)( (recv_clk_freq*1000000.0)/(DpHres_total * DpVres_total) < 0.0 ?
+						(recv_clk_freq*1000000.0)/(DpHres_total * DpVres_total) :
+						(recv_clk_freq*1000000.0)/(DpHres_total * DpVres_total)+0.9
+						);
+			DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].IsRxDp21 = 0;
+		}else{	//dp2.1 linkrates
+			u32 VFreq_lower = XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+										0x1608);
+			u32 VFreq_higher = XDp_ReadReg(DpRxSsInst->DpPtr->Config.BaseAddr,
+										0x160C);
+			u64 VFreq = 0;
+			VFreq = VFreq_higher;
+			VFreq = (VFreq << 24) | VFreq_lower;
+			DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].VFreq = VFreq;
+		    DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].IsRxDp21 = 1;
+
+			recv_frame_clk =
+				(int)( (VFreq*1.0)/(DpHres_total * DpVres_total) < 0.0 ?
+						(VFreq*1.0)/(DpHres_total * DpVres_total) :
+						(VFreq*1.0)/(DpHres_total * DpVres_total)+0.9
+						);
+		}
+
+		XVidC_FrameRate recv_frame_clk_int = recv_frame_clk;
+		//Doing Approximation here
+		if (recv_frame_clk_int == 49 || recv_frame_clk_int == 51) {
+			recv_frame_clk_int = 50;
+		} else if (recv_frame_clk_int == 59 || recv_frame_clk_int == 61) {
+			recv_frame_clk_int = 60;
+		} else if (recv_frame_clk_int == 29 || recv_frame_clk_int == 31) {
+			recv_frame_clk_int = 30;
+		} else if (recv_frame_clk_int == 76 || recv_frame_clk_int == 74) {
+			recv_frame_clk_int = 75;
+		} else if (recv_frame_clk_int == 121 || recv_frame_clk_int == 119) {
+			recv_frame_clk_int = 120;
+		}
+
+
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].PixelClockHz = DpHres_total * DpVres_total * recv_frame_clk_int;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.FrameRate =recv_frame_clk_int;
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].DynamicRange = XDpRxss_GetDynamicRange(DpRxSsInst, Stream);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].YCbCrColorimetry = XDpRxss_GetColorimetry(DpRxSsInst, Stream);
+		DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.VmId =
+		XVidC_GetVideoModeId(DpHres, DpVres,
+				     DpRxSsInst->DpPtr->RxInstance.MsaConfig[(Stream - 1)].Vtm.FrameRate,
+				     XDpRxss_GetInterlace(DpRxSsInst, Stream));
+
+		if (color_mode == 0) {
+			DpRxSsInst->DpPtr->RxInstance.MsaConfig[Stream -1].ComponentFormat =
+					XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_RGB;
+			color = "RGB";
+		} else if (color_mode == 1) {
+			DpRxSsInst->DpPtr->RxInstance.MsaConfig[Stream - 1].ComponentFormat =
+					XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444;
+			color = "YCbCr444";
+		} else if (color_mode == 2) {
+			DpRxSsInst->DpPtr->RxInstance.MsaConfig[Stream - 1].ComponentFormat =
+					XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422;
+			color = "YCbCr422";
+		} else {
+			//RAW, 420, Y unsupported
+			xil_printf("Unsupported Color Format\r\n");
+		}
+	}
+
+	return Msa_Config;
+}
+
+/*****************************************************************************/
+/**
+ *
+ * This function retrieves the VideoStream Parameters from
+ * the incoming video stream.
+ *
+ * @param	InstancePtr is a pointer to the XDpRxSs core instance.
+ * @Stream	Stream is the stream number to get the Video data.
+ *
+ * @return
+ *		- SUCCESS when video data extraction is success
+ *
+ ******************************************************************************/
+int XDpRxSs_GetVideoStream(XDpRxSs *InstancePtr, XVidC_VideoStream *VideoStream, u8 Stream)
+{
+	XDp_MainStreamAttributes *Msa_Config;
+	u32 VTotal;
+
+	/* Verify arguments.*/
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
+			  (Stream == XDP_TX_STREAM_ID2) ||
+			  (Stream == XDP_TX_STREAM_ID3) ||
+			  (Stream == XDP_TX_STREAM_ID4));
+
+	u32 StreamOffset[4] = {XDP_RX_STREAM1_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM2_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM3_ADAPTIVE_VBLANK_VTOTAL,
+			XDP_RX_STREAM4_ADAPTIVE_VBLANK_VTOTAL};
+
+	Msa_Config = XDPRxss_GetMsa(InstancePtr);
+
+	VideoStream->Timing =
+		InstancePtr->DpPtr->RxInstance.MsaConfig[Stream - 1].Vtm.Timing;
+	VideoStream->FrameRate =
+		InstancePtr->DpPtr->RxInstance.MsaConfig[Stream - 1].Vtm.FrameRate;
+	VideoStream->VmId =
+		InstancePtr->DpPtr->RxInstance.MsaConfig[Stream - 1].Vtm.VmId;
+	VideoStream->PixPerClk = InstancePtr->UsrOpt.LaneCount;
+	VideoStream->ColorDepth =
+		InstancePtr->DpPtr->RxInstance.MsaConfig[Stream - 1].BitsPerColor;
+	VideoStream->ColorFormatId =
+		InstancePtr->DpPtr->RxInstance.MsaConfig[Stream - 1].ComponentFormat;
+	VideoStream->ColorStd = XDp_RxGetColorimetry(InstancePtr->DpPtr, Stream);
+	VideoStream->DynamicRange = XDp_RxGetDynamicRange(InstancePtr->DpPtr, Stream);
+	VideoStream->BaseFrameRate = VideoStream->FrameRate;
+	VideoStream->BaseTiming = VideoStream->Timing;
+	VideoStream->UncompressedTiming = VideoStream->Timing;
+	VideoStream->IsInterlaced = XDpRxss_GetInterlace(InstancePtr, Stream);
+
+	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
 /**
 *
 * This function handles incoming sideband messages. It will
@@ -974,6 +1295,7 @@ u32 XDpRxSs_HandleDownReq(XDpRxSs *InstancePtr)
 	return Status;
 }
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -997,14 +1319,19 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr);
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr)
 		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
 		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
+#endif
 
 	switch (InstancePtr->HdcpProtocol) {
 		/* Disable HDCP 1.4 and HDCP 2.2 */
 		case XDPRXSS_HDCP_NONE :
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Disable(
 						InstancePtr->Hdcp1xPtr);
@@ -1012,14 +1339,18 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 				 *  command is executed */
 				XHdcp1x_Poll(InstancePtr->Hdcp1xPtr);
 			}
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
 				Status2 = XHdcp22Rx_Dp_Disable(
 						InstancePtr->Hdcp22Ptr);
 			}
+#endif
 			break;
 
 			/* Enable HDCP 1.4 and disable HDCP 2.2 */
 		case XDPRXSS_HDCP_14 :
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Enable(
 						InstancePtr->Hdcp1xPtr);
@@ -1030,14 +1361,20 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 			else {
 				Status1 = XST_FAILURE;
 			}
+#else
+			Status1 = XST_FAILURE;
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
 				Status2 = XHdcp22Rx_Dp_Disable(
 						InstancePtr->Hdcp22Ptr);
 			}
+#endif
 			break;
 
 			/* Enable HDCP 2.2 and disable HDCP 1.4 */
 		case XDPRXSS_HDCP_22 :
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp1xPtr) {
 				Status1 = XHdcp1x_Disable(
 						InstancePtr->Hdcp1xPtr);
@@ -1045,6 +1382,8 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 				 * command is executed. */
 				XHdcp1x_Poll(InstancePtr->Hdcp1xPtr);
 			}
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 			if (InstancePtr->Hdcp22Ptr) {
 				Status2 = XHdcp22Rx_Dp_Enable(
 						InstancePtr->Hdcp22Ptr);
@@ -1052,6 +1391,9 @@ u32 XDpRxSs_HdcpEnable(XDpRxSs *InstancePtr)
 			else {
 				Status2 = XST_FAILURE;
 			}
+#else
+			Status2 = XST_FAILURE;
+#endif
 			break;
 
 		default :
@@ -1082,20 +1424,23 @@ u32 XDpRxSs_HdcpDisable(XDpRxSs *InstancePtr)
 
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr);
-
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr)
 		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
-
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
 		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
-
+#endif
 	/* Set protocol to NONE then reset/disable HDCP 1X and 2.2 */
 	InstancePtr->HdcpProtocol = XDPRXSS_HDCP_NONE;
 	Status = XDpRxSs_HdcpReset(InstancePtr);
 
 	return Status;
 }
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -1157,7 +1502,9 @@ u32 XDpRxSs_SetPhysicalState(XDpRxSs *InstancePtr, u32 PhyState)
 
 	return Status;
 }
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -1182,15 +1529,19 @@ u32 XDpRxSs_SetLane(XDpRxSs *InstancePtr, u32 Lane)
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr);
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr)
 		Xil_AssertNonvoid(InstancePtr->Config.HdcpEnable);
+#endif
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
 		Xil_AssertNonvoid(InstancePtr->Config.Hdcp22Enable);
-
+#endif
 	Xil_AssertNonvoid((Lane == XDPRXSS_LANE_COUNT_SET_1) ||
 			(Lane == XDPRXSS_LANE_COUNT_SET_2) ||
 			(Lane == XDPRXSS_LANE_COUNT_SET_4));
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr) {
 		/* Set lanes into the HDCP interface */
 		Status = XHdcp1x_SetLaneCount(InstancePtr->Hdcp1xPtr, Lane);
@@ -1201,13 +1552,18 @@ u32 XDpRxSs_SetLane(XDpRxSs *InstancePtr, u32 Lane)
 			return XST_FAILURE;
 		}
 	}
+#endif
 
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
 		XHdcp22_Dp_RxSetLaneCount(InstancePtr->Hdcp22Ptr, Lane);
+#endif
 
 	return Status;
 }
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -1366,7 +1722,11 @@ u32 XDpRxSs_DownstreamReady(XDpRxSs *InstancePtr)
 
 	return Status;
 }
+#endif
 
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+	(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 /*****************************************************************************/
 /**
 *
@@ -1446,13 +1806,16 @@ static void DpRxSs_TimeOutCallback(void *InstancePtr, u8 TmrCtrNumber)
 	/* Set Timer Counter reset done */
 	XDpRxSsPtr->TmrCtrResetDone = 1;
 
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	/* Call HDCP22 Timer handler */
 	if (XDpRxSsPtr->Hdcp22Ptr)
 		XHdcp22Rx_Dp_TimerHandler((void *)XDpRxSsPtr->Hdcp22Ptr,
 					  TmrCtrNumber);
-
+#endif
 }
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
 *
@@ -1674,6 +2037,7 @@ static u32 DpRxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq)
 
 	return NumTicks;
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -1687,6 +2051,7 @@ static u32 DpRxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq)
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr)
 {
 	/* Assign instance of DisplayPort core */
@@ -1701,30 +2066,87 @@ static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr)
 			: NULL);
 	}
 #endif
+
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	/* Assign instance of HDCP core */
 	InstancePtr->Hdcp1xPtr =
 		((InstancePtr->Config.Hdcp1xSubCore.IsPresent) ?
 	(&DpRxSsSubCores[InstancePtr->Config.DeviceId].Hdcp1xInst) : NULL);
+#endif
 
-
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+			(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	/* Assign instance of Timer Counter core */
 	InstancePtr->TmrCtrPtr =
 		((InstancePtr->Config.TmrCtrSubCore.IsPresent) ?
 	(&DpRxSsSubCores[InstancePtr->Config.DeviceId].TmrCtrInst) : NULL);
+#endif
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr != NULL)
 		InstancePtr->Hdcp1xPtr->Hdcp1xRef =
 			(void *)InstancePtr->TmrCtrPtr;
+#endif
 
-
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	/*Assign Instance of HDCP22 core*/
 	InstancePtr->Hdcp22Ptr =
 		((InstancePtr->Config.Hdcp22SubCore.IsPresent) ?
 		 (&DpRxSsSubCores[InstancePtr->Config.DeviceId].Hdcp22Inst) :
 		 NULL);
-
+#endif
 }
+#else
+static void DpRxSs_GetIncludedSubCores(XDpRxSs *InstancePtr, UINTPTR BaseAddress)
+{
+    u32 Index;
 
+    Index = XDpRxSs_GetDrvIndex(BaseAddress);
+	/* Assign instance of DisplayPort core */
+	InstancePtr->DpPtr = ((InstancePtr->Config.DpSubCore.IsPresent) ?
+		(&DpRxSsSubCores[Index].DpInst) : NULL);
+#ifdef XPAR_XIIC_NUM_INSTANCES
+	if (InstancePtr->Config.IncludeAxiIic) {
+	/* Assign instance of IIC core */
+		InstancePtr->IicPtr =
+			((InstancePtr->Config.DpSubCore.IsPresent) ?
+			(&DpRxSsSubCores[Index].IicInst)
+			: NULL);
+	}
+#endif
+
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
+	/* Assign instance of HDCP core */
+	InstancePtr->Hdcp1xPtr =
+		((InstancePtr->Config.Hdcp1xSubCore.IsPresent) ?
+	(&DpRxSsSubCores[Index].Hdcp1xInst) : NULL);
+#endif
+
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+			(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
+	/* Assign instance of Timer Counter core */
+	InstancePtr->TmrCtrPtr =
+		((InstancePtr->Config.TmrCtrSubCore.IsPresent) ?
+	(&DpRxSsSubCores[Index].TmrCtrInst) : NULL);
+#endif
+
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
+	if (InstancePtr->Hdcp1xPtr != NULL)
+		InstancePtr->Hdcp1xPtr->Hdcp1xRef =
+			(void *)InstancePtr->TmrCtrPtr;
+#endif
+
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
+	/*Assign Instance of HDCP22 core*/
+	InstancePtr->Hdcp22Ptr =
+		((InstancePtr->Config.Hdcp22SubCore.IsPresent) ?
+		 (&DpRxSsSubCores[Index].Hdcp22Inst) :
+		 NULL);
+#endif
+}
+#endif
 /*****************************************************************************/
 /**
 *
@@ -2074,6 +2496,7 @@ void XDpRxSs_McDp6000_init(void *InstancePtr)
 				XDPRXSS_MCDP6000_IIC_SLAVE);
 
 }
+#if ((XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0))
 /*****************************************************************************/
 /**
 *
@@ -2096,7 +2519,7 @@ static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr)
 
 	int Status = XST_SUCCESS;
 
-
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	/* HDCP 1.4 */
 	/* Resetting HDCP 1.4 causes the state machine to be enabled, therefore
 	 * disable must be called immediately after reset is called
@@ -2116,7 +2539,9 @@ static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr)
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
 	}
+#endif
 
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 	/* HDCP 2.2*/
 	if (InstancePtr->Hdcp22Ptr) {
 		Status = XHdcp22Rx_Dp_Reset(InstancePtr->Hdcp22Ptr);
@@ -2127,7 +2552,7 @@ static int XDpRxSs_HdcpReset(XDpRxSs *InstancePtr)
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
 	}
-
+#endif
 
 	return Status;
 }
@@ -2172,9 +2597,9 @@ int XDpRxSs_HdcpSetProtocol(XDpRxSs *InstancePtr,
 
 	return XST_SUCCESS;
 }
+#endif
 
-
-
+#if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
  *
@@ -2209,6 +2634,7 @@ void XDpRxSs_Hdcp22SetKey(XDpRxSs *InstancePtr,
 			break;
 	}
 }
+#endif
 
 /*****************************************************************************/
 /**

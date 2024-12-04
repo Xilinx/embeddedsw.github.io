@@ -11,6 +11,7 @@ var struct_x_dp___config =
     [ "MstSupport", "struct_x_dp___config.html#ad2199240482b0fe872899ab24eb65cab", null ],
     [ "NumAudioChs", "struct_x_dp___config.html#aca6d4ff74a97c61024cb9d01208beb15", null ],
     [ "NumMstStreams", "struct_x_dp___config.html#a19f28705ad36d2977c7000949184fb9c", null ],
+    [ "OctaPixelEn", "struct_x_dp___config.html#ac84b8057614ed03b57a81093dba7db53", null ],
     [ "PayloadDataWidth", "struct_x_dp___config.html#ad55c96c3cb3b68375ef00270f99624c4", null ],
     [ "QuadPixelEn", "struct_x_dp___config.html#a3f284f0e071c5a742ac50c143ea66a47", null ],
     [ "SAxiClkHz", "struct_x_dp___config.html#a9a0799787a21f54ae0eddb8de0b7cf14", null ],

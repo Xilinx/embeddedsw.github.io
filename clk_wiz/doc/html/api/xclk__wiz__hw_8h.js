@@ -2,6 +2,7 @@ var xclk__wiz__hw_8h =
 [
     [ "XCLK_WIZ_CLKOUT0_MX_SHIFT", "xclk__wiz__hw_8h.html#ga5b78de754a5a563c46cc4364b9698488", null ],
     [ "XCLK_WIZ_CLKOUT0_P5EN_SHIFT", "xclk__wiz__hw_8h.html#gac7482b3e0a5b624637346bee0811515d", null ],
+    [ "XCLK_WIZ_CLKOUT0_P5FEDGE_MASK", "xclk__wiz__hw_8h.html#gae826d18d7971be10836d3804ad4ed38e", null ],
     [ "XCLK_WIZ_CLKOUT0_P5FEDGE_SHIFT", "xclk__wiz__hw_8h.html#gae49b1d691b76f209b89e751b7d091d43", null ],
     [ "XCLK_WIZ_CLKOUT0_PREDIV2_SHIFT", "xclk__wiz__hw_8h.html#ga26c3e66c06696502f24f013c0da90e55", null ],
     [ "XCLK_WIZ_IER_ALLINTR_MASK", "xclk__wiz__hw_8h.html#gaa454fd2cfc7ed730c52b747b72de71ef", null ],
@@ -80,6 +81,7 @@ var xclk__wiz__hw_8h =
     [ "XCLK_WIZ_ISR_OFFSET", "xclk__wiz__hw_8h.html#ga54bfc49d1a188b798cb96cfd40a0dc54", null ],
     [ "XCLK_WIZ_RECONFIG_OFFSET", "xclk__wiz__hw_8h.html#ga8d853c1eaeeb4b89d06b7de0ff13d999", null ],
     [ "XCLK_WIZ_REG12_EDGE_SHIFT", "xclk__wiz__hw_8h.html#ga142028c206e507df8633d0b91b0ef273", null ],
+    [ "XCLK_WIZ_REG1_EDGE_SHIFT", "xclk__wiz__hw_8h.html#gafa257e031d2c60c9fdd568df2fa023d0", null ],
     [ "XCLK_WIZ_REG1_EDGE_SHIFT", "xclk__wiz__hw_8h.html#gafa257e031d2c60c9fdd568df2fa023d0", null ],
     [ "XCLK_WIZ_REG1_EN", "xclk__wiz__hw_8h.html#ga8162c60bfa65bf8e6856f4ab94845337", null ],
     [ "XCLK_WIZ_REG1_MX", "xclk__wiz__hw_8h.html#ga901c3adb5465cdf153c4b0d1a51e3bd9", null ],

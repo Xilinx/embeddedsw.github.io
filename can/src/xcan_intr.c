@@ -22,6 +22,8 @@
 * 1.10a mta  05/13/07 Updated to new coding style
 * 2.00a ktn  10/22/09 Updated to use the HAL APIs/macros.
 *		      The macros have been renamed to remove _m from the name.
+* 3.8   ht   12/13/23 Modify XCan_InterruptEnable to enable the interrupts.
+* 3.8	ht   12/13/23 Added support for ECC.
 * </pre>
 *
 ******************************************************************************/
@@ -64,19 +66,11 @@
 *****************************************************************************/
 void XCan_InterruptEnable(XCan *InstancePtr, u32 Mask)
 {
-	u32 IntrValue;
-
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	/* Read currently enabled interrupts. */
-	IntrValue = XCan_InterruptGetEnabled(InstancePtr);
-
-	/* Calculate the new interrupts that should be enabled */
-	IntrValue |= Mask & XCAN_IXR_ALL;
-
 	/* Write to IER to enable interrupts */
-	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_IER_OFFSET, IntrValue);
+	XCan_WriteReg(InstancePtr->BaseAddress, XCAN_IER_OFFSET, Mask);
 }
 
 /****************************************************************************/
@@ -260,9 +254,17 @@ void XCan_IntrHandler(void *InstancePtr)
 	 * If so, call event callback provided by upper level.
 	 */
 	EventIntr = PendingIntr & (XCAN_IXR_RXOFLW_MASK | XCAN_IXR_RXUFLW_MASK |
-				   XCAN_IXR_TXBFLL_MASK | XCAN_IXR_TXFLL_MASK |
-				   XCAN_IXR_WKUP_MASK | XCAN_IXR_SLP_MASK |
-				   XCAN_IXR_BSOFF_MASK | XCAN_IXR_ARBLST_MASK);
+                                   XCAN_IXR_TXBFLL_MASK | XCAN_IXR_TXFLL_MASK |
+                                   XCAN_IXR_WKUP_MASK | XCAN_IXR_SLP_MASK |
+                                   XCAN_IXR_BSOFF_MASK | XCAN_IXR_ARBLST_MASK);
+
+	if(CanPtr->EnableECC == 1) {
+		EventIntr |= (PendingIntr & XCAN_IXR_ECC_MASK);
+
+		/* Get ECC count and reset the counter because it reaches its maximum at 0xffff and does not overflow. */
+		XCan_GetECCCount(CanPtr);
+		XCan_ResetECC(CanPtr);
+	}
 	if (EventIntr) {
 		CanPtr->EventHandler(CanPtr->EventRef, EventIntr);
 

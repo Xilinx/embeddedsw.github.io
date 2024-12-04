@@ -61,6 +61,7 @@ $(document).ready(function(){initNavTree('xpciepsu_8h.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">xpciepsu.h File Reference</div>  </div>
@@ -88,6 +89,15 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 <p>
 1.0     bs      08/21/2018      First release
 </pre> </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">No BAR allocation for Bridge.  <a href="#a11bdbeb0f844db1d203f2b8f6f29ca5c">More...</a><br/></td></tr>
+<tr class="separator:a11bdbeb0f844db1d203f2b8f6f29ca5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acad74e57979d6bc62e24ddaa31ed11e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8h.html#acad74e57979d6bc62e24ddaa31ed11e9">REQ_SIZE</a>&#160;&#160;&#160;(<a class="el" href="xpciepsu_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a> * sizeof(unsigned long))</td></tr>
+<tr class="memdesc:acad74e57979d6bc62e24ddaa31ed11e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Required size for BAR Alignment.  <a href="#acad74e57979d6bc62e24ddaa31ed11e9">More...</a><br/></td></tr>
+<tr class="separator:acad74e57979d6bc62e24ddaa31ed11e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:acd35420aa1975d4b277d533e71be6187"><td class="memItemLeft" align="right" valign="top">XPciePsu_Config *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8h.html#acd35420aa1975d4b277d533e71be6187">XPciePsu_LookupConfig</a> (u16 DeviceId)</td></tr>
@@ -121,12 +131,41 @@ Functions</h2></td></tr>
 <tr class="memdesc:a95b11e3f3a7fc1ae339795b380fde121"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints all the available capabilities in the Function.  <a href="#a95b11e3f3a7fc1ae339795b380fde121">More...</a><br/></td></tr>
 <tr class="separator:a95b11e3f3a7fc1ae339795b380fde121"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cfd7833187346f6f654d80a359951b0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8h.html#a0cfd7833187346f6f654d80a359951b0">XPciePsu_ReadReg</a> (UINTPTR BaseAddr, u32 RegOffset)</td></tr>
-<tr class="memdesc:a0cfd7833187346f6f654d80a359951b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads a register value from specificied offset.  <a href="#a0cfd7833187346f6f654d80a359951b0">More...</a><br/></td></tr>
+<tr class="memdesc:a0cfd7833187346f6f654d80a359951b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads a register value from specified offset.  <a href="#a0cfd7833187346f6f654d80a359951b0">More...</a><br/></td></tr>
 <tr class="separator:a0cfd7833187346f6f654d80a359951b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a558622766b2c01af123a216c1d682376"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xpciepsu_8h.html#a558622766b2c01af123a216c1d682376">XPciePsu_WriteReg</a> (UINTPTR BaseAddr, u32 RegOffset, u32 Val)</td></tr>
-<tr class="memdesc:a558622766b2c01af123a216c1d682376"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes a register value to specificied offset.  <a href="#a558622766b2c01af123a216c1d682376">More...</a><br/></td></tr>
+<tr class="memdesc:a558622766b2c01af123a216c1d682376"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes a register value to specified offset.  <a href="#a558622766b2c01af123a216c1d682376">More...</a><br/></td></tr>
 <tr class="separator:a558622766b2c01af123a216c1d682376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a11bdbeb0f844db1d203f2b8f6f29ca5c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_BARS&#160;&#160;&#160;6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>No BAR allocation for Bridge. </p>
+
+</div>
+</div>
+<a class="anchor" id="acad74e57979d6bc62e24ddaa31ed11e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define REQ_SIZE&#160;&#160;&#160;(<a class="el" href="xpciepsu_8h.html#a11bdbeb0f844db1d203f2b8f6f29ca5c">MAX_BARS</a> * sizeof(unsigned long))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Required size for BAR Alignment. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a3d54a4fe188343ce59d689901c2b88c6"></a>
 <div class="memitem">
@@ -337,7 +376,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the configuration table entry corresponding to the given device ID, or NULL if no match is found. </dd></dl>
 
-<p>Referenced by <a class="el" href="xpciepsu__rc__enumerate__example_8c.html#aaa5f6815da393a21fa6e8d151c3569d0">PcieInitRootComplex()</a>, and <a class="el" href="xpciepsu__ep__enable__example_8c.html#a71de060d9b164f1bcc1a31f0dea4fe07">XPciePsu_InitEndPoint()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__rc__enumerate__example_8c.html#aaa5f6815da393a21fa6e8d151c3569d0">PcieInitRootComplex()</a>, and <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#a71de060d9b164f1bcc1a31f0dea4fe07">XPciePsu_InitEndPoint()</a>.</p>
 
 </div>
 </div>
@@ -534,7 +573,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reads a register value from specificied offset. </p>
+<p>This function reads a register value from specified offset. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">BaseAddr</td><td>BaseAddr of the register </td></tr>
@@ -544,7 +583,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Register value </dd></dl>
 
-<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep__enable__example_8c.html#a77aeb276879c8d92a9169d7f6c3f4b98">XPciePsu_EP_IntrHandler()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, <a class="el" href="xpciepsu__ep_8h.html#a1d40296b15e59da3006fda5faa6a5d9c">XPciePsu_EP_WaitForEnumeration()</a>, <a class="el" href="xpciepsu__ep_8h.html#aca1b71a1574b91939ee539c11556ce88">XPciePsu_EP_WaitForLinkup()</a>, <a class="el" href="xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>, <a class="el" href="xpciepsu_8h.html#ad974ca02c5108cc4d4afbfa809474c75">XPciePsu_ReadLocalConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>, <a class="el" href="xpciepsu__ep_8h.html#a6486e8d86d93762e998010aa29efd100">XPciePsu_Egress_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#a77aeb276879c8d92a9169d7f6c3f4b98">XPciePsu_EP_IntrHandler()</a>, <a class="el" href="xpciepsu__ep_8h.html#ad0ab59afa2bae270a5be2f4496945dde">XPciePsu_EP_SetupEgress()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, <a class="el" href="xpciepsu__ep_8h.html#a1d40296b15e59da3006fda5faa6a5d9c">XPciePsu_EP_WaitForEnumeration()</a>, <a class="el" href="xpciepsu__ep_8h.html#aca1b71a1574b91939ee539c11556ce88">XPciePsu_EP_WaitForLinkup()</a>, <a class="el" href="xpciepsu_8h.html#a2c102ea980dacfdcfdfde291b60986be">XPciePsu_ReadConfigSpace()</a>, <a class="el" href="xpciepsu_8h.html#ad974ca02c5108cc4d4afbfa809474c75">XPciePsu_ReadLocalConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>.</p>
 
 </div>
 </div>
@@ -645,7 +684,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write 32-bit value to one of this IP own configuration space. </p>
-<p>Location is identified by its offset from the begginning of the configuration space.</p>
+<p>Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
@@ -693,7 +732,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function writes a register value to specificied offset. </p>
+<p>This function writes a register value to specified offset. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">BaseAddr</td><td>Base Address of the register </td></tr>
@@ -704,7 +743,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
 
-<p>Referenced by <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep__enable__example_8c.html#a77aeb276879c8d92a9169d7f6c3f4b98">XPciePsu_EP_IntrHandler()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a70154f924a73a1ee89b6b829bab05857">XPciePsu_WriteLocalConfigSpace()</a>.</p>
+<p>Referenced by <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>, <a class="el" href="xpciepsu__ep_8h.html#a6486e8d86d93762e998010aa29efd100">XPciePsu_Egress_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__ep_8h.html#a99474c575ca291a93548797b66df45b8">XPciePsu_EP_BridgeInitialize()</a>, <a class="el" href="xpciepsu__egress__ep__enable__example_8c.html#a77aeb276879c8d92a9169d7f6c3f4b98">XPciePsu_EP_IntrHandler()</a>, <a class="el" href="xpciepsu__ep_8h.html#ad0ab59afa2bae270a5be2f4496945dde">XPciePsu_EP_SetupEgress()</a>, <a class="el" href="xpciepsu__ep_8h.html#a60670dca0dbddb37079e9917e41eae40">XPciePsu_EP_SetupIngress()</a>, <a class="el" href="xpciepsu_8h.html#a55212721869b9ddb1f187cdbefebdc57">XPciePsu_WriteConfigSpace()</a>, and <a class="el" href="xpciepsu_8h.html#a70154f924a73a1ee89b6b829bab05857">XPciePsu_WriteLocalConfigSpace()</a>.</p>
 
 </div>
 </div>

@@ -1,35 +1,48 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
-
 /*****************************************************************************/
-
-
-/******************************************************************************
-* I3C spec defines the following:
+/**
+*
+* @file xi3cpsx_pr.h
+* @addtogroup Overview
+* @{
+*
+* This file contains the following:
 * Common command codes (CCC)
 * Error types
 * Command structure/framing
 * Characterisitcs registers
 *
+* <pre>
+* MODIFICATION HISTORY:
+*
+* Ver   Who Date     Changes
+* ----- --- -------- -----------------------------------------------.
+* 1.00  sd  06/10/22 First release
+* 1.4   gm  10/07/24 Added DBP and slave transmit macros.
+*
+* </pre>
+*
 ******************************************************************************/
-
 #ifndef XI3CPS_PR_H
 #define XI3CPS_PR_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "xil_types.h"
 #include "xil_assert.h"
 
 #define BIT(N)		(1U << N)
 
-
 #define I3C_BUS_TYP_I3C_SCL_RATE	12500000
 #define I3C_BUS_I2C_FM_PLUS_SCL_RATE	1000000
 #define I3C_BUS_I2C_FM_SCL_RATE		400000
 #define I3C_BUS_TLOW_OD_MIN_NS		200
-
 
 /***********************Common command codes (CCC)****************************/
 
@@ -75,12 +88,13 @@
 #define I3C_CCC_EVENT_HJ		BIT(3)
 /*FIXME */
 #define GENMASK(h, l)			(~(u32)0 - ( (u32)1 << l) + 1) & \
-					(~(u32)0 >> (32 - 1 - h))
+	(~(u32)0 >> (32 - 1 - h))
 
 #define COMMAND_PORT_TOC		BIT(30)
 #define COMMAND_PORT_READ_TRANSFER	BIT(28)
 #define COMMAND_PORT_SDAP		BIT(27)
 #define COMMAND_PORT_ROC		BIT(26)
+#define COMMAND_PORT_DBP		BIT(25)
 #define COMMAND_PORT_SPEED(x)		((x) << 21)
 #define COMMAND_PORT_DEV_INDEX(x)	((x) << 16)
 #define COMMAND_PORT_CP			BIT(15)
@@ -89,6 +103,7 @@
 
 #define COMMAND_PORT_ARG_DATA_LEN(x)	((x) << 16)
 #define COMMAND_PORT_ARG_DATA_LEN_MAX	65536
+#define COMMAND_PORT_SLAVE_TRANSMIT	0x0
 #define COMMAND_PORT_TRANSFER_ARG	0x01
 
 #define COMMAND_PORT_SDA_DATA_BYTE_3(x)	((x) << 24)
@@ -115,12 +130,15 @@
 #define RESPONSE_PORT_TID(x)		(((x) & GENMASK(27, 24)) >> 24)
 #define RESPONSE_PORT_DATA_LEN(x)	((x) & 0xFFFF)
 
-
 #define SCL_I3C_TIMING_HCNT(x)		(((x) << 16) & GENMASK(23, 16))
 #define SCL_I3C_TIMING_LCNT(x)		((x) & GENMASK(7, 0))
 #define SCL_I3C_TIMING_CNT_MIN		5
 #define I3C_BUS_I2C_FM_TLOW_MIN_NS	1300
 #define I3C_BUS_I2C_FMP_TLOW_MIN_NS	500
 #define I3C_BUS_THIGH_MAX_NS		41
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

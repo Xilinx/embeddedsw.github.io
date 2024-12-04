@@ -1,12 +1,13 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************
 **
 * @file xaxipcie_sinit.c
-* @addtogroup axipcie_v3_3
+* @addtogroup axipcie Overview
 * @{
 *
 * This file contains the implementation of AXI PCIe driver's static
@@ -55,6 +56,7 @@ extern XAxiPcie_Config XAxiPcie_ConfigTable[];
 * @note		None
 *
 ******************************************************************************/
+#ifndef SDT
 XAxiPcie_Config *XAxiPcie_LookupConfig(u16 DeviceId)
 {
 	XAxiPcie_Config *CfgPtr = NULL;
@@ -70,6 +72,23 @@ XAxiPcie_Config *XAxiPcie_LookupConfig(u16 DeviceId)
 
 	return (CfgPtr);
 }
+#else
+XAxiPcie_Config *XAxiPcie_LookupConfig(UINTPTR BaseAddress)
+{
+	XAxiPcie_Config *CfgPtr = NULL;
+
+	int Index;
+
+	for (Index = 0; XAxiPcie_ConfigTable[Index].Name != NULL; Index++) {
+		if (XAxiPcie_ConfigTable[Index].BaseAddress == BaseAddress) {
+			CfgPtr = &XAxiPcie_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (CfgPtr);
+}
+#endif
 
 
 

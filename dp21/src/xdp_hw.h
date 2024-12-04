@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023, Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -40,11 +40,18 @@
 /* Prevent circular inclusions by using protection macros. */
 #define XDP_HW_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /***************************** Include Files **********************************/
 
 #include "xil_io.h"
-
+#include "xparameters.h"
 /************************** Constant Definitions ******************************/
+#ifdef SDT
+#define XPAR_XDPTXSS_NUM_INSTANCES XPAR_DPTXSS_NUM_INSTANCES
+#define XPAR_XDPRXSS_NUM_INSTANCES XPAR_DPRXSS_NUM_INSTANCES
+#endif
 
 /** @name Protocol Selection definitions : DP 1.1, DP 1.2, DP 1.4, DP 2.1.
  * @{
@@ -1121,15 +1128,17 @@
 #define XDP_RX_PHY_STATUS		0x208	/**< Current PHY status. */
 #define XDP_RX_PHY_POWER_DOWN		0x210	/**< Control PHY power down. */
 #define XDP_RX_MIN_VOLTAGE_SWING	0x214	/**< Specifies the minimum
-							voltage swing required
-							during training before
-							a link can be reliably
-							established and advanced
-							configuration for link
-							training. */
+						  * voltage swing required
+						  * during training before
+						  * a link can be reliably
+						  * established and advanced
+						  * configuration for link
+						  * training.
+						  */
 #define XDP_RX_CDR_CONTROL_CONFIG	0x21C	/**< Control the configuration
-							for clock and data
-							recovery. */
+						  * for clock and data
+						  * recovery.
+						  */
 #define XDP_RX_BS_IDLE_TIME		0x220	/**< Blanking start symbol idle
 							time - this value is
 							loaded as a timeout
@@ -2371,6 +2380,39 @@
 /* DP 1.4 definitions end. */
 /* @} */
 
+// MSA Attributes-
+#define XDP_RX_INDIVIDUAL_MSA_HRES	0x00	/**< Number of active pixels per
+						  * line (the horizontal resolution).
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_HSPOL	0x04	/**< The horizontal sync polarity. */
+#define XDP_RX_INDIVIDUAL_MSA_HSWIDTH	0x08	/**< Width of the horizontal sync pulse. */
+#define XDP_RX_INDIVIDUAL_MSA_HSTART	0x0C	/**< Number of clocks between the leading
+						  * edge of the horizontal sync and the
+						  * start of active data.
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_HTOTAL	0x10	/**< Total number of clocks in
+						  * the horizontal framing period.
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_VHEIGHT	0x14	/**< Number of active lines
+						  * (the vertical resolution).
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_VSPOL	0x18	/**< The vertical sync polarity. */
+#define XDP_RX_INDIVIDUAL_MSA_VSWIDTH	0x1C	/**< Width of the vertical sync pulse. */
+#define XDP_RX_INDIVIDUAL_MSA_VSTART	0x20	/**< Number of lines between the
+						  * leading edge of the vertical sync and the
+						  * first line of active	data.
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_VTOTAL	0x24	/**< Total number of lines in the video frame. */
+#define XDP_RX_INDIVIDUAL_MSA_MISC0	0x28	/**< Miscellaneous stream attributes. */
+#define XDP_RX_INDIVIDUAL_MSA_MISC1	0x2C	/**< Miscellaneous stream attributes. */
+#define XDP_RX_INDIVIDUAL_MSA_MVID	0x30	/**< Used to recover the video
+						  * clock from the link clock.
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_NVID	0x34	/**< Used to recover the video clock from the link
+						  * clock.
+						  */
+#define XDP_RX_INDIVIDUAL_MSA_VBID	0x38	/**< The most recently received VB-ID value. */
+
 /* DP 2.1 definitions*/
 #define XDP_RX_AUX_RD_INTERVAL	0x1644	/**< The time till which the DUT
 					 * waits to achieve EQ_DONE in 128/132b.
@@ -2397,6 +2439,7 @@
 #define XDP_DPCD_REV						0x00000
 #define XDP_DPCD_MAX_LINK_RATE					0x00001
 #define XDP_EDID_DPCD_MAX_LINK_RATE				0x02201
+#define XDP_EDID_DPCD_MAINLINKCHANNELCODING			0x02206
 #define XDP_DPCD_FEATURE_ENUMERATION_LIST			0x02210
 #define XDP_DPCD_MAX_LANE_COUNT					0x00002
 #define XDP_DPCD_MAX_DOWNSPREAD					0x00003
@@ -2673,6 +2716,7 @@
 #define XDP_DPCD_FAUX_CAP_MASK					0x01
 /* 0x00021: MSTM_CAP */
 #define XDP_DPCD_MST_CAP_MASK					0x01
+#define XDP_DPCD_MST_SIDEBAND_MSG_CAP			0x02
 
 /* *** Definitions for DP 1.4 :: DPCD parameters. */
 /* 0x00021: DPCD_NUM_OF_AUDIO_ENDPOINTS - read only register. */
@@ -2928,6 +2972,8 @@
 								0x10
 #define XDP_DPCD_LANE_ALIGN_STATUS_128B_CDS_INTERALIGN_DONE \
 								0x08
+#define XDP_DPCD_LANE_ALIGN_STATUS_128B_EQ_INTERALIGN_DONE \
+								0x04
 /* 0x00205: SINK_STATUS */
 #define XDP_DPCD_SINK_STATUS_RX_PORT0_SYNC_STATUS_MASK		0x01
 #define XDP_DPCD_SINK_STATUS_RX_PORT1_SYNC_STATUS_MASK		0x02
@@ -2965,10 +3011,17 @@
 #define XDP_TX_MAIN_LINK_CHANNEL_CODING_SET_128B_132B_MASK	0x02
 
 #define XDP_TX_TP_SET_TRAINING_AUX_RD_INTERVAL 0x6CC	/**< Link Training AUX read interval.*/
-#define XDP_TX_VFREQ_STREAM1 0x6D0	/**< Vfreq for MST stream1. */
-#define XDP_TX_VFREQ_STREAM2 0x6D4	/**< Vfreq for MST stream2. */
-#define XDP_TX_VFREQ_STREAM3 0x6D8	/**< Vfreq for MST stream3. */
-#define XDP_TX_VFREQ_STREAM4 0x6DC	/**< Vfreq for MST stream4. */
+#define XDP_TX_VFREQ_STREAM1_LOW 0x6D0	/**< Vfreq for MST stream1. */
+#define XDP_TX_VFREQ_STREAM1_HIGH 0x6D4	/**< Vfreq for MST stream1. */
+
+#define XDP_TX_VFREQ_STREAM2_LOW 0x6E4	/**< Vfreq for MST stream2. */
+#define XDP_TX_VFREQ_STREAM2_HIGH 0x6E8	/**< Vfreq for MST stream2. */
+
+#define XDP_TX_VFREQ_STREAM3_LOW 0x6EC	/**< Vfreq for MST stream3. */
+#define XDP_TX_VFREQ_STREAM3_HIGH 0x6F0	/**< Vfreq for MST stream3. */
+
+#define XDP_TX_VFREQ_STREAM4_LOW 0x6F4	/**< Vfreq for MST stream4. */
+#define XDP_TX_VFREQ_STREAM4_HIGH 0x6F8	/**< Vfreq for MST stream4. */
 
 #define XDP_TX_V2_0_CONFIG 0x6E0	/**< DP v2.1 Config Params */
 #define XDP_TX_V2_0_CONFIG_RESET_MASK	0x1003F
@@ -2976,6 +3029,13 @@
 #define XDP_DPCD_128B_132B_SUPPORTED_LINK_RATE		0x02215	/*< 128B/132B Supported LinkRates.*/
 #define XDP_DPCD_TRAINING_AUX_RD_INTERVAL		0x02216	/*< AUX Read Interval Set. */
 
+/* 0x00101: LANE_COUNT_SET */
+#define XDP_DPCD_LTTPR_CAPABILITY				0xF0000
+#define XDP_PHY_REPEATER_MODE					0xF0003
+#define XDP_PHY_LTTPR_BASE						0xF0010
+#define XDP_DPCD_LTTPR_TRAINING_LANE0_SET		0xF0011
+#define XDP_DPCD_LTTPR_STATUS_LANE_0_1			0xF0030
+#define XDP_PHY_LTTPR_PHY_CONFIG_SIZE			0x50
 /* @} */
 
 /******************************************************************************/
@@ -3358,6 +3418,10 @@
 	XDp_TxGetDispIdTdtHLoc(Tdt))
 
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* XDP_HW_H_ */
 /** @} */

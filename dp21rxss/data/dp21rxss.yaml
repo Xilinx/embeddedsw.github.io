@@ -1,0 +1,198 @@
+# Copyright (C) 2023-2024 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (c) 2021 Xilinx, Inc.  All rights reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for DisplayPort2.1 Receiver Subsystem
+
+maintainers:
+  - Lakshmi Prasanna Eachuri <lakshmi.prasanna.eachuri@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,v-dp-rxss2-1.0
+          - xlnx,v-dp-rxss2-1.1
+  reg:
+    description: Physical base address and DisplayPort Transmitter Subsystem register map
+
+  xlnx,audio-enable:
+    description: 1 if subsystem core supports audio packets being sent by Secondary channel, 0 if not present
+
+  xlnx,bits-per-color:
+    description: Maximum bits/color supported by this Subsystem core
+
+  xlnx,hdcp-enable:
+    description: 1 if subsystem supports digital content protection(HDCP14), 0 if not present
+
+  xlnx,hdcp22-enable:
+    description: 1 if subsystem supports digital content protection(HDCP22), 0 if not present
+
+  xlnx,lane-count:
+    description: Maximum lane count supported by this Subsystem core
+
+  xlnx,mode:
+    description: 1 if subsystem core supports Multi-stream transport(MST) mode, 0 if not present
+
+  xlnx,num-streams:
+    description: The total number of MST streams supported by this Subsystem core
+
+  xlnx,color-format:
+    description: Type of color format supported by this Subssytem core
+
+  xlnx,include-axi-iic:
+    description: 1 if Subsystem supports Axi i2c support, 0 if not support
+
+  xlnx,include-clk-wiz:
+    description: 1 if Subssytem supports clocking wizard support, 0 if not support
+
+  iic-present:
+    description: Sub-core instance presence
+
+  iic-connected:
+    description: Sub-core instance configuration
+
+  hdcp-timer-present:
+    description: Sub-core instance presence
+
+  hdcp-timer-connected:
+    description: Sub-core instance configuration
+
+  clkWiz-present:
+    description: Sub-core instance presence
+
+  clkWiz-connected:
+    description: Sub-core instance configuration
+
+  dp14-present:
+    description: Sub-core instance presence
+
+  dp14-connected:
+    description: Sub-core instance configuration
+
+  hdcp14-present:
+    description: Sub-core instance presence
+
+  hdcp14-connected:
+    description: Sub-core instance configuration
+
+  hdcp22-present:
+    description: Sub-core instance presence
+
+  hdcp22-connected:
+    description: Sub-core instance configuration
+
+  interrupts:
+    description: Sub-core interrupt ids
+
+  interrupt-parent:
+    description: Interrupt parent
+
+required:
+    - compatible
+    - reg
+    - xlnx,audio-enable
+    - xlnx,audio-channels
+    - xlnx,bits-per-color
+    - xlnx,hdcp-enable
+    - xlnx,hdcp22-enable
+    - xlnx,lane-count
+    - xlnx,mode
+    - xlnx,num-streams
+    - xlnx,color-format
+    - xlnx,include-axi-iic
+    - xlnx,include-clk-wiz
+    - iic-present
+    - iic-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+          - xlnx,ten-bit-adr
+          - xlnx,gpo-width
+          - interrupts
+          - interrupt-parent
+    - hdcptimer-present
+    - hdcptimer-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+    - clkWiz-present
+    - clkWiz-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+    - dp21-present
+    - dp21-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+          - xlnx,axi-aclk-freq-mhz
+          - xlnx,lane-count
+          - xlnx,link-rate
+          - xlnx,max-bits-per-color
+          - xlnx,octa-pixel-enable
+          - xlnx,quad-pixel-enable
+          - xlnx,dual-pixel-enable
+          - xlnx,ycrcb-enable
+          - xlnx,yonly-enable
+          - xlnx,gt-datawidth
+          - xlnx,secondary-support
+          - xlnx,number-of-audio-channels
+          - xlnx,mst-enable
+          - xlnx,number-of-mst-streams
+          - xlnx,protocol-selection
+          - xlnx,flow-direction
+    - hdcp14-present
+    - hdcp14-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+    - hdcp22-present
+    - hdcp22-connected:
+        subnode_phandle:
+          - compatible
+          - reg
+    - interrupts: 5
+    - interrupt-parent
+
+config:
+    - XDpRxSs_Config
+
+xparam_prefix: DpRXSS
+
+depends:
+    video_common: []
+
+examples:
+    src/dp21_rx_only/xdprxss_dp21_rx.c:
+        - dependency_files:
+            - src/dp21_rx_only/idt_8t49n24x.c
+            - src/dp21_rx_only/idt_8t49n24x.h
+            - src/dp21_rx_only/si5344drv.c
+            - src/dp21_rx_only/si5344drv.h
+            - src/dp21_rx_only/ti_lmk03318.c
+            - src/dp21_rx_only/ti_lmk03318.h
+            - src/dp21_rx_only/videofmc_defs.h
+            - src/dp21_rx_only/xdprxss_dp21_rx.c
+            - src/dp21_rx_only/xvidframe_crc.c
+            - src/dp21_rx_only/xvidframe_crc.h
+
+    dummy/xdprxss_dp21_rx_vcu.txt:
+        - dependency_files:
+            - src/dp21_rx_only/idt_8t49n24x.c
+            - src/dp21_rx_only/idt_8t49n24x.h
+            - src/dp21_rx_only/si5344drv.c
+            - src/dp21_rx_only/si5344drv.h
+            - src/dp21_rx_only/ti_lmk03318.c
+            - src/dp21_rx_only/ti_lmk03318.h
+            - src/dp21_rx_only/videofmc_defs.h
+            - src/dp21_rx_only/xdprxss_dp21_rx.c
+            - src/dp21_rx_only/xvidframe_crc.c
+            - src/dp21_rx_only/xvidframe_crc.h
+            - src/platforms/vcu_mb/lscript.ld
+
+...

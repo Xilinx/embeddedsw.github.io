@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,10 @@
 * @file xdfeofdm.h
 * @addtogroup dfeofdm Overview
 * @{
+*
+* The API is used for the configuration and control of the IP core. It is
+* written in C code and compiles and links with the Libmetal library. The API
+* can be built for Linux or bare-metal.
 *
 * @cond nocomments
 * The RFSoC DFE Orthogonal Frequency Division Multiplexing IP performs
@@ -29,7 +33,7 @@
 * - Supports a maximum sampling rate of 491.52 MS/s
 * - Supports up to 8 CC both LTE and NR.
 * - Supports SCS spacing of 15 KHz and 30 KHz.
-* - Currently supports 1K, 2K and 4K FFT sizes.
+* - Currently supports 512, 1K, 2K and 4K FFT sizes.
 * - Supports up to 8 DL or UL paths (or antennas)
 * - Supports both TDD and FDD modes
 * - Using 16 or 18 bit data interface.
@@ -48,6 +52,11 @@
 * 1.1   dc     04/05/23 Update documentation
 *       dc     05/22/23 State and status upgrades
 *       dc     06/28/23 Add phase compensation calculation
+* 1.2   dc     10/16/23 Doxygen documenatation update
+*       dc     10/17/23 Support for FFT size 512
+*       cog    02/21/24 Fixed SDT runtime issue
+* 1.3   dc     06/18/24 Add FR1 and FR2 frequency range
+*       dc     09/23/24 Add frequency range MODEL_PARAM
 *
 * </pre>
 * @endcond
@@ -78,7 +87,9 @@ extern "C" {
 #ifndef __BAREMETAL__
 #define XDFEOFDM_MAX_NUM_INSTANCES                                             \
 	(10U) /**< Maximum number of driver instances running at the same time. */
-#define XDFEOFDM_INSTANCE_EXISTS(X) (X < XDFEOFDM_MAX_NUM_INSTANCES)
+#define XDFEOFDM_INSTANCE_EXISTS(X)                                            \
+	(X < XDFEOFDM_MAX_NUM_INSTANCES) /**< Number
+	of instances that exist at any given time. */
 /**
 * @cond nocomments
 */
@@ -98,11 +109,17 @@ extern "C" {
 #endif
 #else
 #ifndef SDT
+/**
+* @cond nocomments
+*/
 #define XDFEOFDM_MAX_NUM_INSTANCES XPAR_XDFEOFDM_NUM_INSTANCES
 #define XDFEOFDM_INSTANCE_EXISTS(X) (X < XDFEOFDM_MAX_NUM_INSTANCES)
+/**
+* @endcond
+*/
 #else
-#define XDFEOFDM_MAX_NUM_INSTANCES                                              \
-	(10U) /**< Maximum number of driver instances running at the same time. */
+#define XDFEOFDM_MAX_NUM_INSTANCES                                             \
+	(11U) /**< Maximum number of driver instances in global config struct. */
 #define XDFEOFDM_INSTANCE_EXISTS(X) (XDfeOfdm_ConfigTable[X].Name != NULL)
 #endif
 #endif
@@ -150,12 +167,12 @@ typedef enum XDfeOfdm_StateId {
 	XDFEOFDM_STATE_READY, /**< Ready state*/
 	XDFEOFDM_STATE_RESET, /**< Reset state*/
 	XDFEOFDM_STATE_CONFIGURED, /**< Configured state*/
-	XDFEOFDM_STATE_INITIALISED, /**< Initialised state*/
+	XDFEOFDM_STATE_INITIALISED, /**< Initialized state*/
 	XDFEOFDM_STATE_OPERATIONAL /**< Operational state*/
 } XDfeOfdm_StateId;
 
 /**
- * Logicore version.
+ * LogiCORE version.
  */
 typedef struct {
 	u32 Major; /**< Major version number. */
@@ -172,11 +189,11 @@ typedef struct {
 		- 0 = DISABLED: Trigger Pulse and State outputs are disabled.
 		- 1 = ENABLED: Trigger Pulse and State outputs are enabled and follow
 			the settings described below. */
-	u32 Mode; /**< [0-3], Specify Trigger Mode. In TUSER_Single_Shot mode as
-		soon as the TUSER_Edge_level condition is met the State output will be
+	u32 Mode; /**< [0-3], Specify Trigger Mode. In TUSER_Single_Shot mode, as
+		soon as the TUSER_Edge_level condition is met, the State output will be
 		driven to the value specified in STATE_OUTPUT. The Pulse output will
 		pulse high at the same time. No further change will occur until the
-		trigger register is re-written. In TUSER Continuous mode each time
+		trigger register is re-written. In TUSER Continuous mode, each time
 		a TUSER_Edge_level condition is met the State output will be driven to
 		the value specified in STATE_OUTPUT This will happen continuously until
 		the trigger register is re-written. The pulse output is disabled in
@@ -193,13 +210,13 @@ typedef struct {
 		and Edge is Level will generate a trigger immediately the TUSER level
 		is detected. Edge will ensure a TUSER transition has come first:
 		- 0 = LOW: Trigger occurs immediately after a low-level is seen on TUSER
-			provided tvalid is high.
+			provided tvalid is High.
 		- 1 = HIGH: Trigger occurs immediately after a high-level is seen on
-			TUSER provided tvalid is high.
+			TUSER provided tvalid is High.
 		- 2 = FALLING: Trigger occurs immediately after a high to low transition
-			on TUSER provided tvalid is high.
+			on TUSER provided tvalid is High.
 		- 3 = RISING: Trigger occurs immediately after a low to high transition
-			on TUSER provided tvalid is high. */
+			on TUSER provided tvalid is High. */
 	u32 StateOutput; /**< [0,1], Specify the State output value:
 		- 0 = DISABLED: Place the State output into the Disabled state.
 		- 1 = ENABLED: Place the State output into the Enabled state. */
@@ -225,39 +242,38 @@ typedef struct {
  */
 typedef struct {
 	u32 Length; /**< [1-16] Sequence length. */
-	s32 CCID[XDFEOFDM_CC_SEQ_LENGTH_MAX]; /**< Array of CCID's arranged in
-		the order the CC samples are output on CC Interfaces */
+	s32 CCID[XDFEOFDM_CC_SEQ_LENGTH_MAX]; /**< Array of CCIDs arranged in
+		the order the CC samples are output on CC interfaces */
 } XDfeOfdm_CCSequence;
 
 /**
- * Defines a FT sequence.
+ * Defines an FT sequence.
  */
 typedef struct {
 	u32 Length; /**< [1-16] Sequence length. */
-	s32 CCID[XDFEOFDM_FT_SEQ_LENGTH_MAX]; /**< Array of CCID's arranged in
-		the order of Fourier Transforms output on FT Interfaces */
+	s32 CCID[XDFEOFDM_FT_SEQ_LENGTH_MAX]; /**< Array of CCIDs arranged in
+		the order of Fourier Transform outputs on FT interfaces */
 } XDfeOfdm_FTSequence;
 
 /*********** end - common code to all Logiccores ************/
 /**
- * Orthogonal Frequency Division Multiplexing model parameters structure. Data
+ * OFDM model parameters structure. Data
  * defined in Device tree or xparameters.h for BM.
  */
 typedef struct {
-	u32 NumAntenna; /**< [1-8] Number of antenas */
+	u32 NumAntenna; /**< [1-8] Number of antennas */
 	u32 AntennaInterleave; /**< [1-8] Antenna interleave */
-	u32 PhaseCompensation; /**< [0,1] Phase compesation
-				0 - Phase compesation disabled
-				1 - Phase compesation enabled */
+	u32 PhaseCompensation; /**< [0,1] Phase compensation
+				- 0: Phase compensation disabled
+				- 1: Phase compensation enabled */
 } XDfeOfdm_ModelParameters;
 
 /**
  * Configuration.
  */
 typedef struct {
-	XDfeOfdm_Version Version; /**< Logicore version */
-	XDfeOfdm_ModelParameters ModelParams; /**< Logicore
-		parameterization */
+	XDfeOfdm_Version Version; /**< LogiCORE version */
+	XDfeOfdm_ModelParameters ModelParams; /**< LogiCORE parameterization */
 } XDfeOfdm_Cfg;
 
 /**
@@ -280,9 +296,11 @@ typedef struct {
 		- 4 = 240 KHz
 		- 5 = 480 KHz
 		- 6 = 960 KHz
+
 		Numerology must be 0 for LTE. */
-	u32 FftSize; /**< [10,11,12] FFT size to be used for FFT of the CC.
+	u32 FftSize; /**< [9, 10,11,12] FFT size to be used for FFT of the CC.
 		Valid sizes are:
+		- 512 = 0x9
 		- 1024 = 0xA
 		- 2048 = 0xB
 		- 4096 = 0xC */
@@ -295,9 +313,9 @@ typedef struct {
 		- 1 = LTE
 		- 0 = 5G NR */
 	/* CC slot delay */
-	u32 OutputDelay; /** [0-2047] Delay required before outputting CC
+	u32 OutputDelay; /**< [0-2047] Delay required before outputting CC
 		in order to balance CC Filter group delay. */
-	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /** Phase weight is
+	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /**< Phase weight is
 		a complex number with 0 to 15 bits providing the I and 16 to 31
 		bits the Q part of the weight. */
 } XDfeOfdm_CarrierCfg;
@@ -319,9 +337,11 @@ typedef struct {
 		- 4 = 240 KHz
 		- 5 = 480 KHz
 		- 6 = 960 KHz
+
 		Numerology must be 0 for LTE. */
-	u32 FftSize; /**< [10,11,12] FFT size to be used for FFT of the CC.
+	u32 FftSize; /**< [9,10,11,12] FFT size to be used for FFT of the CC.
 		Valid sizes are:
+		- 512 = 0x9
 		- 1024 = 0xA
 		- 2048 = 0xB
 		- 4096 = 0xC */
@@ -334,9 +354,9 @@ typedef struct {
 		- 1 = LTE
 		- 0 = 5G NR */
 	/* CC slot delay */
-	u32 OutputDelay; /** [0-2047] Delay required before outputting CC
+	u32 OutputDelay; /**< [0-2047] Delay required before outputting CC
 		in order to balance CC Filter group delay. */
-	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /** Phase weight is
+	u32 PhaseCompensation[XDFEOFDM_PHASE_COMPENSATION_MAX]; /**< Phase weight is
 		a complex number with 0 to 15 bits providing the I and 16 to 31
 		bits the Q part of the weight. */
 } XDfeOfdm_InternalCarrierCfg;
@@ -352,7 +372,7 @@ typedef struct {
 } XDfeOfdm_CCCfg;
 
 /**
- * Orthogonal Division Multiplexing Status.
+ * OFDM Status.
  */
 typedef struct {
 	u32 SaturationCCID; /**< [0,15] CCID in which saturation event
@@ -380,20 +400,23 @@ typedef struct {
 } XDfeOfdm_InterruptMask;
 
 /**
- * OFDM Config Structure.
+ * OFDM Configuration structure.
  */
 typedef struct {
 #ifndef SDT
-	u32 DeviceId; /**< The component instance Id */
+	u32 DeviceId; /**< The component instance ID */
 #else
 	char *Name; /**< Unique name of the device */
 #endif
 	metal_phys_addr_t BaseAddr; /**< Instance base address */
-	u32 NumAntenna; /**< Number of antenas */
+	u32 FrequencyRange; /**< [0, 1] Frequency ranges:
+				     - 0 = FR1 (default)
+				     - 1 = FR2 */
+	u32 NumAntenna; /**< Number of antennas */
 	u32 AntennaInterleave; /**< Antenna interleave */
-	u32 PhaseCompensation; /**< [0,1] Phase compesation
-				0 - Phase compesation disabled
-				1 - Phase compesation enabled */
+	u32 PhaseCompensation; /**< [0,1] Phase compensation
+				- 0: Phase compensation disabled
+				- 1: Phase compensation enabled */
 } XDfeOfdm_Config;
 
 /**
@@ -405,7 +428,7 @@ typedef struct {
 	s32 NotUsedCCID; /**< Not used CCID */
 	u32 CCSequenceLength; /**< Exact sequence length */
 	char NodeName[XDFEOFDM_NODE_NAME_MAX_LENGTH]; /**< Node name */
-	struct metal_io_region *Io; /**< Libmetal IO structure */
+	struct metal_io_region *Io; /**< Libmetal I/O structure */
 	struct metal_device *Device; /**< Libmetal device structure */
 } XDfeOfdm;
 
@@ -478,6 +501,9 @@ void XDfeOfdm_SetTriggersCfg(const XDfeOfdm *InstancePtr,
 void XDfeOfdm_SetTuserOutFrameLocation(const XDfeOfdm *InstancePtr,
 				       u32 TuserOutFrameLocation);
 u32 XDfeOfdm_GetTuserOutFrameLocation(const XDfeOfdm *InstancePtr);
+void XDfeOfdm_SetTuserCCUpdateTrigger(const XDfeOfdm *InstancePtr,
+				      u32 TuserCCUpdateTrigger);
+u32 XDfeOfdm_GetTuserCCUpdateTrigger(const XDfeOfdm *InstancePtr);
 
 void XDfeOfdm_GetEventStatus(const XDfeOfdm *InstancePtr,
 			     XDfeOfdm_Status *Status);

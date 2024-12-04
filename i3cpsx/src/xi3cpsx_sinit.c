@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,6 +19,7 @@
 * Ver   Who    Date     Changes
 * ----- ------ -------- --------------------------------------------
 * 1.00  sd      06/10/22 First release
+* 1.3   sd      11/17/23 Added support for system device-tree flow
 * </pre>
 *
 ******************************************************************************/
@@ -26,16 +27,16 @@
 /***************************** Include Files *********************************/
 
 #include "xstatus.h"
+#ifndef SDT
 #include "xparameters.h"
+#endif
 #include "xi3cpsx.h"
 
 /************************** Constant Definitions *****************************/
 
-
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
-
 
 /************************** Function Prototypes ******************************/
 
@@ -58,6 +59,7 @@
 * @note		None.
 *
 ******************************************************************************/
+#ifndef SDT
 XI3cPsx_Config *XI3cPsx_LookupConfig(u16 DeviceId)
 {
 	XI3cPsx_Config *CfgPtr = NULL;
@@ -72,4 +74,21 @@ XI3cPsx_Config *XI3cPsx_LookupConfig(u16 DeviceId)
 
 	return (XI3cPsx_Config *)CfgPtr;
 }
+#else
+XI3cPsx_Config *XI3cPsx_LookupConfig(u32 BaseAddress)
+{
+	XI3cPsx_Config *CfgPtr = NULL;
+	s32 Index;
+
+	for (Index = 0; XI3cPsx_ConfigTable[Index].Name != NULL; Index++) {
+		if (XI3cPsx_ConfigTable[Index].BaseAddress == BaseAddress ||
+		    !BaseAddress) {
+			CfgPtr = &XI3cPsx_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XI3cPsx_Config *)CfgPtr;
+}
+#endif
 /** @} */

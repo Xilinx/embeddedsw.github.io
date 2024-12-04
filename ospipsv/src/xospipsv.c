@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,10 @@
 /**
 *
 * @file xospipsv.c
-* @addtogroup ospipsv Overview
+* @addtogroup ospipsv_api OSPIPSV APIs
 * @{
 *
-* This file implements the functions required to use the OSPIPSV hardware to
+* The xospipsv.c file implements the functions required to use the OSPIPSV hardware to
 * perform a transfer. These are accessible to the user via XOspiPsv.h.
 *
 * <pre>
@@ -43,6 +43,10 @@
 * 1.8   sk   11/11/22 Enable Master DLL mode by default for Versal Net.
 *       sk   11/29/22 Added support for Indirect Non-Dma write.
 * 1.9   sb   09/06/23 Fixed MISRAC violations.
+* 1.10	akm  01/31/24 Use OSPI controller reset for resetting flash device.
+* 1.10	akm  02/06/24 Increase the delay after device reset.
+* 1.10	sb   02/09/24 Add support for Infineon flash part S28HS02G.
+* 1.11  ng  08/20/24 Add spartanup device support
 *
 * </pre>
 *
@@ -59,10 +63,6 @@
 
 #define SILICON_VERSION_1	0x10U	/**< Silicon version */
 
-/**
- * Minimum frequency for Tap grain selection.
- */
-#define XOSPIPSV_TAP_GRAN_SEL_MIN_FREQ	120000000U
 #define READ_ID		0x9FU	/**< Read Id opcode */
 
 /**************************** Type Definitions *******************************/
@@ -80,10 +80,10 @@ static inline void StubStatusHandler(void *CallBackRef, u32 StatusEvent);
 /*****************************************************************************/
 /**
 * @brief
-* Initializes a specific XOspiPsv instance such that the driver is ready to use.
+* Initializes a specific XOspiPsv instance so that the driver is ready to use.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	ConfigPtr is a reference to a structure containing information
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	ConfigPtr Reference to a structure containing information
 *		about a specific OSPIPSV device. This function initializes an
 *		InstancePtr object for a specific device specified by the
 *		contents of Config.
@@ -132,7 +132,7 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->DllMode = XOSPIPSV_DLL_BYPASS_MODE;
 		InstancePtr->DualByteOpcodeEn = 0U;
 
-#if defined (versal) && !defined (VERSAL_NET)
+#if defined (versal) && !defined (VERSAL_NET) && !defined (SPARTANUP)
 		if (XGetPSVersion_Info() != SILICON_VERSION_1) {
 #endif
 			InstancePtr->DllMode = XOSPIPSV_DLL_MASTER_MODE;
@@ -141,7 +141,7 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 				XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 						XOSPIPSV_ECO_REG, 0x1);
 			}
-#if defined (versal) && !defined (VERSAL_NET)
+#if defined (versal) && !defined (VERSAL_NET) && !defined (SPARTANUP)
 		}
 #endif
 
@@ -183,12 +183,12 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 /*****************************************************************************/
 /**
 * @brief
-* This function reset the configuration register.
+* Resets the configuration register.
 *
 * The Upper layer software is responsible for re-configuring (if necessary)
 * and restarting the OSPIPSV device after the reset.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None.
 *
@@ -208,9 +208,9 @@ void XOspiPsv_Reset(XOspiPsv *InstancePtr)
 /*****************************************************************************/
 /**
 * @brief
-* This function reset the OSPI flash device.
+* Reset the OSPI flash device.
 *
-* @param	Type is Reset type.
+* @param	Type Reset type.
 *
 * @return
 * 		- XST_SUCCESS if successful.
@@ -248,14 +248,14 @@ u32 XOspiPsv_DeviceReset(u8 Type)
 		XOspiPsv_WriteReg(XPMC_IOU_MIO_TRI0, 0,
 			XOspiPsv_ReadReg(XPMC_IOU_MIO_TRI0, 0) & ~(u32)XPMC_MIO12_MASK);
 #endif
-		usleep(1);
+		usleep(5);
 		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
 				((u32)XPMC_MIO12_DATA_MASK_LSW << XPMC_MIO12_DATA_MASK_LSW_SHIFT));
-		usleep(10);
+		usleep(150);
 		XOspiPsv_WriteReg(XPMC_GPIO_DATA, 0,
 			((u32)XPMC_MIO12_DATA_MASK_LSW << XPMC_MIO12_DATA_MASK_LSW_SHIFT) |
 			(u32)XPMC_MIO12_MASK);
-		usleep(35);
+		usleep(1200);
 	} else {
 		/* TODO In-band reset */
 		Status = (u32)XST_FAILURE;
@@ -270,9 +270,56 @@ RETURN_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function asserts the chip select line.
+* Resets the OSPI flash device via OSPI controller.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Type Resets type.
+*
+* @return
+* 		- XST_SUCCESS if successful.
+*		- XST_FAILURE for invalid Reset Type.
+*
+******************************************************************************/
+u32 XOspiPsv_DeviceResetViaOspi(const XOspiPsv *InstancePtr, u8 Type)
+{
+	u32 Status;
+
+        if (Type == XOSPIPSV_HWPIN_RESET) {
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_CONFIG_REG,
+				  (XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				  XOSPIPSV_CONFIG_REG) | XOSPIPSV_CONFIG_REG_RESET_CFG_FLD_MASK));
+
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_CONFIG_REG,
+				  XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				  XOSPIPSV_CONFIG_REG) & (~XOSPIPSV_CONFIG_REG_RESET_PIN_FLD_MASK));
+		usleep(5);
+
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_CONFIG_REG,
+				  (XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				  XOSPIPSV_CONFIG_REG)) | XOSPIPSV_CONFIG_REG_RESET_PIN_FLD_MASK);
+		usleep(150);
+
+		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_CONFIG_REG,
+				  XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
+				  XOSPIPSV_CONFIG_REG) & (~XOSPIPSV_CONFIG_REG_RESET_PIN_FLD_MASK));
+		usleep(1200);
+	} else {
+		/* TODO In-band reset */
+		Status = (u32)XST_FAILURE;
+		goto RETURN_PATH;
+	}
+
+	Status = (u32)XST_SUCCESS;
+RETURN_PATH:
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Asserts the chip select line.
+*
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None
 *
@@ -295,9 +342,9 @@ static inline void XOspiPsv_AssertCS(const XOspiPsv *InstancePtr)
 /*****************************************************************************/
 /**
 * @brief
-* This function De-asserts the chip select line.
+* De-asserts the chip select line.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return	None
 *
@@ -322,11 +369,11 @@ static inline void XOspiPsv_DeAssertCS(const XOspiPsv *InstancePtr)
 /*****************************************************************************/
 /**
 * @brief
-* This function performs a transfer on the bus in polled mode. The messages
+* Performs a transfer on the bus in polled mode. The messages
 * passed are all transferred on the bus between one CS assert and de-assert.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Msg is a pointer to the structure containing transfer data.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -427,10 +474,10 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function start a DMA transfer.
+* Starts a DMA transfer.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Msg is a pointer to the structure containing transfer data.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -499,9 +546,9 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function check for DMA transfer complete.
+* Checks for DMA transfer complete.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if DMA transfer complete.
@@ -557,10 +604,10 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function performs a transfer on the bus in interrupt mode.
+* Performs a transfer on the bus in interrupt mode.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Msg is a pointer to the structure containing transfer data.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -683,9 +730,9 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function handles interrupt based transfers.
+* Handles interrupt based transfers.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -790,7 +837,7 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
  * By calling this API, any ongoing Dma transfers will be paused and DMA will
  * not issue AXI write commands to memory
  *
- * @param	InstancePtr is a pointer to the XOspiPsv instance.
+ * @param	InstancePtr Pointer to the XOspiPsv instance.
  *
  * @return	None.
  *
@@ -818,12 +865,12 @@ void XOspiPsv_Idle(const XOspiPsv *InstancePtr)
 /*****************************************************************************/
 /**
 * @brief
-* Configure TX and RX DLL Delay. Based on the mode and reference clock
-* this API calculate the RX delay and configure them in PHY configuration
+* Configures TX and RX DLL Delay. Based on the mode and reference clock
+* this API calculates the RX delay and configure them in PHY configuration
 * register.
 *
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -890,8 +937,15 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 		FlashMsg.Proto = XOSPIPSV_READ_8_0_8;
 	}
 
-	if (InstancePtr->DualByteOpcodeEn != 0U) {
+	if (InstancePtr->DualByteOpcodeEn == XOSPIPSV_DUAL_BYTE_OP_ENABLE) {
 		FlashMsg.ExtendedOpcode = (u8)(~FlashMsg.Opcode);
+		FlashMsg.Addrsize = 4U;
+		FlashMsg.Addrvalid = 1U;
+		FlashMsg.Dummy = 4;
+		FlashMsg.Proto = XOSPIPSV_READ_8_8_8;
+	}
+	else if (InstancePtr->DualByteOpcodeEn == XOSPIPSV_DUAL_BYTE_OP_SAME) {
+		FlashMsg.ExtendedOpcode = (u8)(FlashMsg.Opcode);
 		FlashMsg.Addrsize = 4U;
 		FlashMsg.Addrvalid = 1U;
 		FlashMsg.Dummy = 4;
@@ -929,10 +983,10 @@ RETURN_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function configures the dual-byte opcode mode.
+* Configures the dual-byte opcode mode.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Enable is 1 to enable dual-byte opcode, 0 to disable.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Enable 1 to enable dual-byte opcode, 0 to disable.
 *
 * @return	None.
 *
@@ -945,7 +999,7 @@ u32 XOspiPsv_ConfigDualByteOpcode(XOspiPsv *InstancePtr, u8 Enable)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
-	if (Enable > (u8)XOSPIPSV_DUAL_BYTE_OP_ENABLE) {
+	if (Enable > (u8)(XOSPIPSV_DUAL_BYTE_OP_SAME)) {
 		Status = (u32)XST_FAILURE;
 		goto ERROR_PATH;
 	}
@@ -978,10 +1032,10 @@ ERROR_PATH:
  * XST_SPI_TRANSFER_DONE		The requested data transfer is done
  *
  * </pre>
- * @param	InstancePtr is a pointer to the XOspiPsv instance.
- * @param	CallBackRef is the upper layer callback reference passed back
+ * @param	InstancePtr Pointer to the XOspiPsv instance.
+ * @param	CallBackRef Upper layer callback reference passed back
  *		when the callback function is invoked.
- * @param	FuncPointer is the pointer to the callback function.
+ * @param	FuncPointer Pointer to the callback function.
  *
  * @return	None.
  *
@@ -1005,11 +1059,11 @@ void XOspiPsv_SetStatusHandler(XOspiPsv *InstancePtr, void *CallBackRef,
 /*****************************************************************************/
 /**
  * @brief
- * This is a stub for the status callback. The stub is here in case the upper
+ * Stub for the status callback. The stub is here in case the upper
  * layers forget to set the handler.
  *
- * @param	CallBackRef is a pointer to the upper layer callback reference
- * @param	StatusEvent is the event that just occurred.
+ * @param	CallBackRef Pointer to the upper layer callback reference
+ * @param	StatusEvent Event that just occurred.
  *
  * @return	None.
  *

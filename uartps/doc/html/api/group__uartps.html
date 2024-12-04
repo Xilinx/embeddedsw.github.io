@@ -119,6 +119,12 @@ Macros</h2></td></tr>
 <tr class="memitem:gaf1507e8d7b12983484a0ab5436a51970"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaf1507e8d7b12983484a0ab5436a51970">XUartPs_IsTransmitFull</a>(BaseAddress)</td></tr>
 <tr class="memdesc:gaf1507e8d7b12983484a0ab5436a51970"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a byte of data can be sent with the transmitter.  <a href="#gaf1507e8d7b12983484a0ab5436a51970">More...</a><br/></td></tr>
 <tr class="separator:gaf1507e8d7b12983484a0ab5436a51970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#ga8170a2befa118c8bd2ccc108163c4b7a">XUartPs_IsTransmitFifoEmpty</a>(BaseAddress)</td></tr>
+<tr class="memdesc:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transmission FIFO is empty.  <a href="#ga8170a2befa118c8bd2ccc108163c4b7a">More...</a><br/></td></tr>
+<tr class="separator:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaa34f1217cdc0b14977fbe3a22ec167ee">XUartPs_IsTransmitActive</a>(BaseAddress)</td></tr>
+<tr class="memdesc:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transmission state machine is active.  <a href="#gaa34f1217cdc0b14977fbe3a22ec167ee">More...</a><br/></td></tr>
+<tr class="separator:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -212,6 +218,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga157cf5966738452bc13639746f4b8d97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#ga157cf5966738452bc13639746f4b8d97">XUartPs_ResetHw</a> (u32 BaseAddress)</td></tr>
 <tr class="memdesc:ga157cf5966738452bc13639746f4b8d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function resets UART.  <a href="#ga157cf5966738452bc13639746f4b8d97">More...</a><br/></td></tr>
 <tr class="separator:ga157cf5966738452bc13639746f4b8d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf789b78ee831825f3131f9a016e15044"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaf789b78ee831825f3131f9a016e15044">XUartPs_WaitTransmitDone</a> (u32 BaseAddress)</td></tr>
+<tr class="memdesc:gaf789b78ee831825f3131f9a016e15044"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function waits for transmission to complete.  <a href="#gaf789b78ee831825f3131f9a016e15044">More...</a><br/></td></tr>
+<tr class="separator:gaf789b78ee831825f3131f9a016e15044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -1074,10 +1083,10 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>), \</div>
 <div class="line">          (((Xil_In32((InstancePtr)-&gt;Config.BaseAddress + (u32)XUARTPS_CR_OFFSET)) &amp; \</div>
 <div class="line">          (u32)(~<a class="code" href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a>)) | ((u32)<a class="code" href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a> | (u32)<a class="code" href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a>)))</div>
-<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:93</div></div>
-<div class="ttc" id="group__uartps_html_gaffa7bb80501ee66683ce853436190ea9"><div class="ttname"><a href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_RX_DIS</div><div class="ttdoc">RX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:91</div></div>
-<div class="ttc" id="group__uartps_html_ga4831dbafe987c3286b022f3ab937bc9a"><div class="ttname"><a href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_TX_DIS</div><div class="ttdoc">TX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:89</div></div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
+<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:95</div></div>
+<div class="ttc" id="group__uartps_html_gaffa7bb80501ee66683ce853436190ea9"><div class="ttname"><a href="group__uartps.html#gaffa7bb80501ee66683ce853436190ea9">XUARTPS_CR_RX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_RX_DIS</div><div class="ttdoc">RX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:93</div></div>
+<div class="ttc" id="group__uartps_html_ga4831dbafe987c3286b022f3ab937bc9a"><div class="ttname"><a href="group__uartps.html#ga4831dbafe987c3286b022f3ab937bc9a">XUARTPS_CR_TX_DIS</a></div><div class="ttdeci">#define XUARTPS_CR_TX_DIS</div><div class="ttdoc">TX disabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:91</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:62</div></div>
 </div><!-- fragment -->
 <p>Disable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1109,10 +1118,10 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>), \</div>
 <div class="line">          ((Xil_In32((InstancePtr)-&gt;Config.BaseAddress + (u32)XUARTPS_CR_OFFSET) &amp; \</div>
 <div class="line">          (u32)(~<a class="code" href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a>)) | ((u32)<a class="code" href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a> | (u32)<a class="code" href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a>)))</div>
-<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:93</div></div>
-<div class="ttc" id="group__uartps_html_gaf22f08ec08cbe06a53efbd44a43b8096"><div class="ttname"><a href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_TX_EN</div><div class="ttdoc">TX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:90</div></div>
-<div class="ttc" id="group__uartps_html_ga31a05c9637d59b0631b43758a78d605e"><div class="ttname"><a href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_RX_EN</div><div class="ttdoc">RX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:92</div></div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
+<div class="ttc" id="group__uartps_html_gae297afa5ad30bb459ae92c6289bf24d3"><div class="ttname"><a href="group__uartps.html#gae297afa5ad30bb459ae92c6289bf24d3">XUARTPS_CR_EN_DIS_MASK</a></div><div class="ttdeci">#define XUARTPS_CR_EN_DIS_MASK</div><div class="ttdoc">Enable/disable Mask. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:95</div></div>
+<div class="ttc" id="group__uartps_html_gaf22f08ec08cbe06a53efbd44a43b8096"><div class="ttname"><a href="group__uartps.html#gaf22f08ec08cbe06a53efbd44a43b8096">XUARTPS_CR_TX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_TX_EN</div><div class="ttdoc">TX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:92</div></div>
+<div class="ttc" id="group__uartps_html_ga31a05c9637d59b0631b43758a78d605e"><div class="ttname"><a href="group__uartps.html#ga31a05c9637d59b0631b43758a78d605e">XUARTPS_CR_RX_EN</a></div><div class="ttdeci">#define XUARTPS_CR_RX_EN</div><div class="ttdoc">RX enabled. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:94</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:62</div></div>
 </div><!-- fragment -->
 <p>Enable the transmitter and receiver of the UART. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1565,8 +1574,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">!((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;        \</div>
 <div class="line">        (u32)<a class="code" href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a>) == (u32)<a class="code" href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
-<div class="ttc" id="group__uartps_html_gad604ae6739b459eb76fd3515d3d4f249"><div class="ttname"><a href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_RXEMPTY</div><div class="ttdoc">RX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:282</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:73</div></div>
+<div class="ttc" id="group__uartps_html_gad604ae6739b459eb76fd3515d3d4f249"><div class="ttname"><a href="group__uartps.html#gad604ae6739b459eb76fd3515d3d4f249">XUARTPS_SR_RXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_RXEMPTY</div><div class="ttdoc">RX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:284</div></div>
 </div><!-- fragment -->
 <p>Determine if there is receive data in the receiver and/or FIFO. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1579,6 +1588,32 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__uartps.html#gac8b8f06d10cf178227ce88c140d78eb4" title="Determine if there is receive data in the receiver and/or FIFO. ">XUartPs_IsReceiveData(u32 BaseAddress)</a> </dd></dl>
 
 <p>Referenced by <a class="el" href="xuartps__low__echo__example_8c.html#a012e79e774af8eeb985f9fdfac38de37">UartPsEchoExample()</a>, and <a class="el" href="group__uartps.html#ga60240486c69f6167ab13194ced5e8bb7">XUartPs_RecvByte()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaa34f1217cdc0b14977fbe3a22ec167ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XUartPs_IsTransmitActive</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">BaseAddress</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;         \</div>
+<div class="line">         (u32)<a class="code" href="group__uartps.html#ga5032d2efd70379e4c525816c0f75c724">XUARTPS_SR_TACTIVE</a>) == (u32)<a class="code" href="group__uartps.html#ga5032d2efd70379e4c525816c0f75c724">XUARTPS_SR_TACTIVE</a>)</div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:73</div></div>
+<div class="ttc" id="group__uartps_html_ga5032d2efd70379e4c525816c0f75c724"><div class="ttname"><a href="group__uartps.html#ga5032d2efd70379e4c525816c0f75c724">XUARTPS_SR_TACTIVE</a></div><div class="ttdeci">#define XUARTPS_SR_TACTIVE</div><div class="ttdoc">TX active. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:279</div></div>
+</div><!-- fragment -->
+<p>Check if transmission state machine is active. </p>
+<dl class="section return"><dt>Returns</dt><dd>TRUE if the TX state machine is active, FALSE if Tx state machine is In-active</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__uartps.html#gaa34f1217cdc0b14977fbe3a22ec167ee" title="Check if transmission state machine is active. ">XUartPs_IsTransmitActive(u32 BaseAddress)</a> </dd></dl>
+
+<p>Referenced by <a class="el" href="group__uartps.html#gaf789b78ee831825f3131f9a016e15044">XUartPs_WaitTransmitDone()</a>.</p>
 
 </div>
 </div>
@@ -1597,8 +1632,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32(((InstancePtr)-&gt;Config.BaseAddress) + (u32)<a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp; \</div>
 <div class="line">         (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>) == (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
-<div class="ttc" id="group__uartps_html_ga4eb9c1b9ceaf7aecb36d43c983edbe95"><div class="ttname"><a href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_TXEMPTY</div><div class="ttdoc">TX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:280</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:73</div></div>
+<div class="ttc" id="group__uartps_html_ga4eb9c1b9ceaf7aecb36d43c983edbe95"><div class="ttname"><a href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_TXEMPTY</div><div class="ttdoc">TX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:282</div></div>
 </div><!-- fragment -->
 <p>Determine if the transmitter FIFO is empty. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1613,6 +1648,32 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__uartps.html#ga9a3d03d5794a4d8cdda2fa2c4ba8e174" title="Determine if the transmitter FIFO is empty. ">XUartPs_IsTransmitEmpty(XUartPs InstancePtr)</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga8170a2befa118c8bd2ccc108163c4b7a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XUartPs_IsTransmitFifoEmpty</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">BaseAddress</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;         \</div>
+<div class="line">         (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>) == (u32)<a class="code" href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a>)</div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:73</div></div>
+<div class="ttc" id="group__uartps_html_ga4eb9c1b9ceaf7aecb36d43c983edbe95"><div class="ttname"><a href="group__uartps.html#ga4eb9c1b9ceaf7aecb36d43c983edbe95">XUARTPS_SR_TXEMPTY</a></div><div class="ttdeci">#define XUARTPS_SR_TXEMPTY</div><div class="ttdoc">TX FIFO empty. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:282</div></div>
+</div><!-- fragment -->
+<p>Check if transmission FIFO is empty. </p>
+<dl class="section return"><dt>Returns</dt><dd>TRUE if the TX FIFO is empty, FALSE if Tx FIFO is not empty</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>C-Style signature: u32 <a class="el" href="group__uartps.html#ga8170a2befa118c8bd2ccc108163c4b7a" title="Check if transmission FIFO is empty. ">XUartPs_IsTransmitFifoEmpty(u32 BaseAddress)</a> </dd></dl>
+
+<p>Referenced by <a class="el" href="group__uartps.html#gaf789b78ee831825f3131f9a016e15044">XUartPs_WaitTransmitDone()</a>.</p>
 
 </div>
 </div>
@@ -1631,8 +1692,8 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((Xil_In32((BaseAddress) + <a class="code" href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a>) &amp;         \</div>
 <div class="line">         (u32)<a class="code" href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a>) == (u32)<a class="code" href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a>)</div>
-<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:71</div></div>
-<div class="ttc" id="group__uartps_html_ga1fe57953aa624e5c7a1c8e20799dc012"><div class="ttname"><a href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a></div><div class="ttdeci">#define XUARTPS_SR_TXFULL</div><div class="ttdoc">TX FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:279</div></div>
+<div class="ttc" id="group__uartps_html_ga342083b04c2f9d589d7dcb1d40b329f6"><div class="ttname"><a href="group__uartps.html#ga342083b04c2f9d589d7dcb1d40b329f6">XUARTPS_SR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_SR_OFFSET</div><div class="ttdoc">Channel Status [14:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:73</div></div>
+<div class="ttc" id="group__uartps_html_ga1fe57953aa624e5c7a1c8e20799dc012"><div class="ttname"><a href="group__uartps.html#ga1fe57953aa624e5c7a1c8e20799dc012">XUARTPS_SR_TXFULL</a></div><div class="ttdeci">#define XUARTPS_SR_TXFULL</div><div class="ttdoc">TX FIFO full. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:281</div></div>
 </div><!-- fragment -->
 <p>Determine if a byte of data can be sent with the transmitter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -3027,7 +3088,7 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">Xil_Out32(((InstancePtr)-&gt;Config.BaseAddress) + (u32)<a class="code" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>, \</div>
 <div class="line">                        (u32)(RegisterValue))</div>
-<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:60</div></div>
+<div class="ttc" id="group__uartps_html_ga90a3cb2c33dba6a5b888f7324d1c5135"><div class="ttname"><a href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a></div><div class="ttdeci">#define XUARTPS_CR_OFFSET</div><div class="ttdoc">Control Register [8:0]. </div><div class="ttdef"><b>Definition:</b> xuartps_hw.h:62</div></div>
 </div><!-- fragment -->
 <p>Set the UART Mode Control Register. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -4376,6 +4437,28 @@ Receiver FIFO Byte Status Register</h2></td></tr>
 <p>References <a class="el" href="struct_x_uart_ps___config.html#ae84ddc1aadabf71057f148681630fa40">XUartPs_Config::BaseAddress</a>, <a class="el" href="group__uartps.html#ga90a3cb2c33dba6a5b888f7324d1c5135">XUARTPS_CR_OFFSET</a>, <a class="el" href="group__uartps.html#ga3fbd9a70a2d90299418dd9b5a16b94d9">XUARTPS_CR_TORST</a>, <a class="el" href="group__uartps.html#ga16be7534dc3d678f8abcfeb87e6a4f7e">XUartPs_ReadReg</a>, <a class="el" href="group__uartps.html#ga391ed6bbae78f486a638f48f539f7755">XUARTPS_RXTOUT_MASK</a>, <a class="el" href="group__uartps.html#ga3370f0abee2b4247e3c4aecda1fd63e7">XUARTPS_RXTOUT_OFFSET</a>, and <a class="el" href="group__uartps.html#gab541297d822b163193a2e47305987ab6">XUartPs_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="xuartps__intr__example_8c.html#aee2cb1d1ffc3c0fdb4ca1c8a07a3f65c">UartPsIntrExample()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf789b78ee831825f3131f9a016e15044"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XUartPs_WaitTransmitDone </td>
+          <td>(</td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>BaseAddress</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function waits for transmission to complete. </p>
+<dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__uartps.html#gaa34f1217cdc0b14977fbe3a22ec167ee">XUartPs_IsTransmitActive</a>, and <a class="el" href="group__uartps.html#ga8170a2befa118c8bd2ccc108163c4b7a">XUartPs_IsTransmitFifoEmpty</a>.</p>
 
 </div>
 </div>

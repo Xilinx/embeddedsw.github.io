@@ -99,6 +99,21 @@ var xdp_8h =
       [ "XDP_TX_HANDLER_PRESET_FFE_ADJUST", "xdp_8h.html#gga994038531967374f976ed8256013657ba5373dff10c40b2fa2d25c59a102c8401", null ],
       [ "XDP_TX_NUM_HANDLERS", "xdp_8h.html#gga994038531967374f976ed8256013657ba68ef955a34af50f7afe9bcb99e7ed8c7", null ]
     ] ],
+    [ "XDp_Tx_LttprCount", "xdp_8h.html#gaef8e86f63f0850957d608008059755e9", [
+      [ "XDP_TX_LTTPR_NONE", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9afc34c30c42d046f4ad05a320c78ac68b", null ],
+      [ "XDP_TX_LTTPR_1", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9a2a30de9a233c40b37302aed8ba04cf7b", null ],
+      [ "XDP_TX_LTTPR_2", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9a709a494e2611635b86eaea8e5feed29f", null ],
+      [ "XDP_TX_LTTPR_3", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9ae4e69b0dc59e2c6e7070779426f46600", null ],
+      [ "XDP_TX_LTTPR_4", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9a7d01d7a18092d357c6d7282d85c7be68", null ],
+      [ "XDP_TX_LTTPR_5", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9afecaf5aa875726b3dd99c593bbe36a3a", null ],
+      [ "XDP_TX_LTTPR_6", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9abba1ef79ae271aecfafd597ccd1568e8", null ],
+      [ "XDP_TX_LTTPR_7", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9a746c497b9bfcaf28bfc051fa397fcbcc", null ],
+      [ "XDP_TX_LTTPR_8", "xdp_8h.html#ggaef8e86f63f0850957d608008059755e9a8394da8a98a2aa5e659baebc9b82dcaf", null ]
+    ] ],
+    [ "XDp_Tx_LttprMode", "xdp_8h.html#ga208d1f0a9e8a277734c7c07da4a67a78", [
+      [ "XDP_TX_LTTPR_TRANSPARENT", "xdp_8h.html#gga208d1f0a9e8a277734c7c07da4a67a78a3f2f6d2e84a2ea57ad31a145b2186cd1", null ],
+      [ "XDP_TX_LTTPR_NON_TRANSPARENT", "xdp_8h.html#gga208d1f0a9e8a277734c7c07da4a67a78a0fb94671a82622b107ee93bb0a26043d", null ]
+    ] ],
     [ "XDp_CfgInitialize", "xdp_8h.html#ga99e89fe4b5550c32cef410fffab99318", null ],
     [ "XDp_Initialize", "xdp_8h.html#ga85f185599e63935fa41e46ca249d4a3a", null ],
     [ "XDp_InterruptHandler", "xdp_8h.html#ga5d95fcd5fa78f5ad7ac1bbfc112ea5f3", null ],

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -31,6 +31,10 @@
 * 1.17  akm 10/31/22 Add support for Winbond flash w25q02nw.
 * 1.18  sb  05/19/23 Update number of sector calculation logic
 *           in flash erase API.
+* 1.19  sb  11/10/23 Add support for Winbond flash w25q256jw
+* 1.19  sb  11/10/23 Add support for ISSI flash is25lp02g
+* 1.20  sb  05/20/24 Add support for ISSI flash is25lp01gg
+* 1.20  sb  09/13/24 Updated examples to configure correct baud rate value
 *
 *</pre>
 *
@@ -301,6 +305,11 @@ FlashInfo Flash_Config_Table[] = {
 		0xef7018, SECTOR_SIZE_64K, NUM_OF_SECTORS256, BYTES256_PER_PAGE,
 		0x10000, 0x1000000, 1
 	},
+	/*w25q256jw*/
+	{
+		0xef8019, SECTOR_SIZE_64K, NUM_OF_SECTORS512, BYTES256_PER_PAGE,
+		0x20000, 0x2000000, 1
+	},
 	/*w25h02jv*/
 	{
 		0xef9022, SECTOR_SIZE_64K, NUM_OF_SECTORS4096, BYTES256_PER_PAGE,
@@ -413,10 +422,20 @@ FlashInfo Flash_Config_Table[] = {
 		0x9d601b, SECTOR_SIZE_64K, NUM_OF_SECTORS2048, BYTES256_PER_PAGE,
 		0x80000, 0x8000000, 1
 	},
+	/*is25lp01gg*/
+	{
+		0x9d6021, SECTOR_SIZE_64K, NUM_OF_SECTORS2048, BYTES256_PER_PAGE,
+		0x80000, 0x8000000, 1
+	},
 	/*is25wp01g*/
 	{
 		0x9d701b, SECTOR_SIZE_64K, NUM_OF_SECTORS2048, BYTES256_PER_PAGE,
 		0x80000, 0x8000000, 1
+	},
+	/*is25lp02g*/
+	{
+		0x9d6022, SECTOR_SIZE_64K, NUM_OF_SECTORS4096, BYTES256_PER_PAGE,
+		0x100000, 0x10000000, 1
 	}
 };
 
@@ -433,6 +452,17 @@ static INLINE u32 CalculateFCTIndex(u32 ReadId, u32 *FCTIndex)
 	}
 
 	return XST_FAILURE;
+}
+
+static INLINE u8 CalculatePreScaler(u8 BaudRateDiv)
+{
+	u8 PreScaler = 0;
+	while(BaudRateDiv > 2){
+		BaudRateDiv >>= 1;
+		PreScaler++;
+	}
+
+	return PreScaler;
 }
 
 #ifdef __cplusplus

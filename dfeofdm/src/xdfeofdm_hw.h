@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,8 @@
 * @file xdfeofdm_hw.h
 * @addtogroup dfeofdm Overview
 * @{
+*
+* @cond NOCOMMENTS
 *
 * Contains the register definitions for xdfeofdm.
 *
@@ -47,6 +49,8 @@
 *      XDFEOFDM_TRIGGERS_<register>_OFFSET registers, hence
 *      the <register> specifier is removed.
 *
+* @endcond
+*
 * <pre>
 * MODIFICATION HISTORY:
 *
@@ -55,6 +59,9 @@
 * 1.0   dc     11/21/22 Initial version
 * 1.1   dc     05/22/23 State and status upgrades
 *       dc     06/28/23 Add phase compensation calculation
+* 1.2   dc     10/16/23 Doxygen documenatation update
+*       dc     10/17/23 Support for FFT size 512
+* 1.3   dc     09/23/24 Add frequency range MODEL_PARAM
 * </pre>
 *
 ******************************************************************************/
@@ -64,6 +71,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+* @cond NOCOMMENTS
+*/
 
 /**************************** Definitions *******************************/
 /* CORE functionality */
@@ -87,8 +98,8 @@ extern "C" {
 
 /* Model_Param */
 #define XDFEOFDM_MODEL_PARAM_OFFSET 0x08U /**< Register offset */
-#define XDFEOFDM_MODEL_PARAM_RESERVED_OFFSET 0U
-#define XDFEOFDM_MODEL_PARAM_RESERVED_WIDTH 1U
+#define XDFEOFDM_MODEL_PARAM_FREQUENCY_RANGE_OFFSET 0U
+#define XDFEOFDM_MODEL_PARAM_FREQUENCY_RANGE_WIDTH 1U
 #define XDFEOFDM_MODEL_PARAM_NUM_ANTENNA_OFFSET 4U
 #define XDFEOFDM_MODEL_PARAM_NUM_ANTENNA_WIDTH 4U
 #define XDFEOFDM_MODEL_PARAM_ANTENNA_INTERLEAVE_OFFSET 16U
@@ -194,6 +205,11 @@ extern "C" {
 #define XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_OFFSET 0U
 #define XDFEOFDM_TUSER_OUTFRAME_LOCATION_BF_WIDTH 8U
 
+/* TUSER CC Update Trigger Location register */
+#define XDFEOFDM_TUSER_CC_UPDATE_TRIGGER_OFFSET 0x64U /**< Register offset */
+#define XDFEOFDM_TUSER_CC_UPDATE_TRIGGER_BF_OFFSET 0U
+#define XDFEOFDM_TUSER_CC_UPDATE_TRIGGER_BF_WIDTH 8U
+
 /* FT Sequence */
 #define XDFEOFDM_FT_SEQUENCE_LENGTH_CURRENT_OFFSET                             \
 	0x1000U /**< Register offset */
@@ -244,9 +260,11 @@ extern "C" {
 #define XDFEOFDM_CARRIER_CONFIGURATION1_NUMEROLOGY_960kHz 6U
 #define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_OFFSET 4U
 #define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_WIDTH 4U
+#define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_512 0x9U
 #define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_1024 0xAU
 #define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_2048 0xBU
 #define XDFEOFDM_CARRIER_CONFIGURATION1_FFT_SIZE_4096 0xCU
+#define XDFEOFDM_FFT_SIZE_512 512U
 #define XDFEOFDM_FFT_SIZE_1024 1024U
 #define XDFEOFDM_FFT_SIZE_2048 2048U
 #define XDFEOFDM_FFT_SIZE_4096 4096U

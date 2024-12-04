@@ -27,7 +27,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xtrafgen__static__mode__example_8c.html#a0f889ceb44c23528b088a74afeccdf2d"
+"xtrafgen__sinit_8c.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

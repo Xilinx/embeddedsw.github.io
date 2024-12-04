@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -156,6 +156,9 @@
 * 1.11  akm    03/31/22    Fix unused parameter warning.
 * 1.11  akm    03/31/22    Fix misleading-indentation warning.
 * 1.12  akm    06/27/23    Update the driver to support for system device-tree flow.
+* 1.13  akm    02/13/24    Ensure buffer cache sync.
+* 1.13  akm    02/13/24    Avoid loop counter reset.
+* 1.13  akm    02/13/24    Always wrap page to device size.
 *
 * </pre>
 *
@@ -404,6 +407,8 @@ typedef struct {
 	XNandPsu_BadBlockPattern BbPattern;	/**< Bad block pattern to
 						  search */
 	u8 Bbt[XNANDPSU_MAX_BLOCKS >> 2];	/**< Bad block table array */
+	u8 FlashBbt[XNANDPSU_MAX_BLOCKS >> 2];	/**< BBT buffer for partial read/write
+						  from/to flash */
 } XNandPsu;
 
 /******************* Macro Definitions (Inline Functions) *******************/

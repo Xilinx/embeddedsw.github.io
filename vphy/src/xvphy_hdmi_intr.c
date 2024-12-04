@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -46,7 +47,8 @@
 /******************************* Include Files ********************************/
 
 #include "xparameters.h"
-#if defined (XPAR_XV_HDMITX_0_DEVICE_ID) || defined (XPAR_XV_HDMIRX_0_DEVICE_ID)
+#if defined (XPAR_XV_HDMITX_0_DEVICE_ID) || defined (XPAR_XV_HDMIRX_0_DEVICE_ID) || \
+	     defined (XPAR_XV_HDMITX_0_BASEADDR) || defined (XPAR_XV_HDMIRX_0_BASEADDR)
 #include "xstatus.h"
 #include "xvphy.h"
 #include "xvphy_i.h"

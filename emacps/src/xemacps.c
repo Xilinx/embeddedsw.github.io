@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -98,6 +98,10 @@ LONG XEmacPs_CfgInitialize(XEmacPs *InstancePtr, XEmacPs_Config * CfgPtr,
 #if defined  (XCLOCKING)
 	InstancePtr->Config.RefClk = CfgPtr->RefClk;
 #endif
+#ifdef SDT
+	InstancePtr->Config.PhyType = CfgPtr->PhyType;
+        InstancePtr->Config.PhyAddr = CfgPtr->PhyAddr;
+#endif
 
 	InstancePtr->Config.S1GDiv0 = CfgPtr->S1GDiv0;
 	InstancePtr->Config.S1GDiv1 = CfgPtr->S1GDiv1;
@@ -149,6 +153,7 @@ LONG XEmacPs_CfgInitialize(XEmacPs *InstancePtr, XEmacPs_Config * CfgPtr,
 void XEmacPs_Start(XEmacPs *InstancePtr)
 {
 	u32 Reg;
+	u8 i;
 
 	/* Assert bad arguments and conditions */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -202,14 +207,14 @@ void XEmacPs_Start(XEmacPs *InstancePtr)
 		}
 	}
 
-        /* Enable TX and RX interrupts */
-        XEmacPs_IntEnable(InstancePtr, (XEMACPS_IXR_TX_ERR_MASK |
-	XEMACPS_IXR_RX_ERR_MASK | (u32)XEMACPS_IXR_FRAMERX_MASK |
-	(u32)XEMACPS_IXR_TXCOMPL_MASK));
+	/* Enable TX and RX interrupts */
+	XEmacPs_IntEnable(InstancePtr, (XEMACPS_IXR_TX_ERR_MASK |
+			  XEMACPS_IXR_RX_ERR_MASK | (u32)XEMACPS_IXR_FRAMERX_MASK |
+			  (u32)XEMACPS_IXR_TXCOMPL_MASK));
 
-	/* Enable TX Q1 Interrupts */
-	if (InstancePtr->Version > 2)
-		XEmacPs_IntQ1Enable(InstancePtr, XEMACPS_INTQ1_IXR_ALL_MASK);
+	/* Enable TX & RX Interrupts of all queues */
+	for (i=1; i < InstancePtr->MaxQueues; i++)
+		XEmacPs_IntQiEnable(InstancePtr, i, XEMACPS_INTQ_IXR_ALL_MASK);
 
 	/* Mark as started */
 	InstancePtr->IsStarted = XIL_COMPONENT_IS_STARTED;
@@ -326,6 +331,14 @@ void XEmacPs_Reset(XEmacPs *InstancePtr)
 					XEMACPS_HDR_VLAN_SIZE;
 	InstancePtr->RxBufMask = XEMACPS_RXBUF_LEN_MASK;
 
+	/* Get the number of queues */
+	InstancePtr->MaxQueues = 1;
+	if (InstancePtr->Version > 2) {
+		Reg = XEmacPs_ReadReg(InstancePtr->Config.BaseAddress,
+				      XEMACPS_DCFG6_OFFSET);
+		InstancePtr->MaxQueues += get_num_set_bits(Reg & 0xFF);
+	}
+
 	/* Setup hardware with default values */
 	XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
 			XEMACPS_NWCTRL_OFFSET,
@@ -359,6 +372,11 @@ void XEmacPs_Reset(XEmacPs *InstancePtr)
 				(u32)XEMACPS_DMACR_RXSIZE_MASK |
 				(u32)XEMACPS_DMACR_TXSIZE_MASK);
 
+	/* Setup DMA Rx Buffer size for remaining queues */
+	for (i=1; i< InstancePtr->MaxQueues; i++)
+			XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
+					 XEmacPs_GetQxOffset(DMA_RXQI_BUFSIZE, i),
+					 (u32)XEMACPS_RX_BUF_SIZE_JUMBO / (u32)XEMACPS_RX_BUF_UNIT);
 
 	if (InstancePtr->Version > 2) {
 		XEmacPs_WriteReg(InstancePtr->Config.BaseAddress, XEMACPS_DMACR_OFFSET,
@@ -461,22 +479,15 @@ void XEmacPs_SetQueuePtr(XEmacPs *InstancePtr, UINTPTR QPtr, u8 QueueNum,
                 return;
         }
 
-	if (QueueNum == 0x00U) {
-		if (Direction == XEMACPS_SEND) {
-			XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
-				XEMACPS_TXQBASE_OFFSET,
-				(QPtr & ULONG64_LO_MASK));
-		} else {
-			XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
-				XEMACPS_RXQBASE_OFFSET,
-				(QPtr & ULONG64_LO_MASK));
-		}
-	}
-	 else {
+	if (Direction == XEMACPS_SEND)
 		XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
-			XEMACPS_TXQ1BASE_OFFSET,
+			XEmacPs_GetQxOffset(TXQIBASE, QueueNum),
 			(QPtr & ULONG64_LO_MASK));
-	}
+	else
+		XEmacPs_WriteReg(InstancePtr->Config.BaseAddress,
+			XEmacPs_GetQxOffset(RXQIBASE, QueueNum),
+			(QPtr & ULONG64_LO_MASK));
+
 #ifdef __aarch64__
 	if (Direction == XEMACPS_SEND) {
 		/* Set the MSB of TX Queue start address */

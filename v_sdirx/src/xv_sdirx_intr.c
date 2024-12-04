@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -486,11 +487,13 @@ static void SdiRx_VidLckIntrHandler(XV_SdiRx *InstancePtr)
 			SdiStream->ColorDepth = XVIDC_BPC_UNKNOWN;
 
 		/*
-		 * when in 3G scenario there is no ST352 payload, we are setting
+		 * when in SDI SD,HD and 3G scenario there is no ST352 payload, we are setting
 		 * colorformat as YUV 422 10bpc. Resolution will be 1920x1080/2048x1080
 		 */
-		if (((InstancePtr->Transport.TMode == XSDIVID_MODE_3GA) ||
-		     (InstancePtr->Transport.TMode == XSDIVID_MODE_3GB)) && !valid) {
+		if (!valid && (((InstancePtr->Transport.TMode == XSDIVID_MODE_3GA) ||
+		    (InstancePtr->Transport.TMode == XSDIVID_MODE_3GB)) ||
+		    ((InstancePtr->Transport.TMode == XSDIVID_MODE_SD) ||
+		    (InstancePtr->Transport.TMode == XSDIVID_MODE_HD)))) {
 
 			byte1 = 0;
 			active_luma = (InstancePtr->Transport.TFamily ==
@@ -688,7 +691,8 @@ static void SdiRx_VidLckIntrHandler(XV_SdiRx *InstancePtr)
 				}
 			switch (FrameRate) {
 				case XVIDC_FR_24HZ:
-					if (color_format == XST352_BYTE3_COLOR_FORMAT_422) {
+					if (color_format == XST352_BYTE3_COLOR_FORMAT_422 &&
+					    bitdepth == XST352_BYTE4_BIT_DEPTH_10) {
 						SdiStream->VmId = ((active_luma == 1) ?
 								XVIDC_VM_2048x1080_96_I : XVIDC_VM_1920x1080_96_I);
 					} else {
@@ -705,7 +709,8 @@ static void SdiRx_VidLckIntrHandler(XV_SdiRx *InstancePtr)
 					}
 					break;
 				case XVIDC_FR_25HZ:
-					if (color_format == XST352_BYTE3_COLOR_FORMAT_422) {
+					if (color_format == XST352_BYTE3_COLOR_FORMAT_422 &&
+					    bitdepth == XST352_BYTE4_BIT_DEPTH_10) {
 						SdiStream->VmId = ((active_luma == 1) ?
 								XVIDC_VM_2048x1080_100_I : XVIDC_VM_1920x1080_100_I);
 					} else {
@@ -907,7 +912,8 @@ static void SdiRx_VidLckIntrHandler(XV_SdiRx *InstancePtr)
 										XVIDC_VM_2048x1080_120_I);
 						else
 							SdiStream->VmId = ((active_luma== 1) ?
-								XVIDC_VM_2048x1080_60_P : XVIDC_VM_1920x1080_60_P);
+								XVIDC_VM_2048x1080_60_P :
+								XVIDC_VM_1920x1080_60_P);
 					}
 					break;
 				default:

@@ -1,0 +1,70 @@
+# Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for v_scenechange Driver
+
+maintainers:
+  - Prasad Gutti <prasadg@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,v-scenechange-1.1
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,memory-based:
+    description: Is memory mode
+  xlnx,max-nr-streams:
+    description: Maximum number of streams
+  xlnx,histogram-bits:
+    description: Histogram Bits
+  xlnx,has-y8:
+    description: Y8 enabled?.
+  xlnx,has-y10:
+    description: Y10 enabled?.
+  xlnx,max-cols:
+    description: Maximum columns supported by core instance
+  xlnx,max-rows:
+    description: Maximum rows supported by core instance
+  interrupts:
+    description: Interrupt number
+  interrupt-parent:
+    description: Parent interrupt
+
+required:
+    - compatible
+    - reg
+    - xlnx,memory-based
+    - xlnx,max-nr-streams
+    - xlnx,histogram-bits
+    - xlnx,has-y8
+    - xlnx,has-y10
+    - xlnx,max-cols
+    - xlnx,max-rows
+    - interrupts
+    - interrupt-parent
+
+config:
+    - XV_scenechange_Config
+
+depends:
+    video_common: []
+
+examples:
+    src/xv_scenechange_memory_mode_ex.c:
+        - dependency_files:
+            - src/platform.c
+            - src/platform.h
+            - src/platform_config.h
+
+    src/xv_scenechange_stream_mode_ex.c:
+        - dependency_files:
+            - src/platform.c
+            - src/platform.h
+            - src/platform_config.h
+...

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -52,9 +52,11 @@
 *       dc     11/11/22 Align AddCC to switchable UL/DL algorithm
 *       dc     11/25/22 Update macro of SW version Minor number
 * 1.6   dc     06/15/23 Function comment update
-*       dc     06/20/23 Depricate obsolete APIs
+*       dc     06/20/23 Deprecate obsolete APIs
 *       cog    07/04/23 Add support for SDT
 *       dc     08/29/23 Remove immediate trigger
+* 1.7   cog    02/02/24 Yocto SDT support
+*       dc     03/01/24 Update version number in makefiles
 * </pre>
 * @addtogroup dfeccf Overview
 * @{
@@ -87,7 +89,7 @@
 #define XDFECCF_ACTIVE_SET_NUM (8U) /**< Maximum number of active sets */
 #define XDFECCF_U32_NUM_BITS (32U) /**< Number of bits in register */
 #define XDFECCF_TAP_NUMBER_MAX (256U) /**< Maximum tap number */
-#define XDFECCF_DRIVER_VERSION_MINOR (6U) /**< Driver's minor version number */
+#define XDFECCF_DRIVER_VERSION_MINOR (7U) /**< Driver's minor version number */
 #define XDFECCF_DRIVER_VERSION_MAJOR (1U) /**< Driver's major version number */
 
 /************************** Function Prototypes *****************************/

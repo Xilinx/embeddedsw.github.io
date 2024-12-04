@@ -8,6 +8,9 @@ var xemacps__hw_8h =
     [ "XEMACPS_BD_ADDR_OFFSET", "xemacps__hw_8h.html#ga387207ad526b13359b99bbe1d8b19b1f", null ],
     [ "XEMACPS_BD_ALIGNMENT", "xemacps__hw_8h.html#ga35aefec3888018914e34175e0a24c5ed", null ],
     [ "XEMACPS_BD_STAT_OFFSET", "xemacps__hw_8h.html#gaeacdb32989ed4c5df3af72c7b79bee75", null ],
+    [ "XEMACPS_CMPA_ENABLE_MASK", "xemacps__hw_8h.html#ga3a9ca7f19435d3608d1877ea06e5f2f8", null ],
+    [ "XEMACPS_CMPA_MASK", "xemacps__hw_8h.html#gaecf41bf1924fbbe2376754375c80fc0e", null ],
+    [ "XEMACPS_DMA_RXQ1_BUFSIZE_OFFSET", "xemacps__hw_8h.html#ga0f9040bac415e6b940368002b2b13fa3", null ],
     [ "XEMACPS_DMACR_ADDR_WIDTH_64", "xemacps__hw_8h.html#ga797faa8dab3a5852ad4067636770e99b", null ],
     [ "XEMACPS_DMACR_BLENGTH_MASK", "xemacps__hw_8h.html#gad877feb8ef35f79f033978fdf584d7b0", null ],
     [ "XEMACPS_DMACR_ENDIAN_MASK", "xemacps__hw_8h.html#ga799102e8f78a43d02b55cc874a4d285a", null ],
@@ -33,6 +36,7 @@ var xemacps__hw_8h =
     [ "XEMACPS_INTQ1_IER_OFFSET", "xemacps__hw_8h.html#ga5a35f51ffeb90efa50016fe13fa9e4bc", null ],
     [ "XEMACPS_INTQ1_IMR_OFFSET", "xemacps__hw_8h.html#ga3c3c91aa95b89ff18027e3c433112a65", null ],
     [ "XEMACPS_INTQ1_STS_OFFSET", "xemacps__hw_8h.html#gabab8a45f64a643f41921926f0d4f109b", null ],
+    [ "XEMACPS_INTQ1SR_RXCOMPL_MASK", "xemacps__hw_8h.html#gaeaefff2f78b716fd0f9fcfadc3d5318b", null ],
     [ "XEMACPS_INTQ1SR_TXCOMPL_MASK", "xemacps__hw_8h.html#ga1236eff553a0e0f4ef2536fd2c9494ad", null ],
     [ "XEMACPS_INTQ1SR_TXERR_MASK", "xemacps__hw_8h.html#ga76b076af4e1161e51e6f7211660f3d3e", null ],
     [ "XEMACPS_ISR_OFFSET", "xemacps__hw_8h.html#ga79e6717cd2ea26ef74423ed6cfdc3d85", null ],
@@ -255,7 +259,15 @@ var xemacps__hw_8h =
       [ "MDC_DIV_64", "xemacps__hw_8h.html#ggaa367ea42c2214b487cf74951453204ffa1743739e65c86f8d258ced422fbadbbd", null ],
       [ "MDC_DIV_96", "xemacps__hw_8h.html#ggaa367ea42c2214b487cf74951453204ffaeb0086695bb850e112fbcb801b89f2eb", null ],
       [ "MDC_DIV_128", "xemacps__hw_8h.html#ggaa367ea42c2214b487cf74951453204ffaaeedd69bcc332a3fa5ee0c8d2076e925", null ],
-      [ "MDC_DIV_224", "xemacps__hw_8h.html#ggaa367ea42c2214b487cf74951453204ffa9572dbb5458c29e70fa31ab506bf2169", null ]
+      [ "MDC_DIV_224", "xemacps__hw_8h.html#ggaa367ea42c2214b487cf74951453204ffa9572dbb5458c29e70fa31ab506bf2169", null ],
+      [ "TXQIBASE", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907aec5ac72efe12896fdf90e0c70df62525", null ],
+      [ "RXQIBASE", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907aa3d73ad94a3ca8a3a140ce5c699fdd4e", null ],
+      [ "DMA_RXQI_BUFSIZE", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907a6649d4715bd4a1b350d0b296f74063b2", null ],
+      [ "INTQI_STS", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907adac6f061108ce9c6092d63b3d75ed50e", null ],
+      [ "INTQI_IER", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907a79348264b3eafeb9b657f9ebe95c892b", null ],
+      [ "INTQI_IDR", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907a6feff1435cccb77fa84cbf45160d7036", null ],
+      [ "REG_END", "xemacps__hw_8h.html#ggac41a49c074587a7d2cc20d57c7678907a83a92458713c0e5e5dda875a2edbe8cd", null ]
     ] ],
+    [ "XEmacPs_GetQxOffset", "xemacps__hw_8h.html#gad4398ed6e4d94d5f5249118f775f1e7f", null ],
     [ "XEmacPs_ResetHw", "xemacps__hw_8h.html#ga33f7b6941750d70804ecb74cee107a1e", null ]
 ];

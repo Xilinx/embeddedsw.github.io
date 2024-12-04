@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -373,7 +373,16 @@
 /* Prevent circular inclusions by using protection macros. */
 #define XDP_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /******************************* Include Files ********************************/
+#include "xparameters.h"
+#ifdef SDT
+#define XPAR_XDPTXSS_NUM_INSTANCES XPAR_DPTXSS_NUM_INSTANCES
+#define XPAR_XDPRXSS_NUM_INSTANCES XPAR_DPRXSS_NUM_INSTANCES
+#endif
 
 #include "xil_assert.h"
 #include "xil_types.h"
@@ -496,10 +505,37 @@ typedef enum {
 } XDp_Tx_HandlerType;
 
 /**
+ * This typedef enumerates the mode of LTTPR.
+ */
+typedef enum {
+	XDP_TX_LTTPR_TRANSPARENT = 0x55,
+	XDP_TX_LTTPR_NON_TRANSPARENT = 0xAA
+} XDp_Tx_LttprMode;
+
+/**
+ * This typedef enumerates the LTTPR count.
+ */
+typedef enum {
+	XDP_TX_LTTPR_NONE = 0x00,
+	XDP_TX_LTTPR_1 = 0x80,
+	XDP_TX_LTTPR_2 = 0x40,
+	XDP_TX_LTTPR_3 = 0x20,
+	XDP_TX_LTTPR_4 = 0x10,
+	XDP_TX_LTTPR_5 = 0x08,
+	XDP_TX_LTTPR_6 = 0x04,
+	XDP_TX_LTTPR_7 = 0x02,
+	XDP_TX_LTTPR_8 = 0x01,
+} XDp_Tx_LttprCount;
+
+/**
  * This typedef contains configuration information for the DisplayPort core.
  */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< Device instance ID. */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;	/**< The base address of the core instance. */
 	u32 SAxiClkHz;		/**< The clock frequency of the core instance's
 					S_AXI_ACLK port. */
@@ -509,6 +545,7 @@ typedef struct {
 					core instance. */
 	u8 MaxBitsPerColor;	/**< The maximum bits/color supported by this
 					core instance*/
+	u8 OctaPixelEn;		/**< Octa pixel support by this core instance.*/
 	u8 QuadPixelEn;		/**< Quad pixel support by this core
 					instance. */
 	u8 DualPixelEn;		/**< Dual pixel support by this core
@@ -558,12 +595,12 @@ typedef struct {
 				 *forward equalization values used for adjusting link rate
 				 */
 	u32 AuxReadInterval;	/* dp link status/adjust read interval during training period */
-	u32 LaneEqAlignStatus[2];	/*This is a raw read of the RX device's
+	u8 LaneEqAlignStatus[6];	/*This is a raw read of the RX device's
 					 *lane equalization align status registers.This bits ensures
 					 *receiver is properly detected and  aligned to 128B/132B
 					 *boudaries
 					 */
-	u32 CdsAlignStatus[2];	/*This is a raw read of the RX device's
+	u8 CdsAlignStatus[6];	/*This is a raw read of the RX device's
 				 *cds align status registers.This bits ensures the
 				 *receiver is properly detected and aligned to 128B/132B
 				 *boudaries.
@@ -617,7 +654,38 @@ typedef struct {
 					 */
 	u8 TrainingMode;	/**< The Current Training protocol*/
 	u8 ExtendedCapPresent;	/**< Availability of Extended capabilities*/
+	u8 IsDsRepeater;	/**< Downstream detected as Repeater*/
+	u8 OverrideLinkrate;	/**< If set to 1, the value stored for
+				  * LinkRate will get Overwrite with user LinkRates.
+				  */
+	u8 OverrideLinkCount;	/**< If set to 1, the value stored for
+				  * LinkCount will get Overwrite with user LinkCount.
+				  */
+	u8 OverrideRepeaterMode; /**< If set to 1, the value stored for
+				   * LinkCount will get Overwrite with user LinkCount.
+				   */
+	u8 ActiveRepeaterCount;
+	u8 LttprMode;
+	u8 OverrideLttprMode;
 } XDp_TxLinkConfig;
+
+/**
+ * This typedef contains configuration information about the main link settings.
+ */
+typedef struct {
+	u8 RevId;			/**< The LTTPR Capability and ID Field */
+	u8 MaxLinkRate_8B;			/**< The maximum link rate for 8B LTTPR encoding */
+	u8 RepeaterCnt;	/**< Indicates the number of LTTPR's that are present. */
+	u8 RepeaterMode;	/**< LTTPR repeater mode */
+	u8 MaxLaneCount;	/**< The maximum lane count of LTTPR */
+	u8 ExtendTimeOut;	/**< The Repeater Extended timeout */
+	u8 ChannelCoding;	/**< The Main Link channel coding of LTTPR */
+	u8 MaxLinkRate_128B;	/**< LTTPR Linkrate for 128B channel encoding*/
+	u8 EqDone;			/**< Equiliation Done per LTTPR*/
+	u8 AlpmCapabilities;	/**< AUX-Less ALPM Capabilities */
+	u8 TotalRptCnt;		/**< Total LTTPR count */
+	u8 reserved_bytes[6];		/**< Reserved */
+} XDp_TxLttprConfig;
 
 /**
  * This typedef contains the main stream attributes which determine how the
@@ -625,7 +693,7 @@ typedef struct {
  */
 typedef struct {
 	XVidC_VideoTimingMode Vtm;	/**< The video timing. */
-	u32 PixelClockHz;		/**< The pixel clock of the stream (in
+	u64 PixelClockHz;		/**< The pixel clock of the stream (in
 						Hz). */
 	u32 HStart;			/**< Horizontal blank start (in
 						pixels). */
@@ -672,8 +740,11 @@ typedef struct {
 						the pixel width. */
 	u8 OverrideSyncPolarity;	/**< Overrides the Horizontal
 						and vertical sync polarity */
-} XDp_TxMainStreamAttributes;
+	u64 VFreq;
+	u8 IsRxDp21;
+} XDp_MainStreamAttributes;
 
+typedef XDp_MainStreamAttributes XDp_TxMainStreamAttributes;
 /**
  * This typedef contains the VSC extended packet information.
  */
@@ -971,6 +1042,11 @@ typedef struct {
 	u8 ColorimetryThroughVsc;		/**< Enable / Disable of sending
                                                         colorimetry information
                                                         through VSC packet */
+	u8 SideBandMsgCapable; /**< SideBand Message Support */
+	u8 isRxMstCapable; /**< Sink MST Capable Status */
+	XDp_TxLttprConfig LttprConfig;	/**< Configuration structure
+					  * for the Lttpr.
+					  */
 	XDp_TxSinkConfig RxConfig;		/**< Configuration structure for
 							the RX device. */
 	XDp_TxLinkConfig LinkConfig;		/**< Configuration structure for
@@ -1114,6 +1190,14 @@ typedef struct {
 							passed to the video mode
 							change callback
 							functions. */
+	XDp_MainStreamAttributes MsaConfig[4]; /**< Configuration structure
+						 * for the main stream
+						 * attributes (MSA). Each
+						 * stream has its own set
+						 * of attributes. When MST
+						 * mode is disabled, only
+						 * MsaConfig[0] is used.
+						 */
 	XDp_IntrHandler IntrPowerStateHandler;	/**< Callback function for
 							power state change
 							interrupts. */
@@ -1484,10 +1568,12 @@ typedef struct {
 } XDp;
 
 /**************************** Function Prototypes *****************************/
-
+#ifndef SDT
 /* xdp_sinit.c: Configuration extraction function. */
 XDp_Config *XDp_LookupConfig(u16 DeviceId);
-
+#else
+XDp_Config *XDp_LookupConfig(UINTPTR BaseAddress);
+#endif
 /* xdp.c: Setup and initialization functions. */
 void XDp_CfgInitialize(XDp *InstancePtr, XDp_Config *ConfigPtr,
 							UINTPTR EffectiveAddr);
@@ -1591,6 +1677,8 @@ int XDp_TxSetCallback(XDp *InstancePtr,	XDp_Tx_HandlerType HandlerType,
 void XDp_RxGenerateHpdInterrupt(XDp *InstancePtr, u16 DurationUs);
 void XDp_RxInterruptEnable(XDp *InstancePtr, u32 Mask);
 void XDp_RxInterruptDisable(XDp *InstancePtr, u32 Mask);
+void XDp_RxInterruptEnable1(XDp *InstancePtr, u32 Mask);
+void XDp_RxInterruptDisable1(XDp *InstancePtr, u32 Mask);
 int XDp_RxSetCallback(XDp *InstancePtr,	Dp_Rx_HandlerType HandlerType,
 			XDp_IntrHandler CallbackFunc, void *CallbackRef);
 #endif /* XPAR_XDPRXSS_NUM_INSTANCES */
@@ -1670,6 +1758,8 @@ void XDp_TxWriteGuid(XDp *InstancePtr, u8 LinkCountTotal, u8 *RelativeAddress,
 								u8 *Guid);
 void XDp_TxGetGuid(XDp *InstancePtr, u8 LinkCountTotal, u8 *RelativeAddress,
 								u8 *Guid);
+u8 XDp_TxGet_LttprRepeaterCount(u8 RepeaterCount);
+u8 XDp_Tx_GetRepeaterStatus(XDp_TxLttprConfig *LttprConfig);
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 
 #if XPAR_XDPRXSS_NUM_INSTANCES
@@ -1690,7 +1780,7 @@ void XDp_RxMstSetPbn(XDp *InstancePtr, u8 PortNum, u16 PbnVal);
 
 /* xdp_selftest.c: Self test function. */
 u32 XDp_SelfTest(XDp *InstancePtr);
-
+u8 Dp_GetMstSideBandMsgStatus(XDp *InstancePtr);
 #if XPAR_XDPTXSS_NUM_INSTANCES
 /* xdp_spm.c: Stream policy maker functions. */
 void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream);
@@ -1710,6 +1800,9 @@ void XDp_TxClearMsaValues(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream);
 void XDp_TxOverrideSyncPolarity(XDp *InstancePtr, u8 Stream);
 void XDp_TxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth);
+u32 XDp_TxSetRepeaterMode(XDp *InstancePtr, XDp_Tx_LttprMode mode);
+u32 XDp_TxGetSinkCapabilities(XDp *InstancePtr, u8 *SinkCap, u8 *SinkExtendedCap,
+			      u8 *MaxLinkrate_128B);
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 
 #if XPAR_XDPRXSS_NUM_INSTANCES
@@ -1854,6 +1947,10 @@ u32 XDp_TxGetLinkRate(XDp *InstancePtr);
 					XDp_SbMsgLinkAddressReplyDeviceInfo
 #define XDp_TxSbMsgLinkAddressReplyPortDetail \
 					XDp_SbMsgLinkAddressReplyPortDetail
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* XDP_H_ */
 /** @} */

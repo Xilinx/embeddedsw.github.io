@@ -62,8 +62,7 @@ $(document).ready(function(){initNavTree('xi3cpsx__master_8c.html','');});
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">xi3cpsx_master.c File Reference</div>  </div>
 </div><!--header-->
@@ -78,8 +77,11 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga10dedaf409b8b5c149dd04b5d082769e"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">XI3cPsx_BusInit</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga10dedaf409b8b5c149dd04b5d082769e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Bus initialisation code.  <a href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">More...</a><br/></td></tr>
+<tr class="memdesc:ga10dedaf409b8b5c149dd04b5d082769e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the I3c bus by configuring the device address table, resets and assigns the dynamic address to the slave devices.  <a href="group___overview.html#ga10dedaf409b8b5c149dd04b5d082769e">More...</a><br/></td></tr>
 <tr class="separator:ga10dedaf409b8b5c149dd04b5d082769e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4f245bce33f80afa0f5458bae59b8da9"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga4f245bce33f80afa0f5458bae59b8da9">XI3cPsx_MasterSend</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr, u8 *MsgPtr, s32 ByteCount, XI3cPsx_Cmd Cmds)</td></tr>
+<tr class="memdesc:ga4f245bce33f80afa0f5458bae59b8da9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates an interrupt-driven send in master mode.  <a href="group___overview.html#ga4f245bce33f80afa0f5458bae59b8da9">More...</a><br/></td></tr>
+<tr class="separator:ga4f245bce33f80afa0f5458bae59b8da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga858ac6e2e7491133b6781a3ad9a80a20"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga858ac6e2e7491133b6781a3ad9a80a20">XI3cPsx_MasterRecv</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr, u8 *MsgPtr, s32 ByteCount, XI3cPsx_Cmd *Cmds)</td></tr>
 <tr class="memdesc:ga858ac6e2e7491133b6781a3ad9a80a20"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates an interrupt-driven receive in master mode.  <a href="group___overview.html#ga858ac6e2e7491133b6781a3ad9a80a20">More...</a><br/></td></tr>
 <tr class="separator:ga858ac6e2e7491133b6781a3ad9a80a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -89,15 +91,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga759bdfcbba7cff4248e1a490f9b2b8c2"><td class="memItemLeft" align="right" valign="top">s32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga759bdfcbba7cff4248e1a490f9b2b8c2">XI3cPsx_MasterRecvPolled</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr, u8 *MsgPtr, s32 ByteCount, XI3cPsx_Cmd *Cmds)</td></tr>
 <tr class="memdesc:ga759bdfcbba7cff4248e1a490f9b2b8c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates a polled mode receive in master mode.  <a href="group___overview.html#ga759bdfcbba7cff4248e1a490f9b2b8c2">More...</a><br/></td></tr>
 <tr class="separator:ga759bdfcbba7cff4248e1a490f9b2b8c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49588a527df3275f36af02d46caa8dad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga49588a527df3275f36af02d46caa8dad">XI3cPsx_SetStatusHandler</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr, void *CallBackRef, XI3cPsx_IntrHandler FunctionPtr)</td></tr>
+<tr class="memdesc:ga49588a527df3275f36af02d46caa8dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the status handler, which the driver calls when it encounters conditions that should be reported to the higher layer software.  <a href="group___overview.html#ga49588a527df3275f36af02d46caa8dad">More...</a><br/></td></tr>
+<tr class="separator:ga49588a527df3275f36af02d46caa8dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga804fd6fec118ef2902d1a3cf8893a3b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga804fd6fec118ef2902d1a3cf8893a3b2">XI3cPsx_MasterInterruptHandler</a> (<a class="el" href="struct_x_i3c_psx.html">XI3cPsx</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga804fd6fec118ef2902d1a3cf8893a3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The interrupt handler for the master mode.  <a href="group___overview.html#ga804fd6fec118ef2902d1a3cf8893a3b2">More...</a><br/></td></tr>
 <tr class="separator:ga804fd6fec118ef2902d1a3cf8893a3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ga01687d3f47807e4a010f25dd2bb7a67f"><td class="memItemLeft" align="right" valign="top">XI3cPsx_Cmd *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga01687d3f47807e4a010f25dd2bb7a67f">CmdsPtr</a></td></tr>
-<tr class="memdesc:ga01687d3f47807e4a010f25dd2bb7a67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates an interrupt-driven send in master mode.  <a href="group___overview.html#ga01687d3f47807e4a010f25dd2bb7a67f">More...</a><br/></td></tr>
-<tr class="separator:ga01687d3f47807e4a010f25dd2bb7a67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

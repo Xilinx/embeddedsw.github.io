@@ -8,6 +8,7 @@ var xspi__l_8h =
     [ "XSP_CR_MANUAL_SS_MASK", "xspi__l_8h.html#ga68b5a025e603ab87d7987e2220507e6c", null ],
     [ "XSP_CR_MASTER_MODE_MASK", "xspi__l_8h.html#ga25aabcaa1db090de7cf4aaf3cb05ea6b", null ],
     [ "XSP_CR_OFFSET", "xspi__l_8h.html#ga3a63aa98328d40e3221901143e128da1", null ],
+    [ "XSP_CR_RESET_DONE_MASK", "xspi__l_8h.html#ga17631cb22711b70ec4da7741e0ac648f", null ],
     [ "XSP_CR_RXFIFO_RESET_MASK", "xspi__l_8h.html#ga5b5e5793f12d648025e58f716862bb3e", null ],
     [ "XSP_CR_TRANS_INHIBIT_MASK", "xspi__l_8h.html#ga2d045067441152dbf5729d4dce64032b", null ],
     [ "XSP_CR_TXFIFO_RESET_MASK", "xspi__l_8h.html#gab7796329c185988f906256394bc9372f", null ],

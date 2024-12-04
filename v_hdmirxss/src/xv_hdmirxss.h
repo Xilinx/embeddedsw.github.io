@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -94,6 +94,12 @@ extern "C" {
 #if !defined(XV_CONFIG_LOG_VHDMIRXSS_DISABLE) && \
                                              !defined(XV_CONFIG_LOG_DISABLE_ALL)
 #define XV_HDMIRXSS_LOG_ENABLE
+#endif
+
+#ifdef SDT
+#if XPAR_XHDCP1X_NUM_INSTANCES
+#define XPAR_XHDCP_NUM_INSTANCES XPAR_XHDCP1X_NUM_INSTANCES
+#endif
 #endif
 
 #if defined(XPAR_XHDCP_NUM_INSTANCES) || defined(XPAR_XHDCP22_RX_NUM_INSTANCES)
@@ -298,7 +304,9 @@ typedef enum {
 typedef struct
 {
   u16 IsPresent;  /**< Flag to indicate if sub-core is present in the design*/
+#ifndef SDT
   u16 DeviceId;   /**< Device ID of the sub-core */
+#endif
   UINTPTR AbsAddr; /**< Absolute Base Address of hte Sub-cores*/
 }XV_HdmiRxSs_SubCore;
 
@@ -310,7 +318,11 @@ typedef struct
 
 typedef struct
 {
-  u16 DeviceId;     /**< DeviceId is the unique ID  of the device */
+#ifndef SDT
+	u16 DeviceId;     /**< DeviceId is the unique ID  of the device */
+#else
+	char *Name;
+#endif
   UINTPTR BaseAddress;  /**< BaseAddress is the physical base address of the
                         subsystem address range */
   UINTPTR HighAddress;  /**< HighAddress is the physical MAX address of the
@@ -321,6 +333,11 @@ typedef struct
   XV_HdmiRxSs_SubCore Hdcp14;       /**< Sub-core instance configuration */
   XV_HdmiRxSs_SubCore Hdcp22;       /**< Sub-core instance configuration */
   XV_HdmiRxSs_SubCore HdmiRx;       /**< Sub-core instance configuration */
+#ifdef SDT
+	u16 IntrId[5];	/**< Interrupt ID */
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
+						Parent base address */
+#endif
 } XV_HdmiRxSs_Config;
 
 /**
@@ -451,7 +468,12 @@ typedef struct
   (InstancePtr)->HdcpIsReady
 #endif
 /************************** Function Prototypes ******************************/
+#ifndef SDT
 XV_HdmiRxSs_Config* XV_HdmiRxSs_LookupConfig(u32 DeviceId);
+#else
+XV_HdmiRxSs_Config* XV_HdmiRxSs_LookupConfig(UINTPTR BaseAddress);
+u32 XV_HdmiRxSs_GetDrvIndex(XV_HdmiRxSs *InstancePtr, UINTPTR BaseAddress);
+#endif
 void XV_HdmiRxSs_SetUserTimerHandler(XV_HdmiRxSs *InstancePtr,
         XVidC_DelayHandler CallbackFunc, void *CallbackRef);
 void XV_HdmiRxSS_HdmiRxIntrHandler(XV_HdmiRxSs *InstancePtr);

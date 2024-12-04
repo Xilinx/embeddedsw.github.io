@@ -5,6 +5,7 @@ var xdfeprach__sinit_8c =
     [ "XDFEPRACH_COMPATIBLE_PROPERTY", "xdfeprach__sinit_8c.html#ga31a1228741e9ba9530b5fd4dc49857ad", null ],
     [ "XDFEPRACH_COMPATIBLE_STRING", "xdfeprach__sinit_8c.html#gac6cd4fe3d2f73741ef2b60712f41c412", null ],
     [ "XDFEPRACH_HAS_AXIS_CTRL_CFG", "xdfeprach__sinit_8c.html#gafd80e4c5a1957e69ae6401b2d8549f39", null ],
+    [ "XDFEPRACH_HAS_CONTINUOUS_SCHED_CFG", "xdfeprach__sinit_8c.html#gadee50f81b4ce982c5af21c812cc4bdd4", null ],
     [ "XDFEPRACH_HAS_IRQ_CFG", "xdfeprach__sinit_8c.html#ga3b3ecf220717d4265bb72fe16da5d242", null ],
     [ "XDFEPRACH_NUM_ANTENNA0_CFG", "xdfeprach__sinit_8c.html#ga9b3dcc2065c3c918fcb4588612613644", null ],
     [ "XDFEPRACH_NUM_ANTENNA1_CFG", "xdfeprach__sinit_8c.html#ga782b0459892b29a94846685a71e4d6ac", null ],

@@ -3,6 +3,7 @@ var struct_x_dfe_prach___config =
     [ "BaseAddr", "struct_x_dfe_prach___config.html#adc5fbf155a2b48fbaca6f92714875571", null ],
     [ "DeviceId", "struct_x_dfe_prach___config.html#af6a6657959159554b8b2fb2f09863027", null ],
     [ "HasAxisCtrl", "struct_x_dfe_prach___config.html#a227cca8522f031786fa3b993a1deb0a9", null ],
+    [ "HasContinuousSched", "struct_x_dfe_prach___config.html#af2084b18da662eb8c08ed53221ec9e02", null ],
     [ "HasIrq", "struct_x_dfe_prach___config.html#ab0e5055767539ed61c50cafe3dcdf7e6", null ],
     [ "NumAntenna", "struct_x_dfe_prach___config.html#afd4d255f310794af1bc1264f4aa7ec88", null ],
     [ "NumAntennaChannels", "struct_x_dfe_prach___config.html#a2a023450d84be955fc49c7162d20d4c7", null ],

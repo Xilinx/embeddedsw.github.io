@@ -144,6 +144,9 @@ extern "C" {
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 #include "xdphy.h"
 #endif
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+#include "xmipi_rx_phy.h"
+#endif
 #if (XPAR_XIIC_NUM_INSTANCES > 0)
 #include "xiic.h"
 #endif
@@ -193,8 +196,12 @@ typedef void (*XCsiSs_Callback)(void *CallbackRef, u32 Mask);
 typedef struct {
 	u32 IsPresent;	/**< Flag to indicate if sub-core is present in
 			  *  design */
+#ifndef SDT
 	u32 DeviceId;	/**< Device ID of the sub-core */
 	u32 AddrOffset;	/**< sub-core offset from subsystem base address */
+#else
+	UINTPTR AddrOffset;
+#endif
 } CsiRxSsSubCore;
 
 /**
@@ -203,7 +210,11 @@ typedef struct {
  * that defines the MAX supported sub-cores within subsystem
  */
 typedef struct {
+#ifndef SDT
 	u32 DeviceId;	/**< DeviceId is the unique ID  of the device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;	/**< BaseAddress is the physical base address
 				of the subsystem address range */
 	UINTPTR HighAddr;	/**< HighAddress is the physical MAX address
@@ -230,6 +241,17 @@ typedef struct {
 	CsiRxSsSubCore IicInfo;	/**< IIC sub-core configuration */
 	CsiRxSsSubCore CsiInfo;	/**< CSI sub-core configuration */
 	CsiRxSsSubCore DphyInfo;	/**< DPHY sub-core configuration */
+#ifdef SDT
+	u16 IntrId;		/* Interrupt ID */
+	UINTPTR IntrParent; 	/* Bit[0] Interrupt Parent */
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	u32 IsMipiRxPhyRegIntfcPresent;	/**< Flag for DPHY register interface
+					  *  presence */
+	u32 MipiRxPhyLineRate;	/**< DPHY Line Rate ranging from
+				  *  80-1500 Mbps */
+	CsiRxSsSubCore MipiRxPhyInfo; /* MIPI RX PHY sub-core configuration */
+#endif
+#endif
 } XCsiSs_Config;
 
 /**
@@ -242,6 +264,9 @@ typedef struct {
 	u32 IsReady;		/**< Device and the driver instance are
 				  *  initialized */
 	XCsi  *CsiPtr;		/**< handle to sub-core driver instance */
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	XMipi_Rx_Phy *MipiRxPhyPtr;		/**< handle to sub-core driver instance */
+#endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	XDphy *DphyPtr;		/**< handle to sub-core driver instance */
 #endif
@@ -258,7 +283,12 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Initialization function in xcsiss_sinit.c */
+#ifndef SDT
 XCsiSs_Config* XCsiSs_LookupConfig(u32 DeviceId);
+#else
+XCsiSs_Config* XCsiSs_LookupConfig(UINTPTR BaseAddress);
+u32 XCsiSs_GetDrvIndex(XCsiSs *InstancePtr, UINTPTR BaseAddress);
+#endif
 
 /* Initialization and control functions xcsiss.c */
 u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,

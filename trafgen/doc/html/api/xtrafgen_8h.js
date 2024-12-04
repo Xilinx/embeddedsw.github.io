@@ -1,5 +1,7 @@
 var xtrafgen_8h =
 [
+    [ "ERROR_INTRID", "xtrafgen_8h.html#ga84a7f675e8ab79a86daedc6abd01fbec", null ],
+    [ "MASTER_INTRID", "xtrafgen_8h.html#gade5e5059c5f95eacc3caec6096ddf384", null ],
     [ "MAX_NUM_ENTRIES", "xtrafgen_8h.html#gaefe8b2fd0fb990e5cfa429c8b49b3162", null ],
     [ "NUM_BLOCKS", "xtrafgen_8h.html#ga622293b32ccc06f19e7f568ba80a2390", null ],
     [ "XTG_CMD_RAM_BLOCK_SIZE", "xtrafgen_8h.html#gae6768580423b3cbb32e1822433634463", null ],

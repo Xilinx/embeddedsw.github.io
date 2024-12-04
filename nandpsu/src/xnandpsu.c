@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -92,6 +92,9 @@
 * 1.11  akm    03/31/22    Fix unused parameter warning.
 * 1.11  akm    03/31/22    Fix misleading-indentation warning.
 * 1.12  akm    06/27/23    Update the driver to support for system device-tree flow.
+* 1.13  akm    02/13/24    Ensure buffer cache sync.
+* 1.13  akm    02/13/24    Avoid loop counter reset.
+* 1.13  akm    02/13/24    Always wrap page to device size.
 *
 * </pre>
 *
@@ -1473,9 +1476,7 @@ s32 XNandPsu_Write(XNandPsu *InstancePtr, u64 Offset, u64 Length, u8 *SrcBuf)
 		}
 
 		Target = (u32) (OffsetVar / InstancePtr->Geometry.TargetSize);
-		if (Page > InstancePtr->Geometry.NumTargetPages) {
-			Page %= InstancePtr->Geometry.NumTargetPages;
-		}
+		Page %= InstancePtr->Geometry.NumTargetPages;
 
 		/* Check if partial write */
 		if (PartialBytes > 0U) {
@@ -1590,9 +1591,7 @@ s32 XNandPsu_Read(XNandPsu *InstancePtr, u64 Offset, u64 Length, u8 *DestBuf)
 		}
 
 		Target = (u32) (OffsetVar / InstancePtr->Geometry.TargetSize);
-		if (Page > InstancePtr->Geometry.NumTargetPages) {
-			Page %= InstancePtr->Geometry.NumTargetPages;
-		}
+		Page %= InstancePtr->Geometry.NumTargetPages;
 		/* Check if partial read */
 		if (PartialBytes > 0U) {
 			BufPtr = &InstancePtr->PartialDataBuf[0];
@@ -1612,6 +1611,9 @@ s32 XNandPsu_Read(XNandPsu *InstancePtr, u64 Offset, u64 Length, u8 *DestBuf)
 		}
 		if (PartialBytes > 0U) {
 			(void)Xil_MemCpy(DestBufPtr, BufPtr + Col, NumBytes);
+			if (InstancePtr->Config.IsCacheCoherent == 0) {
+			        Xil_DCacheFlushRange((INTPTR)(void *)DestBufPtr, NumBytes);
+			}
 		}
 		DestBufPtr += NumBytes;
 		OffsetVar += NumBytes;
@@ -1701,14 +1703,14 @@ s32 XNandPsu_Erase(XNandPsu *InstancePtr, u64 Offset, u64 Length)
 
 	for (Block = StartBlock; Block < (StartBlock + NumBlocks); Block++) {
 		Target = Block / InstancePtr->Geometry.NumTargetBlocks;
-		Block %= InstancePtr->Geometry.NumTargetBlocks;
+		u32 TargetBlock = Block % InstancePtr->Geometry.NumTargetBlocks;
 		/* Don't erase bad block */
 		if (XNandPsu_IsBlockBad(InstancePtr, Block) ==
 		    XST_SUCCESS) {
 			continue;
 		}
 		/* Block Erase */
-		Status = XNandPsu_EraseBlock(InstancePtr, Target, Block);
+		Status = XNandPsu_EraseBlock(InstancePtr, Target, TargetBlock);
 		if (Status != XST_SUCCESS) {
 			goto Out;
 		}
@@ -2151,7 +2153,7 @@ s32 XNandPsu_EraseBlock(XNandPsu *InstancePtr, u32 Target, u32 Block)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(Target < XNANDPSU_MAX_TARGETS);
-	Xil_AssertNonvoid(Block < InstancePtr->Geometry.NumBlocks);
+	Xil_AssertNonvoid(Block < InstancePtr->Geometry.NumTargetBlocks);
 
 	s32 Status = XST_FAILURE;
 	u32 Page;

@@ -52,6 +52,9 @@ var NAVTREEINDEX0 =
 "xaudioformatter__hw_8h.html":[2,2],
 "xaudioformatter__hw_8h.html#ga6a7006c2fa2d0a88c457d36f7ff17cf7":[2,2,0],
 "xaudioformatter__intr_8c.html":[2,3],
-"xaudioformatter__sinit_8c.html":[2,4],
-"xaudioformatter__sinit_8c.html#ga306c87bbfa3dfceed94dec4591465bf5":[2,4,0]
+"xaudioformatter__selftest__example_8c.html":[2,4],
+"xaudioformatter__selftest__example_8c.html#a64fdbf9842b52cd0c47e06996f91f736":[2,4,0],
+"xaudioformatter__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,4,1],
+"xaudioformatter__sinit_8c.html":[2,5],
+"xaudioformatter__sinit_8c.html#ga306c87bbfa3dfceed94dec4591465bf5":[2,5,0]
 };

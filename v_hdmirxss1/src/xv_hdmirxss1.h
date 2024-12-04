@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
+* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -52,6 +53,12 @@ extern "C" {
 #if !defined(XV_CONFIG_LOG_VHDMIRXSS1_DISABLE) && \
                                              !defined(XV_CONFIG_LOG_DISABLE_ALL)
 #define XV_HDMIRXSS1_LOG_ENABLE
+#endif
+
+#ifdef SDT
+#if XPAR_XHDCP1X_NUM_INSTANCES
+#define XPAR_XHDCP_NUM_INSTANCES XPAR_XHDCP1X_NUM_INSTANCES
+#endif
 #endif
 
 #if defined(XPAR_XHDCP_NUM_INSTANCES) || defined(XPAR_XHDCP22_RX_NUM_INSTANCES)
@@ -199,10 +206,15 @@ typedef struct
 */
 typedef enum
 {
-  XV_HDMIRXSS1_HDCP_NONE,       /**< No content protection */
-  XV_HDMIRXSS1_HDCP_14,         /**< HDCP 1.4 */
-  XV_HDMIRXSS1_HDCP_22,         /**< HDCP 2.2 */
-  XV_HDMIRXSS1_HDCP_BOTH        /**< Both HDCP 1.4 and 2.2 */
+	XV_HDMIRXSS1_HDCP_NONE,       /**< No content protection */
+	XV_HDMIRXSS1_HDCP_14,         /**< HDCP 1.4 */
+	XV_HDMIRXSS1_HDCP_22,         /**< HDCP 2.2 */
+	XV_HDMIRXSS1_HDCP_BOTH,
+	XV_HDMIRXSS1_HDCP_NOUSERPREF	/**< Control user selection.
+					  * to be used only with API
+					  * XV_HdmiRxSs1_SetUserHdcpProtocol
+					  * < Both HDCP 1.4 and 2.2>
+					  */
 } XV_HdmiRxSs1_HdcpProtocol;
 
 /**
@@ -279,8 +291,12 @@ typedef enum {
 typedef struct
 {
   u16 IsPresent;  /**< Flag to indicate if sub-core is present in the design*/
+#ifndef SDT
   u16 DeviceId;   /**< Device ID of the sub-core */
   UINTPTR AbsAddr; /**< Absolute Base Address of hte Sub-cores*/
+#else
+  UINTPTR AbsAddr;
+#endif
 }XV_HdmiRxSs1_SubCore;
 
 /**
@@ -291,7 +307,11 @@ typedef struct
 
 typedef struct
 {
+#ifndef SDT
   u16 DeviceId;     /**< DeviceId is the unique ID  of the device */
+#else
+  char *Name;
+#endif
   UINTPTR BaseAddress;  /**< BaseAddress is the physical base address of the
                         subsystem address range */
   UINTPTR HighAddress;  /**< HighAddress is the physical MAX address of the
@@ -307,6 +327,11 @@ typedef struct
   XV_HdmiRxSs1_SubCore Hdcp14;       /**< Sub-core instance configuration */
   XV_HdmiRxSs1_SubCore Hdcp22;       /**< Sub-core instance configuration */
   XV_HdmiRxSs1_SubCore HdmiRx1;       /**< Sub-core instance configuration */
+#ifdef SDT
+	u16 IntrId[5];	/**< Interrupt ID */
+	UINTPTR IntrParent;
+	/**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+#endif
 } XV_HdmiRxSs1_Config;
 
 /**
@@ -487,6 +512,7 @@ typedef struct
   /**< HDCP specific */
   u32                           HdcpIsReady;    /**< HDCP ready flag */
   XV_HdmiRxSs1_HdcpEventQueue    HdcpEventQueue;         /**< HDCP event queue */
+	XV_HdmiRxSs1_HdcpProtocol	UserHdcpProt;	/**< User HDCP preference */
 #endif
 #ifdef XPAR_XHDCP22_RX_NUM_INSTANCES
   u8                            *Hdcp22Lc128Ptr;     /**< Pointer to HDCP 2.2
@@ -523,7 +549,12 @@ typedef struct {
   (InstancePtr)->HdcpIsReady
 #endif
 /************************** Function Prototypes ******************************/
+#ifndef SDT
 XV_HdmiRxSs1_Config* XV_HdmiRxSs1_LookupConfig(u32 DeviceId);
+#else
+XV_HdmiRxSs1_Config* XV_HdmiRxSs1_LookupConfig(UINTPTR BaseAddress);
+u32 XV_HdmiRxSs1_GetDrvIndex(XV_HdmiRxSs1 *InstancePtr, UINTPTR BaseAddress);
+#endif
 void XV_HdmiRxSs1_SetUserTimerHandler(XV_HdmiRxSs1 *InstancePtr,
 	XVidC_DelayHandler CallbackFunc, void *CallbackRef);
 void XV_HdmiRxSS1_HdmiRxIntrHandler(XV_HdmiRxSs1 *InstancePtr);

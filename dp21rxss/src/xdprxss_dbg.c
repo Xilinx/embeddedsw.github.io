@@ -1,6 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2015 - 2023 Xilinx, Inc. All rights reserved.
+* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -32,6 +32,8 @@
 /***************************** Include Files *********************************/
 
 #include "xdprxss.h"
+#include "xdp.h"
+#include "xdp_hw.h"
 #include "xdebug.h"
 
 /************************** Constant Definitions *****************************/
@@ -70,13 +72,18 @@ void XDpRxSs_ReportCoreInfo(XDpRxSs *InstancePtr)
 	xil_printf("\n\rDisplayPort RX Subsystem info:\n\r");
 
 	/* Report all the included cores in the subsystem instance */
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr) {
 		xil_printf("High-Bandwidth Content protection (HDCP):Yes\n\r");
 	}
-
+#endif
+#if (((XPAR_XHDCP_NUM_INSTANCES > 0) || \
+	(XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)) \
+		&& (XPAR_XTMRCTR_NUM_INSTANCES > 0))
 	if (InstancePtr->TmrCtrPtr) {
 		xil_printf("Timer Counter(0):Yes\n\r");
 	}
+#endif
 
 	if (InstancePtr->DpPtr) {
 		xil_printf("DisplayPort Receiver(DPRX):Yes\n\r");
@@ -200,6 +207,9 @@ void XDpRxSs_ReportMsaInfo(XDpRxSs *InstancePtr)
 	u32 StreamOffset[4] = {0, XDP_RX_STREAM2_MSA_START_OFFSET,
 					XDP_RX_STREAM3_MSA_START_OFFSET,
 					XDP_RX_STREAM4_MSA_START_OFFSET};
+	u32 Linkrate=0;
+	Linkrate = XDpRxSs_ReadReg(RxConfig->BaseAddr,
+			XDP_RX_DPCD_LINK_BW_SET);
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	for (Stream = 1; Stream <= InstancePtr->Config.NumMstStreams; Stream++) {
@@ -216,13 +226,7 @@ void XDpRxSs_ReportMsaInfo(XDpRxSs *InstancePtr)
 			"\tVert Start                     (0x520) : %d\n\r"
 			"\tMisc0                          (0x528) : 0x%08X\n\r"
 			"\tMisc1                          (0x52C) : 0x%08X\n\r"
-			"\tUser Pixel Width               (0x010) : %d\n\r"
-			"\tM Vid                          (0x530) : %d\n\r"
-			"\tN Vid                          (0x534) : %d\n\r"
-			"\tM Aud			  (0x324) : %d\n\r"
-			"\tN Aud			  (0x328) : %d\n\r"
-			"\tVB-ID                          (0x538) : %d\n\r",
-
+			"\tUser Pixel Width               (0x010) : %d\n\r",
 		Stream,
 		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_HTOTAL +
 				StreamOffset[Stream - 1]),
@@ -249,17 +253,32 @@ void XDpRxSs_ReportMsaInfo(XDpRxSs *InstancePtr)
 		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_MISC1+
 				StreamOffset[Stream - 1]),
 		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_USER_PIXEL_WIDTH+
-				StreamOffset[Stream - 1]),
-		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_MVID+
-				StreamOffset[Stream - 1]),
-		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_NVID+
-				StreamOffset[Stream - 1]),
-		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_AUDIO_MAUD+
-				StreamOffset[Stream - 1]),
-		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_AUDIO_NAUD+
-				StreamOffset[Stream - 1]),
-		XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_VBID+
 				StreamOffset[Stream - 1]));
+		if((Linkrate == 0x1) || (Linkrate == 0x2) || (Linkrate == 0x4)){
+			xil_printf(
+					"\tVFreq L                       (0x1608) : 0x%08X\n\r"
+					"\tVFreq H                       (0x160c) : 0x%08X\n\r",
+			XDp_ReadReg(RxConfig->BaseAddr,0x1608),
+			XDp_ReadReg(RxConfig->BaseAddr, 0x160c));
+		}else{
+			xil_printf(
+				"\tM Vid                          (0x530) : %d\n\r"
+				"\tN Vid                          (0x534) : %d\n\r",
+			XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_MVID+
+					StreamOffset[Stream - 1]),
+			XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_NVID+
+							StreamOffset[Stream - 1]));
+		}
+		xil_printf(
+				"\tM Aud			  	(0x324) : %d\n\r"
+				"\tN Aud			  	(0x328) : %d\n\r"
+				"\tVB-ID                (0x538) : %d\n\r",
+					XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_AUDIO_MAUD+
+							StreamOffset[Stream - 1]),
+					XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_AUDIO_NAUD+
+							StreamOffset[Stream - 1]),
+					XDp_ReadReg(RxConfig->BaseAddr, XDP_RX_MSA_VBID+
+							StreamOffset[Stream - 1]));
 
 		xil_printf("\n\r");
 	}
@@ -282,9 +301,11 @@ void XDpRxSs_ReportHdcpInfo(XDpRxSs *InstancePtr)
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
 
+#if (XPAR_XHDCP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp1xPtr)
 		XHdcp1x_Info(InstancePtr->Hdcp1xPtr);
 	else
+#endif
 		xil_printf("HDCP is not supported in this design.\n\r");
 }
 /** @} */

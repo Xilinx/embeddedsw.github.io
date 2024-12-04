@@ -1,75 +1,15 @@
 /******************************************************************************
 * Copyright (c) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************/
 /**
 * @file xcsudma.h
-* @addtogroup Overview
+* @addtogroup csuma_api CSUDMA APIs
 * @{
 * @details
-*
-* The CSU_DMA is present inside CSU (Configuration Security Unit) module which
-* is located within the Low-Power Subsystem (LPS) internal to the PS.
-* CSU_DMA allows the CSU to move data efficiently between the memory (32 bit
-* AXI interface) and the CSU stream peripherals (SHA, AES and PCAP) via Secure
-* Stream Switch (SSS).
-*
-* The CSU_DMA is a 2 channel simple DMA, allowing separate control of the SRC
-* (read) channel and DST (write) channel. The DMA is effectively able to
-* transfer data:
-*	- From PS-side to the SSS-side (SRC DMA only).
-*	- From SSS-side to the PS-side (DST DMA only).
-*	- Simultaneous PS-side to SSS_side and SSS-side to the PS-side.
-*
-* <b>Initialization & Configuration</b>
-*
-* The device driver enables higher layer software (e.g., an application) to
-* communicate to the CSU_DMA core.
-*
-* XCsuDma_CfgInitialize() API is used to initialize the CSU_DMA core.
-* The user needs to first call the XCsuDma_LookupConfig() API which returns
-* the Configuration structure pointer which is passed as a parameter to the
-* XCsuDma_CfgInitialize() API.
-*
-* <b> Reset </b>
-* This driver will not support handling of CRP PDMA Reset in case of PMCDMA
-* inorder to support multiple level of handoff's. User needs to call
-* the XCsuDma_PmcReset() API before performing any driver operation to make
-* sure PMCDMA is in proper state.
-*
-* <b> Interrupts </b>
-* This driver will not support handling of interrupts user should write handler
-* to handle the interrupts.
-*
-* <b> Virtual Memory </b>
-*
-* This driver supports Virtual Memory. The RTOS is responsible for calculating
-* the correct device base address in Virtual Memory space.
-*
-* <b> Threads </b>
-*
-* This driver is not thread safe. Any needs for threads or thread mutual
-* exclusion must be satisfied by the layer above this driver.
-*
-* <b> Asserts </b>
-*
-* Asserts are used within all Xilinx drivers to enforce constraints on argument
-* values. Asserts can be turned off on a system-wide basis by defining, at
-* compile time, the NDEBUG identifier. By default, asserts are turned on and it
-* is recommended that users leave asserts on during development.
-*
-* <b> Building the driver </b>
-*
-* The XCsuDma driver is composed of several source files. This allows the user
-* to build and link only those parts of the driver that are necessary.
-*
-* This section contains identifiers and register-level driver functions (or
-* macros), range macros, structure typedefs that can be used to access the
-* Xilinx CSU_DMA core instance.
-*
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -158,7 +98,7 @@ typedef enum {
 /** @name Ranges of Size
  * @{
  */
-#ifdef VERSAL_NET
+#if defined(VERSAL_NET) || defined(VERSAL_AIEPG2)
 #define XCSUDMA_SIZE_MAX 0x1FFFFFFFU	/**< Maximum allowed no of bytes */
 #else
 #define XCSUDMA_SIZE_MAX 0x07FFFFFFU	/**< Maximum allowed no of words */
@@ -167,6 +107,8 @@ typedef enum {
 #define XCSUDMA_DMATYPEIS_CSUDMA 	0U	/**< DMA is CSUDMA  */
 #define XCSUDMA_DMATYPEIS_PMCDMA0	1U	/**< DMA is PMCDMA0 */
 #define XCSUDMA_DMATYPEIS_PMCDMA1	2U	/**< DMA is PMCDMA1 */
+#define XCSUDMA_DMATYPEIS_ASUDMA0	3U	/**< DMA is ASUDMA0 */
+#define XCSUDMA_DMATYPEIS_ASUDMA1	4U	/**< DMA is ASUDMA1 */
 
 /*@}*/
 
@@ -196,20 +138,19 @@ typedef enum {
 *
 * This function resets the PMC_DMA core.
 *
-* @param	DmaType is the type of DMA (PMCDMA0 or PMCDMA1).
+* @param	DmaType Type of DMA (PMCDMA0 or PMCDMA1).
 *
 * @return	None.
 *
-* @note		None.
-*		C-style signature:
-*		void XCsuDma_PmcReset(u8 DmaType)
+* @note	 C-style signature:
+*		 void XCsuDma_PmcReset(u8 DmaType)
 *
 ******************************************************************************/
 #define XCsuDma_PmcReset(DmaType)  \
 	Xil_Out32(((u32)(XPS_CRP_BASEADDRESS) + (u32)(XCRP_PMCDMA_RESET_OFFSET)), \
-			(u32)(XCSUDMA_RESET_SET_MASK << (DmaType - 1))); \
+			((u32)XCSUDMA_RESET_SET_MASK << ((u32)DmaType - 1U))); \
 	Xil_Out32(((u32)(XPS_CRP_BASEADDRESS) + (u32)(XCRP_PMCDMA_RESET_OFFSET)), \
-			(u32)(XCSUDMA_RESET_UNSET_MASK << (DmaType - 1)));
+			((u32)XCSUDMA_RESET_UNSET_MASK << ((u32)DmaType - 1U)));
 #endif
 
 /*****************************************************************************/
@@ -217,8 +158,8 @@ typedef enum {
 * This function will be in busy while loop until the data transfer is
 * completed.
 *
-* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
-* @param	Channel represents the type of channel either it is Source or
+* @param	InstancePtr Pointer to XCsuDma instance to be worked on.
+* @param	Channel Represents the type of channel either it is Source or
 *		Destination.
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
@@ -226,7 +167,7 @@ typedef enum {
 * @return	None.
 *
 * @note		This function should be called after XCsuDma_Transfer in polled
-*		mode  to wait until the data gets transfered completely.
+*		mode  to wait until the data gets transferred completely.
 *		C-style signature:
 *		void XCsuDma_WaitForDone(XCsuDma *InstancePtr,
 *						XCsuDma_Channel Channel)
@@ -254,9 +195,8 @@ typedef enum {
 * This function returns the number of completed SRC/DST DMA transfers that
 * have not been acknowledged by software based on the channel selection.
 *
-* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
-* @param	Channel represents the type of channel either it is Source or
-* 		Destination.
+* @param	InstancePtr Pointer to XCsuDma instance to be worked on.
+* @param	Channel Type of channel.
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
@@ -266,9 +206,8 @@ typedef enum {
 *		- Count - Count number of finished transfers are still
 *		outstanding.
 *
-* @note		None.
-*		C-style signature:
-*		u8 XCsuDma_GetDoneCount(XCsuDma *InstancePtr,
+* @note	 C-style signature:
+*		 u8 XCsuDma_GetDoneCount(XCsuDma *InstancePtr,
 *						XCsuDma_Channel Channel)
 *
 ******************************************************************************/
@@ -284,9 +223,9 @@ typedef enum {
 *
 * This function returns the current SRC/DST FIFO level in 32 bit words of the
 * selected channel
-* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
-* @param	Channel represents the type of channel either it is Source or
-* 		Destination.
+*
+* @param	InstancePtr Pointer to XCsuDma instance to be worked on.
+* @param	Channel Type of channel
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
@@ -294,9 +233,8 @@ typedef enum {
 *		- 0 Indicates empty
 *		- Any number 1 to 128 indicates the number of entries in FIFO.
 *
-* @note		None.
-*		C-style signature:
-*		u8 XCsuDma_GetFIFOLevel(XCsuDma *InstancePtr,
+* @note	 C-style signature:
+*		 u8 XCsuDma_GetFIFOLevel(XCsuDma *InstancePtr,
 *					XCsuDma_Channel Channel)
 *
 ******************************************************************************/
@@ -313,17 +251,15 @@ typedef enum {
 * This function returns the current number of read(src)/write(dst) outstanding
 * commands based on the type of channel selected.
 *
-* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
-* @param	Channel represents the type of channel either it is Source or
-* 		Destination.
+* @param	InstancePtr Pointer to XCsuDma instance to be worked on.
+* @param	Channel Type of channel
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
 * @return	Count of outstanding commands. (Range is 0 to 9).
 *
-* @note		None.
-*		C-style signature:
-*		u8 XCsuDma_GetWROutstandCount(XCsuDma *InstancePtr,
+* @note	 C-style signature:
+*		 u8 XCsuDma_GetWROutstandCount(XCsuDma *InstancePtr,
 *						XCsuDma_Channel Channel)
 *
 ******************************************************************************/
@@ -339,9 +275,8 @@ typedef enum {
 *
 * This function returns the status of Channel either it is busy or not.
 *
-* @param	InstancePtr is a pointer to XCsuDma instance to be worked on.
-* @param	Channel represents the type of channel either it is Source or
-* 		Destination.
+* @param	InstancePtr Pointer to XCsuDma instance to be worked on.
+* @param	Channel Type of channel
 *		Source channel      - XCSUDMA_SRC_CHANNEL
 *		Destination Channel - XCSUDMA_DST_CHANNEL
 *
@@ -349,9 +284,8 @@ typedef enum {
 *		- TRUE represents core is currently busy.
 *		- FALSE represents core is not involved in any transfers.
 *
-* @note		None.
-*		C-style signature:
-*		s32 XCsuDma_IsBusy(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
+* @note  C-style signature:
+*		 s32 XCsuDma_IsBusy(XCsuDma *InstancePtr, XCsuDma_Channel Channel)
 *
 ******************************************************************************/
 
@@ -367,7 +301,7 @@ typedef enum {
 
 /**
 * This typedef contains configuration information for a CSU_DMA core.
-* Each CSU_DMA core should have a configuration structure associated.
+* Each CSU_DMA core should have an associated configuration structure.
 */
 typedef struct {
 #ifndef SDT
@@ -407,14 +341,14 @@ typedef struct {
 
 /******************************************************************************/
 /**
-* This typedef contains all the configuration feilds which needs to be set
+* This typedef contains all the configuration feilds which must be set
 * before the start of the data transfer. All these feilds of CSU_DMA can be
 * configured by using XCsuDma_SetConfig API.
 */
 typedef struct {
 	u8 SssFifoThesh;	/**< SSS FIFO threshold value */
 	u8 ApbErr;		/**< ABP invalid access error */
-	u8 EndianType;		/**< Type of endianess */
+	u8 EndianType;		/**< Type of endianness */
 	u8 AxiBurstType;	/**< Type of AXI bus */
 	u32 TimeoutValue;	/**< Time out value */
 	u8 FifoThresh;		/**< FIFO threshold value */
@@ -451,7 +385,7 @@ void XCsuDma_Transfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					u64 Addr, u32 Size, u8 EnDataLast);
 void XCsuDma_64BitTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 			   u32 AddrLow, u32 AddrHigh, u32 Size, u8 EnDataLast);
-#ifdef VERSAL_NET
+#if defined(VERSAL_NET) || defined(VERSAL_AIEPG2)
 void XCsuDma_ByteAlignedTransfer(XCsuDma *InstancePtr, XCsuDma_Channel Channel,
 					u64 Addr, u32 Size, u8 EnDataLast);
 #endif

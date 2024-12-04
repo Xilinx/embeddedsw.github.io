@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
 *
 * @file xsdps_g.c
-* @addtogroup sdps Overview
+* @addtogroup sdps_api SDPS APIs
 * @{
 *
 * The xsdps_g.c file contains a configuration table that specifies the
@@ -54,7 +54,8 @@ XSdPs_Config XSdPs_ConfigTable[] =
 		XPAR_XSDPS_0_CLK_50_DDR_ITAP_DLY,
 		XPAR_XSDPS_0_CLK_50_DDR_OTAP_DLY,
 		XPAR_XSDPS_0_CLK_100_SDR_OTAP_DLY,
-		XPAR_XSDPS_0_CLK_200_SDR_OTAP_DLY
+		XPAR_XSDPS_0_CLK_200_SDR_OTAP_DLY,
+		XPAR_XSDPS_0_CLK_200_DDR_OTAP_DLY
 	}
 };
 /** @} */

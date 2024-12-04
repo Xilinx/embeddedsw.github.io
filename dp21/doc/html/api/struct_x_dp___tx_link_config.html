@@ -135,6 +135,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a9a33114c8619fca9d9a462ae78068ad5"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html#a9a33114c8619fca9d9a462ae78068ad5">ExtendedCapPresent</a></td></tr>
 <tr class="memdesc:a9a33114c8619fca9d9a462ae78068ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Availability of Extended capabilities.  <a href="#a9a33114c8619fca9d9a462ae78068ad5">More...</a><br/></td></tr>
 <tr class="separator:a9a33114c8619fca9d9a462ae78068ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52bc84b6f8c43cdac3dbee44e5afd9b7"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html#a52bc84b6f8c43cdac3dbee44e5afd9b7">IsDsRepeater</a></td></tr>
+<tr class="memdesc:a52bc84b6f8c43cdac3dbee44e5afd9b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downstream detected as Repeater.  <a href="#a52bc84b6f8c43cdac3dbee44e5afd9b7">More...</a><br/></td></tr>
+<tr class="separator:a52bc84b6f8c43cdac3dbee44e5afd9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac584183fed5d455ec70314a4e0563d14"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html#ac584183fed5d455ec70314a4e0563d14">OverrideLinkrate</a></td></tr>
+<tr class="memdesc:ac584183fed5d455ec70314a4e0563d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">If set to 1, the value stored for LinkRate will get Overwrite with user LinkRates.  <a href="#ac584183fed5d455ec70314a4e0563d14">More...</a><br/></td></tr>
+<tr class="separator:ac584183fed5d455ec70314a4e0563d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d727464529d57e828e2ec30650a2e12"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html#a3d727464529d57e828e2ec30650a2e12">OverrideLinkCount</a></td></tr>
+<tr class="memdesc:a3d727464529d57e828e2ec30650a2e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">If set to 1, the value stored for LinkCount will get Overwrite with user LinkCount.  <a href="#a3d727464529d57e828e2ec30650a2e12">More...</a><br/></td></tr>
+<tr class="separator:a3d727464529d57e828e2ec30650a2e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdffa64488425f3c184344c531f41c70"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html#abdffa64488425f3c184344c531f41c70">OverrideRepeaterMode</a></td></tr>
+<tr class="memdesc:abdffa64488425f3c184344c531f41c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">If set to 1, the value stored for LinkCount will get Overwrite with user LinkCount.  <a href="#abdffa64488425f3c184344c531f41c70">More...</a><br/></td></tr>
+<tr class="separator:abdffa64488425f3c184344c531f41c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This typedef contains configuration information about the main link settings. </p>
@@ -241,6 +253,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a52bc84b6f8c43cdac3dbee44e5afd9b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XDp_TxLinkConfig::IsDsRepeater</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Downstream detected as Repeater. </p>
+
+</div>
+</div>
 <a class="anchor" id="a86b3dae5f9896de8c18734aadbf3d23b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -310,6 +336,48 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The maximum link rate of the main link. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3d727464529d57e828e2ec30650a2e12"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XDp_TxLinkConfig::OverrideLinkCount</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If set to 1, the value stored for LinkCount will get Overwrite with user LinkCount. </p>
+
+</div>
+</div>
+<a class="anchor" id="ac584183fed5d455ec70314a4e0563d14"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XDp_TxLinkConfig::OverrideLinkrate</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If set to 1, the value stored for LinkRate will get Overwrite with user LinkRates. </p>
+
+</div>
+</div>
+<a class="anchor" id="abdffa64488425f3c184344c531f41c70"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XDp_TxLinkConfig::OverrideRepeaterMode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If set to 1, the value stored for LinkCount will get Overwrite with user LinkCount. </p>
 
 </div>
 </div>

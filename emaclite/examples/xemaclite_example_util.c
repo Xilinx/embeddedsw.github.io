@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,6 +25,7 @@
 *		      TxFrame[XEL_MAX_FRAME_SIZE], RxFrame[XEL_MAX_FRAME_SIZE]
 *		      from the xemaclite_example.h
 *		      to this file for fixing C++ compilation errors
+* 4.9    ml  11/15/23 Fix compilation errors reported with -std=c2x compiler flag
 *</pre>
 ******************************************************************************/
 
@@ -228,16 +229,16 @@ void EmacLitePhyDelay(unsigned int Seconds)
 	}
 
 #define ITERS_PER_SEC   (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 6)
-    asm volatile ("\n"
-                  "1:               \n\t"
-                  "addik r7, r0, %0 \n\t"
-                  "2:               \n\t"
-                  "addik r7, r7, -1 \n\t"
-                  "bneid  r7, 2b    \n\t"
-                  "or  r0, r0, r0   \n\t"
-                  "bneid %1, 1b     \n\t"
-                  "addik %1, %1, -1 \n\t"
-                  :: "i"(ITERS_PER_SEC), "d" (Seconds));
+	__asm volatile ("\n"
+			      "1:               \n\t"
+			      "addik r7, r0, %0 \n\t"
+			      "2:               \n\t"
+			      "addik r7, r7, -1 \n\t"
+			      "bneid  r7, 2b    \n\t"
+			      "or  r0, r0, r0   \n\t"
+			      "bneid %1, 1b     \n\t"
+			      "addik %1, %1, -1 \n\t"
+			      :: "i"(ITERS_PER_SEC), "d" (Seconds));
 
 #else
 

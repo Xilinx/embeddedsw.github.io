@@ -76,6 +76,7 @@ MODIFICATION HISTORY:</pre><pre>Ver     Who   Date     Changes
 <p>
 1.0  aad   04/12/16 Initial release.
 1.1  aad   04/26/18 Fixed Warnings
+1.6  arm   11/27/23 Fixed Coverity Warnings
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -101,10 +102,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a33d14a186926a53012087f81a4fd3f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function Retriggers DPDMA to fetch data from new descriptor.  <a href="#a33d14a186926a53012087f81a4fd3f16">More...</a><br/></td></tr>
 <tr class="separator:a33d14a186926a53012087f81a4fd3f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a830dfc769c7cd83f4d55e72217863b93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdpdma_8c.html#a830dfc769c7cd83f4d55e72217863b93">XDpDma_InitVideoDescriptor</a> (XDpDma_Descriptor *CurrDesc, XDpDma_FrameBuffer *FrameBuffer)</td></tr>
-<tr class="memdesc:a830dfc769c7cd83f4d55e72217863b93"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function intializes Video Descriptor for Video and Graphics channel.  <a href="#a830dfc769c7cd83f4d55e72217863b93">More...</a><br/></td></tr>
+<tr class="memdesc:a830dfc769c7cd83f4d55e72217863b93"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes Video Descriptor for Video and Graphics channel.  <a href="#a830dfc769c7cd83f4d55e72217863b93">More...</a><br/></td></tr>
 <tr class="separator:a830dfc769c7cd83f4d55e72217863b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b54f9c726866282dbbe546b1f5ebd55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdpdma_8c.html#a3b54f9c726866282dbbe546b1f5ebd55">XDpDma_InitAudioDescriptor</a> (XDpDma_AudioChannel *Channel, XDpDma_AudioBuffer *AudioBuffer)</td></tr>
-<tr class="memdesc:a3b54f9c726866282dbbe546b1f5ebd55"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function intializes Descriptors for transactions on Audio Channel.  <a href="#a3b54f9c726866282dbbe546b1f5ebd55">More...</a><br/></td></tr>
+<tr class="memdesc:a3b54f9c726866282dbbe546b1f5ebd55"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes Descriptors for transactions on Audio Channel.  <a href="#a3b54f9c726866282dbbe546b1f5ebd55">More...</a><br/></td></tr>
 <tr class="separator:a3b54f9c726866282dbbe546b1f5ebd55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17566416aab41ddfefa7ebb65146223f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdpdma_8c.html#a17566416aab41ddfefa7ebb65146223f">XDpDma_DisplayVideoFrameBuffer</a> (XDpDma *InstancePtr, XDpDma_FrameBuffer *Plane0, XDpDma_FrameBuffer *Plane1, XDpDma_FrameBuffer *Plane2)</td></tr>
 <tr class="memdesc:a17566416aab41ddfefa7ebb65146223f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the next Frame Buffers to be displayed on the Video Channel.  <a href="#a17566416aab41ddfefa7ebb65146223f">More...</a><br/></td></tr>
@@ -273,7 +274,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function intializes Descriptors for transactions on Audio Channel. </p>
+<p>This function initializes Descriptors for transactions on Audio Channel. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Channel</td><td>is a pointer to the XDpDma_AudioChannel instance</td></tr>
@@ -312,7 +313,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function intializes Video Descriptor for Video and Graphics channel. </p>
+<p>This function initializes Video Descriptor for Video and Graphics channel. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">CurrDesc</td><td>is a pointer to the current Descriptor of Video or Graphics Channel. </td></tr>

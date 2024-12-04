@@ -118,9 +118,13 @@ var xsysmonpsu_8h =
     [ "XSM_SEQ_MODE_SINGCHAN", "xsysmonpsu_8h.html#a3c4487fa8b08f41c807433ef456abc75", null ],
     [ "XSysMonPsu_RawToTemperature_ExternalRef", "xsysmonpsu_8h.html#a9ab3e135004e7d5995a827caa045883e", null ],
     [ "XSysMonPsu_RawToTemperature_OnChip", "xsysmonpsu_8h.html#a380d87507652a19d453b20e6d7655d65", null ],
+    [ "XSysMonPsu_RawToTemperature_OT_ExternalRef", "xsysmonpsu_8h.html#a4fe15f60a0a540ef004786090d750ad8", null ],
+    [ "XSysMonPsu_RawToTemperature_OT_OnChip", "xsysmonpsu_8h.html#a8deda750d363495fc0fa7a98167cb418", null ],
     [ "XSysMonPsu_RawToVoltage", "xsysmonpsu_8h.html#af6667f0fcc65dda4a7af897b2924143c", null ],
     [ "XSysMonPsu_TemperatureToRaw_ExternalRef", "xsysmonpsu_8h.html#a50b32ba6617a306fd1f12c7d34151722", null ],
     [ "XSysMonPsu_TemperatureToRaw_OnChip", "xsysmonpsu_8h.html#a977b419288fae23364d46bc87d6976ce", null ],
+    [ "XSysMonPsu_TemperatureToRaw_OT_ExternalRef", "xsysmonpsu_8h.html#a78a467243193029ee49fc2144a1bb38a", null ],
+    [ "XSysMonPsu_TemperatureToRaw_OT_OnChip", "xsysmonpsu_8h.html#aa5f6e0d4b6f0d119ef0b6b0318f12025", null ],
     [ "XSysMonPsu_VccopsioRawToVoltage", "xsysmonpsu_8h.html#ad74fd43c8a038933bc2580837b95cee4", null ],
     [ "XSysMonPsu_VccopsioVoltageToRaw", "xsysmonpsu_8h.html#a05b960d7be1902cbefc489cc0ae4ec95", null ],
     [ "XSysMonPsu_VoltageToRaw", "xsysmonpsu_8h.html#a986f164c3c1f811ea27713adf9dace4c", null ],
@@ -166,5 +170,5 @@ var xsysmonpsu_8h =
     [ "XSysMonPsu_SetSequencerMode", "xsysmonpsu_8h.html#aa4bdb4e555b2c8d47a0185862c9cb4c6", null ],
     [ "XSysMonPsu_SetSingleChParams", "xsysmonpsu_8h.html#a872e9a41818489e77fa554dd01408281", null ],
     [ "XSysMonPsu_StartAdcConversion", "xsysmonpsu_8h.html#a2ed2a9f0fbd1be48dfd71aaeef05174f", null ],
-    [ "XSysMonPsu_UpdateAdcClkDivisor", "xsysmonpsu_8h.html#a15c7ebcfb5e5e7014deaabaa8f6261eb", null ]
+    [ "XSysMonPsu_UpdateAdcClkDivisor", "xsysmonpsu_8h.html#ad850523d0e0f5f54fcde1f2a6ecd8aa1", null ]
 ];

@@ -83,6 +83,12 @@ Macros</h2></td></tr>
 <tr class="memitem:gaf1507e8d7b12983484a0ab5436a51970"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaf1507e8d7b12983484a0ab5436a51970">XUartPs_IsTransmitFull</a>(BaseAddress)</td></tr>
 <tr class="memdesc:gaf1507e8d7b12983484a0ab5436a51970"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a byte of data can be sent with the transmitter.  <a href="group__uartps.html#gaf1507e8d7b12983484a0ab5436a51970">More...</a><br/></td></tr>
 <tr class="separator:gaf1507e8d7b12983484a0ab5436a51970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#ga8170a2befa118c8bd2ccc108163c4b7a">XUartPs_IsTransmitFifoEmpty</a>(BaseAddress)</td></tr>
+<tr class="memdesc:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transmission FIFO is empty.  <a href="group__uartps.html#ga8170a2befa118c8bd2ccc108163c4b7a">More...</a><br/></td></tr>
+<tr class="separator:ga8170a2befa118c8bd2ccc108163c4b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaa34f1217cdc0b14977fbe3a22ec167ee">XUartPs_IsTransmitActive</a>(BaseAddress)</td></tr>
+<tr class="memdesc:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transmission state machine is active.  <a href="group__uartps.html#gaa34f1217cdc0b14977fbe3a22ec167ee">More...</a><br/></td></tr>
+<tr class="separator:gaa34f1217cdc0b14977fbe3a22ec167ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Register Map</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Register offsets for the UART. </p>
 </div></td></tr>
@@ -496,6 +502,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga157cf5966738452bc13639746f4b8d97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#ga157cf5966738452bc13639746f4b8d97">XUartPs_ResetHw</a> (u32 BaseAddress)</td></tr>
 <tr class="memdesc:ga157cf5966738452bc13639746f4b8d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function resets UART.  <a href="group__uartps.html#ga157cf5966738452bc13639746f4b8d97">More...</a><br/></td></tr>
 <tr class="separator:ga157cf5966738452bc13639746f4b8d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf789b78ee831825f3131f9a016e15044"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uartps.html#gaf789b78ee831825f3131f9a016e15044">XUartPs_WaitTransmitDone</a> (u32 BaseAddress)</td></tr>
+<tr class="memdesc:gaf789b78ee831825f3131f9a016e15044"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function waits for transmission to complete.  <a href="group__uartps.html#gaf789b78ee831825f3131f9a016e15044">More...</a><br/></td></tr>
+<tr class="separator:gaf789b78ee831825f3131f9a016e15044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

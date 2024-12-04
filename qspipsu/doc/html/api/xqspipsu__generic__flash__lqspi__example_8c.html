@@ -114,7 +114,9 @@ $(document).ready(function(){initNavTree('xqspipsu__generic__flash__lqspi__examp
            in flash erase API.
  1.18  sb  06/07/23 Added support for system device-tree flow.
  1.18  sb  07/24/23 Fix wrong init sequence for spansion byte ID.
- 1.18  sb  08/02/23 Add status check for XQspiPsu_SetClkPrescaler API.</pre><pre></pre> </div><table class="memberdecls">
+ 1.18  sb  08/02/23 Add status check for XQspiPsu_SetClkPrescaler API.
+ 1.19  sb  01/12/24 Added support to set QSPI clock based on baud rate divisior
+ 1.20  sb  09/13/24 Updated examples to configure correct baud rate value</pre><pre></pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a1d5699f770ac9e1ceaf76398b568b9ee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xqspipsu__generic__flash__lqspi__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee">QspiPsuInterruptFlashExample</a> (XScuGic *IntcInstancePtr, <a class="el" href="struct_x_qspi_psu.html">XQspiPsu</a> *QspiPsuInstancePtr, u16 QspiPsuDeviceId, u16 QspiPsuIntrId)</td></tr>
@@ -714,7 +716,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu.html#ga6079956c578f636665b87ca5f60b8bad">XQspiPsu_GetLqspiConfigReg</a>, and <a class="el" href="group__qspipsu.html#gac5bfff58ddca187becec7c533cf355fe">XQSPIPSU_LQSPI_CR_LINEAR_MASK</a>.</p>
+<p>References <a class="el" href="struct_x_qspi_psu.html#ae6039f5b4f8cdf2e528931ec383deb31">XQspiPsu::IsReady</a>, <a class="el" href="group__qspipsu__api.html#ga6079956c578f636665b87ca5f60b8bad">XQspiPsu_GetLqspiConfigReg</a>, and <a class="el" href="group__qspipsu.html#gac5bfff58ddca187becec7c533cf355fe">XQSPIPSU_LQSPI_CR_LINEAR_MASK</a>.</p>
 
 </div>
 </div>

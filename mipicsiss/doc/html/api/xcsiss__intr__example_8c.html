@@ -83,6 +83,7 @@ MODIFICATION HISTORY:</pre><pre>Ver Who Date     Changes
                  are available in all examples. This is a fix for
                  CR-965028.
 1.2 vsa 03/02/17 Added Word Count corruption interrupt
+1.11 ml 11/15/23 Fix compilation errors reported with -std=c2x compiler flag
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -226,7 +227,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for DPHY level error event. </dd></dl>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>
@@ -265,7 +266,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for Other error event. </dd></dl>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>
@@ -302,9 +303,9 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for Frame Receieved event. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for Frame Received event. </dd></dl>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>
@@ -337,7 +338,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>If system setup was successful, this function is blocking in order to illustrate interrupt handling. </dd></dl>
 
-<p>References <a class="el" href="struct_x_csi_ss___config.html#accf7178f1f7fc0ba40fee2e61ca159bc">XCsiSs_Config::BaseAddr</a>, <a class="el" href="xcsiss__intr__example_8c.html#a99ec12dec93c6e641d493dc67abe8093">CsiSs_CciInit()</a>, <a class="el" href="xcsiss__intr__example_8c.html#a2616eb2221d62da082b74d1a3c1ae937">CsiSs_PlatformInit()</a>, <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>, <a class="el" href="xcsiss__intr__example_8c.html#aa93f4f357d4911b56121f95a2917cd1a">Delay()</a>, <a class="el" href="group__csiss.html#gaf30fdaf13ba08d8612f8e20ab21d8ff2">XCsiSs_Activate()</a>, <a class="el" href="group__csiss.html#ga8fde229b1ad93697e0cf3f1710b2db7e">XCsiSs_CfgInitialize()</a>, <a class="el" href="group__csiss.html#ga3b35fe38bf1b55eb8107f892caf67103">XCsiSs_Configure()</a>, <a class="el" href="group__csiss.html#gaff8115edc1de28ca0524d489e736480c">XCsiSs_LookupConfig()</a>, <a class="el" href="group__csiss.html#ga3c63d232d9c7c19a7206fe10d5713509">XCsiSs_ReportCoreInfo()</a>, and <a class="el" href="group__csiss.html#ga0436d17627c2acd4ed542efbbb584fab">XCsiSs_Reset()</a>.</p>
+<p>References <a class="el" href="struct_x_csi_ss___config.html#accf7178f1f7fc0ba40fee2e61ca159bc">XCsiSs_Config::BaseAddr</a>, <a class="el" href="struct_x_csi_ss.html#a9e11a24b49b049a215fe243afd1e9741">XCsiSs::Config</a>, <a class="el" href="xcsiss__intr__example_8c.html#a99ec12dec93c6e641d493dc67abe8093">CsiSs_CciInit()</a>, <a class="el" href="xcsiss__intr__example_8c.html#aba92c48fbd79a81c915b28b6fb610b34">CsiSs_DphyEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#a76ecf43e07a31fe614b1ef75fc345eec">CsiSs_ErrEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#a13a51bb809fbfe41556ab4f92cf8b4db">CsiSs_FrameRcvdEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#a47f73352e5fdacd0a5781d75837711f1">CsiSs_PktLvlEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#a2616eb2221d62da082b74d1a3c1ae937">CsiSs_PlatformInit()</a>, <a class="el" href="xcsiss__intr__example_8c.html#adb83f55711bd51c4c70dc552e1d080db">CsiSs_ProtLvlEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>, <a class="el" href="xcsiss__intr__example_8c.html#aa82de58a14571625b9b396dca82a5627">CsiSs_SPktEventHandler()</a>, <a class="el" href="xcsiss__intr__example_8c.html#aa93f4f357d4911b56121f95a2917cd1a">Delay()</a>, <a class="el" href="group__csiss.html#gaf30fdaf13ba08d8612f8e20ab21d8ff2">XCsiSs_Activate()</a>, <a class="el" href="group__csiss.html#ga8fde229b1ad93697e0cf3f1710b2db7e">XCsiSs_CfgInitialize()</a>, <a class="el" href="group__csiss.html#ga3b35fe38bf1b55eb8107f892caf67103">XCsiSs_Configure()</a>, <a class="el" href="group__csiss.html#ga7144ae932dcf2ddf7ad15e7ec7565bba">XCsiSs_IntrHandler()</a>, <a class="el" href="group__csiss.html#gaff8115edc1de28ca0524d489e736480c">XCsiSs_LookupConfig()</a>, <a class="el" href="group__csiss.html#ga3c63d232d9c7c19a7206fe10d5713509">XCsiSs_ReportCoreInfo()</a>, <a class="el" href="group__csiss.html#ga0436d17627c2acd4ed542efbbb584fab">XCsiSs_Reset()</a>, and <a class="el" href="group__csiss.html#ga806675fd5dc154656f12869b549e916a">XCsiSs_SetCallBack()</a>.</p>
 
 <p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
@@ -378,7 +379,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for Packet level error event. </dd></dl>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>
@@ -449,7 +450,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Use the XCsiSs_SetCallback driver function to set this function as the handler for Protocol Decoding level error </dd></dl>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>
@@ -525,7 +526,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_csi_ss.html#a9f94784dc621d2cf0213645392f2e877">XCsiSs::SpktData</a>, and <a class="el" href="group__csiss.html#gad50495d88d4013368ccf7886554cfbe4">XCsiSs_GetShortPacket()</a>.</p>
 
-<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
+<p>Referenced by <a class="el" href="xcsiss__intr__example_8c.html#a6fb058d3bf941cd9a817bb6ad7e0a819">CsiSs_IntrExample()</a>, and <a class="el" href="xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476">CsiSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>

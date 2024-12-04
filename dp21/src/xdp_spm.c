@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -43,6 +43,7 @@
 
 /******************************* Include Files ********************************/
 
+#include "xparameters.h"
 #include "xdp.h"
 
 /**************************** Function Prototypes *****************************/
@@ -98,7 +99,7 @@ static void XDp_TxSetLineReset(XDp *InstancePtr, u8 Stream,
 void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 {
 	u32 MinBytesPerTu;
-	u32 VideoBw;
+	u64 VideoBw;
 	u32 LinkBw;
 	u32 WordsPerLine;
 	u8 LinkRate;
@@ -141,14 +142,20 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	 * capabilities of the DisplayPort TX core. */
 	if (MsaConfig->OverrideUserPixelWidth == 0) {
 		/* Check for Dp2.1or DP1.4/Dp1.2/1.1 */
-		if (MsaConfig->PixelClockHz > 540000000 &&
+		if (MsaConfig->PixelClockHz > 1188000000 &&
 		    LinkConfig->LaneCount == XDP_TX_LANE_COUNT_SET_4 &&
-		    XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1) {
+			XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1) {
+			MsaConfig->UserPixelWidth = 8;
+		} else if (((MsaConfig->PixelClockHz > 540000000) &&
+		    (LinkConfig->LaneCount == XDP_TX_LANE_COUNT_SET_4) &&
+		    (XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1  ||
+			XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1))) {
 			MsaConfig->UserPixelWidth = 4;
 		} else if ((MsaConfig->PixelClockHz > 270000000) &&
 			   (LinkConfig->LaneCount != XDP_TX_LANE_COUNT_SET_1) &&
 			   ((XPAR_XDP_0_DUAL_PIXEL_ENABLE == 1) ||
-			    (XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1))) {
+			    (XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1) ||
+				(XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1))) {
 			MsaConfig->UserPixelWidth = 2;
 		} else {
 			MsaConfig->UserPixelWidth = 1;
@@ -719,14 +726,6 @@ void XDp_TxCfgMsaEnSynchClkMode(XDp *InstancePtr, u8 Stream, u8 Enable)
 
         MsaConfig->SynchronousClockMode = Enable;
 
-	if (Enable == 1) {
-		MsaConfig->Misc0 |= (1 <<
-			XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_SHIFT);
-	}
-	else {
-		MsaConfig->Misc0 &= ~(1 <<
-			XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_SHIFT);
-	}
 }
 
 /******************************************************************************/
@@ -876,7 +875,7 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
 	u32 StreamOffset[4] = {0, XDP_TX_STREAM2_MSA_START_OFFSET,
 					XDP_TX_STREAM3_MSA_START_OFFSET,
 					XDP_TX_STREAM4_MSA_START_OFFSET};
-	u32 DP2xVfreq;
+	u64 DP2xVfreq;
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -974,11 +973,31 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
 	/*update vfreq for each stream*/
 	DP2xVfreq = (MsaConfig->PixelClockHz) & 0x00FFFFFF;
 
-	XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM1, DP2xVfreq);
+	if ((Stream) == XDP_TX_STREAM_ID1) {
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM1_LOW, DP2xVfreq);
 
-	DP2xVfreq = (MsaConfig->PixelClockHz) & 0xFF000000;
-	DP2xVfreq = (DP2xVfreq >> 24);
-	XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM2, DP2xVfreq);
+		DP2xVfreq = (MsaConfig->PixelClockHz) & 0xFF000000;
+		DP2xVfreq = (DP2xVfreq >> 24);
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM1_HIGH, DP2xVfreq);
+	} else if ((Stream) == XDP_TX_STREAM_ID2) {
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM2_LOW, DP2xVfreq);
+
+		DP2xVfreq = (MsaConfig->PixelClockHz) & 0xFF000000;
+		DP2xVfreq = (DP2xVfreq >> 24);
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM2_HIGH, DP2xVfreq);
+	} else if ((Stream) == XDP_TX_STREAM_ID3) {
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM3_LOW, DP2xVfreq);
+
+		DP2xVfreq = (MsaConfig->PixelClockHz) & 0xFF000000;
+		DP2xVfreq = (DP2xVfreq >> 24);
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM3_HIGH, DP2xVfreq);
+	} else if ((Stream) == XDP_TX_STREAM_ID4) {
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM4_LOW, DP2xVfreq);
+
+		DP2xVfreq = (MsaConfig->PixelClockHz) & 0xFF000000;
+		DP2xVfreq = (DP2xVfreq >> 24);
+		XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_VFREQ_STREAM4_HIGH, DP2xVfreq);
+	}
 }
 
 /******************************************************************************/
@@ -1001,7 +1020,7 @@ void XDp_TxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth)
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
 	Xil_AssertVoid((UserPixelWidth == 1) || (UserPixelWidth == 2) ||
-		       (UserPixelWidth == 4));
+		       (UserPixelWidth == 4) || (UserPixelWidth == 8));
 	/* Check the main link status. */
 	Xil_AssertVoid(XDp_ReadReg(InstancePtr->Config.BaseAddr,
 				   XDP_TX_ENABLE_MAIN_STREAM) == 0);
@@ -1035,7 +1054,7 @@ void XDp_RxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth)
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
 	Xil_AssertVoid((UserPixelWidth == 1) || (UserPixelWidth == 2) ||
-							(UserPixelWidth == 4));
+							(UserPixelWidth == 4) || (UserPixelWidth == 8));
 
 	XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_RX_USER_PIXEL_WIDTH,
 								UserPixelWidth);

@@ -45,7 +45,8 @@ var xv__hdmirxss1_8h =
       [ "XV_HDMIRXSS1_HDCP_NONE", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343afe0c709fbf3f3aa7de6b6c2f2a2ec79a", null ],
       [ "XV_HDMIRXSS1_HDCP_14", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343abf1ff914d0909d329212a8ebabd5a430", null ],
       [ "XV_HDMIRXSS1_HDCP_22", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343a993f9601793b5e3b48d1d1f01672489b", null ],
-      [ "XV_HDMIRXSS1_HDCP_BOTH", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343a691fd8f39f24027fec8b26e0fde45cdf", null ]
+      [ "XV_HDMIRXSS1_HDCP_BOTH", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343a691fd8f39f24027fec8b26e0fde45cdf", null ],
+      [ "XV_HDMIRXSS1_HDCP_NOUSERPREF", "xv__hdmirxss1_8h.html#a0d85b6b4f68b5d50ba6dbebaa5245343a8c172e054ce877aa482c786d1d473cac", null ]
     ] ],
     [ "XV_HdmiRxSs1_LogEvent", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0", [
       [ "XV_HDMIRXSS1_LOG_EVT_NONE", "xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a537d42d9846fa44b3ab7b2bb1745cb6f", null ],

@@ -1,4 +1,5 @@
 /******************************************************************************
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
@@ -39,6 +40,7 @@
 *                  are available in all examples. This is a fix for
 *                  CR-965028.
 * 1.2 vsa 03/02/17 Added Word Count corruption interrupt
+* 1.11 ml 11/15/23 Fix compilation errors reported with -std=c2x compiler flag
 * </pre>
 *
 ******************************************************************************/
@@ -49,10 +51,14 @@
 #include "xil_printf.h"
 #include "xparameters.h"
 #include "xstatus.h"
-#include "xintc.h"
+#ifndef SDT
+ #include "xintc.h"
+#else
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions *****************************/
-
+#ifndef SDT
 /*
 * The following constants map to the names of the hardware instances.
 * They are only defined here such that a user can easily change all the
@@ -63,16 +69,20 @@
 #define XINTC				XIntc
 #define XINTC_HANDLER			XIntc_InterruptHandler
 
+#endif
+
 /* The unique device ID of the MIPI CSI Rx Subsystem instance to be used
  */
+#ifndef SDT
 #define XCSISS_DEVICE_ID		XPAR_CSISS_0_DEVICE_ID
+#else
+#define XCSISS_BASE			XPAR_XMIPICSISS_0_BASEADDR
+#endif
 #define MAX_INTERRUPT_COUNT 	1
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-
 /**************************** Type Definitions *******************************/
-
 
 /************************** Function Prototypes ******************************/
 
@@ -131,18 +141,18 @@ void Delay(u32 Seconds)
 	}
 
 #define ITERS_PER_SEC   (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 6)
-    asm volatile ("\n"
-			"1:               \n\t"
-			"addik r7, r0, %0 \n\t"
-			"2:               \n\t"
-			"addik r7, r7, -1 \n\t"
-			"bneid  r7, 2b    \n\t"
-			"or  r0, r0, r0   \n\t"
-			"bneid %1, 1b     \n\t"
-			"addik %1, %1, -1 \n\t"
-			:: "i"(ITERS_PER_SEC), "d" (Seconds));
+	__asm volatile ("\n"
+			      "1:               \n\t"
+			      "addik r7, r0, %0 \n\t"
+			      "2:               \n\t"
+			      "addik r7, r7, -1 \n\t"
+			      "bneid  r7, 2b    \n\t"
+			      "or  r0, r0, r0   \n\t"
+			      "bneid %1, 1b     \n\t"
+			      "addik %1, %1, -1 \n\t"
+			      :: "i"(ITERS_PER_SEC), "d" (Seconds));
 #else
-    sleep(Seconds);
+	sleep(Seconds);
 #endif
 }
 
@@ -172,8 +182,11 @@ int main()
 	xil_printf("------------------------------------------\n\r");
 	xil_printf("MIPI CSI Rx Subsystem interrupt example\n\r");
 	xil_printf("-------------------------------------------\n\r");
-
+#ifndef SDT
 	Status = CsiSs_IntrExample(XCSISS_DEVICE_ID);
+#else
+	Status = CsiSs_IntrExample(XCSISS_BASE);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("MIPI CSI Rx Subsystem interrupt example failed.");
 		return XST_FAILURE;
@@ -229,13 +242,37 @@ u32 CsiSs_IntrExample(u32 DeviceId)
 	/* Copy the device configuration into the CsiSsInst's Config
 	 * structure. */
 	Status = XCsiSs_CfgInitialize(&CsiSsInst, ConfigPtr,
-					ConfigPtr->BaseAddr);
+				      ConfigPtr->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		xil_printf("CSISS config initialization "
-		"failed.\n\r");
+			   "failed.\n\r");
 		return XST_FAILURE;
 	}
+#ifdef SDT
+	/* Set the HPD interrupt handlers. */
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_DPHY,
+			   CsiSs_DphyEventHandler, &CsiSsInst);
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_PKTLVL,
+			   CsiSs_PktLvlEventHandler, &CsiSsInst);
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_PROTLVL,
+			   CsiSs_ProtLvlEventHandler, &CsiSsInst);
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_SHORTPACKET,
+			   CsiSs_SPktEventHandler, &CsiSsInst);
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_FRAMERECVD,
+			   CsiSs_FrameRcvdEventHandler, &CsiSsInst);
+	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_OTHERERROR,
+			   CsiSs_ErrEventHandler, &CsiSsInst);
 
+	Status = XSetupInterruptSystem(&CsiSsInst,&XCsiSs_IntrHandler,
+				       CsiSsInst.Config.IntrId,
+				       CsiSsInst.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("ERROR:: CSI Interrupt Setup Failed\r\n");
+		xil_printf("ERROR:: Test could not be completed\r\n");
+		return(1);
+	}
+#endif
 	/* Dump the configuration */
 	XCsiSs_ReportCoreInfo(&CsiSsInst);
 
@@ -262,18 +299,16 @@ u32 CsiSs_IntrExample(u32 DeviceId)
 		return XST_FAILURE;
 	}
 
-
 #if (XPAR_XIIC_NUM_INSTANCES > 0)
 	/* Initialise the IIC (inside subsys or external) separately */
 	IicInstPtr = XCsiSs_GetIicInstance(&CsiSsInst);
 
 	if (!IicInstPtr) {
 		xil_printf("IIC not present in "
-		" the subsystem \n\r");
+			   " the subsystem \n\r");
 		xil_printf("Need to have external "
-		"IIC in design \n\r");
-	}
-	else {
+			   "IIC in design \n\r");
+	} else {
 		/* Initialise the IIC in the system design */
 	}
 #endif
@@ -285,16 +320,16 @@ u32 CsiSs_IntrExample(u32 DeviceId)
 		xil_printf("CCI init failed!\n\r");
 	}
 	xil_printf("Camera Control Interface "
-	"initialization done.\n\r");
-
+		   "initialization done.\n\r");
+#ifndef SDT
 	/* Setup the interrupts and call back handlers */
 	Status = CsiSs_SetupIntrSystem();
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERR: Interrupt system "
-		"setup failed.\n\r");
+			   "setup failed.\n\r");
 		return XST_FAILURE;
 	}
-
+#endif
 	/* Enable the cores */
 	XCsiSs_Activate(&CsiSsInst, 1);
 
@@ -302,14 +337,13 @@ u32 CsiSs_IntrExample(u32 DeviceId)
 	do {
 		Delay(1);
 		Exit_Count++;
-		if(Exit_Count > 3) {
+		if (Exit_Count > 3) {
 			xil_printf("CSISS Interrupt "
-			" test failed, Please check design\n\r");
+				   " test failed, Please check design\n\r");
 			return XST_FAILURE;
 		}
 
-	}
-	while (interrupt_counts < MAX_INTERRUPT_COUNT);
+	} while (interrupt_counts < MAX_INTERRUPT_COUNT);
 
 	return XST_SUCCESS;
 }
@@ -381,6 +415,7 @@ u32 CsiSs_CciSetupIntrSystem(void)
 	return XST_SUCCESS;
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
@@ -408,17 +443,17 @@ u32 CsiSs_SetupIntrSystem(void)
 
 	/* Set the HPD interrupt handlers. */
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_DPHY,
-				CsiSs_DphyEventHandler, &CsiSsInst);
+			   CsiSs_DphyEventHandler, &CsiSsInst);
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_PKTLVL,
-				CsiSs_PktLvlEventHandler, &CsiSsInst);
+			   CsiSs_PktLvlEventHandler, &CsiSsInst);
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_PROTLVL,
-				CsiSs_ProtLvlEventHandler, &CsiSsInst);
+			   CsiSs_ProtLvlEventHandler, &CsiSsInst);
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_SHORTPACKET,
-				CsiSs_SPktEventHandler, &CsiSsInst);
+			   CsiSs_SPktEventHandler, &CsiSsInst);
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_FRAMERECVD,
-				CsiSs_FrameRcvdEventHandler, &CsiSsInst);
+			   CsiSs_FrameRcvdEventHandler, &CsiSsInst);
 	XCsiSs_SetCallBack(&CsiSsInst, XCSISS_HANDLER_OTHERERROR,
-				CsiSs_ErrEventHandler, &CsiSsInst);
+			   CsiSs_ErrEventHandler, &CsiSsInst);
 
 	/* Initialize the interrupt controller driver so that it's ready to
 	 * use, specify the device ID that was generated in xparameters.h
@@ -431,11 +466,11 @@ u32 CsiSs_SetupIntrSystem(void)
 
 	/* Hook up interrupt service routine */
 	Status = XIntc_Connect(IntcInstPtr, XINTC_CSISS_CSI_INTERRUPT_ID,
-			(XInterruptHandler)XCsiSs_IntrHandler,
-				&CsiSsInst);
+			       (XInterruptHandler)XCsiSs_IntrHandler,
+			       &CsiSsInst);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERR: MIPI CSI RX SS CSI "
-		"interrupt connect  failed!\n\r");
+			   "interrupt connect  failed!\n\r");
 		return XST_FAILURE;
 	}
 
@@ -462,7 +497,7 @@ u32 CsiSs_SetupIntrSystem(void)
 	 * table.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XINTC_HANDLER, IntcInstPtr);
+				     (Xil_ExceptionHandler)XINTC_HANDLER, IntcInstPtr);
 
 	/* Enable exceptions. */
 	Xil_ExceptionEnable();
@@ -470,6 +505,7 @@ u32 CsiSs_SetupIntrSystem(void)
 	return XST_SUCCESS;
 }
 
+#endif
 /*****************************************************************************/
 /**
 *
@@ -496,7 +532,7 @@ void CsiSs_DphyEventHandler(void *InstancePtr, u32 Mask)
 
 	if (Mask & XCSISS_ISR_SOTSYNCERR_MASK) {
 		xil_printf("Start of Transmission "
-		"Sync Error \n\r");
+			   "Sync Error \n\r");
 	}
 }
 
@@ -657,10 +693,10 @@ void CsiSs_SPktEventHandler(void *InstancePtr, u32 Mask)
 		xil_printf("Fifo not empty \n\r");
 		XCsiSs_GetShortPacket(InstancePtr);
 		xil_printf("Data Type = 0x%x,"
-		"Virtual Channel = 0x%x, Data = 0x%x",
-			CsiSsInstance->SpktData.DataType,
-			CsiSsInstance->SpktData.VirtualChannel,
-			CsiSsInstance->SpktData.Data);
+			   "Virtual Channel = 0x%x, Data = 0x%x",
+			   CsiSsInstance->SpktData.DataType,
+			   CsiSsInstance->SpktData.VirtualChannel,
+			   CsiSsInstance->SpktData.Data);
 	}
 
 	if (Mask & XCSISS_ISR_SPFIFOF_MASK) {
@@ -681,11 +717,11 @@ void CsiSs_SPktEventHandler(void *InstancePtr, u32 Mask)
 * @return	None.
 *
 * @note		Use the XCsiSs_SetCallback driver function to set this
-*		function as the handler for Frame Receieved event.
+*		function as the handler for Frame Received event.
 *
 ******************************************************************************/
 void CsiSs_FrameRcvdEventHandler(void *InstancePtr, u32 Mask)
 {
-	xil_printf("+=> Frame Receieved Event detected.\n\r");
+	xil_printf("+=> Frame Received Event detected.\n\r");
 	interrupt_counts++;
 }

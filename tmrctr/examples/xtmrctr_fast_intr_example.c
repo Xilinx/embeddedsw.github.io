@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -28,7 +28,8 @@
 *                     being passed instead of interrupt id. It fixes
 *                     CR#1006251.
 * 4.5   mus  07/05/18 Fixed checkpatch errors and warnings.
-*
+* 4.12  ml   12/07/23 Make TimerExpired as a static variable.
+* 4.12  mus  03/25/24 Update RESET_VALUE to reduce extecution time to 1 seconds.
 *</pre>
 ******************************************************************************/
 
@@ -63,19 +64,16 @@
  */
 #define TIMER_CNTR_0	 0
 
-
 /*
  * The following constant is used to set the reset value of the timer counter,
  * making this number larger reduces the amount of time this example consumes
  * because it is the value the timer counter is loaded with when it is started
  */
-#define RESET_VALUE	 0xF0000000
+#define RESET_VALUE	 0xFFFF0000
 
 /**************************** Type Definitions *******************************/
 
-
 /***************** Macros (Inline Functions) Definitions *********************/
-
 
 /************************** Function Prototypes ******************************/
 #ifndef SDT
@@ -90,7 +88,6 @@ static int TmrCtrSetupIntrSystem(XIntc *IntcInstancePtr,
 				 u16 DeviceId,
 				 u16 IntrId,
 				 u8 TmrCtrNumber);
-
 
 static void TmrCtrDisableIntr(XIntc *IntcInstancePtr, u16 IntrId);
 #else
@@ -115,8 +112,7 @@ XTmrCtr TimerCounterInst;   /* The instance of the Timer Counter */
  * The following variables are shared between non-interrupt processing and
  * interrupt processing such that they must be global.
  */
-volatile int TimerExpired;
-
+static volatile int TimerExpired;
 
 /*****************************************************************************/
 /**
@@ -161,7 +157,6 @@ int main(void)
 	return XST_SUCCESS;
 
 }
-
 
 /*****************************************************************************/
 /**
@@ -465,7 +460,6 @@ void TmrCtrDisableIntr(XTmrCtr *TmrCtrInstancePtr)
 	XDisableIntrId(TmrCtrInstancePtr->Config.IntrId, TmrCtrInstancePtr->Config.IntrParent);
 #endif
 }
-
 
 /*****************************************************************************/
 /**

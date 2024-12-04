@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,7 +8,7 @@
 /**
 *
 * @file xaxipcie.h
-* @addtogroup axipcie_v3_3
+* @addtogroup axipcie Overview
 * @{
 * @details
 *
@@ -158,7 +159,11 @@ extern "C" {
  */
 
 typedef  struct {
+#ifndef SDT
 	u16 DeviceId;			/**< Unique ID of PCIe IP */
+#else
+	char *Name;			/* Compatible string */
+#endif
 	UINTPTR BaseAddress;		/**< Register base address */
 	u8  LocalBarsNum;		/* The number of local bus (AXI) BARs
 					 * in hardware
@@ -252,7 +257,11 @@ typedef struct {
  * This API is implemented in xaxipcie_sinit.c
  */
 
+#ifndef SDT
 XAxiPcie_Config * XAxiPcie_LookupConfig(u16 DeviceId);
+#else
+XAxiPcie_Config * XAxiPcie_LookupConfig(UINTPTR BaseAddress);
+#endif
 
 /*
  * PCIe Setup and Configuration Functions.

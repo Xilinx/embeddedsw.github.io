@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -53,7 +53,13 @@
 *                    software interrupts
 * 3.12 mus  05/28/20 Added new API XIntc_TriggerSwIntr to trigger the software
 *                    interrupts.
-*
+* 3.18 mus  01/25/24 Update XIntc_Initialize to initialize IVAR registers based on
+*                    mtvec register in case of Microblaze RISC-V.
+* 3.19 adk  08/05/24 In SDT flow inorder to loop over config table use the
+* 		     XPAR_INTC_NUM_DRV_INSTANCES define instead of config table
+* 		     to reduce the size.
+* 3.19 ml   09/11/24 Add conditional checks to fix compilation warning.
+*                    [-Wunused-variable]
 * </pre>
 *
 ******************************************************************************/
@@ -126,6 +132,9 @@ int XIntc_Initialize(XIntc *InstancePtr, UINTPTR BaseAddr)
 	u8 Id;
 	XIntc_Config *CfgPtr;
 	u32 NextBitMask = 1;
+#ifndef XPAR_MICROBLAZE_BASE_VECTORS
+	UINTPTR vector_base;
+#endif
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -235,16 +244,22 @@ int XIntc_Initialize(XIntc *InstancePtr, UINTPTR BaseAddr)
 			}
 		}
 #else
+
+#ifdef __riscv
+		vector_base = csrr(XREG_MTVEC);
+#else
+		vector_base = 0x10;
+#endif
 		if (InstancePtr->CfgPtr->VectorAddrWidth >
 		    XINTC_STANDARD_VECTOR_ADDRESS_WIDTH) {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out64(InstancePtr->BaseAddress + XIN_IVEAR_OFFSET
-					    + (Id * 8), 0x10);
+					    + (Id * 8), vector_base);
 			}
 		} else {
 			for (Id = 0; Id < 32 ; Id++) {
 				XIntc_Out32(InstancePtr->BaseAddress + XIN_IVAR_OFFSET
-					    + (Id * 4), 0x10);
+					    + (Id * 4), vector_base);
 			}
 		}
 #endif
@@ -325,7 +340,7 @@ int XIntc_Start(XIntc *InstancePtr, u8 Mode)
 #ifndef SDT
 		for (Index = 1; Index <= XPAR_XINTC_NUM_INSTANCES - 1; Index++)
 #else
-		for (Index = 1; XIntc_ConfigTable[Index].Name != NULL; Index++)
+		for (Index = 1;  Index <=XPAR_INTC_NUM_DRV_INSTANCES - 1; Index++)
 #endif
 		{
 			CfgPtr = XIntc_LookupConfig(Index);
@@ -764,7 +779,7 @@ XIntc_Config *XIntc_LookupConfig(UINTPTR BaseAddr)
 	XIntc_Config *CfgPtr = NULL;
 	int Index;
 
-	for (Index = 0; XIntc_ConfigTable[Index].Name != NULL; Index++) {
+	for (Index = 0;  Index < XPAR_INTC_NUM_DRV_INSTANCES; Index++) {
 		/*
 		 * If BaseAddress is 0, return Configuration for 0th instance of
 		 * AXI INTC device.
@@ -1113,7 +1128,7 @@ static void XIntc_InitializeSlaves(XIntc *InstancePtr)
 	for (Index = 1; Index <= XPAR_XINTC_NUM_INSTANCES - 1; Index++) {
 		CfgPtr = XIntc_LookupConfig(Index);
 #else
-	for (Index = 1; XIntc_ConfigTable[Index].Name != NULL; Index++) {
+	for (Index = 1; Index <=XPAR_INTC_NUM_DRV_INSTANCES  - 1; Index++) {
 		CfgPtr = XIntc_LookupConfig(XIntc_ConfigTable[Index].BaseAddress);
 #endif
 		if (CfgPtr == NULL) {

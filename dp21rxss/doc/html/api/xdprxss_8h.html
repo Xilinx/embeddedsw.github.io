@@ -124,6 +124,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga6f9de5c9cfe65efb801061c596db2cbe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga6f9de5c9cfe65efb801061c596db2cbe">XDpRxSs_AudioReset</a>(InstancePtr)&#160;&#160;&#160;XDp_RxAudioReset((InstancePtr)-&gt;DpPtr)</td></tr>
 <tr class="memdesc:ga6f9de5c9cfe65efb801061c596db2cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function macro resets the reception of audio stream packets on the main link.  <a href="group__dprxss.html#ga6f9de5c9cfe65efb801061c596db2cbe">More...</a><br/></td></tr>
 <tr class="separator:ga6f9de5c9cfe65efb801061c596db2cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga695bfd9f482cf7230e756ff9197c1589"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga695bfd9f482cf7230e756ff9197c1589">XDP_RX_STREAM_MSA_OFFSET</a>(StreamId)&#160;&#160;&#160;(XDP_RX_STREAM1_MSA_START + ((StreamId) * 0x40))</td></tr>
+<tr class="memdesc:ga695bfd9f482cf7230e756ff9197c1589"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function macro enable the stream address.  <a href="group__dprxss.html#ga695bfd9f482cf7230e756ff9197c1589">More...</a><br/></td></tr>
+<tr class="separator:ga695bfd9f482cf7230e756ff9197c1589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9dc9e09a11d8dcc154d443e1ff9a26c2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga9dc9e09a11d8dcc154d443e1ff9a26c2">XDpRxSs_Mst_AudioEnable</a>(InstancePtr, StreamId)&#160;&#160;&#160;XDp_Rx_Mst_AudioEn((InstancePtr)-&gt;DpPtr, StreamId)</td></tr>
 <tr class="memdesc:ga9dc9e09a11d8dcc154d443e1ff9a26c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function macro enables MST audio on a given stream on the main link.  <a href="group__dprxss.html#ga9dc9e09a11d8dcc154d443e1ff9a26c2">More...</a><br/></td></tr>
 <tr class="separator:ga9dc9e09a11d8dcc154d443e1ff9a26c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,12 +136,6 @@ Macros</h2></td></tr>
 <tr class="memitem:gac12fae71e2f814c34ebf8cf3007631e2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gac12fae71e2f814c34ebf8cf3007631e2">XDpRxSs_WaitUs</a>(InstancePtr, MicroSeconds)&#160;&#160;&#160;XDp_WaitUs((InstancePtr)-&gt;DpPtr, MicroSeconds)</td></tr>
 <tr class="memdesc:gac12fae71e2f814c34ebf8cf3007631e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function macro is the delay/sleep function for the <a class="el" href="struct_x_dp_rx_ss.html" title="The DisplayPort RX Subsystem driver instance data. ">XDpRxSs</a> driver.  <a href="group__dprxss.html#gac12fae71e2f814c34ebf8cf3007631e2">More...</a><br/></td></tr>
 <tr class="separator:gac12fae71e2f814c34ebf8cf3007631e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga59c337308368e6c06b278fae9b17d7b5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga59c337308368e6c06b278fae9b17d7b5">XDpRxSs_Printf</a>&#160;&#160;&#160;XHdcp1x_Printf</td></tr>
-<tr class="memdesc:ga59c337308368e6c06b278fae9b17d7b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug printf.  <a href="group__dprxss.html#ga59c337308368e6c06b278fae9b17d7b5">More...</a><br/></td></tr>
-<tr class="separator:ga59c337308368e6c06b278fae9b17d7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga469d8037e4a579574f5a0ba43ce71187"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga469d8037e4a579574f5a0ba43ce71187">XDpRxSs_LogMsg</a>&#160;&#160;&#160;XHdcp1x_LogMsg</td></tr>
-<tr class="memdesc:ga469d8037e4a579574f5a0ba43ce71187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug log message.  <a href="group__dprxss.html#ga469d8037e4a579574f5a0ba43ce71187">More...</a><br/></td></tr>
-<tr class="separator:ga469d8037e4a579574f5a0ba43ce71187"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -176,57 +173,48 @@ Enumerations</h2></td></tr>
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a00fee3de49d36bba93dea56f115d2699">XDPRXSS_HANDLER_DP_ACT_RX_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ab28cd614aced217dd5698e91b43e3c07">XDPRXSS_HANDLER_DP_CRC_TEST_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31acfb4f7678ded7a6349635c73f793d42d">XDPRXSS_HANDLER_HDCP_RPTR_TDSA_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a8718c92430bd1e50d89519677b08a317">XDPRXSS_HANDLER_HDCP_AUTHENTICATED</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a4cba24869b29da0a04a9949a88e0233d">XDPRXSS_HANDLER_HDCP22_AUTHENTICATED</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a292d0369e1bab815694d5206aff90bf8">XDPRXSS_HANDLER_HDCP22_UNAUTHENTICATED</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ad429549cca647f923ca3d095722792b6">XDPRXSS_HANDLER_HDCP22_AUTHENTICATION_REQUEST</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a8fc7f6e014a9e81bb27f68bd5b2ffd23">XDPRXSS_HANDLER_HDCP22_ENCRYPTION_UPDATE</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a60c4033d561deb39132f456ce4601c49">XDPRXSS_HANDLER_HDCP22_SKE_SEND_EKS</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a54d8a7534f2766333f1048fcad9e3cbd">XDPRXSS_HANDLER_UNPLUG_EVENT</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a148ff5a3b54e14baaf0ce9740d4e90a3">XDPRXSS_HANDLER_LINKBW_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a54d8a7534f2766333f1048fcad9e3cbd">XDPRXSS_HANDLER_UNPLUG_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a148ff5a3b54e14baaf0ce9740d4e90a3">XDPRXSS_HANDLER_LINKBW_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a4ee8d2b95922a7fd6a85f519b8e8919a">XDPRXSS_HANDLER_PLL_RESET_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a51438ae9459d42e97912ec565f33008f">XDPRXSS_DRV_HANDLER_DP_PWR_CHG_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae3352e504bfe4182697b9cc1d23f57ee">XDPRXSS_DRV_HANDLER_DP_VID_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a428d19d1a9c1e542daeb251a863ab07b">XDPRXSS_DRV_HANDLER_DP_NO_VID_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae3352e504bfe4182697b9cc1d23f57ee">XDPRXSS_DRV_HANDLER_DP_VID_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a428d19d1a9c1e542daeb251a863ab07b">XDPRXSS_DRV_HANDLER_DP_NO_VID_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a911f359d919c9b6d7b945674f7910eff">XDPRXSS_HANDLER_ACCESS_LANE_SET_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a90bd0bc7d763792b6e8abcc4136f7fb9">XDPRXSS_HANDLER_ACCESS_LINK_QUAL_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae849672cbd7972a17de1262735966e9b">XDPRXSS_HANDLER_ACCESS_ERROR_COUNTER_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a787777e4c0e3b27e0ca0c616b0f43906">XDPRXSS_HANDLER_DP_VBLANK_STREAM_2_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae849672cbd7972a17de1262735966e9b">XDPRXSS_HANDLER_ACCESS_ERROR_COUNTER_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a787777e4c0e3b27e0ca0c616b0f43906">XDPRXSS_HANDLER_DP_VBLANK_STREAM_2_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a558df4ac29ad329960e0a42cc9997b23">XDPRXSS_HANDLER_DP_VBLANK_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31afba12dbf314bf794808757bc49c8d393">XDPRXSS_HANDLER_DP_VBLANK_STREAM_4_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae31683ea6ee150368455d8e50c2f12cf">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_1_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ad268f553fc729c9fccb7ef1f928568e4">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_2_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae31683ea6ee150368455d8e50c2f12cf">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_1_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ad268f553fc729c9fccb7ef1f928568e4">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_2_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a102d46be97d57c8a9802c56a797e0f7a">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a4854a53efc49a6554d36d44989ae79f1">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_4_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a5dbc9786865543fc5684ce3b3eefe267">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_1_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a3a25e7bfef55157397ae9178cfaf0ee6">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_2_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a5dbc9786865543fc5684ce3b3eefe267">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_1_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a3a25e7bfef55157397ae9178cfaf0ee6">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_2_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31aa36c79072fb687efa2aceabe4a4647b9">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae25b4ddf496f29c283341610c6c2ded6">XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_4_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a487ab994f7f5c2749dbb782dbd41a87e">XDPRXSS_HANDLER_DP_VM_CHG_STREAM_2_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a213f8903d09354f05fd48509de977d87">XDPRXSS_HANDLER_DP_VM_CHG_STREAM_3_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a487ab994f7f5c2749dbb782dbd41a87e">XDPRXSS_HANDLER_DP_VM_CHG_STREAM_2_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a213f8903d09354f05fd48509de977d87">XDPRXSS_HANDLER_DP_VM_CHG_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a206ce28ff9ef9060a0fcc907a77200d2">XDPRXSS_HANDLER_DP_VM_CHG_STREAM_4_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae936d95034351feeaaa75d767f2e3a63">XDPRXSS_HANDLER_DP_NO_VID_STREAM_2_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31aab64917bcd30a1fcbfce5a575b5344c6">XDPRXSS_HANDLER_DP_NO_VID_STREAM_3_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a9a7d10ce42f36d17d0166b2aacb9769a">XDPRXSS_HANDLER_DP_NO_VID_STREAM_4_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31aab64917bcd30a1fcbfce5a575b5344c6">XDPRXSS_HANDLER_DP_NO_VID_STREAM_3_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a9a7d10ce42f36d17d0166b2aacb9769a">XDPRXSS_HANDLER_DP_NO_VID_STREAM_4_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a0a42596573bc60e8f94c8e3b7b48ae11">XDPRXSS_HANDLER_DP_VID_STREAM_2_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a8ba7598e65a53881da3894dbc642a25c">XDPRXSS_HANDLER_DP_VID_STREAM_3_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31aebe4fe8a61e39c555fc6db0c808d9ea1">XDPRXSS_HANDLER_DP_VID_STREAM_4_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a43d1d1f060262ac36e3472f3b3d29954">XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_2_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31aebe4fe8a61e39c555fc6db0c808d9ea1">XDPRXSS_HANDLER_DP_VID_STREAM_4_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a43d1d1f060262ac36e3472f3b3d29954">XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_2_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a0a124902cabee7c2f353eb79f5745805">XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ab231d725890ba3a4e58d1bfb4ecf7725">XDPRXSS_HANDLER_DP_INFO_PKT_STREAM_4_EVENT</a>, 
-<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31abb12c3c800c8b075c7c54ec2683e2080">XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_2_EVENT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae7993d59dd06594fdce87aab132984a7">XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_3_EVENT</a>, 
+&#160;&#160;<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31abb12c3c800c8b075c7c54ec2683e2080">XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_2_EVENT</a>, 
+<a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31ae7993d59dd06594fdce87aab132984a7">XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_3_EVENT</a>, 
 <a class="el" href="group__dprxss.html#gga3ca7c841e35b2dfe41310092b3837b31a054e4bf1d20ed8968f437ea9d6e4d946">XDPRXSS_HANDLER_DP_EXT_PKT_STREAM_4_EVENT</a>
 <br/>
  }</td></tr>
@@ -277,51 +265,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga1339e3fb35d4efb7f35214a0e167fb78"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga1339e3fb35d4efb7f35214a0e167fb78">XDpRxss_GetDynamicRange</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, u8 Stream)</td></tr>
 <tr class="memdesc:ga1339e3fb35d4efb7f35214a0e167fb78"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function extracts the dynamic range from MISC0 or VSC SDP packet based on whether reception of colorimetry information through VSC SDP packets or through MISC registers of the stream.  <a href="group__dprxss.html#ga1339e3fb35d4efb7f35214a0e167fb78">More...</a><br/></td></tr>
 <tr class="separator:ga1339e3fb35d4efb7f35214a0e167fb78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3d89d93803e12b3d70a5be68f076f59f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga3d89d93803e12b3d70a5be68f076f59f">XDpRxSs_HdcpSetProtocol</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, <a class="el" href="group__dprxss.html#ga7b73be64577a646cadafa5a3398a8d3d">XDpRxSs_HdcpProtocol</a> Protocol)</td></tr>
-<tr class="memdesc:ga3d89d93803e12b3d70a5be68f076f59f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the active HDCP protocol and enables it.  <a href="group__dprxss.html#ga3d89d93803e12b3d70a5be68f076f59f">More...</a><br/></td></tr>
-<tr class="separator:ga3d89d93803e12b3d70a5be68f076f59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga66ba97844950d7367b4bee8096e5fce6"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga66ba97844950d7367b4bee8096e5fce6">XDpRxSs_HdcpEnable</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga66ba97844950d7367b4bee8096e5fce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the requested HDCP protocol.  <a href="group__dprxss.html#ga66ba97844950d7367b4bee8096e5fce6">More...</a><br/></td></tr>
-<tr class="separator:ga66ba97844950d7367b4bee8096e5fce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad0f6fdb3c86e2533550b5beb94f4923a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gad0f6fdb3c86e2533550b5beb94f4923a">XDpRxSs_HdcpDisable</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:gad0f6fdb3c86e2533550b5beb94f4923a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables High-Bandwidth Content Protection (HDCP) interface.  <a href="group__dprxss.html#gad0f6fdb3c86e2533550b5beb94f4923a">More...</a><br/></td></tr>
-<tr class="separator:gad0f6fdb3c86e2533550b5beb94f4923a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga07ba08017f5c66a8f53673e3f704cdce"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga07ba08017f5c66a8f53673e3f704cdce">XDpRxSs_SetLane</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, u32 Lane)</td></tr>
-<tr class="memdesc:ga07ba08017f5c66a8f53673e3f704cdce"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets lane(s) of the HDCP interface.  <a href="group__dprxss.html#ga07ba08017f5c66a8f53673e3f704cdce">More...</a><br/></td></tr>
-<tr class="separator:ga07ba08017f5c66a8f53673e3f704cdce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99fc5021149d86ad0830ae943d380e26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga99fc5021149d86ad0830ae943d380e26">XDpRxSs_StartTimer</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga99fc5021149d86ad0830ae943d380e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts the Timer Counter in count down, interrupt mode.  <a href="group__dprxss.html#ga99fc5021149d86ad0830ae943d380e26">More...</a><br/></td></tr>
-<tr class="separator:ga99fc5021149d86ad0830ae943d380e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5eef2be0618e593cafac25d96c44ae73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga5eef2be0618e593cafac25d96c44ae73">XDpRxSs_StopTimer</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga5eef2be0618e593cafac25d96c44ae73"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function stops the Timer Counter.  <a href="group__dprxss.html#ga5eef2be0618e593cafac25d96c44ae73">More...</a><br/></td></tr>
-<tr class="separator:ga5eef2be0618e593cafac25d96c44ae73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab9f06e2bfcf1665eb76584268d27930a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gab9f06e2bfcf1665eb76584268d27930a">XDpRxSs_Poll</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:gab9f06e2bfcf1665eb76584268d27930a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function polls the HDCP interface, process events and sets receive state machine accordingly.  <a href="group__dprxss.html#gab9f06e2bfcf1665eb76584268d27930a">More...</a><br/></td></tr>
-<tr class="separator:gab9f06e2bfcf1665eb76584268d27930a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9c1d172a02d186f7cad97a9692b4d513"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga9c1d172a02d186f7cad97a9692b4d513">XDpRxSs_SetPhysicalState</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, u32 PhyState)</td></tr>
-<tr class="memdesc:ga9c1d172a02d186f7cad97a9692b4d513"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables/disables the underlying physical interface.  <a href="group__dprxss.html#ga9c1d172a02d186f7cad97a9692b4d513">More...</a><br/></td></tr>
-<tr class="separator:ga9c1d172a02d186f7cad97a9692b4d513"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab1d863b219a2005525ba4680cc46a63b"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gab1d863b219a2005525ba4680cc46a63b">XDpRxSs_Authenticate</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:gab1d863b219a2005525ba4680cc46a63b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates authentication process.  <a href="group__dprxss.html#gab1d863b219a2005525ba4680cc46a63b">More...</a><br/></td></tr>
-<tr class="separator:gab1d863b219a2005525ba4680cc46a63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga24c87817b58511b163a8d03b55520e52"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga24c87817b58511b163a8d03b55520e52">XDpRxSs_IsAuthenticated</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga24c87817b58511b163a8d03b55520e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks whether the HDCP Receiver authenticated or not.  <a href="group__dprxss.html#ga24c87817b58511b163a8d03b55520e52">More...</a><br/></td></tr>
-<tr class="separator:ga24c87817b58511b163a8d03b55520e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5893dfd441842ef691d124718a1bd577"><td class="memItemLeft" align="right" valign="top">u64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga5893dfd441842ef691d124718a1bd577">XDpRxSs_GetEncryption</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga5893dfd441842ef691d124718a1bd577"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function retrieves the current encryption map.  <a href="group__dprxss.html#ga5893dfd441842ef691d124718a1bd577">More...</a><br/></td></tr>
-<tr class="separator:ga5893dfd441842ef691d124718a1bd577"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab0f50faafb6af6b5c898fb131e119e52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gab0f50faafb6af6b5c898fb131e119e52">XDpRxSs_SetDebugPrintf</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, <a class="el" href="group__dprxss.html#ga59c337308368e6c06b278fae9b17d7b5">XDpRxSs_Printf</a> PrintfFunc)</td></tr>
-<tr class="memdesc:gab0f50faafb6af6b5c898fb131e119e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the debug printf function.  <a href="group__dprxss.html#gab0f50faafb6af6b5c898fb131e119e52">More...</a><br/></td></tr>
-<tr class="separator:gab0f50faafb6af6b5c898fb131e119e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0b4701fbc0ab64395a51538dc2aab0ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga0b4701fbc0ab64395a51538dc2aab0ad">XDpRxSs_SetDebugLogMsg</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, <a class="el" href="group__dprxss.html#ga469d8037e4a579574f5a0ba43ce71187">XDpRxSs_LogMsg</a> LogFunc)</td></tr>
-<tr class="memdesc:ga0b4701fbc0ab64395a51538dc2aab0ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the debug log message function.  <a href="group__dprxss.html#ga0b4701fbc0ab64395a51538dc2aab0ad">More...</a><br/></td></tr>
-<tr class="separator:ga0b4701fbc0ab64395a51538dc2aab0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8e3e27a16661150a7949b87eea1b1c09"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga8e3e27a16661150a7949b87eea1b1c09">XDpRxSs_DownstreamReady</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga8e3e27a16661150a7949b87eea1b1c09"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function informs the HDCP state machine that the downstream interfaces of the Repeater are ready (enabled or authenticated).  <a href="group__dprxss.html#ga8e3e27a16661150a7949b87eea1b1c09">More...</a><br/></td></tr>
-<tr class="separator:ga8e3e27a16661150a7949b87eea1b1c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac9515885e9c999483c91a46fafa2b5aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gac9515885e9c999483c91a46fafa2b5aa">XDpRxSs_HandleTimeout</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
-<tr class="memdesc:gac9515885e9c999483c91a46fafa2b5aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function handles a timeout for HDCP.  <a href="group__dprxss.html#gac9515885e9c999483c91a46fafa2b5aa">More...</a><br/></td></tr>
-<tr class="separator:gac9515885e9c999483c91a46fafa2b5aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5bcda88f1e979aa99b8a903a12e421fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga5bcda88f1e979aa99b8a903a12e421fc">XDpRxSs_ReportCoreInfo</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga5bcda88f1e979aa99b8a903a12e421fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports list of sub-cores included in DisplayPort RX Subsystem.  <a href="group__dprxss.html#ga5bcda88f1e979aa99b8a903a12e421fc">More...</a><br/></td></tr>
 <tr class="separator:ga5bcda88f1e979aa99b8a903a12e421fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -337,12 +280,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9a5414c99d822a3848b6ef7442fe551d"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga9a5414c99d822a3848b6ef7442fe551d">XDpRxSs_SelfTest</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga9a5414c99d822a3848b6ef7442fe551d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs self test on DisplayPort Receiver Subsystem sub-cores.  <a href="group__dprxss.html#ga9a5414c99d822a3848b6ef7442fe551d">More...</a><br/></td></tr>
 <tr class="separator:ga9a5414c99d822a3848b6ef7442fe551d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab9f075bfc4a9be65a80d291c7f5cc75a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gab9f075bfc4a9be65a80d291c7f5cc75a">XDpRxSs_HdcpIntrHandler</a> (void *InstancePtr)</td></tr>
-<tr class="memdesc:gab9f075bfc4a9be65a80d291c7f5cc75a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for the HDCP Cipher core.  <a href="group__dprxss.html#gab9f075bfc4a9be65a80d291c7f5cc75a">More...</a><br/></td></tr>
-<tr class="separator:gab9f075bfc4a9be65a80d291c7f5cc75a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab29b7f4cada3c2b13bcbc4b8757b681e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gab29b7f4cada3c2b13bcbc4b8757b681e">XDpRxSs_TmrCtrIntrHandler</a> (void *InstancePtr)</td></tr>
-<tr class="memdesc:gab29b7f4cada3c2b13bcbc4b8757b681e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for the Timer Counter core.  <a href="group__dprxss.html#gab29b7f4cada3c2b13bcbc4b8757b681e">More...</a><br/></td></tr>
-<tr class="separator:gab29b7f4cada3c2b13bcbc4b8757b681e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga666df5371b82b3dec85271c007f1625d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga666df5371b82b3dec85271c007f1625d">XDpRxSs_DpIntrHandler</a> (void *InstancePtr)</td></tr>
 <tr class="memdesc:ga666df5371b82b3dec85271c007f1625d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for the DisplayPort RX core operating in RX mode.  <a href="group__dprxss.html#ga666df5371b82b3dec85271c007f1625d">More...</a><br/></td></tr>
 <tr class="separator:ga666df5371b82b3dec85271c007f1625d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -376,15 +313,18 @@ Functions</h2></td></tr>
 <tr class="memitem:ga28534a26466651e4c4c51fc24a2e9064"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga28534a26466651e4c4c51fc24a2e9064">XDpRxSs_GetVtotal</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, u8 Stream)</td></tr>
 <tr class="memdesc:ga28534a26466651e4c4c51fc24a2e9064"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function retrieves the current VTotal value of the incoming video stream.  <a href="group__dprxss.html#ga28534a26466651e4c4c51fc24a2e9064">More...</a><br/></td></tr>
 <tr class="separator:ga28534a26466651e4c4c51fc24a2e9064"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0dc9f5cdb86e4c2239430d3400fe8b83"><td class="memItemLeft" align="right" valign="top">XDp_MainStreamAttributes *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga0dc9f5cdb86e4c2239430d3400fe8b83">XDPRxss_GetMsa</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *DpRxSsInst)</td></tr>
+<tr class="memdesc:ga0dc9f5cdb86e4c2239430d3400fe8b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gives the main stream attributes (MSA).  <a href="group__dprxss.html#ga0dc9f5cdb86e4c2239430d3400fe8b83">More...</a><br/></td></tr>
+<tr class="separator:ga0dc9f5cdb86e4c2239430d3400fe8b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0fbc39394421cb5d431cf5586ee83461"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga0fbc39394421cb5d431cf5586ee83461">XDpRxSs_GetVideoStream</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, XVidC_VideoStream *VideoStream, u8 Stream)</td></tr>
+<tr class="memdesc:ga0fbc39394421cb5d431cf5586ee83461"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function retrieves the VideoStream Parameters from the incoming video stream.  <a href="group__dprxss.html#ga0fbc39394421cb5d431cf5586ee83461">More...</a><br/></td></tr>
+<tr class="separator:ga0fbc39394421cb5d431cf5586ee83461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1518225008da9f21ba2eaa435767a91e"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga1518225008da9f21ba2eaa435767a91e">XDpRxss_GetInterlace</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:ga1518225008da9f21ba2eaa435767a91e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function extracts the incoming video stream is Progressive or Interlace mode.  <a href="group__dprxss.html#ga1518225008da9f21ba2eaa435767a91e">More...</a><br/></td></tr>
+<tr class="separator:ga1518225008da9f21ba2eaa435767a91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9cdb547f48349408f016e6c376655a69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga9cdb547f48349408f016e6c376655a69">XDpRxSs_McDp6000_init</a> (void *InstancePtr)</td></tr>
 <tr class="memdesc:ga9cdb547f48349408f016e6c376655a69"><td class="mdescLeft">&#160;</td><td class="mdescRight">This routine initializes the MCDP6000 part on the VFMC card used for DP 1.4.  <a href="group__dprxss.html#ga9cdb547f48349408f016e6c376655a69">More...</a><br/></td></tr>
 <tr class="separator:ga9cdb547f48349408f016e6c376655a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa62d9331e0e76cb9e40bc2ac3709d71a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#gaa62d9331e0e76cb9e40bc2ac3709d71a">XDpRxSs_Hdcp22LicFailHandler</a> (void *InstancePtr)</td></tr>
-<tr class="memdesc:gaa62d9331e0e76cb9e40bc2ac3709d71a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for HDCP22 LIC failure.  <a href="group__dprxss.html#gaa62d9331e0e76cb9e40bc2ac3709d71a">More...</a><br/></td></tr>
-<tr class="separator:gaa62d9331e0e76cb9e40bc2ac3709d71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6c483bd9ace0ee8ca2dd9becd2ff61e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dprxss.html#ga6c483bd9ace0ee8ca2dd9becd2ff61e1">XDpRxSs_Hdcp22SetKey</a> (<a class="el" href="struct_x_dp_rx_ss.html">XDpRxSs</a> *InstancePtr, <a class="el" href="xdprxss__hdcp22_8h.html#a5b61497d64bce620baf964eed9fd26a4">XDpRxSs_Hdcp22KeyType</a> KeyType, u8 *KeyPtr)</td></tr>
-<tr class="memdesc:ga6c483bd9ace0ee8ca2dd9becd2ff61e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets pointers to the HDCP 2.2 keys.  <a href="group__dprxss.html#ga6c483bd9ace0ee8ca2dd9becd2ff61e1">More...</a><br/></td></tr>
-<tr class="separator:ga6c483bd9ace0ee8ca2dd9becd2ff61e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

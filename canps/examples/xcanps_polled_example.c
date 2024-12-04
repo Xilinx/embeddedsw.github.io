@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -26,6 +26,9 @@
 *						 SDK claims a 40kbps baud rate but it's not.
 * 3.7   ht     06/28/23 Added support for system device-tree flow.
 *       ht     07/10/23 Added support for peripheral test in SDT flow.
+* 3.8   rma    01/12/23 Update example code to fix compilation warnings.
+* 3.8   ht     01/19/24 Update example to fix peripheral test compilation warnings
+* 				and example compilation failure in SDT flow
 * </pre>
 *
 ******************************************************************************/
@@ -110,9 +113,10 @@ static int RecvFrame(XCanPs *InstancePtr);
 static u32 TxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
 static u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
 
+#if !(defined (SDT) && defined (TESTAPP_GEN))
 /* Driver instance */
 static XCanPs Can;
-
+#endif
 /****************************************************************************/
 /**
 *
@@ -177,7 +181,11 @@ int CanPsPolledExample(XCanPs *CanInstancePtr, UINTPTR BaseAddress)
 #endif
 {
 	int Status;
+#ifndef SDT
 	XCanPs *CanInstPtr = &Can;
+#else
+	XCanPs *CanInstPtr = CanInstancePtr;
+#endif
 	XCanPs_Config *ConfigPtr;
 
 	/*

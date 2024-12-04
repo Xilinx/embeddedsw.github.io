@@ -1,12 +1,13 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /*****************************************************************************
 **
 * @file xaxipcie.c
-* @addtogroup axipcie_v3_3
+* @addtogroup axipcie Overview
 * @{
 *
 * Implements all of functions for XAxiPcie IP driver except interrupts and
@@ -501,13 +502,13 @@ void XAxiPcie_ClearRootPortErrFIFOMsg(XAxiPcie *InstancePtr)
 * @param	ReqIdPtr is a variable where the driver will pass back the
 *		requester Id of error message.
 * @param	MsiAddr is a variable where the driver will pass back the
-*		MSI address for which interrupt message recieved.
+*		MSI address for which interrupt message received.
 * @param	MsiInt is a variable where the driver will pass back the
-*		type of interrupt message recieved (MSI/INTx).
+*		type of interrupt message received (MSI/INTx).
 * @param	IntValid is a variable where the driver will pass back the
 *		status of read operation of interrupt message.
 * @param	MsiMsgData is a variable where the driver will pass back the
-*		MSI data recieved.
+*		MSI data received.
 *
 * @return 	MsiMsgData if MSI interrupt is observed or
 *		0 if there is no MSI interrupt.
@@ -684,11 +685,11 @@ void XAxiPcie_ReadLocalConfigSpace(XAxiPcie *InstancePtr, u16 Offset,
 /****************************************************************************/
 /**
 * Write 32-bit value to one of this IP own configuration space.
-* Location is identified by its offset from the begginning of the
+* Location is identified by its offset from the beginning of the
 * configuration space.
 *
 * @param 	InstancePtr is the PCIe component to operate on.
-* @param 	Offset from beggininng of IP own configuration space.
+* @param 	Offset from begininng of IP own configuration space.
 * @param 	Data to be written to the specified location.
 *
 * @return 	None
@@ -751,7 +752,7 @@ u32 XAxiPcie_ComposeExternalConfigAddress(u8 Bus, u8 Device, u8 Function,
 /**
 * Read 32-bit value from external PCIe Function's configuration space.
 * External PCIe function is identified by its Requester ID (Bus#, Device#,
-* Function#). Location is identified by its offset from the begginning of the
+* Function#). Location is identified by its offset from the beginning of the
 * configuration space.
 *
 * @param 	InstancePtr is the PCIe component to operate on.
@@ -804,7 +805,7 @@ void XAxiPcie_ReadRemoteConfigSpace(XAxiPcie *InstancePtr, u8 Bus, u8 Device,
 /**
 * Write 32-bit value to external PCIe function's configuration space.
 * External PCIe function is identified by its Requester ID (Bus#, Device#,
-* Function#). Location is identified by its offset from the begginning of the
+* Function#). Location is identified by its offset from the beginning of the
 * configuration space.
 *
 * @param 	InstancePtr is the PCIe component to operate on.

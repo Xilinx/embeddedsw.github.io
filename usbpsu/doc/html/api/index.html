@@ -65,27 +65,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">usbpsu Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This section explains the implementation of functions of USBPSU driver.This driver supports both USB high-speed and super-speed features for USB peripheral mode.</p>
-<p>The definitions for endpoints is included by the xusbps_endpoint.c, which is implementing the endpoint functions and by xusbps_intr.c.</p>
-<p><b>Initialization &amp; Configuration</b></p>
-<p>The <a class="el" href="struct_x_usb_psu___config.html" title="struct XUsbPsu_Config - Configuration information for the USB ">XUsbPsu_Config</a> structure is used by the driver to configure itself. Fields inside this structure are properties of <a class="el" href="struct_x_usb_psu.html" title="USB Device Controller representation USB Device Controller representation. ">XUsbPsu</a> based on its hardware build.</p>
-<p>To support multiple runtime loading and initialization strategies employed by various operating systems, the driver instance can be initialized in the following way:</p>
-<ul>
-<li>XUsbPsu_CfgInitialize(InstancePtr, CfgPtr, EffectiveAddr) - Uses a configuration structure provided by the caller. If running in a system with address translation, the parameter EffectiveAddr should be the virtual address.</li>
-</ul>
-<p><b>Endpoint Support</b></p>
-<p>This driver supports control, bulk, interrupt and ISO endpoint and its applications like mass-storage, HID, audio and composite, etc. Based on user application configuration set by the application.</p>
-<p><b>Interrupts</b></p>
-<p>The driver defaults to no interrupts at initialization such that interrupts must be enabled if desired. An interrupt is generated for one of the following conditions.</p>
-<ul>
-<li>Disconnect Detected Event Enable</li>
-<li>USB Reset Enable</li>
-<li>Connection Done Enable</li>
-<li>Link State Change Event Enable</li>
-<li>Wakeup Event Enable</li>
-</ul>
-<p>The SetupInterruptSystem function setups the interrupt system such that interrupts can occur. This function is application specific since the actual system may or may not have an interrupt controller.</p>
-<pre></pre><pre>MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
+<div class="textblock"><pre></pre><pre>MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 </p>
 <hr/>
 <p>
@@ -120,7 +100,11 @@ $(document).ready(function(){initNavTree('index.html','');});
 1.9     pm    03/21/21 Fixed doxygen warnings
 1.10    pm    08/30/21 Update MACRO to fix plm compilation warnings
 1.13    pm    01/05/23 Added "xil_util.h" header to use polling logic API
-1.14    pm    21/06/23 Added support for system device-tree flow.</pre><pre></pre> </div></div><!-- contents -->
+1.14    pm    21/06/23 Added support for system device-tree flow.
+1.15  ml    11/16/23 Fix compilation errors reported with -std=c2x compiler flag
+1.15  np    26/03/24 Add doxygen and editorial fixes
+1.16   dn    17/05/24 Fix compilation error
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>

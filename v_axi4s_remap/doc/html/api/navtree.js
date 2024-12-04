@@ -7,6 +7,10 @@ var NAVTREE =
         [ "All", "functions.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
+    ] ],
+    [ "Examples", "example.html", [
+      [ "main.c", "example.html#ex1", null ],
+      [ "vaxi4s_remapper_example.tcl", "example.html#ex2", null ]
     ] ]
   ] ]
 ];

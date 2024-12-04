@@ -32,6 +32,9 @@
 #include "xstatus.h"
 #include "xdebug.h"
 #include "xcsi.h"
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+#include "xmipi_rx_phy.h"
+#endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 #include "xdphy.h"
 #endif
@@ -50,6 +53,9 @@
  */
 typedef struct {
 	XCsi CsiInst;
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	XMipi_Rx_Phy MipiRxPhyInst;
+#endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	XDphy DphyInst;
 #endif
@@ -61,8 +67,11 @@ typedef struct {
 /**************************** Local Global ***********************************/
 
 /* Define Driver instance of all sub-core included in the design */
+#ifndef SDT
 XCsiSs_SubCores CsiSsSubCores[XPAR_XCSISS_NUM_INSTANCES];
-
+#else
+XCsiSs_SubCores CsiSsSubCores[];
+#endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
@@ -76,6 +85,10 @@ static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr);
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr);
 #endif
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr);
+#endif
+
 static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 					u32 Offset, UINTPTR *BaseAddr);
 
@@ -147,6 +160,14 @@ u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 	}
+#elif (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
+		Status = CsiSs_SubCoreInitMipiRxPhy(InstancePtr);
+		if (Status != XST_SUCCESS) {
+			return XST_FAILURE;
+		}
+	}
+
 #endif
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 	return XST_SUCCESS;
@@ -260,6 +281,11 @@ u32 XCsiSs_Activate(XCsiSs *InstancePtr, u8 Flag)
 	if (Status != XST_SUCCESS)
 		return Status;
 
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
+		XMipi_Rx_Phy_Activate(InstancePtr->MipiRxPhyPtr, Flag);
+	}
+#endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->DphyPtr) {
 		XDphy_Activate(InstancePtr->DphyPtr, Flag);
@@ -324,6 +350,19 @@ void XCsiSs_ReportCoreInfo(XCsiSs *InstancePtr)
 		xdbg_printf(XDBG_DEBUG_GENERAL,"    : CSI Rx Controller \n\r");
 	}
 
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	if (InstancePtr->MipiRxPhyPtr) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,"    : XMipi Rx Phy ");
+		if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent) {
+			xdbg_printf(XDBG_DEBUG_GENERAL,"with ");
+		}
+		else {
+			xdbg_printf(XDBG_DEBUG_GENERAL,"without ");
+		}
+
+		xdbg_printf(XDBG_DEBUG_GENERAL,"register interface \n\r");
+	}
+#endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	if (InstancePtr->DphyPtr) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"    : DPhy ");
@@ -493,6 +532,7 @@ void XCsiSs_GetVCInfo(XCsiSs *InstancePtr)
 ******************************************************************************/
 static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 {
+#ifndef SDT
 	CsiSsPtr->CsiPtr = ((CsiSsPtr->Config.CsiInfo.IsPresent) ?
 		(&CsiSsSubCores[CsiSsPtr->Config.DeviceId].CsiInst) : NULL);
 
@@ -504,6 +544,27 @@ static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 #if (XPAR_XIIC_NUM_INSTANCES > 0)
 	CsiSsPtr->IicPtr = ((CsiSsPtr->Config.IicInfo.IsPresent) ?
 		(&CsiSsSubCores[CsiSsPtr->Config.DeviceId].IicInst) : NULL);
+#endif
+#else
+	u32 Index = 0;
+	Index = XCsiSs_GetDrvIndex(CsiSsPtr, CsiSsPtr->Config.BaseAddr);
+
+	CsiSsPtr->CsiPtr = ((CsiSsPtr->Config.CsiInfo.IsPresent) ?
+		(&CsiSsSubCores[Index].CsiInst) : NULL);
+
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+	CsiSsPtr->MipiRxPhyPtr = ((CsiSsPtr->Config.MipiRxPhyInfo.IsPresent) ?
+		(&CsiSsSubCores[Index].MipiRxPhyInst) : NULL);
+#endif
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
+	CsiSsPtr->DphyPtr = ((CsiSsPtr->Config.DphyInfo.IsPresent) ?
+		(&CsiSsSubCores[Index].DphyInst) : NULL);
+#endif
+
+#if (XPAR_XIIC_NUM_INSTANCES > 0)
+	CsiSsPtr->IicPtr = ((CsiSsPtr->Config.IicInfo.IsPresent) ?
+		(&CsiSsSubCores[Index].IicInst) : NULL);
+#endif
 #endif
 }
 
@@ -528,7 +589,11 @@ static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing CSI Rx Controller...\n\r");
+#ifndef SDT
 	ConfigPtr = XCsi_LookupConfig(CsiSsPtr->Config.CsiInfo.DeviceId);
+#else
+	ConfigPtr = XCsi_LookupConfig(CsiSsPtr->Config.CsiInfo.AddrOffset);
+#endif
 	if (ConfigPtr == NULL) {
 		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: CSI not found\n\r");
 		return XST_FAILURE;
@@ -579,7 +644,11 @@ static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr)
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL,"->Initializing IIC MIPI CSI "
 		"subsystem.\n\r");
+#ifndef SDT
 	ConfigPtr = XIic_LookupConfig(CsiSsPtr->Config.IicInfo.DeviceId);
+#else
+	ConfigPtr = XIic_LookupConfig(CsiSsPtr->Config.IicInfo.AddrOffset);
+#endif
 	if (!ConfigPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: IIC not found\n\r");
 		return XST_FAILURE;
@@ -631,7 +700,11 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing DPHY ...\n\r");
+#ifndef SDT
 	ConfigPtr = XDphy_LookupConfig(CsiSsPtr->Config.DphyInfo.DeviceId);
+#else
+	ConfigPtr = XDphy_LookupConfig(CsiSsPtr->Config.DphyInfo.AddrOffset);
+#endif
 	if (!ConfigPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: DPHY not found\n\r");
 		return XST_FAILURE;
@@ -653,6 +726,60 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 	Status = XDphy_CfgInitialize(CsiSsPtr->DphyPtr, ConfigPtr, AbsAddr);
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS ERR:: Dphy core "
+			"Initialization failed\n\r");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+#endif
+
+#if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
+/*****************************************************************************/
+/**
+* This function initializes the included sub-core to it's static configuration
+*
+* @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
+*
+* @return
+*		- XST_SUCCESS If DPHY sub core is initialised sucessfully
+*		- XST_FAILURE If DPHY sub core initialization failed
+*
+* @note		None
+*
+******************************************************************************/
+static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
+{
+	u32 Status;
+	UINTPTR AbsAddr;
+	XMipi_Rx_Phy_Config *ConfigPtr;
+
+	/* Get core configuration */
+	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing MIPI RX PHY ...\n\r");
+
+	ConfigPtr = XMipi_Rx_Phy_LookupConfig(CsiSsPtr->Config.MipiRxPhyInfo.AddrOffset);
+
+	if (!ConfigPtr) {
+		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: MIPI RX PHY not found\n\r");
+		return XST_FAILURE;
+	}
+
+	/* Compute absolute base address */
+	AbsAddr = 0;
+	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
+					CsiSsPtr->Config.HighAddr,
+					CsiSsPtr->Config.MipiRxPhyInfo.AddrOffset,
+					&AbsAddr);
+	if (Status != XST_SUCCESS) {
+		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: MIPI RX PHY core base "
+			"address (0x%x) invalid %d\n\r", AbsAddr);
+		return XST_FAILURE;
+	}
+
+	/* Initialize core */
+	Status = XMipi_Rx_Phy_CfgInitialize(CsiSsPtr->MipiRxPhyPtr, ConfigPtr, AbsAddr);
+	if (Status != XST_SUCCESS) {
+		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS ERR:: Mipi  Rx Phy core "
 			"Initialization failed\n\r");
 		return XST_FAILURE;
 	}

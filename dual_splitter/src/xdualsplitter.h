@@ -86,6 +86,9 @@ extern "C" {
 #include "xil_assert.h"
 #include "xstatus.h"
 
+#ifdef SDT
+#define XPAR_XDUALSPLITTER_NUM_INSTANCES  XPAR_XDUAL_SPLITTER_NUM_INSTANCES
+#endif
 /************************** Constant Definitions *****************************/
 
 #define XDUSP_MAX_INPUT_SAMPLES		4	/**< Maximum input samples per
@@ -107,8 +110,12 @@ extern "C" {
 * associated.
 */
 typedef struct {
+#ifndef SDT
 	u16 DeviceId;		/**< DeviceId is the unique ID of the Dual
 				  *  Splitter core */
+#else
+	char *Name;
+#endif
 	u32 BaseAddress;	/**< BaseAddress is the physical base address
 				  *  of the core's registers */
 	u32 ActiveCols;		/**< Active Maximum Image Width */
@@ -341,8 +348,11 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Initialization function in xdualsplitter_sinit.c */
+#ifndef SDT
 XDualSplitter_Config *XDualSplitter_LookupConfig(u16 DeviceId);
-
+#else
+XDualSplitter_Config *XDualSplitter_LookupConfig(UINTPTR BaseAddress);
+#endif
 /* Initialization and control functions in xdualsplitter.c */
 s32 XDualSplitter_CfgInitialize(XDualSplitter *InstancePtr,
 				XDualSplitter_Config *CfgPtr,

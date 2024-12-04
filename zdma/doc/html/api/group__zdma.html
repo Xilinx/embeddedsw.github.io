@@ -476,6 +476,9 @@ Channel DSCR Attribute register bit masks and shifts</h2></td></tr>
 <tr class="memitem:gaeb9a7bdb3c0b6be0adf689c98e0526c3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__zdma.html#gaeb9a7bdb3c0b6be0adf689c98e0526c3">XZDMA_DSCR_ATTR_RESET_VALUE</a>&#160;&#160;&#160;(0x00000000U)</td></tr>
 <tr class="memdesc:gaeb9a7bdb3c0b6be0adf689c98e0526c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dscr Attributes reset value.  <a href="#gaeb9a7bdb3c0b6be0adf689c98e0526c3">More...</a><br/></td></tr>
 <tr class="separator:gaeb9a7bdb3c0b6be0adf689c98e0526c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac4e0bd4cf99586a764ac52fdd43c4a0c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__zdma.html#gac4e0bd4cf99586a764ac52fdd43c4a0c">XZDMA_CH_WR_ONLY_RESET_VALUE</a>&#160;&#160;&#160;(0x00000000U)</td></tr>
+<tr class="memdesc:gac4e0bd4cf99586a764ac52fdd43c4a0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">CH write only reset value.  <a href="#gac4e0bd4cf99586a764ac52fdd43c4a0c">More...</a><br/></td></tr>
+<tr class="separator:gac4e0bd4cf99586a764ac52fdd43c4a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Channel Source/Destination Word0 register bit mask</h2></td></tr>
@@ -637,6 +640,22 @@ Channel control2 register bit mask</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Channel rate control mask. </p>
+
+</div>
+</div>
+<a class="anchor" id="gac4e0bd4cf99586a764ac52fdd43c4a0c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XZDMA_CH_WR_ONLY_RESET_VALUE&#160;&#160;&#160;(0x00000000U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CH write only reset value. </p>
+
+<p>Referenced by <a class="el" href="group__zdma.html#gaf236c2323636d87ab0888b2d6f55a313">XZDma_Reset()</a>.</p>
 
 </div>
 </div>
@@ -2321,7 +2340,7 @@ Channel control2 register bit mask</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This function resets all the configurations made previously. Disables all the interrupts and clears interrupt status. </dd></dl>
 
-<p>References <a class="el" href="struct_x_z_dma___config.html#a9be2f556ef1ee02397fb358f06aa5366">XZDma_Config::BaseAddress</a>, <a class="el" href="struct_x_z_dma.html#ae7cb358dd89da5287751442fd9a7fb53">XZDma::ChannelState</a>, <a class="el" href="struct_x_z_dma.html#a16d3eccbc976f6b61c7b83ac0df68f89">XZDma::Config</a>, <a class="el" href="struct_x_z_dma.html#a418f988cd455196d6127689c8e665da4">XZDma::IntrMask</a>, <a class="el" href="struct_x_z_dma___config.html#aa863829cef07a315b0beec01251918e1">XZDma_Config::IsCacheCoherent</a>, <a class="el" href="group__zdma.html#gadb99cf87cd8081ab8195fafb44005d8d">XZDMA_CTRL0_RESET_VALUE</a>, <a class="el" href="group__zdma.html#gad1a614229d720d8abc65e98bba16def8">XZDMA_CTRL1_RESET_VALUE</a>, <a class="el" href="group__zdma.html#ga6fc39f50cddb793d1ffa51bf3b36e471">XZDMA_DATA_ATTR_RESET_VALUE</a>, <a class="el" href="xzdma_8h.html#abb977b875b07151264f4a70527052885">XZDma_DisableCh</a>, <a class="el" href="xzdma_8h.html#aaf5bc66296248406b7fa1a85e736e7f5">XZDma_DisableIntr</a>, <a class="el" href="group__zdma.html#gacf85276abd3537f849cb9279861570a4">XZDMA_DSCR_ATTR_AXCOHRNT_SHIFT</a>, <a class="el" href="group__zdma.html#gaeb9a7bdb3c0b6be0adf689c98e0526c3">XZDMA_DSCR_ATTR_RESET_VALUE</a>, <a class="el" href="xzdma_8h.html#a20da79b41cec32ba5729c7208359a66d">XZDma_GetDstIntrCnt</a>, <a class="el" href="xzdma_8h.html#a53b741795f9b65cc29b1a8f7e5e15f9f">XZDma_GetSrcIntrCnt</a>, <a class="el" href="xzdma_8h.html#a19f8494063d56f2f39f9d40e6ded952aa598386ffccc9121fe927b5d761e0d07b">XZDMA_IDLE</a>, <a class="el" href="xzdma_8h.html#a01dcc0932c4566c5efeefd0b781fea01">XZDma_IntrClear</a>, <a class="el" href="group__zdma.html#gad82b072a8c2cc4c5e32fc43e9822e634">XZDMA_IXR_ALL_INTR_MASK</a>, <a class="el" href="xzdma_8h.html#aef935a114c847da7e5014be2f2237b79">XZDma_TotalByteClear</a>, <a class="el" href="group__zdma.html#gac2aeec8d3bc367ed78ec8a2436f780a7">XZDMA_WORD3_COHRNT_MASK</a>, and <a class="el" href="group__zdma.html#ga1fe52ea6cc149bd35296d497837eff5b">XZDma_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_z_dma___config.html#a9be2f556ef1ee02397fb358f06aa5366">XZDma_Config::BaseAddress</a>, <a class="el" href="struct_x_z_dma.html#ae7cb358dd89da5287751442fd9a7fb53">XZDma::ChannelState</a>, <a class="el" href="struct_x_z_dma.html#a16d3eccbc976f6b61c7b83ac0df68f89">XZDma::Config</a>, <a class="el" href="struct_x_z_dma.html#a418f988cd455196d6127689c8e665da4">XZDma::IntrMask</a>, <a class="el" href="struct_x_z_dma___config.html#aa863829cef07a315b0beec01251918e1">XZDma_Config::IsCacheCoherent</a>, <a class="el" href="group__zdma.html#gac4e0bd4cf99586a764ac52fdd43c4a0c">XZDMA_CH_WR_ONLY_RESET_VALUE</a>, <a class="el" href="group__zdma.html#gadb99cf87cd8081ab8195fafb44005d8d">XZDMA_CTRL0_RESET_VALUE</a>, <a class="el" href="group__zdma.html#gad1a614229d720d8abc65e98bba16def8">XZDMA_CTRL1_RESET_VALUE</a>, <a class="el" href="group__zdma.html#ga6fc39f50cddb793d1ffa51bf3b36e471">XZDMA_DATA_ATTR_RESET_VALUE</a>, <a class="el" href="xzdma_8h.html#abb977b875b07151264f4a70527052885">XZDma_DisableCh</a>, <a class="el" href="xzdma_8h.html#aaf5bc66296248406b7fa1a85e736e7f5">XZDma_DisableIntr</a>, <a class="el" href="group__zdma.html#gacf85276abd3537f849cb9279861570a4">XZDMA_DSCR_ATTR_AXCOHRNT_SHIFT</a>, <a class="el" href="group__zdma.html#gaeb9a7bdb3c0b6be0adf689c98e0526c3">XZDMA_DSCR_ATTR_RESET_VALUE</a>, <a class="el" href="xzdma_8h.html#a20da79b41cec32ba5729c7208359a66d">XZDma_GetDstIntrCnt</a>, <a class="el" href="xzdma_8h.html#a53b741795f9b65cc29b1a8f7e5e15f9f">XZDma_GetSrcIntrCnt</a>, <a class="el" href="xzdma_8h.html#a19f8494063d56f2f39f9d40e6ded952aa598386ffccc9121fe927b5d761e0d07b">XZDMA_IDLE</a>, <a class="el" href="xzdma_8h.html#a01dcc0932c4566c5efeefd0b781fea01">XZDma_IntrClear</a>, <a class="el" href="group__zdma.html#gad82b072a8c2cc4c5e32fc43e9822e634">XZDMA_IXR_ALL_INTR_MASK</a>, <a class="el" href="xzdma_8h.html#aef935a114c847da7e5014be2f2237b79">XZDma_TotalByteClear</a>, <a class="el" href="group__zdma.html#gac2aeec8d3bc367ed78ec8a2436f780a7">XZDMA_WORD3_COHRNT_MASK</a>, and <a class="el" href="group__zdma.html#ga1fe52ea6cc149bd35296d497837eff5b">XZDma_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__zdma.html#gad882e6d7430871e5b71643c8be2512d5">XZDma_CfgInitialize()</a>, <a class="el" href="xzdma__linear__example_8c.html#a4d3f40edf2d265f5df9a045f27ba5ff5">XZDma_LinearExample()</a>, <a class="el" href="xzdma__linkedlist__example_8c.html#a4760deea4e054235c55a504187d96988">XZDma_LinkedListExample()</a>, <a class="el" href="xzdma__simple__example_8c.html#a378c4f0e9236ec692d7f32d7fe4220e7">XZDma_SimpleExample()</a>, and <a class="el" href="xzdma__writeonlymode__example_8c.html#a18349b17c717df9dd089f5e9a3b465b9">XZDma_WriteOnlyExample()</a>.</p>
 

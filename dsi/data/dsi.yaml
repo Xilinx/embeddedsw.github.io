@@ -1,0 +1,43 @@
+
+# Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: Bindings for dsi controller Driver
+
+maintainers:
+  - Kunal Rane <kvrane@amd.com>
+
+type: driver
+
+properties:
+  compatible:
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,mipi-dsi-tx-ctrl-1.0
+  reg:
+    description: Physical base address and size of the controller register map
+  xlnx,dsi-lanes:
+    description: DSI no of control lanes.
+  xlnx,dsi-datatype:
+    description: DSI control data type flag.
+  xlnx,dsi-byte-fifo:
+    description: DSI control byte FIFO size.
+  xlnx,dsi-crc-gen:
+    description: DSI control CRC generate flag.
+  xlnx,dsi-pixels:
+    description: DSI control no of pixels.
+
+required:
+  - compatible
+  - reg
+  - xlnx,dsi-lanes
+  - xlnx,dsi-datatype
+  - xlnx,dsi-byte-fifo
+  - xlnx,dsi-crc-gen
+  - xlnx,dsi-pixels
+
+config:
+  - XDsi_Config
+...

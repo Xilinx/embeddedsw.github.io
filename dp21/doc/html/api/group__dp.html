@@ -83,8 +83,11 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_link_config.html">XDp_TxLinkConfig</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains configuration information about the main link settings.  <a href="struct_x_dp___tx_link_config.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_main_stream_attributes.html">XDp_TxMainStreamAttributes</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains the main stream attributes which determine how the video will be displayed.  <a href="struct_x_dp___tx_main_stream_attributes.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_lttpr_config.html">XDp_TxLttprConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains configuration information about the main link settings.  <a href="struct_x_dp___tx_lttpr_config.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___main_stream_attributes.html">XDp_MainStreamAttributes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains the main stream attributes which determine how the video will be displayed.  <a href="struct_x_dp___main_stream_attributes.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_dp___tx_vsc_ext_packet.html">XDp_TxVscExtPacket</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains the VSC extended packet information.  <a href="struct_x_dp___tx_vsc_ext_packet.html#details">More...</a><br/></td></tr>
@@ -182,6 +185,12 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ga994038531967374f976ed8256013657b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga994038531967374f976ed8256013657b">XDp_Tx_HandlerType</a> </td></tr>
 <tr class="memdesc:ga994038531967374f976ed8256013657b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef enumerates the handlers for the the DisplayPort Transmitter.  <a href="group__dp.html#ga994038531967374f976ed8256013657b">More...</a><br/></td></tr>
 <tr class="separator:ga994038531967374f976ed8256013657b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga208d1f0a9e8a277734c7c07da4a67a78"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga208d1f0a9e8a277734c7c07da4a67a78">XDp_Tx_LttprMode</a> </td></tr>
+<tr class="memdesc:ga208d1f0a9e8a277734c7c07da4a67a78"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef enumerates the mode of LTTPR.  <a href="group__dp.html#ga208d1f0a9e8a277734c7c07da4a67a78">More...</a><br/></td></tr>
+<tr class="separator:ga208d1f0a9e8a277734c7c07da4a67a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef8e86f63f0850957d608008059755e9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gaef8e86f63f0850957d608008059755e9">XDp_Tx_LttprCount</a> </td></tr>
+<tr class="memdesc:gaef8e86f63f0850957d608008059755e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef enumerates the LTTPR count.  <a href="group__dp.html#gaef8e86f63f0850957d608008059755e9">More...</a><br/></td></tr>
+<tr class="separator:gaef8e86f63f0850957d608008059755e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -340,6 +349,9 @@ DisplayPort Configuration Data: Receiver capability field.</h2></td></tr>
 <tr class="memitem:gaee70768233260dd1fa728a4b4e4a90a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaee70768233260dd1fa728a4b4e4a90a1"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_EDID_DPCD_MAX_LINK_RATE</b>&#160;&#160;&#160;0x02201</td></tr>
 <tr class="separator:gaee70768233260dd1fa728a4b4e4a90a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4ce42cc6b5e6022e3f244db47354a7e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4ce42cc6b5e6022e3f244db47354a7e9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_EDID_DPCD_MAINLINKCHANNELCODING</b>&#160;&#160;&#160;0x02206</td></tr>
+<tr class="separator:ga4ce42cc6b5e6022e3f244db47354a7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8a790ae80c22eddca68eb56c57f0b472"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8a790ae80c22eddca68eb56c57f0b472"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_FEATURE_ENUMERATION_LIST</b>&#160;&#160;&#160;0x02210</td></tr>
 <tr class="separator:ga8a790ae80c22eddca68eb56c57f0b472"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -927,6 +939,9 @@ DisplayPort Configuration Data: Receiver capability field masks,</h2></td></tr>
 <tr class="memitem:ga052030b70775cd58c39c144b7baad51a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga052030b70775cd58c39c144b7baad51a"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_MST_CAP_MASK</b>&#160;&#160;&#160;0x01</td></tr>
 <tr class="separator:ga052030b70775cd58c39c144b7baad51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49d432518a0713a61c51f3c82837d4a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga49d432518a0713a61c51f3c82837d4a7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_MST_SIDEBAND_MSG_CAP</b>&#160;&#160;&#160;0x02</td></tr>
+<tr class="separator:ga49d432518a0713a61c51f3c82837d4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9d351a84d4304bd49e99cc26985a1e22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9d351a84d4304bd49e99cc26985a1e22"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_AV_SYNC_DATA_BLK_AV_GRAN_AG_FACTOR_MASK</b>&#160;&#160;&#160;0xF</td></tr>
 <tr class="separator:ga9d351a84d4304bd49e99cc26985a1e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1471,6 +1486,9 @@ DisplayPort Configuration Data: Link/sink status field masks, shifts,</h2></td><
 <tr class="memitem:ga39e161568d7f7f1ba216ee5502ca23b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga39e161568d7f7f1ba216ee5502ca23b1"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LANE_ALIGN_STATUS_128B_CDS_INTERALIGN_DONE</b>&#160;&#160;&#160;0x08</td></tr>
 <tr class="separator:ga39e161568d7f7f1ba216ee5502ca23b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4aa3d9c9c1d720f93cb1c04d329971a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4aa3d9c9c1d720f93cb1c04d329971a8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LANE_ALIGN_STATUS_128B_EQ_INTERALIGN_DONE</b>&#160;&#160;&#160;0x04</td></tr>
+<tr class="separator:ga4aa3d9c9c1d720f93cb1c04d329971a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafd0a767cf7be9486de3af5313dd6d884"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafd0a767cf7be9486de3af5313dd6d884"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_SINK_STATUS_RX_PORT0_SYNC_STATUS_MASK</b>&#160;&#160;&#160;0x01</td></tr>
 <tr class="separator:gafd0a767cf7be9486de3af5313dd6d884"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1543,18 +1561,30 @@ DisplayPort Configuration Data: Link/sink status field masks, shifts,</h2></td><
 <tr class="memitem:ga0f65d02a105f8151694227732d69b74b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga0f65d02a105f8151694227732d69b74b">XDP_TX_TP_SET_TRAINING_AUX_RD_INTERVAL</a>&#160;&#160;&#160;0x6CC</td></tr>
 <tr class="memdesc:ga0f65d02a105f8151694227732d69b74b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Link Training AUX read interval.  <a href="#ga0f65d02a105f8151694227732d69b74b">More...</a><br/></td></tr>
 <tr class="separator:ga0f65d02a105f8151694227732d69b74b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacd5b6874a281604989f19b9f228c213f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gacd5b6874a281604989f19b9f228c213f">XDP_TX_VFREQ_STREAM1</a>&#160;&#160;&#160;0x6D0</td></tr>
-<tr class="memdesc:gacd5b6874a281604989f19b9f228c213f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream1.  <a href="#gacd5b6874a281604989f19b9f228c213f">More...</a><br/></td></tr>
-<tr class="separator:gacd5b6874a281604989f19b9f228c213f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga65de8bbe02bd5cce4d824aff64c5a69d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga65de8bbe02bd5cce4d824aff64c5a69d">XDP_TX_VFREQ_STREAM2</a>&#160;&#160;&#160;0x6D4</td></tr>
-<tr class="memdesc:ga65de8bbe02bd5cce4d824aff64c5a69d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream2.  <a href="#ga65de8bbe02bd5cce4d824aff64c5a69d">More...</a><br/></td></tr>
-<tr class="separator:ga65de8bbe02bd5cce4d824aff64c5a69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99124d536d5ae4143e32f7116801460c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga99124d536d5ae4143e32f7116801460c">XDP_TX_VFREQ_STREAM3</a>&#160;&#160;&#160;0x6D8</td></tr>
-<tr class="memdesc:ga99124d536d5ae4143e32f7116801460c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream3.  <a href="#ga99124d536d5ae4143e32f7116801460c">More...</a><br/></td></tr>
-<tr class="separator:ga99124d536d5ae4143e32f7116801460c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga31b14d96107aeb6dbd471c94623edbe3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga31b14d96107aeb6dbd471c94623edbe3">XDP_TX_VFREQ_STREAM4</a>&#160;&#160;&#160;0x6DC</td></tr>
-<tr class="memdesc:ga31b14d96107aeb6dbd471c94623edbe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream4.  <a href="#ga31b14d96107aeb6dbd471c94623edbe3">More...</a><br/></td></tr>
-<tr class="separator:ga31b14d96107aeb6dbd471c94623edbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef6bf3ac2934a43fa0b1b4c75f67c41f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gaef6bf3ac2934a43fa0b1b4c75f67c41f">XDP_TX_VFREQ_STREAM1_LOW</a>&#160;&#160;&#160;0x6D0</td></tr>
+<tr class="memdesc:gaef6bf3ac2934a43fa0b1b4c75f67c41f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream1.  <a href="#gaef6bf3ac2934a43fa0b1b4c75f67c41f">More...</a><br/></td></tr>
+<tr class="separator:gaef6bf3ac2934a43fa0b1b4c75f67c41f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac1497d645e214c5e8b0a7207526ce8c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gac1497d645e214c5e8b0a7207526ce8c1">XDP_TX_VFREQ_STREAM1_HIGH</a>&#160;&#160;&#160;0x6D4</td></tr>
+<tr class="memdesc:gac1497d645e214c5e8b0a7207526ce8c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream1.  <a href="#gac1497d645e214c5e8b0a7207526ce8c1">More...</a><br/></td></tr>
+<tr class="separator:gac1497d645e214c5e8b0a7207526ce8c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac910e42b86b52d8a32f9c0edffae57e5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gac910e42b86b52d8a32f9c0edffae57e5">XDP_TX_VFREQ_STREAM2_LOW</a>&#160;&#160;&#160;0x6E4</td></tr>
+<tr class="memdesc:gac910e42b86b52d8a32f9c0edffae57e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream2.  <a href="#gac910e42b86b52d8a32f9c0edffae57e5">More...</a><br/></td></tr>
+<tr class="separator:gac910e42b86b52d8a32f9c0edffae57e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0453d460b4cb67873308133e74c0354e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga0453d460b4cb67873308133e74c0354e">XDP_TX_VFREQ_STREAM2_HIGH</a>&#160;&#160;&#160;0x6E8</td></tr>
+<tr class="memdesc:ga0453d460b4cb67873308133e74c0354e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream2.  <a href="#ga0453d460b4cb67873308133e74c0354e">More...</a><br/></td></tr>
+<tr class="separator:ga0453d460b4cb67873308133e74c0354e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga20ffaffb095e43bd7acdef9de9b0054c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga20ffaffb095e43bd7acdef9de9b0054c">XDP_TX_VFREQ_STREAM3_LOW</a>&#160;&#160;&#160;0x6EC</td></tr>
+<tr class="memdesc:ga20ffaffb095e43bd7acdef9de9b0054c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream3.  <a href="#ga20ffaffb095e43bd7acdef9de9b0054c">More...</a><br/></td></tr>
+<tr class="separator:ga20ffaffb095e43bd7acdef9de9b0054c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf56159d23905f0daf82fe8564936ec0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gaaf56159d23905f0daf82fe8564936ec0">XDP_TX_VFREQ_STREAM3_HIGH</a>&#160;&#160;&#160;0x6F0</td></tr>
+<tr class="memdesc:gaaf56159d23905f0daf82fe8564936ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream3.  <a href="#gaaf56159d23905f0daf82fe8564936ec0">More...</a><br/></td></tr>
+<tr class="separator:gaaf56159d23905f0daf82fe8564936ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaee1defbec3d383b55cead6ab0db5b841"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#gaee1defbec3d383b55cead6ab0db5b841">XDP_TX_VFREQ_STREAM4_LOW</a>&#160;&#160;&#160;0x6F4</td></tr>
+<tr class="memdesc:gaee1defbec3d383b55cead6ab0db5b841"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream4.  <a href="#gaee1defbec3d383b55cead6ab0db5b841">More...</a><br/></td></tr>
+<tr class="separator:gaee1defbec3d383b55cead6ab0db5b841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0f0900a7357ab6c4790e011026cc2f38"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga0f0900a7357ab6c4790e011026cc2f38">XDP_TX_VFREQ_STREAM4_HIGH</a>&#160;&#160;&#160;0x6F8</td></tr>
+<tr class="memdesc:ga0f0900a7357ab6c4790e011026cc2f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vfreq for MST stream4.  <a href="#ga0f0900a7357ab6c4790e011026cc2f38">More...</a><br/></td></tr>
+<tr class="separator:ga0f0900a7357ab6c4790e011026cc2f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dp.html#ga99a3c266ccfa4ed4ac5ea6fa4964690d">XDP_TX_V2_0_CONFIG</a>&#160;&#160;&#160;0x6E0</td></tr>
 <tr class="memdesc:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="mdescLeft">&#160;</td><td class="mdescRight">DP v2.1 Config Params.  <a href="#ga99a3c266ccfa4ed4ac5ea6fa4964690d">More...</a><br/></td></tr>
 <tr class="separator:ga99a3c266ccfa4ed4ac5ea6fa4964690d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1567,6 +1597,24 @@ DisplayPort Configuration Data: Link/sink status field masks, shifts,</h2></td><
 <tr class="memitem:gae724009827b106721da4f8a1e6e9a0a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae724009827b106721da4f8a1e6e9a0a0"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_TRAINING_AUX_RD_INTERVAL</b>&#160;&#160;&#160;0x02216	/*&lt; AUX Read Interval Set. */</td></tr>
 <tr class="separator:gae724009827b106721da4f8a1e6e9a0a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga16af5f4ad1447ff0589d01e7a55f19f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga16af5f4ad1447ff0589d01e7a55f19f9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LTTPR_CAPABILITY</b>&#160;&#160;&#160;0xF0000</td></tr>
+<tr class="separator:ga16af5f4ad1447ff0589d01e7a55f19f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7ff5b778aa4978471862afc7ab6c3d68"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7ff5b778aa4978471862afc7ab6c3d68"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_PHY_REPEATER_MODE</b>&#160;&#160;&#160;0xF0003</td></tr>
+<tr class="separator:ga7ff5b778aa4978471862afc7ab6c3d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga86d1439d79a65a0f9ae871d6432a9500"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga86d1439d79a65a0f9ae871d6432a9500"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_PHY_LTTPR_BASE</b>&#160;&#160;&#160;0xF0010</td></tr>
+<tr class="separator:ga86d1439d79a65a0f9ae871d6432a9500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaff3aba0a69ec1e34aaeef6bebd26b883"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaff3aba0a69ec1e34aaeef6bebd26b883"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LTTPR_TRAINING_LANE0_SET</b>&#160;&#160;&#160;0xF0011</td></tr>
+<tr class="separator:gaff3aba0a69ec1e34aaeef6bebd26b883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8e019a967472b279efe3e9be473a262d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8e019a967472b279efe3e9be473a262d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_DPCD_LTTPR_STATUS_LANE_0_1</b>&#160;&#160;&#160;0xF0030</td></tr>
+<tr class="separator:ga8e019a967472b279efe3e9be473a262d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01e05be6f44dc166af1dd2f100f13ca0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga01e05be6f44dc166af1dd2f100f13ca0"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDP_PHY_LTTPR_PHY_CONFIG_SIZE</b>&#160;&#160;&#160;0x50</td></tr>
+<tr class="separator:ga01e05be6f44dc166af1dd2f100f13ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Extended Display Identification Data: Field addresses and sizes.</h2></td></tr>
@@ -2348,12 +2396,12 @@ Register access macro definitions.</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gacd5b6874a281604989f19b9f228c213f"></a>
+<a class="anchor" id="gac1497d645e214c5e8b0a7207526ce8c1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDP_TX_VFREQ_STREAM1&#160;&#160;&#160;0x6D0</td>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM1_HIGH&#160;&#160;&#160;0x6D4</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2362,12 +2410,26 @@ Register access macro definitions.</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga65de8bbe02bd5cce4d824aff64c5a69d"></a>
+<a class="anchor" id="gaef6bf3ac2934a43fa0b1b4c75f67c41f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDP_TX_VFREQ_STREAM2&#160;&#160;&#160;0x6D4</td>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM1_LOW&#160;&#160;&#160;0x6D0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vfreq for MST stream1. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga0453d460b4cb67873308133e74c0354e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM2_HIGH&#160;&#160;&#160;0x6E8</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2376,12 +2438,26 @@ Register access macro definitions.</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga99124d536d5ae4143e32f7116801460c"></a>
+<a class="anchor" id="gac910e42b86b52d8a32f9c0edffae57e5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDP_TX_VFREQ_STREAM3&#160;&#160;&#160;0x6D8</td>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM2_LOW&#160;&#160;&#160;0x6E4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vfreq for MST stream2. </p>
+
+</div>
+</div>
+<a class="anchor" id="gaaf56159d23905f0daf82fe8564936ec0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM3_HIGH&#160;&#160;&#160;0x6F0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2390,12 +2466,40 @@ Register access macro definitions.</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga31b14d96107aeb6dbd471c94623edbe3"></a>
+<a class="anchor" id="ga20ffaffb095e43bd7acdef9de9b0054c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XDP_TX_VFREQ_STREAM4&#160;&#160;&#160;0x6DC</td>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM3_LOW&#160;&#160;&#160;0x6EC</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vfreq for MST stream3. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga0f0900a7357ab6c4790e011026cc2f38"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM4_HIGH&#160;&#160;&#160;0x6F8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vfreq for MST stream4. </p>
+
+</div>
+</div>
+<a class="anchor" id="gaee1defbec3d383b55cead6ab0db5b841"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XDP_TX_VFREQ_STREAM4_LOW&#160;&#160;&#160;0x6F4</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2586,6 +2690,34 @@ Register access macro definitions.</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This typedef enumerates the handlers for the the DisplayPort Transmitter. </p>
+
+</div>
+</div>
+<a class="anchor" id="gaef8e86f63f0850957d608008059755e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__dp.html#gaef8e86f63f0850957d608008059755e9">XDp_Tx_LttprCount</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This typedef enumerates the LTTPR count. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga208d1f0a9e8a277734c7c07da4a67a78"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__dp.html#ga208d1f0a9e8a277734c7c07da4a67a78">XDp_Tx_LttprMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This typedef enumerates the mode of LTTPR. </p>
 
 </div>
 </div>

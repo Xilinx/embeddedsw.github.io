@@ -23,6 +23,7 @@
 * 1.00a nm   03/10/10 First release
 * 2.5   dp   07/11/23 Add Support for system device tree flow
 * 2.5   dp   09/08/23 Update example to stop timer at the end of the test
+* 2.6   ml   12/07/23 Make TimerExpired as a static variable.
 * </pre>
 *
 ******************************************************************************/
@@ -91,7 +92,7 @@ XScuGic IntcInstance;		/* Interrupt Controller Instance */
  * The following variables are shared between non-interrupt processing and
  * interrupt processing such that they must be global.
  */
-volatile int TimerExpired;
+static volatile int TimerExpired;
 
 /*****************************************************************************/
 /**
@@ -117,7 +118,7 @@ int main(void)
 	 */
 #ifndef SDT
 	Status = ScuTimerIntrExample(&IntcInstance, &TimerInstance,
-				TIMER_DEVICE_ID, TIMER_IRPT_INTR);
+				     TIMER_DEVICE_ID, TIMER_IRPT_INTR);
 #else
 	Status = ScuTimerIntrExample(&TimerInstance, XPAR_SCUTIMER_BASEADDR);
 #endif
@@ -149,10 +150,10 @@ int main(void)
 *
 ******************************************************************************/
 #ifndef SDT
-int ScuTimerIntrExample(XScuGic *IntcInstancePtr, XScuTimer * TimerInstancePtr,
+int ScuTimerIntrExample(XScuGic *IntcInstancePtr, XScuTimer *TimerInstancePtr,
 			u16 TimerDeviceId, u16 TimerIntrId)
 #else
-int ScuTimerIntrExample(XScuTimer * TimerInstancePtr,	UINTPTR BaseAddress)
+int ScuTimerIntrExample(XScuTimer *TimerInstancePtr,	UINTPTR BaseAddress)
 #endif
 {
 	int Status;
@@ -172,7 +173,7 @@ int ScuTimerIntrExample(XScuTimer * TimerInstancePtr,	UINTPTR BaseAddress)
 	 * uses physical address.
 	 */
 	Status = XScuTimer_CfgInitialize(TimerInstancePtr, ConfigPtr,
-					ConfigPtr->BaseAddr);
+					 ConfigPtr->BaseAddr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -191,12 +192,12 @@ int ScuTimerIntrExample(XScuTimer * TimerInstancePtr,	UINTPTR BaseAddress)
 	 */
 #ifndef SDT
 	Status = TimerSetupIntrSystem(IntcInstancePtr,
-					TimerInstancePtr, TimerIntrId);
+				      TimerInstancePtr, TimerIntrId);
 #else
-   Status = XSetupInterruptSystem(TimerInstancePtr, &TimerIntrHandler,
-                                    TimerInstancePtr->Config.IntrId,
-                                    TimerInstancePtr->Config.IntrParent,
-                                    XINTERRUPT_DEFAULT_PRIORITY);
+	Status = XSetupInterruptSystem(TimerInstancePtr, &TimerIntrHandler,
+				       TimerInstancePtr->Config.IntrId,
+				       TimerInstancePtr->Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
 	/*
 	 * Enable the timer interrupts for timer mode.
 	 */
@@ -247,10 +248,10 @@ int ScuTimerIntrExample(XScuTimer * TimerInstancePtr,	UINTPTR BaseAddress)
 #ifndef SDT
 	TimerDisableIntrSystem(IntcInstancePtr, TimerIntrId);
 #else
-   XDisconnectInterruptCntrl(TimerInstancePtr->Config.IntrId, TimerInstancePtr->Config.IntrParent);
+	XDisconnectInterruptCntrl(TimerInstancePtr->Config.IntrId, TimerInstancePtr->Config.IntrParent);
 #endif
 
-   XScuTimer_Stop(TimerInstancePtr);
+	XScuTimer_Stop(TimerInstancePtr);
 
 	return XST_SUCCESS;
 }
@@ -273,7 +274,7 @@ int ScuTimerIntrExample(XScuTimer * TimerInstancePtr,	UINTPTR BaseAddress)
 *
 ******************************************************************************/
 static int TimerSetupIntrSystem(XScuGic *IntcInstancePtr,
-			      XScuTimer *TimerInstancePtr, u16 TimerIntrId)
+				XScuTimer *TimerInstancePtr, u16 TimerIntrId)
 {
 	int Status;
 
@@ -290,7 +291,7 @@ static int TimerSetupIntrSystem(XScuGic *IntcInstancePtr,
 	}
 
 	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
-					IntcConfig->CpuBaseAddress);
+				       IntcConfig->CpuBaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -305,8 +306,8 @@ static int TimerSetupIntrSystem(XScuGic *IntcInstancePtr,
 	 * interrupt handling logic in the processor.
 	 */
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
-				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-				IntcInstancePtr);
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     IntcInstancePtr);
 #endif
 
 	/*
@@ -315,8 +316,8 @@ static int TimerSetupIntrSystem(XScuGic *IntcInstancePtr,
 	 * the specific interrupt processing for the device.
 	 */
 	Status = XScuGic_Connect(IntcInstancePtr, TimerIntrId,
-				(Xil_ExceptionHandler)TimerIntrHandler,
-				(void *)TimerInstancePtr);
+				 (Xil_ExceptionHandler)TimerIntrHandler,
+				 (void *)TimerInstancePtr);
 	if (Status != XST_SUCCESS) {
 		return Status;
 	}

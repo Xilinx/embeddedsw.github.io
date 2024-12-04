@@ -10,6 +10,7 @@ var struct_x_nand_psu =
     [ "EccCfg", "struct_x_nand_psu.html#a42fcfeb64ff08cd45cbc8ed86a129211", null ],
     [ "EccMode", "struct_x_nand_psu.html#a1f2a85d38c0202fe76fed5e328d51ed7", null ],
     [ "Features", "struct_x_nand_psu.html#a2e48a39dfea41cfad0208cffd72b2737", null ],
+    [ "FlashBbt", "struct_x_nand_psu.html#a4dd502aa220ab8c56e41f832cb7e75ed", null ],
     [ "Geometry", "struct_x_nand_psu.html#ada90fdee8e87d8880eb6766d76e3ad2d", null ],
     [ "IsReady", "struct_x_nand_psu.html#af937c82e0b5c79e13c98a124f107c972", null ],
     [ "Mode", "struct_x_nand_psu.html#a37972d089e9998402fa4f788e0972a5a", null ]

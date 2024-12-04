@@ -26,6 +26,8 @@ var xuartps__hw_8h =
     [ "XUARTPS_IMR_OFFSET", "xuartps__hw_8h.html#ga0cfdb73d2795d7cc3b849fe1622fa029", null ],
     [ "XUARTPS_ISR_OFFSET", "xuartps__hw_8h.html#ga7e96d23606d96a7d9816bc2ff777cbf8", null ],
     [ "XUartPs_IsReceiveData", "xuartps__hw_8h.html#gac8b8f06d10cf178227ce88c140d78eb4", null ],
+    [ "XUartPs_IsTransmitActive", "xuartps__hw_8h.html#gaa34f1217cdc0b14977fbe3a22ec167ee", null ],
+    [ "XUartPs_IsTransmitFifoEmpty", "xuartps__hw_8h.html#ga8170a2befa118c8bd2ccc108163c4b7a", null ],
     [ "XUartPs_IsTransmitFull", "xuartps__hw_8h.html#gaf1507e8d7b12983484a0ab5436a51970", null ],
     [ "XUARTPS_IXR_DMS", "xuartps__hw_8h.html#gadf1dabb7547f5b16748e8c6307cfc7a1", null ],
     [ "XUARTPS_IXR_FRAMING", "xuartps__hw_8h.html#gaa6048212fde48f7188efd90c83c4822d", null ],
@@ -121,5 +123,6 @@ var xuartps__hw_8h =
     [ "XUartPs_WriteReg", "xuartps__hw_8h.html#gab541297d822b163193a2e47305987ab6", null ],
     [ "XUartPs_RecvByte", "xuartps__hw_8h.html#ga60240486c69f6167ab13194ced5e8bb7", null ],
     [ "XUartPs_ResetHw", "xuartps__hw_8h.html#ga157cf5966738452bc13639746f4b8d97", null ],
-    [ "XUartPs_SendByte", "xuartps__hw_8h.html#ga4bae0ee4df836a8c3e7748c9ae28ebee", null ]
+    [ "XUartPs_SendByte", "xuartps__hw_8h.html#ga4bae0ee4df836a8c3e7748c9ae28ebee", null ],
+    [ "XUartPs_WaitTransmitDone", "xuartps__hw_8h.html#gaf789b78ee831825f3131f9a016e15044", null ]
 ];

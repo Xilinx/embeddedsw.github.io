@@ -1,4 +1,5 @@
 /******************************************************************************
+* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * Copyright (C) 2016 - 2020 Xilinx, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
@@ -24,6 +25,7 @@
 *                  CR-965028.
 *     ms  04/05/17 Added tabspace for return statements in functions for
 *                  proper documentation while generating doxygen.
+* 2.4 ml  11/15/23 Fix compilation errors reported with -std=c2x compiler flag
 * </pre>
 *
 ******************************************************************************/
@@ -35,13 +37,23 @@
 #include "xil_printf.h"
 #include "xil_types.h"
 #include "xstatus.h"
-#include "xintc.h"
+#ifndef SDT
+ #include "xintc.h"
+#else
+ #include "xinterrupt_wrap.h"
+#endif
 
 /* The unique device ID of the MIPI DSI Tx Subsystem instance to be used
  */
-#define XDSITXSS_DEVICE_ID		XPAR_DSITXSS_0_DEVICE_ID
-#define XINTC_DSITXSS_INTERRUPT_ID	XPAR_INTC_0_DSITXSS_0_VEC_ID
-#define XINTC_DEVICE_ID			XPAR_INTC_0_DEVICE_ID
+#ifndef SDT
+ #define XDSITXSS_DEVICE_ID		XPAR_DSITXSS_0_DEVICE_ID
+#else
+#define XDSITXSS_BASE			XPAR_XDSITXSS_0_BASEADDR
+#endif
+#ifndef SDT
+ #define XINTC_DSITXSS_INTERRUPT_ID	XPAR_INTC_0_DSITXSS_0_VEC_ID
+ #define XINTC_DEVICE_ID			XPAR_INTC_0_DEVICE_ID
+#endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -55,7 +67,7 @@ u32 DsiTxSs_IntrExample(u32 DeviceId);
 u32 DsiTxSs_SetupIntrSystem(void);
 void XDsiTxSs_IntrHandler(void *InstancePtr);
 u32 XDsiTxSs_SetCallback(XDsiTxSs *InstancePtr, u32 HandlerType,
-				void *CallbackFunc, void *CallbackRef);
+			 void *CallbackFunc, void *CallbackRef);
 void XDsiTxSs_SetGlobalInterrupt(void *InstancePtr);
 void XDsiTxSs_InterruptEnable(void *InstancePtr, u32 Mask);
 
@@ -102,7 +114,11 @@ s32 main()
 	xil_printf("MIPI DSITXSS interrupt example\n\r");
 	xil_printf("------------------------------------------\n\r\n\r");
 
+#ifndef SDT
 	Status = DsiTxSs_IntrExample(XDSITXSS_DEVICE_ID);
+#else
+	Status = DsiTxSs_IntrExample(XDSITXSS_BASE);
+#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("MIPI DSITXSS interrupt example failed.");
 		return XST_FAILURE;
@@ -143,21 +159,22 @@ void Delay(u32 Seconds)
 	}
 
 #define ITERS_PER_SEC   (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 6)
-    asm volatile ("\n"
-			"1:               \n\t"
-			"addik r7, r0, %0 \n\t"
-			"2:               \n\t"
-			"addik r7, r7, -1 \n\t"
-			"bneid  r7, 2b    \n\t"
-			"or  r0, r0, r0   \n\t"
-			"bneid %1, 1b     \n\t"
-			"addik %1, %1, -1 \n\t"
-			:: "i"(ITERS_PER_SEC), "d" (Seconds));
+	__asm volatile ("\n"
+			      "1:               \n\t"
+			      "addik r7, r0, %0 \n\t"
+			      "2:               \n\t"
+			      "addik r7, r7, -1 \n\t"
+			      "bneid  r7, 2b    \n\t"
+			      "or  r0, r0, r0   \n\t"
+			      "bneid %1, 1b     \n\t"
+			      "addik %1, %1, -1 \n\t"
+			      :: "i"(ITERS_PER_SEC), "d" (Seconds));
 #else
 	sleep(Seconds);
 #endif
 }
 
+#ifndef SDT
 /****************************************************************************/
 /**
 *
@@ -184,11 +201,11 @@ s32 SetupInterruptSystem(XDsiTxSs *DsiTxSsPtr)
 
 	/* Setup call back handlers */
 	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_UNSUPPORT_DATATYPE,
-				DsiTxSs_UnSupportDataEventHandler, DsiTxSsPtr);
+			     DsiTxSs_UnSupportDataEventHandler, DsiTxSsPtr);
 	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_PIXELDATA_UNDERRUN,
-				DsiTxSs_PixelUnderrunEventHandler, DsiTxSsPtr);
+			     DsiTxSs_PixelUnderrunEventHandler, DsiTxSsPtr);
 	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_CMDQ_FIFOFULL,
-				DsiTxSs_CmdQFIFOFullEventHandler, DsiTxSsPtr);
+			     DsiTxSs_CmdQFIFOFullEventHandler, DsiTxSsPtr);
 
 	/*
 	 * Initialize the interrupt controller driver so that it is ready to
@@ -205,8 +222,8 @@ s32 SetupInterruptSystem(XDsiTxSs *DsiTxSsPtr)
 	 * specific interrupt processing for the device.
 	 */
 	Status = XIntc_Connect(&InterruptController, XINTC_DSITXSS_INTERRUPT_ID,
-				(XInterruptHandler)XDsiTxSs_IntrHandler,
-				(void *)DsiTxSsPtr);
+			       (XInterruptHandler)XDsiTxSs_IntrHandler,
+			       (void *)DsiTxSsPtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -226,8 +243,8 @@ s32 SetupInterruptSystem(XDsiTxSs *DsiTxSsPtr)
 	Xil_ExceptionInit();
 
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			 (Xil_ExceptionHandler)XIntc_InterruptHandler,
-			 &InterruptController);
+				     (Xil_ExceptionHandler)XIntc_InterruptHandler,
+				     &InterruptController);
 
 	Xil_ExceptionEnable();
 
@@ -235,7 +252,7 @@ s32 SetupInterruptSystem(XDsiTxSs *DsiTxSsPtr)
 
 	return XST_SUCCESS;
 }
-
+#endif
 /*****************************************************************************/
 /**
 *
@@ -274,6 +291,25 @@ u32 DsiTxSs_IntrExample(u32 DeviceId)
 		return XST_FAILURE;
 	}
 
+#ifdef SDT
+	/* Setup call back handlers */
+	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_UNSUPPORT_DATATYPE,
+			     DsiTxSs_UnSupportDataEventHandler, DsiTxSsPtr);
+	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_PIXELDATA_UNDERRUN,
+			     DsiTxSs_PixelUnderrunEventHandler, DsiTxSsPtr);
+	XDsiTxSs_SetCallback(DsiTxSsPtr, XDSITXSS_HANDLER_CMDQ_FIFOFULL,
+			     DsiTxSs_CmdQFIFOFullEventHandler, DsiTxSsPtr);
+	Status = XSetupInterruptSystem(&DSITxSs,&XDsiTxSs_IntrHandler,
+				       DSITxSs.Config.IntrId,
+				       DSITxSs.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+
+	if (Status == XST_FAILURE) {
+		xil_printf("ERROR:: DSI Interrupt Setup Failed \r \n");
+		xil_printf("ERROR:: Test could not be completed \r \n");
+		return(1);
+	}
+#endif
 	/*
 	 * Perform self test to ensure the hardware built correctly
 	 */
@@ -286,11 +322,12 @@ u32 DsiTxSs_IntrExample(u32 DeviceId)
 	 * Connect the DSI to the interrupt subsystem such that interrupts can
 	 * occur. This function is application specific.
 	 */
+#ifndef SDT
 	Status = SetupInterruptSystem(&DsiTxSs);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
-
+#endif
 	XDsiTxSs_InterruptEnable(&DsiTxSs, XDSITXSS_IER_ALLINTR_MASK);
 
 	/*
@@ -298,14 +335,13 @@ u32 DsiTxSs_IntrExample(u32 DeviceId)
 	 */
 
 	do {
-	    Delay(1);
-	    Exit_Count++;
-	    if(Exit_Count > 3) {
-		xil_printf("DSI TXInterrupt test failed \r\n");
-		return XST_FAILURE;
-	    }
-	}
-	while(data_err_flag && pixel_underrun_flag && cmdq_fifo_full_flag);
+		Delay(1);
+		Exit_Count++;
+		if (Exit_Count > 3) {
+			xil_printf("DSI TXInterrupt test failed \r\n");
+			return XST_FAILURE;
+		}
+	} while (data_err_flag && pixel_underrun_flag && cmdq_fifo_full_flag);
 
 	return XST_SUCCESS;
 }
@@ -323,7 +359,7 @@ u32 DsiTxSs_IntrExample(u32 DeviceId)
 * @return	None.
 *
 * @note		Use the DsiTxSs_UnSupportDataEventHandler driver function to set
-* 		this function as the handler for Unsupport data error event.
+* 		this function as the handler for Unsupported data error event.
 *
 ******************************************************************************/
 void DsiTxSs_UnSupportDataEventHandler(void *CallbackRef, u32 Mask)

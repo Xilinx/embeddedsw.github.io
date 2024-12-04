@@ -131,7 +131,11 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 3.8     sne  09/17/20 Added description for Versal PS and PMC GPIO pins.
 3.9     sne  03/15/21 Fixed MISRA-C violations.
 3.11  sg   02/23/23 Update bank and pin mapping information.
-3.12  gm   07/11/23 Added SDT support.</pre><pre></pre> </div></div><!-- contents -->
+3.12  gm   07/11/23 Added SDT support.
+3.13  gm   03/15/24 Remove const of <a class="el" href="struct_x_gpio_ps.html" title="The XGpioPs driver instance data. ">XGpioPs</a> InstancePtr from function proto
+                    type of XGpioPs_IntrEnable, XGpioPs_IntrDisable,
+                    XGpioPs_IntrEnablePin and XGpioPs_IntrDisablePin
+                    to add multi-core interrupt support.</pre><pre></pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 	<p class="footer">&copy; Copyright 2015-2022 Xilinx, Inc. All Rights Reserved.</p>

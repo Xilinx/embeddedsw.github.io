@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,6 +36,7 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 * 4.10  gm   07/11/23 Added SDT support.
+* 4.11  gm   12/06/23 Added IER and GIER calls in SDT flow.
 *
 *</pre>
 *
@@ -47,6 +48,7 @@
 #include "xgpio.h"
 #include "xil_exception.h"
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #include "xintc.h"
 #include <stdio.h>
@@ -54,7 +56,7 @@
 #include "xscugic.h"
 #include "xil_printf.h"
 #endif
-#ifdef SDT
+#else
 #include "xinterrupt_wrap.h"
 #endif
 
@@ -267,6 +269,8 @@ int GpioIntrExample(XGpio *InstancePtr, UINTPTR BaseAddress,
 				       ConfigPtr->IntrId,
 				       ConfigPtr->IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
+	XGpio_InterruptEnable(InstancePtr, IntrMask);
+	XGpio_InterruptGlobalEnable(InstancePtr);
 #endif
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;

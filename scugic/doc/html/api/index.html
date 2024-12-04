@@ -65,23 +65,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">scugic Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The generic interrupt controller driver component.The interrupt controller driver uses the idea of priority for the various handlers. Priority is an integer within the range of 1 and 31 inclusive with default of 1 being the highest priority interrupt source. The priorities of the various sources can be dynamically altered as needed through hardware configuration.</p>
-<p>The generic interrupt controller supports the following features:</p>
-<ul>
-<li>specific individual interrupt enabling/disabling</li>
-<li>specific individual interrupt acknowledging</li>
-<li>attaching specific callback function to handle interrupt source</li>
-<li>assigning desired priority to interrupt source if default is not acceptable.</li>
-</ul>
-<p>Details about connecting the interrupt handler of the driver are contained in the source file specific to interrupt processing, <a class="el" href="xscugic__intr_8c.html">xscugic_intr.c</a>.</p>
-<p>This driver is intended to be RTOS and processor independent. It works with physical addresses only. Any needs for dynamic memory management, threads or thread mutual exclusion, virtual memory, or cache control must be satisfied by the layer above this driver.</p>
-<p><b>Interrupt Vector Tables</b></p>
-<p>The device ID of the interrupt controller device is used by the driver as a direct index into the configuration data table. The user should populate the vector table with handlers and callbacks at run-time using the <a class="el" href="group__scugic.html#ga48f9dd531aa861a74e6bd627943573ea" title="Makes the connection between the Int_Id of the interrupt source and the associated handler that is to...">XScuGic_Connect()</a> and <a class="el" href="group__scugic.html#gad162acedbbd41fd890fc7f2225ed480b" title="Updates the interrupt table with the Null Handler and NULL arguments at the location pointed at by th...">XScuGic_Disconnect()</a> functions.</p>
-<p>Each vector table entry corresponds to a device that can generate an interrupt. Each entry contains an interrupt handler function and an argument to be passed to the handler when an interrupt occurs. The user must use <a class="el" href="group__scugic.html#ga48f9dd531aa861a74e6bd627943573ea" title="Makes the connection between the Int_Id of the interrupt source and the associated handler that is to...">XScuGic_Connect()</a> when the interrupt handler takes an argument other than the base address.</p>
-<p><b>Nested Interrupts Processing</b></p>
-<p>Nested interrupts are not supported by this driver.</p>
-<p>NOTE: The generic interrupt controller is not a part of the snoop control unit as indicated by the prefix "scu" in the name of the driver. It is an independent module in APU.</p>
-<pre>
+<div class="textblock"><pre>
 MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 </p>
 <hr/>
@@ -113,8 +97,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
               *_hw.h
               Added APIs</p>
 <ul>
-<li><a class="el" href="group__scugic.html#gaf58a00ee3c052d8aec17b179c86388c7" title="Sets the interrupt priority and trigger type for the specificd IRQ source. ">XScuGic_SetPriTrigTypeByDistAddr()</a></li>
-<li><a class="el" href="group__scugic.html#ga0c6a61acf2d5d030542c788a9aa42004" title="Gets the interrupt priority and trigger type for the specificd IRQ source. ">XScuGic_GetPriTrigTypeByDistAddr()</a>
+<li><a class="el" href="group__scugic__api.html#gaf58a00ee3c052d8aec17b179c86388c7" title="Sets the interrupt priority and trigger type for the specificd IRQ source. ">XScuGic_SetPriTrigTypeByDistAddr()</a></li>
+<li><a class="el" href="group__scugic__api.html#ga0c6a61acf2d5d030542c788a9aa42004" title="Gets the interrupt priority and trigger type for the specificd IRQ source. ">XScuGic_GetPriTrigTypeByDistAddr()</a>
               (CR 702687)
                 Added support to direct interrupts to the appropriate CPU. Earlier
                   interrupts were directed to CPU1 (hard coded). Now depending
@@ -190,7 +174,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
                     GIC driver can use newly introduced spinlock
                     functionality.
 4.6     sk   08/05/21 Fix scugic misrac violations.
-4.7   dp   11/22/21 Added new API <a class="el" href="group__scugic.html#ga72b9aec992716861e5f0929e4d0d9f7c" title="It checks whether the XScGic is initialized or not given the device id. ">XScuGic_IsInitialized()</a> to check and return
+4.7   dp   11/22/21 Added new API <a class="el" href="group__scugic__api.html#ga72b9aec992716861e5f0929e4d0d9f7c" title="Checks whether the XScGic is initialized or not given the device ID. ">XScuGic_IsInitialized()</a> to check and return
                     the GIC initialization status.
 5.0   mus  22/02/22 Add support for VERSAL NET
         adk  04/18/22 Replace infinite while loops in the examples with

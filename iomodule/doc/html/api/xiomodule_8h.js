@@ -19,6 +19,7 @@ var xiomodule_8h =
     [ "XIOModule_GetOptions", "xiomodule_8h.html#gab24288979ff867f5e8f98372bddda874", null ],
     [ "XIOModule_GetStats", "xiomodule_8h.html#ga42ada8bd0fb0d16976254c228a8924a2", null ],
     [ "XIOModule_GetValue", "xiomodule_8h.html#ga826357a58aeda0b2d1bfc42efd6bb94c", null ],
+    [ "XIOModule_HandlerTable_Initialize", "xiomodule_8h.html#ga964f5bae2572929b40d1f630118e36ac", null ],
     [ "XIOModule_Initialize", "xiomodule_8h.html#ga81cf0087aeb46a8a78030e964e743314", null ],
     [ "XIOModule_Intc_SelfTest", "xiomodule_8h.html#gaadbc5225c2c104a1a09d226e6daf3497", null ],
     [ "XIOModule_InterruptHandler", "xiomodule_8h.html#ga848da9f83ad1188caca777cd324cec10", null ],

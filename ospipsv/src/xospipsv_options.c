@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
 *
 * @file xospipsv_options.c
-* @addtogroup ospipsv Overview
+* @addtogroup ospipsv_api OSPIPSV APIs
 * @{
 *
 * The xospipsv_options.c file implements functions to configure the OSPIPSV component,
@@ -26,6 +26,8 @@
 *       sk   02/04/19 Added support for SDR+PHY and DDR+PHY modes.
 * 1.1   sk   07/22/19 Added RX Tuning algorithm for SDR and DDR modes.
 * 1.6   sk   02/07/22 Replaced driver version in addtogroup with Overview.
+* 1.11  sb   07/09/24 Limit dummy value range in XOspiPsv_ConfigureAutoPolling().
+* 1.11  ng  08/20/24 Add spartanup device support
 *
 * </pre>
 *
@@ -47,7 +49,7 @@
 /************************** Variable Definitions *****************************/
 
 /**
- * Create the table of options which are processed to get/set the device
+ * Creates the table of options which are processed to get/set the device
  * options. These options are table driven to allow easy maintenance and
  * expansion of the options.
  */
@@ -74,12 +76,12 @@ static OptionsMap OptionsTable[] = {
 /*****************************************************************************/
 /**
 * @brief
-* This function sets the options for the OSPIPSV device driver.The options
+* Sets the options for the OSPIPSV device driver.The options
 * control how the device behaves relative to the OSPIPSV bus. The device must be
 * idle rather than busy transferring data before setting these device options.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Options contains the specified options to be set. This is a bit
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Options Contains the specified options to be set. This is a bit
 *		mask where a 1 indicates the option should be turned ON and
 *		a 0 indicates no action. One or more bit Values may be
 *		contained in the mask. See the bit definitions named
@@ -134,6 +136,9 @@ u32 XOspiPsv_SetOptions(XOspiPsv *InstancePtr, u32 Options)
 					Xil_Smc(PM_IOCTL_SMC_FID, (((u64)PM_IOCTL_OSPI_MUX_SELECT << 32) | OSPI_NODE_ID) , PM_OSPI_MUX_SEL_LINEAR, 0,0,0,0,0);
 					/* Release OSPI node */
 					Xil_Smc(PM_RELEASE_DEVICE_SMC_FID,OSPI_NODE_ID,0, 0,0,0,0,0);
+					#elif defined(SPARTANUP)
+					XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, OSPI_AXI_MODE_SEL,
+						OSPI_AXI_MODE_SEL_AXIS_MODE_SEL_MASK);
 					#else
 					XOspiPsv_WriteReg(XPMC_IOU_SLCR_BASEADDR,
 						XPMC_IOU_SLCR_OSPI_MUX_SEL,
@@ -154,6 +159,9 @@ u32 XOspiPsv_SetOptions(XOspiPsv *InstancePtr, u32 Options)
 						Xil_Smc(PM_IOCTL_SMC_FID, (((u64)PM_IOCTL_OSPI_MUX_SELECT << 32) | OSPI_NODE_ID), PM_OSPI_MUX_SEL_DMA, 0, 0, 0, 0, 0);
 						/* Release OSPI node */
 						Xil_Smc(PM_RELEASE_DEVICE_SMC_FID,OSPI_NODE_ID, 0, 0, 0, 0, 0, 0);
+						#elif defined(SPARTANUP)
+						XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, OSPI_AXI_MODE_SEL,
+							~(u32)OSPI_AXI_MODE_SEL_AXIS_MODE_SEL_MASK);
 						#else
 						XOspiPsv_WriteReg(XPMC_IOU_SLCR_BASEADDR,
 							XPMC_IOU_SLCR_OSPI_MUX_SEL,
@@ -179,6 +187,9 @@ u32 XOspiPsv_SetOptions(XOspiPsv *InstancePtr, u32 Options)
 						Xil_Smc(PM_IOCTL_SMC_FID, (((u64)PM_IOCTL_OSPI_MUX_SELECT << 32) | OSPI_NODE_ID) , PM_OSPI_MUX_SEL_DMA, 0,0,0,0,0);
 						/* Release OSPI node */
 						Xil_Smc(PM_RELEASE_DEVICE_SMC_FID,OSPI_NODE_ID,0, 0,0,0,0,0);
+						#elif defined(SPARTANUP)
+						XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, OSPI_AXI_MODE_SEL,
+							~(u32)OSPI_AXI_MODE_SEL_AXIS_MODE_SEL_MASK);
 						#else
 						XOspiPsv_WriteReg(XPMC_IOU_SLCR_BASEADDR,
 							XPMC_IOU_SLCR_OSPI_MUX_SEL,
@@ -203,10 +214,10 @@ u32 XOspiPsv_SetOptions(XOspiPsv *InstancePtr, u32 Options)
 /*****************************************************************************/
 /**
 * @brief
-* This function gets the options for the OSPIPSV device. The options control how
+* Gets the options for the OSPIPSV device. The options control how
 * the device behaves relative to the OSPIPSV bus.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 * 		Options contains the specified options currently set. This is a bit Value
@@ -243,8 +254,8 @@ u32 XOspiPsv_GetOptions(const XOspiPsv *InstancePtr)
 * @brief
 * Configures the clock according to the prescaler passed.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Prescaler - clock prescaler to be set.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Prescaler Clock prescaler to be set.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -301,10 +312,10 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* Configures the edge mode (SDR or DDR)
+* Configures the edge mode (SDR or DDR).
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	Mode is Edge mode. XOSPIPSV_EDGE_MODE_* represents valid values.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	Mode Edge mode. XOSPIPSV_EDGE_MODE_* represents valid values.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -370,13 +381,13 @@ ERROR_PATH:
 /*****************************************************************************/
 /**
 * @brief
-* This function should be used to tell the OSPIPSV driver the HW flash
+* Used to signify the OSPIPSV driver that the Hardware flash
 * configuration being used. This API should be called at least once in the
 * application. If desired, it can be called multiple times when switching
-* between communicating to different flash devices/using different configs.
+* between communicating to different flash devices/using different configuration.
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	chip_select - Flash Chip Select.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	chip_select Flash Chip Select.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -414,8 +425,8 @@ ERROR_PATH:
 * transfer in DAC mode.
 *
 *
-* @param	InstancePtr is a pointer to the XOspiPsv instance.
-* @param	FlashMode is Edge mode. XOSPIPSV_EDGE_MODE_* represents valid values.
+* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param	FlashMode Edge mode. XOSPIPSV_EDGE_MODE_* represents valid values.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -436,6 +447,15 @@ void XOspiPsv_ConfigureAutoPolling(const XOspiPsv *InstancePtr, u32 FlashMode)
 	Dummy = InstancePtr->Extra_DummyCycle;
 	if (FlashMode == XOSPIPSV_EDGE_MODE_DDR_PHY) {
 		Dummy += XOSPIPSV_DDR_STATS_REG_DUMMY;
+	}
+	/*
+	 * Limit the dummy value to stay within the range of
+	 * device_status_nb_dummy to prevent it from exceeding the allowed range
+	 */
+	if (Dummy >= (XOSPIPSV_POLLING_FLASH_STATUS_REG_DEVICE_STATUS_NB_DUMMY_MASK >>
+				XOSPIPSV_POLLING_FLASH_STATUS_REG_DEVICE_STATUS_NB_DUMMY_SHIFT)) {
+		Dummy = XOSPIPSV_POLLING_FLASH_STATUS_REG_DEVICE_STATUS_NB_DUMMY_MASK >>
+				XOSPIPSV_POLLING_FLASH_STATUS_REG_DEVICE_STATUS_NB_DUMMY_SHIFT;
 	}
 	ReadReg |= ((u32)Dummy <<
 		XOSPIPSV_POLLING_FLASH_STATUS_REG_DEVICE_STATUS_NB_DUMMY_SHIFT);

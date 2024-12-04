@@ -13,6 +13,7 @@ var files =
     [ "xsysmonpsv_polled_example.c", "xsysmonpsv__polled__example_8c.html", "xsysmonpsv__polled__example_8c" ],
     [ "xsysmonpsv_secure.c", "xsysmonpsv__secure_8c.html", null ],
     [ "xsysmonpsv_secure.h", "xsysmonpsv__secure_8h.html", null ],
+    [ "xsysmonpsv_services.c", "xsysmonpsv__services_8c.html", "xsysmonpsv__services_8c" ],
     [ "xsysmonpsv_services.h", "xsysmonpsv__services_8h.html", "xsysmonpsv__services_8h" ],
     [ "xsysmonpsv_sinit.c", "xsysmonpsv__sinit_8c.html", "xsysmonpsv__sinit_8c" ]
 ];

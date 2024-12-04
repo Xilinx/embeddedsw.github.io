@@ -3,6 +3,7 @@ var xdmapcie_8c =
     [ "XDmaPcie_CfgInitialize", "xdmapcie_8c.html#a557a92506060fd460154426bd8c4870c", null ],
     [ "XDmaPcie_ClearRootPortErrFIFOMsg", "xdmapcie_8c.html#a8ae44f206a94bf40daea49281112b46d", null ],
     [ "XDmaPcie_ClearRootPortIntFIFOReg", "xdmapcie_8c.html#a1a9e71d1904e3b6bfca811f5baec640c", null ],
+    [ "XDmaPcie_CompareSizes", "xdmapcie_8c.html#aeca748f13e8fb34897a72e26be390eb0", null ],
     [ "XDmaPcie_EnumerateFabric", "xdmapcie_8c.html#a6140581d0eb6e4867a18a996e8e91708", null ],
     [ "XDmaPcie_GetBridgeInfo", "xdmapcie_8c.html#a83357e666376be50d018b3e0d2d07acf", null ],
     [ "XDmaPcie_GetLocalBusBar2PcieBar", "xdmapcie_8c.html#a2c9b0cae150260c8ee67c21c3e7cd372", null ],

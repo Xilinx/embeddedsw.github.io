@@ -15,7 +15,7 @@ var xipipsu_8h =
     [ "XIPIPSU_W0_TO_W6_SIZE", "xipipsu_8h.html#ga60f742faef33529c730b02614441789b", null ],
     [ "XIpiPsu_WriteReg", "xipipsu_8h.html#ga72bcaac2f32ad480f79204f868309c31", null ],
     [ "XIpiPsu_CfgInitialize", "xipipsu_8h.html#ga9fb4494480ae0079422956f2af1da357", null ],
-    [ "XIpiPsu_LookupConfig", "xipipsu_8h.html#gaaafe5e7a11e3d1fdd01a255521332272", null ],
+    [ "XIpiPsu_LookupConfig", "xipipsu_8h.html#ga156d31f0b6ec62b917d9ce4a2d3684e3", null ],
     [ "XIpiPsu_PollForAck", "xipipsu_8h.html#ga8153ea7257d7db9dd3f2ac0dd03e2ee2", null ],
     [ "XIpiPsu_ReadMessage", "xipipsu_8h.html#ga64113249dac23760b5cc0e9d038f8361", null ],
     [ "XIpiPsu_Reset", "xipipsu_8h.html#ga9c55b8deb0e6b0a4ff355ad3a74aa2f1", null ],

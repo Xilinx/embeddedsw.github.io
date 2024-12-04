@@ -35,6 +35,7 @@
 * 1.2   sd     02/13/20 Rename ARRAY_SIZE
 * 1.4   sd     12/02/21 Fix compilation warnings reported with "-Wundef" flag.
 * 1.5   sd     07/10/23 Added SDT support
+* 1.6   sd     11/03/23 Fix the redefinition of the PSS_REF frequency
 * </pre>
 *
 ******************************************************************************/
@@ -59,8 +60,10 @@ extern "C" {
  * Device ID and Num Instances defines for resetps. Resetps uses common
  * hardware with other driver and hence this wrapper defines are required
  */
+#ifndef SDT
 #define XPAR_XCLOCKPS_NUM_INSTANCES  (XPAR_XCRPSU_NUM_INSTANCES)
 #define XPAR_XCLOCKPS_DEVICE_ID      (XPAR_XCRPSU_0_DEVICE_ID)
+#endif
 
 /* Fixed clock rate definitions */
 #define XCLOCK_FIX_RATE_VIDEO_CLK    (27000000U)

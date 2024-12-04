@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('xintc__low__level__example_8c.html',''
                     ensure that "Successfully ran" and "Failed" strings
                     are available in all examples. This is a fix for
                     CR-965028.
+3.18  mus  03/27/24 Added handling for FAST interrupts.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -158,7 +159,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS to indicate success, otherwise XST_FAILURE.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xintc__example_8c.html#a2d6264927eb02cdac505c92079fa9e03">DeviceDriverHandler()</a>, <a class="el" href="xintc__low__level__example_8c.html#a0838d944ebf56cbdfce4d481eab585e8">SetupInterruptSystem()</a>, <a class="el" href="group__intc.html#gad35ec3b9b658f26d989b19783954683e">XIntc_EnableIntr</a>, and <a class="el" href="group__intc.html#ga4bd1d34885340943143c8fd2f98a3963">XIntc_RegisterHandler()</a>.</p>
+<p>References <a class="el" href="xintc__example_8c.html#a2d6264927eb02cdac505c92079fa9e03">DeviceDriverHandler()</a>, <a class="el" href="group__intc.html#gaf8c9b9342d3f4190fe131c29765a1e02">LookupConfigByBaseAddress()</a>, <a class="el" href="xintc__low__level__example_8c.html#a0838d944ebf56cbdfce4d481eab585e8">SetupInterruptSystem()</a>, <a class="el" href="struct_x_intc___config.html#a630c8585f41eea348ae0d6d134b0ad8f">XIntc_Config::VectorAddrWidth</a>, <a class="el" href="group__intc.html#gad35ec3b9b658f26d989b19783954683e">XIntc_EnableIntr</a>, and <a class="el" href="group__intc.html#ga4bd1d34885340943143c8fd2f98a3963">XIntc_RegisterHandler()</a>.</p>
 
 <p>Referenced by <a class="el" href="xintc__low__level__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>.</p>
 

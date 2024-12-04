@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2019 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  *****************************************************************************/
 
@@ -44,15 +45,25 @@
 #include "xsdiaud_hw.h"
 #endif
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 #include "xintc.h"
 else
 #include "xscugic.h"
 #endif
+#else
+#include "xinterrupt_wrap.h"
+#endif
 
 /************************** Constant Definitions *****************************/
+#ifndef SDT
 #define GPIO_0_TX_RST XPAR_GPIO_0_BASEADDR
 #define GPIO_1_RX_RST XPAR_GPIO_1_BASEADDR
+#else
+#define GPIO_0_TX_RST XPAR_XGPIO_0_BASEADDR
+#define GPIO_1_RX_RST XPAR_XGPIO_1_BASEADDR
+#endif
+
 
 #ifdef XPAR_XSDIAUD_NUM_INSTANCES
 #define SDI_AUD_EMBED   XPAR_V_UHDSDI_AUDIO_EMBED_1_BASEADDR
@@ -77,6 +88,7 @@ typedef u8 AddressType;
 #define FREQ_27_MHz	(27000000)
 #define FREQ_148_35_MHz	(148350000)
 
+#ifndef SDT
 #ifdef XPAR_XSDIAUD_NUM_INSTANCES
 #define SPDIF_0_DEVICE_ID XPAR_XSPDIF_0_DEVICE_ID
 #define SPDIF_1_DEVICE_ID XPAR_XSPDIF_1_DEVICE_ID
@@ -96,6 +108,14 @@ typedef u8 AddressType;
 #define ACR_BASEADDR XPAR_AES_TX_HIER_ACR_BASEADDR
 #define AXIS_SWITCH_RX XPAR_AXIS_SWITCH_0_BASEADDR
 #define AXIS_SWITCH_TX XPAR_AXIS_SWITCH_1_BASEADDR
+#endif
+#else
+#ifdef XPAR_XSDIAUD_NUM_INSTANCES
+#define XSDIAUD_QUAD_GROUP	4
+#define ACR_BASEADDR XPAR_AES_TX_HIER_ACR_BASEADDR
+#define AXIS_SWITCH_RX XPAR_XAXIS_SWITCH_0_BASEADDR
+#define AXIS_SWITCH_TX XPAR_XAXIS_SWITCH_1_BASEADDR
+#endif
 #endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -139,9 +159,9 @@ unsigned int IntrReceived;
 u8 AudioStatusUpdate;
 
 /************************** Variable Definitions *****************************/
-
+#ifndef SDT
 static XScuGic Intc;
-
+#endif
 XGpio Gpio_AxisFifo_resetn;
 XGpio_Config *Gpio_AxisFifo_resetn_ConfigPtr;
 
@@ -185,6 +205,7 @@ void ClearScreen(void)
 	xil_printf("%c\033[0;0H", 27);	/**< Bring Cursor to 0,0 */
 }
 
+#ifndef SDT
 /*****************************************************************************/
 /**
  *
@@ -238,7 +259,7 @@ static int SetupInterruptSystem(void)
 
 	return XST_SUCCESS;
 }
-
+#endif
 /*****************************************************************************/
 /**
  *
@@ -257,11 +278,19 @@ static int I2cMux(void)
 	xil_printf("Set i2c mux... ");
 
 	Buffer = 0x18;
+#ifndef SDT
 	Status = XIic_Send((XPAR_IIC_0_BASEADDR),
 				(I2C_MUX_ADDR),
 				(u8 *)&Buffer,
 				1,
 				(XIIC_STOP));
+#else
+	Status = XIic_Send((XPAR_XIIC_0_BASEADDR),
+			   (I2C_MUX_ADDR),
+			   (u8 *)&Buffer,
+			   1,
+			   (XIIC_STOP));
+#endif
 	xil_printf("done\n\r");
 
 	return Status;
@@ -288,11 +317,20 @@ static int I2cClk(u32 InFreq, u32 OutFreq)
 	/* Free running mode */
 	if (!InFreq) {
 
+#ifndef SDT
 		Status = Si5324_SetClock((XPAR_IIC_0_BASEADDR),
 					(I2C_CLK_ADDR),
 					(SI5324_CLKSRC_XTAL),
 					(SI5324_XTAL_FREQ),
 					OutFreq);
+#else
+		Status = Si5324_SetClock((XPAR_XIIC_0_BASEADDR),
+					 (I2C_CLK_ADDR),
+					 (SI5324_CLKSRC_XTAL),
+					 (SI5324_XTAL_FREQ),
+					 OutFreq);
+
+#endif
 
 		if (Status != (SI5324_SUCCESS)) {
 			print("Error programming SI5324\n\r");
@@ -302,11 +340,19 @@ static int I2cClk(u32 InFreq, u32 OutFreq)
 
 	/* Locked mode */
 	else {
+#ifndef SDT
 		Status = Si5324_SetClock((XPAR_IIC_0_BASEADDR),
 					(I2C_CLK_ADDR),
 					(SI5324_CLKSRC_CLK1),
 					InFreq,
 					OutFreq);
+#else
+		Status = Si5324_SetClock((XPAR_XIIC_0_BASEADDR),
+					 (I2C_CLK_ADDR),
+					 (SI5324_CLKSRC_CLK1),
+					 InFreq,
+					 OutFreq);
+#endif
 
 		if (Status != (SI5324_SUCCESS)) {
 			print("Error programming SI5324\n\r");
@@ -1266,7 +1312,11 @@ int main(void)
 	I2cMux();
 
 	/* si570 configuration of 148.5MHz */
+#ifndef SDT
 	Si570_SetClock(XPAR_IIC_0_BASEADDR, I2C_CLK_ADDR_570, FREQ_148_5_MHz);
+#else
+	Si570_SetClock(XPAR_XIIC_0_BASEADDR, I2C_CLK_ADDR_570, FREQ_148_5_MHz);
+#endif
 
 
 	/* Rx Reset Sequence */
@@ -1289,15 +1339,21 @@ int main(void)
 	xil_printf("----------------------------------------\r\n");
 
 	/* Initialize IRQ */
+#ifndef SDT
 	Status = SetupInterruptSystem();
 	if (Status == XST_FAILURE) {
 		xil_printf("IRQ init failed.\n\r\r");
 		return XST_FAILURE;
 	}
+#endif
+
 
 	/* Initialize SDI TX Subsystem */
+#ifndef SDT
 	XV_SdiTxSs_ConfigPtr = XV_SdiTxSs_LookupConfig(XPAR_XV_SDITXSS_0_DEVICE_ID);
-
+#else
+	XV_SdiTxSs_ConfigPtr = XV_SdiTxSs_LookupConfig(XPAR_XV_SDITXSS_0_BASEADDR);
+#endif
 	XV_SdiTxSs_ConfigPtr->BaseAddress = XPAR_XV_SDITXSS_0_BASEADDR;
 
 	if (!XV_SdiTxSs_ConfigPtr) {
@@ -1331,8 +1387,14 @@ int main(void)
 	XV_SdiTxSs_IntrEnable(&SdiTxSs, XV_SDITXSS_IER_GTTX_RSTDONE_MASK);
 
 	/* Initialize axis_fifo_gpio */
+#ifndef SDT
 	Gpio_AxisFifo_resetn_ConfigPtr =
 		XGpio_LookupConfig(XPAR_GPIO_2_DEVICE_ID);
+#else
+	Gpio_AxisFifo_resetn_ConfigPtr =
+		XGpio_LookupConfig(XPAR_XGPIO_2_BASEADDR);
+
+#endif
 
 	if (!Gpio_AxisFifo_resetn_ConfigPtr) {
 		Gpio_AxisFifo_resetn.IsReady = 0;
@@ -1352,8 +1414,13 @@ int main(void)
 	XGpio_SetDataDirection(&Gpio_AxisFifo_resetn, 1, 0);
 
 	/* Initialize SI5324_lol_gpio */
+#ifndef SDT
 	Gpio_si5324_ConfigPtr =
 		XGpio_LookupConfig(XPAR_GPIO_3_DEVICE_ID);
+#else
+	Gpio_si5324_ConfigPtr =
+		XGpio_LookupConfig(XPAR_XGPIO_3_BASEADDR);
+#endif
 
 	if (!Gpio_si5324_ConfigPtr) {
 		Gpio_si5324.IsReady = 0;
@@ -1373,7 +1440,11 @@ int main(void)
 	XGpio_SetDataDirection(&Gpio_si5324, 1, 1);
 
 	/* Initialize SDI RX Subsystem */
+#ifndef SDT
 	XV_SdiRxSs_ConfigPtr = XV_SdiRxSs_LookupConfig(XPAR_XV_SDIRX_0_DEVICE_ID);
+#else
+	XV_SdiRxSs_ConfigPtr = XV_SdiRxSs_LookupConfig(XPAR_XV_SDIRXSS_0_BASEADDR);
+#endif
 
 	XV_SdiRxSs_ConfigPtr->BaseAddress = XPAR_XV_SDIRXSS_0_BASEADDR;
 
@@ -1414,8 +1485,12 @@ int main(void)
 	/*
 	 * Lookup and Initialize the Spdif so that it's ready to use.
 	 */
-
+#ifndef SDT
 	Config = XSpdif_LookupConfig(SPDIF_0_DEVICE_ID);
+#else
+	Config = XSpdif_LookupConfig(XPAR_XSPDIF_0_BASEADDR);
+#endif
+
 	if (Config == NULL)
 		 return XST_FAILURE;
 	Status = XSpdif_CfgInitialize(&SpdifRx, Config,
@@ -1423,7 +1498,11 @@ int main(void)
 	if (Status != XST_SUCCESS)
 		return XST_FAILURE;
 
+#ifndef SDT
 	Config = XSpdif_LookupConfig(SPDIF_1_DEVICE_ID);
+#else
+	Config = XSpdif_LookupConfig(XPAR_XSPDIF_1_BASEADDR);
+#endif
 	if (Config == NULL)
 		 return XST_FAILURE;
 	Status = XSpdif_CfgInitialize(&SpdifTx, Config,
@@ -1431,17 +1510,32 @@ int main(void)
 	if (Status != XST_SUCCESS)
 		return XST_FAILURE;
 
+#ifndef SDT
 	Status = XSdiAud_Initialize(&SdiEmbed, SDIAUD_1_DEVICE_ID);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERR:: SDI Embed IP Initialization failed %d\r\n", Status);
 		return XST_FAILURE;
 	}
-
+#else
+	Status = XSdiAud_Initialize(&SdiEmbed, XPAR_XSDIAUD_1_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERR:: SDI Embed IP Initialization failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+#endif
+#ifndef SDT
 	Status = XSdiAud_Initialize(&SdiExtract, SDIAUD_0_DEVICE_ID);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERR:: SDI Extract IP Initialization failed %d\r\n", Status);
 		return XST_FAILURE;
 	}
+#else
+	Status = XSdiAud_Initialize(&SdiExtract, XPAR_XSDIAUD_0_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERR:: SDI Extract IP Initialization failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+#endif
 
 	xil_printf("SDI AUDIO EMBED AND EXTRACT DRIVER ready to use\r\n");
 
@@ -1468,6 +1562,7 @@ int main(void)
 			XSdiAud_AESStChangeHandler,
 			(void *)&SdiEmbed);
 #endif
+#ifndef SDT
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
 				SDI_RX_SS_INTR_ID,
@@ -1480,7 +1575,18 @@ int main(void)
 		xil_printf("SDI RX SS initialization error\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SdiRxSs, &XV_SdiRxSS_SdiRxIntrHandler,
+				       SdiRxSs.Config.IntrId,
+				       SdiRxSs.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+#endif
 
+#ifndef SDT
 	/*Register SDI TX SS Interrupt Handler with Interrupt Controller */
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
@@ -1494,9 +1600,20 @@ int main(void)
 		xil_printf("SDI TX SS initialization error\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SdiTxSs, &XV_SdiTxSS_SdiTxIntrHandler,
+				       SdiTxSs.Config.IntrId,
+				       SdiTxSs.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+#endif
 
 #ifdef XPAR_XSDIAUD_NUM_INSTANCES
 	/* Register Spdif Rx Interrupt Handler with Interrupt Controller */
+#ifndef SDT
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
 				SPDIF_0_INTERRUPT_ID,
@@ -1509,8 +1626,20 @@ int main(void)
 		xil_printf("ERR:: Unable to register Spdif Rx interrupt handler\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SpdifRx, &XSpdif_IntrHandler,
+				       SpdifRx.Config.IntrId,
+				       SpdifRx.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+
+#endif
 
 	/* Register Spdif Tx Interrupt Handler with Interrupt Controller */
+#ifndef SDT
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
 				SPDIF_1_INTERRUPT_ID,
@@ -1523,8 +1652,19 @@ int main(void)
 		xil_printf("ERR:: Unable to register Spdif Tx interrupt handler\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SpdifTx, &XSpdif_IntrHandler,
+				       SpdifTx.Config.IntrId,
+				       SpdifTx.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+#endif
 
 	/* Register SDI AUdio Extract Interrupt Handler with Interrupt Controller */
+#ifndef SDT
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
 				SDIAUD_0_INTERRUPT_ID,
@@ -1537,7 +1677,19 @@ int main(void)
 		xil_printf("ERR:: Unable to register SDI Audio Extract interrupt handler\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SdiExtract, &XSdiAud_IntrHandler,
+				       SdiExtract.Config.IntrId,
+				       SdiExtract.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+
+#endif
 	/* Register SDI AUdio Embed Interrupt Handler with Interrupt Controller */
+#ifndef SDT
 	Status = 0;
 	Status |= XScuGic_Connect(&Intc,
 				SDIAUD_1_INTERRUPT_ID,
@@ -1550,6 +1702,18 @@ int main(void)
 		xil_printf("ERR:: Unable to register SDI Audio Embed interrupt handler\n\r");
 		return XST_FAILURE;
 	}
+#else
+	Status = XSetupInterruptSystem(&SdiEmbed, &XSpdif_IntrHandler,
+				       SdiEmbed.Config.IntrId,
+				       SdiEmbed.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+	if (Status == XST_FAILURE) {
+		xil_printf("IRQ init failed.\n\r\r");
+		return XST_FAILURE;
+	}
+
+#endif
+
 #endif
 	/* Initialize menu */
 	XSdi_MenuInitialize(&SdiMenu, UART_BASEADDR);

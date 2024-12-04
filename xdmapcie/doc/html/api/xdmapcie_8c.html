@@ -81,6 +81,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a557a92506060fd460154426bd8c4870c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8c.html#a557a92506060fd460154426bd8c4870c">XDmaPcie_CfgInitialize</a> (<a class="el" href="struct_x_dma_pcie.html">XDmaPcie</a> *InstancePtr, <a class="el" href="struct_x_dma_pcie___config.html">XDmaPcie_Config</a> *CfgPtr, UINTPTR EffectiveAddress)</td></tr>
 <tr class="memdesc:a557a92506060fd460154426bd8c4870c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the <a class="el" href="struct_x_dma_pcie.html" title="The XDmaPcie driver instance data. ">XDmaPcie</a> instance provided by the caller based on the given Config structure.  <a href="#a557a92506060fd460154426bd8c4870c">More...</a><br/></td></tr>
 <tr class="separator:a557a92506060fd460154426bd8c4870c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeca748f13e8fb34897a72e26be390eb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8c.html#aeca748f13e8fb34897a72e26be390eb0">XDmaPcie_CompareSizes</a> (const void *FirstReqSize, const void *SecondReqSize)</td></tr>
+<tr class="memdesc:aeca748f13e8fb34897a72e26be390eb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function Compare two different sizes.  <a href="#aeca748f13e8fb34897a72e26be390eb0">More...</a><br/></td></tr>
+<tr class="separator:aeca748f13e8fb34897a72e26be390eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6140581d0eb6e4867a18a996e8e91708"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xdmapcie_8c.html#a6140581d0eb6e4867a18a996e8e91708">XDmaPcie_EnumerateFabric</a> (<a class="el" href="struct_x_dma_pcie.html">XDmaPcie</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a6140581d0eb6e4867a18a996e8e91708"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts PCIe enumeration.  <a href="#a6140581d0eb6e4867a18a996e8e91708">More...</a><br/></td></tr>
 <tr class="separator:a6140581d0eb6e4867a18a996e8e91708"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -242,6 +245,42 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>This function is valid only when IP is configured as a root complex.Clearing any one Interrupt FIFO register clears both registers. </dd></dl>
 
 <p>References <a class="el" href="struct_x_dma_pcie___config.html#a11981cd817dda09fa8ffb1e4b6c524bd">XDmaPcie_Config::BaseAddress</a>, <a class="el" href="struct_x_dma_pcie.html#af5d05276beffe8f09d05bf237cc3d2f5">XDmaPcie::Config</a>, <a class="el" href="struct_x_dma_pcie___config.html#ab67ad06680c60071c889da0a04852a96">XDmaPcie_Config::IncludeRootComplex</a>, <a class="el" href="struct_x_dma_pcie.html#ab8f1b6c7f90a5614de5f726f4daef12e">XDmaPcie::IsReady</a>, <a class="el" href="xdmapcie__hw_8h.html#a2d3fa8b6821762a92a973e4b1d341f12">XDMAPCIE_RPIFR1_OFFSET</a>, and <a class="el" href="xdmapcie__hw_8h.html#afa180a178e9501f6238f5a5fbbd62a69">XDmaPcie_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aeca748f13e8fb34897a72e26be390eb0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XDmaPcie_CompareSizes </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>FirstReqSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>SecondReqSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function Compare two different sizes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">FirstReqSize</td><td>is First Variable to compare size </td></tr>
+    <tr><td class="paramname">SecondReqSize</td><td>is Second Variable to compare size</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Difference of sizes, Zero for Equal </dd></dl>
 
 </div>
 </div>
@@ -578,10 +617,10 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
     <tr><td class="paramname">ReqIdPtr</td><td>is a variable where the driver will pass back the requester Id of error message. </td></tr>
-    <tr><td class="paramname">MsiAddr</td><td>is a variable where the driver will pass back the MSI address for which interrupt message recieved. </td></tr>
-    <tr><td class="paramname">MsiInt</td><td>is a variable where the driver will pass back the type of interrupt message recieved (MSI/INTx). </td></tr>
+    <tr><td class="paramname">MsiAddr</td><td>is a variable where the driver will pass back the MSI address for which interrupt message received. </td></tr>
+    <tr><td class="paramname">MsiInt</td><td>is a variable where the driver will pass back the type of interrupt message received (MSI/INTx). </td></tr>
     <tr><td class="paramname">IntValid</td><td>is a variable where the driver will pass back the status of read operation of interrupt message. </td></tr>
-    <tr><td class="paramname">MsiMsgData</td><td>is a variable where the driver will pass back the MSI data recieved.</td></tr>
+    <tr><td class="paramname">MsiMsgData</td><td>is a variable where the driver will pass back the MSI data received.</td></tr>
   </table>
   </dd>
 </dl>
@@ -857,7 +896,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Read 32-bit value from external PCIe Function's configuration space. </p>
-<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the begginning of the configuration space.</p>
+<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
@@ -1033,7 +1072,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write 32-bit value to one of this IP own configuration space. </p>
-<p>Location is identified by its offset from the begginning of the configuration space.</p>
+<p>Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>
@@ -1100,7 +1139,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write 32-bit value to external PCIe function's configuration space. </p>
-<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the begginning of the configuration space.</p>
+<p>External PCIe function is identified by its Requester ID (Bus#, Device#, Function#). Location is identified by its offset from the beginning of the configuration space.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is the PCIe component to operate on. </td></tr>

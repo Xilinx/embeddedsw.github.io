@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,9 +8,9 @@
 /**
 *
 * @file xsrio_sinit.c
-* @addtogroup srio_v1_4
+* @addtogroup srio Overview
 * @{
-* 
+*
 * This file contains static Initialization functionality for Xilinx SRIO Gen2
 * Core driver.
 *
@@ -32,7 +33,7 @@
 /*****************************************************************************/
 /**
  * Looks up the device configuration based on the unique device ID. The table
- * XSrio_ConfigTable contains the configuration info for each device in the 
+ * XSrio_ConfigTable contains the configuration info for each device in the
  * system.
  *
  * @param	DeviceId is the unique device ID of the device to lookup for

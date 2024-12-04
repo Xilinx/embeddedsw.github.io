@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2018 – 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -94,6 +94,9 @@ extern "C" {
 #define XV_VPHY_LOG_ENABLE
 #endif
 
+#ifdef SDT
+#define XPAR_VPHY_0_TRANSCEIVER XPAR_XVPHY_0_TRANSCEIVER_TYPE
+#endif
 /******************************* Include Files ********************************/
 
 #include "xil_assert.h"
@@ -656,7 +659,11 @@ typedef struct {
  * This typedef contains configuration information for the Video PHY core.
  */
 typedef struct {
-	u16 DeviceId;			/**< Device instance ID. */
+#ifndef SDT
+	u16 DeviceId;		/**< Unique ID  of device */
+#else
+	char *Name;
+#endif
 	UINTPTR BaseAddr;		/**< The base address of the core
 						instance. */
 	XVphy_GtType XcvrType;		/**< VPHY Transceiver Type */
@@ -686,6 +693,11 @@ typedef struct {
 	u8  DpRxProtocol;       /* DP RX protocol */
 	XVphy_ClkPrimitive TxClkPrimitive; /* TX Clock Primitive */
 	XVphy_ClkPrimitive RxClkPrimitive; /* RX Clock Primitive */
+#ifdef SDT
+	u16 IntrId;		/**< Interrupt ID */
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
+					Parent base address */
+#endif
 } XVphy_Config;
 
 /* Forward declaration. */
@@ -830,7 +842,7 @@ u32 XVphy_PllInitialize(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		XVphy_PllRefClkSelType QpllRefClkSel,
 		XVphy_PllRefClkSelType CpllxRefClkSel,
 		XVphy_PllType TxPllSelect, XVphy_PllType RxPllSelect);
-#if defined (XPAR_XDP_0_DEVICE_ID)
+#if defined (XPAR_XDP_NUM_INSTANCES)
 u32 XVphy_ClkInitialize(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		XVphy_DirectionType Dir);
 #endif
@@ -842,7 +854,7 @@ void XVphy_SetUserTimerHandler(XVphy *InstancePtr,
 /* xvphy.c: Channel configuration functions - setters. */
 u32 XVphy_CfgLineRate(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		u64 LineRateHz);
-#if defined (XPAR_XDP_0_DEVICE_ID)
+#if defined (XPAR_XDP_NUM_INSTANCES)
 u32 XVphy_CfgQuadRefClkFreq(XVphy *InstancePtr, u8 QuadId,
 	XVphy_PllRefClkSelType RefClkType, u32 FreqHz);
 #endif
@@ -853,7 +865,7 @@ XVphy_PllType XVphy_GetPllType(XVphy *InstancePtr, u8 QuadId,
 u64 XVphy_GetLineRateHz(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId);
 
 /* xvphy.c: Reset functions. */
-#if defined (XPAR_XDP_0_DEVICE_ID)
+#if defined (XPAR_XDP_NUM_INSTANCES)
 u32 XVphy_WaitForPmaResetDone(XVphy *InstancePtr, u8 QuadId,
 		XVphy_ChannelId ChId, XVphy_DirectionType Dir);
 u32 XVphy_WaitForResetDone(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
@@ -893,7 +905,7 @@ void XVphy_IBufDsEnable(XVphy *InstancePtr, u8 QuadId, XVphy_DirectionType Dir,
 		u8 Enable);
 void XVphy_Clkout1OBufTdsEnable(XVphy *InstancePtr, XVphy_DirectionType Dir,
 		u8 Enable);
-#if defined (XPAR_XDP_0_DEVICE_ID)
+#if defined (XPAR_XDP_NUM_INSTANCES)
 void XVphy_BufgGtReset(XVphy *InstancePtr, XVphy_DirectionType Dir, u8 Reset);
 
 /* xvphy.c Miscellaneous control. */
@@ -932,8 +944,11 @@ void XVphy_InterruptHandler(XVphy *InstancePtr);
 u32 XVphy_SelfTest(XVphy *InstancePtr);
 
 /* xvphy_sinit.c: Configuration extraction function. */
+#ifndef SDT
 XVphy_Config *XVphy_LookupConfig(u16 DeviceId);
-
+#else
+XVphy_Config *XVphy_LookupConfig(UINTPTR BaseAddress);
+#endif
 /* xvphy_dp.c, xvphy_hdmi.c, xvphy_hdmi_intr.c: Protocol specific functions. */
 u32 XVphy_DpInitialize(XVphy *InstancePtr, XVphy_Config *CfgPtr, u8 QuadId,
 		XVphy_PllRefClkSelType CpllRefClkSel,
@@ -1010,6 +1025,27 @@ void XVphy_RegisterDebug(XVphy *InstancePtr);
 #define XVPHY_GTHE3 4
 #define XVPHY_GTHE4 5
 #define XVPHY_GTYE4 6
+
+#define XVPHY_GTYE4_CHANNEL_ADAPT_CFG1	0x92
+#define XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_0	0xF7
+#define XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_1	0xF8
+#define XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_0	0xF9
+#define XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_1	0x101
+
+#define XVPHY_GTYE4_CHANNEL_TXDRV_FREQBAND	0xFA
+#define XVPHY_GTYE4_CHANNEL_TXFE_CFG1	0xA1
+#define XVPHY_GTYE4_CHANNEL_TXFE_CFG2	0x53
+#define XVPHY_GTYE4_CHANNEL_TXFE_CFG3	0x54
+
+#define XVPHY_GTYE4_CHANNEL_TXPHDLY_CFG1	0x6F
+#define XVPHY_GTYE4_CHANNEL_TXPI_CFG0	0xA7
+#define XVPHY_GTYE4_CHANNEL_TXPI_CFG1	0xA8
+#define XVPHY_GTYE4_CHANNEL_TX_PI_BIASSET	0xFB
+#define XVPHY_GTYE4_CHANNEL_CH_HSPMUX	0x116
+#define XVPHY_GTYE4_CHANNEL_TXOUT_DIV	0x7C
+
+#define XVPHY_GTYE4_CHANNEL_RTX_BUF_CML_CTRL	0xDD
+#define XVPHY_GTYE4_CHANNEL_TX_CLK25_DIV	0x7A
 
 #ifdef __cplusplus
 }

@@ -377,6 +377,9 @@ Macros</h2></td></tr>
 <tr class="memitem:gad53565971b1436c898ad02594c2ae1e4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#gad53565971b1436c898ad02594c2ae1e4">XEMACPS_RXQ1BASE_OFFSET</a>&#160;&#160;&#160;0x00000480U</td></tr>
 <tr class="memdesc:gad53565971b1436c898ad02594c2ae1e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">RX Q1 Base address reg.  <a href="group__emacps.html#gad53565971b1436c898ad02594c2ae1e4">More...</a><br/></td></tr>
 <tr class="separator:gad53565971b1436c898ad02594c2ae1e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0f9040bac415e6b940368002b2b13fa3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga0f9040bac415e6b940368002b2b13fa3">XEMACPS_DMA_RXQ1_BUFSIZE_OFFSET</a>&#160;&#160;&#160;0x000004A0U</td></tr>
+<tr class="memdesc:ga0f9040bac415e6b940368002b2b13fa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">RX Q1 DMA buffer size reg.  <a href="group__emacps.html#ga0f9040bac415e6b940368002b2b13fa3">More...</a><br/></td></tr>
+<tr class="separator:ga0f9040bac415e6b940368002b2b13fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9f199511da61ed091e0bd728f125cd04"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga9f199511da61ed091e0bd728f125cd04">XEMACPS_MSBBUF_TXQBASE_OFFSET</a>&#160;&#160;&#160;0x000004C8U</td></tr>
 <tr class="memdesc:ga9f199511da61ed091e0bd728f125cd04"><td class="mdescLeft">&#160;</td><td class="mdescRight">MSB Buffer TX Q Base reg.  <a href="group__emacps.html#ga9f199511da61ed091e0bd728f125cd04">More...</a><br/></td></tr>
 <tr class="separator:ga9f199511da61ed091e0bd728f125cd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -735,9 +738,30 @@ Macros</h2></td></tr>
 <tr class="memitem:ga76b076af4e1161e51e6f7211660f3d3e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga76b076af4e1161e51e6f7211660f3d3e">XEMACPS_INTQ1SR_TXERR_MASK</a>&#160;&#160;&#160;0x00000040U</td></tr>
 <tr class="memdesc:ga76b076af4e1161e51e6f7211660f3d3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit AMBA Error.  <a href="group__emacps.html#ga76b076af4e1161e51e6f7211660f3d3e">More...</a><br/></td></tr>
 <tr class="separator:ga76b076af4e1161e51e6f7211660f3d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeaefff2f78b716fd0f9fcfadc3d5318b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#gaeaefff2f78b716fd0f9fcfadc3d5318b">XEMACPS_INTQ1SR_RXCOMPL_MASK</a>&#160;&#160;&#160;0x00000002U</td></tr>
+<tr class="memdesc:gaeaefff2f78b716fd0f9fcfadc3d5318b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive completed OK.  <a href="group__emacps.html#gaeaefff2f78b716fd0f9fcfadc3d5318b">More...</a><br/></td></tr>
+<tr class="separator:gaeaefff2f78b716fd0f9fcfadc3d5318b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabe4a329e5774d9c1092d3ec72e0dd7a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabe4a329e5774d9c1092d3ec72e0dd7a9"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQ1_IXR_ALL_MASK</b></td></tr>
 <tr class="separator:gabe4a329e5774d9c1092d3ec72e0dd7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga24c24c4fb670be64860a79608a2d3735"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga24c24c4fb670be64860a79608a2d3735"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQ1_IXR_TX_MASK</b></td></tr>
+<tr class="separator:ga24c24c4fb670be64860a79608a2d3735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabbab3289b51077e1b3a0cbe4417bc89f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabbab3289b51077e1b3a0cbe4417bc89f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQ1_IXR_RX_MASK</b>&#160;&#160;&#160;(u32)<a class="el" href="group__emacps.html#gaeaefff2f78b716fd0f9fcfadc3d5318b">XEMACPS_INTQ1SR_RXCOMPL_MASK</a></td></tr>
+<tr class="separator:gabbab3289b51077e1b3a0cbe4417bc89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga207696801933f569416ba7056de9929a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga207696801933f569416ba7056de9929a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQISR_RXCOMPL_MASK</b>&#160;&#160;&#160;<a class="el" href="group__emacps.html#gaeaefff2f78b716fd0f9fcfadc3d5318b">XEMACPS_INTQ1SR_RXCOMPL_MASK</a></td></tr>
+<tr class="separator:ga207696801933f569416ba7056de9929a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9079b0e131e9f236077461e4d952791f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9079b0e131e9f236077461e4d952791f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQISR_TXCOMPL_MASK</b>&#160;&#160;&#160;<a class="el" href="group__emacps.html#ga1236eff553a0e0f4ef2536fd2c9494ad">XEMACPS_INTQ1SR_TXCOMPL_MASK</a></td></tr>
+<tr class="separator:ga9079b0e131e9f236077461e4d952791f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa4d2fc86bd800656b15bf75ca50c138b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa4d2fc86bd800656b15bf75ca50c138b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQSR_TXERR_MASK</b>&#160;&#160;&#160;<a class="el" href="group__emacps.html#ga76b076af4e1161e51e6f7211660f3d3e">XEMACPS_INTQ1SR_TXERR_MASK</a></td></tr>
+<tr class="separator:gaa4d2fc86bd800656b15bf75ca50c138b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga131bd285b11aea0ebee0acbd34174e4c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga131bd285b11aea0ebee0acbd34174e4c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XEMACPS_INTQ_IXR_ALL_MASK</b>&#160;&#160;&#160;XEMACPS_INTQ1_IXR_ALL_MASK</td></tr>
+<tr class="separator:ga131bd285b11aea0ebee0acbd34174e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">interrupts bit definitions</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Bits definitions are same in XEMACPS_ISR_OFFSET, XEMACPS_IER_OFFSET, XEMACPS_IDR_OFFSET, and XEMACPS_IMR_OFFSET </p>
 </div></td></tr>
@@ -848,6 +872,13 @@ Macros</h2></td></tr>
 <tr class="memitem:ga3a7dab71e1efbb9a7d7a9f22cb44a513"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga3a7dab71e1efbb9a7d7a9f22cb44a513">XEMACPS_RXWM_LOW_SHFT_MSK</a>&#160;&#160;&#160;16U</td></tr>
 <tr class="memdesc:ga3a7dab71e1efbb9a7d7a9f22cb44a513"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shift for RXWM low.  <a href="group__emacps.html#ga3a7dab71e1efbb9a7d7a9f22cb44a513">More...</a><br/></td></tr>
 <tr class="separator:ga3a7dab71e1efbb9a7d7a9f22cb44a513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Screening Type2 bit definitions</div></td></tr>
+<tr class="memitem:ga3a9ca7f19435d3608d1877ea06e5f2f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga3a9ca7f19435d3608d1877ea06e5f2f8">XEMACPS_CMPA_ENABLE_MASK</a>&#160;&#160;&#160;0x00040000U</td></tr>
+<tr class="memdesc:ga3a9ca7f19435d3608d1877ea06e5f2f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable Compare A.  <a href="group__emacps.html#ga3a9ca7f19435d3608d1877ea06e5f2f8">More...</a><br/></td></tr>
+<tr class="separator:ga3a9ca7f19435d3608d1877ea06e5f2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaecf41bf1924fbbe2376754375c80fc0e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#gaecf41bf1924fbbe2376754375c80fc0e">XEMACPS_CMPA_MASK</a>&#160;&#160;&#160;0x0003E000U</td></tr>
+<tr class="memdesc:gaecf41bf1924fbbe2376754375c80fc0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare reg number.  <a href="group__emacps.html#gaecf41bf1924fbbe2376754375c80fc0e">More...</a><br/></td></tr>
+<tr class="separator:gaecf41bf1924fbbe2376754375c80fc0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -862,6 +893,17 @@ Functions</h2></td></tr>
 <tr class="memitem:ga33f7b6941750d70804ecb74cee107a1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#ga33f7b6941750d70804ecb74cee107a1e">XEmacPs_ResetHw</a> (u32 BaseAddr)</td></tr>
 <tr class="memdesc:ga33f7b6941750d70804ecb74cee107a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function perform the reset sequence to the given emacps interface by configuring the appropriate control bits in the emacps specific registers.  <a href="group__emacps.html#ga33f7b6941750d70804ecb74cee107a1e">More...</a><br/></td></tr>
 <tr class="separator:ga33f7b6941750d70804ecb74cee107a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4398ed6e4d94d5f5249118f775f1e7f"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__emacps.html#gad4398ed6e4d94d5f5249118f775f1e7f">XEmacPs_GetQxOffset</a> (XEmacPs_QxRegOffset RegName, u8 Queue)</td></tr>
+<tr class="memdesc:gad4398ed6e4d94d5f5249118f775f1e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The register offset of a specific queue register is returned by this function.  <a href="group__emacps.html#gad4398ed6e4d94d5f5249118f775f1e7f">More...</a><br/></td></tr>
+<tr class="separator:gad4398ed6e4d94d5f5249118f775f1e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
+Queue Registers Offset</h2></td></tr>
+<tr class="memitem:ga54449794368f561fda4305c79187387a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga54449794368f561fda4305c79187387a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MAX_QUEUES_FEASIBLE</b>&#160;&#160;&#160;2 /* Max queues possible on latest device */</td></tr>
+<tr class="separator:ga54449794368f561fda4305c79187387a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac41a49c074587a7d2cc20d57c7678907"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>XEmacPs_QxRegOffset</b> </td></tr>
+<tr class="separator:gac41a49c074587a7d2cc20d57c7678907"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

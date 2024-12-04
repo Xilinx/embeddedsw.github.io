@@ -112,6 +112,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a29ecaa7b4ab49c591e0a52fa425d1ff3"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_nand_ps_tag.html#a29ecaa7b4ab49c591e0a52fa425d1ff3">Bbt</a> [<a class="el" href="group__nandps.html#gaeac7c4a5846cd8f24d4a64ee522c34f3">XNANDPS_MAX_BLOCKS</a> &gt;&gt; 2]</td></tr>
 <tr class="memdesc:a29ecaa7b4ab49c591e0a52fa425d1ff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bad block table array.  <a href="#a29ecaa7b4ab49c591e0a52fa425d1ff3">More...</a><br/></td></tr>
 <tr class="separator:a29ecaa7b4ab49c591e0a52fa425d1ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e5782e2042c2ae489e1a267bce79d12"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_nand_ps_tag.html#a4e5782e2042c2ae489e1a267bce79d12">FlashBbt</a> [<a class="el" href="group__nandps.html#gaeac7c4a5846cd8f24d4a64ee522c34f3">XNANDPS_MAX_BLOCKS</a> &gt;&gt; 2]</td></tr>
+<tr class="memdesc:a4e5782e2042c2ae489e1a267bce79d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">BBT buffer for partial read/writes.  <a href="#a4e5782e2042c2ae489e1a267bce79d12">More...</a><br/></td></tr>
+<tr class="separator:a4e5782e2042c2ae489e1a267bce79d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba2da858e8dc13045862f0da98bd0c0b"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_nand_ps_tag.html#aba2da858e8dc13045862f0da98bd0c0b">DataBuf</a> [<a class="el" href="group__nandps.html#ga786386f3e559ae718dd2705232659f42">XNANDPS_MAX_PAGE_SIZE</a>+<a class="el" href="group__nandps.html#ga934b1c75fe903a36e6060b4e2b3f80bc">XNANDPS_MAX_SPARE_SIZE</a>]</td></tr>
 <tr class="memdesc:aba2da858e8dc13045862f0da98bd0c0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data buffer for partial read/writes.  <a href="#aba2da858e8dc13045862f0da98bd0c0b">More...</a><br/></td></tr>
 <tr class="separator:aba2da858e8dc13045862f0da98bd0c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -337,6 +340,20 @@ Data Fields</h2></td></tr>
 <p>Features and Optional commands. </p>
 
 <p>Referenced by <a class="el" href="group__nandps.html#gacb42515d1fa541b8ac5e785d1fb7eefd">Onfi_NandInit()</a>, and <a class="el" href="group__nandps.html#ga605bd783f065806f1d1f602f88128f9b">XNandPs_ReadCache()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4e5782e2042c2ae489e1a267bce79d12"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u8 XNandPsTag::FlashBbt[<a class="el" href="group__nandps.html#gaeac7c4a5846cd8f24d4a64ee522c34f3">XNANDPS_MAX_BLOCKS</a> &gt;&gt; 2]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BBT buffer for partial read/writes. </p>
 
 </div>
 </div>

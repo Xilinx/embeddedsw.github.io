@@ -1,6 +1,7 @@
 var struct_x_dfe_prach___model_parameters =
 [
     [ "HasAxisCtrl", "struct_x_dfe_prach___model_parameters.html#ab5d74453fa3a1174a6cae4833968d6e5", null ],
+    [ "HasContinuousSched", "struct_x_dfe_prach___model_parameters.html#a6dfb4da5a1b0fcd545d5e8630cc65c4b", null ],
     [ "HasIrq", "struct_x_dfe_prach___model_parameters.html#a326b6bbf7981158027c835f24f351c83", null ],
     [ "NumAntenna", "struct_x_dfe_prach___model_parameters.html#aef90889bbc26a4d0afeb671b1259100f", null ],
     [ "NumAntennaChannels", "struct_x_dfe_prach___model_parameters.html#a18299f02890be420ebcb646435bca36f", null ],
