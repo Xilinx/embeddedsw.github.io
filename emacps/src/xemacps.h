@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -414,8 +414,9 @@ extern "C" {
 /**< Enable the TX checksum offload
  *   This option defaults to enabled (set) */
 
-#define XEMACPS_JUMBO_ENABLE_OPTION	0x00004000U
-#define XEMACPS_SGMII_ENABLE_OPTION	0x00008000U
+#define XEMACPS_JUMBO_ENABLE_OPTION	        0x00004000U
+#define XEMACPS_SGMII_ENABLE_OPTION	        0x00008000U
+#define XEMACPS_GIGABIT_MODE_ENABLE_OPTION	0x00010000U
 
 #define XEMACPS_DEFAULT_OPTIONS                     \
 	((u32)XEMACPS_FLOW_CONTROL_OPTION |                  \
@@ -529,6 +530,8 @@ typedef struct {
 			     *  used (MII, GMII, RGMII, etc.
 			     */
         u32 PhyAddr;
+	UINTPTR MdioProducerBaseAddr;
+	u32 GmiitoRgmiiConvPhyAddr;
 #endif
 	u16 S1GDiv0;	/**< 1Gbps Clock Divider 0 */
 	u8 S1GDiv1;	/**< 1Gbps Clock Divider 1 */
@@ -546,6 +549,7 @@ typedef struct {
  */
 typedef struct XEmacPs_Instance {
 	XEmacPs_Config Config;	/* Hardware configuration */
+	u32 IsHighSpeed;    /* Device is High Speed 10G */
 	u32 IsStarted;		/* Device is currently started */
 	u32 IsReady;		/* Device is initialized and ready */
 	u32 Options;		/* Current options word */
@@ -811,7 +815,7 @@ typedef struct XEmacPs_Instance {
 #define CLEAR_BIT(x, n)		(x & (~BIT(n)))
 #define GENMASK(h, l)		(((~0U) << (l)) & \
 				(~0U >> (sizeof(int) * 8 - 1 - (h))))
-INLINE u32 get_num_set_bits(u32 n)	{
+static INLINE u32 get_num_set_bits(u32 n)	{
 	u8 count = 0;
 	while(n) {
 		n &= (n - 1);
@@ -876,6 +880,8 @@ LONG XEmacPs_SetTypeIdCheck(XEmacPs *InstancePtr, u32 Id_Check, u8 Index);
 
 LONG XEmacPs_SendPausePacket(XEmacPs *InstancePtr);
 void XEmacPs_DMABLengthUpdate(XEmacPs *InstancePtr, s32 BLength);
+
+int XEmacPs_IsCommonMdioPresent(XEmacPs *InstancePtr);
 
 #ifdef __cplusplus
 }

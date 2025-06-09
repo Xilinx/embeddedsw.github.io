@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -96,6 +96,7 @@ static void XV_Rx_HdmiRX_VrrVfp_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_VtemPkt_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_DynHdrPkt_Cb(void *CallbackRef);
 static void XV_Rx_HdmiRX_DscDdcStsUpdt_Cb(void *CallbackRef);
+static void XV_Rx_HdmiRX_VidRdyEvent_Cb(void *CallbackRef);
 
 static void XV_Rx_HdmiRx_StateDisconnected(XV_Rx *InstancePtr,
 					XV_Rx_Hdmi_Events Event,
@@ -216,7 +217,8 @@ void Hdmiphy1HdmiRxReadyCallback(void *CallbackRef)
 	xdbg_xv_rx_print("%s,%d : XHdmiphy1_ClkDetGetRefClkFreqHz: %d\r\n",
 			__func__, __LINE__, Hdmiphy1Ptr->HdmiRxRefClkHz);
 #if defined (XPS_BOARD_VCK190) || \
-    defined (XPS_BOARD_VEK280)
+    defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
 		XV_HdmiRxSs1_SetStream(HdmiRxSs1Ptr,
 				       Hdmiphy1Ptr->HdmiRxRefClkHz,
@@ -433,7 +435,8 @@ u64 XV_Rx_GetLineRate(XV_Rx *InstancePtr)
 				     XHDMIPHY1_DIR_RX,
 				     XHDMIPHY1_CHANNEL_ID_CH1);
 #if defined (XPS_BOARD_VCK190) || \
-    defined (XPS_BOARD_VEK280)
+    defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 
 	if ((RxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
 		LineRate = InstancePtr->VidPhy->Quads[0].Plls[
@@ -651,6 +654,11 @@ u32 XV_Rx_SetTriggerCallbacks(XV_Rx *InstancePtr,
 		InstancePtr->RxDscDdcCb = Callback;
 		InstancePtr->RxDscDdcCbRef = CallbackRef;
 		break;
+
+	case XV_RX_TRIG_HANDLER_VIDRDYEVENT:
+		InstancePtr->RxVidRdyEvent = Callback;
+		InstancePtr->RxVidRdyEventRef = CallbackRef;
+		break;
 #ifdef USE_HDCP_HDMI_RX
 	case XV_RX_TRIG_HANDLER_HDCP_SET_CONTENTSTREAMTYPE:
 		InstancePtr->HdcpSetContentStreamTypeCb = Callback;
@@ -774,6 +782,11 @@ u32 XV_Rx_HdmiRxSs_Setup_Callbacks(XV_Rx *InstancePtr)
 	Status |= XV_HdmiRxSs1_SetCallback(InstancePtr->HdmiRxSs,
 					XV_HDMIRXSS1_HANDLER_DSC_STS_UPDT,
 					(void *)XV_Rx_HdmiRX_DscDdcStsUpdt_Cb,
+					(void *)InstancePtr);
+
+	Status |= XV_HdmiRxSs1_SetCallback(InstancePtr->HdmiRxSs,
+					XV_HDMIRXSS1_HANDLER_VID_RDY_ERR,
+					(void *)XV_Rx_HdmiRX_VidRdyEvent_Cb,
 					(void *)InstancePtr);
 	return Status;
 }
@@ -957,7 +970,6 @@ u32 XV_Rx_Hdmi_Initialize(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 			(XInterruptHandler)XV_HdmiRxSS1_HdmiRxIntrHandler,
 			(void *)InstancePtr->HdmiRxSs);
 #endif
-
 #ifdef XPAR_XHDCP_NUM_INSTANCES
 #ifndef SDT
 	/* HDCP 1.4 Cipher interrupt */
@@ -1073,8 +1085,6 @@ u32 XV_Rx_Hdmi_Initialize(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 #endif
 	/* Initialize the RX SS interrupts. */
 	XV_Rx_HdmiRxSs_Setup_Callbacks(InstancePtr);
-
-
 	/* Initialize the VPhy related to the HdmiRxSs if it isn't ready yet. */
 	if (!(InstancePtr->VidPhy->IsReady == 0xFFFFFFFF)) {
 		xil_printf("Initializing Video Phy with Video Receiver \r\n");
@@ -1696,6 +1706,15 @@ static void XV_Rx_HdmiRX_DscDdcStsUpdt_Cb (void *CallbackRef)
 	XV_Rx *recvInst = (XV_Rx *)CallbackRef;
 	if (recvInst->RxDscDdcCb != NULL) {
 		recvInst->RxDscDdcCb(recvInst->RxDscDdcCbRef);
+	}
+}
+
+static void XV_Rx_HdmiRX_VidRdyEvent_Cb (void *CallbackRef)
+{
+	Xil_AssertVoid(CallbackRef);
+	XV_Rx *recvInst = (XV_Rx *)CallbackRef;
+	if (recvInst->RxVidRdyEvent != NULL) {
+		recvInst->RxVidRdyEvent(recvInst->RxVidRdyEventRef);
 	}
 }
 
@@ -2369,7 +2388,8 @@ static void XV_Rx_HdmiRx_EnterStatePhyReset(XV_Rx *InstancePtr)
 
 	xdbg_xv_rx_print("%s: Hdmi Rx : PhyReset ...\r\n", __func__);
 
-#if (defined (XPS_BOARD_VCK190) || defined (XPS_BOARD_VEK280))
+#if (defined (XPS_BOARD_VCK190) || defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385))
 	XHdmiphy1_PllType RxPllType;
 	XHdmiphy1_ChannelId ChId;
 
@@ -2491,7 +2511,9 @@ static void XV_Rx_HdmiRx_EnterStateFrlConfig(XV_Rx *InstancePtr)
 	XHdmiphy1_SetRxLpm(&Hdmiphy1, 0,
 			XHDMIPHY1_CHANNEL_ID_CHA, XHDMIPHY1_DIR_RX, 0);
 #endif
-
+#if defined (XPS_BOARD_VEK385)
+	Hdmiphy1.versal_2ve_2vm = 1;
+#endif
 	XHdmiphy1_Hdmi21Config(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX,
 			       LineRate, NChannels);
 
@@ -2613,7 +2635,9 @@ static void XV_Rx_HdmiRx_EnterStateTmdsConfig(XV_Rx *InstancePtr)
 	XHdmiphy1_SetRxLpm(&Hdmiphy1, 0,
 	XHDMIPHY1_CHANNEL_ID_CHA, XHDMIPHY1_DIR_RX, 1);
 #endif
-
+#if defined (XPS_BOARD_VEK385)
+	Hdmiphy1.versal_2ve_2vm = 1;
+#endif
 	XHdmiphy1_Hdmi20Config(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
 
 	if (InstancePtr->RxClkSrcSelCb != NULL) {

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc. All rights reserved.
-* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -448,7 +448,9 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, XDpTxSs_MainStreamAttributes Msa[4])
 			&& bw_set != XDP_TX_LINK_BW_SET_270GBPS
 			&& bw_set != XDP_TX_LINK_BW_SET_540GBPS
 			&& bw_set != XDP_TX_LINK_BW_SET_810GBPS
-			&& bw_set != 0x1){
+			&& bw_set != XDP_TX_LINK_BW_SET_UHBR10
+			&& bw_set != XDP_TX_LINK_BW_SET_UHBR135
+			&& bw_set != XDP_TX_LINK_BW_SET_UHBR20){
 		//Not all MOnitors are capable of 1E
 		bw_set = linkrate_tx_run;
 		retrain_link = 1;
@@ -705,6 +707,11 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 	 * Setting Color Format
 	 * User can change coefficients here - By default 601 is used for YCbCr
 	 * */
+	if (format == 1){
+		format = XVIDC_CSF_YCRCB_422;
+	}else if(format == 2){
+		format = XVIDC_CSF_YCRCB_444;
+	}
 	XDp_TxCfgSetColorEncode(DpTxSsInst.DpPtr, XDP_TX_STREAM_ID1, \
 				format, XVIDC_BT_601, XDP_DR_VESA);
 
@@ -774,6 +781,18 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 
 	xil_printf ("..done !\r\n");
 	tx_started = 1;
+
+	int lr,lc=0;
+
+	/* Read Link rate over through channel */
+	XDp_TxAuxRead(DpTxSsInst.DpPtr, XDP_DPCD_LINK_BW_SET, 1, &lr);
+
+
+	/* Read Lane count through AUX channel */
+	XDp_TxAuxRead(DpTxSsInst.DpPtr, XDP_DPCD_LANE_COUNT_SET, 1,
+			&lc);
+
+	xil_printf("Tx trained at %x x %x\r\n",(lr & 0xFF),(lc & XDP_DPCD_LANE_COUNT_SET_MASK));
 	return XST_SUCCESS;
 }
 
@@ -1107,6 +1126,12 @@ u8 get_Lanecounts(void){
 u32 config_phy(int LineRate_init_tx){
 	u32 Status=XST_SUCCESS;
 	u8 linerate;
+
+	//Tx on QPLL1 doesnt support 13.5g
+	 if(LineRate_init_tx == XDP_TX_LINK_BW_SET_UHBR135){
+		xil_printf("Tx on QPLL1 doesnt support 13.5G hence downshifting the linkrate\r\n");
+		return XST_FAILURE;
+	 }
 
 	if (LineRate_init_tx == XDP_TX_LINK_BW_SET_810GBPS) {
 		PLLRefClkSel (&VPhyInst, PHY_User_Config_Table[(is_TX_CPLL)?9:10].LineRate);

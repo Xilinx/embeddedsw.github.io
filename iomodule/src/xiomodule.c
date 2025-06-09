@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -32,11 +32,14 @@
 * 2.12	sk   06/08/21 Update XIOModule_DiscreteRead and XIOModule_DiscreteWrite
 *		      API's argument(Channel) datatype to fix the coverity warning.
 * 2.13	sk   10/04/21 Update functions return type to fix misra-c violation.
-* 2.15  ml   27/02/23 Update typecast,add U to Numerical and functions return
+* 2.15  ml   02/27/23 Update typecast,add U to Numerical and functions return
 *                     type to fix misra-c violations.
-* 2.16  ml   27/09/23 fixed compilation warnings for cpputest.
+* 2.16  ml   09/27/23 fixed compilation warnings for cpputest.
 *       ma   05/03/24 Added XIOModule_HandlerTable_Initialize function to
 *                       be called after In-place PLM update
+* 2.19  ml   03/24/25 Fixed multiple returns in XIOModule_Initialize,
+*                     XIOModule_Timer_Initialize and XIOModule_IsExpired
+*                     to comply with MISRA-C R15.5
 * </pre>
 *
 ******************************************************************************/
@@ -121,7 +124,8 @@ s32 XIOModule_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 	 * and reinitialize, but prevents a user from inadvertently initializing
 	 */
 	if (InstancePtr->IsStarted == XIL_COMPONENT_IS_READY) {
-		return XST_DEVICE_IS_STARTED;
+		Status = XST_DEVICE_IS_STARTED;
+		goto END;
 	}
 
 	/*
@@ -134,7 +138,8 @@ s32 XIOModule_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 	CfgPtr = XIOModule_LookupConfig(BaseAddress);
 #endif
 	if (CfgPtr == NULL) {
-		return XST_DEVICE_NOT_FOUND;
+		Status = XST_DEVICE_NOT_FOUND;
+		goto END;
 	}
 
 	/*
@@ -223,7 +228,7 @@ s32 XIOModule_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 	 * Indicate the instance is now ready to use, successfully initialized
 	 */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
-
+END:
 	return Status;
 }
 
@@ -891,6 +896,7 @@ s32 XIOModule_Timer_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 	u32 TimerNumber;
 	u32 TimerOffset;
 	u32 StatusReg;
+	XStatus Status = XST_SUCCESS;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -905,7 +911,8 @@ s32 XIOModule_Timer_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 #endif
 
 	if (IOModuleConfigPtr == (XIOModule_Config *) NULL) {
-		return XST_DEVICE_NOT_FOUND;
+		Status = XST_DEVICE_NOT_FOUND;
+		goto END;
 	}
 
 	/*
@@ -963,8 +970,8 @@ s32 XIOModule_Timer_Initialize(XIOModule *InstancePtr, u32 BaseAddress)
 	 * Indicate the instance is ready to use, successfully initialized
 	 */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
-
-	return XST_SUCCESS;
+END:
+	return Status;
 }
 
 /*****************************************************************************/
@@ -1225,6 +1232,7 @@ s32 XIOModule_IsExpired(XIOModule *InstancePtr, u8 TimerNumber)
 {
 	u32 CounterReg;
 	u32 TimerOffset = (u32) TimerNumber << XTC_TIMER_COUNTER_SHIFT;
+	XStatus Status = XST_FAILURE;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(TimerNumber < XTC_DEVICE_TIMER_COUNT);
@@ -1235,18 +1243,21 @@ s32 XIOModule_IsExpired(XIOModule *InstancePtr, u8 TimerNumber)
 	 * Check if timer is expired
 	 */
 	if ((bool)(InstancePtr->CurrentTCSR[TimerNumber] & XTC_CSR_AUTO_RELOAD_MASK)) {
-		return 1; /* Always expired for reload */
+		goto END; /* Always expired for reload */
 	} else {
 		CounterReg = XIOModule_ReadReg(InstancePtr->BaseAddress,
 					       TimerOffset + XTC_TCR_OFFSET);
 
 		if ((CounterReg & InstancePtr->CfgPtr->PitMask[TimerNumber]) ==
 		    InstancePtr->CfgPtr->PitMask[TimerNumber]) {
-			return 1;
+			goto END;
 		} else {
-			return 0;
+			Status = XST_SUCCESS;
+			goto END;
 		}
 	}
+END:
+	return Status;
 }
 
 /****************************************************************************/

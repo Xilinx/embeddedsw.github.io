@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -23,6 +23,9 @@
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stddef.h>
 #include <xdp.h>
@@ -112,6 +115,8 @@
 #endif
 
 #endif
+
+#define PARRETO_FMC //define this for parreto fmc, comment it to use diode fmc
 /************************** Constant Definitions *****************************/
 
 /*
@@ -201,7 +206,7 @@
 /*Max timeout tuned as per tester - AXI Clock=100 MHz
  *Some GPUs may need larger value, So user may tune if needed
  */
-#define DP_BS_IDLE_TIMEOUT       0xFFFFFFFF
+#define DP_BS_IDLE_TIMEOUT       0xFFFFFF
 #define VBLANK_WAIT_COUNT       200
 
 /*For compliance, please set AUX_DEFER_COUNT to be 8
@@ -290,6 +295,13 @@ void frameBuffer_start_rd(XDpTxSs_MainStreamAttributes Msa[4]);
 void DpPt_ffe_adjustHandler(void *InstancePtr);
 u32 xil_gethex(u8 num_chars);
 
+#ifdef PARRETO_FMC
+int i2c_write_freq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u8 RegisterAddress,
+                u32 Value);
+u8 i2c_read_freq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterAddress);
+u8 i2c_read_tdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterAddress);
+int i2c_write_tdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u8 RegisterAddress, u8 Value);
+#endif
 /************************** Function Definitions *****************************/
 /* Defining constants for colors in printing */
 #define ANSI_COLOR_RED          "\x1b[31m"
@@ -300,3 +312,6 @@ u32 xil_gethex(u8 num_chars);
 #define ANSI_COLOR_CYAN     "\x1b[36m"
 #define ANSI_COLOR_WHITE    "\x1b[37m"
 #define ANSI_COLOR_RESET    "\x1b[0m"
+#ifdef __cplusplus
+}
+#endif

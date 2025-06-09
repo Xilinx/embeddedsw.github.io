@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -664,10 +664,10 @@ extern "C" {
 				0x0		/**< Stream's component format
 							is RGB. */
 #define XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422 \
-				0x5		/**< Stream's component format
+				0x1		/**< Stream's component format
 							is YcbCr 4:2:2. */
 #define XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444 \
-				0x6		/**< Stream's component format
+				0x2	/**< Stream's component format
 							is YcbCr 4:4:4. */
 #define XDP_TX_MAIN_STREAMX_MISC0_DYNAMIC_RANGE_MASK \
 				0x00000008	/**< Dynamic range. */
@@ -2537,6 +2537,7 @@ extern "C" {
 #define XDP_DPCD_STATUS_LANE_2_3				0x00203
 #define XDP_DPCD_LANE_ALIGN_STATUS_UPDATED			0x00204
 #define XDP_DPCD_SINK_STATUS					0x00205
+#define XDP_DPCD_INTRA_HOP_INDICATION				0x08
 #define XDP_DPCD_ADJ_REQ_LANE_0_1				0x00206
 #define XDP_DPCD_ADJ_REQ_LANE_2_3				0x00207
 #define XDP_DPCD_TRAINING_SCORE_LANE_0				0x00208
@@ -2885,7 +2886,7 @@ extern "C" {
 /* *** DP 1.4 :: DPCD definitions end. */
 
 /* 0x00101: LANE_COUNT_SET */
-#define XDP_DPCD_LANE_COUNT_SET_MASK				0x1F
+#define XDP_DPCD_LANE_COUNT_SET_MASK				0x0F
 #define XDP_DPCD_LANE_COUNT_SET_1				0x01
 #define XDP_DPCD_LANE_COUNT_SET_2				0x02
 #define XDP_DPCD_LANE_COUNT_SET_4				0x04
@@ -3031,6 +3032,7 @@ extern "C" {
 
 /* 0x00101: LANE_COUNT_SET */
 #define XDP_DPCD_LTTPR_CAPABILITY				0xF0000
+#define XDP_DPCD_LTTPR_REPEATER_CNT				0xF0002
 #define XDP_PHY_REPEATER_MODE					0xF0003
 #define XDP_PHY_LTTPR_BASE						0xF0010
 #define XDP_DPCD_LTTPR_TRAINING_LANE0_SET		0xF0011

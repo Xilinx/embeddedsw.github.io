@@ -1,6 +1,6 @@
  /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -151,7 +151,7 @@ void InitImageProcessingPipe(u32 width, u32 height)
 
 /*****************************************************************************/
 /**
- * This function programs MIPI DSI SS with the required timing paramters.
+ * This function programs MIPI DSI SS with the required timing parameters.
  *
  * @return	None.
  *
@@ -647,9 +647,9 @@ do {
 
 			if ((Response == 'r')||(Response == 'R')){
 					xil_printf("\r\n0 - 1920x1080p60");
-					xil_printf(" => Configures Sensor for 1920x1080 60fps.\r\n");
+					xil_printf(" => Configures HDMI pipeline for 1920x1080 60fps.\r\n");
 					xil_printf("\r\n1 - 3840x2160p60");
-					xil_printf(" => Configures Sensor for 3840x2160 60fps.\r\n");
+					xil_printf(" => Configures HDMI pipeline for 3840x2160 60fps.\r\n");
 					xil_printf("\r\n\r\n");
 					xil_printf("\r\nEnter Selection ->\r\n ");
 					Response = XUartPsv_RecvByte(XPAR_XUARTPSV_0_BASEADDR);
@@ -690,7 +690,7 @@ int main() {
 
 	u32 Status = XST_FAILURE;
 	u8 prev_VideoDestn;
-
+        u8 prev_VideoMode = XVIDC_VM_1920x1080_60_P;
 
 	Pipeline_Cfg.ActiveLanes = 4;
 	Pipeline_Cfg.VideoSrc = XVIDSRC_SENSOR;
@@ -783,7 +783,8 @@ int main() {
 		if(Pipeline_Cfg.VideoDestn == XVIDDES_DSI){
 			SelectDSIOutput();
 		}else {
-			SelectHDMIOutput();
+			enable_hdmi_interrupt();
+            SelectHDMIOutput();
 		}
 
 	/* Enable exceptions. */
@@ -843,23 +844,25 @@ int main() {
 #else
             /* Main loop */
 			prev_VideoDestn = Pipeline_Cfg.VideoDestn;
+            prev_VideoMode = Pipeline_Cfg.VideoMode;
 			do {
 				XMipi_DisplayMainMenu();
-				Pipeline_Cfg.VideoDestn = New_Cfg.VideoDestn ;
-				Pipeline_Cfg.VideoMode = New_Cfg.VideoMode ;
+				Pipeline_Cfg.VideoDestn = New_Cfg.VideoDestn;
+				Pipeline_Cfg.VideoMode = New_Cfg.VideoMode;
 
 				/* logic to maintain prev state of the destination */
-				if (prev_VideoDestn == Pipeline_Cfg.VideoDestn)
+				if (prev_VideoDestn == Pipeline_Cfg.VideoDestn && prev_VideoMode == Pipeline_Cfg.VideoMode)
 				continue;
 				else
 				prev_VideoDestn = Pipeline_Cfg.VideoDestn;
+                prev_VideoMode = Pipeline_Cfg.VideoMode;
 
 					if (Pipeline_Cfg.VideoDestn == XVIDDES_HDMI) {
 						xil_printf("Set HDMI as destination \r\n");
-						disable_hdmi_interrupt();
+					    disable_hdmi_interrupt();
 						usleep(5000);
 						/* reset capture pipe */
-						XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_BASE);
+                        XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_BASE);
 						Reset_IP_Pipe();
 
 						TxBusy            = (FALSE);
@@ -877,7 +880,7 @@ int main() {
 						disable_hdmi_interrupt();
 						usleep(5000);
 						/* reset capture pipe */
-						XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_BASE);
+			XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_BASE);
 						Reset_IP_Pipe();
 
 						SetupDSI();
@@ -894,11 +897,9 @@ int main() {
 						SelectDSIOutput();
 						InitDSI();
 						xil_printf("InitDSI Done \n\r");
-
 						start_csi_cap_pipe(Pipeline_Cfg.VideoMode);
 						EnableDSI();
 					}
-
 	    } while (1);
 #endif
   return 0;

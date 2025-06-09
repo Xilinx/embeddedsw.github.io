@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -15,6 +15,7 @@ properties:
       - items:
         - enum:
           - xlnx,axi-i3c-1.0
+          - xlnx,axi-i3c
   reg:
     description: Physical base address and size of the controller register map
   xlnx,axi-clk-freq:
@@ -29,6 +30,8 @@ properties:
       IBI capability
   xlnx,hj-capable:
       Hot join capability
+  xlnx,device-role:
+      Device role
 
 config:
     - XI3c_Config
@@ -44,6 +47,7 @@ required:
     - xlnx,num-targets
     - xlnx,ibi-capable
     - xlnx,hj-capable
+    - xlnx,device-role
 
 examples:
     xi3c_intr_example.c:
@@ -53,5 +57,11 @@ examples:
         - reg
 
     xi3c_daa_example.c:
+        - reg
+
+    xi3c_slave_intr_example.c:
+        - interrupts
+
+    xi3c_slave_polled_example.c:
         - reg
 ...

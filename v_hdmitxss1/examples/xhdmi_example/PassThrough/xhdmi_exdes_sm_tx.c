@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -922,12 +922,11 @@ u32 XV_Tx_Hdmi_Initialize(XV_Tx *InstancePtr, u32 HdmiTxSsBaseAddr,
 
 	/* Register HDMI TX SS Interrupt Handler with Interrupt Controller */
 #ifdef SDT
-	Status =
-		XSetupInterruptSystem(InstancePtr->HdmiTxSs,
-				      (XInterruptHandler)XV_HdmiTxSS1_HdmiTx1IntrHandler,
+	Status = XSetupInterruptSystem(InstancePtr->HdmiTxSs,
+					(XInterruptHandler)XV_HdmiTxSS1_HdmiTx1IntrHandler,
 				      InstancePtr->HdmiTxSs->Config.IntrId[INTRNAME_HDMITX],
-				      InstancePtr->HdmiTxSs->Config.IntrParent,
-				      XINTERRUPT_DEFAULT_PRIORITY);
+					InstancePtr->HdmiTxSs->Config.IntrParent,
+					XINTERRUPT_DEFAULT_PRIORITY);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERR: HDMI TX SS  interrupt connect failed!\r\n");
 		return XST_FAILURE;
@@ -1128,7 +1127,6 @@ u32 XV_Tx_Hdmi_Initialize(XV_Tx *InstancePtr, u32 HdmiTxSsBaseAddr,
 #endif
 	/* Initialize the HDMI TX SS interrupts. */
 	XV_Tx_HdmiTxSs_Setup_Callbacks(InstancePtr);
-
 	/**
 	 * Initialize the VPhy related to the HdmiTxSs if it isn't ready yet.
 	 */
@@ -2095,7 +2093,9 @@ void XV_Tx_HdmiTx_EnterStateConnected(XV_Tx *InstancePtr)
 	/* Disable TX TDMS clock */
 	XHdmiphy1_Clkout1OBufTdsEnable(InstancePtr->VidPhy,
 				       XHDMIPHY1_DIR_TX, (FALSE));
-
+#if defined (XPS_BOARD_VEK385)
+	InstancePtr->VidPhy->versal_2ve_2vm = 1;
+#endif
 	XHdmiphy1_Hdmi20Config(InstancePtr->VidPhy, 0, XHDMIPHY1_DIR_TX);
 
 	/* Setting FRL link and video clocks to 0. */
@@ -2448,7 +2448,8 @@ void XV_Tx_HdmiTx_EnterStateStreamOn(XV_Tx *InstancePtr)
 	TxPllType = XHdmiphy1_GetPllType(XV_Tx_Hdmiphy1Ptr, 0,
 				XHDMIPHY1_DIR_TX, XHDMIPHY1_CHANNEL_ID_CH1);
 #if defined (XPS_BOARD_VCK190) || \
-    defined (XPS_BOARD_VEK280)
+    defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 
 	if ((TxPllType == XHDMIPHY1_PLL_TYPE_LCPLL)) {
 		TxLineRate = XHdmiphy1_GetLineRateHz(XV_Tx_Hdmiphy1Ptr, 0,
@@ -2680,7 +2681,9 @@ void XV_Tx_HdmiTx_EnterStateFrlConfig(XV_Tx *InstancePtr)
 		XHdmiphy1_IBufDsEnable(InstancePtr->VidPhy, 0,
 				XHDMIPHY1_DIR_TX, (TRUE));
 	}
-
+#if defined (XPS_BOARD_VEK385)
+	InstancePtr->VidPhy->versal_2ve_2vm = 1;
+#endif
 	XHdmiphy1_Hdmi21Config(InstancePtr->VidPhy, 0, XHDMIPHY1_DIR_TX,
 			       LineRate, NChannels);
 
@@ -2997,7 +3000,9 @@ void XV_Tx_HdmiTx_EnterStateTmdsConfig(XV_Tx *InstancePtr)
 	Xil_AssertVoid(InstancePtr);
 
 	xdbg_xv_tx_print("Tmds Config ...\r\n");
-
+#if defined (XPS_BOARD_VEK385)
+	InstancePtr->VidPhy->versal_2ve_2vm = 1;
+#endif
 	XHdmiphy1_Hdmi20Config(InstancePtr->VidPhy, 0, XHDMIPHY1_DIR_TX);
 	XV_HdmiTx1_SetFrlLinkClock(InstancePtr->HdmiTxSs->HdmiTx1Ptr, 0);
 	XV_HdmiTx1_SetFrlVidClock(InstancePtr->HdmiTxSs->HdmiTx1Ptr, 0);

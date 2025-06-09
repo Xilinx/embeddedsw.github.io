@@ -1,6 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -44,7 +44,10 @@
  * 		     in system device-tree flow.
  * 2.14 sd 07/27/23  Update the target count.
  * 2.15 ht 01/11/24  Add PMC, PSM bitmasks macros for versal-net
- * 2.16 ma 09/10/24  Updated to support VERSAL_AIEPG2 platform
+ * 2.16 ma 09/10/24  Updated to support VERSAL_2VE_2VM platform
+ * 2.17 ht 11/25/24  Update Max Message length to accommodate for CRC bytes
+ *                   when IPI CRC is enabled
+ *	jb 12/26/24 Fixed misrac warnings
  * </pre>
  *
  *****************************************************************************/
@@ -64,7 +67,6 @@ extern "C" {
 /************************** Constant Definitions *****************************/
 #define XIPIPSU_BUF_TYPE_MSG	(0x001U) /**< Message type buffer */
 #define XIPIPSU_BUF_TYPE_RESP	(0x002U) /**< Response buffer */
-#define XIPIPSU_MAX_MSG_LEN		XIPIPSU_MSG_BUF_SIZE /**< Maximum message length */
 #define XIPIPSU_CRC_INDEX		(0x7U) /**< Index where the CRC is stored */
 #define XIPIPSU_W0_TO_W6_SIZE	(28U)	       /**< Size of the word 0 to word 6 */
 
@@ -78,13 +80,23 @@ extern "C" {
 #define ENABLE_IPI_CRC  /**< Enable CalculateCRC API*/
 #endif
 
+#ifdef ENABLE_IPI_CRC
+/*
+ * Subtracting 1 from the message length to accommodate for the CRC bytes when
+ * IPI CRC is enabled.
+ * */
+#define XIPIPSU_MAX_MSG_LEN             (XIPIPSU_MSG_BUF_SIZE - 1U)
+#else
+#define XIPIPSU_MAX_MSG_LEN		XIPIPSU_MSG_BUF_SIZE	/**< Maximum message length */
+#endif
+
 /*
  * Target List for referring to processor IPI Targets
  * FIXME: This is a workaround for system device-tree flow, the proper solution
  * would be generating the defines using lopper.
  */
 #ifdef	SDT
-#if defined (VERSAL_AIEPG2)
+#if defined (VERSAL_2VE_2VM)
 #define XPAR_XIPIPS_TARGET_PMC_0_CH0_MASK			0x00000002U
 #define XPAR_XIPIPS_TARGET_PMC_0_CH1_MASK			0x00000100U
 #define XPAR_XIPIPS_TARGET_ASU_0_CH0_MASK			0x00000001U

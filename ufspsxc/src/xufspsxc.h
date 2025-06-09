@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -13,8 +13,8 @@
 *
 * This section contains information about the driver structures, user
 * API prototypes and all the defines required for the user to interact
-* with the driver. ufspsxc driver supports the UFS controller in Versal Gen 2
-* SoC platform.
+* with the driver. ufspsxc driver supports the UFS controller in Versal 2VE and
+* 2VM SoC platforms.
 *
 * <b>Initialization & Configuration</b>
 *
@@ -30,6 +30,8 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------.
 * 1.0   sk  01/16/24 First release
+* 1.1   sk  01/13/25 Update the example to enable the LU before
+*                    configuring the Boot LUN ID.
 *
 * </pre>
 *

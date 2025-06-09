@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -57,6 +57,8 @@
 * 1.18  sb  08/02/23 Add status check for XQspiPsu_SetClkPrescaler API.
 * 1.19  sb  01/12/24 Added support to set QSPI clock based on baud rate divisior
 * 1.20  sb  09/13/24 Updated examples to configure correct baud rate value
+* 1.21  sb  01/02/25 Fixed gcc and g++ warnings.
+* 1.21  bkv 04/04/25 Fixed g++ warnings.
 *
 *</pre>
 *
@@ -139,9 +141,11 @@ int FlashRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
 u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address);
 int BulkErase(XQspiPsu *QspiPsuPtr, u8 *WriteBfrPtr);
 int DieErase(XQspiPsu *QspiPsuPtr, u8 *WriteBfrPtr);
+#ifndef SDT
 static int QspiPsuSetupIntrSystem(XScuGic *IntcInstancePtr,
 				  XQspiPsu *QspiPsuInstancePtr, u16 QspiPsuIntrId);
 static void QspiPsuDisableIntrSystem(XScuGic *IntcInstancePtr, u16 QspiPsuIntrId);
+#endif
 void QspiPsuHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
 int FlashEnterExit4BAddMode(XQspiPsu *QspiPsuPtr, unsigned int Enable);
 int FlashEnableQuadMode(XQspiPsu *QspiPsuPtr);
@@ -157,7 +161,9 @@ u32 FCTIndex;	/* Flash configuration table index */
  * are initialized to zero each time the program runs. They could be local
  * but should at least be static so they are zeroed.
  */
+#ifndef SDT
 static XScuGic IntcInstance;
+#endif
 static XQspiPsu QspiPsuInstance;
 
 static XQspiPsu_Msg FlashMsg[5];
@@ -272,10 +278,10 @@ int QspiPsuWriteProtectFlashExample(XQspiPsu *QspiPsuInstancePtr,
 {
 	int Status;
 	u8 UniqueValue;
-	int Count;
+	u32 Count;
 	int Page;
 	XQspiPsu_Config *QspiPsuConfig;
-	int ReadBfrSize;
+	u32 ReadBfrSize;
 	u32 PageSize = 0;
 	u8 PreScaler;
 
@@ -311,7 +317,7 @@ int QspiPsuWriteProtectFlashExample(XQspiPsu *QspiPsuInstancePtr,
 	Status = QspiPsuSetupIntrSystem(IntcInstancePtr, QspiPsuInstancePtr,
 					QspiPsuIntrId);
 #else
-	Status = XSetupInterruptSystem(QspiPsuInstancePtr, &XQspiPsu_InterruptHandler,
+	Status = XSetupInterruptSystem(QspiPsuInstancePtr, (void *)&XQspiPsu_InterruptHandler,
 				       QspiPsuConfig->IntrId,
 				       QspiPsuConfig->IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
@@ -502,6 +508,9 @@ int QspiPsuWriteProtectFlashExample(XQspiPsu *QspiPsuInstancePtr,
  *****************************************************************************/
 void QspiPsuHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
 {
+	Xil_AssertVoid(CallBackRef != NULL);
+	(void)ByteCount;
+
 	/*
 	 * Indicate the transfer on the QSPIPSU bus is no longer in progress
 	 * regardless of the status event
@@ -777,7 +786,7 @@ int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount,
 	u8 WriteEnableCmd;
 	u8 ReadStatusCmd;
 	u8 FlashStatus[2];
-	int Sector;
+	u32 Sector;
 	u32 RealAddr;
 	u32 NumSect;
 	int Status;
@@ -1411,7 +1420,7 @@ ERROR_PATH:
  ******************************************************************************/
 u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address)
 {
-	u32 RealAddr;
+	u32 RealAddr = 0;
 
 	switch (QspiPsuPtr->Config.ConnectionMode) {
 		case XQSPIPSU_CONNECTION_MODE_SINGLE:
@@ -1455,14 +1464,14 @@ u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address)
 			RealAddr = Address / 2;
 			break;
 		default:
-			/* RealAddr wont be assigned in this case; */
+			/* RealAddr won't be assigned in this case; */
 			break;
 
 	}
 
 	return (RealAddr);
 }
-
+#ifndef SDT
 /*****************************************************************************/
 /**
  *
@@ -1563,6 +1572,7 @@ static void QspiPsuDisableIntrSystem(XScuGic *IntcInstancePtr,
 	 */
 	XScuGic_Disconnect(IntcInstancePtr, QspiPsuIntrId);
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -1631,7 +1641,7 @@ int FlashEnterExit4BAddMode(XQspiPsu *QspiPsuPtr, unsigned int Enable)
 
 		case SPANSION_ID_BYTE0:
 
-			/* Read Extended Addres Register */
+			/* Read Extended Address Register */
 			WriteBuffer[0] = BANK_REG_RD;
 			FlashMsg[0].TxBfrPtr = &WriteBuffer[0];
 			FlashMsg[0].RxBfrPtr = NULL;
@@ -2100,6 +2110,7 @@ int FlashEnableQuadMode(XQspiPsu *QspiPsuPtr)
 			if (Xil_WaitForEventSet(MAX_DELAY_CNT, 1, (u32 *)&TransferDone) != XST_SUCCESS) {
 				return XST_FAILURE;
 			}
+			break;
 
 		default:
 			/*

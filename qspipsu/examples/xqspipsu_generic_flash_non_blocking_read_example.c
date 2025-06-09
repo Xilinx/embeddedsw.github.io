@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -49,6 +49,8 @@
 * 1.18   sb   08/02/23 Add status check for XQspiPsu_SetClkPrescaler API.
 * 1.19   sb   01/12/24 Added support to set QSPI clock based on baud rate divisior
 * 1.20   sb  09/13/24 Updated examples to configure correct baud rate value
+* 1.21   sb  01/02/25 Fixed gcc and g++ warnings.
+* 1.21   bkv 04/04/25 Fixed g++ warnings.
 *
 *</pre>
 *
@@ -231,10 +233,10 @@ int QspiPsuFlashNonBlockingReadExample(XQspiPsu *QspiPsuInstancePtr, UINTPTR Bas
 {
 	int Status;
 	u8 UniqueValue;
-	int Count;
+	u32 Count;
 	int Page;
 	XQspiPsu_Config *QspiPsuConfig;
-	int ReadBfrSize;
+	u32 ReadBfrSize;
 	u32 PageSize = 0;
 	u8 PreScaler;
 
@@ -660,7 +662,7 @@ int FlashErase(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount,
 	u8 WriteEnableCmd;
 	u8 ReadStatusCmd;
 	u8 FlashStatus[2];
-	int Sector;
+	u32 Sector;
 	u32 RealAddr;
 	u32 NumSect;
 	int Status;
@@ -1048,7 +1050,7 @@ int MultiDieRead(XQspiPsu *QspiPsuPtr, u32 Address, u32 ByteCount, u8 Command,
 	int Status;
 	u32 cur_bank = 0;
 	u32 nxt_bank = 0;
-	u32 bank_size;
+	u32 bank_size = 0;
 	u32 remain_len = ByteCount;
 	u32 data_len;
 	u32 transfer_len;
@@ -1335,6 +1337,7 @@ ERROR_PATH:
 int FlashRegisterRead(XQspiPsu *QspiPsuPtr, u32 ByteCount,
 		      u8 Command, u8 *ReadBfrPtr)
 {
+	(void)ByteCount;
 	u8 WriteCmd;
 	int Status;
 
@@ -1648,7 +1651,7 @@ ERROR_PATH:
  ******************************************************************************/
 u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address)
 {
-	u32 RealAddr;
+	u32 RealAddr = 0;
 
 	switch (QspiPsuPtr->Config.ConnectionMode) {
 		case XQSPIPSU_CONNECTION_MODE_SINGLE:
@@ -1692,7 +1695,7 @@ u32 GetRealAddr(XQspiPsu *QspiPsuPtr, u32 Address)
 			RealAddr = Address / 2;
 			break;
 		default:
-			/* RealAddr wont be assigned in this case; */
+			/* RealAddr won't be assigned in this case; */
 			break;
 
 	}
@@ -1764,7 +1767,7 @@ int FlashEnterExit4BAddMode(XQspiPsu *QspiPsuPtr, unsigned int Enable)
 
 		case SPANSION_ID_BYTE0:
 
-			/* Read Extended Addres Register */
+			/* Read Extended Address Register */
 			WriteBuffer[0] = BANK_REG_RD;
 			FlashMsg[0].TxBfrPtr = &WriteBuffer[0];
 			FlashMsg[0].RxBfrPtr = NULL;

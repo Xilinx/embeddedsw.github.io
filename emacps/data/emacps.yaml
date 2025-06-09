@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -22,6 +22,7 @@ properties:
           - xlnx,versal-gem
           - cdns,versal-gem
           - cdns,gem
+          - amd,versal2-10gbe
   reg:
     description: Physical base address and size of the controller register map
   dma-coherent:
@@ -40,6 +41,8 @@ required:
     - ref-clk
     - phy-mode
     - phy-handle: phandle
+    - mdioproducer-baseaddr
+    - gmiitorgmii-addr
 
 examples:
     xemacps_example_intr_dma.c:

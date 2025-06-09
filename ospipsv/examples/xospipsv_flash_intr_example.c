@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -38,6 +38,7 @@
 * 1.10  akm 01/31/24 Use OSPI controller reset for resetting flash device.
 * 1.10  sb  02/09/24 Add support for Infineon flash part S28HS02G.
 * 1.11  sb  05/02/24 Add support for Macronix flash part mx66uw2g345gxrix0.
+* 1.12  sb  03/12/25 Fixed gcc and g++ warnings.
 *
 *</pre>
 *
@@ -131,6 +132,7 @@ u8 ReadBfrPtr[8]__attribute__ ((aligned(4)));
 #endif
 
 u32 FlashMake;
+u32 FlashType;
 u32 FCTIndex;	/* Flash configuration table index */
 
 /*
@@ -139,7 +141,9 @@ u32 FCTIndex;	/* Flash configuration table index */
  * but should at least be static so they are zeroed.
  */
 static XOspiPsv OspiPsvInstance;
+#ifndef SDT
 static XScuGic IntcInstance;
+#endif
 
 static XOspiPsv_Msg FlashMsg;
 
@@ -247,10 +251,10 @@ int OspiPsvInterruptFlashExample(XOspiPsv *OspiPsvInstancePtr, UINTPTR BaseAddre
 {
 	int Status;
 	u8 UniqueValue;
-	int Count;
+	u32 Count;
 	int Page = 0;
 	XOspiPsv_Config *OspiPsvConfig;
-	int ReadBfrSize;
+	u32 ReadBfrSize;
 	ReadBfrSize = (PAGE_COUNT * MAX_PAGE_SIZE);
 
 	/*
@@ -329,7 +333,7 @@ int OspiPsvInterruptFlashExample(XOspiPsv *OspiPsvInstancePtr, UINTPTR BaseAddre
 	}
 
 	/* Configure Flash Dummy cycles in flash device */
-	if(FlashMake == MACRONIX_OCTAL_ID_BYTE0){
+	if ((FlashMake == MACRONIX_OCTAL_ID_BYTE0) && (FlashType == MACRONIX_OCTAL_ID_BYTE1)){
 		Status = MxConfigDummy(OspiPsvInstancePtr);
 		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
@@ -546,6 +550,7 @@ int FlashReadID(XOspiPsv *OspiPsvPtr)
 	ReadId = ((ReadBfrPtr[0] << 16) | (ReadBfrPtr[1] << 8) | ReadBfrPtr[2]);
 
 	FlashMake = ReadBfrPtr[0];
+	FlashType = ReadBfrPtr[1];
 
 	if (FlashMake == MACRONIX_OCTAL_ID_BYTE0 || FlashMake == SPANSION_OCTAL_ID_BYTE0) {
 		FSRFlag = 0;
@@ -758,7 +763,7 @@ int FlashIoWrite(XOspiPsv *OspiPsvPtr, u32 Address, u32 ByteCount,
 int FlashErase(XOspiPsv *OspiPsvPtr, u32 Address, u32 ByteCount,
 	       u8 *WriteBfrPtr)
 {
-	int Sector;
+	u32 Sector;
 	u32 NumSect;
 #ifdef __ICCARM__
 #pragma data_alignment = 4
@@ -1005,6 +1010,7 @@ int FlashErase(XOspiPsv *OspiPsvPtr, u32 Address, u32 ByteCount,
 int FlashRead(XOspiPsv *OspiPsvPtr, u32 Address, u32 ByteCount,
 	      u8 *WriteBfrPtr, u8 *ReadBfrPtr)
 {
+	(void)WriteBfrPtr;
 	u8 Status;
 	u32 RealAddr;
 	u32 BytesToRead;
@@ -1094,6 +1100,7 @@ int FlashRead(XOspiPsv *OspiPsvPtr, u32 Address, u32 ByteCount,
 ******************************************************************************/
 int BulkErase(XOspiPsv *OspiPsvPtr, u8 *WriteBfrPtr)
 {
+	(void)WriteBfrPtr;
 #ifdef __ICCARM__
 #pragma data_alignment = 4
 	u8 FlashStatus[2];
@@ -1244,6 +1251,7 @@ int BulkErase(XOspiPsv *OspiPsvPtr, u8 *WriteBfrPtr)
 ******************************************************************************/
 int DieErase(XOspiPsv *OspiPsvPtr, u8 *WriteBfrPtr)
 {
+	(void)WriteBfrPtr;
 	u8 DieCnt;
 #ifdef __ICCARM__
 #pragma data_alignment = 4
@@ -1675,6 +1683,7 @@ static void OspiPsvDisableIntrSystem(XScuGic *IntcInstancePtr,
  *****************************************************************************/
 void OspiPsvHandler(void *CallBackRef, u32 StatusEvent)
 {
+	(void)CallBackRef;
 	/*
 	 * If the event was not transfer done, then track it as an error
 	 */
@@ -2212,7 +2221,7 @@ int MxConfigDummy(XOspiPsv *OspiPsvPtr){
 	FlashMsg.RxBfrPtr = ConfigReg;
 	FlashMsg.ByteCount = 1;
 	FlashMsg.Flags = XOSPIPSV_MSG_FLAG_RX;
-	FlashMsg.Dummy = 4;
+	FlashMsg.Dummy = 0;
 	FlashMsg.IsDDROpCode = 0;
 	FlashMsg.Proto = 0;
 	FlashMsg.Addr = RegAddr;

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -11,8 +11,12 @@ type: driver
 
 properties:
   compatible:
-    items:
-      - const: xlnx,mutex-2.1
+    OneOf:
+      - items:
+        - enum:
+          - xlnx,mutex-2.1
+          - xlnx,mutex
+
   reg:
     description: Physical base address and size of the controller register map
   xlnx,num-mutex:
@@ -24,6 +28,8 @@ properties:
 
 config:
     - XMutex_Config
+
+xparam_prefix: Mutex
 
 required:
     - compatible

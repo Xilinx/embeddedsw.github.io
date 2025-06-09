@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -20,6 +20,8 @@ properties:
 
 config:
     - XTMR_Manager_Config
+
+xparam_prefix: TMR_Manager
 
 required:
     - compatible
@@ -43,4 +45,31 @@ required:
     - xlnx,strict-miscompare
     - xlnx,use-debug-disable
     - xlnx,use-tmr-disable
+    - interrupts
+    - interrupt-parent
+
+additionalProperties:
+    - xlnx,mask
+
+examples:
+    xtmr_manager_selftest_example.c:
+        - reg
+    xtmr_manager_intr_example.c:
+        - interrupts
+    xtmr_manager_intr_tapp_example.c:
+        - interrupts
+    xtmr_manager_low_level_example.c:
+        - reg
+    xtmr_manager_polled_example.c:
+        - reg
+    xtmr_manager_recovery_example.c:
+        - reg
+
+tapp:
+   xtmr_manager_selftest_example.c:
+        declaration: TMR_ManagerSelfTestExample
+   xtmr_manager_intr_tapp_example.c:
+        declaration: TMR_ManagerIntrExample
+        hwproperties:
+            - interrupts
 ...

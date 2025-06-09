@@ -1,17 +1,21 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 #ifndef TMRMANAGER_INTR_HEADER_H		/* prevent circular inclusions */
 #define TMRMANAGER_INTR_HEADER_H		/* by using protection macros */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "xil_types.h"
 #include "xil_assert.h"
 #include "xstatus.h"
 
+#ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
 int TMR_ManagerIntrExample(XIntc* IntcInstancePtr, \
                             XTMR_Manager* TMRManagerInstancePtr, \
@@ -28,5 +32,9 @@ int TMR_ManagerIntrExample(XScuGic* IntcInstancePtr, \
                             u16 TMRManagerDeviceId, \
                             u16 TMRManagerIntrId);
 
+#endif
+#endif
+#ifdef __cplusplus
+}
 #endif
 #endif

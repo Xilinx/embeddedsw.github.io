@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -112,6 +112,8 @@ extern "C" {
 #define MACRONIX_OCTAL_ID_BYTE0		0xc2
 #define SPANSION_OCTAL_ID_BYTE0		0x34
 
+#define MACRONIX_OCTAL_ID_BYTE1		0x94
+
 #define MICRON_BP_BITS_MASK		0x7C
 #define CONFIG_REG2_VOLATILE_ADDR_MX 	0x00000300
 
@@ -191,21 +193,21 @@ FlashInfo Flash_Config_Table[] = {
 	{
 		0xc2813a, FLASH_SECTOR_SIZE_4KB, 0x4000, FLASH_PAGE_SIZE_256, 0x40000,
 		FLASH_DEVICE_SIZE_512M, 0xFFFFF000, 1,
-		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, (WRITE_CMD_4B << 8) | WRITE_CMD_4B,
 		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
 	},
 	/*mx66um2g45g*/
 	{
 		0xc2803c, FLASH_SECTOR_SIZE_4KB, 0x10000, FLASH_PAGE_SIZE_256, 0x100000,
 		FLASH_DEVICE_SIZE_2G, 0xFFFFF000, 1,
-		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, (WRITE_CMD_4B << 8) | WRITE_CMD_4B,
 		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
 	},
 	/*mx66uw2g345gxrix0*/
 	{
 		0xc2943c, FLASH_SECTOR_SIZE_4KB, 0x10000, FLASH_PAGE_SIZE_256, 0x100000,
 		FLASH_DEVICE_SIZE_2G, 0xFFFFF000, 1,
-		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(READ_CMD_OPI_MX << 8) | READ_CMD_4B, (WRITE_CMD_4B << 8) | WRITE_CMD_4B,
 		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_MX, READ_STATUS_CMD, 0
 	},
 	/* Infineon */
@@ -213,7 +215,7 @@ FlashInfo Flash_Config_Table[] = {
 	{
 		0x345b1c, FLASH_SECTOR_SIZE_256KB, 0x400, FLASH_PAGE_SIZE_256, 0x100000,
 		FLASH_DEVICE_SIZE_2G, 0xFFFC0000, 2,
-		(DDR_READ_CMD_4B_SPN  << 8) | READ_CMD_4B, WRITE_CMD_4B,
+		(DDR_READ_CMD_4B_SPN  << 8) | READ_CMD_4B, (WRITE_CMD_4B << 8) | WRITE_CMD_4B,
 		(BULK_ERASE_CMD << 8) | SEC_ERASE_CMD_4B, READ_STATUS_CMD, 0
 	},
 };

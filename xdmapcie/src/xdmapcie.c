@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -148,7 +148,7 @@ int XDmaPcie_CfgInitialize(XDmaPcie *InstancePtr, XDmaPcie_Config *CfgPtr,
 		XDmaPcie_QdmaAddPgm(InstancePtr);
 #endif
 
-#if defined(SDT) && defined(versal) && !defined(QDMA_PCIE_BRIDGE) && !defined(XDMA_PCIE_BRIDGE)
+#if defined(SDT) && defined(versal) && !defined(QDMA_PCIE_BRIDGE) && !defined(XDMA_PCIE_BRIDGE) && !defined(versal2)
 	InstancePtr->Config.BaseAddress= InstancePtr->Config.Ecam;
 	InstancePtr->Config.Ecam= EffectiveAddress;
 #endif
@@ -160,7 +160,7 @@ int XDmaPcie_CfgInitialize(XDmaPcie *InstancePtr, XDmaPcie_Config *CfgPtr,
 	XDmaPcie_DisableInterrupts(InstancePtr, XDMAPCIE_IM_DISABLE_ALL_MASK);
 
 	/* Max number of buses */
-#if defined(versal) || defined(QDMA_PCIE_BRIDGE)
+#if defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(versal2)
 	InstancePtr->MaxNumOfBuses = XDMAPCIE_NUM_BUSES;
 #else
 	Data = XDmaPcie_ReadReg(InstancePtr->Config.BaseAddress,
@@ -381,16 +381,21 @@ static void XDmaPcie_BarMemoryAlloc(XDmaPcie *InstancePtr, u8 Bus,u8 Device,u8 F
 			Index[BarNo] = BarNo;
 		}
 
-		if (((Size[BarNo] & XDMAPCIE_CFG_BAR_MEM_AS_MASK) != 0) && (Size[BarNo] != (~((u64)0x0)))) {
+		if((BarIndex + 1) < MaxBars) {
+			if ((Size[BarNo] & XDMAPCIE_CFG_BAR_MEM_TYPE_MASK) != 1U) {
+				if (((Size[BarNo] & XDMAPCIE_CFG_BAR_MEM_AS_MASK) != 0) &&
+					(Size[BarNo] != (~((u64)0x0)))) {
 
-			Location_1 = XDmaPcie_ComposeExternalConfigAddress(
-				Bus, Device, Function,
-				XDMAPCIE_CFG_BAR_BASE_OFFSET + (BarNo + 1U));
-			XDmaPcie_WriteReg((InstancePtr->Config.Ecam), Location_1, Data);
+				Location_1 = XDmaPcie_ComposeExternalConfigAddress(
+					Bus, Device, Function,
+					XDMAPCIE_CFG_BAR_BASE_OFFSET + (BarNo + 1U));
+				XDmaPcie_WriteReg((InstancePtr->Config.Ecam), Location_1, Data);
 
-			Size_1 = XDmaPcie_ReadReg((InstancePtr->Config.Ecam), Location_1);
-			Prefetchable_Size = ((u64)Size_1 << 32) | Size[BarNo];
-			Size[BarNo] = Prefetchable_Size;
+				Size_1 = XDmaPcie_ReadReg((InstancePtr->Config.Ecam), Location_1);
+				Prefetchable_Size = ((u64)Size_1 << 32) | Size[BarNo];
+				Size[BarNo] = Prefetchable_Size;
+				}
+			}
 		}
 
 		/* return saying that BAR is not implemented */
@@ -1608,6 +1613,56 @@ u32 XDmaPcie_ComposeExternalConfigAddress(u8 Bus, u8 Device, u8 Function,
 }
 
 /****************************************************************************/
+/*
+* Enable IATU Programming for MMI PCI Node
+*
+* @param 	InstancePtr is the PCIe component to operate on.
+* @param        Bus is the external PCIe function's Bus number.
+* @param        ATUConfigDataType is the TYPE to Modify Outgoing TLP's
+* @param        ATURegionCntrl is the Region EN for Address Transalation
+* @param        ATUAddress is the IATU Base Address
+* @param        ATULimitAddress is the IATU Limit Address
+* @param        PCIeAddress is the Target address to be mapped
+* @param        RegionSize is the IATU Address Transalation Size
+
+* @return       None
+*
+* @note         This function is valid only when IP is configured as a
+*               root complex.
+*
+*****************************************************************************/
+void XDmaPcie_ConfigureIATURegion(XDmaPcie *InstancePtr, u8 Bus, u8 ATUConfigDataType,
+		u32 ATURegionCntrl, u64 ATUAddress, u32 ATULimitAddress,
+		u64 PCIeAddress, u32 RegionSize)
+{
+	 if(Bus>=1) {
+                Xil_Out32(InstancePtr->Config.IATUAddress , ATUConfigDataType);
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+			XDMAPCIE_IATU_REGION_CNTRL_OFFSET) , ATURegionCntrl);
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_LWR_BASE_ADDR_OFFSET) , LOWER_32_BITS(ATUAddress));
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_UPPER_BASE_ADDR_OFFSET) , UPPER_32_BITS(ATUAddress));
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_LIMIT_ADDR_OFFSET) , ATULimitAddress);
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_PCIE_LWR_ADDR_OFFSET) ,LOWER_32_BITS(PCIeAddress));
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_PCIE_UPPER_ADDR_OFFSET) ,UPPER_32_BITS(PCIeAddress));
+
+                Xil_Out32((InstancePtr->Config.IATUAddress +
+                        XDMAPCIE_IATU_MAX_ATU_SIZE_OFFSET) ,RegionSize);
+
+	 }
+}
+
+/****************************************************************************/
 /**
 * Read 32-bit value from external PCIe Function's configuration space.
 * External PCIe function is identified by its Requester ID (Bus#, Device#,
@@ -1633,8 +1688,11 @@ void XDmaPcie_ReadRemoteConfigSpace(XDmaPcie *InstancePtr, u8 Bus, u8 Device,
 		 u8 Function, u16 Offset, u32 *DataPtr)
 {
 	u32 Location = 0;
-	u32 Data;
-
+	u32 Data = 0;
+#if defined(versal2)
+	u64 PCIeAddr = 0;
+	u64 IATUAddr = 0;
+#endif
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(DataPtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
@@ -1650,7 +1708,22 @@ void XDmaPcie_ReadRemoteConfigSpace(XDmaPcie *InstancePtr, u8 Bus, u8 Device,
 	/* Compose function configuration space location */
 	Location = XDmaPcie_ComposeExternalConfigAddress (Bus, Device,
 							Function, Offset);
+#if defined(versal2)
+	PCIeAddr = InstancePtr->Config.Ecam + Location;
 
+	if ((Bus == 1) && (Device == 0))
+		IATUAddr = InstancePtr->Config.Ecam + Location;
+
+	if((Bus == 1) && (Device == 0))
+		XDmaPcie_ConfigureIATURegion(InstancePtr, Bus, XDMAPCIE_CFG_TLP_TYPE0,
+			XDMAPCIE_REGION_EN, IATUAddr, XDMAPCIE_ATU_LIMIT_ADDR, PCIeAddr,
+			XDMAPCIE_ATU_REGION_SIZE);
+
+        else
+		XDmaPcie_ConfigureIATURegion(InstancePtr, Bus, XDMAPCIE_CFG_TLP_TYPE1,
+			XDMAPCIE_REGION_EN, IATUAddr, XDMAPCIE_ATU_LIMIT_ADDR, PCIeAddr,
+			XDMAPCIE_ATU_REGION_SIZE);
+#endif
 	while(XDmaPcie_IsEcamBusy(InstancePtr));
 
 	/* Read data from that location */

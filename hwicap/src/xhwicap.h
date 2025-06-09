@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -164,6 +164,9 @@
 *                      function prototypes from the header file.
 * 11.5 Nava   09/30/22 Added new IDCODE's as mentioned in the ug570 Doc.
 * 11.6 Nava   06/28/23 Added support for system device-tree flow.
+* 11.7 Nava   12/02/24 Fixed mismatch between IDCODE array size and initialization value.
+* 11.7 Nava   02/06/25 Added missing xlnx,icap-dwidth and xlnx,mode to YAML to
+*                      align with the driver config struct.
 *
 * </pre>
 *
@@ -188,8 +191,8 @@ extern "C" {
 #define DEVICE_TYPE_ULTRA_PLUS		3
 
 #define NUM_7SERIES_IDCODES		32
-#define NUM_ULTRA_SERIES_IDCODES	13
-#define NUM_ULTRA_PLUS_SERIES_IDCODES	12
+#define NUM_ULTRA_SERIES_IDCODES	14
+#define NUM_ULTRA_PLUS_SERIES_IDCODES	29
 
 #define PCAP_CR_OFFSET         0xFFCA3008 /**< PCAP CR Register */
 
@@ -228,12 +231,14 @@ typedef struct {
 	u16 DeviceId;		/**< Device ID  of device */
 #else
 	char *Name;
+#endif
+	UINTPTR BaseAddress;	/**< Register base address */
+#ifdef SDT
 	u32 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
 				  * trigger type and level flags */
 	UINTPTR IntrParent;	/** Bit[0] Interrupt parent type Bit[64/32:1]
 				  * Parent base address */
 #endif
-	UINTPTR BaseAddress;	/**< Register base address */
 	int IcapWidth;		/**< Width of ICAP */
 	int IsLiteMode;		/**< IsLiteMode, 0 not
 					present, 1 present */

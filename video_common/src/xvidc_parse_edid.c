@@ -89,6 +89,12 @@ xvidc_disp_cea861_extended_data(
                   XV_VidC_Verbose VerboseEn);
 
 static void
+xvidc_disp_cea861_hf_edid_ext_override_data(
+		const struct xvidc_cea861_extended_data_block * const edb,
+		XV_VidC_EdidCntrlParam *EdidCtrlParam,
+		XV_VidC_Verbose VerboseEn);
+
+static void
 xvidc_disp_cea861_hf_sink_capability_data(
 		const struct xvidc_cea861_extended_data_block * const edb,
 		XV_VidC_EdidCntrlParam *EdidCtrlParam,
@@ -266,6 +272,7 @@ xvidc_disp_edid1(const struct edid * const edid,
         xil_printf("\r\n");
 	}
 #endif
+	EdidCtrlParam->Extensions = edid->extensions;
         if (has_ascii_string) {
 			if (VerboseEn) {
 #if XVIDC_EDID_VERBOSITY > 1
@@ -765,6 +772,12 @@ xvidc_disp_cea861_extended_data(
             }
         break;
 #endif
+	case XVIDC_CEA861_EXT_TAG_TYPE_HDMI_FORUM_EDID_EXT_OVERRIDE_DATA:
+		if (VerboseEn) {
+			xil_printf("	HDMI Forum EDID extension override Data Block\r\n");
+		}
+		xvidc_disp_cea861_hf_edid_ext_override_data(edb, EdidCtrlParam, VerboseEn);
+		break;
         case XVIDC_CEA861_EXT_TAG_TYPE_HDMI_FORUM_SINK_CAPABILITY:
             if (VerboseEn) {
                 xil_printf("  HDMI Forum Sink Capability Data Block\r\n");
@@ -1132,6 +1145,42 @@ xvidc_disp_cea861_hf_sink_capability_data(
 		xil_printf("\r\n");
             }
             #endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function parse EDID on CEA 861 HDMI Forum Extension Override Data Block(HF-EEODB)
+*
+* @param    data is a pointer to the EDID array.
+* @param    EdidCtrlParam is a pointer the EDID Control parameter
+* @param    VerboseEn is a pointer to the XV_HdmiTxSs core instance.
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+static void
+xvidc_disp_cea861_hf_edid_ext_override_data(
+					const struct xvidc_cea861_extended_data_block * const edb,
+					XV_VidC_EdidCntrlParam *EdidCtrlParam,
+					XV_VidC_Verbose VerboseEn)
+{
+	/* During Verbosity 0, VerboseEn won't be used */
+	/* To avoid compilation warnings */
+	VerboseEn = VerboseEn;
+	const struct xvidc_cea861_hdmi_hf_edid_ext_override_data_block * const hdmi =
+			(struct xvidc_cea861_hdmi_hf_edid_ext_override_data_block *)edb;
+
+#if XVIDC_EDID_VERBOSITY > 0
+	if (VerboseEn) {
+		xil_printf("HF - EDID Extension Override Data block (EEODB)\r\n");
+		xil_printf("Cea Extended Tag: %d\r\n", edb->xvidc_cea861_extended_tag_codes);
+		xil_printf("Extension block count %d\r\n", hdmi->Edid_extention_block_count);
+	}
+#endif
+	EdidCtrlParam->Extensions = hdmi->Edid_extention_block_count;
 }
 
 /*****************************************************************************/
@@ -1644,7 +1693,6 @@ static const struct xvidc_edid_extension_handler {
 	[XVIDC_EDID_EXTENSION_DDDB]           = { NULL },
 };
 
-
 /*****************************************************************************/
 /**
 *
@@ -1687,5 +1735,70 @@ XV_VidC_parse_edid(const u8 * const data,
         } else {
 		(*handler->inf_disp)(extension,EdidCtrlParam,VerboseEn);
         }
+    }
+}
+
+void XV_VidC_handle_extension(const struct xvidc_edid_extension *extension,
+		XV_VidC_EdidCntrlParam *EdidCtrlParam,
+		XV_VidC_Verbose VerboseEn) {
+	const struct xvidc_edid_extension_handler *handler =
+			&xvidc_edid_extension_handlers[extension->tag];
+
+	if (!handler->inf_disp) {
+#if XVIDC_EDID_VERBOSITY > 0
+		if (VerboseEn) {
+			xil_printf("WARNING: block %u contains unknown extension (%#04x)\r\n",
+					block_num, extension->tag);
+		}
+#endif
+	} else {
+		(*handler->inf_disp)(extension, EdidCtrlParam, VerboseEn);
+	}
+}
+
+/*****************************************************************************/
+/**
+*
+* This function parse and print the EDID of the Sink and handles the EDID data
+* segment wise.
+*
+* @param    data is a pointer to the EDID array.
+* @param    EdidCtrlParam is a pointer the EDID Control parameter
+* @param    VerboseEn is a pointer to the XV_HdmiTxSs core instance.
+* @param    Segment is a segment number of EDID
+*
+* @return None
+*
+* @note   None.
+*
+******************************************************************************/
+void
+XV_VidC_parse_edid_extension(const u8 * const data,
+                  XV_VidC_EdidCntrlParam *EdidCtrlParam,
+                  XV_VidC_Verbose VerboseEn, u8 SegmentNum) {
+
+    if (SegmentNum == 0) {
+	const struct edid *edid = (const struct edid *)data;
+	const struct xvidc_edid_extension *extension =
+		(const struct xvidc_edid_extension *)(data + sizeof(*edid));
+
+        /* Initialize EDID Control Parameters */
+        XV_VidC_EdidCtrlParamInit(EdidCtrlParam);
+
+        xvidc_disp_edid1(edid, EdidCtrlParam, VerboseEn);
+
+        /* Handle the base segment */
+        XV_VidC_handle_extension(extension, EdidCtrlParam, VerboseEn);
+        return;
+    }
+
+     /* Handle segment 1 onwards */
+    for (u8 i = 0; i < 2; i++) {
+	const struct xvidc_edid_extension *extensions =
+		(const struct xvidc_edid_extension *)data;
+	const struct xvidc_edid_extension *extension =
+		&extensions[i * XVIDC_EDID_BLOCK_SIZE];
+
+	XV_VidC_handle_extension(extension, EdidCtrlParam, VerboseEn);
     }
 }

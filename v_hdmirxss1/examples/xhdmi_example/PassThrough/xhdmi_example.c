@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -40,6 +40,7 @@
 * 1.10  ssh    03/02/22 Added LCPLL and RPLL config for VCK190 Exdes
 * 1.11	ssh    01/25/23 Added support for VEK280
 * 1.12  ssh    09/14/23 Added Tx compliance values for UltrascalePlus
+* 1.13	ssh    04/07/25 Added support for VEK385
 *
 * </pre>
 *
@@ -132,6 +133,7 @@ void XV_Rx_HdmiTrigCb_VfmcRxClkSel(void *InstancePtr);
 void XV_Rx_HdmiTrigCb_VrrVfpEvent(void *InstancePtr);
 void XV_Rx_HdmiTrigCb_VtemEvent(void *InstancePtr);
 void XV_Rx_HdmiTrigCb_DynHdrEvent(void *InstancePtr);
+void XV_Rx_HdmiTrigCb_VidRdyEvent(void *InstancePtr);
 
 #if (XPAR_V_HDMI_RXSS1_DSC_EN == 1)
 void XV_Rx_HdmiTrigCb_DscDdcEvent(void *InstancePtr);
@@ -830,6 +832,10 @@ u32 XV_Rx_InitController(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 	Status |= XV_Rx_SetTriggerCallbacks(InstancePtr,
 			    XV_RX_TRIG_HANDLER_VTEMEVENT,
 				(void *)XV_Rx_HdmiTrigCb_VtemEvent,
+				(void *)InstancePtr);
+	Status |= XV_Rx_SetTriggerCallbacks(InstancePtr,
+				XV_RX_TRIG_HANDLER_VIDRDYEVENT,
+				(void *)XV_Rx_HdmiTrigCb_VidRdyEvent,
 				(void *)InstancePtr);
 #if defined (XPAR_XV_FRMBUFWR_NUM_INSTANCES) && \
                       (XPAR_XV_FRMBUFRD_NUM_INSTANCES)
@@ -3840,7 +3846,8 @@ int I2cClk(u32 InFreq, u32 OutFreq)
 {
 	int Status;
 
-#if defined (XPS_BOARD_VEK280)
+#if defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 	if (OutFreq != 0) {
 	/* VFMC TX Clock Source */
 		Status = IDT_8T49N24x_I2cClk(&Iic, I2C_CLK_ADDR1,
@@ -4536,7 +4543,8 @@ void XV_Tx_HdmiTrigCb_GetFRLClk(void *InstancePtr)
 void XV_Tx_HdmiTrigCb_SetupTxFrlRefClk(void *InstancePtr)
 {
 	int Status;
-#if (!defined XPS_BOARD_VEK280)
+#if !(defined (XPS_BOARD_VEK280) || \
+	  defined (XPS_BOARD_VEK385))
 	Status = XST_FAILURE;
 	xil_printf("XV_Tx_HdmiTrigCb_SetupTxFrlRefClk\r\n");
 	Status = Vfmc_Mezz_HdmiTxRefClock_Sel(&Vfmc[0],
@@ -4571,7 +4579,8 @@ void XV_Tx_HdmiTrigCb_SetupTxTmdsRefClk(void *InstancePtr)
 	u8 IsTx = xhdmi_exdes_ctrlr.IsTxPresent;
 	u8 IsRx = xhdmi_exdes_ctrlr.IsRxPresent;
 
-#if (!defined XPS_BOARD_VEK280)
+#if !(defined (XPS_BOARD_VEK280) || \
+	  defined (XPS_BOARD_VEK385))
 	Status = Vfmc_Mezz_HdmiTxRefClock_Sel(&Vfmc[0],
 			VFMC_MEZZ_TxRefclk_From_IDT);
 #endif
@@ -4984,7 +4993,8 @@ void XV_Tx_HdmiTrigCb_EnableCableDriver(void *InstancePtr)
 				}
 			}
 #elif defined (XPS_BOARD_VCK190) || \
-	  defined (XPS_BOARD_VEK280)
+	  defined (XPS_BOARD_VEK280) || \
+	  defined (XPS_BOARD_VEK385)
 			/* Adjust GT TX Diff Swing based on Line rate */
 			if (Vfmc[0].TxMezzType >= VFMC_MEZZ_HDMI_ONSEMI_R0 &&
 				Vfmc[0].TxMezzType <  VFMC_MEZZ_INVALID) {
@@ -5042,7 +5052,8 @@ void XV_Tx_HdmiTrigCb_EnableCableDriver(void *InstancePtr)
             TxprecursorVal = 0x3;
             TxpostcursorVal = 0x3;
 #elif defined (XPS_BOARD_VCK190) || \
-	  defined (XPS_BOARD_VEK280)
+	  defined (XPS_BOARD_VEK280) || \
+	  defined (XPS_BOARD_VEK385)
 			TxDiffSwingVal = 0xD;
             TxprecursorVal = 0x1;
             TxpostcursorVal = 0x2;
@@ -5142,7 +5153,8 @@ void XV_Tx_HdmiTrigCb_FrlConfigDeviceSetup(void *InstancePtr)
 #if defined (XPS_BOARD_ZCU102) || \
 	defined (XPS_BOARD_ZCU106) || \
 	defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280)
+	defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 			Data = 0xD;
 #elif defined (XPS_BOARD_VCU118)
 			Data = ChId==4 ? 0x1C : 0x1A;
@@ -5173,13 +5185,16 @@ void XV_Tx_HdmiTrigCb_FrlConfigDeviceSetup(void *InstancePtr)
 			Data = 0xD;
 #elif defined (XPS_BOARD_VEK280)
 			Data = 0xD;
+#elif defined (XPS_BOARD_VEK385)
+			Data = 0xD;
 #endif
 		}
 #if defined (XPS_BOARD_ZCU106) || \
 	defined (XPS_BOARD_VCU118) || \
 	defined (XPS_BOARD_ZCU102) || \
 	defined (XPS_BOARD_VCK190) || \
-	defined (XPS_BOARD_VEK280)
+	defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385)
 		XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId, Data);
 #endif
 	}
@@ -5605,6 +5620,29 @@ void XV_Rx_HdmiTrigCb_VtemEvent(void *InstancePtr)
 #endif
 }
 
+/*****************************************************************************/
+/**
+*
+* This function is called from the RX State machine layer.
+*
+* @param  InstancePtr is the callback reference.
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void XV_Rx_HdmiTrigCb_VidRdyEvent(void *InstancePtr)
+{
+	u32 Data;
+	Data = XV_HdmiRx1_ReadReg(HdmiRxSs.Config.BaseAddress,
+				  (XV_HDMIRX1_PIO_IN_OFFSET));
+
+	if ((Data) & (XV_HDMIRX1_PIO_IN_LNK_RDY_MASK)) {
+		XHdmiphy1_ClkDetFreqReset(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
+	}
+}
+
 #if defined (XPAR_XV_FRMBUFWR_NUM_INSTANCES) && \
                       (XPAR_XV_FRMBUFRD_NUM_INSTANCES)
 /*****************************************************************************/
@@ -5825,7 +5863,8 @@ void XV_Rx_HdmiTrigCb_VfmcRxClkSel(void *InstancePtr)
 
 	if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl ==
 	    TRUE) {
-#if (!defined XPS_BOARD_VEK280)
+#if !(defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385))
 		Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0],
 			VFMC_MEZZ_RxRefclk_From_Si5344);
 		XHdmiphy1_ClkDetFreqReset(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
@@ -5834,7 +5873,8 @@ void XV_Rx_HdmiTrigCb_VfmcRxClkSel(void *InstancePtr)
 		Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 1, LineRate, Lanes);
 	} else if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->
 			Stream.IsFrl == FALSE) {
-#if (!defined XPS_BOARD_VEK280)
+#if !(defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385))
 		Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0],
 			VFMC_MEZZ_RxRefclk_From_Cable);
 #endif
@@ -6717,8 +6757,12 @@ int main()
 	Status = Exdes_SetupClkSrc(XPAR_XIICPS_0_DEVICE_ID,
 			XPAR_XIICPS_1_DEVICE_ID);
 #else
+#ifndef XPS_BOARD_VEK385
 	Status = Exdes_SetupClkSrc(XPAR_XIICPS_0_BASEADDR,
 			XPAR_XIICPS_1_BASEADDR);
+#else
+	Status = Exdes_SetupClkSrc((u32)NULL, (u32)NULL);
+#endif
 #endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("PS IIC initialization failed. \r\n");
@@ -6763,6 +6807,11 @@ int main()
 			XPAR_AUDIO_SS_0_AUD_PAT_GEN_BASEADDR,
 			XPAR_AUDIO_SS_0_HDMI_ACR_CTRL_BASEADDR,
 			XPAR_AUDIO_SS_0_CLK_WIZARD_BASEADDR);
+#elif defined (XPS_BOARD_VEK385)
+	XhdmiAudGen_Init(&AudioGen,
+			XPAR_AUDIO_SS_0_AUD_PAT_GEN_BASEADDR,
+			XPAR_AUDIO_SS_0_HDMI_ACR_CTRL_BASEADDR,
+			XPAR_AUDIO_SS_0_CLKX5_WIZ_BASEADDR);
 #else
 	XhdmiAudGen_Init(&AudioGen,
 			XPAR_AUDIO_SS_0_AUD_PAT_GEN_BASEADDR,
@@ -6895,6 +6944,13 @@ int main()
 					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x1);/*1, A */
 			XHdmiphy1_SetTxPostCursor(&Hdmiphy1, 0, ChId,
 					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x2);/*1, B */
+#elif defined (XPS_BOARD_VEK385)
+			XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0xD : 0xD);/*0xc 0xb */
+			XHdmiphy1_SetTxPreEmphasis(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x1);/*1, A */
+			XHdmiphy1_SetTxPostCursor(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x2);/*1, B */
 #else
 /* Place holder for future board support, Below Value just a random value */
 			XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId, 0xD);
@@ -6908,7 +6964,9 @@ int main()
 	}
 
 	/* Initialize IDT to make sure LoL is LOW */
+#ifndef XPS_BOARD_VEK385
 	I2cClk(0, 400000000);
+#endif
 	/* Delay 50ms to allow clockgen to lock */
 	usleep (50000);
 

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -64,6 +64,11 @@
 *		       ug570
 * 11.5  Nava  09/30/22 Added New IDCODE's as mentioned in the ug570 Doc.
 * 11.6  Nava  06/28/23 Added support for system device-tree flow.
+* 11.7  Nava  12/09/24 Added the missing ID code for Artix UltraScale+ FPGAs
+*                      to the series_ultra_plus_idcodes array.
+* 11.7  Nava  04/01/25 Updates the series_ultra_plus_idcodes array to include
+*                      the ID code for UltraScale+ FPGAs, ensuring accurate
+*                      identification and compliance with the latest UG570 Doc.
 *
 * </pre>
 *
@@ -114,9 +119,9 @@ static u32 series_ultra_idcodes[NUM_ULTRA_SERIES_IDCODES] = {
 static u32 series_ultra_plus_idcodes[NUM_ULTRA_PLUS_SERIES_IDCODES] = {
 	0x4A63093, 0x4A62093, 0x484A093, 0x4A4E093, 0x4A52093, 0x4A56093,
 	0x4B39093, 0x4B2B093, 0x4B29093, 0x4B31093, 0x4B49093, 0x4B51093,
-	0x4AC5093, 0x4AC4093, 0x4A65093, 0x4A64093, 0x4ACF093, 0x4BA1093,
+	0x4AC2093, 0x4AC4093, 0x4A65093, 0x4A64093, 0x4ACF093, 0x4BA1093,
 	0x4ACE093, 0x4B43093, 0x4B41093, 0x4B6B093, 0x4B69093, 0x4B71093,
-	0x4B79093, 0x4B73093, 0x4B7B093, 0x4B61093
+	0x4B79093, 0x4B73093, 0x4B7B093, 0x4B61093, 0x4AF6093
 };
 
 

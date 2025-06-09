@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,7 +17,9 @@
 *
 * Ver  Who Date     Changes
 * ---- --- -------- --------------------------------------------------------
-* 1.00 ND  18/10/22  Common DP 2.1 rx only application for zcu102 and vcu118
+* 1.00 ND  10/18/22  Common DP 2.1 rx only application for zcu102 and vcu118
+* 1.01 ND  03/24/25  Added support for PARRETO fmc.
+* 1.02 ND  05/02/25  Enhanced the prints for training.
 * </pre>
 *
 ******************************************************************************/
@@ -131,7 +133,7 @@
 /*Max timeout tuned as per tester - AXI Clock=100 MHz
  *Some GPUs may need larger value, So user may tune if needed
  */
-#define DP_BS_IDLE_TIMEOUT      0xFFFFFFFF//0x047868C0//0x0091FFFF
+#define DP_BS_IDLE_TIMEOUT      0xFFFFFF
 #define VBLANK_WAIT_COUNT       200
 
 /*For compliance, please set AUX_DEFER_COUNT to be 8
@@ -167,11 +169,15 @@
  */
 #define TIMER_RESET_VALUE        1000
 
+#define PARRETO_FMC //enable for parreto fmc and disable for diode fmc
+
 #if !defined (XPS_BOARD_ZCU102)
 #define CRC_CFG 0x5
 #else
 #define CRC_CFG 0x4
 #endif
+
+//#define DEBUG
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
@@ -408,11 +414,16 @@ void enable_caches()
     Xil_ICacheEnableRegion(CACHEABLE_REGION_MASK);
     Xil_DCacheEnableRegion(CACHEABLE_REGION_MASK);
 #elif __MICROBLAZE__
+#ifndef SDT
 #ifdef XPAR_MICROBLAZE_USE_ICACHE
     Xil_ICacheEnable();
 #endif
 #ifdef XPAR_MICROBLAZE_USE_DCACHE
     Xil_DCacheEnable();
+#endif
+#else
+	Xil_ICacheEnable();
+	Xil_DCacheEnable();
 #endif
 #endif
 }
@@ -420,11 +431,16 @@ void enable_caches()
 void disable_caches()
 {
 #ifdef __MICROBLAZE__
+#ifndef SDT
 #ifdef XPAR_MICROBLAZE_USE_DCACHE
     Xil_DCacheDisable();
 #endif
 #ifdef XPAR_MICROBLAZE_USE_ICACHE
     Xil_ICacheDisable();
+#endif
+#else
+	Xil_DCacheDisable();
+	Xil_ICacheDisable();
 #endif
 #endif
 }
@@ -481,6 +497,7 @@ int VideoFMC_Init(void){
 	    return XST_FAILURE;
 	}
 
+#ifndef PARRETO_FMC
 //	I2C_Scan(XPAR_IIC_0_BASEADDR);
 
 	/* Configure VFMC IO Expander 0:
@@ -533,6 +550,7 @@ int VideoFMC_Init(void){
 	xil_printf("Failed to Si5344\n\r");
         return XST_FAILURE;
     }
+#endif
 	return XST_SUCCESS;
 }
 
@@ -575,6 +593,62 @@ int main()
 
 	return XST_SUCCESS;
 }
+
+void PrintLinkInfo(){
+		u32 Linkrate=0;
+		Linkrate = XDpRxSs_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+													XDP_RX_DPCD_LINK_BW_SET);
+		int lk_int=0,lk_dec=0;
+		if(Linkrate == 0x6){
+					lk_int=1;
+					lk_dec=62;
+		}else if (Linkrate == 0xA){
+					lk_int=2;
+					lk_dec=7;
+		}else if (Linkrate == 0x14){
+					lk_int =5;
+					lk_dec =4;
+		}else if(Linkrate == 0x1E){
+					lk_int = 8;
+					lk_dec = 1;
+		}else if(Linkrate == 0x1){
+					lk_int = 10;
+					lk_dec = 0;
+		}else if(Linkrate == 0x4){
+					lk_int = 13;
+					lk_dec = 5;
+		}else if(Linkrate == 0x2){
+					lk_int = 20;
+					lk_dec = 0;
+		}
+
+		xil_printf("Video Detected --> Link Config: %d.%dx%d, "
+			           "Frame: %dx%d, MISC0: 0x%x,",
+		lk_int,lk_dec,
+		(int)DpRxSsInst.UsrOpt.LaneCount,
+		(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				XDP_RX_MSA_HRES),
+		(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+			XDP_RX_MSA_VHEIGHT),
+		(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				XDP_RX_MSA_MISC0));
+
+		if((Linkrate == 0x1) || (Linkrate == 0x2) || (Linkrate == 0x4)){
+		xil_printf(
+			"VFreq L = %d, VFreq H =%d\r\n",
+			(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+					0x1608),
+			(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+						 0x160c));
+		}else{
+			xil_printf("Mvid=%d, Nvid=%d \r\n",
+			(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				 XDP_RX_MSA_MVID),
+			(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				 XDP_RX_MSA_NVID));
+		}
+}
+
 
 /*****************************************************************************/
 /**
@@ -848,42 +922,12 @@ u32 DpRxSs_Main(u32 BaseAddress)
 			/* VBLANK Management */
 			DpRxSsInst.VBlankCount = 0;
 
-			if ((int)DpRxSsInst.UsrOpt.LinkRate == 0x1) {
-				mult = 10;
-			}
-#if !defined (XPS_BOARD_ZCU102)
-			else if ((int)DpRxSsInst.UsrOpt.LinkRate == 0x2) {
-				mult = 10;
-			}
-#endif
-			else if ((int)DpRxSsInst.UsrOpt.LinkRate == 0x4) {
-				mult = 3;
-		    } else {
-				mult = 270;
-			}
-                        // retoring unplug counter
-                        XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-					XDP_RX_CDR_CONTROL_CONFIG,
-			        XDP_RX_CDR_CONTROL_CONFIG_TDLOCK_DP159);
+            // retoring unplug counter
+            XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+			XDP_RX_CDR_CONTROL_CONFIG,
+			XDP_RX_CDR_CONTROL_CONFIG_TDLOCK_DP159);
 
-			/* Wait for few frames to ensure valid video is received */
-			xil_printf("Video Detected --> Link Config: %dx%d, "
-			           "Frame: %dx%d, MISC0: 0x%x, Mvid=%d, Nvid=%d \r",
-				(int)DpRxSsInst.UsrOpt.LinkRate * mult,
-				(int)DpRxSsInst.UsrOpt.LaneCount,
-				(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-						 XDP_RX_MSA_HRES),
-				(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-						 XDP_RX_MSA_VHEIGHT),
-				(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-						 XDP_RX_MSA_MISC0),
-				(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-						 XDP_RX_MSA_MVID),
-				(int)XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
-						 XDP_RX_MSA_NVID));
-
-			XDp_RxDtgDis(DpRxSsInst.DpPtr);
-			XDp_RxDtgEn(DpRxSsInst.DpPtr);
+			PrintLinkInfo();
 			XDp_RxInterruptDisable(DpRxSsInst.DpPtr,
 					   XDP_RX_INTERRUPT_MASK_VBLANK_MASK);
 
@@ -957,9 +1001,10 @@ u32 DpRxSs_PlatformInit(void)
 	XIicPs_SetSClk(&Ps_Iic0, PS_IIC_CLK);
 #endif
 	VideoFMC_Init();
+#ifndef PARRETO_FMC
 	IDT_8T49N24x_SetClock(XPAR_IIC_0_BASEADDR, I2C_IDT8N49_ADDR,
 			      0, 270000000, TRUE);
-
+#endif
 	return Status;
 }
 
@@ -1004,9 +1049,11 @@ u32 DpRxSs_VideoPhyInit(u32 Baseaddress)
 			   PHY_User_Config_Table[5].RxPLL,
 			   PHY_User_Config_Table[5].LineRate);
 
+#ifndef PARRETO_FMC
 	//Setting polarity (RX) for new DP2.1 FMC
 	XVphy_SetPolarity(&VPhyInst, 0, XVPHY_CHANNEL_ID_CHA,
 			XVPHY_DIR_RX, 1);
+#endif
 
 	return XST_SUCCESS;
 }
@@ -1438,11 +1485,12 @@ void DpRxSs_PowerChangeHandler(void *InstancePtr)
 void DpRxSs_NoVideoHandler(void *InstancePtr)
 {
 	DpRxSsInst.VBlankCount = 0;
+#ifdef DEBUG
+	xil_printf("NoVideo Interrupt\r\n");
+#endif
 	XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
 			      XDP_RX_INTERRUPT_MASK_VBLANK_MASK);
 
-	XDp_RxDtgDis(DpRxSsInst.DpPtr);
-	XDp_RxDtgEn(DpRxSsInst.DpPtr);
 
 	/* Reset CRC Test Counter in DP DPCD Space */
 	XVidFrameCrc_Reset();
@@ -1509,6 +1557,9 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VideoHandler(void *InstancePtr)
 {
+#ifdef DEBUG
+	xil_printf("valid video interrupt\r\n");
+#endif
 }
 
 /*****************************************************************************/
@@ -1526,6 +1577,8 @@ void DpRxSs_VideoHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_TrainingDoneHandler(void *InstancePtr)
 {
+	XDp_RxDtgDis(DpRxSsInst.DpPtr);
+	XDp_RxDtgEn(DpRxSsInst.DpPtr);
 }
 
 /*****************************************************************************/
@@ -1542,6 +1595,10 @@ void DpRxSs_TrainingDoneHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_UnplugHandler(void *InstancePtr)
 {
+	/* Disable All Interrupts*/
+	XDp_RxInterruptDisable(DpRxSsInst.DpPtr, 0xFFFFFFFF);
+	XDp_RxInterruptDisable1(DpRxSsInst.DpPtr, 0xFFFFFFFF);
+	xil_printf("Rx cable Unplugged\r\n");
 	/* Disable & Enable Audio */
 	XDpRxSs_AudioDisable(&DpRxSsInst);
 	AudioinfoFrame.frame_count = 0;
@@ -1549,8 +1606,27 @@ void DpRxSs_UnplugHandler(void *InstancePtr)
 	SdpExtFrame_q.Header[1] = 0;
 	SdpExtFrame.frame_count = 0;
 	SdpExtFrame.frame_count = 0;
+	/* Enable Training related interrupts*/
+	XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
+			  XDP_RX_INTERRUPT_MASK_TP1_MASK |
+			  XDP_RX_INTERRUPT_MASK_TP2_MASK |
+			  XDP_RX_INTERRUPT_MASK_TP3_MASK |
+			  XDP_RX_INTERRUPT_MASK_POWER_STATE_MASK |
+			  XDP_RX_INTERRUPT_MASK_CRC_TEST_MASK |
+			  XDP_RX_INTERRUPT_MASK_BW_CHANGE_MASK |
+			  XDP_RX_INTERRUPT_MASK_VCP_ALLOC_MASK |
+			 XDP_RX_INTERRUPT_MASK_VCP_DEALLOC_MASK |
+			 XDP_RX_INTERRUPT_MASK_DOWN_REPLY_MASK |
+			 XDP_RX_INTERRUPT_MASK_DOWN_REQUEST_MASK);
+
+
+	XDp_RxInterruptEnable1(DpRxSsInst.DpPtr,
+				   XDP_RX_INTERRUPT_MASK_TP4_MASK |
+			   XDP_RX_INTERRUPT_MASK_ACCESS_LANE_SET_MASK |
+			   XDP_RX_INTERRUPT_MASK_ACCESS_LINK_QUAL_MASK |
+			   XDP_RX_INTERRUPT_MASK_ACCESS_ERROR_COUNTER_MASK);
 	XDp_RxGenerateHpdInterrupt(DpRxSsInst.DpPtr, 5000);
-        DpRxSs_Setup();
+
 
 }
 
@@ -1617,7 +1693,7 @@ void DpRxSs_PllResetHandler(void *InstancePtr)
         xil_printf ("Issue encountered in PHY config and reset\r\n");
     }
 
-	/*Enable all interrupts except Unplug*/
+	/*Enable all interrupts*/
 	XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
 			      XDP_RX_INTERRUPT_MASK_ALL_MASK);
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_CRC_CONFIG,
@@ -2062,17 +2138,6 @@ void CalculateCRC(void)
 		     (VidFrameCRC.TEST_CRC_SUPPORTED << 5 |
 		      VidFrameCRC.TEST_CRC_CNT));
 
-	/* Set pixel mode as per lane count - it is default behavior
-	 * User has to adjust this accordingly if there is change in pixel
-	 * width programming
-	 * */
-
-	/* Set pixel mode as per lane count - it
-	 * is default behavior Reset DTG */
-	XDp_RxSetUserPixelWidth(DpRxSsInst.DpPtr,
-				DpRxSsInst.UsrOpt.LaneCount);
-	XDp_RxDtgDis(DpRxSsInst.DpPtr);
-	XDp_RxDtgEn(DpRxSsInst.DpPtr);
 	CustomWaitUs(DpRxSsInst.DpPtr, 100000);
 	VidFrameCRC.Mode_422 =
 			(XVidFrameCrc_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,

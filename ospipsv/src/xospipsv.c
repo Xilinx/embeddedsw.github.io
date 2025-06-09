@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -47,6 +47,7 @@
 * 1.10	akm  02/06/24 Increase the delay after device reset.
 * 1.10	sb   02/09/24 Add support for Infineon flash part S28HS02G.
 * 1.11  ng  08/20/24 Add spartanup device support
+* 1.12  sb  01/28/25 Use stig read for byte count less than 8bytes.
 *
 * </pre>
 *
@@ -118,6 +119,7 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->Config.InputClockHz = ConfigPtr->InputClockHz;
 		InstancePtr->Config.IsCacheCoherent = ConfigPtr->IsCacheCoherent;
 		InstancePtr->Config.ConnectionMode = ConfigPtr->ConnectionMode;
+		InstancePtr->Config.BusWidth = ConfigPtr->BusWidth;
 		/* Other instance variable initializations */
 		InstancePtr->SendBufferPtr = NULL;
 		InstancePtr->RecvBufferPtr = NULL;
@@ -424,7 +426,8 @@ u32 XOspiPsv_PollTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 		InstancePtr->RecvBufferPtr = Msg->RxBfrPtr;
 		if ((InstancePtr->OpMode == XOSPIPSV_IDAC_MODE) ||
 					(Msg->Addrvalid == 0U)) {
-			if (Msg->Addrvalid == 0U) {
+			if ((Msg->Addrvalid == 0U) || ((Msg->ByteCount <= 8U) &&
+						((Msg->Proto == XOSPIPSV_READ_1_1_1) || (Msg->Proto == XOSPIPSV_READ_8_8_8)))) {
 				Status = XOspiPsv_Stig_Read(InstancePtr, Msg);
 			} else {
 				Status = XOspiPsv_Dma_Read(InstancePtr,Msg);

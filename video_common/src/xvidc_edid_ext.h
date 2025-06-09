@@ -680,6 +680,7 @@ typedef struct {
     XV_VidC_Supp	IsDscNativeYCbCr420Supp;
     XV_VidC_Supp	IsVesaDsc12aSupp;
     u8			DscTotalChunkBytes;
+    u8			Extensions;
 } XV_VidC_EdidCntrlParam;
 
 
@@ -695,6 +696,11 @@ void
 XV_VidC_parse_edid(const u8 * const data,
                   XV_VidC_EdidCntrlParam *EdidCtrlParam,
                   XV_VidC_Verbose VerboseEn);
+
+void
+XV_VidC_parse_edid_extension(const u8 * const data,
+                  XV_VidC_EdidCntrlParam *EdidCtrlParam,
+                  XV_VidC_Verbose VerboseEn, u8 Segment);
 
 #ifdef __cplusplus
 }
