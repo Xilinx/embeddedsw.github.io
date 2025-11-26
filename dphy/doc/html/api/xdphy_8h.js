@@ -1,5 +1,7 @@
 var xdphy_8h =
 [
+    [ "XDPHY_DISABLE_FLAG", "xdphy_8h.html#ga785db23ac1e4dd31bc64e52477284a34", null ],
+    [ "XDPHY_ENABLE_FLAG", "xdphy_8h.html#ga1928ad1fc94b6207188388aab7b2cc5e", null ],
     [ "XDPHY_ESCAPE_MODE", "xdphy_8h.html#ga5fd3c9a2402bf6a9c106186237745916", null ],
     [ "XDPHY_H_", "xdphy_8h.html#gad094a68e601596ca2263f4d3e17ef70b", null ],
     [ "XDPHY_HANDLE_CLKLANE", "xdphy_8h.html#ga463bc6fb3c22165f08b03a9f5517a790", null ],
@@ -27,6 +29,9 @@ var xdphy_8h =
     [ "XDPHY_HANDLE_MIN", "xdphy_8h.html#gaa1d99410ba62847260787dfe41fbe04f", null ],
     [ "XDPHY_HANDLE_WAKEUP", "xdphy_8h.html#ga1f5ca25326171d6b8cb5132f946bdbbf", null ],
     [ "XDPHY_HIGH_POWER_MODE", "xdphy_8h.html#gaa3c596aa6d06c5f514e78e6b94fd6bf8", null ],
+    [ "XDPHY_HS_SETTLE_MAX_VALUE", "xdphy_8h.html#ga6277c3802ef175e1a187ee56107c6d6d", null ],
+    [ "XDPHY_HS_TIMEOUT_MAX_VALUE", "xdphy_8h.html#gab6e4356b5dbb8a90f6e5ee5cb8330a4a", null ],
+    [ "XDPHY_HS_TIMEOUT_MIN_VALUE", "xdphy_8h.html#ga0aaacbc10c3e54e9f03d7c8668c049c1", null ],
     [ "XDPHY_LOW_POWER_MODE", "xdphy_8h.html#gac8777d601264f6f0451d119d635d5547", null ],
     [ "XDPHY_MAX_LANES_V10", "xdphy_8h.html#gad526fba138789830b02aca34e757145b", null ],
     [ "XDPHY_MODE_MAX", "xdphy_8h.html#ga83a8245fb8aa24e9a745ad81f66767a7", null ],

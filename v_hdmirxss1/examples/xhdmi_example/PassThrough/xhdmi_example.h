@@ -40,6 +40,11 @@ extern "C" {
 #define XPS_BOARD_VEK280
 #endif
 
+#if defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_VEK385_1)
+#define XPS_BOARD_VEK385
+#endif
+
 #if defined (XPS_BOARD_ZCU102) || \
 	defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190)
@@ -94,6 +99,7 @@ extern "C" {
 #include "xv_hdmic_vsif.h"
 #include "sleep.h"
 #include "xhdmi_edid.h"
+#include "xvidc_edid_ext.h"
 
 #ifdef XPAR_XV_HDMITXSS1_NUM_INSTANCES
 #include "audiogen_drv.h"
@@ -341,15 +347,17 @@ typedef enum {
 	DYNAMIC_HDR_ETSI_TS_103_433_1,
 	DYNAMIC_HDR_H265_CRI,
 	DYNAMIC_HDR_ST_2094_40,
-	DYNAMIC_HDR_HDR10P_VSIF,iiiii
+	DYNAMIC_HDR_HDR10P_VSIF,
+	DYNAMIC_HDR_HDRVIVID_VSEMDS,
 } DynamicHDRType;
-const u8 Dynamic_hdr_type[6][100]={
+const u8 Dynamic_hdr_type[7][100]={
 		{"No Dynamic HDR"},
 		{"ST 2094-10"},
 		{"ETSI TS 103-433-1"},
 		{"ITU-T H.265 CRI"},
 		{"ST 2094-40"},
 		{"HDR10+ VSIF"},
+		{"HDR VIVID VS-EMDS"},
 };
 
 /************************** Variable Definitions *****************************/

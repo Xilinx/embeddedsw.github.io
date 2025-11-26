@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -46,6 +46,7 @@
 #include "xinterrupt_wrap.h"
 #endif
 #include "xil_util.h"
+#include"xplatform_info.h"
 
 /************************** Function Prototypes ******************************/
 
@@ -86,7 +87,7 @@ XZDma ZDma;		/**<Instance of the ZDMA Device */
 XScuGic Intc;		/**< XIntc Instance */
 #endif
 u32 SrcBuf[256];	/**< Source buffer */
-volatile static u32 Done = 0;	/**< Done flag */
+static volatile u32 Done = 0;	/**< Done flag */
 
 /*****************************************************************************/
 /**
@@ -182,7 +183,14 @@ int XZDma_SimpleReadOnlyExample(UINTPTR BaseAddress)
 	/*
 	 * Flushing source address in cache
 	 */
-	if (!Config->IsCacheCoherent) {
+	if(XIOCoherencySupported())
+	{
+		if (!Config->IsCacheCoherent) {
+			Xil_DCacheFlushRange((INTPTR)SrcBuf, SIZE);
+		}
+	}
+	else
+	{
 		Xil_DCacheFlushRange((INTPTR)SrcBuf, SIZE);
 	}
 

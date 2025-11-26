@@ -110,6 +110,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga4e3f6aec16afcf025476f4a331741d82"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>(InstancePtr, LayerId)&#160;&#160;&#160;((InstancePtr)-&gt;Mix.Config.AlphaEn[LayerId-1])</td></tr>
 <tr class="memdesc:ga4e3f6aec16afcf025476f4a331741d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if alpha feature of specified layer is available.  <a href="#ga4e3f6aec16afcf025476f4a331741d82">More...</a><br/></td></tr>
 <tr class="separator:ga4e3f6aec16afcf025476f4a331741d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga673bd2cc41044da90fd50f08d75b11c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga673bd2cc41044da90fd50f08d75b11c1">XVMix_IsTileFormatEnabled</a>(InstancePtr)&#160;&#160;&#160;((InstancePtr)-&gt;Mix.Config.IsTileFormat)</td></tr>
+<tr class="memdesc:ga673bd2cc41044da90fd50f08d75b11c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the tile format is enabled for the given XVMix instance.  <a href="#ga673bd2cc41044da90fd50f08d75b11c1">More...</a><br/></td></tr>
+<tr class="separator:ga673bd2cc41044da90fd50f08d75b11c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4082688759c43f2f4d6411fa01c1bd6c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>(InstancePtr, LayerId)&#160;&#160;&#160;((InstancePtr)-&gt;Mix.Config.ScalingEn[LayerId-1])</td></tr>
 <tr class="memdesc:ga4082688759c43f2f4d6411fa01c1bd6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if scaling feature of specified layer is available.  <a href="#ga4082688759c43f2f4d6411fa01c1bd6c">More...</a><br/></td></tr>
 <tr class="separator:ga4082688759c43f2f4d6411fa01c1bd6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,22 +144,22 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga58ff6dc9ac3a65cb92e5f975846e1e09"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga58ff6dc9ac3a65cb92e5f975846e1e09">XVMix_Initialize</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, u16 DeviceId)</td></tr>
-<tr class="memdesc:ga58ff6dc9ac3a65cb92e5f975846e1e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the core instance.  <a href="#ga58ff6dc9ac3a65cb92e5f975846e1e09">More...</a><br/></td></tr>
+<tr class="memdesc:ga58ff6dc9ac3a65cb92e5f975846e1e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">XVMix_Initialize - Initialize the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.  <a href="#ga58ff6dc9ac3a65cb92e5f975846e1e09">More...</a><br/></td></tr>
 <tr class="separator:ga58ff6dc9ac3a65cb92e5f975846e1e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga349918aa3590f7bac1257e8fade0ee4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga349918aa3590f7bac1257e8fade0ee4c">XVMix_InterruptEnable</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga349918aa3590f7bac1257e8fade0ee4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables interrupts in the core.  <a href="#ga349918aa3590f7bac1257e8fade0ee4c">More...</a><br/></td></tr>
+<tr class="memdesc:ga349918aa3590f7bac1257e8fade0ee4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables interrupts for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.  <a href="#ga349918aa3590f7bac1257e8fade0ee4c">More...</a><br/></td></tr>
 <tr class="separator:ga349918aa3590f7bac1257e8fade0ee4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga730ead6b1406bec7411131a76556f63b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga730ead6b1406bec7411131a76556f63b">XVMix_InterruptDisable</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga730ead6b1406bec7411131a76556f63b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables interrupts in the core.  <a href="#ga730ead6b1406bec7411131a76556f63b">More...</a><br/></td></tr>
+<tr class="memdesc:ga730ead6b1406bec7411131a76556f63b"><td class="mdescLeft">&#160;</td><td class="mdescRight">XVMix_InterruptDisable - Disables interrupts for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.  <a href="#ga730ead6b1406bec7411131a76556f63b">More...</a><br/></td></tr>
 <tr class="separator:ga730ead6b1406bec7411131a76556f63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga32026175776d49f1fe5fc7f7be21b9da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga32026175776d49f1fe5fc7f7be21b9da">XVMix_Start</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga32026175776d49f1fe5fc7f7be21b9da"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts the core instance.  <a href="#ga32026175776d49f1fe5fc7f7be21b9da">More...</a><br/></td></tr>
+<tr class="memdesc:ga32026175776d49f1fe5fc7f7be21b9da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the video mixer hardware.  <a href="#ga32026175776d49f1fe5fc7f7be21b9da">More...</a><br/></td></tr>
 <tr class="separator:ga32026175776d49f1fe5fc7f7be21b9da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b703df7e560fd02b33376d630a53773"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga9b703df7e560fd02b33376d630a53773">XVMix_Stop</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga9b703df7e560fd02b33376d630a53773"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function stops the core instance.  <a href="#ga9b703df7e560fd02b33376d630a53773">More...</a><br/></td></tr>
+<tr class="memdesc:ga9b703df7e560fd02b33376d630a53773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> core operation.  <a href="#ga9b703df7e560fd02b33376d630a53773">More...</a><br/></td></tr>
 <tr class="separator:ga9b703df7e560fd02b33376d630a53773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga372774be70d11a2e394d8f0d7d8c1b1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga372774be70d11a2e394d8f0d7d8c1b1e">XVMix_SetVidStream</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, const XVidC_VideoStream *StrmIn)</td></tr>
-<tr class="memdesc:ga372774be70d11a2e394d8f0d7d8c1b1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the mixer input stream.  <a href="#ga372774be70d11a2e394d8f0d7d8c1b1e">More...</a><br/></td></tr>
+<tr class="memdesc:ga372774be70d11a2e394d8f0d7d8c1b1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the video stream configuration for the mixer instance.  <a href="#ga372774be70d11a2e394d8f0d7d8c1b1e">More...</a><br/></td></tr>
 <tr class="separator:ga372774be70d11a2e394d8f0d7d8c1b1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga486fc2f3495d74d4a4ad9b66ea50f1cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga486fc2f3495d74d4a4ad9b66ea50f1cc">XVMix_LayerEnable</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="group__v__mix.html#gafadb158ffcf5c0fae5cc9b9ed0e2795c">XVMix_LayerId</a> LayerId)</td></tr>
 <tr class="memdesc:ga486fc2f3495d74d4a4ad9b66ea50f1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables the specified layer of the core instance.  <a href="#ga486fc2f3495d74d4a4ad9b66ea50f1cc">More...</a><br/></td></tr>
@@ -207,29 +210,38 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga3056dab3a16bc61cffee350544b862fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the buffer address of the specified layer for the UV plane for semi-planar formats and for the U plane for 3-planar formats.  <a href="#ga3056dab3a16bc61cffee350544b862fa">More...</a><br/></td></tr>
 <tr class="separator:ga3056dab3a16bc61cffee350544b862fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaf18b72d5323b64b3c7d58703918bb2c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gaaf18b72d5323b64b3c7d58703918bb2c">XVMix_SetLayerChromaBuffer2Addr</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="group__v__mix.html#gafadb158ffcf5c0fae5cc9b9ed0e2795c">XVMix_LayerId</a> LayerId, UINTPTR Addr)</td></tr>
-<tr class="memdesc:gaaf18b72d5323b64b3c7d58703918bb2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the buffer address of the specified layer for the V plane for 3-planar formats.  <a href="#gaaf18b72d5323b64b3c7d58703918bb2c">More...</a><br/></td></tr>
+<tr class="memdesc:gaaf18b72d5323b64b3c7d58703918bb2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the chroma buffer address for the specified layer.  <a href="#gaaf18b72d5323b64b3c7d58703918bb2c">More...</a><br/></td></tr>
 <tr class="separator:gaaf18b72d5323b64b3c7d58703918bb2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3279f35b6a870f57e9d89a013bcf28fc"><td class="memItemLeft" align="right" valign="top">UINTPTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga3279f35b6a870f57e9d89a013bcf28fc">XVMix_GetLayerChromaBuffer2Addr</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="group__v__mix.html#gafadb158ffcf5c0fae5cc9b9ed0e2795c">XVMix_LayerId</a> LayerId)</td></tr>
-<tr class="memdesc:ga3279f35b6a870f57e9d89a013bcf28fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the buffer address of the specified layer for the V plane for 3-planar formats.  <a href="#ga3279f35b6a870f57e9d89a013bcf28fc">More...</a><br/></td></tr>
+<tr class="memdesc:ga3279f35b6a870f57e9d89a013bcf28fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the address of the second chroma buffer for a specified layer in the video mixer instance.  <a href="#ga3279f35b6a870f57e9d89a013bcf28fc">More...</a><br/></td></tr>
 <tr class="separator:ga3279f35b6a870f57e9d89a013bcf28fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae610d77dd58ce485da3d0e616aa0a4ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gae610d77dd58ce485da3d0e616aa0a4ea">XVMix_SetLogoColorKey</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="struct_x_v_mix___logo_color_key.html">XVMix_LogoColorKey</a> ColorKeyData)</td></tr>
-<tr class="memdesc:gae610d77dd58ce485da3d0e616aa0a4ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the logo layer color key data.  <a href="#gae610d77dd58ce485da3d0e616aa0a4ea">More...</a><br/></td></tr>
+<tr class="memdesc:gae610d77dd58ce485da3d0e616aa0a4ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the logo color key values for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.  <a href="#gae610d77dd58ce485da3d0e616aa0a4ea">More...</a><br/></td></tr>
 <tr class="separator:gae610d77dd58ce485da3d0e616aa0a4ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca5e7221f1af27ee75c91d68d407ea11"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gaca5e7221f1af27ee75c91d68d407ea11">XVMix_GetLogoColorKey</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="struct_x_v_mix___logo_color_key.html">XVMix_LogoColorKey</a> *ColorKeyData)</td></tr>
-<tr class="memdesc:gaca5e7221f1af27ee75c91d68d407ea11"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the logo layer color key data.  <a href="#gaca5e7221f1af27ee75c91d68d407ea11">More...</a><br/></td></tr>
+<tr class="memdesc:gaca5e7221f1af27ee75c91d68d407ea11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the current logo color key range from the hardware.  <a href="#gaca5e7221f1af27ee75c91d68d407ea11">More...</a><br/></td></tr>
 <tr class="separator:gaca5e7221f1af27ee75c91d68d407ea11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad3be6015739c08069d22cb45910d9df9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gad3be6015739c08069d22cb45910d9df9">XVMix_LoadLogo</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, XVidC_VideoWindow *Win, u8 *RBuffer, u8 *GBuffer, u8 *BBuffer)</td></tr>
-<tr class="memdesc:gad3be6015739c08069d22cb45910d9df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function loads the logo data into core BRAM.  <a href="#gad3be6015739c08069d22cb45910d9df9">More...</a><br/></td></tr>
+<tr class="memdesc:gad3be6015739c08069d22cb45910d9df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a logo image into the mixer hardware.  <a href="#gad3be6015739c08069d22cb45910d9df9">More...</a><br/></td></tr>
 <tr class="separator:gad3be6015739c08069d22cb45910d9df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad7d9ee2b4aeabf501f0a0dd0703543d5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gad7d9ee2b4aeabf501f0a0dd0703543d5">XVMix_LoadLogoPixelAlpha</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, XVidC_VideoWindow *Win, u8 *ABuffer)</td></tr>
-<tr class="memdesc:gad7d9ee2b4aeabf501f0a0dd0703543d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function loads the logo pixel alpha data into core BRAM.  <a href="#gad7d9ee2b4aeabf501f0a0dd0703543d5">More...</a><br/></td></tr>
+<tr class="memdesc:gad7d9ee2b4aeabf501f0a0dd0703543d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">XVMix_LoadLogoPixelAlpha - Loads per-pixel alpha values for a logo window into the hardware.  <a href="#gad7d9ee2b4aeabf501f0a0dd0703543d5">More...</a><br/></td></tr>
 <tr class="separator:gad7d9ee2b4aeabf501f0a0dd0703543d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga805ce6cc52eaecc97361e4680b4a51b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga805ce6cc52eaecc97361e4680b4a51b3">XVMix_DbgReportStatus</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga805ce6cc52eaecc97361e4680b4a51b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports the mixer status.  <a href="#ga805ce6cc52eaecc97361e4680b4a51b3">More...</a><br/></td></tr>
+<tr class="memdesc:ga805ce6cc52eaecc97361e4680b4a51b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">XVMix_DbgReportStatus - Prints the current status and configuration of the mixer instance.  <a href="#ga805ce6cc52eaecc97361e4680b4a51b3">More...</a><br/></td></tr>
 <tr class="separator:ga805ce6cc52eaecc97361e4680b4a51b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga723b99028777cdecd1a2f4102ce9b792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, <a class="el" href="group__v__mix.html#gafadb158ffcf5c0fae5cc9b9ed0e2795c">XVMix_LayerId</a> LayerId)</td></tr>
-<tr class="memdesc:ga723b99028777cdecd1a2f4102ce9b792"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports the mixer status of the specified layer.  <a href="#ga723b99028777cdecd1a2f4102ce9b792">More...</a><br/></td></tr>
+<tr class="memdesc:ga723b99028777cdecd1a2f4102ce9b792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints debug information for a specific layer in the video mixer.  <a href="#ga723b99028777cdecd1a2f4102ce9b792">More...</a><br/></td></tr>
 <tr class="separator:ga723b99028777cdecd1a2f4102ce9b792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6c170f73b18b237aa6a735df762e8219"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga6c170f73b18b237aa6a735df762e8219">XVMix_SetCscCoeffs</a> (<a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *InstancePtr, XVidC_ColorStd colorStandard, XVidC_ColorRange colorRange, u8 colorDepth)</td></tr>
+<tr class="memdesc:ga6c170f73b18b237aa6a735df762e8219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the Color Space Conversion (CSC) coefficients for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.  <a href="#ga6c170f73b18b237aa6a735df762e8219">More...</a><br/></td></tr>
+<tr class="separator:ga6c170f73b18b237aa6a735df762e8219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga02f27d8545d97740ca717b9e4368170b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga02f27d8545d97740ca717b9e4368170b">XV_mix_SetFlushbit</a> (<a class="el" href="struct_x_v__mix.html">XV_mix</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga02f27d8545d97740ca717b9e4368170b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the flush bit in the control register of the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware instance.  <a href="#ga02f27d8545d97740ca717b9e4368170b">More...</a><br/></td></tr>
+<tr class="separator:ga02f27d8545d97740ca717b9e4368170b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf2e5af1b38e6f904c84a89f93a0df30e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#gaf2e5af1b38e6f904c84a89f93a0df30e">XV_mix_Get_FlushDone</a> (<a class="el" href="struct_x_v__mix.html">XV_mix</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaf2e5af1b38e6f904c84a89f93a0df30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the flush done status from the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware instance.  <a href="#gaf2e5af1b38e6f904c84a89f93a0df30e">More...</a><br/></td></tr>
+<tr class="separator:gaf2e5af1b38e6f904c84a89f93a0df30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga11c3c9f8be66807a720a0043195e5382"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__mix.html#ga11c3c9f8be66807a720a0043195e5382">XVMix_InterruptHandler</a> (void *InstancePtr)</td></tr>
 <tr class="memdesc:ga11c3c9f8be66807a720a0043195e5382"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for the mixer core driver.  <a href="#ga11c3c9f8be66807a720a0043195e5382">More...</a><br/></td></tr>
 <tr class="separator:ga11c3c9f8be66807a720a0043195e5382"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -394,6 +406,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Enabled(1)/Disabled(0)</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
+<p>Referenced by <a class="el" href="group__v__mix.html#ga6c170f73b18b237aa6a735df762e8219">XVMix_SetCscCoeffs()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ga33dca66e76d77f9384a0fee6b662cd25"></a>
@@ -430,7 +444,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>TRUE(1)/FALSE(0) </dd></dl>
 
-<p>Referenced by <a class="el" href="group__v__mix.html#gaae184b6a71616c3b4c0a61a0d0e007b1">XVMix_SetLayerWindow()</a>.</p>
+<p>Referenced by <a class="el" href="xv__mix__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__v__mix.html#gaae184b6a71616c3b4c0a61a0d0e007b1">XVMix_SetLayerWindow()</a>.</p>
 
 </div>
 </div>
@@ -557,6 +571,34 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga673bd2cc41044da90fd50f08d75b11c1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XVMix_IsTileFormatEnabled</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">InstancePtr</td><td>)</td>
+          <td>&#160;&#160;&#160;((InstancePtr)-&gt;Mix.Config.IsTileFormat)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the tile format is enabled for the given XVMix instance. </p>
+<p>This macro evaluates to the value of the IsTileFormat field in the Mix configuration structure of the specified instance. It is used to determine whether the tile format feature is enabled for the XVMix hardware.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>A pointer to the XVMix instance to be checked.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Non-zero if tile format is enabled, zero otherwise. </dd></dl>
+
+<p>Referenced by <a class="el" href="group__v__mix.html#ga805ce6cc52eaecc97361e4680b4a51b3">XVMix_DbgReportStatus()</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="ga547d67e8ebe67c5c6f124464fa5d5783"></a>
 <div class="memitem">
@@ -638,6 +680,68 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="gaf2e5af1b38e6f904c84a89f93a0df30e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XV_mix_Get_FlushDone </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v__mix.html">XV_mix</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the flush done status from the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware instance. </p>
+<p>This function reads the FLUSH status bit from the AP_CTRL register of the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware core to determine if the flush operation has completed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the FLUSH status bit (non-zero if flush is done, zero otherwise).</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function asserts that InstancePtr is not NULL and that the instance is ready before accessing the hardware register. </dd></dl>
+
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, and <a class="el" href="struct_x_v__mix.html#aae1d21c5f20dad615adbcb7ec97354ac">XV_mix::IsReady</a>.</p>
+
+<p>Referenced by <a class="el" href="group__v__mix.html#ga9b703df7e560fd02b33376d630a53773">XVMix_Stop()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga02f27d8545d97740ca717b9e4368170b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_mix_SetFlushbit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v__mix.html">XV_mix</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the flush bit in the control register of the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware instance. </p>
+<p>This function reads the current value of the control register, sets the flush bit, and writes the updated value back to the register. The flush bit is typically used to trigger a hardware flush operation, ensuring that any pending data is processed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>The function asserts that the InstancePtr is not NULL and that the hardware instance is ready before performing the operation. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, and <a class="el" href="struct_x_v__mix.html#aae1d21c5f20dad615adbcb7ec97354ac">XV_mix::IsReady</a>.</p>
+
+<p>Referenced by <a class="el" href="group__v__mix.html#ga9b703df7e560fd02b33376d630a53773">XVMix_Stop()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga723b99028777cdecd1a2f4102ce9b792"></a>
 <div class="memitem">
 <div class="memproto">
@@ -662,18 +766,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reports the mixer status of the specified layer. </p>
+<p>Prints debug information for a specific layer in the video mixer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">LayerId</td><td>is the layer to be updated</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">LayerId</td><td>Identifier of the layer to report (master, logo, or regular layer).</td></tr>
   </table>
   </dd>
 </dl>
+<p>This function prints detailed status and configuration information for the specified layer in the video mixer. The information includes:</p>
+<ul>
+<li>Whether the layer is enabled or disabled.</li>
+<li>For the master layer: color format, resolution, and stream info.</li>
+<li>For the logo layer: alpha, scale factor, window position/size, color key data, and pixel alpha status.</li>
+<li>For regular layers: interface type (memory/stream), buffer addresses, alpha and scaling status/values, color format, window position/size, and stride.</li>
+</ul>
+<p>The function uses xil_printf for output and is intended for debugging purposes. Assertions are used to validate input parameters.</p>
 <dl class="section return"><dt>Returns</dt><dd>none</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="group__v__mix.html#ga5cc8135e34ef1c998256c207a80dd8a8">XVMix_GetLayerAlpha()</a>, <a class="el" href="group__v__mix.html#ga72b288cda2c49d1fb09245622d9e58c6">XVMix_GetLayerBufferAddr()</a>, <a class="el" href="group__v__mix.html#ga3056dab3a16bc61cffee350544b862fa">XVMix_GetLayerChromaBufferAddr()</a>, <a class="el" href="group__v__mix.html#gaba881e5eeabde22ab7c02aee78d320a0">XVMix_GetLayerColorFormat()</a>, <a class="el" href="group__v__mix.html#ga61712123a1ec7d4f21b3e6245fb1e422">XVMix_GetLayerInterfaceType</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gaca5e7221f1af27ee75c91d68d407ea11">XVMix_GetLogoColorKey()</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, <a class="el" href="group__v__mix.html#ga9b28f400c6cd002f3371b36c215d6211">XVMix_IsLayerEnabled()</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, <a class="el" href="group__v__mix.html#ga2dfd82fb182e252dfe664826a8a6c4d6">XVMix_IsLogoPixAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="xv__mix_8c.html#a87a8bf16902e77adcea33b94160a34ae">XV_mix_Get_HwReg_height()</a>, <a class="el" href="xv__mix_8c.html#ab67a77fdc39340c5ce5812e3ad15eedf">XV_mix_Get_HwReg_width()</a>, <a class="el" href="group__v__mix.html#ga5cc8135e34ef1c998256c207a80dd8a8">XVMix_GetLayerAlpha()</a>, <a class="el" href="group__v__mix.html#ga72b288cda2c49d1fb09245622d9e58c6">XVMix_GetLayerBufferAddr()</a>, <a class="el" href="group__v__mix.html#ga3056dab3a16bc61cffee350544b862fa">XVMix_GetLayerChromaBufferAddr()</a>, <a class="el" href="group__v__mix.html#gaba881e5eeabde22ab7c02aee78d320a0">XVMix_GetLayerColorFormat()</a>, <a class="el" href="group__v__mix.html#ga61712123a1ec7d4f21b3e6245fb1e422">XVMix_GetLayerInterfaceType</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gaca5e7221f1af27ee75c91d68d407ea11">XVMix_GetLogoColorKey()</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, <a class="el" href="group__v__mix.html#ga9b28f400c6cd002f3371b36c215d6211">XVMix_IsLayerEnabled()</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, <a class="el" href="group__v__mix.html#ga2dfd82fb182e252dfe664826a8a6c4d6">XVMix_IsLogoPixAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
 
 </div>
 </div>
@@ -691,17 +803,27 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reports the mixer status. </p>
+<p>XVMix_DbgReportStatus - Prints the current status and configuration of the mixer instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance to report status for.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>none</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>none </dd></dl>
+<p>This function outputs detailed information about the mixer hardware and its configuration to the standard output using xil_printf. The reported information includes:</p>
+<ul>
+<li>Pixels per clock</li>
+<li>Color depth</li>
+<li>Number of layers</li>
+<li>Control register value</li>
+<li>Layer enable register value</li>
+<li>Enable/disable status of each layer (Master, Layer 1-N, Logo)</li>
+<li>Background color values (Y/R, U/G, V/B)</li>
+</ul>
+<p>The function asserts that the provided instance pointer is not NULL. It is intended for debugging and diagnostic purposes.</p>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v__mix___config.html#ad940170590dd4268c420fdf1e7c30eec">XV_mix_Config::MaxDataWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga9b28f400c6cd002f3371b36c215d6211">XVMix_IsLayerEnabled()</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v__mix___config.html#ad940170590dd4268c420fdf1e7c30eec">XV_mix_Config::MaxDataWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="xv__mix_8c.html#a93dab54c6c3f0223b073303b7220c7d4">XV_mix_Get_HwReg_background_U_G()</a>, <a class="el" href="xv__mix_8c.html#a08cdecc9e1c00f0ab5f89106e4aa20d0">XV_mix_Get_HwReg_background_V_B()</a>, <a class="el" href="xv__mix_8c.html#a53db9373c1d2d5d2814cbc5578c36db3">XV_mix_Get_HwReg_background_Y_R()</a>, <a class="el" href="xv__mix_8c.html#aa5e654fefba2a55f6de1c711dea0a46a">XV_mix_Get_HwReg_layerEnable()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga9b28f400c6cd002f3371b36c215d6211">XVMix_IsLayerEnabled()</a>, and <a class="el" href="group__v__mix.html#ga673bd2cc41044da90fd50f08d75b11c1">XVMix_IsTileFormatEnabled</a>.</p>
 
 </div>
 </div>
@@ -740,7 +862,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>If layer enabled, current set value, else ~0</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#a4a8e06c6557e9c911ac0858710b96b56">XV_mix_Get_HwReg_logoAlpha()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>.</p>
 
@@ -811,16 +933,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reads the buffer address of the specified layer for the V plane for 3-planar formats. </p>
+<p>Retrieves the address of the second chroma buffer for a specified layer in the video mixer instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">LayerId</td><td>is the layer to be updated</td></tr>
+    <tr><td class="paramname">InstancePtr,:</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">LayerId,:</td><td>Identifier of the layer for which the chroma buffer address is requested. Must be greater than XVMIX_LAYER_MASTER and less than XVMIX_LAYER_LOGO.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Address of second buffer in memory</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-16 </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The address (UINTPTR) of the second chroma buffer for the specified layer. Returns 0 if the LayerId is invalid or out of range.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function asserts that InstancePtr is not NULL and that LayerId is within the valid range. The function only returns a valid address if LayerId is less than the number of layers configured in the instance. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>.</p>
 
@@ -902,16 +1024,16 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
     <tr><td class="paramname">LayerId</td><td>is the layer to be updated </td></tr>
-    <tr><td class="paramname">cfmt</td><td>is pointer to color format return variable</td></tr>
+    <tr><td class="paramname">Cfmt</td><td>is pointer to color format return variable</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix___config.html#a3e8abea176bf7f3743cd1a1e2b1855d0">XV_mix_Config::ColorFormat</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix___config.html#a3e8abea176bf7f3743cd1a1e2b1855d0">XV_mix_Config::ColorFormat</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#ab951c4f8a972d543a1982a7701d5f6d3">XV_mix_Get_HwReg_video_format()</a>, and <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>.</p>
 
-<p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>.</p>
+<p>Referenced by <a class="el" href="xv__mix__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>.</p>
 
 </div>
 </div>
@@ -950,7 +1072,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>If layer enabled, current set value, else ~0</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#aa8412e2ac0cb0d35a83cd4c11d5ec56c">XV_mix_Get_HwReg_logoScaleFactor()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>, <a class="el" href="group__v__mix.html#ga8a30c176c1bc5810577622e42d102ec6">XVMix_MoveLayerWindow()</a>, and <a class="el" href="group__v__mix.html#gaae184b6a71616c3b4c0a61a0d0e007b1">XVMix_SetLayerWindow()</a>.</p>
 
@@ -998,7 +1120,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if command is successful else error code with reason</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#a5ce6146be290bcf630e8e98a3edd971c">XV_mix_Get_HwReg_logoHeight()</a>, <a class="el" href="xv__mix_8c.html#abbf112e0cead373d77a031cf8fa393bc">XV_mix_Get_HwReg_logoStartX()</a>, <a class="el" href="xv__mix_8c.html#aa2abf9ed54245b6bb266675aa5e3fe10">XV_mix_Get_HwReg_logoStartY()</a>, <a class="el" href="xv__mix_8c.html#a35c8d10a1569ad08a061af4340fed9b8">XV_mix_Get_HwReg_logoWidth()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>, <a class="el" href="group__v__mix.html#ga8a30c176c1bc5810577622e42d102ec6">XVMix_MoveLayerWindow()</a>, and <a class="el" href="group__v__mix.html#ga8ed68eed5c7d6441ef98894f658deb1d">XVMix_SetLayerScaleFactor()</a>.</p>
 
@@ -1028,18 +1150,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reads the logo layer color key data. </p>
+<p>Retrieves the current logo color key range from the hardware. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">ColorKeyData</td><td>is the structure that holds return min/max values</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">ColorKeyData</td><td>Pointer to an <a class="el" href="struct_x_v_mix___logo_color_key.html" title="This typedef contains configuration information for Logo Color Key. ">XVMix_LogoColorKey</a> structure where the color key minimum and maximum RGB values will be stored.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>none </dd></dl>
+<p>This function checks if the logo and logo color key features are enabled. If both are enabled, it reads the minimum and maximum RGB values for the logo color key from the hardware registers and stores them in the provided ColorKeyData structure.</p>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the color key values were successfully retrieved, XST_FAILURE otherwise. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#a422e7c205ac66ceb8499a8a21901d3a1">XV_mix_Get_HwReg_logoClrKeyMax_B()</a>, <a class="el" href="xv__mix_8c.html#af6f5953de583ba2aebf445005f8fc505">XV_mix_Get_HwReg_logoClrKeyMax_G()</a>, <a class="el" href="xv__mix_8c.html#aebef5e4092f5325962663ce249204cac">XV_mix_Get_HwReg_logoClrKeyMax_R()</a>, <a class="el" href="xv__mix_8c.html#a9050b4800594bdcb9492bf89b4ea9f3e">XV_mix_Get_HwReg_logoClrKeyMin_B()</a>, <a class="el" href="xv__mix_8c.html#a1922d399cb513b084ebcf2d1e307ebd3">XV_mix_Get_HwReg_logoClrKeyMin_G()</a>, <a class="el" href="xv__mix_8c.html#a0ed475176404e034033803bf7c73bf14">XV_mix_Get_HwReg_logoClrKeyMin_R()</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>.</p>
 
@@ -1069,17 +1191,22 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function initializes the core instance. </p>
+<p>XVMix_Initialize - Initialize the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </p>
+<p>This function initializes the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance specified by InstancePtr using the hardware configuration identified by DeviceId. It first asserts that the provided pointer is not NULL, clears the instance memory, and then calls the lower-level XV_mix_Initialize function. If initialization is successful, it sets the instance to its power-on default state.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">DeviceId</td><td>is instance id of the core</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance to be initialized. </td></tr>
+    <tr><td class="paramname">DeviceId</td><td>Device ID of the hardware configuration to use.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if device is found and initialized XST_DEVICE_NOT_FOUND if device is not found </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if initialization was successful.</li>
+<li>Error code defined by XV_mix_Initialize otherwise. </li>
+</ul>
+</dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="xv__mix_8h.html#aa9536301332d154d5bbceaee00fda811">XV_mix_Initialize()</a>.</p>
 
 </div>
 </div>
@@ -1097,16 +1224,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function disables interrupts in the core. </p>
+<p>XVMix_InterruptDisable - Disables interrupts for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </p>
+<p>This function disables the DONE interrupt and the global interrupt for the specified <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. After disabling interrupts, it enables the auto-restart feature to allow the hardware to automatically restart processing without requiring software intervention.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The InstancePtr must not be NULL. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#ac5a34d3f2411445a01fc0756f464820b">XV_mix_EnableAutoRestart()</a>, <a class="el" href="xv__mix_8c.html#aab5f91166c838d8885499b4b47be0083">XV_mix_InterruptDisable()</a>, and <a class="el" href="xv__mix_8c.html#a80a4a6ccfe3ca6c42048731027f122e2">XV_mix_InterruptGlobalDisable()</a>.</p>
 
 </div>
 </div>
@@ -1124,16 +1253,23 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function enables interrupts in the core. </p>
+<p>Enables interrupts for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </p>
+<p>This function performs the following actions:</p>
+<ol type="1">
+<li>Asserts that the provided instance pointer is not NULL.</li>
+<li>Enables the DONE interrupt for the underlying <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware.</li>
+<li>Globally enables interrupts for the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware.</li>
+<li>Disables the auto-restart feature of the <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware.</li>
+</ol>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#afa0cb113ca68156bed7d969159ed7592">XV_mix_DisableAutoRestart()</a>, <a class="el" href="xv__mix_8c.html#ae9315fc9bf4da3e66d5e9ef9837a74d2">XV_mix_InterruptEnable()</a>, and <a class="el" href="xv__mix_8c.html#a31de2af229c1f796b735d204ab8cc94c">XV_mix_InterruptGlobalEnable()</a>.</p>
 
 </div>
 </div>
@@ -1163,7 +1299,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ad374a97b3230791c2c55271d063aef54">XV_Mix_l2::CallbackRef</a>, <a class="el" href="struct_x_v___mix__l2.html#ae7f8572bd90632d268180e01c836b069">XV_Mix_l2::FrameDoneCallback</a>, <a class="el" href="struct_x_v__mix.html#aae1d21c5f20dad615adbcb7ec97354ac">XV_mix::IsReady</a>, and <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ad374a97b3230791c2c55271d063aef54">XV_Mix_l2::CallbackRef</a>, <a class="el" href="struct_x_v___mix__l2.html#ae7f8572bd90632d268180e01c836b069">XV_Mix_l2::FrameDoneCallback</a>, <a class="el" href="struct_x_v__mix.html#aae1d21c5f20dad615adbcb7ec97354ac">XV_mix::IsReady</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#adc3df9baaa7847de23ef2e024bfe6297">XV_mix_InterruptClear()</a>, <a class="el" href="xv__mix_8c.html#a4464bf44b7217ff1723b87d7133cfb66">XV_mix_InterruptGetStatus()</a>, and <a class="el" href="xv__mix_8c.html#aa4bdcc65788bfaa22f5dd4f0c4a0fca3">XV_mix_Start()</a>.</p>
 
 </div>
 </div>
@@ -1201,7 +1337,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Enabled(1)/Disabled(0) </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="xv__mix_8c.html#aa5e654fefba2a55f6de1c711dea0a46a">XV_mix_Get_HwReg_layerEnable()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#ga723b99028777cdecd1a2f4102ce9b792">XVMix_DbgLayerInfo()</a>, and <a class="el" href="group__v__mix.html#ga805ce6cc52eaecc97361e4680b4a51b3">XVMix_DbgReportStatus()</a>.</p>
 
@@ -1242,7 +1378,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>To disable all layers use layer id XVMIX_LAYER_ALL </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#aa5e654fefba2a55f6de1c711dea0a46a">XV_mix_Get_HwReg_layerEnable()</a>, <a class="el" href="xv__mix_8c.html#a33eb63a9d49f238019d434127870ed02">XV_mix_Set_HwReg_layerEnable()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 </div>
 </div>
@@ -1281,7 +1417,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>To enable all layers use layer id XVMIX_LAYER_ALL </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#aa5e654fefba2a55f6de1c711dea0a46a">XV_mix_Get_HwReg_layerEnable()</a>, <a class="el" href="xv__mix_8c.html#a33eb63a9d49f238019d434127870ed02">XV_mix_Set_HwReg_layerEnable()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 </div>
 </div>
@@ -1327,19 +1463,34 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function loads the logo data into core BRAM. </p>
+<p>Loads a logo image into the mixer hardware. </p>
+<p>This function takes separate R, G, and B buffers representing a logo image, and writes the pixel data into the hardware registers of the video mixer for display as a logo overlay. The function supports logos with dimensions and alignment constraints as specified by the hardware configuration.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">Win</td><td>is logo window (logo width must be multiple of 4 bytes) </td></tr>
-    <tr><td class="paramname">RBuffer</td><td>is the pointer to Red buffer </td></tr>
-    <tr><td class="paramname">GBuffer</td><td>is the pointer to Green buffer </td></tr>
-    <tr><td class="paramname">BBuffer</td><td>is the pointer to Blue buffer</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">Win</td><td>Pointer to an XVidC_VideoWindow structure specifying the position and size of the logo window. </td></tr>
+    <tr><td class="paramname">RBuffer</td><td>Pointer to the buffer containing the red channel data. </td></tr>
+    <tr><td class="paramname">GBuffer</td><td>Pointer to the buffer containing the green channel data. </td></tr>
+    <tr><td class="paramname">BBuffer</td><td>Pointer to the buffer containing the blue channel data.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>none </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if the logo was loaded successfully.</li>
+<li>XST_FAILURE if the logo could not be loaded (e.g., invalid parameters or logo not enabled).</li>
+</ul>
+</dd></dl>
+<p>Preconditions:</p>
+<ul>
+<li>The logo feature must be enabled in the mixer hardware.</li>
+<li>The window dimensions and alignment must meet hardware requirements.</li>
+<li>The input buffers must be valid and sized appropriately for the window.</li>
+</ul>
+<p>Side Effects:</p>
+<ul>
+<li>Writes logo pixel data to hardware registers.</li>
+<li>Updates the logo layer buffer pointers in the instance. </li>
+</ul>
 
 <p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v__mix___config.html#a210dbafd352c1d65c64eb0e60b5e3337">XV_mix_Config::MaxLogoHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ae6f18d9777c7b781fcd91974fa884319">XV_mix_Config::MaxLogoWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#gaae184b6a71616c3b4c0a61a0d0e007b1">XVMix_SetLayerWindow()</a>.</p>
 
@@ -1375,17 +1526,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function loads the logo pixel alpha data into core BRAM. </p>
+<p>XVMix_LoadLogoPixelAlpha - Loads per-pixel alpha values for a logo window into the hardware. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">Win</td><td>is logo window (logo width must be multiple of 4 bytes) </td></tr>
-    <tr><td class="paramname">ABuffer</td><td>is the pointer to Pixel Alpha buffer</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">Win</td><td>Pointer to the XVidC_VideoWindow structure specifying the logo window position and size. </td></tr>
+    <tr><td class="paramname">ABuffer</td><td>Pointer to the buffer containing alpha values for each pixel in the logo window.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>none </dd></dl>
+<p>This function loads the per-pixel alpha values from the provided buffer into the hardware registers for the specified logo window. The function checks that the logo and per-pixel alpha features are enabled, and that the window parameters are within valid ranges. The alpha values are packed into 32-bit words (4 pixels per word) and written to the hardware.</p>
+<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the operation is successful, XST_FAILURE otherwise. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v__mix___config.html#a210dbafd352c1d65c64eb0e60b5e3337">XV_mix_Config::MaxLogoHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ae6f18d9777c7b781fcd91974fa884319">XV_mix_Config::MaxLogoWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#ga2dfd82fb182e252dfe664826a8a6c4d6">XVMix_IsLogoPixAlphaEnabled</a>.</p>
 
@@ -1440,7 +1591,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if command is successful else error code with reason</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="xv__mix_8c.html#a98f132aea1700ad9de3c2b787ec5534f">XV_mix_Set_HwReg_logoStartX()</a>, <a class="el" href="xv__mix_8c.html#aaa088ca7f0642ebe4b34cd3a86e2c8da">XV_mix_Set_HwReg_logoStartY()</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 </div>
 </div>
@@ -1486,7 +1637,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>none</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#ab951c4f8a972d543a1982a7701d5f6d3">XV_mix_Get_HwReg_video_format()</a>, <a class="el" href="xv__mix_8c.html#a17ea0199fcf61de79d82e3cd90dc79da">XV_mix_Set_HwReg_background_U_G()</a>, <a class="el" href="xv__mix_8c.html#ae9bf959784a075649de6359ed378d760">XV_mix_Set_HwReg_background_V_B()</a>, and <a class="el" href="xv__mix_8c.html#a2f252b500c73ae651a820c136fd1bd90">XV_mix_Set_HwReg_background_Y_R()</a>.</p>
 
 </div>
 </div>
@@ -1536,6 +1687,64 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga6c170f73b18b237aa6a735df762e8219"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XVMix_SetCscCoeffs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___mix__l2.html">XV_Mix_l2</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XVidC_ColorStd&#160;</td>
+          <td class="paramname"><em>colorStandard</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XVidC_ColorRange&#160;</td>
+          <td class="paramname"><em>colorRange</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>colorDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the Color Space Conversion (CSC) coefficients for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </p>
+<p>This function configures the CSC coefficients based on the specified color standard, color range, and color depth. It first checks if the provided color standard and color range are supported. If the CSC coefficient registers are enabled in the hardware, it sets the coefficients for both YUV-to-RGB and RGB-to-YUV conversions. If the registers are not enabled, it returns an error indicating that the feature is not available.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">colorStandard</td><td>Specifies the color standard (e.g., BT.601, BT.709). </td></tr>
+    <tr><td class="paramname">colorRange</td><td>Specifies the color range (e.g., full, limited). </td></tr>
+    <tr><td class="paramname">colorDepth</td><td>Specifies the color depth (in bits).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if the coefficients are set successfully.</li>
+<li>XST_FAILURE if an unknown color standard or color range is provided.</li>
+<li>XST_NO_FEATURE if the CSC coefficient registers are not enabled. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="group__v__mix.html#ga065d3541c8ce721b6098398cf7d4e97f">XVMix_IsCscCoeffsRegsEnabled</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga283cb29bb936ce5d0539782422ff3c3e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1578,7 +1787,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if command is successful else error code with reason</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#a59372ef7df6a8300ad2ab2f8f06468be">XV_mix_Set_HwReg_logoAlpha()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga4e3f6aec16afcf025476f4a331741d82">XVMix_IsAlphaEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 </div>
 </div>
@@ -1658,17 +1867,23 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function sets the buffer address of the specified layer for the V plane for 3-planar formats. </p>
+<p>Set the chroma buffer address for the specified layer. </p>
+<p>This function sets the address of the second chroma buffer for a given layer in the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. It checks for valid input parameters, ensures the address is properly aligned according to the AXI memory interface requirements, and writes the address to the appropriate hardware register. The function updates the internal state of the instance with the new buffer address.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">LayerId</td><td>is the layer to be updated </td></tr>
-    <tr><td class="paramname">Addr</td><td>is the absolute address of second buffer in memory</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">LayerId</td><td>ID of the layer for which the chroma buffer address is to be set. Must be greater than XVMIX_LAYER_MASTER and less than XVMIX_LAYER_LOGO. </td></tr>
+    <tr><td class="paramname">Addr</td><td>Physical address of the chroma buffer. Must be non-zero and properly aligned.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-16 </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if the address was set successfully.</li>
+<li>XVMIX_ERR_MEM_ADDR_MISALIGNED if the address is not properly aligned.</li>
+<li>XST_FAILURE for other failures (e.g., invalid parameters).</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The address must be aligned to (2 * PixPerClk * 4) bytes. The function does not perform any memory allocation or buffer management. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, and <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>.</p>
 
@@ -1762,7 +1977,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if command is successful else error code with reason</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="xv__mix_8c.html#a60ee69b01902f05cf06b21853cdb25db">XV_mix_Set_HwReg_logoScaleFactor()</a>, <a class="el" href="group__v__mix.html#ga7294d87809e7c940e83234bf6d0730db">XVMix_GetLayerWindow()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>, and <a class="el" href="group__v__mix.html#ga4082688759c43f2f4d6411fa01c1bd6c">XVMix_IsScalingEnabled</a>.</p>
 
 </div>
 </div>
@@ -1815,7 +2030,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if command is successful else error code with reason</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Applicable only for Layer1-8 and Logo Layer </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v__mix___config.html#a856cafed5e2fbfd25dc92173f0d14d44">XV_mix_Config::MaxHeight</a>, <a class="el" href="struct_x_v__mix___config.html#a210dbafd352c1d65c64eb0e60b5e3337">XV_mix_Config::MaxLogoHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ae6f18d9777c7b781fcd91974fa884319">XV_mix_Config::MaxLogoWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga33dca66e76d77f9384a0fee6b662cd25">XVMix_IsLayerInterfaceStream</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix___config.html#a3465714e442307d99eabf8d32fcb319b">XV_mix_Config::BaseAddress</a>, <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v___mix__l2.html#a1864eceb4bb616f4c59ff70139dcb8a6">XV_Mix_l2::Layer</a>, <a class="el" href="struct_x_v__mix___config.html#a856cafed5e2fbfd25dc92173f0d14d44">XV_mix_Config::MaxHeight</a>, <a class="el" href="struct_x_v__mix___config.html#a210dbafd352c1d65c64eb0e60b5e3337">XV_mix_Config::MaxLogoHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ae6f18d9777c7b781fcd91974fa884319">XV_mix_Config::MaxLogoWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v__mix___config.html#a6e937d235d6dfc668f73624c2098675a">XV_mix_Config::PixPerClk</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="xv__mix_8c.html#a3cc6c40351bbcfbb193c62bc531f97e2">XV_mix_Set_HwReg_logoHeight()</a>, <a class="el" href="xv__mix_8c.html#a98f132aea1700ad9de3c2b787ec5534f">XV_mix_Set_HwReg_logoStartX()</a>, <a class="el" href="xv__mix_8c.html#aaa088ca7f0642ebe4b34cd3a86e2c8da">XV_mix_Set_HwReg_logoStartY()</a>, <a class="el" href="xv__mix_8c.html#aaabbd8957b19ff70c193240dbe954baf">XV_mix_Set_HwReg_logoWidth()</a>, <a class="el" href="group__v__mix.html#ga694fb356c5458509b2ceb615a0cb4008">XVMix_GetLayerScaleFactor()</a>, <a class="el" href="group__v__mix.html#gab0893c45f2ea0018724305170296e926">XVMix_GetNumLayers</a>, <a class="el" href="group__v__mix.html#ga33dca66e76d77f9384a0fee6b662cd25">XVMix_IsLayerInterfaceStream</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 <p>Referenced by <a class="el" href="group__v__mix.html#gad3be6015739c08069d22cb45910d9df9">XVMix_LoadLogo()</a>.</p>
 
@@ -1845,18 +2060,22 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function sets the logo layer color key data. </p>
+<p>Set the logo color key values for the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </p>
+<p>This function configures the minimum and maximum RGB values for the logo color key, which are used to enable color keying (transparency) for the logo overlay in the video mixer. The function only sets the color key values if both the logo and logo color key features are enabled in the instance.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon </td></tr>
-    <tr><td class="paramname">ColorKeyData</td><td>is the structure that holds the min/max values</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">ColorKeyData</td><td>Structure containing the minimum and maximum RGB values for the color key.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS or XST_FAILURE</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>none </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if the color key values were set successfully.</li>
+<li>XST_FAILURE if the logo or logo color key feature is not enabled. </li>
+</ul>
+</dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#a6642027ecf2f61b3cd39069ef7ec39a1">XV_mix_Set_HwReg_logoClrKeyMax_B()</a>, <a class="el" href="xv__mix_8c.html#ae374d98026a71b5ea009799b7756b8e5">XV_mix_Set_HwReg_logoClrKeyMax_G()</a>, <a class="el" href="xv__mix_8c.html#aa69b9f6789c34dedab7fd6e31b8da899">XV_mix_Set_HwReg_logoClrKeyMax_R()</a>, <a class="el" href="xv__mix_8c.html#af7b0387bba193d445e722d1193257059">XV_mix_Set_HwReg_logoClrKeyMin_B()</a>, <a class="el" href="xv__mix_8c.html#ade7f36618acd0e831ceed72a49f0fd97">XV_mix_Set_HwReg_logoClrKeyMin_G()</a>, <a class="el" href="xv__mix_8c.html#a542fd5db6a4367a0657d8b88da4d8d41">XV_mix_Set_HwReg_logoClrKeyMin_R()</a>, <a class="el" href="group__v__mix.html#ga13bf8d0cb911a015fce2f4a5d85c2646">XVMix_IsLogoColorKeyEnabled</a>, and <a class="el" href="group__v__mix.html#ga213581e68e05ded964cd81e67dd6dda9">XVMix_IsLogoEnabled</a>.</p>
 
 </div>
 </div>
@@ -1884,17 +2103,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function configures the mixer input stream. </p>
+<p>Sets the video stream configuration for the mixer instance. </p>
+<p>This function copies the provided video stream structure into the mixer instance, and programs the hardware registers for the active video width and height.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the core instance to be worked on. </td></tr>
-    <tr><td class="paramname">StrmIn</td><td>is the pointer to input stream configuration</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance. </td></tr>
+    <tr><td class="paramname">StrmIn</td><td>Pointer to the input XVidC_VideoStream structure.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function asserts that the input pointers are valid and that the resolution is within the supported range. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v__mix___config.html#a856cafed5e2fbfd25dc92173f0d14d44">XV_mix_Config::MaxHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ac83103aa80b226a9a5013e35f55f1f35">XV_mix_Config::MaxWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>.</p>
+<p>References <a class="el" href="struct_x_v__mix.html#af5c06fa4bf07a06466a5588b9fe5f910">XV_mix::Config</a>, <a class="el" href="struct_x_v__mix___config.html#a856cafed5e2fbfd25dc92173f0d14d44">XV_mix_Config::MaxHeight</a>, <a class="el" href="struct_x_v__mix___config.html#ac83103aa80b226a9a5013e35f55f1f35">XV_mix_Config::MaxWidth</a>, <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="struct_x_v___mix__l2.html#a4c4efe88134e13a32a87ba1bc899b9c2">XV_Mix_l2::Stream</a>, <a class="el" href="xv__mix_8c.html#aa0cefd5a1932fa866a9071bc585ee8ce">XV_mix_Set_HwReg_height()</a>, and <a class="el" href="xv__mix_8c.html#a6972ea99ecf8792803e25f2832c550de">XV_mix_Set_HwReg_width()</a>.</p>
 
 </div>
 </div>
@@ -1912,16 +2133,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function starts the core instance. </p>
+<p>Starts the video mixer hardware. </p>
+<p>This function asserts that the provided instance pointer is not NULL, and then starts the underlying <a class="el" href="struct_x_v__mix.html" title="Driver instance data. ">XV_mix</a> hardware by calling its Start function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance to be started.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, and <a class="el" href="xv__mix_8c.html#aa4bdcc65788bfaa22f5dd4f0c4a0fca3">XV_mix_Start()</a>.</p>
 
 </div>
 </div>
@@ -1939,16 +2161,25 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function stops the core instance. </p>
+<p>Stops the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> core operation. </p>
+<p>This function disables the autostart feature, initiates a flush operation, and waits for the flush to complete or until a timeout occurs.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to core instance to be worked upon</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___mix__l2.html" title="Mixer driver Layer 2 data. ">XV_Mix_l2</a> instance.</td></tr>
   </table>
   </dd>
 </dl>
+<p>The function performs the following steps:</p>
+<ol type="1">
+<li>Asserts that the instance pointer is not NULL.</li>
+<li>Disables the autostart mode of the core.</li>
+<li>Sets the flush bit to initiate a flush operation.</li>
+<li>Waits for the flush operation to complete by polling the flush done status, with a timeout to prevent indefinite waiting.</li>
+<li>Returns early if the flush operation does not complete within the timeout.</li>
+</ol>
 <dl class="section return"><dt>Returns</dt><dd>none </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>.</p>
+<p>References <a class="el" href="struct_x_v___mix__l2.html#ac5a8467e514ea5628de7784f2bbe36ad">XV_Mix_l2::Mix</a>, <a class="el" href="xv__mix_8c.html#afa0cb113ca68156bed7d969159ed7592">XV_mix_DisableAutoRestart()</a>, <a class="el" href="group__v__mix.html#gaf2e5af1b38e6f904c84a89f93a0df30e">XV_mix_Get_FlushDone()</a>, and <a class="el" href="group__v__mix.html#ga02f27d8545d97740ca717b9e4368170b">XV_mix_SetFlushbit()</a>.</p>
 
 </div>
 </div>

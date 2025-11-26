@@ -108,9 +108,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a30c73a88ad038e2ba0696241c15d512e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tx_8h.html#a30c73a88ad038e2ba0696241c15d512e">start_tx</a> (u8 line_rate, u8 lane_count, user_config_struct user_config, <a class="el" href="group__dptxss.html#gaa1430b8060c5df2fd8c8e664247143f8">XDpTxSs_MainStreamAttributes</a> Msa[4])</td></tr>
 <tr class="memdesc:a30c73a88ad038e2ba0696241c15d512e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts tx process.  <a href="#a30c73a88ad038e2ba0696241c15d512e">More...</a><br/></td></tr>
 <tr class="separator:a30c73a88ad038e2ba0696241c15d512e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc3b5b8be57b7512acb3aefb43ea5f42"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tx_8h.html#abc3b5b8be57b7512acb3aefb43ea5f42">config_phy</a> (int LineRate_init_tx)</td></tr>
-<tr class="memdesc:abc3b5b8be57b7512acb3aefb43ea5f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets VPHY based on the linerate.  <a href="#abc3b5b8be57b7512acb3aefb43ea5f42">More...</a><br/></td></tr>
-<tr class="separator:abc3b5b8be57b7512acb3aefb43ea5f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae950e5381749a4972645f73cfa8c478"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tx_8h.html#aae950e5381749a4972645f73cfa8c478">Vpg_VidgenSetUserPattern</a> (XDp *InstancePtr, u8 Pattern)</td></tr>
 <tr class="memdesc:aae950e5381749a4972645f73cfa8c478"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets user pattern.  <a href="#aae950e5381749a4972645f73cfa8c478">More...</a><br/></td></tr>
 <tr class="separator:aae950e5381749a4972645f73cfa8c478"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,42 +143,6 @@ Functions</h2></td></tr>
 <tr class="separator:a580b1ce673353caf117185940232783e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="abc3b5b8be57b7512acb3aefb43ea5f42"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u32 config_phy </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>LineRate_init_tx</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This function sets VPHY based on the linerate. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">user_config_struct.</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Status.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">LineRate_init_tx</td><td>- Linerate LaneCount_init_tx - Lanecount</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Status.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
-
-<p>Referenced by <a class="el" href="tx_8h.html#a52482b484f3223853225073ee4446d1e">DpPt_LinkrateChgHandler()</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a5d15e19beea7bc6ae8407543fd333bb9"></a>
 <div class="memitem">
 <div class="memproto">
@@ -294,7 +255,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="tx_8h.html#abc3b5b8be57b7512acb3aefb43ea5f42">config_phy()</a>, and <a class="el" href="tx_8h.html#a4f08b7f747aa871c3bf0347e7a97a014">get_LineRate()</a>.</p>
+<p>References <a class="el" href="main_8h.html#a2054db2aa7675762b07920e0cdc2fe30">config_phy()</a>, and <a class="el" href="tx_8h.html#a4f08b7f747aa871c3bf0347e7a97a014">get_LineRate()</a>.</p>
 
 <p>Referenced by <a class="el" href="tx_8h.html#a580b1ce673353caf117185940232783e">DpTxSs_SetupIntrSystem()</a>.</p>
 
@@ -411,6 +372,8 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="tx_8h.html#a5d15e19beea7bc6ae8407543fd333bb9">DpPt_CustomWaitUs()</a>, <a class="el" href="tx_8h.html#a447f6616df8f90d9d99ca9f8ff9d3f9d">DpPt_HpdEventHandler()</a>, <a class="el" href="tx_8h.html#a9e50f6016fe9f36c15696a53f9cbf5fa">DpPt_HpdPulseHandler()</a>, <a class="el" href="tx_8h.html#a52482b484f3223853225073ee4446d1e">DpPt_LinkrateChgHandler()</a>, <a class="el" href="tx_8h.html#aaa193dfdcab43b10f46e44724ebe7f85">DpTxSs_ExtPacketHandler()</a>, <a class="el" href="rx_8c.html#a52925150cc1fdc72079961624f475c47">TmrCtr</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aadad089ac49b97d4e86751910a6d06118d1">XDPTXSS_HANDLER_DP_EXT_PKT_EVENT</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aadaf2e8e7d08071f02a941873557ba8edd9">XDPTXSS_HANDLER_DP_FFE_PRESET_ADJUST</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aada7e7ea8c4b1a96639dff7572b1b808a13">XDPTXSS_HANDLER_DP_HPD_EVENT</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aada2dcc3ec7427726dcdc6300edde59ac63">XDPTXSS_HANDLER_DP_HPD_PULSE</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aadaea8b421bf34f9b01fe82b4819a1d0d1e">XDPTXSS_HANDLER_DP_LINK_RATE_CHG</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aadaefc0cc637a174c917c67653e1de97eb7">XDPTXSS_HANDLER_DP_PE_VS_ADJUST</a>, <a class="el" href="group__dptxss.html#gga22c23bc4a70466cc2eb177c2ce4f7aadaf5f73d6f5ad8f1520e116e61926a012a">XDPTXSS_HANDLER_DP_VSYNC</a>, <a class="el" href="group__dptxss.html#ga9e1b67a8337b7024c54258cc26d23e90">XDpTxSs_SetCallBack()</a>, and <a class="el" href="group__dptxss.html#gae6148ed6282e7c51a715ff3e86ff91e1">XDpTxSs_SetUserTimerHandler()</a>.</p>
+
+<p>Referenced by <a class="el" href="main_8h.html#a82296473fccecfdd24d3fc5fcddc714b">DpSs_SetupIntrSystem()</a>.</p>
 
 </div>
 </div>

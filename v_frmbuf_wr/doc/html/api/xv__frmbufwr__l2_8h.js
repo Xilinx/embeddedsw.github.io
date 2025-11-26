@@ -5,6 +5,7 @@ var xv__frmbufwr__l2_8h =
     [ "XVFrmbufWr_IsBGR8Enabled", "xv__frmbufwr__l2_8h.html#a3ffa5d2dc950fdff081a42ad961dd161", null ],
     [ "XVFrmbufWr_IsBGRA8Enabled", "xv__frmbufwr__l2_8h.html#a06298cf0035199d4636e12983f085b22", null ],
     [ "XVFrmbufWr_IsBGRX8Enabled", "xv__frmbufwr__l2_8h.html#acbb8fda38bfa532d79d357c930fbd710", null ],
+    [ "XVFrmbufWr_IsEnSyncSignals", "xv__frmbufwr__l2_8h.html#a47323597d6c93aad6acaa9c8bee72dd6", null ],
     [ "XVFrmbufWr_IsRGB16Enabled", "xv__frmbufwr__l2_8h.html#a3c7d4d87d74782c6db765abad80c625e", null ],
     [ "XVFrmbufWr_IsRGB8Enabled", "xv__frmbufwr__l2_8h.html#ae801db647299b33a32690e944c71144c", null ],
     [ "XVFrmbufWr_IsRGBA8Enabled", "xv__frmbufwr__l2_8h.html#a3ddcf48750784db3ed9e3657574fbfa3", null ],

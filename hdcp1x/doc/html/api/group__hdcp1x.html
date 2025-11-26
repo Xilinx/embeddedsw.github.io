@@ -266,6 +266,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga10ea0666c02c4c6343b9ae9e251ae6a3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga10ea0666c02c4c6343b9ae9e251ae6a3">XHDCP1X_CIPHER_BITMASK_CONTROL_ENABLE</a>&#160;&#160;&#160;(0x01u &lt;&lt;  0)</td></tr>
 <tr class="memdesc:ga10ea0666c02c4c6343b9ae9e251ae6a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable bitmask in Control register.  <a href="#ga10ea0666c02c4c6343b9ae9e251ae6a3">More...</a><br/></td></tr>
 <tr class="separator:ga10ea0666c02c4c6343b9ae9e251ae6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac6a1df11b9bce083f4396c73d2e66208"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gac6a1df11b9bce083f4396c73d2e66208">XHDCP1X_CIPHER_BITMASK_MODE</a>&#160;&#160;&#160;(0x01u &lt;&lt;  3)</td></tr>
+<tr class="memdesc:gac6a1df11b9bce083f4396c73d2e66208"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable SST/MST in Control register.  <a href="#gac6a1df11b9bce083f4396c73d2e66208">More...</a><br/></td></tr>
+<tr class="separator:gac6a1df11b9bce083f4396c73d2e66208"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga26e1542eb772b2449973d200297da4f4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga26e1542eb772b2449973d200297da4f4">XHDCP1X_CIPHER_BITMASK_CONTROL_UPDATE</a>&#160;&#160;&#160;(0x01u &lt;&lt;  1)</td></tr>
 <tr class="memdesc:ga26e1542eb772b2449973d200297da4f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update bitmask in Control register.  <a href="#ga26e1542eb772b2449973d200297da4f4">More...</a><br/></td></tr>
 <tr class="separator:ga26e1542eb772b2449973d200297da4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -823,6 +826,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga6650255cee4d6285275448cfa0e5664e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga6650255cee4d6285275448cfa0e5664e">XHdcp1x_GetRepeaterInfo</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, <a class="el" href="struct_x_hdcp1x___repeater_exchange.html">XHdcp1x_RepeaterExchange</a> *RepeaterInfoPtr)</td></tr>
 <tr class="memdesc:ga6650255cee4d6285275448cfa0e5664e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function copies the V'H0, V'H1, V'H2, V'H3, V'H4, KSVList and BInfo values in the HDCP RX HDCP Instance for Repeater validation .  <a href="#ga6650255cee4d6285275448cfa0e5664e">More...</a><br/></td></tr>
 <tr class="separator:ga6650255cee4d6285275448cfa0e5664e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga612654336653a8a03b67da96b5924eb8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga612654336653a8a03b67da96b5924eb8">XHdcp1x_Enable_ECF_Slots</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u64 timeslots)</td></tr>
+<tr class="memdesc:ga612654336653a8a03b67da96b5924eb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables an HDCP MST ECF Field.  <a href="#ga612654336653a8a03b67da96b5924eb8">More...</a><br/></td></tr>
+<tr class="separator:ga612654336653a8a03b67da96b5924eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga91937cd3d7e1aadbd8bb7be0f6c4fa91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga91937cd3d7e1aadbd8bb7be0f6c4fa91">XHdcp1x_SetRepeater</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u8 State)</td></tr>
 <tr class="memdesc:ga91937cd3d7e1aadbd8bb7be0f6c4fa91"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the Repeater functionality for an HDCP interface.  <a href="#ga91937cd3d7e1aadbd8bb7be0f6c4fa91">More...</a><br/></td></tr>
 <tr class="separator:ga91937cd3d7e1aadbd8bb7be0f6c4fa91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -841,6 +847,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga230854e10d59500a41137b4f5951042b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga230854e10d59500a41137b4f5951042b">XHdcp1x_SetLaneCount</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, int LaneCount)</td></tr>
 <tr class="memdesc:ga230854e10d59500a41137b4f5951042b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the lane count of a hdcp interface.  <a href="#ga230854e10d59500a41137b4f5951042b">More...</a><br/></td></tr>
 <tr class="separator:ga230854e10d59500a41137b4f5951042b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab11e2ca5742f47d45da7e3383e2f6688"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gab11e2ca5742f47d45da7e3383e2f6688">XHdcp1x_SetMSTMode</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, int mode)</td></tr>
+<tr class="memdesc:gab11e2ca5742f47d45da7e3383e2f6688"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the MST/ SST of a hdcp interface.  <a href="#gab11e2ca5742f47d45da7e3383e2f6688">More...</a><br/></td></tr>
+<tr class="separator:gab11e2ca5742f47d45da7e3383e2f6688"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga103ae62cd1207e7566bf4f39ce946f67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga103ae62cd1207e7566bf4f39ce946f67">XHdcp1x_Authenticate</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga103ae62cd1207e7566bf4f39ce946f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates authentication of an HDCP interface.  <a href="#ga103ae62cd1207e7566bf4f39ce946f67">More...</a><br/></td></tr>
 <tr class="separator:ga103ae62cd1207e7566bf4f39ce946f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -991,6 +1000,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gad104aebb80bb03cb66c31eaabf21247a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u32 NumLanes)</td></tr>
 <tr class="memdesc:gad104aebb80bb03cb66c31eaabf21247a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the number of lanes of the HDCP cipher.  <a href="#gad104aebb80bb03cb66c31eaabf21247a">More...</a><br/></td></tr>
 <tr class="separator:gad104aebb80bb03cb66c31eaabf21247a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8438aa18360e551721d2803cf11004a2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u32 mode)</td></tr>
+<tr class="memdesc:ga8438aa18360e551721d2803cf11004a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the Mode of the HDCP cipher to MST/ SST.  <a href="#ga8438aa18360e551721d2803cf11004a2">More...</a><br/></td></tr>
+<tr class="separator:ga8438aa18360e551721d2803cf11004a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae38ae0f74022763d8650a21fedcd15e5"><td class="memItemLeft" align="right" valign="top">u64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gae38ae0f74022763d8650a21fedcd15e5">XHdcp1x_CipherGetEncryption</a> (const <a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gae38ae0f74022763d8650a21fedcd15e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function retrieves the current encryption stream map.  <a href="#gae38ae0f74022763d8650a21fedcd15e5">More...</a><br/></td></tr>
 <tr class="separator:gae38ae0f74022763d8650a21fedcd15e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1072,6 +1084,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gafe3971f3a49c69f3a316f3fab58fdf20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gafe3971f3a49c69f3a316f3fab58fdf20">XHdcp1x_PortEnable</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gafe3971f3a49c69f3a316f3fab58fdf20"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables a port device.  <a href="#gafe3971f3a49c69f3a316f3fab58fdf20">More...</a><br/></td></tr>
 <tr class="separator:gafe3971f3a49c69f3a316f3fab58fdf20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabaa138ac8e69b6b515fc1abf6cf0b83d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gabaa138ac8e69b6b515fc1abf6cf0b83d">XHdcp1x_SetEcfSlots</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u64 timeslots)</td></tr>
+<tr class="memdesc:gabaa138ac8e69b6b515fc1abf6cf0b83d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables encryption/decyption for all timeslots.  <a href="#gabaa138ac8e69b6b515fc1abf6cf0b83d">More...</a><br/></td></tr>
+<tr class="separator:gabaa138ac8e69b6b515fc1abf6cf0b83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga152c8d8f9abdee612ce15f6e914a122a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga152c8d8f9abdee612ce15f6e914a122a">XHdcp1x_PortDisable</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga152c8d8f9abdee612ce15f6e914a122a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables a port device.  <a href="#ga152c8d8f9abdee612ce15f6e914a122a">More...</a><br/></td></tr>
 <tr class="separator:ga152c8d8f9abdee612ce15f6e914a122a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1210,6 +1225,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gaf4099beda2b952aa7f9ce574cbbc7646"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gaf4099beda2b952aa7f9ce574cbbc7646">XHdcp1x_TxSetLaneCount</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, int LaneCount)</td></tr>
 <tr class="memdesc:gaf4099beda2b952aa7f9ce574cbbc7646"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set the lane count of an HDCP interface.  <a href="#gaf4099beda2b952aa7f9ce574cbbc7646">More...</a><br/></td></tr>
 <tr class="separator:gaf4099beda2b952aa7f9ce574cbbc7646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga787eabbdb561dd26f1a18524f4ec707b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga787eabbdb561dd26f1a18524f4ec707b">XHdcp1x_TxSetMSTMode</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, int mode)</td></tr>
+<tr class="memdesc:ga787eabbdb561dd26f1a18524f4ec707b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set the MST/SST mode of an HDCP interface.  <a href="#ga787eabbdb561dd26f1a18524f4ec707b">More...</a><br/></td></tr>
+<tr class="separator:ga787eabbdb561dd26f1a18524f4ec707b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga77e1f67d04fe05ef14dbc3c28e6a5942"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga77e1f67d04fe05ef14dbc3c28e6a5942">XHdcp1x_TxEnableEcfTimeslots</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u64 timeslots)</td></tr>
+<tr class="memdesc:ga77e1f67d04fe05ef14dbc3c28e6a5942"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables HDCP ECF slots.  <a href="#ga77e1f67d04fe05ef14dbc3c28e6a5942">More...</a><br/></td></tr>
+<tr class="separator:ga77e1f67d04fe05ef14dbc3c28e6a5942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaec7dcf7e211da3d42dc621cb7d062f6c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gaec7dcf7e211da3d42dc621cb7d062f6c">XHdcp1x_TxAuthenticate</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gaec7dcf7e211da3d42dc621cb7d062f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates authentication on an interface.  <a href="#gaec7dcf7e211da3d42dc621cb7d062f6c">More...</a><br/></td></tr>
 <tr class="separator:gaec7dcf7e211da3d42dc621cb7d062f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1282,6 +1303,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gab22ac8a26a4b60bdeda3be59baacbf39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_hdcp1x___repeater_exchange.html">XHdcp1x_RepeaterExchange</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#gab22ac8a26a4b60bdeda3be59baacbf39">XHdcp1x_TxGetTopology</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gab22ac8a26a4b60bdeda3be59baacbf39"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns a pointer to the downstream Topology structure.  <a href="#gab22ac8a26a4b60bdeda3be59baacbf39">More...</a><br/></td></tr>
 <tr class="separator:gab22ac8a26a4b60bdeda3be59baacbf39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4f752680b62e63e3c354880fd5d5156c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp1x.html#ga4f752680b62e63e3c354880fd5d5156c">XHdcp1x_TxEnableEcf</a> (<a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *InstancePtr, u64 timeslots)</td></tr>
+<tr class="memdesc:ga4f752680b62e63e3c354880fd5d5156c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables HDCP ECF slots.  <a href="#ga4f752680b62e63e3c354880fd5d5156c">More...</a><br/></td></tr>
+<tr class="separator:ga4f752680b62e63e3c354880fd5d5156c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -1668,6 +1692,22 @@ Request Types</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gac6a1df11b9bce083f4396c73d2e66208"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XHDCP1X_CIPHER_BITMASK_MODE&#160;&#160;&#160;(0x01u &lt;&lt;  3)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable SST/MST in Control register. </p>
+
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga84b710cd1da8802a7dce1a7a637fb7f4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1982,7 +2022,7 @@ Request Types</h2></td></tr>
 
 <p>Control register offset. </p>
 
-<p>Referenced by <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gacfeb8a266c1bc554753f93d62eb9a891">XHdcp1x_CipherGetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, and <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gacfeb8a266c1bc554753f93d62eb9a891">XHdcp1x_CipherGetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, and <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>.</p>
 
 </div>
 </div>
@@ -2357,7 +2397,7 @@ Request Types</h2></td></tr>
 <div class="line">        <a class="code" href="group__hdcp1x.html#ga388ba97163cd68f5e6124a80bd78c30d">XHDCP1X_CIPHER_REG_CONTROL</a>) &amp; <a class="code" href="group__hdcp1x.html#ga10ea0666c02c4c6343b9ae9e251ae6a3">\</a></div>
 <div class="line"><a class="code" href="group__hdcp1x.html#ga10ea0666c02c4c6343b9ae9e251ae6a3">	XHDCP1X_CIPHER_BITMASK_CONTROL_ENABLE</a>) != 0)</div>
 <div class="ttc" id="group__hdcp1x_html_ga388ba97163cd68f5e6124a80bd78c30d"><div class="ttname"><a href="group__hdcp1x.html#ga388ba97163cd68f5e6124a80bd78c30d">XHDCP1X_CIPHER_REG_CONTROL</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_CONTROL</div><div class="ttdoc">Control register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:58</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_ga10ea0666c02c4c6343b9ae9e251ae6a3"><div class="ttname"><a href="group__hdcp1x.html#ga10ea0666c02c4c6343b9ae9e251ae6a3">XHDCP1X_CIPHER_BITMASK_CONTROL_ENABLE</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_CONTROL_ENABLE</div><div class="ttdoc">Enable bitmask in Control register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:166</div></div>
 </div><!-- fragment -->
 <p>This queries a cipher to determine if it is enabled. </p>
@@ -2390,8 +2430,8 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gae54c355c17e6c20cff27fb271d4a311f">XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</a>) &amp; <a class="code" href="group__hdcp1x.html#ga74f6d8a048e1f8b3c386e5755d77b2bc">\</a></div>
 <div class="line"><a class="code" href="group__hdcp1x.html#ga74f6d8a048e1f8b3c386e5755d77b2bc">	XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY</a>) != 0)</div>
-<div class="ttc" id="group__hdcp1x_html_ga74f6d8a048e1f8b3c386e5755d77b2bc"><div class="ttname"><a href="group__hdcp1x.html#ga74f6d8a048e1f8b3c386e5755d77b2bc">XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY</div><div class="ttdoc">Km Value ready bitmask in Key Management Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:223</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga74f6d8a048e1f8b3c386e5755d77b2bc"><div class="ttname"><a href="group__hdcp1x.html#ga74f6d8a048e1f8b3c386e5755d77b2bc">XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY</div><div class="ttdoc">Km Value ready bitmask in Key Management Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:227</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_gae54c355c17e6c20cff27fb271d4a311f"><div class="ttname"><a href="group__hdcp1x.html#gae54c355c17e6c20cff27fb271d4a311f">XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</div><div class="ttdoc">Key Management Status register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:84</div></div>
 </div><!-- fragment -->
 <p>This queries a cipher to determine if the Km value is ready. </p>
@@ -2424,9 +2464,9 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gae54c355c17e6c20cff27fb271d4a311f">XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</a>) &amp; <a class="code" href="group__hdcp1x.html#ga5ac122eb8e2456759a8207831615cc0c">\</a></div>
 <div class="line"><a class="code" href="group__hdcp1x.html#ga5ac122eb8e2456759a8207831615cc0c">	XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY</a>) != 0)</div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_gae54c355c17e6c20cff27fb271d4a311f"><div class="ttname"><a href="group__hdcp1x.html#gae54c355c17e6c20cff27fb271d4a311f">XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_KEYMGMT_STATUS</div><div class="ttdoc">Key Management Status register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:84</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga5ac122eb8e2456759a8207831615cc0c"><div class="ttname"><a href="group__hdcp1x.html#ga5ac122eb8e2456759a8207831615cc0c">XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY</div><div class="ttdoc">Local KSV ready bitmask in Key Management Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:217</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5ac122eb8e2456759a8207831615cc0c"><div class="ttname"><a href="group__hdcp1x.html#ga5ac122eb8e2456759a8207831615cc0c">XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY</div><div class="ttdoc">Local KSV ready bitmask in Key Management Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:221</div></div>
 </div><!-- fragment -->
 <p>This queries a cipher to determine if the local KSV is ready to read. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -2458,8 +2498,8 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gae3972aa89e01893b3fe8f5218625d512">XHDCP1X_CIPHER_REG_CIPHER_STATUS</a>) &amp; <a class="code" href="group__hdcp1x.html#ga0b6854f289450df142cde1637a13092b">\</a></div>
 <div class="line"><a class="code" href="group__hdcp1x.html#ga0b6854f289450df142cde1637a13092b">	XHDCP1X_CIPHER_BITMASK_CIPHER_STATUS_XOR_IN_PROG</a>) != 0)</div>
-<div class="ttc" id="group__hdcp1x_html_ga0b6854f289450df142cde1637a13092b"><div class="ttname"><a href="group__hdcp1x.html#ga0b6854f289450df142cde1637a13092b">XHDCP1X_CIPHER_BITMASK_CIPHER_STATUS_XOR_IN_PROG</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_CIPHER_STATUS_XOR_IN_PROG</div><div class="ttdoc">XOR In Progress bitmask in Cipher Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:239</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga0b6854f289450df142cde1637a13092b"><div class="ttname"><a href="group__hdcp1x.html#ga0b6854f289450df142cde1637a13092b">XHDCP1X_CIPHER_BITMASK_CIPHER_STATUS_XOR_IN_PROG</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_CIPHER_STATUS_XOR_IN_PROG</div><div class="ttdoc">XOR In Progress bitmask in Cipher Status register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:243</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_gae3972aa89e01893b3fe8f5218625d512"><div class="ttname"><a href="group__hdcp1x.html#gae3972aa89e01893b3fe8f5218625d512">XHDCP1X_CIPHER_REG_CIPHER_STATUS</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_CIPHER_STATUS</div><div class="ttdoc">Cipher Status register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:110</div></div>
 </div><!-- fragment -->
 <p>This queries a cipher to determine if the XOR (encryption) function is currently in progress. </p>
@@ -2578,8 +2618,8 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a>) &amp; <a class="code" href="group__hdcp1x.html#ga0798856f180c219e38c507a192e3ae1f">XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</a>) \</div>
 <div class="line">        == <a class="code" href="group__hdcp1x.html#ga5ed9ffd759a96f662221c27cfca0b985">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_DP</a>)</div>
-<div class="ttc" id="group__hdcp1x_html_ga5ed9ffd759a96f662221c27cfca0b985"><div class="ttname"><a href="group__hdcp1x.html#ga5ed9ffd759a96f662221c27cfca0b985">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_DP</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_DP</div><div class="ttdoc">DP Protocol value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:262</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5ed9ffd759a96f662221c27cfca0b985"><div class="ttname"><a href="group__hdcp1x.html#ga5ed9ffd759a96f662221c27cfca0b985">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_DP</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_DP</div><div class="ttdoc">DP Protocol value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:266</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_ga0798856f180c219e38c507a192e3ae1f"><div class="ttname"><a href="group__hdcp1x.html#ga0798856f180c219e38c507a192e3ae1f">XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</div><div class="ttdoc">Protocol bitmask in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:157</div></div>
 <div class="ttc" id="group__hdcp1x_html_gaed76d9474c5b8112f70540b4b13430cf"><div class="ttname"><a href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_TYPE</div><div class="ttdoc">Type register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:54</div></div>
 </div><!-- fragment -->
@@ -2612,10 +2652,10 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a>) &amp; <a class="code" href="group__hdcp1x.html#ga0798856f180c219e38c507a192e3ae1f">XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</a>) \</div>
 <div class="line">        == <a class="code" href="group__hdcp1x.html#ga680a297bf1b072fd0d516a07e311d4de">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_HDMI</a>)</div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_ga0798856f180c219e38c507a192e3ae1f"><div class="ttname"><a href="group__hdcp1x.html#ga0798856f180c219e38c507a192e3ae1f">XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL</div><div class="ttdoc">Protocol bitmask in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:157</div></div>
 <div class="ttc" id="group__hdcp1x_html_gaed76d9474c5b8112f70540b4b13430cf"><div class="ttname"><a href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_TYPE</div><div class="ttdoc">Type register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:54</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga680a297bf1b072fd0d516a07e311d4de"><div class="ttname"><a href="group__hdcp1x.html#ga680a297bf1b072fd0d516a07e311d4de">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_HDMI</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_HDMI</div><div class="ttdoc">HDMI Protocol value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:266</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga680a297bf1b072fd0d516a07e311d4de"><div class="ttname"><a href="group__hdcp1x.html#ga680a297bf1b072fd0d516a07e311d4de">XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_HDMI</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_PROTOCOL_HDMI</div><div class="ttdoc">HDMI Protocol value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:270</div></div>
 </div><!-- fragment -->
 <p>This macro checks if a core supports the HDMI protocol. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -2626,7 +2666,7 @@ Request Types</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Truth value indicating HDMI (TRUE) or not (FALSE) </dd></dl>
 
-<p>Referenced by <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>, and <a class="el" href="group__hdcp1x.html#ga710df77b22f0b5c728a51747be26ca2e">XHdcp1x_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>, and <a class="el" href="group__hdcp1x.html#ga710df77b22f0b5c728a51747be26ca2e">XHdcp1x_SelfTest()</a>.</p>
 
 </div>
 </div>
@@ -2646,8 +2686,8 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a>) &amp; <a class="code" href="group__hdcp1x.html#ga84b710cd1da8802a7dce1a7a637fb7f4">XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</a>) \</div>
 <div class="line">        == <a class="code" href="group__hdcp1x.html#ga7ed6efb073f7ca9454407f78461a1967">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_RX</a>)</div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
-<div class="ttc" id="group__hdcp1x_html_ga7ed6efb073f7ca9454407f78461a1967"><div class="ttname"><a href="group__hdcp1x.html#ga7ed6efb073f7ca9454407f78461a1967">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_RX</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_RX</div><div class="ttdoc">RX Direction value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:271</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga7ed6efb073f7ca9454407f78461a1967"><div class="ttname"><a href="group__hdcp1x.html#ga7ed6efb073f7ca9454407f78461a1967">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_RX</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_RX</div><div class="ttdoc">RX Direction value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:275</div></div>
 <div class="ttc" id="group__hdcp1x_html_ga84b710cd1da8802a7dce1a7a637fb7f4"><div class="ttname"><a href="group__hdcp1x.html#ga84b710cd1da8802a7dce1a7a637fb7f4">XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</div><div class="ttdoc">Direction bitmask in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:161</div></div>
 <div class="ttc" id="group__hdcp1x_html_gaed76d9474c5b8112f70540b4b13430cf"><div class="ttname"><a href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_TYPE</div><div class="ttdoc">Type register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:54</div></div>
 </div><!-- fragment -->
@@ -2680,10 +2720,10 @@ Request Types</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        <a class="code" href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a>) &amp; <a class="code" href="group__hdcp1x.html#ga84b710cd1da8802a7dce1a7a637fb7f4">XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</a>) \</div>
 <div class="line">        == <a class="code" href="group__hdcp1x.html#gaadbc4627cd5bf1f2f2c0726f8375b5ce">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_TX</a>)</div>
-<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:317</div></div>
+<div class="ttc" id="group__hdcp1x_html_ga5477e830e157f72072a2a7f470365682"><div class="ttname"><a href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a></div><div class="ttdeci">#define XHdcp1x_ReadReg(BaseAddress, RegOffset)</div><div class="ttdoc">This macro reads a value from a HDCP cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:321</div></div>
 <div class="ttc" id="group__hdcp1x_html_ga84b710cd1da8802a7dce1a7a637fb7f4"><div class="ttname"><a href="group__hdcp1x.html#ga84b710cd1da8802a7dce1a7a637fb7f4">XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION</div><div class="ttdoc">Direction bitmask in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:161</div></div>
 <div class="ttc" id="group__hdcp1x_html_gaed76d9474c5b8112f70540b4b13430cf"><div class="ttname"><a href="group__hdcp1x.html#gaed76d9474c5b8112f70540b4b13430cf">XHDCP1X_CIPHER_REG_TYPE</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_REG_TYPE</div><div class="ttdoc">Type register offset. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:54</div></div>
-<div class="ttc" id="group__hdcp1x_html_gaadbc4627cd5bf1f2f2c0726f8375b5ce"><div class="ttname"><a href="group__hdcp1x.html#gaadbc4627cd5bf1f2f2c0726f8375b5ce">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_TX</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_TX</div><div class="ttdoc">TX Direction value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:275</div></div>
+<div class="ttc" id="group__hdcp1x_html_gaadbc4627cd5bf1f2f2c0726f8375b5ce"><div class="ttname"><a href="group__hdcp1x.html#gaadbc4627cd5bf1f2f2c0726f8375b5ce">XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_TX</a></div><div class="ttdeci">#define XHDCP1X_CIPHER_VALUE_TYPE_DIRECTION_TX</div><div class="ttdoc">TX Direction value in Type register. </div><div class="ttdef"><b>Definition:</b> xhdcp1x_hw.h:279</div></div>
 </div><!-- fragment -->
 <p>This macro checks if a core supports the transmit direction. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -4444,7 +4484,7 @@ Request Types</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The 32-bit value of the register.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-style: u32 <a class="el" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682" title="This macro reads a value from a HDCP cipher register. ">XHdcp1x_ReadReg(UINTPTR BaseAddress, u32 RegOffset)</a> </dd></dl>
 
-<p>Referenced by <a class="el" href="group__hdcp1x.html#ga931fc14801a82c9cc3aa870d887bbc07">XHdcp1x_CfgInitialize()</a>, <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#gaa2bcbd719e1f2f9b0b5fe6757b5a14b2">XHdcp1x_CipherDisableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga1075068f7db6bf3b0ae31818534f93e8">XHdcp1x_CipherEnableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#ga8ecfb468f0917a558f7713ab74903033">XHdcp1x_CipherGetB()</a>, <a class="el" href="group__hdcp1x.html#gae38ae0f74022763d8650a21fedcd15e5">XHdcp1x_CipherGetEncryption()</a>, <a class="el" href="group__hdcp1x.html#ga987fc5a5170470f0bbff214d317aac17">XHdcp1x_CipherGetK()</a>, <a class="el" href="group__hdcp1x.html#gacc166098738c7aac2703ee0cbd757c01">XHdcp1x_CipherGetLocalKsv()</a>, <a class="el" href="group__hdcp1x.html#ga72d8fd0f45ff6424d3aac43e36360fec">XHdcp1x_CipherGetMi()</a>, <a class="el" href="group__hdcp1x.html#gad8759c2071248b537b7ae18b2a1ec5a6">XHdcp1x_CipherGetMo()</a>, <a class="el" href="group__hdcp1x.html#gacfeb8a266c1bc554753f93d62eb9a891">XHdcp1x_CipherGetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga9d260acd4a5eb9842f5a4bbb31be0e36">XHdcp1x_CipherGetRemoteKsv()</a>, <a class="el" href="group__hdcp1x.html#ga9719a81dc9b6815f6b616ccc076f03c2">XHdcp1x_CipherGetRi()</a>, <a class="el" href="group__hdcp1x.html#ga14ed33ea832900d1022b7a1e8ddba397">XHdcp1x_CipherGetRo()</a>, <a class="el" href="group__hdcp1x.html#gaac542620e5aa06df5f83f097a6fc7738">XHdcp1x_CipherGetVersion()</a>, <a class="el" href="group__hdcp1x.html#ga7a718cbfba0847675523d2a89d8a3755">XHdcp1x_CipherHandleInterrupt()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga40c4838c730476e98dfcd742eb1d21a4">XHdcp1x_CipherIsLinkUp()</a>, <a class="el" href="group__hdcp1x.html#gace24c74db709b523e1aae7e082494022">XHdcp1x_CipherIsRequestComplete()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#ga6f0a88da0a794b63e3f6caafa912dc10">XHdcp1x_CipherSetKeySelect()</a>, <a class="el" href="group__hdcp1x.html#gac3912c6a86498e0559470ce8ce148cd1">XHdcp1x_CipherSetLinkStateCheck()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>, <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>, and <a class="el" href="group__hdcp1x.html#ga710df77b22f0b5c728a51747be26ca2e">XHdcp1x_SelfTest()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga931fc14801a82c9cc3aa870d887bbc07">XHdcp1x_CfgInitialize()</a>, <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#gaa2bcbd719e1f2f9b0b5fe6757b5a14b2">XHdcp1x_CipherDisableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga1075068f7db6bf3b0ae31818534f93e8">XHdcp1x_CipherEnableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#ga8ecfb468f0917a558f7713ab74903033">XHdcp1x_CipherGetB()</a>, <a class="el" href="group__hdcp1x.html#gae38ae0f74022763d8650a21fedcd15e5">XHdcp1x_CipherGetEncryption()</a>, <a class="el" href="group__hdcp1x.html#ga987fc5a5170470f0bbff214d317aac17">XHdcp1x_CipherGetK()</a>, <a class="el" href="group__hdcp1x.html#gacc166098738c7aac2703ee0cbd757c01">XHdcp1x_CipherGetLocalKsv()</a>, <a class="el" href="group__hdcp1x.html#ga72d8fd0f45ff6424d3aac43e36360fec">XHdcp1x_CipherGetMi()</a>, <a class="el" href="group__hdcp1x.html#gad8759c2071248b537b7ae18b2a1ec5a6">XHdcp1x_CipherGetMo()</a>, <a class="el" href="group__hdcp1x.html#gacfeb8a266c1bc554753f93d62eb9a891">XHdcp1x_CipherGetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga9d260acd4a5eb9842f5a4bbb31be0e36">XHdcp1x_CipherGetRemoteKsv()</a>, <a class="el" href="group__hdcp1x.html#ga9719a81dc9b6815f6b616ccc076f03c2">XHdcp1x_CipherGetRi()</a>, <a class="el" href="group__hdcp1x.html#ga14ed33ea832900d1022b7a1e8ddba397">XHdcp1x_CipherGetRo()</a>, <a class="el" href="group__hdcp1x.html#gaac542620e5aa06df5f83f097a6fc7738">XHdcp1x_CipherGetVersion()</a>, <a class="el" href="group__hdcp1x.html#ga7a718cbfba0847675523d2a89d8a3755">XHdcp1x_CipherHandleInterrupt()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga40c4838c730476e98dfcd742eb1d21a4">XHdcp1x_CipherIsLinkUp()</a>, <a class="el" href="group__hdcp1x.html#gace24c74db709b523e1aae7e082494022">XHdcp1x_CipherIsRequestComplete()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#ga6f0a88da0a794b63e3f6caafa912dc10">XHdcp1x_CipherSetKeySelect()</a>, <a class="el" href="group__hdcp1x.html#gac3912c6a86498e0559470ce8ce148cd1">XHdcp1x_CipherSetLinkStateCheck()</a>, <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>, <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>, and <a class="el" href="group__hdcp1x.html#ga710df77b22f0b5c728a51747be26ca2e">XHdcp1x_SelfTest()</a>.</p>
 
 </div>
 </div>
@@ -4561,7 +4601,7 @@ Request Types</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-style: void <a class="el" href="group__hdcp1x.html#ga8e356b098ccbcf8c2a851425e884ac00" title="This macro writes a value to a HDCP cipher register. ">XHdcp1x_WriteReg(UINTPTR BaseAddress, u32 RegOffset, u32 Data)</a> </dd></dl>
 
-<p>Referenced by <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#gaa2bcbd719e1f2f9b0b5fe6757b5a14b2">XHdcp1x_CipherDisableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga1075068f7db6bf3b0ae31818534f93e8">XHdcp1x_CipherEnableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gacc166098738c7aac2703ee0cbd757c01">XHdcp1x_CipherGetLocalKsv()</a>, <a class="el" href="group__hdcp1x.html#ga7a718cbfba0847675523d2a89d8a3755">XHdcp1x_CipherHandleInterrupt()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#ga6f0a88da0a794b63e3f6caafa912dc10">XHdcp1x_CipherSetKeySelect()</a>, <a class="el" href="group__hdcp1x.html#gac3912c6a86498e0559470ce8ce148cd1">XHdcp1x_CipherSetLinkStateCheck()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>, and <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga2ca06586dc06796fdc31a2f64096a28d">XHdcp1x_CipherDisable()</a>, <a class="el" href="group__hdcp1x.html#gaa2bcbd719e1f2f9b0b5fe6757b5a14b2">XHdcp1x_CipherDisableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga49cf0f72f0d918e33d66ff40c91d3073">XHdcp1x_CipherDisableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gad44ad72f65d851de50c40053e327ba9e">XHdcp1x_CipherDoRequest()</a>, <a class="el" href="group__hdcp1x.html#gaa3f73058855c8d60cbd588d74e60a668">XHdcp1x_CipherEnable()</a>, <a class="el" href="group__hdcp1x.html#ga1075068f7db6bf3b0ae31818534f93e8">XHdcp1x_CipherEnableBlank()</a>, <a class="el" href="group__hdcp1x.html#ga706d8729ad07f34fad5e20f83c59d69f">XHdcp1x_CipherEnableEncryption()</a>, <a class="el" href="group__hdcp1x.html#gacc166098738c7aac2703ee0cbd757c01">XHdcp1x_CipherGetLocalKsv()</a>, <a class="el" href="group__hdcp1x.html#ga7a718cbfba0847675523d2a89d8a3755">XHdcp1x_CipherHandleInterrupt()</a>, <a class="el" href="group__hdcp1x.html#ga458350d13807e4d1c4d3655167ec6f03">XHdcp1x_CipherInit()</a>, <a class="el" href="group__hdcp1x.html#ga70bcb7dd61e57e5b33d2213817a80eca">XHdcp1x_CipherSetB()</a>, <a class="el" href="group__hdcp1x.html#ga89ff306031805dad1e1ff7af0c836873">XHdcp1x_CipherSetK()</a>, <a class="el" href="group__hdcp1x.html#ga6f0a88da0a794b63e3f6caafa912dc10">XHdcp1x_CipherSetKeySelect()</a>, <a class="el" href="group__hdcp1x.html#gac3912c6a86498e0559470ce8ce148cd1">XHdcp1x_CipherSetLinkStateCheck()</a>, <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>, <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>, <a class="el" href="group__hdcp1x.html#ga320b0410ab8e10a8bc5c2a6278ed06d7">XHdcp1x_CipherSetRemoteKsv()</a>, and <a class="el" href="group__hdcp1x.html#gae2ae95918ecd46e725812a9bce8f6478">XHdcp1x_CipherSetRiUpdate()</a>.</p>
 
 </div>
 </div>
@@ -6207,6 +6247,50 @@ HandlerType                             Callback Function Type
 
 </div>
 </div>
+<a class="anchor" id="ga8438aa18360e551721d2803cf11004a2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_CipherSetMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function configures the Mode of the HDCP cipher to MST/ SST. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the device to configure. </td></tr>
+    <tr><td class="paramname">mode</td><td>determines MST/ SST configuration.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp1x___config.html#a5aaf25a566d02c952e4ec39d2ac4c4bc">XHdcp1x_Config::BaseAddress</a>, <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="group__hdcp1x.html#gac6a1df11b9bce083f4396c73d2e66208">XHDCP1X_CIPHER_BITMASK_MODE</a>, <a class="el" href="group__hdcp1x.html#ga388ba97163cd68f5e6124a80bd78c30d">XHDCP1X_CIPHER_REG_CONTROL</a>, <a class="el" href="group__hdcp1x.html#ga43765c1afc08c59a03b619d0c822e8b7">XHdcp1x_IsHDMI</a>, <a class="el" href="group__hdcp1x.html#ga5477e830e157f72072a2a7f470365682">XHdcp1x_ReadReg</a>, and <a class="el" href="group__hdcp1x.html#ga8e356b098ccbcf8c2a851425e884ac00">XHdcp1x_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga787eabbdb561dd26f1a18524f4ec707b">XHdcp1x_TxSetMSTMode()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gad104aebb80bb03cb66c31eaabf21247a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -6502,7 +6586,49 @@ HandlerType                             Callback Function Type
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="group__hdcp1x.html#ga5b3db5316f37aa537c96819ef7892d0e">XHdcp1x_RxEnable()</a>, and <a class="el" href="group__hdcp1x.html#gaaf9b859a4cd68d38f32103a365d48b99">XHdcp1x_TxEnable()</a>.</p>
+<p>References <a class="el" href="struct_x_hdcp1x___port_struct.html#a753ae75c4822a4a1e5e3e7e21486a4bb">XHdcp1x_PortStruct::Adaptor</a>, <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___port_phy_if_adaptor_s.html#a21b4cbbff2e906b18b21ee2a614d6217">XHdcp1x_PortPhyIfAdaptorS::Init</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="struct_x_hdcp1x.html#a8234eabad6b1c38cb2cb725ef0ab9b47">XHdcp1x::Port</a>, <a class="el" href="group__hdcp1x.html#ga5b3db5316f37aa537c96819ef7892d0e">XHdcp1x_RxEnable()</a>, and <a class="el" href="group__hdcp1x.html#gaaf9b859a4cd68d38f32103a365d48b99">XHdcp1x_TxEnable()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga612654336653a8a03b67da96b5924eb8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_Enable_ECF_Slots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64&#160;</td>
+          <td class="paramname"><em>timeslots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables an HDCP MST ECF Field. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the interface to enable.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE otherwise.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, and <a class="el" href="group__hdcp1x.html#ga77e1f67d04fe05ef14dbc3c28e6a5942">XHdcp1x_TxEnableEcfTimeslots()</a>.</p>
 
 </div>
 </div>
@@ -6573,7 +6699,7 @@ HandlerType                             Callback Function Type
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="group__hdcp1x.html#ga86d500a34c624c2cae56bc25a31b12f3">UNUSED</a>, and <a class="el" href="group__hdcp1x.html#ga49660982a4772c7bc0091f7c88c68e19">XHdcp1x_TxEnableEncryption()</a>.</p>
+<p>References <a class="el" href="struct_x_hdcp1x___port_struct.html#a753ae75c4822a4a1e5e3e7e21486a4bb">XHdcp1x_PortStruct::Adaptor</a>, <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___port_phy_if_adaptor_s.html#a21b4cbbff2e906b18b21ee2a614d6217">XHdcp1x_PortPhyIfAdaptorS::Init</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="struct_x_hdcp1x___tx.html#a20b95a9c1799854115a8a86496cc4a4b">XHdcp1x_Tx::mode</a>, <a class="el" href="struct_x_hdcp1x.html#a8234eabad6b1c38cb2cb725ef0ab9b47">XHdcp1x::Port</a>, <a class="el" href="struct_x_hdcp1x.html#af50e04f7bdf73163fb7632b0ab004d8a">XHdcp1x::Tx</a>, <a class="el" href="group__hdcp1x.html#ga86d500a34c624c2cae56bc25a31b12f3">UNUSED</a>, <a class="el" href="group__hdcp1x.html#gacce89db1cfc0e9cd5c632f3499bff690">XHdcp1x_IsAuthenticated()</a>, and <a class="el" href="group__hdcp1x.html#ga49660982a4772c7bc0091f7c88c68e19">XHdcp1x_TxEnableEncryption()</a>.</p>
 
 </div>
 </div>
@@ -6915,7 +7041,7 @@ HandlerType                             Callback Function Type
 
 <p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="group__hdcp1x.html#ga2f314cd6eca64f8953ea54fb6bb93c03">XHdcp1x_RxIsAuthenticated()</a>, and <a class="el" href="group__hdcp1x.html#ga3c42675e40aba8024237fee77155fce4">XHdcp1x_TxIsAuthenticated()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__hdcp1x.html#gaf8d484e140ba4935f33b7fd14b9c5c2a">XHdcp1x_IsEncrypted()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga7ace40ed3ad14f22e3cce4bc8bf6249c">XHdcp1x_EnableEncryption()</a>, and <a class="el" href="group__hdcp1x.html#gaf8d484e140ba4935f33b7fd14b9c5c2a">XHdcp1x_IsEncrypted()</a>.</p>
 
 </div>
 </div>
@@ -9081,6 +9207,50 @@ HandlerType                           Callback Function Type
 
 </div>
 </div>
+<a class="anchor" id="gabaa138ac8e69b6b515fc1abf6cf0b83d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_SetEcfSlots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64&#160;</td>
+          <td class="paramname"><em>timeslots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables encryption/decyption for all timeslots. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the device to enables.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_NO_FEATURE if the port lacks an Enable function.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp1x___port_struct.html#a753ae75c4822a4a1e5e3e7e21486a4bb">XHdcp1x_PortStruct::Adaptor</a>, <a class="el" href="struct_x_hdcp1x.html#a8234eabad6b1c38cb2cb725ef0ab9b47">XHdcp1x::Port</a>, and <a class="el" href="struct_x_hdcp1x___port_phy_if_adaptor_s.html#a10c99a915286786bde14fb6cdb16cf02">XHdcp1x_PortPhyIfAdaptorS::SetEcfSlots</a>.</p>
+
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga4f752680b62e63e3c354880fd5d5156c">XHdcp1x_TxEnableEcf()</a>, and <a class="el" href="group__hdcp1x.html#ga77e1f67d04fe05ef14dbc3c28e6a5942">XHdcp1x_TxEnableEcfTimeslots()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gae607ce47975decbc6e4e45d51889dc19"></a>
 <div class="memitem">
 <div class="memproto">
@@ -9231,6 +9401,49 @@ HandlerType                           Callback Function Type
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a737c4d0a7a9ceb9297a7383bf87a00c9">XHdcp1x_Config::IsHDMI</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, <a class="el" href="group__hdcp1x.html#ga51b562dcf0e9f5fe995d2ef05f3cc9b1">XHdcp1x_RxSetLaneCount()</a>, and <a class="el" href="group__hdcp1x.html#gaf4099beda2b952aa7f9ce574cbbc7646">XHdcp1x_TxSetLaneCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gab11e2ca5742f47d45da7e3383e2f6688"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_SetMSTMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the MST/ SST of a hdcp interface. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the interface to update. </td></tr>
+    <tr><td class="paramname">Mode</td><td>determines the MST/ SST configuration.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE otherwise.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp1x.html#a4fd777f9a8a407ed4b2d6d02fab202ea">XHdcp1x::Config</a>, <a class="el" href="struct_x_hdcp1x___config.html#a737c4d0a7a9ceb9297a7383bf87a00c9">XHdcp1x_Config::IsHDMI</a>, <a class="el" href="struct_x_hdcp1x___config.html#a2bd303115c93ce720649a9d59a291893">XHdcp1x_Config::IsRx</a>, and <a class="el" href="group__hdcp1x.html#ga787eabbdb561dd26f1a18524f4ec707b">XHdcp1x_TxSetMSTMode()</a>.</p>
 
 </div>
 </div>
@@ -9792,6 +10005,84 @@ HandlerType                           Callback Function Type
 <p>References <a class="el" href="group__hdcp1x.html#ga1075068f7db6bf3b0ae31818534f93e8">XHdcp1x_CipherEnableBlank()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__hdcp1x.html#ga78468655ea2782da93ae20bab2e9a680">XHdcp1x_EnableBlank()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga4f752680b62e63e3c354880fd5d5156c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XHdcp1x_TxEnableEcf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64&#160;</td>
+          <td class="paramname"><em>timeslots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables HDCP ECF slots. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the receiver instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__hdcp1x.html#gabaa138ac8e69b6b515fc1abf6cf0b83d">XHdcp1x_SetEcfSlots()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga77e1f67d04fe05ef14dbc3c28e6a5942"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_TxEnableEcfTimeslots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u64&#160;</td>
+          <td class="paramname"><em>timeslots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables HDCP ECF slots. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the receiver instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__hdcp1x.html#gabaa138ac8e69b6b515fc1abf6cf0b83d">XHdcp1x_SetEcfSlots()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__hdcp1x.html#ga612654336653a8a03b67da96b5924eb8">XHdcp1x_Enable_ECF_Slots()</a>.</p>
 
 </div>
 </div>
@@ -10641,6 +10932,50 @@ HandlerType                           Callback Function Type
 <p>References <a class="el" href="group__hdcp1x.html#gad104aebb80bb03cb66c31eaabf21247a">XHdcp1x_CipherSetNumLanes()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__hdcp1x.html#ga230854e10d59500a41137b4f5951042b">XHdcp1x_SetLaneCount()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga787eabbdb561dd26f1a18524f4ec707b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp1x_TxSetMSTMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp1x.html">XHdcp1x</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function set the MST/SST mode of an HDCP interface. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the transmitter instance. </td></tr>
+    <tr><td class="paramname">mode</td><td>enables MST/SST configuration.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp1x___tx.html#a20b95a9c1799854115a8a86496cc4a4b">XHdcp1x_Tx::mode</a>, <a class="el" href="struct_x_hdcp1x.html#af50e04f7bdf73163fb7632b0ab004d8a">XHdcp1x::Tx</a>, and <a class="el" href="group__hdcp1x.html#ga8438aa18360e551721d2803cf11004a2">XHdcp1x_CipherSetMode()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__hdcp1x.html#gab11e2ca5742f47d45da7e3383e2f6688">XHdcp1x_SetMSTMode()</a>.</p>
 
 </div>
 </div>

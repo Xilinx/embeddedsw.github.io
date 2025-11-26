@@ -5,5 +5,6 @@ var xv__vscaler__l2_8c =
     [ "XV_VScalerLoadExtCoeff", "xv__vscaler__l2_8c.html#ga225e5f5ea049a33007e01a0f3eed98f1", null ],
     [ "XV_VScalerSetup", "xv__vscaler__l2_8c.html#gaa7b32a54f54e226389a3410ac2e3a669", null ],
     [ "XV_VScalerStart", "xv__vscaler__l2_8c.html#ga18b042a9e8363a391ea0003cc3161fdd", null ],
-    [ "XV_VScalerStop", "xv__vscaler__l2_8c.html#ga3e8283da952231832e4e222ad6e5db87", null ]
+    [ "XV_VScalerStop", "xv__vscaler__l2_8c.html#ga3e8283da952231832e4e222ad6e5db87", null ],
+    [ "XV_vscaler_Lanczos2_taps6", "xv__vscaler__l2_8c.html#gab758b04c44e9ba0fbd656bf02270b330", null ]
 ];

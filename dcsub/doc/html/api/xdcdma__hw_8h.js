@@ -12,6 +12,7 @@ var xdcdma__hw_8h =
     [ "XDCDMA_ALC1_MAX", "xdcdma__hw_8h.html#ad979f6ee58fac746e2afc536d71e8530", null ],
     [ "XDCDMA_ALC1_MIN", "xdcdma__hw_8h.html#ac9ab1fc6320616559f6d4f97d40c1914", null ],
     [ "XDCDMA_ALC1_STATUS", "xdcdma__hw_8h.html#a8a3117c2ca14351200bec1fcc9f99ab5", null ],
+    [ "XDCDMA_AUD_CTRL", "xdcdma__hw_8h.html#a9a6e190e3d9a169d6202601553bec00a", null ],
     [ "XDCDMA_AXI", "xdcdma__hw_8h.html#a64e291b12a118ce51444d148baf59587", null ],
     [ "XDCDMA_BRDY_CNT_EIDR", "xdcdma__hw_8h.html#aef072176726a8c0a46b1f020150a1e7a", null ],
     [ "XDCDMA_BRDY_CNT_EIER", "xdcdma__hw_8h.html#ae15bcf74d9e0c91f57190b02de585013", null ],

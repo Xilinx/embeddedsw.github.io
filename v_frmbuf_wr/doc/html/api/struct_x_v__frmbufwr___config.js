@@ -7,6 +7,7 @@ var struct_x_v__frmbufwr___config =
     [ "BGRA8En", "struct_x_v__frmbufwr___config.html#a1244f566a1a1b59fb78cd8ff67546d9f", null ],
     [ "BGRX8En", "struct_x_v__frmbufwr___config.html#affabcb9afaae10e168f41c86bb65a5e4", null ],
     [ "DeviceId", "struct_x_v__frmbufwr___config.html#a41893c6a3308a153399724384e5929a5", null ],
+    [ "EnSyncSignals", "struct_x_v__frmbufwr___config.html#abed9e63f5f814e80bef26fa983b2fec0", null ],
     [ "Interlaced", "struct_x_v__frmbufwr___config.html#afafb31ab816487c4ea1c6917877d4756", null ],
     [ "IsTileFormat", "struct_x_v__frmbufwr___config.html#ac574dd89449209b1554a4ef8ef5910d2", null ],
     [ "MaxDataWidth", "struct_x_v__frmbufwr___config.html#a55eb9329a50385463b2ffee562d7a412", null ],

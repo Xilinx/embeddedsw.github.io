@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -19,6 +19,7 @@
  * ----- ---- -------- -------------------------------------------------------
  * 1.0   rb   22/03/18 First release
  * 1.5   vak  03/25/19 Fixed incorrect data_alignment pragma directive for IAR
+ * 1.18  ka   08/21/25 Fixed GCC warnings.
  *
  *</pre>
  *
@@ -234,7 +235,7 @@ USB_STD_HID_DESC hid_desc = {
 	.bcdHID			=	0x0101,
 	.bCountryCode		=	0x00,
 	.bNumDescriptors	=	0x1,
-	.bDescriptorType	=	USB_TYPE_REPORT_DESC,
+	.bReportDescriptorType	=	USB_TYPE_REPORT_DESC,
 	.wDescriptorLength	=	sizeof(report_desc)
 };
 
@@ -383,9 +384,7 @@ u32 Usb_Ch9SetupStrDescReply(struct Usb_DevData *InstancePtr, u8 *BufPtr,
 
 	String = (char *)&StringList[StrArray][Index];
 
-	if (Index >= sizeof(StringList) / sizeof(u8 *)) {
-		return 0;
-	}
+	if (Index >= sizeof(StringList[0]) / sizeof(StringList[0][0])) return 0;
 
 	StringLen = strlen(String);
 
@@ -583,6 +582,8 @@ u32 Usb_GetDescReply(struct Usb_DevData *InstancePtr, SetupPacket *SetupData,
 		     u8 *BufPtr)
 {
 	u32 reply_len = 0;
+
+	(void)InstancePtr;
 
 	switch ((SetupData->bRequestType << 8) | SetupData->bRequest) {
 		case (((USB_DIR_IN | USB_CMD_STDREQ | USB_STATUS_INTERFACE) << 8)

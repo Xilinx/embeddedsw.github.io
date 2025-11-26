@@ -82,7 +82,7 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who    Date     Changes
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a550638a09c943f6ef08dabf626020c21"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a550638a09c943f6ef08dabf626020c21">XV_HdmiRxSs1_BridgeYuv420</a>(InstancePtr, Enable)</td></tr>
-<tr class="memdesc:a550638a09c943f6ef08dabf626020c21"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macros selects the bridge YUV420 mode.  <a href="#a550638a09c943f6ef08dabf626020c21">More...</a><br/></td></tr>
+<tr class="memdesc:a550638a09c943f6ef08dabf626020c21"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro selects the bridge YUV420 mode.  <a href="#a550638a09c943f6ef08dabf626020c21">More...</a><br/></td></tr>
 <tr class="separator:a550638a09c943f6ef08dabf626020c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c40dc50bee3066035922ffc9949fbe0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a6c40dc50bee3066035922ffc9949fbe0">XV_HdmiRxSs1_BridgePixelDrop</a>(InstancePtr, Enable)</td></tr>
 <tr class="memdesc:a6c40dc50bee3066035922ffc9949fbe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macros selects the bridge pixel repeat mode.  <a href="#a6c40dc50bee3066035922ffc9949fbe0">More...</a><br/></td></tr>
@@ -90,14 +90,17 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a0f5c8e5790025dc4bf22db158dfe7027"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
+<tr class="memdesc:a0f5c8e5790025dc4bf22db158dfe7027"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints detailed information about the HDMI RX Subsystem, including core info, timing, link quality, audio, HDR metadata, and InfoFrames.  <a href="#a0f5c8e5790025dc4bf22db158dfe7027">More...</a><br/></td></tr>
+<tr class="separator:a0f5c8e5790025dc4bf22db158dfe7027"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83d082ecd6ba525743e7af8269e2c14a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a83d082ecd6ba525743e7af8269e2c14a">XV_HdmiRxSs1_RegisterDebug</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a83d082ecd6ba525743e7af8269e2c14a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints out the sub-core register dump.  <a href="#a83d082ecd6ba525743e7af8269e2c14a">More...</a><br/></td></tr>
 <tr class="separator:a83d082ecd6ba525743e7af8269e2c14a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1be5f12554c551e46983d3c76a49628"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#ad1be5f12554c551e46983d3c76a49628">XV_HdmiRxSs1_ReportCoreInfo</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ad1be5f12554c551e46983d3c76a49628"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports list of cores included in Video Processing Subsystem.  <a href="#ad1be5f12554c551e46983d3c76a49628">More...</a><br/></td></tr>
+<tr class="memdesc:ad1be5f12554c551e46983d3c76a49628"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reports the list of cores included in the HDMI RX Subsystem.  <a href="#ad1be5f12554c551e46983d3c76a49628">More...</a><br/></td></tr>
 <tr class="separator:ad1be5f12554c551e46983d3c76a49628"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ba7069501e51471adcc478b2ea7e724"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a1ba7069501e51471adcc478b2ea7e724">XV_HdmiRxSs1_SetUserTimerHandler</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr, XVidC_DelayHandler CallbackFunc, void *CallbackRef)</td></tr>
-<tr class="memdesc:a1ba7069501e51471adcc478b2ea7e724"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function installs a custom delay/sleep function to be used by the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> driver.  <a href="#a1ba7069501e51471adcc478b2ea7e724">More...</a><br/></td></tr>
+<tr class="memdesc:a1ba7069501e51471adcc478b2ea7e724"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function allows the user to specify a custom delay or sleep function, which will be invoked by the driver when a delay is required.  <a href="#a1ba7069501e51471adcc478b2ea7e724">More...</a><br/></td></tr>
 <tr class="separator:a1ba7069501e51471adcc478b2ea7e724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff9b79fc18e608b1d3efc68516957b2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#aff9b79fc18e608b1d3efc68516957b2f">XV_HdmiRxSS1_HdmiRxIntrHandler</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:aff9b79fc18e608b1d3efc68516957b2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function calls the interrupt handler for HDMI RX.  <a href="#aff9b79fc18e608b1d3efc68516957b2f">More...</a><br/></td></tr>
@@ -109,13 +112,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa385d7305e57a116d118fd8a94f2da7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts the HDMI RX subsystem including all sub-cores that are included in the processing pipeline for a given use-case.  <a href="#aa385d7305e57a116d118fd8a94f2da7a">More...</a><br/></td></tr>
 <tr class="separator:aa385d7305e57a116d118fd8a94f2da7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd29117c5df26cf6e8e59b0c21f03789"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#abd29117c5df26cf6e8e59b0c21f03789">XV_HdmiRxSs1_Stop</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
-<tr class="memdesc:abd29117c5df26cf6e8e59b0c21f03789"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function stops the HDMI RX subsystem including all sub-cores Stop the video pipe starting from front to back.  <a href="#abd29117c5df26cf6e8e59b0c21f03789">More...</a><br/></td></tr>
+<tr class="memdesc:abd29117c5df26cf6e8e59b0c21f03789"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function stops the HDMI RX subsystem including all sub-cores.  <a href="#abd29117c5df26cf6e8e59b0c21f03789">More...</a><br/></td></tr>
 <tr class="separator:abd29117c5df26cf6e8e59b0c21f03789"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c5258fd66ec0b4c4670319715813a93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a5c5258fd66ec0b4c4670319715813a93">XV_HdmiRxSs1_Reset</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a5c5258fd66ec0b4c4670319715813a93"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function resets the video subsystem sub-cores.  <a href="#a5c5258fd66ec0b4c4670319715813a93">More...</a><br/></td></tr>
 <tr class="separator:a5c5258fd66ec0b4c4670319715813a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51671fc7d52ae1450bf765f47231ab4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a51671fc7d52ae1450bf765f47231ab4f">XV_HdmiRxSs1_RXCore_VRST</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr, u8 Reset)</td></tr>
-<tr class="memdesc:a51671fc7d52ae1450bf765f47231ab4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function asserts or releases the Internal Video reset of the HDMI subcore within the subsystem.  <a href="#a51671fc7d52ae1450bf765f47231ab4f">More...</a><br/></td></tr>
+<tr class="memdesc:a51671fc7d52ae1450bf765f47231ab4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function controls the internal video reset signal for the HDMI subcore inside the subsystem.  <a href="#a51671fc7d52ae1450bf765f47231ab4f">More...</a><br/></td></tr>
 <tr class="separator:a51671fc7d52ae1450bf765f47231ab4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c3db888a37a686212acd0022e1fe089"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a9c3db888a37a686212acd0022e1fe089">XV_HdmiRxSs1_RXCore_LRST</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr, u8 Reset)</td></tr>
 <tr class="memdesc:a9c3db888a37a686212acd0022e1fe089"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function asserts or releases the Internal Link reset of the HDMI subcore within the subsystem.  <a href="#a9c3db888a37a686212acd0022e1fe089">More...</a><br/></td></tr>
@@ -166,7 +169,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aeab77a39e55b7017bca60c7a457643c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the pointer to HDMI RX SS Vendor Specific InfoFrame structure.  <a href="#aeab77a39e55b7017bca60c7a457643c0">More...</a><br/></td></tr>
 <tr class="separator:aeab77a39e55b7017bca60c7a457643c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33f9facfc1978f57febcf29682fed6c7"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a33f9facfc1978f57febcf29682fed6c7">XV_HdmiRxSs1_SetStream</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr, u32 Clock, u32 LineRate)</td></tr>
-<tr class="memdesc:a33f9facfc1978f57febcf29682fed6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set HDMI RX susbsystem stream parameters.  <a href="#a33f9facfc1978f57febcf29682fed6c7">More...</a><br/></td></tr>
+<tr class="memdesc:a33f9facfc1978f57febcf29682fed6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set HDMI RX subsystem stream parameters.  <a href="#a33f9facfc1978f57febcf29682fed6c7">More...</a><br/></td></tr>
 <tr class="separator:a33f9facfc1978f57febcf29682fed6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1602e2606cfc7d343dbdd547fec91d4"><td class="memItemLeft" align="right" valign="top">XVidC_VideoStream *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#ae1602e2606cfc7d343dbdd547fec91d4">XV_HdmiRxSs1_GetVideoStream</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ae1602e2606cfc7d343dbdd547fec91d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the pointer to HDMI RX SS video stream.  <a href="#ae1602e2606cfc7d343dbdd547fec91d4">More...</a><br/></td></tr>
@@ -261,6 +264,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a1e744cd6f6c99d942d59054b65656334"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a1e744cd6f6c99d942d59054b65656334">XV_HdmiRxSs1_DynHDR_GetInfo</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr, <a class="el" href="struct_x_v___hdmi_rx_ss1___dyn_h_d_r___info.html">XV_HdmiRxSs1_DynHDR_Info</a> *RxDynHdrInfo)</td></tr>
 <tr class="memdesc:a1e744cd6f6c99d942d59054b65656334"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the buffer address for Dyanamic HDR.  <a href="#a1e744cd6f6c99d942d59054b65656334">More...</a><br/></td></tr>
 <tr class="separator:a1e744cd6f6c99d942d59054b65656334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2391ad693895b50024731a951c6aa990"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmirxss1_8c.html#a2391ad693895b50024731a951c6aa990">XV_HdmiRxSs1_DSC_IsEnableStream</a> (<a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *InstancePtr)</td></tr>
+<tr class="memdesc:a2391ad693895b50024731a951c6aa990"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function verifies whether the DSC feature is enabled in the HDMI RX subsystem and, if so, queries the underlying HDMI RX core to determine if the DSC stream is active.  <a href="#a2391ad693895b50024731a951c6aa990">More...</a><br/></td></tr>
+<tr class="separator:a2391ad693895b50024731a951c6aa990"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -331,12 +337,13 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">{ \</div>
 <div class="line">    XV_HdmiRx1_Bridge_yuv420(InstancePtr-&gt;HdmiRx1Ptr, Enable); \</div>
-<div class="line">} \</div>
+<div class="line">}</div>
 </div><!-- fragment -->
-<p>This macros selects the bridge YUV420 mode. </p>
+<p>This macro selects the bridge YUV420 mode. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem </td></tr>
+    <tr><td class="paramname">Enable</td><td>enables or disables YUV420 mode </td></tr>
   </table>
   </dd>
 </dl>
@@ -371,6 +378,7 @@ Variables</h2></td></tr>
 <p>This function set HDMI RX audio parameters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance.</td></tr>
     <tr><td class="paramname">Enable</td><td>0: Unmute the audio 1: Mute the audio.</td></tr>
   </table>
   </dd>
@@ -416,8 +424,8 @@ Variables</h2></td></tr>
 <p>This function must be called prior to using the subsystem. Initialization includes setting up the instance data for top level as well as all included sub-core therein, and ensuring the hardware is in a known stable state.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on. </td></tr>
-    <tr><td class="paramname">CfgPtr</td><td>points to the configuration structure associated with the subsystem instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on.</td></tr>
+    <tr><td class="paramname">CfgPtr</td><td>points to the configuration structure associated with the subsystem instance.</td></tr>
     <tr><td class="paramname">EffectiveAddr</td><td>is the base address of the device. If address translation is being used, then this parameter must reflect the virtual base address. Otherwise, the physical address should be used.</td></tr>
   </table>
   </dd>
@@ -483,6 +491,38 @@ Variables</h2></td></tr>
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
 <p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a436465d83bcfb1d90e5983e25dddbfc4">DetailedInfo()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2391ad693895b50024731a951c6aa990"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XV_HdmiRxSs1_DSC_IsEnableStream </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function verifies whether the DSC feature is enabled in the HDMI RX subsystem and, if so, queries the underlying HDMI RX core to determine if the DSC stream is active. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>1 if the DSC stream is enabled.</li>
+<li>0 if the DSC stream is not enabled or DSC is not supported.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function asserts that both InstancePtr and InstancePtr-&gt;HdmiRx1Ptr are valid. </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#ae498c708a39c0a72d9d0c56cac26b523">XV_HdmiRxSs1::Config</a>, <a class="el" href="struct_x_v___hdmi_rx_ss1___config.html#aad3079f7c61932fca7de4876a008ff29">XV_HdmiRxSs1_Config::DSC</a>, and <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
 </div>
 </div>
@@ -569,7 +609,7 @@ Variables</h2></td></tr>
 <p>This function sets the buffer address for Dyanamic HDR. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance</td></tr>
     <tr><td class="paramname">RxDynHdrInfo</td><td>pointer to dynamic hdr info structure. This is passed by the application.</td></tr>
   </table>
   </dd>
@@ -608,7 +648,7 @@ Variables</h2></td></tr>
 <p>This function sets the buffer address for Dyanamic HDR. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to XV_HdmiRXSs instance</td></tr>
     <tr><td class="paramname">Addr</td><td>64 bit address</td></tr>
   </table>
   </dd>
@@ -785,7 +825,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>XVidC_VideoStream pointer</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>XHdmiC_Aux pointer</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
@@ -1125,10 +1165,12 @@ Variables</h2></td></tr>
 <p>This function calls the interrupt handler for HDMI RX. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
@@ -1151,7 +1193,7 @@ Variables</h2></td></tr>
 <p>This function checks if the interface is connected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1183,7 +1225,7 @@ Variables</h2></td></tr>
 <p>This function checks if the video stream is up. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1213,6 +1255,12 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function loads the default EDID to the HDMI RX. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -1251,6 +1299,14 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function loads the default EDID to the HDMI RX. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
+    <tr><td class="paramname">EdidDataPtr</td><td>is a pointer to EDID data</td></tr>
+    <tr><td class="paramname">Length</td><td>specifies the length of EDID data</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -1275,7 +1331,7 @@ Variables</h2></td></tr>
 <p>This function is called when HDMI RX SS TMDS clock changes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1303,7 +1359,7 @@ Variables</h2></td></tr>
 <p>This function prints out the sub-core register dump. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>Instance Pointer to the main data structure</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>Instance pointer to the main data structure.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1331,7 +1387,7 @@ Variables</h2></td></tr>
 <p>This function prints the HDMI RX SS audio information. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1340,7 +1396,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>, and <a class="el" href="xv__hdmirxss1_8c.html#a8ca19441484799097c652e8e7ff93e3e">XV_HdmiRxSs1_GetAudioFormat()</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1358,18 +1414,19 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function reports list of cores included in Video Processing Subsystem. </p>
+<p>This function reports the list of cores included in the HDMI RX Subsystem. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a436465d83bcfb1d90e5983e25dddbfc4">DetailedInfo()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a436465d83bcfb1d90e5983e25dddbfc4">DetailedInfo()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1399,7 +1456,35 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="xv__hdmirxss1_8c.html#a75ad45c066cc1abd9fa832e65d75c5c7">XV_HdmiRxSs1_GetDrmInfoframe()</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0f5c8e5790025dc4bf22db158dfe7027"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiRxSs1_ReportInfo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_rx_ss1.html">XV_HdmiRxSs1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function prints detailed information about the HDMI RX Subsystem, including core info, timing, link quality, audio, HDR metadata, and InfoFrames. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Instance Pointer to the main data structure</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xv__hdmirxss1_8c.html#a59fe7994fe271ece2db726f2ba3ce146">XV_HdmiRxSs1_ReportAudio()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ad1be5f12554c551e46983d3c76a49628">XV_HdmiRxSs1_ReportCoreInfo()</a>, <a class="el" href="xv__hdmirxss1_8c.html#a0d75cf52d65565585e301d7b61dba3dd">XV_HdmiRxSs1_ReportDRMInfo()</a>, <a class="el" href="xv__hdmirxss1_8c.html#a53b3c25bffdf06fb415bcfc143789d91">XV_HdmiRxSs1_ReportInfoFrame()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ac69293c91dde2e6c870efd3519a5e045">XV_HdmiRxSs1_ReportLinkQuality()</a>, <a class="el" href="xv__hdmirxss1_8c.html#ac768cfd3f84a876cf88f8571f56a142f">XV_HdmiRxSs1_ReportSubcoreVersion()</a>, and <a class="el" href="xv__hdmirxss1_8c.html#af817b5a4f80a2fc4e5ac1b0e1cebf9da">XV_HdmiRxSs1_ReportTiming()</a>.</p>
 
 </div>
 </div>
@@ -1420,7 +1505,7 @@ Variables</h2></td></tr>
 <p>This function prints the HDMI RX SS audio information. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1428,6 +1513,8 @@ Variables</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
+
+<p>Referenced by <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1448,7 +1535,7 @@ Variables</h2></td></tr>
 <p>This function reports the link quality based on the link error counter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1457,7 +1544,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1478,7 +1565,7 @@ Variables</h2></td></tr>
 <p>This function prints the HDMI RX SS subcore versions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1487,7 +1574,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a436465d83bcfb1d90e5983e25dddbfc4">DetailedInfo()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a436465d83bcfb1d90e5983e25dddbfc4">DetailedInfo()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1508,7 +1595,7 @@ Variables</h2></td></tr>
 <p>This function prints the HDMI RX SS timing information. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
   </table>
   </dd>
 </dl>
@@ -1517,7 +1604,7 @@ Variables</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>.</p>
 
-<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>.</p>
+<p>Referenced by <a class="el" href="xhdmi__menu_8c.html#a14b96491d9e48ad8fadbbb391d097ab6">Info()</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027">XV_HdmiRxSs1_ReportInfo()</a>.</p>
 
 </div>
 </div>
@@ -1618,10 +1705,12 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function asserts or releases the Internal Video reset of the HDMI subcore within the subsystem. </p>
+<p>This function controls the internal video reset signal for the HDMI subcore inside the subsystem. </p>
+<p>It can either assert (activate) or release (deactivate) the reset based on the value of the Reset parameter.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on. </td></tr>
+    <tr><td class="paramname">Reset</td><td>is the value indicating whether to assert (non-zero) or release (zero) the reset.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1666,13 +1755,13 @@ Variables</h2></td></tr>
 <p>This function will set the major and minor application version in RXSs struct. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance. </td></tr>
-    <tr><td class="paramname">maj</td><td>is the major version of the application. </td></tr>
-    <tr><td class="paramname">min</td><td>is the minor version of the application. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance.</td></tr>
+    <tr><td class="paramname">maj</td><td>is the major version of the application.</td></tr>
+    <tr><td class="paramname">min</td><td>is the minor version of the application.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>void.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a72e105dd51975ca027d92afa8b3b6084">XV_HdmiRxSs1::AppMajVer</a>, and <a class="el" href="struct_x_v___hdmi_rx_ss1.html#aeac7326d1d96aa0d8442bfb105cd30f0">XV_HdmiRxSs1::AppMinVer</a>.</p>
@@ -1775,7 +1864,7 @@ HandlerType                     Callback Function Type
 <p>This function will set the default in HDF. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance.</td></tr>
     <tr><td class="paramname">Id</td><td>is the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> ID to operate on.</td></tr>
   </table>
   </dd>
@@ -1818,6 +1907,14 @@ HandlerType                     Callback Function Type
 </div><div class="memdoc">
 
 <p>This function Sets the EDID parameters in the HDMI RX SS struct. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
+    <tr><td class="paramname">EdidDataPtr</td><td>is a pointer to EDID data</td></tr>
+    <tr><td class="paramname">Length</td><td>specifies the length of EDID data</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -1852,6 +1949,7 @@ HandlerType                     Callback Function Type
 <p>This function sets the HPD on the HDMI RX. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
     <tr><td class="paramname">Value</td><td>is a flag used to set the HPD.<ul>
 <li>TRUE drives HPD high</li>
 <li>FALSE drives HPD low</li>
@@ -1900,8 +1998,8 @@ HandlerType                     Callback Function Type
 <p>This function installs an asynchronous callback function for the LogWrite API: </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance. </td></tr>
-    <tr><td class="paramname">CallbackFunc</td><td>is the address of the callback function. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
+    <tr><td class="paramname">CallbackFunc</td><td>is the address of the callback function.</td></tr>
     <tr><td class="paramname">CallbackRef</td><td>is a user data item that will be passed to the callback function when it is invoked.</td></tr>
   </table>
   </dd>
@@ -1949,8 +2047,8 @@ HandlerType                     Callback Function Type
 <p>This function will set PPC specified by user. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance. </td></tr>
-    <tr><td class="paramname">Id</td><td>is the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> ID to operate on. </td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance.</td></tr>
+    <tr><td class="paramname">Id</td><td>is the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> ID to operate on.</td></tr>
     <tr><td class="paramname">Ppc</td><td>is the PPC to be set.</td></tr>
   </table>
   </dd>
@@ -1992,10 +2090,12 @@ HandlerType                     Callback Function Type
       </table>
 </div><div class="memdoc">
 
-<p>This function set HDMI RX susbsystem stream parameters. </p>
+<p>This function set HDMI RX subsystem stream parameters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>pointer to <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance</td></tr>
+    <tr><td class="paramname">Clock</td><td>specifies reference pixel clock frequency.</td></tr>
+    <tr><td class="paramname">LineRate</td><td>specifies FRL linerate</td></tr>
   </table>
   </dd>
 </dl>
@@ -2036,17 +2136,17 @@ HandlerType                     Callback Function Type
       </table>
 </div><div class="memdoc">
 
-<p>This function installs a custom delay/sleep function to be used by the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> driver. </p>
+<p>This function allows the user to specify a custom delay or sleep function, which will be invoked by the driver when a delay is required. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HdmiSsRx instance. </td></tr>
-    <tr><td class="paramname">CallbackFunc</td><td>is the address to the callback function. </td></tr>
-    <tr><td class="paramname">CallbackRef</td><td>is the user data item (microseconds to delay) that will be passed to the custom sleep/delay function when it is invoked.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> instance. </td></tr>
+    <tr><td class="paramname">CallbackFunc</td><td>is the address of the custom delay/sleep callback function. </td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is the user data (e.g., microseconds to delay) that will be passed to the callback function.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a6f341788d0657d756bdecd5027e3f8c4">XV_HdmiRxSs1::UserTimerPtr</a>, and <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a2ad88e297148d18a9d0891dc5d5ed7e8">XV_HdmiRxSs1::UserTimerWaitUs</a>.</p>
 
@@ -2097,14 +2197,15 @@ HandlerType                     Callback Function Type
       </table>
 </div><div class="memdoc">
 
-<p>This function stops the HDMI RX subsystem including all sub-cores Stop the video pipe starting from front to back. </p>
+<p>This function stops the HDMI RX subsystem including all sub-cores. </p>
+<p>Stop the video pipe starting from front to back.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_rx_ss1.html#a51fe864b06a7b80a949a9c65d0f8ec54">XV_HdmiRxSs1::HdmiRx1Ptr</a>, <a class="el" href="xv__hdmirxss1_8h.html#af3a71dd7327c20d37f9daa233bc882c0a0bf6eb9d6d1671f28c4713cf110470b4">XV_HDMIRXSS1_LOG_EVT_STOP</a>, and <a class="el" href="xv__hdmirxss1_8h.html#a7d0b053f82c85248f45171523ef784e5">XV_HdmiRxSs1_LogWrite()</a>.</p>
 
@@ -2137,7 +2238,8 @@ HandlerType                     Callback Function Type
 <p>This function asserts or releases the system reset of other blocks within the subsystem. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the Subsystem instance to be worked on. </td></tr>
+    <tr><td class="paramname">Reset</td><td>is the value indicating whether to assert (non-zero) or release (zero) the reset.</td></tr>
   </table>
   </dd>
 </dl>
@@ -2164,6 +2266,12 @@ HandlerType                     Callback Function Type
 </div><div class="memdoc">
 
 <p>This function toggles the HPD on the HDMI RX. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the HDMI RX Subsystem instance.</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
@@ -2198,6 +2306,7 @@ HandlerType                     Callback Function Type
 <p>This function controls HDMI RX VFP event enable/disable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_rx_ss1.html" title="The XVprocss driver instance data. ">XV_HdmiRxSs1</a> core instance.</td></tr>
     <tr><td class="paramname">Enable</td><td>0: disable VFP event 1: enable VFP event.</td></tr>
   </table>
   </dd>

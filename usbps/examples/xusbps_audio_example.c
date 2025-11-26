@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -19,6 +19,7 @@
  * ----- ---- -------- -------------------------------------------------------
  * 1.0   pm	20/02/20 First release
  * 2.8   pm	07/07/23 Added support for system device-tree flow.
+ * 2.10  ka     21/08/25 Fixed GCC warnings
  *
  * </pre>
  *
@@ -106,7 +107,7 @@ static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
 static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
 				 u32 BytesTxed );
 static void XUsbPs_AudioTransferSize(void);
-static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType);
+static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType, void *Data);
 s32 XUsbPs_CfgInit(struct Usb_DevData *InstancePtr, Usb_Config *ConfigPtr,
 		   u32 BaseAddress);
 
@@ -324,7 +325,7 @@ static void XUsbPs_AudioTransferSize(void)
 	Interval = INTERVAL_PER_SECOND / (1 << (AUDIO_INTERVAL - 1));
 
 	/*
-	 * Audio data transfer size to be transfered at every interval
+	 * Audio data transfer size to be transferred at every interval
 	 */
 	MaxPacketSize = AUDIO_CHANNEL_NUM * AUDIO_FRAME_SIZE *
 			DIV_ROUND_UP(AudioFreqTemp, INTERVAL_PER_SECOND /
@@ -358,6 +359,9 @@ static void XUsbPs_IsoInHandler(void *CallBackRef, u32 RequestedBytes,
 {
 	struct Usb_DevData *InstancePtr = CallBackRef;
 	u32 Size;
+
+	(void)RequestedBytes;
+        (void)BytesTxed;
 
 	Size = PacketSize;
 	Residue += PacketResidue;
@@ -422,6 +426,8 @@ static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
 	struct Usb_DevData *InstancePtr = CallBackRef;
 	u32 Size;
 
+	(void)RequestedBytes;
+
 	Size = PacketSize;
 	Residue += PacketResidue;
 
@@ -464,7 +470,7 @@ static void XUsbPs_IsoOutHandler(void *CallBackRef, u32 RequestedBytes,
  * @return	None.
  *
  ******************************************************************************/
-static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType)
+static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType, void *Data)
 {
 	XUsbPs *InstancePtr;
 	int Status;
@@ -472,6 +478,8 @@ static void XUsbPs_Ep0EventHandler(void *CallBackRef, u8 EpNum, u8 EventType)
 	u8 *BufferPtr;
 	u32 BufferLen;
 	u32 Handle;
+
+	(void)Data;
 
 	Xil_AssertVoid(NULL != CallBackRef);
 

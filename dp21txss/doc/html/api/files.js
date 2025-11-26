@@ -2,10 +2,11 @@ var files =
 [
     [ "clk_set.c", "clk__set_8c.html", null ],
     [ "clk_set.h", "clk__set_8h.html", null ],
-    [ "main.h", "main_8h.html", null ],
+    [ "main.h", "main_8h.html", "main_8h" ],
     [ "passthrough.c", "passthrough_8c.html", "passthrough_8c" ],
     [ "rx.c", "rx_8c.html", "rx_8c" ],
     [ "rx.h", "rx_8h.html", "rx_8h" ],
+    [ "si570.c", "si570_8c.html", null ],
     [ "tx.h", "tx_8h.html", "tx_8h" ],
     [ "xdptxss.c", "xdptxss_8c.html", "xdptxss_8c" ],
     [ "xdptxss.h", "xdptxss_8h.html", "xdptxss_8h" ],

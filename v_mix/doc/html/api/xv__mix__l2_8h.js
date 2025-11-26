@@ -10,6 +10,7 @@ var xv__mix__l2_8h =
     [ "XVMix_IsLogoEnabled", "xv__mix__l2_8h.html#ga213581e68e05ded964cd81e67dd6dda9", null ],
     [ "XVMix_IsLogoPixAlphaEnabled", "xv__mix__l2_8h.html#ga2dfd82fb182e252dfe664826a8a6c4d6", null ],
     [ "XVMix_IsScalingEnabled", "xv__mix__l2_8h.html#ga4082688759c43f2f4d6411fa01c1bd6c", null ],
+    [ "XVMix_IsTileFormatEnabled", "xv__mix__l2_8h.html#ga673bd2cc41044da90fd50f08d75b11c1", null ],
     [ "XVMix_Callback", "xv__mix__l2_8h.html#ga547d67e8ebe67c5c6f124464fa5d5783", null ],
     [ "XVMix_BackgroundId", "xv__mix__l2_8h.html#ga987d8db7bc81e9007661ca8d9457b94b", [
       [ "XVMIX_BKGND_BLACK", "xv__mix__l2_8h.html#gga987d8db7bc81e9007661ca8d9457b94ba792aadc11a85acb1674e41dd50631c30", null ],
@@ -57,6 +58,8 @@ var xv__mix__l2_8h =
       [ "XVMIX_SCALE_FACTOR_4X", "xv__mix__l2_8h.html#gga9d02a170743e7daaaa0bcca02f567378a29a77fb6e29149053a1a1082b96be0ed", null ],
       [ "XVMIX_SCALE_FACTOR_NUM_SUPPORTED", "xv__mix__l2_8h.html#gga9d02a170743e7daaaa0bcca02f567378a421175f12b6328fb396dda33f2bb460d", null ]
     ] ],
+    [ "XV_mix_Get_FlushDone", "xv__mix__l2_8h.html#gaf2e5af1b38e6f904c84a89f93a0df30e", null ],
+    [ "XV_mix_SetFlushbit", "xv__mix__l2_8h.html#ga02f27d8545d97740ca717b9e4368170b", null ],
     [ "XVMix_DbgLayerInfo", "xv__mix__l2_8h.html#ga723b99028777cdecd1a2f4102ce9b792", null ],
     [ "XVMix_DbgReportStatus", "xv__mix__l2_8h.html#ga805ce6cc52eaecc97361e4680b4a51b3", null ],
     [ "XVMix_GetLayerAlpha", "xv__mix__l2_8h.html#ga5cc8135e34ef1c998256c207a80dd8a8", null ],
@@ -79,6 +82,7 @@ var xv__mix__l2_8h =
     [ "XVMix_MoveLayerWindow", "xv__mix__l2_8h.html#ga8a30c176c1bc5810577622e42d102ec6", null ],
     [ "XVMix_SetBackgndColor", "xv__mix__l2_8h.html#ga945667e7c19dfcecad7c289f0517f242", null ],
     [ "XVMix_SetCallback", "xv__mix__l2_8h.html#gad12afb12681e1426a8129e35fa729046", null ],
+    [ "XVMix_SetCscCoeffs", "xv__mix__l2_8h.html#ga6c170f73b18b237aa6a735df762e8219", null ],
     [ "XVMix_SetLayerAlpha", "xv__mix__l2_8h.html#ga283cb29bb936ce5d0539782422ff3c3e", null ],
     [ "XVMix_SetLayerBufferAddr", "xv__mix__l2_8h.html#ga8d317845835bcbcc2b9f877ce0274691", null ],
     [ "XVMix_SetLayerChromaBuffer2Addr", "xv__mix__l2_8h.html#gaaf18b72d5323b64b3c7d58703918bb2c", null ],

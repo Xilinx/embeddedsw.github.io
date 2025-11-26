@@ -5,9 +5,13 @@ var xv__hdmirxss1_8h =
     [ "XV_HdmiRxSs1_Config", "struct_x_v___hdmi_rx_ss1___config.html", "struct_x_v___hdmi_rx_ss1___config" ],
     [ "XV_HdmiRxSs1", "struct_x_v___hdmi_rx_ss1.html", "struct_x_v___hdmi_rx_ss1" ],
     [ "XV_HdmiRxSs1_DynHDR_Info", "struct_x_v___hdmi_rx_ss1___dyn_h_d_r___info.html", null ],
+    [ "ANSI_COLOR_RED", "xv__hdmirxss1_8h.html#a34995b955465f6bbb37c359173d50477", null ],
+    [ "ANSI_COLOR_RESET", "xv__hdmirxss1_8h.html#a92a364c2b863dde1a024a77eac2a5b3b", null ],
+    [ "ANSI_COLOR_YELLOW", "xv__hdmirxss1_8h.html#a5a123b382640b3aa65dd5db386002fbc", null ],
     [ "HDMIRXSS1_H", "xv__hdmirxss1_8h.html#aadc1e897bff28b06c604518e93cb09fe", null ],
     [ "XV_HdmiRxSs1_Callback", "xv__hdmirxss1_8h.html#a64be6c21126599922ecfb365e05a5153", null ],
-    [ "XV_HdmiRxSs1_LogCallback", "xv__hdmirxss1_8h.html#a41f9dc5a39d457fbf334927e2aaf379e", [
+    [ "XV_HdmiRxSs1_LogCallback", "xv__hdmirxss1_8h.html#a41f9dc5a39d457fbf334927e2aaf379e", null ],
+    [ "XV_HdmiRxSs1_DynHdrErrType", "xv__hdmirxss1_8h.html#ae766c84955f1aa0085a770d1c1b12804", [
       [ "XV_HDMIRXSS1_DYNHDR_ERR_SEQID", "xv__hdmirxss1_8h.html#ae766c84955f1aa0085a770d1c1b12804a0fa96336edcd47cd3419a9d73fecaf0f", null ],
       [ "XV_HDMIRXSS1_DYNHDR_ERR_MEMWR", "xv__hdmirxss1_8h.html#ae766c84955f1aa0085a770d1c1b12804a8fcd515181836db27c7547bafe8271f7", null ]
     ] ],
@@ -97,6 +101,7 @@ var xv__hdmirxss1_8h =
     [ "XV_HdmiRxSs1_CfgInitialize", "xv__hdmirxss1_8h.html#ae7df2cc91e752d61253d9a86462d95ab", null ],
     [ "XV_HdmiRxSs1_DdcRegDump", "xv__hdmirxss1_8h.html#a01bf7140ff16b767639771b8b46a91fe", null ],
     [ "XV_HdmiRxSs1_DebugInfo", "xv__hdmirxss1_8h.html#a34b196de94d11c60b63ab0c1516dc8d9", null ],
+    [ "XV_HdmiRxSs1_DSC_IsEnableStream", "xv__hdmirxss1_8h.html#a2391ad693895b50024731a951c6aa990", null ],
     [ "XV_HdmiRxSs1_DynHDR_DM_Disable", "xv__hdmirxss1_8h.html#aea595ce7b6a72c3ef581593dc634f693", null ],
     [ "XV_HdmiRxSs1_DynHDR_DM_Enable", "xv__hdmirxss1_8h.html#ac7d12d5726eed2735460f2f7ae91ac68", null ],
     [ "XV_HdmiRxSs1_DynHDR_GetInfo", "xv__hdmirxss1_8h.html#a42ec2b4dba172edc37040ec1e9ad7590", null ],
@@ -133,6 +138,7 @@ var xv__hdmirxss1_8h =
     [ "XV_HdmiRxSs1_ReportAudio", "xv__hdmirxss1_8h.html#a59fe7994fe271ece2db726f2ba3ce146", null ],
     [ "XV_HdmiRxSs1_ReportCoreInfo", "xv__hdmirxss1_8h.html#ad1be5f12554c551e46983d3c76a49628", null ],
     [ "XV_HdmiRxSs1_ReportDRMInfo", "xv__hdmirxss1_8h.html#a0d75cf52d65565585e301d7b61dba3dd", null ],
+    [ "XV_HdmiRxSs1_ReportInfo", "xv__hdmirxss1_8h.html#a0f5c8e5790025dc4bf22db158dfe7027", null ],
     [ "XV_HdmiRxSs1_ReportInfoFrame", "xv__hdmirxss1_8h.html#a53b3c25bffdf06fb415bcfc143789d91", null ],
     [ "XV_HdmiRxSs1_ReportLinkQuality", "xv__hdmirxss1_8h.html#ac69293c91dde2e6c870efd3519a5e045", null ],
     [ "XV_HdmiRxSs1_ReportSubcoreVersion", "xv__hdmirxss1_8h.html#ac768cfd3f84a876cf88f8571f56a142f", null ],

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,6 +8,7 @@
 /**
 *
 * @file xvprocss.c
+* @addtogroup vprocss Overview
 *
 * This is main code of Xilinx Video Processing Subsystem device driver.
 * Please see xvprocss.h for more details of the driver.
@@ -316,7 +317,7 @@ static void GetIncludedSubcores(XVprocSs *XVprocSsPtr)
 #else
   u32 Index = 0;
 
-  Index = XVprocSs_GetDrvIndex(XVprocSsPtr, XVprocSsPtr->Config.BaseAddress);
+  Index = XVprocSs_GetDrvIndex(XVprocSsPtr->Config.BaseAddress);
 
   XVprocSsPtr->HcrsmplrPtr    = ((XVprocSsPtr->Config.HCrsmplr.IsPresent)   \
                               ? (&subcoreRepo[Index].Hcrsmplr)    : NULL);
@@ -2054,8 +2055,7 @@ s32 XVprocSs_GetPictureGain(XVprocSs *InstancePtr, XVprocSs_ColorChannel ChId)
   /* Verify arguments */
   Xil_AssertNonvoid(InstancePtr != NULL);
   Xil_AssertNonvoid(InstancePtr->CscPtr != NULL);
-  Xil_AssertNonvoid((ChId >= XVPROCSS_COLOR_CH_Y_RED) &&
-		            (ChId < XVPROCSS_COLOR_CH_NUM_SUPPORTED));
+  Xil_AssertNonvoid((ChId < XVPROCSS_COLOR_CH_NUM_SUPPORTED));
 
   if(InstancePtr->CscPtr) {
 	switch(ChId)
@@ -2101,8 +2101,8 @@ void XVprocSs_SetPictureGain(XVprocSs *InstancePtr,
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(InstancePtr->CscPtr != NULL);
-  Xil_AssertVoid((ChId >= XVPROCSS_COLOR_CH_Y_RED) &&
-		         (ChId <= XVPROCSS_COLOR_CH_NUM_SUPPORTED));
+  Xil_AssertVoid((ChId < XVPROCSS_COLOR_CH_NUM_SUPPORTED));
+
   Xil_AssertVoid((NewValue >= 0) && (NewValue <= 100));
 
   if(InstancePtr->CscPtr) {
@@ -2197,8 +2197,7 @@ void XVprocSs_SetPictureColorStdIn(XVprocSs *InstancePtr,
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(InstancePtr->CscPtr != NULL);
-  Xil_AssertVoid((NewVal >= XVIDC_BT_2020) &&
-		         (NewVal < XVIDC_BT_NUM_SUPPORTED));
+  Xil_AssertVoid(NewVal < XVIDC_BT_NUM_SUPPORTED);
 
   if(InstancePtr->CscPtr) {
     XV_CscSetColorspace(CscPtr,
@@ -2233,8 +2232,7 @@ void XVprocSs_SetPictureColorStdOut(XVprocSs *InstancePtr,
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(InstancePtr->CscPtr != NULL);
-  Xil_AssertVoid((NewVal >= XVIDC_BT_2020) &&
-		         (NewVal < XVIDC_BT_NUM_SUPPORTED));
+  Xil_AssertVoid(NewVal < XVIDC_BT_NUM_SUPPORTED);
 
   if(InstancePtr->CscPtr) {
     XV_CscSetColorspace(CscPtr,
@@ -2293,8 +2291,7 @@ void XVprocSs_SetPictureColorRange(XVprocSs *InstancePtr,
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(InstancePtr->CscPtr != NULL);
-  Xil_AssertVoid((NewVal >= XVIDC_CR_16_235) &&
-		         (NewVal < XVIDC_CR_NUM_SUPPORTED));
+  Xil_AssertVoid(NewVal < XVIDC_CR_NUM_SUPPORTED);
 
   if(InstancePtr->CscPtr) {
     XV_CscSetColorspace(CscPtr,
@@ -2310,7 +2307,7 @@ void XVprocSs_SetPictureColorRange(XVprocSs *InstancePtr,
 /**
 * This function sets picture Demo Window.
 * Post this function call all further picture settings will apply only within
-* the defined window. Demo window gets reset everytime subsystem
+* the defined window. Demo window gets reset every time subsystem
 * configuration changes
 *
 * @param  InstancePtr is a pointer to the Subsystem instance to be worked on.
@@ -2362,7 +2359,7 @@ int XVprocSs_SetPictureDemoWindow(XVprocSs *InstancePtr,
 * This function sets PIP background color
 *
 * @param  InstancePtr is a pointer to the Subsystem instance to be worked on.
-* @param  ColorIs is the requested background color
+* @param  ColorId is the requested background color
 *           - XLBOX_BKGND_BLACK
 *           - XLBOX_BKGND_WHITE
 *           - XLBOX_BKGND_RED
@@ -2380,8 +2377,7 @@ void XVprocSs_SetPIPBackgroundColor(XVprocSs *InstancePtr,
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(InstancePtr->LboxPtr != NULL);
-  Xil_AssertVoid((ColorId >= XLBOX_BKGND_BLACK) &&
-		         (ColorId < XLBOX_BKGND_LAST));
+  Xil_AssertVoid(ColorId < XLBOX_BKGND_LAST);
 
   if(InstancePtr->LboxPtr) {
 	XV_LboxSetBackgroundColor(InstancePtr->LboxPtr,

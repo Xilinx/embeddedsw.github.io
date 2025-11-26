@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
+* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -22,7 +23,6 @@
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
-
 #include "xv_hdmirx1_frl.h"
 #include "xv_hdmirx1.h"
 /*#include "string.h"*/
@@ -100,6 +100,7 @@ const XV_HdmiRx1_FrlScdcField FrlScdcField[XV_HDMIRX1_SCDCFIELD_SIZE] = {
 	{0x35, 0x01, 6},	/* XV_HDMIRX1_SCDCFIELD_DSC_FRL_MAX */
 };
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /**************************** Type Definitions *******************************/
@@ -138,8 +139,7 @@ static void XV_HdmiRx1_SetFrlTimer(XV_HdmiRx1 *InstancePtr, u32 Milliseconds);
 * 			- XV_HDMIRX1_LTP_LFSR1
 * 			- XV_HDMIRX1_LTP_LFSR2
 * 			- XV_HDMIRX1_LTP_LFSR3
-*
-* @return	Status on if FrlTraining can be started or not.
+* @param    FfeSuppFlag to specify the support of FFE Levels
 *
 * @note     None.
 *
@@ -155,7 +155,6 @@ void XV_HdmiRx1_FrlModeEnable(XV_HdmiRx1 *InstancePtr, u8 LtpThreshold,
 				DefaultLtp.Byte[3] == 0);
 	Xil_AssertVoid(FfeSuppFlag == 0 || FfeSuppFlag == 1);
 
-/*	InstancePtr->Stream.Frl.DefaultLtp.Data = DefaultLtp.Data;*/
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[0] = DefaultLtp.Byte[0];
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[1] = DefaultLtp.Byte[1];
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[2] = DefaultLtp.Byte[2];
@@ -918,7 +917,6 @@ void XV_HdmiRx1_SetFrlLtpDetection(XV_HdmiRx1 *InstancePtr, u8 Lane,
 u32 XV_HdmiRx1_GetFrlLtpDetection(XV_HdmiRx1 *InstancePtr, u8 Lane)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
-/*	Xil_AssertVoid(Ltp >= 5 && Ltp <= 8);*/
 
 	u32 Data = 0;
 
@@ -995,8 +993,6 @@ u32 XV_HdmiRx1_GetFrlActivePixRatio(XV_HdmiRx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiRx1 core instance.
 *
-* @param    Lane specifies the lane of which the Link Training Pattern will be
-* 			detected for.
 *
 * @return
 *
@@ -1266,7 +1262,7 @@ int XV_HdmiRx1_RetrieveFrlRateLanes(XV_HdmiRx1 *InstancePtr)
 * 			- XV_HDMIRX1_LTP_LFSR2
 * 			- XV_HDMIRX1_LTP_LFSR3
 *
-* @return	Status on if FrlTraining can be started or not.
+* @return	None
 *
 * @note     None.
 *
@@ -1282,7 +1278,6 @@ void XV_HdmiRx1_FrlLinkRetrain(XV_HdmiRx1 *InstancePtr, u8 LtpThreshold,
 	Xil_AssertVoid((DefaultLtp.Byte[3] >= 5 && DefaultLtp.Byte[3] <= 8) ||
 		       DefaultLtp.Byte[3] == 0);
 
-	/* InstancePtr->Stream.Frl.DefaultLtp.Data = DefaultLtp.Data;*/
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[0] = DefaultLtp.Byte[0];
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[1] = DefaultLtp.Byte[1];
 	InstancePtr->Stream.Frl.DefaultLtp.Byte[2] = DefaultLtp.Byte[2];
@@ -1300,6 +1295,7 @@ void XV_HdmiRx1_FrlLinkRetrain(XV_HdmiRx1 *InstancePtr, u8 LtpThreshold,
 
 	XV_HdmiRx1_ExecFrlState(InstancePtr);
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -1310,8 +1306,6 @@ void XV_HdmiRx1_FrlLinkRetrain(XV_HdmiRx1 *InstancePtr, u8 LtpThreshold,
 * @param    InstancePtr is a pointer to the XV_HdmiRx1 core instance.
 *
 * @param    Field specifies the fields from SCDC channels to be written
-*
-* @param    Value specifies the values to be written
 *
 * @return
 *       - XST_SUCCESS
@@ -1445,6 +1439,7 @@ int XV_HdmiRx1_FrlDdcWriteField(XV_HdmiRx1 *InstancePtr,
 	return XST_SUCCESS;
 }
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 /*****************************************************************************/
 /**
 *
@@ -1492,7 +1487,6 @@ void XV_HdmiRx1_FrlReset(XV_HdmiRx1 *InstancePtr, u8 Reset)
 		XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
 				    (XV_HDMIRX1_FRL_CTRL_CLR_OFFSET),
 				    (XV_HDMIRX1_FRL_CTRL_RSTN_MASK));
-		/* xil_printf("RESET SET\r\n");*/
 		XV_HdmiRx1_FrlDdcWriteField(InstancePtr,
 					    XV_HDMIRX1_SCDCFIELD_SINK_VER,
 					    1);
@@ -1536,8 +1530,6 @@ void XV_HdmiRx1_SetFrlTimer(XV_HdmiRx1 *InstancePtr, u32 Milliseconds)
 *
 * @param	InstancePtr is a pointer to the XHdmi_Rx core instance.
 *
-* @param	None.
-*
 * @return	None.
 *
 * @note		None.
@@ -1552,6 +1544,21 @@ void XV_HdmiRx1_SetFrl10MicroSecondsTimer(XV_HdmiRx1 *InstancePtr)
 	XV_HdmiRx1_Tmr1Start(InstancePtr, ClockCycles);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function writes the FLT status to the appropriate SCDC (Status and
+* Control Data Channel) field and updates the internal state of the HDMI RX
+* instance.
+*
+* @param	InstancePtr is a pointer to the XHdmi_Rx core instance.
+*
+* @param        Flag to indicating whether the FLT condition is asserted or
+* 		cleared.
+*
+* @note		None.
+*
+******************************************************************************/
 void XV_HdmiRx1_FrlFltUpdate(XV_HdmiRx1 *InstancePtr, u8 Flag)
 {
 	Xil_AssertVoid(Flag == TRUE || Flag == FALSE);
@@ -1563,6 +1570,18 @@ void XV_HdmiRx1_FrlFltUpdate(XV_HdmiRx1 *InstancePtr, u8 Flag)
 	InstancePtr->Stream.Frl.FltUpdateAsserted = Flag;
 }
 
+/*****************************************************************************/
+/**
+*
+* This function configures the HDMI RX to either enable or simulate the FLT_NO_TIMEOUT
+* condition based on the current state of the `FltNoTimeout` flag in the FRL stream context.
+* This is typically used for testing or managing FRL link training behavior in HDMI 2.1.
+*
+* @param	InstancePtr is a pointer to the XHdmi_Rx core instance.
+*
+* @note		None.
+*
+******************************************************************************/
 void XV_HdmiRx1_SetFrlFltNoTimeout(XV_HdmiRx1 *InstancePtr)
 {
 	if (InstancePtr->Stream.Frl.FltNoTimeout == TRUE) {
@@ -1578,6 +1597,16 @@ void XV_HdmiRx1_SetFrlFltNoTimeout(XV_HdmiRx1 *InstancePtr)
 	}
 }
 
+/*****************************************************************************/
+/**
+* This function typically used to restore normal FRL link training timeout behavior
+* after it was previously disabled for testing or debugging purposes.
+*
+* @param	InstancePtr is a pointer to the XHdmi_Rx core instance.
+*
+* @note		None.
+*
+******************************************************************************/
 void XV_HdmiRx1_ClearFrlFltNoTimeout(XV_HdmiRx1 *InstancePtr)
 {
 	InstancePtr->Stream.Frl.FltNoTimeout = (FALSE);
@@ -1586,6 +1615,21 @@ void XV_HdmiRx1_ClearFrlFltNoTimeout(XV_HdmiRx1 *InstancePtr)
 				    0);
 }
 
+/*****************************************************************************/
+/**
+* This function is used to reinitialize the FRL link training state machine when the
+* current training state has reached or passed the `LTS_P_FRL_RDY` phase. It resets
+* the LTP (Link Training Pattern) detection to the default values and sets the training
+* state back to `LTS_3`, effectively restarting the training sequence.
+*
+* This is typically used in scenarios where FRL training needs to be retried due to
+* errors or unstable link conditions.
+*
+* @param	InstancePtr is a pointer to the XHdmi_Rx core instance.
+*
+* @note		None.
+*
+******************************************************************************/
 void XV_HdmiRx1_RestartFrlLt(XV_HdmiRx1 *InstancePtr)
 {
 	xil_printf("RestartFrlLt_0: S: %X\r\n",
@@ -1611,3 +1655,29 @@ void XV_HdmiRx1_RestartFrlLt(XV_HdmiRx1 *InstancePtr)
 		xil_printf("RestartFrlLt_1\r\n");
 	}
 }
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
+
+/*****************************************************************************/
+/**
+*
+* This function initializes FRL-specific SCDC fields that are required for
+* FRL operation. This should be called separately from the basic SCDC clear
+* operation when FRL is enabled.
+*
+* @param	InstancePtr is a pointer to the XV_HdmiRx1 core instance.
+*
+* @return	None.
+*
+* @note		This function should only be called when FRL is enabled.
+*
+******************************************************************************/
+void XV_HdmiRx1_FrlScdcInit(XV_HdmiRx1 *InstancePtr)
+{
+	/* Verify argument. */
+	Xil_AssertVoid(InstancePtr != NULL);
+
+	/* Initialize FRL-specific SCDC fields */
+	XV_HdmiRx1_FrlDdcWriteField(InstancePtr, XV_HDMIRX1_SCDCFIELD_FLT_READY, 1);
+	XV_HdmiRx1_FrlDdcWriteField(InstancePtr, XV_HDMIRX1_SCDCFIELD_SINK_VER, 1);
+}
+

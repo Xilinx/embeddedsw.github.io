@@ -103,7 +103,6 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	InstancePtr->AudCallback = NULL;
 	InstancePtr->LnkStaCallback = NULL;
 	InstancePtr->DdcCallback = NULL;
-	/* InstancePtr->StreamDownCallback = (XV_HdmiRx1_Callback)((void *)StubCallback);*/
 	InstancePtr->StreamDownCallback = NULL;
 	InstancePtr->StreamInitCallback = NULL;
 	InstancePtr->StreamUpCallback = NULL;
@@ -124,9 +123,10 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	InstancePtr->SyncLossCallback = NULL;
 	InstancePtr->ModeCallback = NULL;
 	InstancePtr->TmdsClkRatioCallback = NULL;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	InstancePtr->Stream.Frl.LtpMatchedCounts = 0;
 	InstancePtr->Stream.Frl.CurFrlRate = 0;
-
+#endif
 	/* Clear HDMI variables */
 	XV_HdmiRx1_Clear(InstancePtr);
 
@@ -136,11 +136,14 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	/* Clear connected flag*/
 	InstancePtr->Stream.IsConnected = (FALSE);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	InstancePtr->Stream.Frl.FltNoRetrain = (FALSE);
 	InstancePtr->Stream.Frl.FltNoTimeout = (FALSE);
 
 	XV_HdmiRx1_FrlIntrDisable(InstancePtr);
+	#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	XV_HdmiRx1_FrlReset(InstancePtr, TRUE);
+	#endif
 
 	XV_HdmiRx1_FrlDdcWriteField(InstancePtr,
 				    XV_HDMIRX1_SCDCFIELD_SINK_VER,
@@ -149,6 +152,7 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	XV_HdmiRx1_FrlDdcWriteField(InstancePtr,
 				    XV_HDMIRX1_SCDCFIELD_FRL_RATE,
 				    0);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 	/* Reset all peripherals*/
 	XV_HdmiRx1_PioDisable(InstancePtr);
@@ -168,6 +172,7 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	XV_HdmiRx1_Tmr4IntrDisable(InstancePtr);
 	XV_HdmiRx1_VtdIntrDisable(InstancePtr);
 	XV_HdmiRx1_DdcScdcClear(InstancePtr);
+	XV_HdmiRx1_FrlScdcInit(InstancePtr);
 	XV_HdmiRx1_SetHpd(InstancePtr,FALSE);
 
 	/*
@@ -226,8 +231,9 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	XV_HdmiRx1_Tmr3IntrEnable(InstancePtr);
 
 	/* Enable Skew Lock Event */
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	XV_HdmiRx1_SkewLockEvtEnable(InstancePtr);
-
+#endif
 	/*
 	Video Timing detector peripheral
 	*/
@@ -245,18 +251,12 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	/* Enable DDC */
 	XV_HdmiRx1_DdcEnable(InstancePtr);
 
-	/* Enable DDC peripheral interrupt */
-	/*XV_HdmiRx1_DdcIntrEnable(InstancePtr);*/
-
 	/* Enable SCDC*/
 	XV_HdmiRx1_DdcScdcEnable(InstancePtr);
 
 	/*
 	AUX peripheral
 	*/
-
-	/* The aux peripheral will be enabled in the RX init done callback*/
-	/*XV_HdmiRx1_AuxEnable(InstancePtr);*/
 
 	/* Enable AUX peripheral interrupt */
 	XV_HdmiRx1_AuxIntrEnable(InstancePtr);
@@ -266,18 +266,13 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 	Audio peripheral
 	*/
 
-	/* The audio peripheral willl be enabled in the RX init done callback */
-	/* XV_HdmiRx1_AudioEnable(InstancePtr); */
-
 	/* Enable AUD peripheral interrupt */
 	XV_HdmiRx1_AudioIntrEnable(InstancePtr);
-
-	/* Enable Audio ACR Update Event */
-	/* XV_HdmiRx1_SetAudioAcrUpdateEventEn(InstancePtr); */
 
 	/* Enable Link Status */
 	XV_HdmiRx1_LnkstaEnable(InstancePtr);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	/* Enable FRL peripheral */
 	XV_HdmiRx1_FrlReset(InstancePtr, FALSE);
 
@@ -300,9 +295,7 @@ int XV_HdmiRx1_CfgInitialize(XV_HdmiRx1 *InstancePtr, XV_HdmiRx1_Config *CfgPtr,
 				    0);
 
 	XV_HdmiRx1_SetFrlRateWrEvent_En(InstancePtr);
-
-	/* Enable Link Status peripheral interrupt */
-	/* XV_HdmiRx1_LinkIntrEnable(InstancePtr); */
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 	/* Reset the hardware and set the flag to indicate the driver is ready */
 	InstancePtr->IsReady = (u32)(XIL_COMPONENT_IS_READY);
@@ -351,7 +344,9 @@ void XV_HdmiRx1_Clear(XV_HdmiRx1 *InstancePtr)
 	/* The stream is down*/
 	InstancePtr->Stream.State = XV_HDMIRX1_STATE_STREAM_DOWN;
 	InstancePtr->Stream.IsHdmi = FALSE;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	InstancePtr->Stream.IsFrl = FALSE;
+#endif
 	/* Default RGB*/
 	InstancePtr->Stream.Video.ColorFormatId = (XVIDC_CSF_RGB);
 	InstancePtr->Stream.Video.IsInterlaced = 0;
@@ -384,7 +379,9 @@ void XV_HdmiRx1_Clear(XV_HdmiRx1 *InstancePtr)
 	InstancePtr->Stream.Audio.Channels = 2;
 	InstancePtr->Stream.GetVideoPropertiesTries = 0;
 	/* Set FRL State*/
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	InstancePtr->Stream.Frl.TrainingState = XV_HDMIRX1_FRLSTATE_LTS_L;
+#endif
 	/* Disable Timer 3 which triggers Phy Reset */
 	XV_HdmiRx1_Tmr3Disable(InstancePtr);
 
@@ -747,7 +744,9 @@ int XV_HdmiRx1_SetHpd(XV_HdmiRx1 *InstancePtr, u8 SetClr)
 	Xil_AssertNonvoid((SetClr == (TRUE)) || (SetClr == (FALSE)));
 
 	if (SetClr) {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		XV_HdmiRx1_FrlReset(InstancePtr, FALSE);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 		/* Set HPD */
 		XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
@@ -755,7 +754,9 @@ int XV_HdmiRx1_SetHpd(XV_HdmiRx1 *InstancePtr, u8 SetClr)
 				    (XV_HDMIRX1_PIO_OUT_HPD_MASK));
 	} else {
 		/* Reset and clear FRL_Rate of SCDC register */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		XV_HdmiRx1_FrlReset(InstancePtr, TRUE);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 		/* Clear HPD */
 		XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
@@ -1269,7 +1270,7 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			Data & 0xFFFF);
 	xil_printf("ADD_CORE_DBG: 0x%X\r\n", (Data >> 16) & 0xFFFF0000);
 
-
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	FrlStatus = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
 					  (XV_HDMIRX1_FRL_STA_OFFSET));
 	xil_printf("FRL_MODE, LANES, STR, RATE: %d, %d, %d, %d\r\n",
@@ -1282,13 +1283,6 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			(FrlStatus >> XV_HDMIRX1_FRL_STA_FRL_RATE_SHIFT) &
 			XV_HDMIRX1_FRL_STA_FRL_RATE_MASK);
 
-	/* HDMI/DVI Mode */
-	PioIn = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
-				  (XV_HDMIRX1_PIO_IN_OFFSET));
-	xil_printf("HDMI/DVI Mode: %d\r\n",
-			(PioIn & XV_HDMIRX1_PIO_IN_MODE_MASK) &&
-			XV_HDMIRX1_PIO_IN_MODE_MASK);
-
 	/* FRL word aligner tap select changed Status */
 	DbgSta = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
 			  (XV_HDMIRX1_DBG_STA_OFFSET));
@@ -1300,6 +1294,13 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			XV_HDMIRX1_FRL_STA_WA_LOCK_ALLL_MASK,
 			(FrlStatus >> XV_HDMIRX1_DBG_STA_WA_LOCK_CHGALL_SHIFT) &
 			XV_HDMIRX1_DBG_STA_WA_LOCK_CHGALL_MASK);
+#endif
+	/* HDMI/DVI Mode */
+	PioIn = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
+				  (XV_HDMIRX1_PIO_IN_OFFSET));
+	xil_printf("HDMI/DVI Mode: %d\r\n",
+			(PioIn & XV_HDMIRX1_PIO_IN_MODE_MASK) &&
+			XV_HDMIRX1_PIO_IN_MODE_MASK);
 
 	xil_printf("TMDS_ALN_LOCK: %d\r\n",
 			(PioIn & XV_HDMIRX1_PIO_IN_ALIGNER_LOCK_MASK) &&
@@ -1309,7 +1310,7 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			(PioIn >> XV_HDMIRX1_PIO_IN_SCRAMBLER_LOCKALLL_SHIFT) &
 			XV_HDMIRX1_PIO_IN_SCRAMBLER_LOCKALLL_MASK);
 
-
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	Data = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
 				  (XV_HDMIRX1_SR_SSB_ERR_CNT0_OFFSET));
 	xil_printf("FRL SR/SSB Period Errors (add_core_dbg=51)\r\n  Lane0 "
@@ -1386,6 +1387,7 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 	xil_printf("Trib_Anlz[Dpack Out] Vid Timing\r\n"
 			"  Tim_Toggle_Cnt: %d\r\n",
 			Data & XV_HDMIRX1_TRIB_ANLZ_TIM_CHGD_CNT_MASK);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 	xil_printf("  Trib_HS_Pol/VS_Pol: %d/%d\r\n",
 			(Data & XV_HDMIRX1_TRIB_ANLZ_TIM_HS_POL_MASK) &&
 			XV_HDMIRX1_TRIB_ANLZ_TIM_HS_POL_MASK,
@@ -1408,6 +1410,7 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			(Data >> XV_HDMIRX1_TRIB_ANLZ_LN_ACT_LN_SZ_SHIFT) &
 			XV_HDMIRX1_TRIB_ANLZ_LN_ACT_LN_SZ_MASK);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	xil_printf("FRL_TOT/ACT_RATIO: %d/%d\r\n",
 			XV_HdmiRx1_GetFrlTotalPixRatio(InstancePtr),
 			XV_HdmiRx1_GetFrlActivePixRatio(InstancePtr));
@@ -1418,6 +1421,7 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			(XV_HDMIRX1_FRL_RATIO_ACT_OFFSET));
 	xil_printf("FRL_VCKE_FREQ: %d\r\n",
 			(Data1*(XPAR_XV_HDMIRX1_0_VID_REF_CLK/1000))/(Data*4));
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 	/* FRL Packets ECC Error Status */
 	Data = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
@@ -1432,10 +1436,12 @@ void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 			(Data & XV_HDMIRX1_LNKSTA_STA_DCS_8CD_LOCK_MASK) &&
 			XV_HDMIRX1_LNKSTA_STA_DCS_8CD_LOCK_MASK);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	Data = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
 			(XV_HDMIRX1_VCKE_SYS_CNT_OFFSET));
 	xil_printf("FRL_VCKE_FREQ(Measured): %d\r\n",
 			(5000*(XPAR_XV_HDMIRX1_0_VID_REF_CLK/1000))/Data);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 }
 
 /******************************************************************************/
@@ -1502,6 +1508,7 @@ void XV_HdmiRx1_DdcRegDump(XV_HdmiRx1 *InstancePtr)
 	}
 }
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 /*****************************************************************************/
 /**
 * This function prints out HDMI RX register
@@ -1532,6 +1539,27 @@ void XV_HdmiRx1_RegisterDebug(XV_HdmiRx1 *InstancePtr)
 		}
 	}
 }
+#else
+void XV_HdmiRx1_RegisterDebug(XV_HdmiRx1 *InstancePtr)
+{
+	u32 RegOffset;
+
+	xil_printf("-------------------------------------\r\n");
+	xil_printf("       HDMI RX Register Dump \r\n");
+	xil_printf("-------------------------------------\r\n");
+	for (RegOffset = 0;
+			RegOffset <= XV_HDMIRX1_LNKSTA_BASE; ) {
+			xil_printf("0x%04x      0x%08x\r\n",RegOffset,
+			XV_HdmiRx1_ReadReg(
+			InstancePtr->Config.BaseAddress, RegOffset));
+		RegOffset += 4;
+		/* Ignore the DDC Space Register */
+		if (RegOffset == 0x114) {
+			RegOffset = 0x140;
+		}
+	}
+}
+#endif
 
 /*****************************************************************************/
 /**
@@ -1891,7 +1919,7 @@ int XV_HdmiRx1_GetVideoProperties(XV_HdmiRx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiRx1 core instance.
 *
-* @return   None.
+* @return   Calculates video timing and returns video timing parameters structure
 *
 * @note     None.
 *
@@ -2464,15 +2492,40 @@ void XV_HdmiRx1_TmrStartMs(XV_HdmiRx1 *InstancePtr, u32 Milliseconds,
 static void StubCallback(void *CallbackRef)
 {
 	Xil_AssertVoid(CallbackRef != NULL);
-	/* Xil_AssertVoidAlways(); */
 }
 
+/*****************************************************************************/
+/**
+*
+* This function returns Video Timing Extended Metadata
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @return   XV_HdmiC_VideoTimingExtMeta
+*
+* @note   None.
+*
+******************************************************************************/
 XV_HdmiC_VideoTimingExtMeta *XV_HdmiRx1_GetVidTimingExtMeta(
 		XV_HdmiRx1 *InstancePtr)
 {
 	return &(InstancePtr->VrrIF.VidTimingExtMeta);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function reads the VTEM (Video Timing Extended Metadatai) InfoFrame data
+* from the HDMI RX auxiliary register and populates the corresponding fields in
+* the XV_HdmiC_VideoTimingExtMeta structure.
+* The VTEM InfoFrame provides metadata for features like Variable Refresh Rate (VRR),
+* Quick Media Switching (QMS), and other advanced timing parameters.
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @note   None.
+*
+******************************************************************************/
 void XV_HdmiRx1_ParseVideoTimingExtMetaIF(XV_HdmiRx1 *InstancePtr)
 {
 	XV_HdmiC_VideoTimingExtMeta *ExtMeta;
@@ -2502,12 +2555,35 @@ void XV_HdmiRx1_ParseVideoTimingExtMetaIF(XV_HdmiRx1 *InstancePtr)
 				XV_HDMIRX1_AUX_VTEM_NEXT_TFR_SHIFT;
 }
 
+/*****************************************************************************/
+/**
+*
+* This function returns AMD Source Product Descriptor Infoframe
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @return   XV_HdmiC_SrcProdDescIF
+*
+* @note   None.
+*
+******************************************************************************/
 XV_HdmiC_SrcProdDescIF *XV_HdmiRx1_GetSrcProdDescIF(
 		XV_HdmiRx1 *InstancePtr)
 {
 	return &(InstancePtr->VrrIF.SrcProdDescIF);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function Parses the Source Product Descriptor (SPD) InfoFrame to extract
+* FreeSync and FreeSync Pro information
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @note   None.
+*
+******************************************************************************/
 void XV_HdmiRx1_ParseSrcProdDescInfoframe(XV_HdmiRx1 *InstancePtr)
 {
 	XV_HdmiC_SrcProdDescIF *SpdIfPtr;
@@ -2615,9 +2691,8 @@ void XV_HdmiRx1_SetVrrIfType(XV_HdmiRx1 *InstancePtr,
 * This function sets the Dynamic HDR buffer address
 *
 * @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
-* @param    Addr is an address in 64bit format.
 *
-* @return None.
+* @param    Addr is an address in 64bit format.
 *
 * @note   None.
 *
@@ -2654,9 +2729,8 @@ void XV_HdmiRx1_DynHDR_SetAddr(XV_HdmiRx1 *InstancePtr, u64 Addr)
 * overlay and errors if any.
 *
 * @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
-* @param    RxDynHdrInfoPtr is a pointer to XHdmiRx1 Dynamic HDR info instance.
 *
-* @return None.
+* @param    RxDynHdrInfoPtr is a pointer to XHdmiRx1 Dynamic HDR info instance.
 *
 * @note   None.
 *
@@ -2691,6 +2765,21 @@ void XV_HdmiRx1_DynHDR_GetInfo(XV_HdmiRx1 *InstancePtr,
 		XV_HDMIRX1_AUX_DYN_HDR_STS_ERR_MASK);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function checks if Display Stream Compression (DSC) is enabled on the HDMI
+* RX stream.
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @return
+* 	    - `1` if DSC is enabled on the stream.
+* 	    - `0` if DSC is not enabled or not supported.
+*
+* @note   None.
+*
+******************************************************************************/
 u32 XV_HdmiRx1_DSC_IsEnableStream(XV_HdmiRx1 *InstancePtr)
 {
 	u32 tmp;
@@ -2706,6 +2795,21 @@ u32 XV_HdmiRx1_DSC_IsEnableStream(XV_HdmiRx1 *InstancePtr)
 	return ((tmp & XV_HDMIRX1_PIO_IN_DSC_EN_STRM_MASK) ? 1 : 0);
 }
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
+/*****************************************************************************/
+/**
+*
+* This function sets the DSC Decode Fail flag in the HDMI RX FRL DDC field.
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @return
+* 	    - XST_SUCCESS if the operation was successful.
+* 	    - XST_NO_FEATURE if DSC is not supported in the current configuration
+*
+* @note   This function uses an assertion to ensure that the input pointer is not NULL.
+*
+******************************************************************************/
 int XV_HdmiRx1_DSC_SetDecodeFail(XV_HdmiRx1 *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr);
@@ -2718,6 +2822,23 @@ int XV_HdmiRx1_DSC_SetDecodeFail(XV_HdmiRx1 *InstancePtr)
 					   1);
 }
 
+/*****************************************************************************/
+/**
+*
+* This function sets the DSC FRL Max flag in the HDMI RX FRL DDC field. This function
+* writes a value of `1` to the `DSC_FRL_MAX` field using the FRL DDC interface. It is
+* used to indicate that the maximum FRL (Fixed Rate Link) bandwidth is being used for
+* Display Stream Compression (DSC) on the HDMI RX path
+*
+* @param    InstancePtr is a pointer to the XHdmiRx1 core instance.
+*
+* @return
+* 	    - XST_SUCCESS if the operation was successful.
+* 	    - XST_NO_FEATURE if DSC is not supported in the current configuration
+*
+* @note   This function uses an assertion to ensure that the input pointer is not NULL.
+*
+******************************************************************************/
 int XV_HdmiRx1_DSC_SetDscFrlMax(XV_HdmiRx1 *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr);
@@ -2729,3 +2850,4 @@ int XV_HdmiRx1_DSC_SetDscFrlMax(XV_HdmiRx1 *InstancePtr)
 					   XV_HDMIRX1_SCDCFIELD_DSC_FRL_MAX,
 					   1);
 }
+#endif

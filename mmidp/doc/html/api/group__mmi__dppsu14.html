@@ -87,6 +87,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3a1716c1aca49a915c57d0f3ddfbb57a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga3a1716c1aca49a915c57d0f3ddfbb57a">XMmiDp_HpdInterruptHandler</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga3a1716c1aca49a915c57d0f3ddfbb57a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the HPD Event interrupt handler for the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> driver.  <a href="#ga3a1716c1aca49a915c57d0f3ddfbb57a">More...</a><br/></td></tr>
 <tr class="separator:ga3a1716c1aca49a915c57d0f3ddfbb57a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4553e478558bc70246a73bc49d43799"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gad4553e478558bc70246a73bc49d43799">XMmiDp_SdpStatusInterruptEnable</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u32 Mask)</td></tr>
+<tr class="memdesc:gad4553e478558bc70246a73bc49d43799"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables SDP_STATUS_ENABLE bits based on the mask.  <a href="#gad4553e478558bc70246a73bc49d43799">More...</a><br/></td></tr>
+<tr class="separator:gad4553e478558bc70246a73bc49d43799"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae87ff6b8ea456fb3e6d6cd77d3a48f1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gae87ff6b8ea456fb3e6d6cd77d3a48f1b">XMmiDp_FastLinkTrainEnable</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gae87ff6b8ea456fb3e6d6cd77d3a48f1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables fast link training in the core controller.  <a href="#gae87ff6b8ea456fb3e6d6cd77d3a48f1b">More...</a><br/></td></tr>
 <tr class="separator:gae87ff6b8ea456fb3e6d6cd77d3a48f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -99,6 +102,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga80cd6c15cc6633c38929058475a46451"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga80cd6c15cc6633c38929058475a46451">XMmiDp_GetRxMaxLinkRate</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga80cd6c15cc6633c38929058475a46451"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gets the max link rate supported from Rx DPCD register.  <a href="#ga80cd6c15cc6633c38929058475a46451">More...</a><br/></td></tr>
 <tr class="separator:ga80cd6c15cc6633c38929058475a46451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9863cd6de09dab984927d51f56b1736e"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga9863cd6de09dab984927d51f56b1736e">XMmiDp_GetRxMstModeCap</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga9863cd6de09dab984927d51f56b1736e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads MST_CAP from Rx DPCD register.  <a href="#ga9863cd6de09dab984927d51f56b1736e">More...</a><br/></td></tr>
+<tr class="separator:ga9863cd6de09dab984927d51f56b1736e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga53ae7c2346ac26c5e79580b2e5602771"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga53ae7c2346ac26c5e79580b2e5602771">XMmiDp_StartLinkXmit</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga53ae7c2346ac26c5e79580b2e5602771"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initates link training sequence with the Rx.  <a href="#ga53ae7c2346ac26c5e79580b2e5602771">More...</a><br/></td></tr>
 <tr class="separator:ga53ae7c2346ac26c5e79580b2e5602771"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,7 +121,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gacc7ff6972b4fb237302b600d563d1018"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads Training Aux Read Interval register of sink DPCD.  <a href="#gacc7ff6972b4fb237302b600d563d1018">More...</a><br/></td></tr>
 <tr class="separator:gacc7ff6972b4fb237302b600d563d1018"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7618de05e6ccfe9c3e512255948f413a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga7618de05e6ccfe9c3e512255948f413a">XMmiDp_GetTrainingDelay</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga7618de05e6ccfe9c3e512255948f413a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returngs the training aux interval.  <a href="#ga7618de05e6ccfe9c3e512255948f413a">More...</a><br/></td></tr>
+<tr class="memdesc:ga7618de05e6ccfe9c3e512255948f413a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns the training aux interval.  <a href="#ga7618de05e6ccfe9c3e512255948f413a">More...</a><br/></td></tr>
 <tr class="separator:ga7618de05e6ccfe9c3e512255948f413a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga730ac6849aaf294c034f7fe5518f79af"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga730ac6849aaf294c034f7fe5518f79af">XMmiDp_GetDpcdLaneStatusAdjReqs</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga730ac6849aaf294c034f7fe5518f79af"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will do a burst AUX read from the RX device over the AUX channel.  <a href="#ga730ac6849aaf294c034f7fe5518f79af">More...</a><br/></td></tr>
@@ -163,7 +169,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gaa56c95a1a342ab85ddccb12c7b531e81"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs the channel equalization sequence as part of link training.  <a href="#gaa56c95a1a342ab85ddccb12c7b531e81">More...</a><br/></td></tr>
 <tr class="separator:gaa56c95a1a342ab85ddccb12c7b531e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadfcdfec9174ff0cf984dbd170bce80f2"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gadfcdfec9174ff0cf984dbd170bce80f2">XMmiDp_CheckLinkStatus</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 LaneCount)</td></tr>
-<tr class="memdesc:gadfcdfec9174ff0cf984dbd170bce80f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks if the Rx DisplayPort Configuration Data (DPCD) indicates the receiver has achieved and maintained clock recovery, channel equalization, symbol lock, and interlane alignment for all lanes currently in use.  <a href="#gadfcdfec9174ff0cf984dbd170bce80f2">More...</a><br/></td></tr>
+<tr class="memdesc:gadfcdfec9174ff0cf984dbd170bce80f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function checks if the Rx DisplayPort Configuration Data (DPCD) indicates the receiver has achieved and maintained clock recovery, channel equalization, symbol lock, and interlane alignment for all lanes currently in use.The DP 1.4 spec specifies checking for the above bits max 5 times before retraining link at lower link rate.  <a href="#gadfcdfec9174ff0cf984dbd170bce80f2">More...</a><br/></td></tr>
 <tr class="separator:gadfcdfec9174ff0cf984dbd170bce80f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2faa4352f70a9938766d8d266bb20b2a"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga2faa4352f70a9938766d8d266bb20b2a">XMmiDp_RunTraining</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga2faa4352f70a9938766d8d266bb20b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function runs the link training process.  <a href="#ga2faa4352f70a9938766d8d266bb20b2a">More...</a><br/></td></tr>
@@ -270,9 +276,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gac08c9347c5b9c108aa9f34221256a225"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gac08c9347c5b9c108aa9f34221256a225">XMmiDp_SetAux_2000Us_Cnt_Limit</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u16 Limit)</td></tr>
 <tr class="memdesc:gac08c9347c5b9c108aa9f34221256a225"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the AUX_2000US_CNT_LIMIT.  <a href="#gac08c9347c5b9c108aa9f34221256a225">More...</a><br/></td></tr>
 <tr class="separator:gac08c9347c5b9c108aa9f34221256a225"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae57dca21aa34824661f67454fa8c8ebb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gae57dca21aa34824661f67454fa8c8ebb">XMmiDp_SetAux_100000Us_Cnt_Limit</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u16 Limit)</td></tr>
-<tr class="memdesc:gae57dca21aa34824661f67454fa8c8ebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the AUX_100000US_CNT_LIMIT.  <a href="#gae57dca21aa34824661f67454fa8c8ebb">More...</a><br/></td></tr>
-<tr class="separator:gae57dca21aa34824661f67454fa8c8ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga47ed0b4f27fb0badafec87dddca81df3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga47ed0b4f27fb0badafec87dddca81df3">XMmiDp_SetAux_100000Us_Cnt_Limit</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u32 Limit)</td></tr>
+<tr class="memdesc:ga47ed0b4f27fb0badafec87dddca81df3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the AUX_100000US_CNT_LIMIT.  <a href="#ga47ed0b4f27fb0badafec87dddca81df3">More...</a><br/></td></tr>
+<tr class="separator:ga47ed0b4f27fb0badafec87dddca81df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga94ea5d18a9840a52eb740c92f564b77f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga94ea5d18a9840a52eb740c92f564b77f">XMmiDp_SetPmConfig1</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u32 Val)</td></tr>
 <tr class="memdesc:ga94ea5d18a9840a52eb740c92f564b77f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets PM_COFIG1 register.  <a href="#ga94ea5d18a9840a52eb740c92f564b77f">More...</a><br/></td></tr>
 <tr class="separator:ga94ea5d18a9840a52eb740c92f564b77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -342,6 +348,144 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa0b60c0810f12bcc797d52fcb3059933"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaa0b60c0810f12bcc797d52fcb3059933">XMmiDp_SetVidStreamEnable</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 StreamEnable)</td></tr>
 <tr class="memdesc:gaa0b60c0810f12bcc797d52fcb3059933"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the video stream to enable or disable.  <a href="#gaa0b60c0810f12bcc797d52fcb3059933">More...</a><br/></td></tr>
 <tr class="separator:gaa0b60c0810f12bcc797d52fcb3059933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga141cf14bd09824562395b2388d65bbea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga141cf14bd09824562395b2388d65bbea">XMmiDp_SetAudStreamInterfaceSel</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 InterfaceSel)</td></tr>
+<tr class="memdesc:ga141cf14bd09824562395b2388d65bbea"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the audio stream interface.  <a href="#ga141cf14bd09824562395b2388d65bbea">More...</a><br/></td></tr>
+<tr class="separator:ga141cf14bd09824562395b2388d65bbea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga44fbca3f44db483c77090ea27441abfd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga44fbca3f44db483c77090ea27441abfd">XMmiDp_SetAudDataInputEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 ActiveDataInput)</td></tr>
+<tr class="memdesc:ga44fbca3f44db483c77090ea27441abfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the active audio data input.  <a href="#ga44fbca3f44db483c77090ea27441abfd">More...</a><br/></td></tr>
+<tr class="separator:ga44fbca3f44db483c77090ea27441abfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9956757e5a4b26d65bc37621cb06fc4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga9956757e5a4b26d65bc37621cb06fc4e">XMmiDp_SetAudDataWidth</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 DataWidth)</td></tr>
+<tr class="memdesc:ga9956757e5a4b26d65bc37621cb06fc4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the audio data width val(16 bit - 24 bit).  <a href="#ga9956757e5a4b26d65bc37621cb06fc4e">More...</a><br/></td></tr>
+<tr class="separator:ga9956757e5a4b26d65bc37621cb06fc4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2da75c922ab4089b196965d5bfdc16b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga2da75c922ab4089b196965d5bfdc16b3">XMmiDp_SetAudHbrModeEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 HbrModeEn)</td></tr>
+<tr class="memdesc:ga2da75c922ab4089b196965d5bfdc16b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the audio input is operating in HBR mode or not.  <a href="#ga2da75c922ab4089b196965d5bfdc16b3">More...</a><br/></td></tr>
+<tr class="separator:ga2da75c922ab4089b196965d5bfdc16b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga17f7e2b43faeaa1f32cc22f5c8a09f59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga17f7e2b43faeaa1f32cc22f5c8a09f59">XMmiDp_SetAudNumChannels</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 NumChannels)</td></tr>
+<tr class="memdesc:ga17f7e2b43faeaa1f32cc22f5c8a09f59"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the audio num of channels used.  <a href="#ga17f7e2b43faeaa1f32cc22f5c8a09f59">More...</a><br/></td></tr>
+<tr class="separator:ga17f7e2b43faeaa1f32cc22f5c8a09f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga235cd874e0e11094e6090a549681e900"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga235cd874e0e11094e6090a549681e900">XMmiDp_SetAudMuteFlag</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 AudioMute)</td></tr>
+<tr class="memdesc:ga235cd874e0e11094e6090a549681e900"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function controls the audio mute flag in VB-ID.  <a href="#ga235cd874e0e11094e6090a549681e900">More...</a><br/></td></tr>
+<tr class="separator:ga235cd874e0e11094e6090a549681e900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6225e22ab7bcf76fec27a9e4a6b0d38c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga6225e22ab7bcf76fec27a9e4a6b0d38c">XMmiDp_SetAudPktId</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 PktId)</td></tr>
+<tr class="memdesc:ga6225e22ab7bcf76fec27a9e4a6b0d38c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function defines first byte of audio SDP and audio timestamp SDP header.  <a href="#ga6225e22ab7bcf76fec27a9e4a6b0d38c">More...</a><br/></td></tr>
+<tr class="separator:ga6225e22ab7bcf76fec27a9e4a6b0d38c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6968916ae15e97fa3b03d62208ecf8e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga6968916ae15e97fa3b03d62208ecf8e1">XMmiDp_SetAudTimeStampVerNum</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 VerNum)</td></tr>
+<tr class="memdesc:ga6968916ae15e97fa3b03d62208ecf8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function defines audio timestamp version num.  <a href="#ga6968916ae15e97fa3b03d62208ecf8e1">More...</a><br/></td></tr>
+<tr class="separator:ga6968916ae15e97fa3b03d62208ecf8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabcbf2b40c8edd0ef82839ddab6252b86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gabcbf2b40c8edd0ef82839ddab6252b86">XMmiDp_SetAudClkMultFs</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 ClkMultFs)</td></tr>
+<tr class="memdesc:gabcbf2b40c8edd0ef82839ddab6252b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function defines audio clock frequency multiplier in relation to audio sample rate Fs.  <a href="#gabcbf2b40c8edd0ef82839ddab6252b86">More...</a><br/></td></tr>
+<tr class="separator:gabcbf2b40c8edd0ef82839ddab6252b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc127205d8d8485a2f9265af632f7b7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gafc127205d8d8485a2f9265af632f7b7b">XMmiDp_SetAudioConfig1</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:gafc127205d8d8485a2f9265af632f7b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function programs the AUDIO_CONFIG1 registers.  <a href="#gafc127205d8d8485a2f9265af632f7b7b">More...</a><br/></td></tr>
+<tr class="separator:gafc127205d8d8485a2f9265af632f7b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga521326ac06c089f4bb64006ff8513de8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga521326ac06c089f4bb64006ff8513de8">XMmiDp_SetSdpVertAudTimeStampEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnAudTimeStamp)</td></tr>
+<tr class="memdesc:ga521326ac06c089f4bb64006ff8513de8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables audio timestamp for sdp vertical ctrl.  <a href="#ga521326ac06c089f4bb64006ff8513de8">More...</a><br/></td></tr>
+<tr class="separator:ga521326ac06c089f4bb64006ff8513de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga33196b52f8e59b73c1045db0ba397b2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga33196b52f8e59b73c1045db0ba397b2d">XMmiDp_SetSdpVertAudStreamEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnAudStream)</td></tr>
+<tr class="memdesc:ga33196b52f8e59b73c1045db0ba397b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables audio stream during vertical blanking .  <a href="#ga33196b52f8e59b73c1045db0ba397b2d">More...</a><br/></td></tr>
+<tr class="separator:ga33196b52f8e59b73c1045db0ba397b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9f3eccc85c55ac1df29ecc213ff4f0f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga9f3eccc85c55ac1df29ecc213ff4f0f1">XMmiDp_SetSdpVertEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u32 EnVerticalSdp)</td></tr>
+<tr class="memdesc:ga9f3eccc85c55ac1df29ecc213ff4f0f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets SDP to be sent out during vertical intervals using data from SDP_REGISTER_BANK .  <a href="#ga9f3eccc85c55ac1df29ecc213ff4f0f1">More...</a><br/></td></tr>
+<tr class="separator:ga9f3eccc85c55ac1df29ecc213ff4f0f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga65bb46a40a4433a23e7bd0f69e7e936f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga65bb46a40a4433a23e7bd0f69e7e936f">XMmiDp_SetSdpVertEn128Bytes</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 En128Bytes)</td></tr>
+<tr class="memdesc:ga65bb46a40a4433a23e7bd0f69e7e936f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets 128 bytes of SDP by using SDP_REGISTER_BANK 1,2,3 and 4.  <a href="#ga65bb46a40a4433a23e7bd0f69e7e936f">More...</a><br/></td></tr>
+<tr class="separator:ga65bb46a40a4433a23e7bd0f69e7e936f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac19815c8b497a69fab66784b38229c70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gac19815c8b497a69fab66784b38229c70">XMmiDp_SetDisableExternalSdp</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 DisExternalSdp)</td></tr>
+<tr class="memdesc:gac19815c8b497a69fab66784b38229c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables external SDP when set.  <a href="#gac19815c8b497a69fab66784b38229c70">More...</a><br/></td></tr>
+<tr class="separator:gac19815c8b497a69fab66784b38229c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0f9fc6aae71f8c26baaf2156bb0de9c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga0f9fc6aae71f8c26baaf2156bb0de9c9">XMmiDp_SetSdpVertFixedPriority</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnFixedPriority)</td></tr>
+<tr class="memdesc:ga0f9fc6aae71f8c26baaf2156bb0de9c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets scheduler searches for next SDP to transmit based on fixed priority.  <a href="#ga0f9fc6aae71f8c26baaf2156bb0de9c9">More...</a><br/></td></tr>
+<tr class="separator:ga0f9fc6aae71f8c26baaf2156bb0de9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga742d7fc4e69057b6f3a0e5737189b066"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga742d7fc4e69057b6f3a0e5737189b066">XMmiDp_SetSdpVerticalCtrl</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:ga742d7fc4e69057b6f3a0e5737189b066"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function programs the SDP_VERTICAL_CTRL registers.  <a href="#ga742d7fc4e69057b6f3a0e5737189b066">More...</a><br/></td></tr>
+<tr class="separator:ga742d7fc4e69057b6f3a0e5737189b066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab1b8cf70119281fa641d36b4e4cf334f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gab1b8cf70119281fa641d36b4e4cf334f">XMmiDp_SetSdpHorAudTimeStampEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnAudTimeStamp)</td></tr>
+<tr class="memdesc:gab1b8cf70119281fa641d36b4e4cf334f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables audio timestamp for sdp horizontal ctrl.  <a href="#gab1b8cf70119281fa641d36b4e4cf334f">More...</a><br/></td></tr>
+<tr class="separator:gab1b8cf70119281fa641d36b4e4cf334f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0472c1deb843c0bf183966d98906f0d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga0472c1deb843c0bf183966d98906f0d7">XMmiDp_SetSdpHorAudStreamEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnAudStream)</td></tr>
+<tr class="memdesc:ga0472c1deb843c0bf183966d98906f0d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables audio stream during horizontal blanking .  <a href="#ga0472c1deb843c0bf183966d98906f0d7">More...</a><br/></td></tr>
+<tr class="separator:ga0472c1deb843c0bf183966d98906f0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8281004ada291d97dafa8e06843d41a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga8281004ada291d97dafa8e06843d41a0">XMmiDp_SetSdpHorizontalEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u32 EnHorizontalSdp)</td></tr>
+<tr class="memdesc:ga8281004ada291d97dafa8e06843d41a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets SDP to be sent out during horizontal intervals using data from SDP_REGISTER_BANK .  <a href="#ga8281004ada291d97dafa8e06843d41a0">More...</a><br/></td></tr>
+<tr class="separator:ga8281004ada291d97dafa8e06843d41a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3631e8793ab57333cdf68b99d8ced007"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga3631e8793ab57333cdf68b99d8ced007">XMmiDp_SetSdpHorFixedPriority</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnFixedPriority)</td></tr>
+<tr class="memdesc:ga3631e8793ab57333cdf68b99d8ced007"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets scheduler searches for next SDP to transmit based on fixed priority.  <a href="#ga3631e8793ab57333cdf68b99d8ced007">More...</a><br/></td></tr>
+<tr class="separator:ga3631e8793ab57333cdf68b99d8ced007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf339d0ff4a882b171fe3b26ed52d4ad1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaf339d0ff4a882b171fe3b26ed52d4ad1">XMmiDp_SetSdpHorizontalCtrl</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:gaf339d0ff4a882b171fe3b26ed52d4ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function programs the SDP_HORIZONTAL_CTRL registers.  <a href="#gaf339d0ff4a882b171fe3b26ed52d4ad1">More...</a><br/></td></tr>
+<tr class="separator:gaf339d0ff4a882b171fe3b26ed52d4ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga58e09571b65d872ceb65da9e0517c4b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga58e09571b65d872ceb65da9e0517c4b1">XMmiDp_ConfigureAudioController</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:ga58e09571b65d872ceb65da9e0517c4b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function programs DpTx Audio Controller.  <a href="#ga58e09571b65d872ceb65da9e0517c4b1">More...</a><br/></td></tr>
+<tr class="separator:ga58e09571b65d872ceb65da9e0517c4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9c52181514f904abffa0b8073344d1df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga9c52181514f904abffa0b8073344d1df">XMmiDp_SetSdpManualCtrl</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u32 SdpManualCtrl)</td></tr>
+<tr class="memdesc:ga9c52181514f904abffa0b8073344d1df"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the Sdp manual mode.  <a href="#ga9c52181514f904abffa0b8073344d1df">More...</a><br/></td></tr>
+<tr class="separator:ga9c52181514f904abffa0b8073344d1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75421fb9dfed2285ef96e8d61cce60e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga75421fb9dfed2285ef96e8d61cce60e5">XMmiDp_SetSdpCfg1HBlankOvr</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 SdpHBlankOvr)</td></tr>
+<tr class="memdesc:ga75421fb9dfed2285ef96e8d61cce60e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function overrides the number of available bytes required to transmit a 16 byte SDP during Horizontal blanking period.  <a href="#ga75421fb9dfed2285ef96e8d61cce60e5">More...</a><br/></td></tr>
+<tr class="separator:ga75421fb9dfed2285ef96e8d61cce60e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0cb78331704ff764cad9e495d1018359"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga0cb78331704ff764cad9e495d1018359">XMmiDp_SetSdpCfg1VBlankOvr</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 SdpVBlankOvr)</td></tr>
+<tr class="memdesc:ga0cb78331704ff764cad9e495d1018359"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function overrides the number of available bytes required to transmit a 16 byte SDP during Vertical blanking period.  <a href="#ga0cb78331704ff764cad9e495d1018359">More...</a><br/></td></tr>
+<tr class="separator:ga0cb78331704ff764cad9e495d1018359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga035d309d3fe1cfe261e5e005c0972b02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga035d309d3fe1cfe261e5e005c0972b02">XMmiDp_SetSdpConfig</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:ga035d309d3fe1cfe261e5e005c0972b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the SDP_CONFIG_X registers.  <a href="#ga035d309d3fe1cfe261e5e005c0972b02">More...</a><br/></td></tr>
+<tr class="separator:ga035d309d3fe1cfe261e5e005c0972b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2b318235a6435831deb9f85ebdc5e913"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga2b318235a6435831deb9f85ebdc5e913">XMmiDp_SetSdpRegBank</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u32 SdpReg)</td></tr>
+<tr class="memdesc:ga2b318235a6435831deb9f85ebdc5e913"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function defines the header and data for SDP.  <a href="#ga2b318235a6435831deb9f85ebdc5e913">More...</a><br/></td></tr>
+<tr class="separator:ga2b318235a6435831deb9f85ebdc5e913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga552e5cfdd334bb97506a62e141778183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga552e5cfdd334bb97506a62e141778183">XMmiDp_SetControllerScrambleDis</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 ScrambleDis)</td></tr>
+<tr class="memdesc:ga552e5cfdd334bb97506a62e141778183"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the Scramble control for DpTx.  <a href="#ga552e5cfdd334bb97506a62e141778183">More...</a><br/></td></tr>
+<tr class="separator:ga552e5cfdd334bb97506a62e141778183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacd46cf48165f2fb5b2a2029b12c60cbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gacd46cf48165f2fb5b2a2029b12c60cbe">XMmiDp_SetControllerEnhanceFramingEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnhanceFramingEn)</td></tr>
+<tr class="memdesc:gacd46cf48165f2fb5b2a2029b12c60cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the enhanced framing control for DpTx.  <a href="#gacd46cf48165f2fb5b2a2029b12c60cbe">More...</a><br/></td></tr>
+<tr class="separator:gacd46cf48165f2fb5b2a2029b12c60cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8e15890ceac9d8d29c0a50a01269d825"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga8e15890ceac9d8d29c0a50a01269d825">XMmiDp_SetControllerEnhanceFramingWithFecEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 EnhanceFramingWithFecEn)</td></tr>
+<tr class="memdesc:ga8e15890ceac9d8d29c0a50a01269d825"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the enhanced framing control with FEC feature for DpTx.  <a href="#ga8e15890ceac9d8d29c0a50a01269d825">More...</a><br/></td></tr>
+<tr class="separator:ga8e15890ceac9d8d29c0a50a01269d825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf83cbea85a7c96a252ff305d135dad1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaaf83cbea85a7c96a252ff305d135dad1">XMmiDp_SetControllerFastLinkTrainEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 FastLinkTrainEn)</td></tr>
+<tr class="memdesc:gaaf83cbea85a7c96a252ff305d135dad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets default fast link training for DpTx.  <a href="#gaaf83cbea85a7c96a252ff305d135dad1">More...</a><br/></td></tr>
+<tr class="separator:gaaf83cbea85a7c96a252ff305d135dad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae9dea3bb5cbbb9090890909d7392ba1a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gae9dea3bb5cbbb9090890909d7392ba1a">XMmiDp_SetControllerScaleDownModeEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 ScaleDownModeEn)</td></tr>
+<tr class="memdesc:gae9dea3bb5cbbb9090890909d7392ba1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function scales down debounce filter on HPD input for DpTx.  <a href="#gae9dea3bb5cbbb9090890909d7392ba1a">More...</a><br/></td></tr>
+<tr class="separator:gae9dea3bb5cbbb9090890909d7392ba1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5aee931e22d6aeb6c1ae24e1651e9e88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga5aee931e22d6aeb6c1ae24e1651e9e88">XMmiDp_SetControllerDisableInterleaving</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 DisableInterleaving)</td></tr>
+<tr class="memdesc:ga5aee931e22d6aeb6c1ae24e1651e9e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables SPD nibble interleaving DpTx.  <a href="#ga5aee931e22d6aeb6c1ae24e1651e9e88">More...</a><br/></td></tr>
+<tr class="separator:ga5aee931e22d6aeb6c1ae24e1651e9e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2ee75a9a9cb805170706db4b13f63b00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga2ee75a9a9cb805170706db4b13f63b00">XMmiDp_SetControllerSelAuxTimeout32Ms</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 SelAuxTimeout32Ms)</td></tr>
+<tr class="memdesc:ga2ee75a9a9cb805170706db4b13f63b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets aux reply timeout to either 400us or 3.2ms DpTx.  <a href="#ga2ee75a9a9cb805170706db4b13f63b00">More...</a><br/></td></tr>
+<tr class="separator:ga2ee75a9a9cb805170706db4b13f63b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaecb4ea6bd4e26bdd078987d3e9d9a32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaaecb4ea6bd4e26bdd078987d3e9d9a32">XMmiDp_SetControllerMstModeEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 MstModeEn)</td></tr>
+<tr class="memdesc:gaaecb4ea6bd4e26bdd078987d3e9d9a32"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables MST mode for DpTx.  <a href="#gaaecb4ea6bd4e26bdd078987d3e9d9a32">More...</a><br/></td></tr>
+<tr class="separator:gaaecb4ea6bd4e26bdd078987d3e9d9a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga000ad5667a09d24c5c212ea627169ed6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga000ad5667a09d24c5c212ea627169ed6">XMmiDp_SetControllerFecEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 FecEn)</td></tr>
+<tr class="memdesc:ga000ad5667a09d24c5c212ea627169ed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables FEC feature for DpTx.  <a href="#ga000ad5667a09d24c5c212ea627169ed6">More...</a><br/></td></tr>
+<tr class="separator:ga000ad5667a09d24c5c212ea627169ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf6369afcfc8245e35dd3904ac2129caf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaf6369afcfc8245e35dd3904ac2129caf">XMmiDp_SetControllereDpEn</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 eDpEn)</td></tr>
+<tr class="memdesc:gaf6369afcfc8245e35dd3904ac2129caf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets DpTx in eDP mode.  <a href="#gaf6369afcfc8245e35dd3904ac2129caf">More...</a><br/></td></tr>
+<tr class="separator:gaf6369afcfc8245e35dd3904ac2129caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf065764ad84b4dfa69ab078238d1ac38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaf065764ad84b4dfa69ab078238d1ac38">XMmiDp_SetControllerInitiateMstActSeq</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream, u8 InitiateMstActSeq)</td></tr>
+<tr class="memdesc:gaf065764ad84b4dfa69ab078238d1ac38"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function use in MST mode only triggers link to start ACT sequence with DpRx of branch.  <a href="#gaf065764ad84b4dfa69ab078238d1ac38">More...</a><br/></td></tr>
+<tr class="separator:gaf065764ad84b4dfa69ab078238d1ac38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabd2a67461b0e2fc53ee3ffef555012f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gabd2a67461b0e2fc53ee3ffef555012f7">XMmiDp_SetCoreCtrl</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u8 Stream)</td></tr>
+<tr class="memdesc:gabd2a67461b0e2fc53ee3ffef555012f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the core controller register.  <a href="#gabd2a67461b0e2fc53ee3ffef555012f7">More...</a><br/></td></tr>
+<tr class="separator:gabd2a67461b0e2fc53ee3ffef555012f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga39b2ada01525a228afd7e382c8fac774"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga39b2ada01525a228afd7e382c8fac774">XMmiDp_MstModeEnable</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga39b2ada01525a228afd7e382c8fac774"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables mst mode in the core controller.  <a href="#ga39b2ada01525a228afd7e382c8fac774">More...</a><br/></td></tr>
+<tr class="separator:ga39b2ada01525a228afd7e382c8fac774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa9a796e9233f2d5bb9cd15ba3e1d3f91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaa9a796e9233f2d5bb9cd15ba3e1d3f91">XMmiDp_MstActSeqEnable</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaa9a796e9233f2d5bb9cd15ba3e1d3f91"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function enables mst act seq in the core controller.  <a href="#gaa9a796e9233f2d5bb9cd15ba3e1d3f91">More...</a><br/></td></tr>
+<tr class="separator:gaa9a796e9233f2d5bb9cd15ba3e1d3f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf8aeb8c282f9f029d38987c697bce0a6"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gaf8aeb8c282f9f029d38987c697bce0a6">XMmiDp_WaitPayloadTableUpdateStatus</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gaf8aeb8c282f9f029d38987c697bce0a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function waits for VC_PAYLOAD_TABLE_UPDATE status bit to be set.  <a href="#gaf8aeb8c282f9f029d38987c697bce0a6">More...</a><br/></td></tr>
+<tr class="separator:gaf8aeb8c282f9f029d38987c697bce0a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafb22147451b141af5abab760ef234e33"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gafb22147451b141af5abab760ef234e33">XMmiDp_WaitActHandledStatus</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:gafb22147451b141af5abab760ef234e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function waits for ACT_Handled status bit to be set.  <a href="#gafb22147451b141af5abab760ef234e33">More...</a><br/></td></tr>
+<tr class="separator:gafb22147451b141af5abab760ef234e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga637998cd412788fe3b1bcd33130e1902"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#ga637998cd412788fe3b1bcd33130e1902">XMmiDp_InitiateActSeq</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga637998cd412788fe3b1bcd33130e1902"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initiates CCTL ACT sequence between DpTx and DpRx of the immediate branch device connected.  <a href="#ga637998cd412788fe3b1bcd33130e1902">More...</a><br/></td></tr>
+<tr class="separator:ga637998cd412788fe3b1bcd33130e1902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafa8478cbb478e7f747bf349036c0a57b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dppsu14.html#gafa8478cbb478e7f747bf349036c0a57b">XMmiDp_SetMstVcpTable0</a> (<a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *InstancePtr, u32 Payload)</td></tr>
+<tr class="memdesc:gafa8478cbb478e7f747bf349036c0a57b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the virtual channel payload allocation table.  <a href="#gafa8478cbb478e7f747bf349036c0a57b">More...</a><br/></td></tr>
+<tr class="separator:gafa8478cbb478e7f747bf349036c0a57b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="gae3fda64975462a763be884e7eec46eec"></a>
@@ -482,7 +626,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
     <tr><td class="paramname">DpcdAddress</td><td>is the starting address to read from the RX device. </td></tr>
-    <tr><td class="paramname">BytesToRead</td><td>is the number of bytes to read from the RX device. </td></tr>
+    <tr><td class="paramname">Bytes</td><td>is the number of bytes to read from the RX device. </td></tr>
     <tr><td class="paramname">Data</td><td>is a pointer to the data buffer that will be filled with read data.</td></tr>
   </table>
   </dd>
@@ -496,7 +640,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga72ca39b12a1ec4c495f4b5f405950baf">XMmiDp_DpcdReadModifyWrite()</a>, <a class="el" href="group__mmi__dppsu14.html#ga730ac6849aaf294c034f7fe5518f79af">XMmiDp_GetDpcdLaneStatusAdjReqs()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7513e80596331ee9ba1b4526dc4a5cb6">XMmiDp_GetDpcdMaxDownspread()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3061cfe50b51b80ee1e7deb391f81aad">XMmiDp_GetDpcdRev()</a>, <a class="el" href="group__mmi__dppsu14.html#gacc7ff6972b4fb237302b600d563d1018">XMmiDp_GetDpcdTrainingAuxRdInterval()</a>, <a class="el" href="group__mmi__dppsu14.html#gac3135a219580b68794c555360df8d81b">XMmiDp_GetRxCapabilities()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6afea29dca33e18ef73737cd72f1020e">XMmiDp_GetRxMaxLaneCount()</a>, <a class="el" href="group__mmi__dppsu14.html#ga80cd6c15cc6633c38929058475a46451">XMmiDp_GetRxMaxLinkRate()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2faa4352f70a9938766d8d266bb20b2a">XMmiDp_RunTraining()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga4d42c2d10d0a0a1771969e9a5bd222b3">XMmiDp_SetDpcdTrainingPattern()</a>.</p>
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga72ca39b12a1ec4c495f4b5f405950baf">XMmiDp_DpcdReadModifyWrite()</a>, <a class="el" href="group__mmi__dppsu14.html#ga730ac6849aaf294c034f7fe5518f79af">XMmiDp_GetDpcdLaneStatusAdjReqs()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7513e80596331ee9ba1b4526dc4a5cb6">XMmiDp_GetDpcdMaxDownspread()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3061cfe50b51b80ee1e7deb391f81aad">XMmiDp_GetDpcdRev()</a>, <a class="el" href="group__mmi__dppsu14.html#gacc7ff6972b4fb237302b600d563d1018">XMmiDp_GetDpcdTrainingAuxRdInterval()</a>, <a class="el" href="group__mmi__dppsu14.html#gac3135a219580b68794c555360df8d81b">XMmiDp_GetRxCapabilities()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6afea29dca33e18ef73737cd72f1020e">XMmiDp_GetRxMaxLaneCount()</a>, <a class="el" href="group__mmi__dppsu14.html#ga80cd6c15cc6633c38929058475a46451">XMmiDp_GetRxMaxLinkRate()</a>, <a class="el" href="group__mmi__dppsu14.html#ga9863cd6de09dab984927d51f56b1736e">XMmiDp_GetRxMstModeCap()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2faa4352f70a9938766d8d266bb20b2a">XMmiDp_RunTraining()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4d42c2d10d0a0a1771969e9a5bd222b3">XMmiDp_SetDpcdTrainingPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#gafb22147451b141af5abab760ef234e33">XMmiDp_WaitActHandledStatus()</a>, and <a class="el" href="group__mmi__dppsu14.html#gaf8aeb8c282f9f029d38987c697bce0a6">XMmiDp_WaitPayloadTableUpdateStatus()</a>.</p>
 
 </div>
 </div>
@@ -706,7 +850,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function checks if the Rx DisplayPort Configuration Data (DPCD) indicates the receiver has achieved and maintained clock recovery, channel equalization, symbol lock, and interlane alignment for all lanes currently in use. </p>
+<p>This function checks if the Rx DisplayPort Configuration Data (DPCD) indicates the receiver has achieved and maintained clock recovery, channel equalization, symbol lock, and interlane alignment for all lanes currently in use.The DP 1.4 spec specifies checking for the above bits max 5 times before retraining link at lower link rate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
@@ -832,7 +976,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xmmidp__hw_8h.html#a563f19ba6acf09748d4ceddcd501a432">XMMIDP_VIDEO_CONFIG1</a>, and <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga2db74c9e089470df8915747461b7ddcb">XMmiDp_ClearVideoController()</a>.</p>
 
@@ -864,6 +1008,44 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="group__mmi__dppsu14.html#ga8395176062765d2ce0129595146ccdc4">XMmiDp_ClearMsaValues()</a>, and <a class="el" href="group__mmi__dppsu14.html#gac6ccb66a7196a25e1b548f9ddc8e1623">XMmiDp_ClearVideoConfigValues()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga58e09571b65d872ceb65da9e0517c4b1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_ConfigureAudioController </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function programs DpTx Audio Controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#gafc127205d8d8485a2f9265af632f7b7b">XMmiDp_SetAudioConfig1()</a>, <a class="el" href="group__mmi__dppsu14.html#gaf339d0ff4a882b171fe3b26ed52d4ad1">XMmiDp_SetSdpHorizontalCtrl()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga742d7fc4e69057b6f3a0e5737189b066">XMmiDp_SetSdpVerticalCtrl()</a>.</p>
 
 </div>
 </div>
@@ -1360,7 +1542,7 @@ Functions</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="group__mmi__dppsu14.html#gac6ab04ec398a03237bc3fc128528e708">XMmiDp_AuxRead()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7513e80596331ee9ba1b4526dc4a5cb6">XMmiDp_GetDpcdMaxDownspread()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3061cfe50b51b80ee1e7deb391f81aad">XMmiDp_GetDpcdRev()</a>, <a class="el" href="group__mmi__dppsu14.html#gacc7ff6972b4fb237302b600d563d1018">XMmiDp_GetDpcdTrainingAuxRdInterval()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6afea29dca33e18ef73737cd72f1020e">XMmiDp_GetRxMaxLaneCount()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga80cd6c15cc6633c38929058475a46451">XMmiDp_GetRxMaxLinkRate()</a>.</p>
+<p>References <a class="el" href="group__mmi__dppsu14.html#gac6ab04ec398a03237bc3fc128528e708">XMmiDp_AuxRead()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7513e80596331ee9ba1b4526dc4a5cb6">XMmiDp_GetDpcdMaxDownspread()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3061cfe50b51b80ee1e7deb391f81aad">XMmiDp_GetDpcdRev()</a>, <a class="el" href="group__mmi__dppsu14.html#gacc7ff6972b4fb237302b600d563d1018">XMmiDp_GetDpcdTrainingAuxRdInterval()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6afea29dca33e18ef73737cd72f1020e">XMmiDp_GetRxMaxLaneCount()</a>, <a class="el" href="group__mmi__dppsu14.html#ga80cd6c15cc6633c38929058475a46451">XMmiDp_GetRxMaxLinkRate()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga9863cd6de09dab984927d51f56b1736e">XMmiDp_GetRxMstModeCap()</a>.</p>
 
 </div>
 </div>
@@ -1430,6 +1612,39 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga9863cd6de09dab984927d51f56b1736e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XMmiDp_GetRxMstModeCap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function reads MST_CAP from Rx DPCD register. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>none.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#gac6ab04ec398a03237bc3fc128528e708">XMmiDp_AuxRead()</a>, and <a class="el" href="xmmidp__hw_8h.html#a211d1513defadbd2d1399f02c5a823c6">XMMIDP_DPCD_MSTM_CAP</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#gac3135a219580b68794c555360df8d81b">XMmiDp_GetRxCapabilities()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga7618de05e6ccfe9c3e512255948f413a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1444,7 +1659,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function returngs the training aux interval. </p>
+<p>This function returns the training aux interval. </p>
+<p>The lowest time is 400us. All other WaitTimes are direct multiples of lowest time and value read from DPCD register.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance.</td></tr>
@@ -1572,12 +1788,21 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function performs an I2C read over the AUX channel. </p>
+<p>The read message will be divided into multiple transactions if the requested data spans multiple segmetns. The segment pointer is automatically incremented and the offset is calibrated as needed. E.g. For an overall offset of:</p>
+<ul>
+<li>128, an I2C read is done on segptr=0; offset=128.</li>
+<li>256, an I2C read is done on segptr=1; offset=0.</li>
+<li>384, an I2C read is done on segptr=1; offset=128.</li>
+<li>512, an I2C read is done on segptr=2; offset=0.</li>
+<li>etc.</li>
+</ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
     <tr><td class="paramname">IicAddress</td><td>is the address on the I2C bus of the target device. </td></tr>
-    <tr><td class="paramname">BytesToWrite</td><td>is the number of bytes to write. </td></tr>
-    <tr><td class="paramname">WriteData</td><td>is a pointer to a buffer which will be used as the data source for the write.</td></tr>
+    <tr><td class="paramname">Offset</td><td>is the offset at specified address of targeted I2C device that the read will start from. </td></tr>
+    <tr><td class="paramname">Bytes</td><td>is the number of bytes to read. </td></tr>
+    <tr><td class="paramname">ReadData</td><td>is a pointer to a buffer that will be filled with the I2C read data.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1682,6 +1907,38 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga637998cd412788fe3b1bcd33130e1902"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XMmiDp_InitiateActSeq </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function initiates CCTL ACT sequence between DpTx and DpRx of the immediate branch device connected. </p>
+<p>Check DPCD Payload table update status. This ensures successful handling of ACT trigger sequence.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>none.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#gaa9a796e9233f2d5bb9cd15ba3e1d3f91">XMmiDp_MstActSeqEnable()</a>, <a class="el" href="xmmidp__hw_8h.html#a16f691f61c7261a5bd549161e56b6dd6">XMmiDp_ReadReg</a>, <a class="el" href="group__mmi__dppsu14.html#gafb22147451b141af5abab760ef234e33">XMmiDp_WaitActHandledStatus()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga0ce3540c32ce1bdcbe2b43fecb15e47d">XMmiDp_WaitUs()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gad828e78a21d5b2700e1318b80116e71c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1704,14 +1961,78 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><ul>
-<li>TRUE if there is a connection.</li>
-<li>FALSE if there is no connection. </li>
+<li>1 if there is a connection.</li>
+<li>0 if there is no connection. </li>
 </ul>
 </dd></dl>
 
 <p>References <a class="el" href="xmmidp__hw_8h.html#a16f691f61c7261a5bd549161e56b6dd6">XMmiDp_ReadReg</a>, and <a class="el" href="group__mmi__dppsu14.html#ga0ce3540c32ce1bdcbe2b43fecb15e47d">XMmiDp_WaitUs()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__mmi__dppsu14.html#gadfcdfec9174ff0cf984dbd170bce80f2">XMmiDp_CheckLinkStatus()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga74d3745c9b78752579ab0457d266d6a9">XMmiDp_I2cRead()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaa9a796e9233f2d5bb9cd15ba3e1d3f91"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_MstActSeqEnable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables mst act seq in the core controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>none.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga637998cd412788fe3b1bcd33130e1902">XMmiDp_InitiateActSeq()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga39b2ada01525a228afd7e382c8fac774"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_MstModeEnable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables mst mode in the core controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>none.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#ga17587910f82d3b484ea19be728e228ce">XMmiDp_RegReadModifyWrite()</a>.</p>
 
 </div>
 </div>
@@ -1967,7 +2288,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xmmidp__hw_8h.html#a16f691f61c7261a5bd549161e56b6dd6">XMmiDp_ReadReg</a>, and <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#gae3fda64975462a763be884e7eec46eec">XDpPSu14_DisableCctlEnhanceFraming()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3f8752364a4322d43123417c75c020ec">XDpPSu14_EnableCctlEnhanceFraming()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6f3c5f1e710332e8e5b96ca5fdd3e5db">XMmiDp_DisableVideoStream()</a>, <a class="el" href="group__mmi__dppsu14.html#ga785cb9fe8a1bfed10c699b603717eb3b">XMmiDp_EnableVideoStream()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4a0559c4e00547e62fed42c6a648f16a">XMmiDp_FastLinkTrainDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#gae87ff6b8ea456fb3e6d6cd77d3a48f1b">XMmiDp_FastLinkTrainEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2fe71a7af196b6276c50c427fcb2e199">XMmiDp_PhyScrambleDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga0eecafe2437dcd87202407eaf95de2a8">XMmiDp_PhyScrambleEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga1a557d069251a50092cc5937149087b9">XMmiDp_PhySSCDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2a67ae0694619bb601b9a555513322fc">XMmiDp_PhySSCEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#gacbd938ad89bbc72cdf5815257f7e6406">XMmiDp_SetPhyLaneCount()</a>, <a class="el" href="group__mmi__dppsu14.html#gab36c129f0d8da121a10db84b7a5aea18">XMmiDp_SetPhyLinkRate()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7f943b0eb7f8a68e639806d547774adc">XMmiDp_SetPhyPowerdown()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4154e9c45589adde594ef6b3721aacec">XMmiDp_SetPhyPreEmphasis()</a>, <a class="el" href="group__mmi__dppsu14.html#ga39fccaaff884522fa23169ca693ba896">XMmiDp_SetPhyTrainingPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#gaab73605334205da8d791cd393bafdf9b">XMmiDp_SetPhyVoltageSwing()</a>, <a class="el" href="group__mmi__dppsu14.html#ga36d2eee01014d017dca42a7ebbe163d2">XMmiDp_SetPhyWidth()</a>, <a class="el" href="group__mmi__dppsu14.html#ga34074e818ece81518e1867c6d7d6049e">XMmiDp_SetPhyXmitDisable()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga22270f6b5d14bae67a710ee183694865">XMmiDp_SetPhyXmitEnable()</a>.</p>
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#gae3fda64975462a763be884e7eec46eec">XDpPSu14_DisableCctlEnhanceFraming()</a>, <a class="el" href="group__mmi__dppsu14.html#ga3f8752364a4322d43123417c75c020ec">XDpPSu14_EnableCctlEnhanceFraming()</a>, <a class="el" href="group__mmi__dppsu14.html#ga6f3c5f1e710332e8e5b96ca5fdd3e5db">XMmiDp_DisableVideoStream()</a>, <a class="el" href="group__mmi__dppsu14.html#ga785cb9fe8a1bfed10c699b603717eb3b">XMmiDp_EnableVideoStream()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4a0559c4e00547e62fed42c6a648f16a">XMmiDp_FastLinkTrainDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#gae87ff6b8ea456fb3e6d6cd77d3a48f1b">XMmiDp_FastLinkTrainEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga39b2ada01525a228afd7e382c8fac774">XMmiDp_MstModeEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2fe71a7af196b6276c50c427fcb2e199">XMmiDp_PhyScrambleDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga0eecafe2437dcd87202407eaf95de2a8">XMmiDp_PhyScrambleEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga1a557d069251a50092cc5937149087b9">XMmiDp_PhySSCDisable()</a>, <a class="el" href="group__mmi__dppsu14.html#ga2a67ae0694619bb601b9a555513322fc">XMmiDp_PhySSCEnable()</a>, <a class="el" href="group__mmi__dppsu14.html#gacbd938ad89bbc72cdf5815257f7e6406">XMmiDp_SetPhyLaneCount()</a>, <a class="el" href="group__mmi__dppsu14.html#gab36c129f0d8da121a10db84b7a5aea18">XMmiDp_SetPhyLinkRate()</a>, <a class="el" href="group__mmi__dppsu14.html#ga7f943b0eb7f8a68e639806d547774adc">XMmiDp_SetPhyPowerdown()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4154e9c45589adde594ef6b3721aacec">XMmiDp_SetPhyPreEmphasis()</a>, <a class="el" href="group__mmi__dppsu14.html#ga39fccaaff884522fa23169ca693ba896">XMmiDp_SetPhyTrainingPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#gaab73605334205da8d791cd393bafdf9b">XMmiDp_SetPhyVoltageSwing()</a>, <a class="el" href="group__mmi__dppsu14.html#ga36d2eee01014d017dca42a7ebbe163d2">XMmiDp_SetPhyWidth()</a>, <a class="el" href="group__mmi__dppsu14.html#ga34074e818ece81518e1867c6d7d6049e">XMmiDp_SetPhyXmitDisable()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga22270f6b5d14bae67a710ee183694865">XMmiDp_SetPhyXmitEnable()</a>.</p>
 
 </div>
 </div>
@@ -2004,7 +2325,473 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gae57dca21aa34824661f67454fa8c8ebb"></a>
+<a class="anchor" id="gad4553e478558bc70246a73bc49d43799"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SdpStatusInterruptEnable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>Mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables SDP_STATUS_ENABLE bits based on the mask. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Mask</td><td>specifies the interrupt bits to enable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a16f691f61c7261a5bd549161e56b6dd6">XMmiDp_ReadReg</a>, and <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gabcbf2b40c8edd0ef82839ddab6252b86"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudClkMultFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>ClkMultFs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function defines audio clock frequency multiplier in relation to audio sample rate Fs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>clock frequency multiplier</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga44fbca3f44db483c77090ea27441abfd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudDataInputEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>ActiveDataInput</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the active audio data input. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Active</td><td>data input on different channels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga9956757e5a4b26d65bc37621cb06fc4e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudDataWidth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>DataWidth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the audio data width val(16 bit - 24 bit). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>Data Width.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga2da75c922ab4089b196965d5bfdc16b3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudHbrModeEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>HbrModeEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the audio input is operating in HBR mode or not. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>HBR mode en or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gafc127205d8d8485a2f9265af632f7b7b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudioConfig1 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function programs the AUDIO_CONFIG1 registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga58e09571b65d872ceb65da9e0517c4b1">XMmiDp_ConfigureAudioController()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga235cd874e0e11094e6090a549681e900"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudMuteFlag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>AudioMute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function controls the audio mute flag in VB-ID. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>mute clear or set</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga17f7e2b43faeaa1f32cc22f5c8a09f59"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudNumChannels </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>NumChannels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the audio num of channels used. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>num channels</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga6225e22ab7bcf76fec27a9e4a6b0d38c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudPktId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>PktId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function defines first byte of audio SDP and audio timestamp SDP header. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>Packet Id</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga141cf14bd09824562395b2388d65bbea"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudStreamInterfaceSel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>InterfaceSel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the audio stream interface. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>interface I2S or SPDIF .</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga6968916ae15e97fa3b03d62208ecf8e1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetAudTimeStampVerNum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>VerNum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function defines audio timestamp version num. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>timestamp version number</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga47ed0b4f27fb0badafec87dddca81df3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2017,7 +2804,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">u16&#160;</td>
+          <td class="paramtype">u32&#160;</td>
           <td class="paramname"><em>Limit</em>&#160;</td>
         </tr>
         <tr>
@@ -2130,6 +2917,561 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga5aee931e22d6aeb6c1ae24e1651e9e88"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerDisableInterleaving </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>DisableInterleaving</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function disables SPD nibble interleaving DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf6369afcfc8245e35dd3904ac2129caf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllereDpEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>eDpEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets DpTx in eDP mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable/disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gacd46cf48165f2fb5b2a2029b12c60cbe"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerEnhanceFramingEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnhanceFramingEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the enhanced framing control for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga8e15890ceac9d8d29c0a50a01269d825"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerEnhanceFramingWithFecEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnhanceFramingWithFecEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the enhanced framing control with FEC feature for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaaf83cbea85a7c96a252ff305d135dad1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerFastLinkTrainEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>FastLinkTrainEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets default fast link training for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga000ad5667a09d24c5c212ea627169ed6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerFecEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>FecEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables FEC feature for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable/disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf065764ad84b4dfa69ab078238d1ac38"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerInitiateMstActSeq </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>InitiateMstActSeq</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function use in MST mode only triggers link to start ACT sequence with DpRx of branch. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable/disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaaecb4ea6bd4e26bdd078987d3e9d9a32"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerMstModeEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>MstModeEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables MST mode for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable/disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gae9dea3bb5cbbb9090890909d7392ba1a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerScaleDownModeEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>ScaleDownModeEn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function scales down debounce filter on HPD input for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga552e5cfdd334bb97506a62e141778183"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerScrambleDis </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>ScrambleDis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the Scramble control for DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Controller</td><td>enable or disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga2ee75a9a9cb805170706db4b13f63b00"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetControllerSelAuxTimeout32Ms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>SelAuxTimeout32Ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets aux reply timeout to either 400us or 3.2ms DpTx. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">0x0</td><td>for 400us, 0x1 for 3.2ms</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gabd2a67461b0e2fc53ee3ffef555012f7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetCoreCtrl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the core controller register. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to enable or disable video stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gac19815c8b497a69fab66784b38229c70"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetDisableExternalSdp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>DisExternalSdp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function disables external SDP when set. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable/Disable</td><td>external SDP.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ga1c9569c6c5ebf64a307e313ccd804198"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2192,7 +3534,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
-    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: PHY_NO_TRAIN = 0x0, PHY_TPS1 = 0x1, PHY_TPS2 = 0x2, PHY_TPS3 = 0x3, PHY_TPS4 = 0x4, PHY_SYMBOL_ERR_RATE = 0x5, PHY_PRBS7 = 0x6, PHY_CUSTOMPAT = 0x7, PHY_CP2520_PAT_1 = 0x8, PHY_CP2520_PAT_2 = 0x9,</td></tr>
+    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: XMMIDP_PHY_NO_TRAIN = 0x0, XMMIDP_PHY_TPS1 = 0x1, XMMIDP_PHY_TPS2 = 0x2, XMMIDP_PHY_TPS3 = 0x3, XMMIDP_PHY_TPS4 = 0x4, XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5, XMMIDP_PHY_PRBS7 = 0x6, XMMIDP_PHY_CUSTOMPAT = 0x7, XMMIDP_PHY_CP2520_PAT_1 = 0x8, XMMIDP_PHY_CP2520_PAT_2 = 0x9,</td></tr>
   </table>
   </dd>
 </dl>
@@ -2322,7 +3664,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
-    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: PHY_NO_TRAIN = 0x0, PHY_TPS1 = 0x1, PHY_TPS2 = 0x2, PHY_TPS3 = 0x3, PHY_TPS4 = 0x4, PHY_SYMBOL_ERR_RATE = 0x5, PHY_PRBS7 = 0x6, PHY_CUSTOMPAT = 0x7, PHY_CP2520_PAT_1 = 0x8, PHY_CP2520_PAT_2 = 0x9,</td></tr>
+    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: XMMIDP_PHY_NO_TRAIN = 0x0, XMMIDP_PHY_TPS1 = 0x1, XMMIDP_PHY_TPS2 = 0x2, XMMIDP_PHY_TPS3 = 0x3, XMMIDP_PHY_TPS4 = 0x4, XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5, XMMIDP_PHY_PRBS7 = 0x6, XMMIDP_PHY_CUSTOMPAT = 0x7, XMMIDP_PHY_CP2520_PAT_1 = 0x8, XMMIDP_PHY_CP2520_PAT_2 = 0x9,</td></tr>
   </table>
   </dd>
 </dl>
@@ -2367,10 +3709,10 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
     <tr><td class="paramname">VoltageSwing</td><td>for each lane to be used over the main link based on one of the following selects:<ul>
-<li>PHY_VSWING_LEVEL0</li>
-<li>PHY_VSWING_LEVEL1</li>
-<li>PHY_VSWING_LEVEL2</li>
-<li>PHY_VSWING_LEVEL3 </li>
+<li>XMMIDP_PHY_VSWING_LEVEL0</li>
+<li>XMMIDP_PHY_VSWING_LEVEL1</li>
+<li>XMMIDP_PHY_VSWING_LEVEL2</li>
+<li>XMMIDP_PHY_VSWING_LEVEL3 </li>
 </ul>
 </td></tr>
   </table>
@@ -2640,6 +3982,44 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gafa8478cbb478e7f747bf349036c0a57b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetMstVcpTable0 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>Payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the virtual channel payload allocation table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">u32</td><td>Payload slot for each stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gacbd938ad89bbc72cdf5815257f7e6406"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2807,10 +4187,10 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
     <tr><td class="paramname">VoltageSwing</td><td>for each lane to be used over the main link based on one of the following selects:<ul>
-<li>PHY_PREEMP_LEVEL0</li>
-<li>PHY_PREEMP_LEVEL1</li>
-<li>PHY_PREEMP_LEVEL2</li>
-<li>PHY_PREEMP_LEVEL3 </li>
+<li>XMMIDP_PHY_PREEMP_LEVEL0</li>
+<li>XMMIDP_PHY_PREEMP_LEVEL1</li>
+<li>XMMIDP_PHY_PREEMP_LEVEL2</li>
+<li>XMMIDP_PHY_PREEMP_LEVEL3 </li>
 </ul>
 </td></tr>
   </table>
@@ -2856,7 +4236,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
-    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: PHY_NO_TRAIN = 0x0, PHY_TPS1 = 0x1, PHY_TPS2 = 0x2, PHY_TPS3 = 0x3, PHY_TPS4 = 0x4, PHY_SYMBOL_ERR_RATE = 0x5, PHY_PRBS7 = 0x6, PHY_CUSTOMPAT = 0x7, PHY_CP2520_PAT_1 = 0x8, PHY_CP2520_PAT_2 = 0x9,</td></tr>
+    <tr><td class="paramname">Pattern</td><td>select to be used over the main link based on one of the following selects: XMMIDP_PHY_NO_TRAIN = 0x0, XMMIDP_PHY_TPS1 = 0x1, XMMIDP_PHY_TPS2 = 0x2, XMMIDP_PHY_TPS3 = 0x3, XMMIDP_PHY_TPS4 = 0x4, XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5, XMMIDP_PHY_PRBS7 = 0x6, XMMIDP_PHY_CUSTOMPAT = 0x7, XMMIDP_PHY_CP2520_PAT_1 = 0x8, XMMIDP_PHY_CP2520_PAT_2 = 0x9,</td></tr>
   </table>
   </dd>
 </dl>
@@ -2901,10 +4281,10 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
     <tr><td class="paramname">VoltageSwing</td><td>for each lane to be used over the main link based on one of the following selects:<ul>
-<li>PHY_VSWING_LEVEL0</li>
-<li>PHY_VSWING_LEVEL1</li>
-<li>PHY_VSWING_LEVEL2</li>
-<li>PHY_VSWING_LEVEL3 </li>
+<li>XMMIDP_PHY_VSWING_LEVEL0</li>
+<li>XMMIDP_PHY_VSWING_LEVEL1</li>
+<li>XMMIDP_PHY_VSWING_LEVEL2</li>
+<li>XMMIDP_PHY_VSWING_LEVEL3 </li>
 </ul>
 </td></tr>
   </table>
@@ -3154,6 +4534,687 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga75421fb9dfed2285ef96e8d61cce60e5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpCfg1HBlankOvr </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>SdpHBlankOvr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function overrides the number of available bytes required to transmit a 16 byte SDP during Horizontal blanking period. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">SdpHBlankOver</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga0cb78331704ff764cad9e495d1018359"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpCfg1VBlankOvr </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>SdpVBlankOvr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function overrides the number of available bytes required to transmit a 16 byte SDP during Vertical blanking period. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">SdpVBlankOver</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga035d309d3fe1cfe261e5e005c0972b02"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpConfig </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the SDP_CONFIG_X registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to enable or disable video stream.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga0472c1deb843c0bf183966d98906f0d7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpHorAudStreamEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnAudStream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables audio stream during horizontal blanking . </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>stream enable/disable.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gab1b8cf70119281fa641d36b4e4cf334f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpHorAudTimeStampEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnAudTimeStamp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables audio timestamp for sdp horizontal ctrl. </p>
+<p>When set, dptx sends out audio timestamp SDP once every video frame during horizontal blanking period.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>timestamp sdp enable/disable.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga3631e8793ab57333cdf68b99d8ced007"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpHorFixedPriority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnFixedPriority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets scheduler searches for next SDP to transmit based on fixed priority. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable/Disable</td><td>fixed priority SDP scheduler.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf339d0ff4a882b171fe3b26ed52d4ad1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpHorizontalCtrl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function programs the SDP_HORIZONTAL_CTRL registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga58e09571b65d872ceb65da9e0517c4b1">XMmiDp_ConfigureAudioController()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga8281004ada291d97dafa8e06843d41a0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpHorizontalEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>EnHorizontalSdp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets SDP to be sent out during horizontal intervals using data from SDP_REGISTER_BANK . </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable</td><td>SDP during horizontal intervals.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga9c52181514f904abffa0b8073344d1df"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpManualCtrl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>SdpManualCtrl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the Sdp manual mode. </p>
+<p>Setting this bit causes corresponding SDP to be transmitted once.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable/Disable</td><td>Sdp Manual Ctrl </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga2b318235a6435831deb9f85ebdc5e913"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpRegBank </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>SdpReg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function defines the header and data for SDP. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">SdpReg</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga33196b52f8e59b73c1045db0ba397b2d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVertAudStreamEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnAudStream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables audio stream during vertical blanking . </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>stream enable/disable.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga521326ac06c089f4bb64006ff8513de8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVertAudTimeStampEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnAudTimeStamp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function enables audio timestamp for sdp vertical ctrl. </p>
+<p>When set, dptx sends out audio timestamp SDP once every video frame during vertical blanking period.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Audio</td><td>timestamp sdp enable/disable.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga9f3eccc85c55ac1df29ecc213ff4f0f1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVertEn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>EnVerticalSdp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets SDP to be sent out during vertical intervals using data from SDP_REGISTER_BANK . </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable</td><td>SDP during vertical intervals.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga65bb46a40a4433a23e7bd0f69e7e936f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVertEn128Bytes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>En128Bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets 128 bytes of SDP by using SDP_REGISTER_BANK 1,2,3 and 4. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable/Disable</td><td>128BytesSdp.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga0f9fc6aae71f8c26baaf2156bb0de9c9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVertFixedPriority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>EnFixedPriority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets scheduler searches for next SDP to transmit based on fixed priority. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth. </td></tr>
+    <tr><td class="paramname">Enable/Disable</td><td>fixed priority SDP scheduler.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga742d7fc4e69057b6f3a0e5737189b066"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XMmiDp_SetSdpVerticalCtrl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function programs the SDP_VERTICAL_CTRL registers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_mmi_dp.html" title="The XMmiDp driver instance data. ">XMmiDp</a> instance. </td></tr>
+    <tr><td class="paramname">Stream</td><td>is the stream number for which to set the color depth.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xmmidp__hw_8h.html#a62cbf3cd69b9c70a14a1943ad14e6312">XMmiDp_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga58e09571b65d872ceb65da9e0517c4b1">XMmiDp_ConfigureAudioController()</a>.</p>
 
 </div>
 </div>
@@ -3891,7 +5952,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function runs the channel equalization sequence as part of link training. </p>
-<p>The sequence is as follows: 0) Start signaling with the same drive settings used at the end of the clock recovery sequence. 1) Transmit training pattern 2 (or 3) over the main link with symbol scrambling disabled. 2) The channel equalization loop. If channel equalization is unsuccessful after 5 loop iterations, return. 2a) Wait for at least the period of time specified in the RX device's DisplayPort Configuration Data (DPCD) register, TRAINING_AUX_RD_INTERVAL. 2b) Check if all lanes have achieved channel equalization, symbol lock, and interlane alignment. If so, return. 2c) Check if the same voltage swing level has been used 5 consecutive times or if the maximum level has been reached. If so, return. 2d) Adjust the voltage swing, pre-emphasis, and post-cursor levels as requested by the RX device. 2e) Loop back to 2a. For a more detailed description of the channel equalization sequence, see section 3.5.1.2.2 of the DisplayPort 1.2a specification document.</p>
+<p>The sequence is as follows: 0) Start signaling with the same drive settings used at the end of the clock recovery sequence. 1) Transmit training pattern 2 (or 3) over the main link with symbol scrambling disabled. 2) The channel equalization loop. If channel equalization is unsuccessful after 5 loop iterations, return. 2a) Wait for at least the period of time specified in the RX device's DisplayPort Configuration Data (DPCD) register, TRAINING_AUX_RD_INTERVAL. 2b) Check if all lanes have achieved channel equalization, symbol lock, and interlane alignment. If so, return. 2c) Check if the same voltage swing level has been used 5 consecutive times or if the maximum level has been reached. If so, return. 2d) Adjust the voltage swing, pre-emphasis, and post-cursor levels as requested by the RX device. 2e) Loop back to 2a. For a more detailed description of the channel equalization sequence, see section 3.5.1.2.2 of the DisplayPort 1.4a specification document.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDp instance.</td></tr>
@@ -3948,6 +6009,72 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gafb22147451b141af5abab760ef234e33"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XMmiDp_WaitActHandledStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function waits for ACT_Handled status bit to be set. </p>
+<p>status. This ensures successful handling of ACT trigger.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS/XST_FAILURE.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#gac6ab04ec398a03237bc3fc128528e708">XMmiDp_AuxRead()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga0ce3540c32ce1bdcbe2b43fecb15e47d">XMmiDp_WaitUs()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga637998cd412788fe3b1bcd33130e1902">XMmiDp_InitiateActSeq()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf8aeb8c282f9f029d38987c697bce0a6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XMmiDp_WaitPayloadTableUpdateStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_mmi_dp.html">XMmiDp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function waits for VC_PAYLOAD_TABLE_UPDATE status bit to be set. </p>
+<p>status. This ensures successful update of VC_PAYLOAD_TABLE.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDpPsu instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS/XST_FAILURE.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="group__mmi__dppsu14.html#gac6ab04ec398a03237bc3fc128528e708">XMmiDp_AuxRead()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga0ce3540c32ce1bdcbe2b43fecb15e47d">XMmiDp_WaitUs()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga0ce3540c32ce1bdcbe2b43fecb15e47d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3986,7 +6113,7 @@ Functions</h2></td></tr>
 </li>
 </ul>
 
-<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#gad828e78a21d5b2700e1318b80116e71c">XMmiDp_IsConnected()</a>, <a class="el" href="group__mmi__dppsu14.html#ga75d6b1acab7dbdcf0603054c287cc506">XMmiDp_PhySoftReset()</a>, <a class="el" href="group__mmi__dppsu14.html#ga98fc24f84370a48e2cad677269274f47">XMmiDp_PhyWaitReady()</a>, <a class="el" href="group__mmi__dppsu14.html#ga14948f99793fbcff34c501b4fa68ae60">XMmiDp_SetDpcdLinkQualPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4d42c2d10d0a0a1771969e9a5bd222b3">XMmiDp_SetDpcdTrainingPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#gaa56c95a1a342ab85ddccb12c7b531e81">XMmiDp_TrainingStateChannelEqualization()</a>, and <a class="el" href="group__mmi__dppsu14.html#ga952daae3354ffe758e5b3db18c9127c1">XMmiDp_TrainingStateClockRecovery()</a>.</p>
+<p>Referenced by <a class="el" href="group__mmi__dppsu14.html#ga637998cd412788fe3b1bcd33130e1902">XMmiDp_InitiateActSeq()</a>, <a class="el" href="group__mmi__dppsu14.html#gad828e78a21d5b2700e1318b80116e71c">XMmiDp_IsConnected()</a>, <a class="el" href="group__mmi__dppsu14.html#ga75d6b1acab7dbdcf0603054c287cc506">XMmiDp_PhySoftReset()</a>, <a class="el" href="group__mmi__dppsu14.html#ga98fc24f84370a48e2cad677269274f47">XMmiDp_PhyWaitReady()</a>, <a class="el" href="group__mmi__dppsu14.html#ga14948f99793fbcff34c501b4fa68ae60">XMmiDp_SetDpcdLinkQualPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#ga4d42c2d10d0a0a1771969e9a5bd222b3">XMmiDp_SetDpcdTrainingPattern()</a>, <a class="el" href="group__mmi__dppsu14.html#gaa56c95a1a342ab85ddccb12c7b531e81">XMmiDp_TrainingStateChannelEqualization()</a>, <a class="el" href="group__mmi__dppsu14.html#ga952daae3354ffe758e5b3db18c9127c1">XMmiDp_TrainingStateClockRecovery()</a>, <a class="el" href="group__mmi__dppsu14.html#gafb22147451b141af5abab760ef234e33">XMmiDp_WaitActHandledStatus()</a>, and <a class="el" href="group__mmi__dppsu14.html#gaf8aeb8c282f9f029d38987c697bce0a6">XMmiDp_WaitPayloadTableUpdateStatus()</a>.</p>
 
 </div>
 </div>

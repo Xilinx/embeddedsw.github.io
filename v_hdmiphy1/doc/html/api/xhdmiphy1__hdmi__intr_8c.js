@@ -13,5 +13,6 @@ var xhdmiphy1__hdmi__intr_8c =
     [ "XHdmiphy1_HdmiTxClkDetFreqChangeHandler", "xhdmiphy1__hdmi__intr_8c.html#afc3e2c76a28022e9d12a96990cc2fc83", null ],
     [ "XHdmiphy1_HdmiTxMmcmLockHandler", "xhdmiphy1__hdmi__intr_8c.html#a26779b95f3fc97265ce6997044426637", null ],
     [ "XHdmiphy1_HdmiTxTimerTimeoutHandler", "xhdmiphy1__hdmi__intr_8c.html#gada0844e8a6a828bb7d512259aca11498", null ],
+    [ "Xhdmiphy1_RefClkValue", "xhdmiphy1__hdmi__intr_8c.html#a9ef4b1e8aa66f37584a75577205ec43c", null ],
     [ "XHdmiphy1_SetHdmiCallback", "xhdmiphy1__hdmi__intr_8c.html#ga64e64512cb8f987620763078fe9e796d", null ]
 ];

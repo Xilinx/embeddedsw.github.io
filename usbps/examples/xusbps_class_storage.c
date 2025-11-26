@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -19,6 +19,7 @@
  * 1.00a wgr  10/10/10 First release
  * 2.1   kpc  4/28/14  Align DMA buffers to cache line boundary
  * 2.4   vak  4/01/19  Fixed IAR data_alignment warnings
+ * 2.10  ka   8/21/25  Fixed GCC warnigns
  *</pre>
  ******************************************************************************/
 
@@ -78,7 +79,7 @@ static USB_CBW lastCBW;
 /* Local transmit buffer for simple replies. */
 static u8 txBuffer[128];
 #else
-const static SCSI_INQUIRY scsiInquiry ALIGNMENT_CACHELINE = {
+static const SCSI_INQUIRY scsiInquiry ALIGNMENT_CACHELINE = {
 	0x00,
 	0x80,
 	0x00,
@@ -126,6 +127,8 @@ void XUsbPs_HandleStorageReq(XUsbPs *InstancePtr, u8 EpNum,
 
 	/* Current SCSI machine state. */
 	static int	phase = USB_EP_STATE_COMMAND;
+
+	(void)EpNum;
 
 	/* COMMAND phase. */
 	if (USB_EP_STATE_COMMAND == phase) {

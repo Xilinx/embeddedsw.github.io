@@ -711,6 +711,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga995867d4d13222914140a89f7a02833f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__tx__dp.html#ga995867d4d13222914140a89f7a02833f">XHdcp22Tx_Dp_SetLaneCount</a> (<a class="el" href="struct_x_hdcp22___tx___dp.html">XHdcp22_Tx_Dp</a> *InstancePtr, u8 LaneCount)</td></tr>
 <tr class="memdesc:ga995867d4d13222914140a89f7a02833f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set the lane count of an hdcp22 interface.  <a href="#ga995867d4d13222914140a89f7a02833f">More...</a><br/></td></tr>
 <tr class="separator:ga995867d4d13222914140a89f7a02833f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga51d929359c8e4fed0eb3f2e05e12ed2d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__tx__dp.html#ga51d929359c8e4fed0eb3f2e05e12ed2d">XHdcp22Tx_Dp_SetMst</a> (<a class="el" href="struct_x_hdcp22___tx___dp.html">XHdcp22_Tx_Dp</a> *InstancePtr, u8 Mode)</td></tr>
+<tr class="memdesc:ga51d929359c8e4fed0eb3f2e05e12ed2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function set the MST mode of an hdcp22 interface.  <a href="#ga51d929359c8e4fed0eb3f2e05e12ed2d">More...</a><br/></td></tr>
+<tr class="separator:ga51d929359c8e4fed0eb3f2e05e12ed2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae5092ac401fe65efbe6719a065bef58f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_hdcp22___tx___dp___config.html">XHdcp22_Tx_Dp_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__tx__dp.html#gae5092ac401fe65efbe6719a065bef58f">XHdcp22Tx_Dp_LookupConfig</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:gae5092ac401fe65efbe6719a065bef58f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns a reference to an <a class="el" href="struct_x_hdcp22___tx___dp___config.html" title="This typedef contains configuration information for the device. ">XHdcp22_Tx_Dp_Config</a> structure based on the core id, <em>DeviceId</em>.  <a href="#gae5092ac401fe65efbe6719a065bef58f">More...</a><br/></td></tr>
 <tr class="separator:gae5092ac401fe65efbe6719a065bef58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -4432,6 +4435,48 @@ HandlerType                                        Callback Function Type
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_hdcp22___tx___dp.html#a6642c2096ac0d7b29698d6cb5ac78862">XHdcp22_Tx_Dp::Info</a>, and <a class="el" href="struct_x_hdcp22___tx___dp___info.html#ae74a66e898c849f5ff21b6250772b8fd">XHdcp22_Tx_Dp_Info::PollingValue</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga51d929359c8e4fed0eb3f2e05e12ed2d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XHdcp22Tx_Dp_SetMst </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp22___tx___dp.html">XHdcp22_Tx_Dp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function set the MST mode of an hdcp22 interface. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the transmitter instance. </td></tr>
+    <tr><td class="paramname">Mode</td><td>enables the MST configuration of the interface.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp22___tx___dp.html#ae447f0c7c48340db931bb23c7f0e7524">XHdcp22_Tx_Dp::Cipher</a>.</p>
 
 </div>
 </div>

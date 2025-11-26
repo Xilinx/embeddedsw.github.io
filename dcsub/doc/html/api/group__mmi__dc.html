@@ -210,6 +210,18 @@ Functions</h2></td></tr>
 <tr class="memitem:ga90f3d27153f1ac50925b330a18cf7ae9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dc.html#ga90f3d27153f1ac50925b330a18cf7ae9">XDc_SetVideoTiming</a> (XDc *InstancePtr)</td></tr>
 <tr class="memdesc:ga90f3d27153f1ac50925b330a18cf7ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures DC Timings register.  <a href="#ga90f3d27153f1ac50925b330a18cf7ae9">More...</a><br/></td></tr>
 <tr class="separator:ga90f3d27153f1ac50925b330a18cf7ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9096a3a44b617e19831f882b6550215a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dc.html#ga9096a3a44b617e19831f882b6550215a">XDc_SetAudioChCtrl</a> (XDc *InstancePtr)</td></tr>
+<tr class="memdesc:ga9096a3a44b617e19831f882b6550215a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function controls the Audio channel preamble and status bits.  <a href="#ga9096a3a44b617e19831f882b6550215a">More...</a><br/></td></tr>
+<tr class="separator:ga9096a3a44b617e19831f882b6550215a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa58756025137aade0084833366439af5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dc.html#gaa58756025137aade0084833366439af5">XDc_SetAudioSegmentedMode</a> (XDc *InstancePtr)</td></tr>
+<tr class="memdesc:gaa58756025137aade0084833366439af5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets Audio Segmented Mode.  <a href="#gaa58756025137aade0084833366439af5">More...</a><br/></td></tr>
+<tr class="separator:gaa58756025137aade0084833366439af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga956fa9949bfaee2723c873ced27e8277"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dc.html#ga956fa9949bfaee2723c873ced27e8277">XDc_SetCursorSdpRdyInterval</a> (XDc *InstancePtr)</td></tr>
+<tr class="memdesc:ga956fa9949bfaee2723c873ced27e8277"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets Cursor Sdp Ready Interval.  <a href="#ga956fa9949bfaee2723c873ced27e8277">More...</a><br/></td></tr>
+<tr class="separator:ga956fa9949bfaee2723c873ced27e8277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga055d5bcfbfad957d91df84a20ff984bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dc.html#ga055d5bcfbfad957d91df84a20ff984bb">XDc_SetSdpAckSel</a> (XDc *InstancePtr)</td></tr>
+<tr class="memdesc:ga055d5bcfbfad957d91df84a20ff984bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets Cursor Sdp Ready Interval.  <a href="#ga055d5bcfbfad957d91df84a20ff984bb">More...</a><br/></td></tr>
+<tr class="separator:ga055d5bcfbfad957d91df84a20ff984bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="gaf8ca72ffe30a09dbb401027f7f28acdf"></a>
@@ -291,6 +303,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xdc__hw_8h.html#a374ed3383f998d3dee32ca1789ea7af2">XDC_NL_AUD</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
 
 </div>
 </div>
@@ -484,6 +498,8 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="xdc__hw_8h.html#a8146367c52105a62261e66a4b1df4761">XDC_DC_AUDIO</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
 
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="gadd99ffb8a3aee5cac1a9d98d65c5d5f0"></a>
@@ -510,6 +526,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xdc__hw_8h.html#a97fc8235e792b61266482e967cf941e8">XDC_AV_CHBUF_AUD</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
 
 </div>
 </div>
@@ -888,6 +906,60 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga9096a3a44b617e19831f882b6550215a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDc_SetAudioChCtrl </td>
+          <td>(</td>
+          <td class="paramtype">XDc *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function controls the Audio channel preamble and status bits. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDc instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xdc__hw_8h.html#af941c1b6329d6b6aa7c30d5634608ec9">XDC_AUD_MIXER_VOLUME_CONTROL</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaa58756025137aade0084833366439af5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDc_SetAudioSegmentedMode </td>
+          <td>(</td>
+          <td class="paramtype">XDc *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets Audio Segmented Mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDc instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xdc__hw_8h.html#ac79762a0f4f06297fc89219a302f8d69">XDC_AUD_MIXER_META_DATA</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gaa74f088c7434d449aa6c7c196c2f45b9"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1007,6 +1079,35 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga956fa9949bfaee2723c873ced27e8277"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDc_SetCursorSdpRdyInterval </td>
+          <td>(</td>
+          <td class="paramtype">XDc *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets Cursor Sdp Ready Interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDc instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xdc__hw_8h.html#a2b1a2f8802758989faeb28b669626225">XDC_RDY_INTERVAL</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga4565c6118eda92a0afe55abd43611eb0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1062,6 +1163,8 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xdc__hw_8h.html#a299e4fc78608701c3bd2a26e620c122d">XDC_AV_BUF_OUTPUT_AUD_VID_SELECT</a>, <a class="el" href="xdc__hw_8h.html#ab8fc0fb136aefe0f7056feef8a0d8f0d">XDc_ReadReg</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
 
 </div>
 </div>
@@ -1229,6 +1332,35 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga055d5bcfbfad957d91df84a20ff984bb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDc_SetSdpAckSel </td>
+          <td>(</td>
+          <td class="paramtype">XDc *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets Cursor Sdp Ready Interval. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XDc instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="xdc__hw_8h.html#aaed7e6a15425c31ef634bb15f77c8256">XDC_DP</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga3ab37b5a0f115c0df36800588dfab246"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1312,6 +1444,8 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="xdc__hw_8h.html#ab8fc0fb136aefe0f7056feef8a0d8f0d">XDc_ReadReg</a>, <a class="el" href="xdc__hw_8h.html#a18910802d33c1d25153a92f482a43d77">XDC_SDP</a>, and <a class="el" href="xdc__hw_8h.html#a062318ea1e6d6815de6958ea8e81c0ce">XDc_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xdcsub_8h.html#a4e69f4103855f57e2eae9266a6c316b3">XDcSub_ConfigureDcVideo()</a>.</p>
 
 </div>
 </div>

@@ -91,6 +91,8 @@ Ver   Who  Date  Changes
                     ensure that "Successfully ran" and "Failed" strings
                     are available in all examples. This is a fix for
                     CR-965028.
+3.21  ml   09/13/25 Updated example to run with GIC-based interrupt routing
+                    under SDT.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -231,7 +233,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="xintc__example_8c.html#a2d6264927eb02cdac505c92079fa9e03">DeviceDriverHandler()</a>, <a class="el" href="group__intc.html#gaefd5527cecdc1a6444b624d1e1a2514f">XIN_SIMULATION_MODE</a>, <a class="el" href="group__intc.html#gaee9ec5873a764994d64b4da35a110084">XIntc_Connect()</a>, <a class="el" href="group__intc.html#gac7f59192d3b3ba2e2283a264677577b8">XIntc_Enable()</a>, <a class="el" href="group__intc.html#ga635187ed756cee70b4b4051560cbd7bc">XIntc_InterruptHandler()</a>, and <a class="el" href="group__intc.html#ga863eb58a3ae9419c7ac5da7c9fa9cb50">XIntc_Start()</a>.</p>
+<p>References <a class="el" href="struct_x_intc.html#ac76bb1d794c122fdb86f8e72a9ed22fd">XIntc::CfgPtr</a>, <a class="el" href="xintc__example_8c.html#a2d6264927eb02cdac505c92079fa9e03">DeviceDriverHandler()</a>, <a class="el" href="group__intc.html#gaefd5527cecdc1a6444b624d1e1a2514f">XIN_SIMULATION_MODE</a>, <a class="el" href="group__intc.html#gaee9ec5873a764994d64b4da35a110084">XIntc_Connect()</a>, <a class="el" href="group__intc.html#gac7f59192d3b3ba2e2283a264677577b8">XIntc_Enable()</a>, <a class="el" href="group__intc.html#ga635187ed756cee70b4b4051560cbd7bc">XIntc_InterruptHandler()</a>, and <a class="el" href="group__intc.html#ga863eb58a3ae9419c7ac5da7c9fa9cb50">XIntc_Start()</a>.</p>
 
 <p>Referenced by <a class="el" href="xintc__example_8c.html#a0421d50fd0512f77fa5f1e6f7abb8603">IntcExample()</a>.</p>
 

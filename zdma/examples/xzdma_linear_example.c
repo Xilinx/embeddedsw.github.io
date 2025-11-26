@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -54,6 +54,7 @@
 #include "xinterrupt_wrap.h"
 #endif
 #include "xil_util.h"
+#include "xplatform_info.h"
 
 /************************** Function Prototypes ******************************/
 
@@ -117,8 +118,8 @@ u32 Src1Buf[256] __attribute__ ((aligned (64)));/**< Source buffer */
 u32 AlloMem[256] __attribute__ ((aligned (64)));
 /**< memory allocated for descriptors */
 #endif
-volatile static u32 Done = 0;	/**< Variable for Done interrupt */
-volatile static u32 Pause = 0;	/**< Variable for Pause interrupt */
+ static volatile u32 Done = 0;	/**< Variable for Done interrupt */
+ static volatile u32 Pause = 0;	/**< Variable for Pause interrupt */
 
 /*****************************************************************************/
 /**
@@ -285,7 +286,17 @@ int XZDma_LinearExample(UINTPTR BaseAddress)
 	 * Invalidating destination address and flushing
 	 * source address in cache before the start of DMA data transfer.
 	 */
-	if (!Config->IsCacheCoherent) {
+	if(XIOCoherencySupported())
+	{
+		if (!Config->IsCacheCoherent) {
+			Xil_DCacheFlushRange((INTPTR)Data[0].SrcAddr, Data[0].Size);
+			Xil_DCacheInvalidateRange((INTPTR)Data[0].DstAddr, Data[0].Size);
+			Xil_DCacheFlushRange((INTPTR)Data[1].SrcAddr, Data[1].Size);
+			Xil_DCacheInvalidateRange((INTPTR)Data[1].DstAddr, Data[1].Size);
+		}
+	}
+	else
+	{
 		Xil_DCacheFlushRange((INTPTR)Data[0].SrcAddr, Data[0].Size);
 		Xil_DCacheInvalidateRange((INTPTR)Data[0].DstAddr, Data[0].Size);
 		Xil_DCacheFlushRange((INTPTR)Data[1].SrcAddr, Data[1].Size);
@@ -321,7 +332,15 @@ int XZDma_LinearExample(UINTPTR BaseAddress)
 	/* Before the destination buffer data is accessed do one more invalidation
 	 * to ensure that the latest data is read. This is as per ARM recommendations.
 	 */
-	if (!Config->IsCacheCoherent) {
+	if(XIOCoherencySupported())
+	{
+		if (!Config->IsCacheCoherent) {
+			Xil_DCacheInvalidateRange((INTPTR)Data[0].DstAddr, Data[0].Size);
+			Xil_DCacheInvalidateRange((INTPTR)Data[1].DstAddr, Data[1].Size);
+		}
+	}
+	else
+	{
 		Xil_DCacheInvalidateRange((INTPTR)Data[0].DstAddr, Data[0].Size);
 		Xil_DCacheInvalidateRange((INTPTR)Data[1].DstAddr, Data[1].Size);
 	}
@@ -439,7 +458,6 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 static void DoneHandler(void *CallBackRef)
 {
 	Done = 1;
-
 }
 
 /*****************************************************************************/

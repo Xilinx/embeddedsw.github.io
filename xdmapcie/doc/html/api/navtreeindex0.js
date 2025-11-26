@@ -26,7 +26,9 @@ var NAVTREEINDEX0 =
 "struct_x_dma_pcie___config.html#a05db311d17be7c1b6e270fa80fba9e16":[0,0,2,1],
 "struct_x_dma_pcie___config.html#a11981cd817dda09fa8ffb1e4b6c524bd":[0,0,2,0],
 "struct_x_dma_pcie___config.html#a154ea2174bdb4f7e8b9ef9e11f857c4e":[0,0,2,4],
-"struct_x_dma_pcie___config.html#a7817941b09b07386d149f37f1a98c4bd":[0,0,2,2],
+"struct_x_dma_pcie___config.html#a22d5c228c7cf3895651024e470317eab":[0,0,2,7],
+"struct_x_dma_pcie___config.html#a42ba484bddfed2c7c40d2e82cefe2893":[0,0,2,2],
+"struct_x_dma_pcie___config.html#a650a11a48e2f0cb8cb5b4b7a258d7bd3":[0,0,2,6],
 "struct_x_dma_pcie___config.html#aaaff93f64f134d510ad5c5e5a326be9b":[0,0,2,5],
 "struct_x_dma_pcie___config.html#ab67ad06680c60071c889da0a04852a96":[0,0,2,3],
 "xdmapcie_8c.html":[2,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "xdmapcie__hw_8h.html#afe136278e0354b9ba85ba73226ce9e23":[2,4,59],
 "xdmapcie__hw_8h.html#afec4ab3c1c02e1155e7f94e3ddcae7c8":[2,4,48],
 "xdmapcie__intr_8c.html":[2,5],
-"xdmapcie__intr_8c.html#a034dab86e9626ac44e222373d056f693":[2,5,4],
-"xdmapcie__intr_8c.html#a086244f1e8866721dbb016893814281a":[2,5,2],
-"xdmapcie__intr_8c.html#a1ba2488b5b13dfebf7a3df93c300d67e":[2,5,0]
+"xdmapcie__intr_8c.html#a034dab86e9626ac44e222373d056f693":[2,5,4]
 };

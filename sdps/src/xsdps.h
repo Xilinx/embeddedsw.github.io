@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -102,6 +102,7 @@
 * 4.3   ap     11/29/23 Add support for Sanitize feature.
 * 4.3   ap     12/22/23 Add support to read custom HS400 tap delay value from design for eMMC.
 * 4.4   ht     09/30/24 Fix IAR warnings.
+* 4.5   sk     10/28/25 Update IsCacheCoherent logic to include EL1_NS mode.
 *
 * </pre>
 *

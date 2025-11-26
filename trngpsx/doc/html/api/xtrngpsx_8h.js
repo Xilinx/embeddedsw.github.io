@@ -1,6 +1,5 @@
 var xtrngpsx_8h =
 [
-    [ "XTRNGPSX_DEFAULT_SEED_LIFE", "xtrngpsx_8h.html#gaf0628cfa849c9b93b2bc3ddb0e59870b", null ],
     [ "XTRNGPSX_PERS_STRING_LEN_IN_BYTES", "xtrngpsx_8h.html#ga3257b88a565d4f7b0fa135f5c24f7fde", null ],
     [ "XTRNGPSX_PERS_STRING_LEN_IN_WORDS", "xtrngpsx_8h.html#ga77e0b07d55f767a322cb870bb0521da3", null ],
     [ "XTRNGPSX_SEC_STRENGTH_IN_BYTES", "xtrngpsx_8h.html#ga6633fc0a90497ef7a28b75e708053d77", null ],

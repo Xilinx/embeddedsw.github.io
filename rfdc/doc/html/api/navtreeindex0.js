@@ -15,7 +15,7 @@ var NAVTREEINDEX0 =
 "globals_func.html":[1,1],
 "globals_type.html":[1,2],
 "index.html":[],
-"md__proj_xhdsswstaff1_bhawanas_patch_integration_auto_jobs_esw_github_doxy_git_2025_81_embeddedsda6c082562db0054d5b38e643bfa66d1.html":[3],
+"md__proj_xhdsswstaff1_bhawanas_patch_integration_auto_jobs_esw_github_doxy_git_2025_82_embeddedsdd9480c9068df5766dd249fc48b11f33.html":[3],
 "pages.html":[],
 "xrfdc_8c.html":[2,0],
 "xrfdc_8c.html#ga03c20d025edfa68bd5149f3eeb0c5a16":[2,0,14],

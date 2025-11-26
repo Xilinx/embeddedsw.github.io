@@ -10,6 +10,7 @@ var xdcdma_8c =
     [ "XDcDma_InterruptEnable", "xdcdma_8c.html#ga178425efb51b5e613b27cdd6eac15a59", null ],
     [ "XDcDma_InterruptHandler", "xdcdma_8c.html#ga34970edec008b2d87dfb528dc57ff180", null ],
     [ "XDcDma_ReTrigger", "xdcdma_8c.html#gad0608c2fb88769d23b5e9d8d40a260e3", null ],
+    [ "XDcDma_SetAudioChCtrl", "xdcdma_8c.html#ga74f4612f706aaf02b9f780c0046c99e1", null ],
     [ "XDcDma_SetAxCache", "xdcdma_8c.html#ga08fe48548a67b91d7eeadea4ae85b908", null ],
     [ "XDcDma_SetAxProt", "xdcdma_8c.html#gad05901557988e38b788efcb691a179a2", null ],
     [ "XDcDma_SetCallBack", "xdcdma_8c.html#ga153e5abe962b93c6ee19741da7f150ed", null ],

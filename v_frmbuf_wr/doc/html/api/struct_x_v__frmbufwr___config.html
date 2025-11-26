@@ -205,8 +205,11 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:afafb31ab816487c4ea1c6917877d4756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interlaced support.  <a href="#afafb31ab816487c4ea1c6917877d4756">More...</a><br/></td></tr>
 <tr class="separator:afafb31ab816487c4ea1c6917877d4756"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac574dd89449209b1554a4ef8ef5910d2"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v__frmbufwr___config.html#ac574dd89449209b1554a4ef8ef5910d2">IsTileFormat</a></td></tr>
-<tr class="memdesc:ac574dd89449209b1554a4ef8ef5910d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interlaced support.  <a href="#ac574dd89449209b1554a4ef8ef5910d2">More...</a><br/></td></tr>
+<tr class="memdesc:ac574dd89449209b1554a4ef8ef5910d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile format support.  <a href="#ac574dd89449209b1554a4ef8ef5910d2">More...</a><br/></td></tr>
 <tr class="separator:ac574dd89449209b1554a4ef8ef5910d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abed9e63f5f814e80bef26fa983b2fec0"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_v__frmbufwr___config.html#abed9e63f5f814e80bef26fa983b2fec0">EnSyncSignals</a></td></tr>
+<tr class="memdesc:abed9e63f5f814e80bef26fa983b2fec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low latency support.  <a href="#abed9e63f5f814e80bef26fa983b2fec0">More...</a><br/></td></tr>
+<tr class="separator:abed9e63f5f814e80bef26fa983b2fec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This typedef contains configuration information for the frame buffer write core Each core instance should have a configuration structure associated. </p>
@@ -237,7 +240,7 @@ Data Fields</h2></td></tr>
 
 <p>AXI-MM data width. </p>
 
-<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
+<p>Referenced by <a class="el" href="xv__frmbufwr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
 
 </div>
 </div>
@@ -253,7 +256,7 @@ Data Fields</h2></td></tr>
 
 <p>The base address of the core instance. </p>
 
-<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
+<p>Referenced by <a class="el" href="xv__frmbufwr_8h.html#a1ffcda6d7c6abe158bc96a3b01efd174">XV_frmbufwr_CfgInitialize()</a>, <a class="el" href="xv__frmbufwr_8h.html#ad436052c2cfc0cd7b6b79f561dca38ab">XV_frmbufwr_DisableAutoRestart()</a>, <a class="el" href="xv__frmbufwr_8h.html#ac37a689a78739317839929d7cba96cff">XV_frmbufwr_EnableAutoRestart()</a>, <a class="el" href="xv__frmbufwr_8h.html#aec8603446c416ffcd590fb1dacc766d8">XV_frmbufwr_Get_FlushDone()</a>, <a class="el" href="xv__frmbufwr_8h.html#a89f7402d7cbb640a3c9c465d58625016">XV_frmbufwr_Get_HwReg_field_id()</a>, <a class="el" href="xv__frmbufwr_8h.html#acd1ec05a706aae551741bd738dc874cc">XV_frmbufwr_Get_HwReg_frm_buffer2_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#aa0a3f998f71dd0afcb5ed2755a8ad97f">XV_frmbufwr_Get_HwReg_frm_buffer3_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#a3a5e315ab14def780bbdcbd280ab12cb">XV_frmbufwr_Get_HwReg_frm_buffer_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#a8e1b6040c53f4a53fe8abe58e57f86bd">XV_frmbufwr_Get_HwReg_height()</a>, <a class="el" href="xv__frmbufwr_8h.html#a713dc15464e73f63f32ae6d2a102e60f">XV_frmbufwr_Get_HwReg_stride()</a>, <a class="el" href="xv__frmbufwr_8h.html#a8b8c974ce85abb60f3cbd9d8d9da8e0e">XV_frmbufwr_Get_HwReg_video_format()</a>, <a class="el" href="xv__frmbufwr_8h.html#a52dd135d5e0ee9f1d8d4aa7470b453d7">XV_frmbufwr_Get_HwReg_width()</a>, <a class="el" href="xv__frmbufwr__sinit_8c.html#aa0ee01725ed803b41fca3ce3f22a4b7e">XV_frmbufwr_Initialize()</a>, <a class="el" href="xv__frmbufwr_8h.html#a0d5ef16a3e39045cf9170304fb67b96e">XV_frmbufwr_InterruptClear()</a>, <a class="el" href="xv__frmbufwr_8h.html#a4566cdad05f19ee21c92150343677c7b">XV_frmbufwr_InterruptDisable()</a>, <a class="el" href="xv__frmbufwr_8h.html#a99d1cb6b86e24d84059be2d1a90fc9f4">XV_frmbufwr_InterruptEnable()</a>, <a class="el" href="xv__frmbufwr_8h.html#a1cbba8d3981e50c0421ede6b361da7ce">XV_frmbufwr_InterruptGetEnabled()</a>, <a class="el" href="xv__frmbufwr_8h.html#a34eec22513f730be9a0740c7fffc9142">XV_frmbufwr_InterruptGetStatus()</a>, <a class="el" href="xv__frmbufwr_8h.html#a8a20fdb5eda4f9e0776dbd061df04e19">XV_frmbufwr_InterruptGlobalDisable()</a>, <a class="el" href="xv__frmbufwr_8h.html#a54d671ea4a8f8f0b7643f122cc4d0206">XV_frmbufwr_InterruptGlobalEnable()</a>, <a class="el" href="xv__frmbufwr_8h.html#a1a45172de1053c3dbd78eda7b85cfd86">XV_frmbufwr_IsDone()</a>, <a class="el" href="xv__frmbufwr_8h.html#a1c126d44d62c2308a2c68a3b7a64046b">XV_frmbufwr_IsIdle()</a>, <a class="el" href="xv__frmbufwr_8h.html#a79c0154c54848e4215b04a297b684497">XV_frmbufwr_IsReady()</a>, <a class="el" href="xv__frmbufwr_8h.html#a7dd03b1adcd69e1d316efe8404bd30dc">XV_frmbufwr_Set_HwReg_frm_buffer2_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#a8cd85b1598a44028e8df3d35660516a0">XV_frmbufwr_Set_HwReg_frm_buffer3_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#aa8ac854d44f035497782ec71d7199c31">XV_frmbufwr_Set_HwReg_frm_buffer_V()</a>, <a class="el" href="xv__frmbufwr_8h.html#a223c96f00aeb45b5a4d6264f517fd54e">XV_frmbufwr_Set_HwReg_height()</a>, <a class="el" href="xv__frmbufwr_8h.html#a0895ffe348089ae1a845a3399326f775">XV_frmbufwr_Set_HwReg_stride()</a>, <a class="el" href="xv__frmbufwr_8h.html#a3979eb5235e31e4d611a2cbb2ab5a3a1">XV_frmbufwr_Set_HwReg_video_format()</a>, <a class="el" href="xv__frmbufwr_8h.html#a358b23884dce32646c0307ac9aab5ab2">XV_frmbufwr_Set_HwReg_width()</a>, <a class="el" href="xv__frmbufwr_8h.html#aec97449765908eeabc6e2b5fd4153297">XV_frmbufwr_SetFlushbit()</a>, <a class="el" href="xv__frmbufwr_8h.html#a1fa08ab807087c53eae5cda44cafd616">XV_frmbufwr_Start()</a>, and <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
 
 </div>
 </div>
@@ -319,6 +322,22 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="abed9e63f5f814e80bef26fa983b2fec0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u16 XV_frmbufwr_Config::EnSyncSignals</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Low latency support. </p>
+
+<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="afafb31ab816487c4ea1c6917877d4756"></a>
 <div class="memitem">
 <div class="memproto">
@@ -331,7 +350,7 @@ Data Fields</h2></td></tr>
 
 <p>Interlaced support. </p>
 
-<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>, and <a class="el" href="group__v__frmbuf__wr.html#ga02ac61b5da119e29efb4fcb6bb0a8340">XVFrmbufWr_GetFieldID()</a>.</p>
+<p>Referenced by <a class="el" href="xv__frmbufwr_8h.html#a89f7402d7cbb640a3c9c465d58625016">XV_frmbufwr_Get_HwReg_field_id()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>, and <a class="el" href="group__v__frmbuf__wr.html#ga02ac61b5da119e29efb4fcb6bb0a8340">XVFrmbufWr_GetFieldID()</a>.</p>
 
 </div>
 </div>
@@ -345,7 +364,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Interlaced support. </p>
+<p>Tile format support. </p>
 
 <p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
 
@@ -363,7 +382,7 @@ Data Fields</h2></td></tr>
 
 <p>Maximum Data width of each channel. </p>
 
-<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
+<p>Referenced by <a class="el" href="xv__frmbufwr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, and <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>.</p>
 
 </div>
 </div>
@@ -407,7 +426,7 @@ Data Fields</h2></td></tr>
 
 <p>Samples Per Clock. </p>
 
-<p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga65a4ff585ac85c574eb6111848e3b2c9">XVFrmbufWr_SetBufferAddr()</a>, <a class="el" href="group__v__frmbuf__wr.html#gae3ad3f1fa2f369041d8e9ab7683a05b0">XVFrmbufWr_SetChromaBufferAddr()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga4951453d9f7373886327dbbcb8b3ada2">XVFrmbufWr_SetMemFormat()</a>, and <a class="el" href="group__v__frmbuf__wr.html#gaf68f85db7571469e49626a9483567a50">XVFrmbufWr_SetVChromaBufferAddr()</a>.</p>
+<p>Referenced by <a class="el" href="xv__frmbufwr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga7aa0fd061e4c759a245ec57b551d8d21">XVFrmbufWr_DbgReportStatus()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga65a4ff585ac85c574eb6111848e3b2c9">XVFrmbufWr_SetBufferAddr()</a>, <a class="el" href="group__v__frmbuf__wr.html#gae3ad3f1fa2f369041d8e9ab7683a05b0">XVFrmbufWr_SetChromaBufferAddr()</a>, <a class="el" href="group__v__frmbuf__wr.html#ga4951453d9f7373886327dbbcb8b3ada2">XVFrmbufWr_SetMemFormat()</a>, and <a class="el" href="group__v__frmbuf__wr.html#gaf68f85db7571469e49626a9483567a50">XVFrmbufWr_SetVChromaBufferAddr()</a>.</p>
 
 </div>
 </div>

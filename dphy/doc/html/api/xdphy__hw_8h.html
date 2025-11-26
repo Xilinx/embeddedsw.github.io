@@ -73,6 +73,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga5ea81bbe1dbd06359901050c0840bceb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#ga5ea81bbe1dbd06359901050c0840bceb">XDPHY_HW_H_</a></td></tr>
 <tr class="memdesc:ga5ea81bbe1dbd06359901050c0840bceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevent circular inclusions by using protection macros.  <a href="group__xdphy.html#ga5ea81bbe1dbd06359901050c0840bceb">More...</a><br/></td></tr>
 <tr class="separator:ga5ea81bbe1dbd06359901050c0840bceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4dab676485278ae963ba2a5c4e5d0063"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#ga4dab676485278ae963ba2a5c4e5d0063">DL_LANE_OFFSET</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:ga4dab676485278ae963ba2a5c4e5d0063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset value for data lane registers.  <a href="group__xdphy.html#ga4dab676485278ae963ba2a5c4e5d0063">More...</a><br/></td></tr>
+<tr class="separator:ga4dab676485278ae963ba2a5c4e5d0063"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Device registers</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Register sets of MIPI DPHY </p>
 </div></td></tr>
@@ -226,8 +229,8 @@ Macros</h2></td></tr>
 <tr class="memitem:gaabcdc97a4b6fe84878848175e059319a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#gaabcdc97a4b6fe84878848175e059319a">XDPHY_CLSTATUS_REG_MODE_MASK</a>&#160;&#160;&#160;0x00000003</td></tr>
 <tr class="memdesc:gaabcdc97a4b6fe84878848175e059319a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low, High, Esc mode.  <a href="group__xdphy.html#gaabcdc97a4b6fe84878848175e059319a">More...</a><br/></td></tr>
 <tr class="separator:gaabcdc97a4b6fe84878848175e059319a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad0d8a99b274aecc21c3123cf57107ea0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad0d8a99b274aecc21c3123cf57107ea0"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDPHY_CLSTATUS_ALLMASK</b></td></tr>
+<tr class="memitem:gad0d8a99b274aecc21c3123cf57107ea0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#gad0d8a99b274aecc21c3123cf57107ea0">XDPHY_CLSTATUS_ALLMASK</a></td></tr>
+<tr class="memdesc:gad0d8a99b274aecc21c3123cf57107ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitmask combining all clock lane status flags: error control, stop state, initialization done, ULPS mode, and mode bits.  <a href="group__xdphy.html#gad0d8a99b274aecc21c3123cf57107ea0">More...</a><br/></td></tr>
 <tr class="separator:gad0d8a99b274aecc21c3123cf57107ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa857f48d553b9ed179970cdfbf80c742"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#gaa857f48d553b9ed179970cdfbf80c742">XDPHY_CLSTATUS_REG_ERRCTRL_OFFSET</a>&#160;&#160;&#160;5</td></tr>
 <tr class="memdesc:gaa857f48d553b9ed179970cdfbf80c742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bit offset for Control Error on Clock.  <a href="group__xdphy.html#gaa857f48d553b9ed179970cdfbf80c742">More...</a><br/></td></tr>
@@ -274,8 +277,8 @@ Macros</h2></td></tr>
 <tr class="memitem:gacb7931a2a11c01f1a0bf86eaf3813ad1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#gacb7931a2a11c01f1a0bf86eaf3813ad1">XDPHY_DLXSTATUS_REG_MODE_MASK</a>&#160;&#160;&#160;0x00000003</td></tr>
 <tr class="memdesc:gacb7931a2a11c01f1a0bf86eaf3813ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control Mode (Esc, Low, High) of Data Lane.  <a href="group__xdphy.html#gacb7931a2a11c01f1a0bf86eaf3813ad1">More...</a><br/></td></tr>
 <tr class="separator:gacb7931a2a11c01f1a0bf86eaf3813ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0ce7be3cdf98b126f61f647f1dfdbe5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0ce7be3cdf98b126f61f647f1dfdbe5c"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XDPHY_DLXSTATUS_ALLMASK</b></td></tr>
+<tr class="memitem:ga0ce7be3cdf98b126f61f647f1dfdbe5c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#ga0ce7be3cdf98b126f61f647f1dfdbe5c">XDPHY_DLXSTATUS_ALLMASK</a></td></tr>
+<tr class="memdesc:ga0ce7be3cdf98b126f61f647f1dfdbe5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bitmask combining all data lane status flags: mode, ULPS, init done, HS abort, escape abort, stop state, calibration status and complete.  <a href="group__xdphy.html#ga0ce7be3cdf98b126f61f647f1dfdbe5c">More...</a><br/></td></tr>
 <tr class="separator:ga0ce7be3cdf98b126f61f647f1dfdbe5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad0aef49004b2cf549d98ad9f596db44c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xdphy.html#gad0aef49004b2cf549d98ad9f596db44c">XDPHY_DLXSTATUS_REG_PACKCOUNT_OFFSET</a>&#160;&#160;&#160;16</td></tr>
 <tr class="memdesc:gad0aef49004b2cf549d98ad9f596db44c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bit offset packet count.  <a href="group__xdphy.html#gad0aef49004b2cf549d98ad9f596db44c">More...</a><br/></td></tr>

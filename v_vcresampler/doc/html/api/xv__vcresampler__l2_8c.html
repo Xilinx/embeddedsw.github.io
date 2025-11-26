@@ -60,6 +60,9 @@ $(document).ready(function(){initNavTree('xv__vcresampler__l2_8c.html','');});
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">xv_vcresampler_l2.c File Reference</div>  </div>
 </div><!--header-->
@@ -67,10 +70,6 @@ $(document).ready(function(){initNavTree('xv__vcresampler__l2_8c.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader">Hw Configuration</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>The following constants define the vert.</p>
-<p>resampler HW MAX configuration </p>
-</div></td></tr>
 <tr class="memitem:ga0f78877397bf8b1ec1723573a39f29e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#ga0f78877397bf8b1ec1723573a39f29e0">XV_VcrsmplInitialize</a> (<a class="el" href="struct_x_v___vcresampler__l2.html">XV_Vcresampler_l2</a> *InstancePtr, u16 DeviceId)</td></tr>
 <tr class="memdesc:ga0f78877397bf8b1ec1723573a39f29e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the core instance.  <a href="group__v__vcresampler.html#ga0f78877397bf8b1ec1723573a39f29e0">More...</a><br/></td></tr>
 <tr class="separator:ga0f78877397bf8b1ec1723573a39f29e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -95,6 +94,21 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9fbc3495721fdc850c27d53b9517dfa0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#ga9fbc3495721fdc850c27d53b9517dfa0">XV_VCrsmplDbgReportStatus</a> (<a class="el" href="struct_x_v___vcresampler__l2.html">XV_Vcresampler_l2</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga9fbc3495721fdc850c27d53b9517dfa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints Chroma Resampler status on the console.  <a href="group__v__vcresampler.html#ga9fbc3495721fdc850c27d53b9517dfa0">More...</a><br/></td></tr>
 <tr class="separator:ga9fbc3495721fdc850c27d53b9517dfa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:gaf55f0f64c22b47faeff44f90e839f079"><td class="memItemLeft" align="right" valign="top">const short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#gaf55f0f64c22b47faeff44f90e839f079">XV_vcrsmplrcoeff_taps4</a> [XV_VCRSMPLR_NUM_CONVERSIONS][XV_VCRSMPLR_MAX_PHASES][XV_VCRSMPLR_TAPS_4]</td></tr>
+<tr class="memdesc:gaf55f0f64c22b47faeff44f90e839f079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficient table for 4-tap vertical chroma resampling conversions.  <a href="group__v__vcresampler.html#gaf55f0f64c22b47faeff44f90e839f079">More...</a><br/></td></tr>
+<tr class="separator:gaf55f0f64c22b47faeff44f90e839f079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae9d91f8a575831080178efacae08dbf1"><td class="memItemLeft" align="right" valign="top">const short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#gae9d91f8a575831080178efacae08dbf1">XV_vcrsmplrcoeff_taps6</a> [XV_VCRSMPLR_NUM_CONVERSIONS][XV_VCRSMPLR_MAX_PHASES][XV_VCRSMPLR_TAPS_6]</td></tr>
+<tr class="memdesc:gae9d91f8a575831080178efacae08dbf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficient table for vertical chroma resampler with 6 taps.  <a href="group__v__vcresampler.html#gae9d91f8a575831080178efacae08dbf1">More...</a><br/></td></tr>
+<tr class="separator:gae9d91f8a575831080178efacae08dbf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf5d19248e464f251ad22246b332e37f"><td class="memItemLeft" align="right" valign="top">const short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#gadf5d19248e464f251ad22246b332e37f">XV_vcrsmplrcoeff_taps8</a> [XV_VCRSMPLR_NUM_CONVERSIONS][XV_VCRSMPLR_MAX_PHASES][XV_VCRSMPLR_TAPS_8]</td></tr>
+<tr class="memdesc:gadf5d19248e464f251ad22246b332e37f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficient table for vertical chroma resampling with 8 taps.  <a href="group__v__vcresampler.html#gadf5d19248e464f251ad22246b332e37f">More...</a><br/></td></tr>
+<tr class="separator:gadf5d19248e464f251ad22246b332e37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa9f9738f5278c32b71ffcfc423c8634e"><td class="memItemLeft" align="right" valign="top">const short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vcresampler.html#gaa9f9738f5278c32b71ffcfc423c8634e">XV_vcrsmplrcoeff_taps10</a> [XV_VCRSMPLR_NUM_CONVERSIONS][XV_VCRSMPLR_MAX_PHASES][XV_VCRSMPLR_TAPS_10]</td></tr>
+<tr class="memdesc:gaa9f9738f5278c32b71ffcfc423c8634e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coefficient table for vertical chroma resampler with 10 taps.  <a href="group__v__vcresampler.html#gaa9f9738f5278c32b71ffcfc423c8634e">More...</a><br/></td></tr>
+<tr class="separator:gaa9f9738f5278c32b71ffcfc423c8634e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

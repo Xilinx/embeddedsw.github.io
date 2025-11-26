@@ -68,7 +68,7 @@ Initialization and Configuration</h1>
 <p>The <a class="el" href="struct_x_sd_fec___config.html" title="Device configuration. ">XSdFec_Config</a> structure is used by the driver to configure the FEC mode and interface parameters defined for each SD-FEC device. The configuration structure is created by the tool-chain based on HW build properties.</p>
 <p>To support multiple runtime loading and initialization strategies employed by various operating systems, the driver instance can be initialized in one of two ways:</p>
 <ul>
-<li>XSdFecInitialize(InstancePtr, DeviceId) - The driver looks up its own configuration structure created by the tool-chain based on an ID provided by the tool-chain.</li>
+<li>XSdFecInitialize(InstancePtr, DeviceId) - The driver looks up its own configuration structure created by the tool-chain based on an ID (for XSCT build flow) or Base Address (for SDT flow) provided by the tool-chain.</li>
 <li>XSdFecCfgInitialize(InstancePtr, CfgPtr) - Uses a configuration structure provided by the caller.</li>
 </ul>
 <h1><a class="anchor" id="sec_data"></a>

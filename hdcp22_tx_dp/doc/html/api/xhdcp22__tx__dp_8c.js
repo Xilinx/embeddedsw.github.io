@@ -43,6 +43,7 @@ var xhdcp22__tx__dp_8c =
     [ "XHdcp22Tx_Dp_SetHdcp22OverProtocol", "xhdcp22__tx__dp_8c.html#ga3cc400b728803cee894bb217d178e199", null ],
     [ "XHdcp22Tx_Dp_SetLaneCount", "xhdcp22__tx__dp_8c.html#ga995867d4d13222914140a89f7a02833f", null ],
     [ "XHdcp22Tx_Dp_SetMessagePollingValue", "xhdcp22__tx__dp_8c.html#ga69e915b5350f18c19185ab3f25807f00", null ],
+    [ "XHdcp22Tx_Dp_SetMst", "xhdcp22__tx__dp_8c.html#ga51d929359c8e4fed0eb3f2e05e12ed2d", null ],
     [ "XHdcp22Tx_Dp_SetRepeater", "xhdcp22__tx__dp_8c.html#gac13cd4fccfd35cdc6910c4cb35e936d4", null ],
     [ "XHdcp22Tx_Dp_timer_attach", "xhdcp22__tx__dp_8c.html#ga35bd2f291b77bb7898711643c0d916f0", null ],
     [ "XHdcp22Tx_Dp_TimerHandler", "xhdcp22__tx__dp_8c.html#gaf8361dacb5fe97db31bbb47ee6510235", null ],

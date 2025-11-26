@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -218,13 +218,6 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	/* Set HDMI mode */
 	XV_HdmiTx1_SetHdmiTmdsMode(InstancePtr);
 
-	/* Enable the AUX peripheral */
-	/* The aux peripheral is enabled at stream up */
-	/*XV_HdmiTx1_AuxEnable(InstancePtr);*/
-
-	/* Enable audio */
-	/* The audio peripheral is enabled at stream up */
-	/*XV_HdmiTx1_AudioEnable(InstancePtr);*/
 
 	/* Enable FRL peripheral */
 	XV_HdmiTx1_FrlReset(InstancePtr, FALSE);
@@ -919,7 +912,7 @@ void XV_HdmiTx1_ShowSCDC(XV_HdmiTx1 *InstancePtr)
 * @param    FVaFactor - Fast Video Active Factor
 * @param    VrrEnabled - VRR is enabled or not
 * @param    CnmvrrEnabled - Negative VRR supported flag
-* @param    TmdsClock, reference clock calculated based on the input parameters.
+* @param    TmdsClock - reference clock calculated based on the input parameters.
 *
 * @returns	XST_SUCCESS on success else
 *		XST_FAILURE
@@ -1036,10 +1029,6 @@ u32 XV_HdmiTx1_SetStream(XV_HdmiTx1 *InstancePtr,
 	if (ColorFormat == XVIDC_CSF_YCRCB_422) {
 		InstancePtr->Stream.Video.ColorDepth = XVIDC_BPC_12;
 	}
-
-/*	InstancePtr->Stream.Vic = XV_HdmiTx1_LookupVic(
-		InstancePtr->Stream.Video.VmId);
-*/
 
 	/* Set TX pixel rate*/
 	XV_HdmiTx1_SetPixelRate(InstancePtr);
@@ -1580,6 +1569,10 @@ void XV_HdmiTx1_DdcInit(XV_HdmiTx1 *InstancePtr, u32 Frequency)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
+* @return
+* 	- Non-zero if the ACK bit is set (acknowledgment received).
+* 	- Zero if the ACK bit is not set.
+*
 * @note     None.
 *
 ******************************************************************************/
@@ -1600,7 +1593,11 @@ int XV_HdmiTx1_DdcGetAck(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @note     None.
+* @return
+*	    - XST_SUCCESS if the DDC operation completed successfully.
+* 	    - XST_FAILURE if the operation timed out or the DDC controller was not running
+*
+* @note     This function blocks until the DDC operation completes or fails.
 *
 ******************************************************************************/
 int XV_HdmiTx1_DdcWaitForDone(XV_HdmiTx1 *InstancePtr)
@@ -1661,6 +1658,7 @@ int XV_HdmiTx1_DdcWaitForDone(XV_HdmiTx1 *InstancePtr)
 * This function writes data into the command fifo.
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
+* @param    Cmd is a 32-bit command to be written to the DDC command FIFO
 *
 * @note     None.
 *
@@ -1706,6 +1704,10 @@ void XV_HdmiTx1_DdcWriteCommand(XV_HdmiTx1 *InstancePtr, u32 Cmd)
 * This function reads data from the data fifo.
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
+*
+* @return
+* 	    - A byte of data read from the DDC FIFO if available.
+* 	    - 0 if the DDC engine is not running or the FIFO is empty
 *
 * @note     None.
 *
@@ -2061,7 +2063,6 @@ int XV_HdmiTx1_DdcRead(XV_HdmiTx1 *InstancePtr, u8 Slave, u16 Length,
 *       	read.
 * @param    Buffer specifies a pointer to u8 variable that will be
 *       	filled with data.
-* @param    Stop specifies the stop flag which is either TRUE/FALSE.
 *
 * @return
 *       - XST_SUCCESS if an acknowledgement received and timeout.
@@ -2196,7 +2197,7 @@ int XV_HdmiTx1_DdcWriteField(XV_HdmiTx1 *InstancePtr,
 void XV_HdmiTx1_Aux_Dsc_Send_Header(XV_HdmiTx1 *InstancePtr, u32 Data)
 {
 	/* Verify argument. */
-	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr != NULL);
 
 	/* Update DSC packet header */
 	XV_HdmiTx1_WriteReg(InstancePtr->Config.BaseAddress, XV_HDMITX1_DSC_BASE, Data);
@@ -2218,7 +2219,7 @@ void XV_HdmiTx1_Aux_Dsc_Send_Header(XV_HdmiTx1 *InstancePtr, u32 Data)
 void XV_HdmiTx1_Aux_Dsc_Send_Data(XV_HdmiTx1 *InstancePtr, u32 Data)
 {
 	/* Verify argument. */
-	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr != NULL);
 
 	/* Update DSC packet Data */
 	XV_HdmiTx1_WriteReg(InstancePtr->Config.BaseAddress, XV_HDMITX1_DSC_BASE, Data);
@@ -2499,8 +2500,6 @@ int XV_HdmiTx1_IsStreamConnected(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @return   Active audio format of HDMI Tx
-*
 * @note     None.
 *
 ******************************************************************************/
@@ -2581,8 +2580,6 @@ void XV_HdmiTx1_FRLACRStart(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @return   Active audio format of HDMI Tx
-*
 * @note     None.
 *
 ******************************************************************************/
@@ -2657,9 +2654,11 @@ void XV_HdmiTx1_TMDSACRStart(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
+* @param    Value is number of active audio channels
+*
 * @return
 *       - XST_SUCCESS if active channels were set.
-*       - XST_FAILURE if no active channles were set.
+*       - XST_FAILURE if no active channels were set.
 *
 * @note     None.
 *
@@ -2818,6 +2817,8 @@ u32 XV_HdmiTxSs1_GetAudioNVal(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
+* @param    Value specifies the audio format
+*
 * @return
 *       - XST_SUCCESS if active channels were set.
 *       - XST_FAILURE if no active channles were set.
@@ -2920,7 +2921,8 @@ XV_HdmiTx1_AudioFormatType XV_HdmiTx1_GetAudioFormat(XV_HdmiTx1 *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XHdmi_Tx core instance.
 *
-* @return	None.
+* @return       Returns a pointer to the local buffer containing the SCDC character
+* 		error detection readings
 *
 * @note		Reading the SCDC registers will clear the values at the sink
 *
@@ -2967,12 +2969,38 @@ static void StubCallback(void *Callback)
 	Xil_AssertVoidAlways();
 }
 
+/*****************************************************************************/
+/**
+*
+* This function returns Video Timing Extended Metadata
+*
+* @param    InstancePtr is a pointer to the XHdmiTx1 core instance.
+*
+* @return   XV_HdmiC_VideoTimingExtMeta
+*
+* @note   None.
+*
+******************************************************************************/
 XV_HdmiC_VideoTimingExtMeta *XV_HdmiTx1_GetVidTimingExtMeta(
 		XV_HdmiTx1 *InstancePtr)
 {
 	return &(InstancePtr->VrrIF.VidTimingExtMeta);
 }
 
+/*****************************************************************************/
+/**
+* This function configures the HDMI transmitter with extended video timing metadata
+* such as QMS (Quick Media Switching), VRR (Variable Refresh Rate), and other
+* timing-related parameters. It prepares the VTEM data based on the provided
+* metadata structure and writes it to the appropriate auxiliary registers.
+*
+* @param    InstancePtr is a pointer to the XHdmiTx1 core instance.
+*
+* @param    ExtMeta is a pointer to the structure containing extended video timing metadata.
+*
+* @note     None
+*
+******************************************************************************/
 void XV_HdmiTx1_GenerateVideoTimingExtMetaIF(XV_HdmiTx1 *InstancePtr,
 			XV_HdmiC_VideoTimingExtMeta *ExtMeta)
 {
@@ -3028,6 +3056,20 @@ void XV_HdmiTx1_GenerateVideoTimingExtMetaIF(XV_HdmiTx1 *InstancePtr,
 			    XV_HDMITX1_AUX_VTEM_OFFSET, Data);
 }
 
+/*****************************************************************************/
+/**
+* This function allows fine-grained control over the VTEM InfoFrame generation by
+* accepting custom values for the sync enable and dataset length fields. It is useful
+* for debugging or advanced HDMI configurations where default behavior needs to be overridden.
+*
+* @param    InstancePtr is a pointer to the XHdmiTx1 core instance.
+* @param    ExtMeta is a pointer to the structure containing extended video timing metadata.
+* @param    Sync Value to set the Sync Enable bit (0 or 1).
+* @param    DataSetLen Value to set the Dataset Length Enable bit (0 or 1).
+*
+* @note     None
+*
+******************************************************************************/
 void XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF(XV_HdmiTx1 *InstancePtr,
 				XV_HdmiC_VideoTimingExtMeta *ExtMeta, u16 Sync,
 				u16 DataSetLen)
@@ -3073,12 +3115,38 @@ void XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF(XV_HdmiTx1 *InstancePtr,
 			XV_HDMITX1_AUX_CTRL_OFFSET, Data);
 }
 
+/*****************************************************************************/
+/**
+* This function returns a pointer to the SrcProdDescIF which contains the Source
+* Product Descriptor InfoFrame data used in HDMI VRR (Variable Refresh Rate) or other
+* auxiliary metadata transmission.
+*
+* @param    InstancePtr is a pointer to the XHdmiTx1 core instance.
+*
+* @return   XV_HdmiC_SrcProdDescIF
+*
+* @note     None
+*
+******************************************************************************/
 XV_HdmiC_SrcProdDescIF *XV_HdmiTx1_GetSrcProdDescIF(
 		XV_HdmiTx1 *InstancePtr)
 {
 	return &(InstancePtr->VrrIF.SrcProdDescIF);
 }
 
+/*****************************************************************************/
+/**
+* This function configures the HDMI transmitter with Source Product Descriptor
+* metadata, including FreeSync and FreeSync Pro capabilities. It prepares the
+* data based on the provided structure and writes it to the appropriate
+* auxiliary registers
+*
+* @param    InstancePtr is a pointer to the XHdmiTx1 core instance.
+* @param    SpdIfPtr is a pointer to the structure containing SPD InfoFrame data.
+*
+* @note     None
+*
+******************************************************************************/
 void XV_HdmiTx1_GenerateSrcProdDescInfoframe(XV_HdmiTx1 *InstancePtr,
 			XV_HdmiC_SrcProdDescIF *SpdIfPtr)
 {

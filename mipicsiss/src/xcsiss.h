@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -163,13 +163,13 @@ extern "C" {
  * are promoted to the subsystem level so that the application can use them.
  * @{
  */
-#define XCSISS_HANDLER_DPHY		XCSI_HANDLER_DPHY
-#define XCSISS_HANDLER_PKTLVL		XCSI_HANDLER_PKTLVL
-#define XCSISS_HANDLER_PROTLVL		XCSI_HANDLER_PROTLVL
-#define XCSISS_HANDLER_SHORTPACKET	XCSI_HANDLER_SHORTPACKET
-#define XCSISS_HANDLER_FRAMERECVD	XCSI_HANDLER_FRAMERECVD
-#define XCSISS_HANDLER_OTHERERROR	XCSI_HANDLER_OTHERERROR
-#define XCSISS_HANDLER_VCX		XCSI_HANDLER_VCXFRAMEERROR
+#define XCSISS_HANDLER_DPHY		XCSI_HANDLER_DPHY	/**< D-PHY handler */
+#define XCSISS_HANDLER_PKTLVL		XCSI_HANDLER_PKTLVL	/**< Packet level handler */
+#define XCSISS_HANDLER_PROTLVL		XCSI_HANDLER_PROTLVL	/**< Protocol level handler */
+#define XCSISS_HANDLER_SHORTPACKET	XCSI_HANDLER_SHORTPACKET /**< Short packet handler */
+#define XCSISS_HANDLER_FRAMERECVD	XCSI_HANDLER_FRAMERECVD	/**< Frame received handler */
+#define XCSISS_HANDLER_OTHERERROR	XCSI_HANDLER_OTHERERROR	/**< Other error handler */
+#define XCSISS_HANDLER_VCX		XCSI_HANDLER_VCXFRAMEERROR /**< VCX frame error handler */
 /*@}*/
 
 /**
@@ -287,7 +287,7 @@ typedef struct {
 XCsiSs_Config* XCsiSs_LookupConfig(u32 DeviceId);
 #else
 XCsiSs_Config* XCsiSs_LookupConfig(UINTPTR BaseAddress);
-u32 XCsiSs_GetDrvIndex(XCsiSs *InstancePtr, UINTPTR BaseAddress);
+u32 XCsiSs_GetDrvIndex(UINTPTR BaseAddress);
 #endif
 
 /* Initialization and control functions xcsiss.c */

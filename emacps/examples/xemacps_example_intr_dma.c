@@ -116,6 +116,7 @@
 #include <stdlib.h>
 #include "xemacps_example.h"
 #include "xil_exception.h"
+#include "xplatform_info.h"
 
 #ifndef __MICROBLAZE__
 #include "xil_mmu.h"
@@ -133,6 +134,10 @@
  */
 #ifdef __MICROBLAZE__
 #define XPS_SYS_CTRL_BASEADDR	XPAR_PS7_SLCR_0_S_AXI_BASEADDR
+#endif
+
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
+#define PM_GET_CHIPID    0xC2000018
 #endif
 
 #ifdef SDT
@@ -209,6 +214,8 @@
 #define GEMVERSION_ZYNQMP	0x7
 #define GEMVERSION_VERSAL	0x107
 #define GEMVERSION_VERSAL_2VE_2VM_10GBE	0xC
+
+#define QUEUE_DISABLE 	0x1
 
 /*************************** Variable Definitions ***************************/
 
@@ -468,7 +475,14 @@ LONG EmacPsDmaIntrExample(INTC *IntcInstancePtr,
 	} else if (GemVersion == GEMVERSION_VERSAL_2VE_2VM_10GBE) {
 		Platform = 0;
 	} else if (GemVersion > 2) {
+#if defined (__aarch64__) && (EL1_NONSECURE == 1)
+		XSmc_OutVar smc_result = Xil_Smc(PM_GET_CHIPID, 0, 0, 0, 0, 0, 0, 0);
+		if (smc_result.Arg0 == 0) {
+			Platform = (u32)smc_result.Arg1;
+		}
+#else
 		Platform = Xil_In32(CSU_VERSION);
+#endif
 	}
 	/* Enable jumbo frames for zynqmp */
 	if (GemVersion > 2) {
@@ -723,7 +737,7 @@ LONG EmacPsDmaSingleFrameIntrExample(XEmacPs *EmacPsInstancePtr, u32 packet)
 	 */
 	PayloadSize = rand() % (PayloadSize - 64 + 1) + 64;
 
-	/* Excercise all available queues */
+	/* Exercise all available queues */
 	queue = packet % (EmacPsInstancePtr->MaxQueues);
 
 	/* Print packet count and payload size */
@@ -741,16 +755,23 @@ LONG EmacPsDmaSingleFrameIntrExample(XEmacPs *EmacPsInstancePtr, u32 packet)
 	EmacPsUtilFrameHdrFormatType(&TxFrame, PayloadSize);
 	EmacPsUtilFrameSetPayloadData(&TxFrame, PayloadSize);
 
-	if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+	if (XIOCoherencySupported()) {
+		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheFlushRange((UINTPTR)&TxFrame, sizeof(EthernetFrame));
+		}
+	} else {
 		Xil_DCacheFlushRange((UINTPTR)&TxFrame, sizeof(EthernetFrame));
 	}
-
 	/*
 	 * Clear out receive packet memory area
 	 */
 	EmacPsUtilFrameMemClear(&RxFrame);
 
-	if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+	if (XIOCoherencySupported()) {
+		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheFlushRange((UINTPTR)&RxFrame, sizeof(EthernetFrame));
+		}
+	} else {
 		Xil_DCacheFlushRange((UINTPTR)&RxFrame, sizeof(EthernetFrame));
 	}
 
@@ -788,7 +809,11 @@ LONG EmacPsDmaSingleFrameIntrExample(XEmacPs *EmacPsInstancePtr, u32 packet)
 	 * cache flush for 64 bytes. which is equal to the cache line size.
 	 */
 	if (GemVersion > 2) {
-		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+		if (XIOCoherencySupported()) {
+			if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+				Xil_DCacheFlushRange((UINTPTR)BdRxPtr, 64);
+			}
+		} else {
 			Xil_DCacheFlushRange((UINTPTR)BdRxPtr, 64);
 		}
 	}
@@ -824,11 +849,17 @@ LONG EmacPsDmaSingleFrameIntrExample(XEmacPs *EmacPsInstancePtr, u32 packet)
 		EmacPsUtilErrorTrap("Error committing TxBD to HW");
 		return XST_FAILURE;
 	}
-	if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+
+	if (XIOCoherencySupported()) {
+		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheFlushRange((UINTPTR)Bd1Ptr, 64);
+		}
+	} else {
 		Xil_DCacheFlushRange((UINTPTR)Bd1Ptr, 64);
 	}
+
 	/*
-	 * Set the Queue pointers and Tie-off unsed queue pointers.
+	 * Set the Queue pointers and Tie-off unused queue pointers.
 	 */
 	if (EmacPsInstancePtr->MaxQueues > 1) {
 		/*
@@ -840,25 +871,40 @@ LONG EmacPsDmaSingleFrameIntrExample(XEmacPs *EmacPsInstancePtr, u32 packet)
 		 * from these queues.
 		 */
 
-		XEmacPs_BdClear(&BdRxTerminate);
-		XEmacPs_BdSetAddressRx(&BdRxTerminate, (XEMACPS_RXBUF_NEW_MASK |
-							XEMACPS_RXBUF_WRAP_MASK));
-		XEmacPs_BdClear(&BdTxTerminate);
-		XEmacPs_BdSetStatus(&BdTxTerminate, (XEMACPS_TXBUF_USED_MASK |
-						     XEMACPS_TXBUF_WRAP_MASK));
+		u8 isVersalPlatform;
+		u8 needsCacheFlush;
+		UINTPTR txPtr;
+		UINTPTR rxPtr;
 
-		/* Tie-off unsed queues */
-		for (i=0; i < EmacPsInstancePtr->MaxQueues; i++ ) {
-			if ( i != queue ) {
-				XEmacPs_SetQueuePtr(EmacPsInstancePtr, (UINTPTR)&BdRxTerminate,
-					i, XEMACPS_RECV);
-				XEmacPs_SetQueuePtr(EmacPsInstancePtr, (UINTPTR)&BdTxTerminate,
-					i, XEMACPS_SEND);
-			}
+		isVersalPlatform = (GemVersion == GEMVERSION_VERSAL) ||
+                       (GemVersion == GEMVERSION_VERSAL_2VE_2VM_10GBE);
+		needsCacheFlush = (!XIOCoherencySupported() || !EmacPsInstancePtr->Config.IsCacheCoherent) && !isVersalPlatform;
+
+		/* Setup termination descriptors only for older platforms */
+		if (!isVersalPlatform) {
+			XEmacPs_BdClear(&BdRxTerminate);
+			XEmacPs_BdSetAddressRx(&BdRxTerminate,
+					XEMACPS_RXBUF_NEW_MASK | XEMACPS_RXBUF_WRAP_MASK);
+			XEmacPs_BdClear(&BdTxTerminate);
+			XEmacPs_BdSetStatus(&BdTxTerminate,
+					XEMACPS_TXBUF_USED_MASK | XEMACPS_TXBUF_WRAP_MASK);
 		}
-		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
-			Xil_DCacheFlushRange((UINTPTR)(&BdTxTerminate), 64);
-			Xil_DCacheFlushRange((UINTPTR)(&BdRxTerminate), 64);
+
+		/* Precompute queue pointers */
+		txPtr = isVersalPlatform ? QUEUE_DISABLE : (UINTPTR)&BdTxTerminate;
+		rxPtr = isVersalPlatform ? QUEUE_DISABLE : (UINTPTR)&BdRxTerminate;
+
+		/* Tie-off unused queues */
+		for (i=0; i < EmacPsInstancePtr->MaxQueues; i++ ) {
+			if (i == queue) continue;
+			XEmacPs_SetQueuePtr(EmacPsInstancePtr, txPtr, i, XEMACPS_SEND);
+			XEmacPs_SetQueuePtr(EmacPsInstancePtr, rxPtr, i, XEMACPS_RECV);
+		}
+
+		/* Flush cache if needed */
+		if (needsCacheFlush) {
+			Xil_DCacheFlushRange((UINTPTR)&BdTxTerminate, 64);
+			Xil_DCacheFlushRange((UINTPTR)&BdRxTerminate, 64);
 		}
 	}
 	XEmacPs_SetQueuePtr(EmacPsInstancePtr, EmacPsInstancePtr->RxBdRing.BaseBdAddr,
@@ -1352,6 +1398,7 @@ static void XEmacPsSendHandler(void *Callback)
 *****************************************************************************/
 static void XEmacPsRecvHandler(void *Callback)
 {
+
 	XEmacPs *EmacPsInstancePtr = (XEmacPs *) Callback;
 
 	/*
@@ -1364,11 +1411,19 @@ static void XEmacPsRecvHandler(void *Callback)
 	 * happened.
 	 */
 	FramesRx++;
-	if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+	if (XIOCoherencySupported()) {
+		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+			Xil_DCacheInvalidateRange((UINTPTR)&RxFrame, sizeof(EthernetFrame));
+		}
+	} else {
 		Xil_DCacheInvalidateRange((UINTPTR)&RxFrame, sizeof(EthernetFrame));
 	}
 	if (GemVersion > 2) {
-		if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+		if (XIOCoherencySupported()) {
+			if (EmacPsInstancePtr->Config.IsCacheCoherent == 0) {
+				Xil_DCacheInvalidateRange((UINTPTR)RxBdSpacePtr, 64);
+			}
+		} else {
 			Xil_DCacheInvalidateRange((UINTPTR)RxBdSpacePtr, 64);
 		}
 		XEmacPs_IntQiDisable(EmacPsInstancePtr, 1, XEMACPS_INTQ1_IXR_RX_MASK);
@@ -1460,9 +1515,9 @@ static void XEmacPsErrorHandler(void *Callback, u8 Direction, u32 ErrorWord)
 * @note		None.
 *
 *****************************************************************************/
-void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId)
+void XEmacPsClkSetup(XEmacPs *EmacPsInstancePtr, u16 EmacPsIntrId __attribute__((unused)))
 {
-	u32 ClkCntrl;
+	u32 ClkCntrl __attribute__((unused)) = 0;
 	u32 BaseAddress = EmacPsInstancePtr->Config.BaseAddress;
 
 	if (GemVersion == 2) {

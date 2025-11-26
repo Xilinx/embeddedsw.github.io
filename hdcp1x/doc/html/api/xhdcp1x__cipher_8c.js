@@ -24,6 +24,7 @@ var xhdcp1x__cipher_8c =
     [ "XHdcp1x_CipherSetB", "xhdcp1x__cipher_8c.html#ga70bcb7dd61e57e5b33d2213817a80eca", null ],
     [ "XHdcp1x_CipherSetK", "xhdcp1x__cipher_8c.html#ga89ff306031805dad1e1ff7af0c836873", null ],
     [ "XHdcp1x_CipherSetKeySelect", "xhdcp1x__cipher_8c.html#ga6f0a88da0a794b63e3f6caafa912dc10", null ],
+    [ "XHdcp1x_CipherSetMode", "xhdcp1x__cipher_8c.html#ga8438aa18360e551721d2803cf11004a2", null ],
     [ "XHdcp1x_CipherSetNumLanes", "xhdcp1x__cipher_8c.html#gad104aebb80bb03cb66c31eaabf21247a", null ],
     [ "XHdcp1x_CipherSetRemoteKsv", "xhdcp1x__cipher_8c.html#ga320b0410ab8e10a8bc5c2a6278ed06d7", null ]
 ];

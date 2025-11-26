@@ -58,6 +58,8 @@ var xhdcp1x__tx_8c =
     [ "XHdcp1x_TxDisableEncryption", "xhdcp1x__tx_8c.html#gad8b45d2c6a594bdb5210c443d1d0020d", null ],
     [ "XHdcp1x_TxEnable", "xhdcp1x__tx_8c.html#gaaf9b859a4cd68d38f32103a365d48b99", null ],
     [ "XHdcp1x_TxEnableBlank", "xhdcp1x__tx_8c.html#ga610b320cce6d9ee99a4f8c2380f2c852", null ],
+    [ "XHdcp1x_TxEnableEcf", "xhdcp1x__tx_8c.html#ga4f752680b62e63e3c354880fd5d5156c", null ],
+    [ "XHdcp1x_TxEnableEcfTimeslots", "xhdcp1x__tx_8c.html#ga77e1f67d04fe05ef14dbc3c28e6a5942", null ],
     [ "XHdcp1x_TxEnableEncryption", "xhdcp1x__tx_8c.html#ga49660982a4772c7bc0091f7c88c68e19", null ],
     [ "XHdcp1x_TxGetEncryption", "xhdcp1x__tx_8c.html#ga86e8fd4e72f7d913bc7f13ea15f37af7", null ],
     [ "XHdcp1x_TxGetTopology", "xhdcp1x__tx_8c.html#gab22ac8a26a4b60bdeda3be59baacbf39", null ],
@@ -83,6 +85,7 @@ var xhdcp1x__tx_8c =
     [ "XHdcp1x_TxSetCallback", "xhdcp1x__tx_8c.html#ga67f8a82df784bef00e7532a43b495d85", null ],
     [ "XHdcp1x_TxSetHdmiMode", "xhdcp1x__tx_8c.html#ga43144123acbfd9840bc356d14ff2ccdc", null ],
     [ "XHdcp1x_TxSetLaneCount", "xhdcp1x__tx_8c.html#gaf4099beda2b952aa7f9ce574cbbc7646", null ],
+    [ "XHdcp1x_TxSetMSTMode", "xhdcp1x__tx_8c.html#ga787eabbdb561dd26f1a18524f4ec707b", null ],
     [ "XHdcp1x_TxSetPhysicalState", "xhdcp1x__tx_8c.html#ga5540f73bc84858385b40eb85c2471cdc", null ],
     [ "XHdcp1x_TxTriggerDownstreamAuth", "xhdcp1x__tx_8c.html#gab797b1cff481d823174db2e3fdec666a", null ]
 ];

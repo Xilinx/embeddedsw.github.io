@@ -110,7 +110,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a7fb8a4318a026c390d69a8f30b019bec"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called when sink requested for FRL to be stopped.  <a href="#a7fb8a4318a026c390d69a8f30b019bec">More...</a><br/></td></tr>
 <tr class="separator:a7fb8a4318a026c390d69a8f30b019bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7e151cc4c1da01d3b581db188725f12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitxss1__frl_8h.html#af7e151cc4c1da01d3b581db188725f12">XV_HdmiTxSs1_TmdsConfigCallback</a> (void *CallbackRef)</td></tr>
-<tr class="memdesc:af7e151cc4c1da01d3b581db188725f12"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called when during FRL link training, it is decided to fallback to the legacy HDMI TMDS mode.  <a href="#af7e151cc4c1da01d3b581db188725f12">More...</a><br/></td></tr>
+<tr class="memdesc:af7e151cc4c1da01d3b581db188725f12"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called during FRL link training when it is decided to fallback to the legacy HDMI TMDS mode.  <a href="#af7e151cc4c1da01d3b581db188725f12">More...</a><br/></td></tr>
 <tr class="separator:af7e151cc4c1da01d3b581db188725f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -146,7 +146,7 @@ Functions</h2></td></tr>
 <p>This function is called when the FRL link training requires configuration from application. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is a pointer to the callback reference.</td></tr>
   </table>
   </dd>
 </dl>
@@ -174,7 +174,7 @@ Functions</h2></td></tr>
 <p>This function is called when the FRL link training requires configuring of FFE. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is a pointer to the callback reference.</td></tr>
   </table>
   </dd>
 </dl>
@@ -202,7 +202,7 @@ Functions</h2></td></tr>
 <p>This function is called when the FRL link training passes and sink is ready to receive video, audio and control packets. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is a pointer to the callback reference.</td></tr>
   </table>
   </dd>
 </dl>
@@ -230,7 +230,7 @@ Functions</h2></td></tr>
 <p>This function is called when sink requested for FRL to be stopped. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is a pointer to the callback reference.</td></tr>
   </table>
   </dd>
 </dl>
@@ -255,10 +255,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function is called when during FRL link training, it is decided to fallback to the legacy HDMI TMDS mode. </p>
+<p>This function is called during FRL link training when it is decided to fallback to the legacy HDMI TMDS mode. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">None.</td><td></td></tr>
+    <tr><td class="paramname">CallbackRef</td><td>is a pointer to the callback reference.</td></tr>
   </table>
   </dd>
 </dl>

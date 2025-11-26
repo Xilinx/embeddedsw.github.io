@@ -11,7 +11,7 @@ var NAVTREE =
       [ "Macros", "globals_defs.html", "globals_defs" ]
     ] ],
     [ "File List", "files.html", "files" ],
-    [ "README", "md__proj_xhdsswstaff1_bhawanas_patch_integration_auto_jobs_esw_github_doxy_git_2025_81_embeddedsda6c082562db0054d5b38e643bfa66d1.html", null ],
+    [ "README", "md__proj_xhdsswstaff1_bhawanas_patch_integration_auto_jobs_esw_github_doxy_git_2025_82_embeddedsdd9480c9068df5766dd249fc48b11f33.html", null ],
     [ "Examples", "example.html", [
       [ "xrfdc_selftest_example.c", "example.html#ex1", null ],
       [ "xrfdc_read_write_example.c", "example.html#ex2", null ],

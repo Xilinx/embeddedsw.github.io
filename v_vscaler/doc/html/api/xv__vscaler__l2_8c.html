@@ -60,6 +60,9 @@ $(document).ready(function(){initNavTree('xv__vscaler__l2_8c.html','');});
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">xv_vscaler_l2.c File Reference</div>  </div>
 </div><!--header-->
@@ -67,9 +70,6 @@ $(document).ready(function(){initNavTree('xv__vscaler__l2_8c.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader">Hw Configuration</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>The following constants define the scaler HW MAX configuration</p>
-</div></td></tr>
 <tr class="memitem:ga6d77a50fbbe99bd1dd186ed1cf82deb3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vscaler.html#ga6d77a50fbbe99bd1dd186ed1cf82deb3">XV_VScalerInitialize</a> (<a class="el" href="struct_x_v___vscaler__l2.html">XV_Vscaler_l2</a> *InstancePtr, u16 DeviceId)</td></tr>
 <tr class="memdesc:ga6d77a50fbbe99bd1dd186ed1cf82deb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the core instance.  <a href="group__v__vscaler.html#ga6d77a50fbbe99bd1dd186ed1cf82deb3">More...</a><br/></td></tr>
 <tr class="separator:ga6d77a50fbbe99bd1dd186ed1cf82deb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -83,11 +83,17 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga225e5f5ea049a33007e01a0f3eed98f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function loads user defined filter coefficients in the scaler coefficient storage.  <a href="group__v__vscaler.html#ga225e5f5ea049a33007e01a0f3eed98f1">More...</a><br/></td></tr>
 <tr class="separator:ga225e5f5ea049a33007e01a0f3eed98f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa7b32a54f54e226389a3410ac2e3a669"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vscaler.html#gaa7b32a54f54e226389a3410ac2e3a669">XV_VScalerSetup</a> (<a class="el" href="struct_x_v___vscaler__l2.html">XV_Vscaler_l2</a> *InstancePtr, u32 WidthIn, u32 HeightIn, u32 HeightOut, u32 ColorFormat)</td></tr>
-<tr class="memdesc:gaa7b32a54f54e226389a3410ac2e3a669"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the scaler core registers with the specified configuration parameters of the axi stream.  <a href="group__v__vscaler.html#gaa7b32a54f54e226389a3410ac2e3a669">More...</a><br/></td></tr>
+<tr class="memdesc:gaa7b32a54f54e226389a3410ac2e3a669"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the scaler core registers with the specified configuration parameters of the AXI stream.  <a href="group__v__vscaler.html#gaa7b32a54f54e226389a3410ac2e3a669">More...</a><br/></td></tr>
 <tr class="separator:gaa7b32a54f54e226389a3410ac2e3a669"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0aec7af5a1af5d07c6d769c0f54e73fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vscaler.html#ga0aec7af5a1af5d07c6d769c0f54e73fd">XV_VScalerDbgReportStatus</a> (<a class="el" href="struct_x_v___vscaler__l2.html">XV_Vscaler_l2</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga0aec7af5a1af5d07c6d769c0f54e73fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints V Scaler status on the console.  <a href="group__v__vscaler.html#ga0aec7af5a1af5d07c6d769c0f54e73fd">More...</a><br/></td></tr>
 <tr class="separator:ga0aec7af5a1af5d07c6d769c0f54e73fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:gab758b04c44e9ba0fbd656bf02270b330"><td class="memItemLeft" align="right" valign="top">const short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__vscaler.html#gab758b04c44e9ba0fbd656bf02270b330">XV_vscaler_Lanczos2_taps6</a> [XV_VSCALER_MAX_V_PHASES][XV_VSCALER_TAPS_6]</td></tr>
+<tr class="memdesc:gab758b04c44e9ba0fbd656bf02270b330"><td class="mdescLeft">&#160;</td><td class="mdescRight">XV_vscaler_Lanczos2_taps6 Default fixed coefficient set for 6-tap Lanczos2 vertical scaler filter.  <a href="group__v__vscaler.html#gab758b04c44e9ba0fbd656bf02270b330">More...</a><br/></td></tr>
+<tr class="separator:gab758b04c44e9ba0fbd656bf02270b330"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

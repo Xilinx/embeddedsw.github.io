@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  ******************************************************************************/
 
@@ -19,6 +19,7 @@
  * ----- ---- -------- -------------------------------------------------------
  * 1.0   rb   22/02/18 First release
  * 1.5   vak  03/25/19 Fixed incorrect data_alignment pragma directive for IAR
+ * 1.18  ka   08/21/25 Fixed GCC warnings
  *
  *</pre>
  ******************************************************************************/
@@ -415,6 +416,7 @@ USB30_CONFIG __attribute__ ((aligned(16))) config3 = {
 		USB_DT_CS_ENDPOINT,		/* bDescriptorType */
 		UAC_EP_GENERAL,			/* bDescriptorSubtype */
 		0x00,				/* bmAttributes */
+		0x00,                           /* bmControls */
 		0x00,				/* bLockDelayUnits */
 		0x00,				/* wLockDelayL */
 		0x00				/* wLockDelayH */
@@ -812,6 +814,7 @@ USB_CONFIG __attribute__ ((aligned(16))) config2 = {
 		USB_DT_CS_ENDPOINT,		/* bDescriptorType */
 		UAC_EP_GENERAL,			/* bDescriptorSubtype */
 		0x00,				/* bmAttributes */
+		0x00,                           /* bmControls */
 		0x00,				/* bLockDelayUnits */
 		0x00,				/* wLockDelayL */
 		0x00				/* wLockDelayH */
@@ -1181,14 +1184,10 @@ u32 Usb_Ch9SetupStrDescReply(struct Usb_DevData *InstancePtr, u8 *BufPtr,
 
 	if (DFU->is_dfu == 1) {
 		String = (char *)&DFUStringList[StrArray][Index];
-		if (Index >= sizeof(DFUStringList) / sizeof(u8 *)) {
-			return 0;
-		}
+		if (Index >= sizeof(DFUStringList[0]) / sizeof(DFUStringList[0][0])) return 0;
 	} else {
 		String = (char *)&StringList[StrArray][Index];
-		if (Index >= sizeof(StringList) / sizeof(u8 *)) {
-			return 0;
-		}
+		if (Index >= sizeof(StringList[0]) / sizeof(StringList[0][0])) return 0;
 	}
 
 	StringLen = strlen(String);

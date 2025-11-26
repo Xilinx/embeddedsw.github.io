@@ -200,6 +200,9 @@ Macros</h2></td></tr>
 <tr class="memitem:gab5dee148b2f2a1a0fe878271ef7def20"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#gab5dee148b2f2a1a0fe878271ef7def20">XHDCP22_CIPHER_REG_CTRL_LANE_CNT_BIT_POS</a>&#160;&#160;&#160;6</td></tr>
 <tr class="memdesc:gab5dee148b2f2a1a0fe878271ef7def20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control register lane count bits position.  <a href="#gab5dee148b2f2a1a0fe878271ef7def20">More...</a><br/></td></tr>
 <tr class="separator:gab5dee148b2f2a1a0fe878271ef7def20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1ad320e9f9daefb0a1b25a44eacb84a6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#ga1ad320e9f9daefb0a1b25a44eacb84a6">XHDCP22_CIPHER_REG_CTRL_MST_BIT_POS</a>&#160;&#160;&#160;11</td></tr>
+<tr class="memdesc:ga1ad320e9f9daefb0a1b25a44eacb84a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control register lane count bits position.  <a href="#ga1ad320e9f9daefb0a1b25a44eacb84a6">More...</a><br/></td></tr>
+<tr class="separator:ga1ad320e9f9daefb0a1b25a44eacb84a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3ac0519b5b67ab5456564663b82bfb51"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#ga3ac0519b5b67ab5456564663b82bfb51">XHDCP22_CIPHER_REG_STA_IRQ_MASK</a>&#160;&#160;&#160;(1&lt;&lt;0)</td></tr>
 <tr class="memdesc:ga3ac0519b5b67ab5456564663b82bfb51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status register interrupt mask.  <a href="#ga3ac0519b5b67ab5456564663b82bfb51">More...</a><br/></td></tr>
 <tr class="separator:ga3ac0519b5b67ab5456564663b82bfb51"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,6 +239,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga56143e6b8ebb69833e9e799f6d77b2d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#ga56143e6b8ebb69833e9e799f6d77b2d0">XHdcp22Cipher_Dp_SetLanecount</a> (<a class="el" href="struct_x_hdcp22___cipher___dp.html">XHdcp22_Cipher_Dp</a> *InstancePtr, u8 LaneCount)</td></tr>
 <tr class="memdesc:ga56143e6b8ebb69833e9e799f6d77b2d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the Lane count in the HDCP22 Cipher core.  <a href="#ga56143e6b8ebb69833e9e799f6d77b2d0">More...</a><br/></td></tr>
 <tr class="separator:ga56143e6b8ebb69833e9e799f6d77b2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1745185b26301d5b64d995fc45e794e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#ga1745185b26301d5b64d995fc45e794e6">XHdcp22Cipher_Dp_SetMst</a> (<a class="el" href="struct_x_hdcp22___cipher___dp.html">XHdcp22_Cipher_Dp</a> *InstancePtr, u8 Mode)</td></tr>
+<tr class="memdesc:ga1745185b26301d5b64d995fc45e794e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the MST mode in the HDCP22 Cipher core.  <a href="#ga1745185b26301d5b64d995fc45e794e6">More...</a><br/></td></tr>
+<tr class="separator:ga1745185b26301d5b64d995fc45e794e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac67a66be23b685e3e37db4b445622eac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_hdcp22___cipher___dp___config.html">XHdcp22_Cipher_Dp_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hdcp22__cipher__dp.html#gac67a66be23b685e3e37db4b445622eac">XHdcp22Cipher_Dp_LookupConfig</a> (u16 DeviceId)</td></tr>
 <tr class="memdesc:gac67a66be23b685e3e37db4b445622eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns a reference to an <a class="el" href="struct_x_hdcp22___cipher___dp___config.html" title="This typedef contains configuration information for the HDCP22 Cipher core. ">XHdcp22_Cipher_Dp_Config</a> structure based on the core id, <em>DeviceId</em>.  <a href="#gac67a66be23b685e3e37db4b445622eac">More...</a><br/></td></tr>
 <tr class="separator:gac67a66be23b685e3e37db4b445622eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -414,6 +420,22 @@ Register access macro definition</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga1ad320e9f9daefb0a1b25a44eacb84a6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XHDCP22_CIPHER_REG_CTRL_MST_BIT_POS&#160;&#160;&#160;11</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Control register lane count bits position. </p>
+
+<p>Referenced by <a class="el" href="group__hdcp22__cipher__dp.html#ga1745185b26301d5b64d995fc45e794e6">XHdcp22Cipher_Dp_SetMst()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga89090e6ad57ea04fa92013b6dc1025f0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -468,7 +490,7 @@ Register access macro definition</h2></td></tr>
 
 <p>Control set register * offset. </p>
 
-<p>Referenced by <a class="el" href="group__hdcp22__cipher__dp.html#ga56143e6b8ebb69833e9e799f6d77b2d0">XHdcp22Cipher_Dp_SetLanecount()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp22__cipher__dp.html#ga56143e6b8ebb69833e9e799f6d77b2d0">XHdcp22Cipher_Dp_SetLanecount()</a>, and <a class="el" href="group__hdcp22__cipher__dp.html#ga1745185b26301d5b64d995fc45e794e6">XHdcp22Cipher_Dp_SetMst()</a>.</p>
 
 </div>
 </div>
@@ -798,7 +820,7 @@ Register access macro definition</h2></td></tr>
 <div class="line">        } \</div>
 <div class="line">}</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_gafa4ee53770fc4f60c2ee363fe0651c6a"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#gafa4ee53770fc4f60c2ee363fe0651c6a">XHDCP22_CIPHER_REG_CTRL_BLANK_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_BLANK_MASK</div><div class="ttdoc">Control register blank mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:95</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga23d82cf795bb981070bdfcb571faa316"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</div><div class="ttdoc">Control set register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:55</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga42e3f5b8c1f600d59c493effd730feb4"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</div><div class="ttdoc">Control clear register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:57</div></div>
 </div><!-- fragment -->
@@ -831,7 +853,7 @@ Register access macro definition</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a>))</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga242122ae1fa2499518f3e2d978190a10"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_RUN_MASK</div><div class="ttdoc">Control register Run mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:87</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga42e3f5b8c1f600d59c493effd730feb4"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</div><div class="ttdoc">Control clear register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:57</div></div>
 </div><!-- fragment -->
 <p>This macro disables the HDCP22 Cipher peripheral. </p>
@@ -861,7 +883,7 @@ Register access macro definition</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a>))</div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga42e3f5b8c1f600d59c493effd730feb4"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</div><div class="ttdoc">Control clear register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:57</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga13ba319db7ea5f068f70ff60e80e1906"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</div><div class="ttdoc">Control register Encrypt mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:93</div></div>
 </div><!-- fragment -->
@@ -893,7 +915,7 @@ Register access macro definition</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a>),(<a class="code" href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a>))</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga242122ae1fa2499518f3e2d978190a10"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_RUN_MASK</div><div class="ttdoc">Control register Run mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:87</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga23d82cf795bb981070bdfcb571faa316"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</div><div class="ttdoc">Control set register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:55</div></div>
 </div><!-- fragment -->
 <p>This macro enables the HDCP22 Cipher peripheral. </p>
@@ -923,7 +945,7 @@ Register access macro definition</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a>))</div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga23d82cf795bb981070bdfcb571faa316"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</div><div class="ttdoc">Control set register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:55</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga13ba319db7ea5f068f70ff60e80e1906"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</div><div class="ttdoc">Control register Encrypt mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:93</div></div>
 </div><!-- fragment -->
@@ -1047,7 +1069,7 @@ Register access macro definition</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a>((InstancePtr)-&gt;Config.BaseAddress)\</div>
 <div class="line">        &amp; <a class="code" href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a>) ==  <a class="code" href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a>)</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga242122ae1fa2499518f3e2d978190a10"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga242122ae1fa2499518f3e2d978190a10">XHDCP22_CIPHER_REG_CTRL_RUN_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_RUN_MASK</div><div class="ttdoc">Control register Run mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:87</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga8cf7419a2c0d57a713b670a2d3e76c7c"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetControlReg(BaseAddress)</div><div class="ttdoc">This macro reads the control register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:198</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga8cf7419a2c0d57a713b670a2d3e76c7c"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetControlReg(BaseAddress)</div><div class="ttdoc">This macro reads the control register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:201</div></div>
 </div><!-- fragment -->
 <p>This macro returns the encrypted enabled state of the HDCP22 Cipher core instance. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1076,8 +1098,8 @@ Register access macro definition</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp22__cipher__dp.html#gaabb443f5d6a08e08414fc00635356240">XHdcp22Cipher_Dp_GetStatusReg</a>((InstancePtr)-&gt;Config.BaseAddress) \</div>
 <div class="line">        &amp; <a class="code" href="group__hdcp22__cipher__dp.html#ga5a0bb78429dece8b52eb35588842afb1">XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</a>) ==  <a class="code" href="group__hdcp22__cipher__dp.html#ga5a0bb78429dece8b52eb35588842afb1">XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</a>)</div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga5a0bb78429dece8b52eb35588842afb1"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga5a0bb78429dece8b52eb35588842afb1">XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</div><div class="ttdoc">Status register encrypted mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:109</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_gaabb443f5d6a08e08414fc00635356240"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#gaabb443f5d6a08e08414fc00635356240">XHdcp22Cipher_Dp_GetStatusReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetStatusReg(BaseAddress)</div><div class="ttdoc">This macro reads the status register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:182</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga5a0bb78429dece8b52eb35588842afb1"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga5a0bb78429dece8b52eb35588842afb1">XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_STA_ENCRYPTED_MASK</div><div class="ttdoc">Status register encrypted mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:112</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_gaabb443f5d6a08e08414fc00635356240"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#gaabb443f5d6a08e08414fc00635356240">XHdcp22Cipher_Dp_GetStatusReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetStatusReg(BaseAddress)</div><div class="ttdoc">This macro reads the status register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:185</div></div>
 </div><!-- fragment -->
 <p>This macro returns the encrypted state for the HDCP22 Cipher peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1106,7 +1128,7 @@ Register access macro definition</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">((<a class="code" href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a>((InstancePtr)-&gt;Config.BaseAddress)\</div>
 <div class="line">        &amp; <a class="code" href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a>) ==  <a class="code" href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a>)</div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga8cf7419a2c0d57a713b670a2d3e76c7c"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetControlReg(BaseAddress)</div><div class="ttdoc">This macro reads the control register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:198</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga8cf7419a2c0d57a713b670a2d3e76c7c"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga8cf7419a2c0d57a713b670a2d3e76c7c">XHdcp22Cipher_Dp_GetControlReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_GetControlReg(BaseAddress)</div><div class="ttdoc">This macro reads the control register from the HDCP22 Cipher. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:201</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga13ba319db7ea5f068f70ff60e80e1906"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga13ba319db7ea5f068f70ff60e80e1906">XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_ENCRYPT_MASK</div><div class="ttdoc">Control register Encrypt mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:93</div></div>
 </div><!-- fragment -->
 <p>This macro returns the encrypted enabled state of HDCP TX encryption for the HDCP22 Cipher peripheral. </p>
@@ -1152,7 +1174,7 @@ Register access macro definition</h2></td></tr>
 <div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">                XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, (<a class="code" href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#ga89090e6ad57ea04fa92013b6dc1025f0">XHDCP22_CIPHER_REG_CTRL_NOISE_MASK</a>)); \</div>
 <div class="line">        } \</div>
 <div class="line">}</div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga89090e6ad57ea04fa92013b6dc1025f0"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga89090e6ad57ea04fa92013b6dc1025f0">XHDCP22_CIPHER_REG_CTRL_NOISE_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_NOISE_MASK</div><div class="ttdoc">Control register noise mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:97</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga23d82cf795bb981070bdfcb571faa316"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</div><div class="ttdoc">Control set register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:55</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga42e3f5b8c1f600d59c493effd730feb4"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</div><div class="ttdoc">Control clear register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:57</div></div>
@@ -1240,7 +1262,7 @@ Register access macro definition</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#gaf9999b5a4f4b113af9b79e583fd9a391">XHDCP22_CIPHER_REG_CTRL_MODE_MASK</a>))</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_gaf9999b5a4f4b113af9b79e583fd9a391"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#gaf9999b5a4f4b113af9b79e583fd9a391">XHDCP22_CIPHER_REG_CTRL_MODE_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_MODE_MASK</div><div class="ttdoc">Control register Mode mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:91</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga23d82cf795bb981070bdfcb571faa316"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</div><div class="ttdoc">Control set register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:55</div></div>
 </div><!-- fragment -->
 <p>This macro sets the HDCP RX operation mode for the HDCP22 Cipher peripheral. </p>
@@ -1271,7 +1293,7 @@ Register access macro definition</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">        (<a class="code" href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a>), (<a class="code" href="group__hdcp22__cipher__dp.html#gaf9999b5a4f4b113af9b79e583fd9a391">XHDCP22_CIPHER_REG_CTRL_MODE_MASK</a>))</div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_gaf9999b5a4f4b113af9b79e583fd9a391"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#gaf9999b5a4f4b113af9b79e583fd9a391">XHDCP22_CIPHER_REG_CTRL_MODE_MASK</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_MODE_MASK</div><div class="ttdoc">Control register Mode mask. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:91</div></div>
-<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:167</div></div>
+<div class="ttc" id="group__hdcp22__cipher__dp_html_ga2fc7b3900db24533feac1bfad238b393"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a></div><div class="ttdeci">#define XHdcp22Cipher_Dp_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDCP22 Cipher register. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:170</div></div>
 <div class="ttc" id="group__hdcp22__cipher__dp_html_ga42e3f5b8c1f600d59c493effd730feb4"><div class="ttname"><a href="group__hdcp22__cipher__dp.html#ga42e3f5b8c1f600d59c493effd730feb4">XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XHDCP22_CIPHER_REG_CTRL_CLR_OFFSET</div><div class="ttdoc">Control clear register * offset. </div><div class="ttdef"><b>Definition:</b> xhdcp22_cipher_dp_hw.h:57</div></div>
 </div><!-- fragment -->
 <p>This macro sets the HDCP operation mode for the HDCP22 Cipher peripheral. </p>
@@ -1330,7 +1352,7 @@ Register access macro definition</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-style signature: void XHdcp22Cipher_WriteReg(u32 BaseAddress, u32 RegOffset, u32 Data) </dd></dl>
 
-<p>Referenced by <a class="el" href="group__hdcp22__cipher__dp.html#gad3b96d930adc7d8a73282ab68a5b9056">XHdcp22Cipher_Dp_SetKs()</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga56143e6b8ebb69833e9e799f6d77b2d0">XHdcp22Cipher_Dp_SetLanecount()</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga0369de0e561893f00d8c47fb37fa1862">XHdcp22Cipher_Dp_SetLc128()</a>, and <a class="el" href="group__hdcp22__cipher__dp.html#ga04b7aea3087f13c91c70af90a5f27172">XHdcp22Cipher_Dp_SetRiv()</a>.</p>
+<p>Referenced by <a class="el" href="group__hdcp22__cipher__dp.html#gad3b96d930adc7d8a73282ab68a5b9056">XHdcp22Cipher_Dp_SetKs()</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga56143e6b8ebb69833e9e799f6d77b2d0">XHdcp22Cipher_Dp_SetLanecount()</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga0369de0e561893f00d8c47fb37fa1862">XHdcp22Cipher_Dp_SetLc128()</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga1745185b26301d5b64d995fc45e794e6">XHdcp22Cipher_Dp_SetMst()</a>, and <a class="el" href="group__hdcp22__cipher__dp.html#ga04b7aea3087f13c91c70af90a5f27172">XHdcp22Cipher_Dp_SetRiv()</a>.</p>
 
 </div>
 </div>
@@ -1572,6 +1594,44 @@ Register access macro definition</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The Lc128 should be in big endian notation. </dd></dl>
 
 <p>References <a class="el" href="struct_x_hdcp22___cipher___dp___config.html#a9af03a14ce92c99b3f713f410b1343d9">XHdcp22_Cipher_Dp_Config::BaseAddress</a>, <a class="el" href="struct_x_hdcp22___cipher___dp.html#a4d19f7a5bfb4226577137e70519a0f93">XHdcp22_Cipher_Dp::Config</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga59cd2434ec0f2a563c9a9cdd67e76ade">XHDCP22_CIPHER_REG_LC128_1_OFFSET</a>, and <a class="el" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga1745185b26301d5b64d995fc45e794e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XHdcp22Cipher_Dp_SetMst </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_hdcp22___cipher___dp.html">XHdcp22_Cipher_Dp</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u8&#160;</td>
+          <td class="paramname"><em>Mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets the MST mode in the HDCP22 Cipher core. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the HDCP22 Cipher core instance. </td></tr>
+    <tr><td class="paramname">Mode</td><td>enables mst in the cipher core.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_hdcp22___cipher___dp___config.html#a9af03a14ce92c99b3f713f410b1343d9">XHdcp22_Cipher_Dp_Config::BaseAddress</a>, <a class="el" href="struct_x_hdcp22___cipher___dp.html#a4d19f7a5bfb4226577137e70519a0f93">XHdcp22_Cipher_Dp::Config</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga1ad320e9f9daefb0a1b25a44eacb84a6">XHDCP22_CIPHER_REG_CTRL_MST_BIT_POS</a>, <a class="el" href="group__hdcp22__cipher__dp.html#ga23d82cf795bb981070bdfcb571faa316">XHDCP22_CIPHER_REG_CTRL_SET_OFFSET</a>, and <a class="el" href="group__hdcp22__cipher__dp.html#ga2fc7b3900db24533feac1bfad238b393">XHdcp22Cipher_Dp_WriteReg</a>.</p>
 
 </div>
 </div>

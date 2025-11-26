@@ -15,7 +15,7 @@ var xhdmi__example_8h =
       [ "DYNAMIC_HDR_H265_CRI", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5ab894e1f57b8ed992d47797a1c25decf9", null ],
       [ "DYNAMIC_HDR_ST_2094_40", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5a2c2819510397c23683ab45dd602e6bbb", null ],
       [ "DYNAMIC_HDR_HDR10P_VSIF", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5a4626e1ef7f8b80a33345ebafb75abf80", null ],
-      [ "iiiii", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5ab8ad9f9a4627f498a79e731efc3b055e", null ]
+      [ "DYNAMIC_HDR_HDRVIVID_VSEMDS", "xhdmi__example_8h.html#affc637b14dff86aa03f9793521379dd5ad5b30b486c4cb32247103e4d76f86ec9", null ]
     ] ],
     [ "TxInputSourceType", "xhdmi__example_8h.html#a64bb08e457f634cfbcc0abe37b550a75", [
       [ "EXDES_TX_INPUT_NONE_WAITFORNEWSTREAM", "xhdmi__example_8h.html#a64bb08e457f634cfbcc0abe37b550a75ab6c4aa639adae36f839ea1d0891bcefe", null ],

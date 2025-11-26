@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -86,6 +86,7 @@
 * 1.14	ab	03/13/22 Add byte-wise transfer API for Versal-Net
 * 1.14  ng      07/13/23 Added macro to detect if dma type is invalid.
 * 1.16  ng      08/20/24 Added spartanup device support
+* 2.0   sd      10/13/25 Added support for VERSAL_2VP_P devices.
 *
 * </pre>
 *
@@ -973,7 +974,7 @@ static INLINE s32 XPmcDma_SelfTest(XPmcDma *InstancePtr)
 	return XCsuDma_SelfTest(InstancePtr);
 }
 
-#if defined(VERSAL_NET) || defined(VERSAL_2VE_2VM)
+#if (defined(VERSAL_NET) || defined(VERSAL_2VP_P))
 /*****************************************************************************/
 /**
 *

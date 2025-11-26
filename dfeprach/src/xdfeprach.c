@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2025 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -54,6 +54,8 @@
 * 1.7   dc     11/29/23 Add continuous scheduling
 *       dc     01/19/24 Correct memset destination address
 *       dc     03/22/24 Correct order of RACH mapping steps
+* 1.8   dc     06/12/25 Set phase offsets to 0 on startup
+*       dc     08/23/25 Add missing  parameter to yaml
 * </pre>
 * @addtogroup dfeprach Overview
 * @{
@@ -84,7 +86,7 @@
 */
 
 #define XDFEPRACH_DRIVER_VERSION_MINOR                                         \
-	(7U) /**< Driver's minor version number */
+	(8U) /**< Driver's minor version number */
 #define XDFEPRACH_DRIVER_VERSION_MAJOR                                         \
 	(1U) /**< Driver's major version number */
 
@@ -1540,6 +1542,7 @@ static void XDfePrach_EnableFrameMarkerTrigger(const XDfePrach *InstancePtr,
 XDfePrach *XDfePrach_InstanceInit(const char *DeviceNodeName)
 {
 	u32 Index;
+	u32 Offset;
 	XDfePrach *InstancePtr;
 #ifdef __BAREMETAL__
 	char Str[XDFEPRACH_NODE_NAME_MAX_LENGTH];
@@ -1623,6 +1626,12 @@ bm_register_metal:
 
 	/* Configure HW and the driver instance */
 	XDfePrach_CfgInitialize(InstancePtr);
+
+	/* Set all phase offsets to 0 */
+	for (Index = 0; Index < XDFEPRACH_RC_NUM_MAX; Index++) {
+		Offset = XDFEPRACH_FREQUENCY_PHASE_OFFSET + (Index * XDFEPRACH_NCO_CTRL_ADDR_STEP);
+		XDfePrach_WriteReg(InstancePtr, Offset, 0);
+	}
 
 	InstancePtr->StateId = XDFEPRACH_STATE_READY;
 

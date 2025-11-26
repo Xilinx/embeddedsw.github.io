@@ -6,5 +6,6 @@ var xv__hscaler__l2_8c =
     [ "XV_HScalerSetup", "xv__hscaler__l2_8c.html#gae6e04c78787b26aea73ce5c28b1d78b6", null ],
     [ "XV_HScalerStart", "xv__hscaler__l2_8c.html#ga6b1d1d8a20f69d2cee85e6897e9e9224", null ],
     [ "XV_HScalerStop", "xv__hscaler__l2_8c.html#ga6af3378b35ee6e260a553a47debb1231", null ],
-    [ "XV_HScalerValidateConfig", "xv__hscaler__l2_8c.html#ga546aba039ad913cfefc82e67ecac1506", null ]
+    [ "XV_HScalerValidateConfig", "xv__hscaler__l2_8c.html#ga546aba039ad913cfefc82e67ecac1506", null ],
+    [ "XV_hscaler_Lanczos2_taps6", "xv__hscaler__l2_8c.html#gaf9a9cd0608804f6cd92afc62eb2b108e", null ]
 ];

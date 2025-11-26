@@ -7,6 +7,7 @@ var files =
     [ "xiomodule_i.h", "xiomodule__i_8h.html", "xiomodule__i_8h" ],
     [ "xiomodule_intr.c", "xiomodule__intr_8c.html", "xiomodule__intr_8c" ],
     [ "xiomodule_intr_example.c", "xiomodule__intr__example_8c.html", "xiomodule__intr__example_8c" ],
+    [ "xiomodule_intr_setup_example.c", "xiomodule__intr__setup__example_8c.html", "xiomodule__intr__setup__example_8c" ],
     [ "xiomodule_io.h", "xiomodule__io_8h.html", null ],
     [ "xiomodule_l.c", "xiomodule__l_8c.html", "xiomodule__l_8c" ],
     [ "xiomodule_l.h", "xiomodule__l_8h.html", "xiomodule__l_8h" ],

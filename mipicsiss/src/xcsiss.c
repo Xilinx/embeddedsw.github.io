@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -547,7 +547,7 @@ static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 #endif
 #else
 	u32 Index = 0;
-	Index = XCsiSs_GetDrvIndex(CsiSsPtr, CsiSsPtr->Config.BaseAddr);
+	Index = XCsiSs_GetDrvIndex(CsiSsPtr->Config.BaseAddr);
 
 	CsiSsPtr->CsiPtr = ((CsiSsPtr->Config.CsiInfo.IsPresent) ?
 		(&CsiSsSubCores[Index].CsiInst) : NULL);
@@ -575,7 +575,7 @@ static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If CSI sub core is initialised sucessfully
+*		- XST_SUCCESS If CSI sub core is initialised successfully
 *		- XST_FAILURE If CSI sub core inititlization fails
 *
 * @note		None
@@ -600,6 +600,7 @@ static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 	}
 
 	/* Compute absolute base address */
+#ifndef SDT
 	AbsAddr = 0;
 	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
 					CsiSsPtr->Config.HighAddr,
@@ -610,6 +611,9 @@ static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 			"address (0x%x) invalid %d\n\r", AbsAddr);
 		return XST_FAILURE;
 	}
+#else
+	AbsAddr = ConfigPtr->BaseAddr;
+#endif
 
 	/* Initialize core */
 	Status = XCsi_CfgInitialize(CsiSsPtr->CsiPtr, ConfigPtr, AbsAddr);
@@ -629,7 +633,7 @@ static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If IIC sub core is initialised sucessfully
+*		- XST_SUCCESS If IIC sub core is initialised successfully
 *		- XST_FAILURE Otherwise
 *
 * @note		None
@@ -655,6 +659,7 @@ static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr)
 	}
 
 	/* Compute absolute base address */
+#ifndef SDT
 	AbsAddr = 0;
 	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
 					CsiSsPtr->Config.HighAddr,
@@ -665,6 +670,9 @@ static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr)
 			"address (0x%x) invalid %d\n\r", AbsAddr);
 		return XST_FAILURE;
 	}
+#else
+	AbsAddr = ConfigPtr->BaseAddress;
+#endif
 
 	/* Initialize core */
 	Status = XIic_CfgInitialize(CsiSsPtr->IicPtr, ConfigPtr, AbsAddr);
@@ -686,7 +694,7 @@ static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr)
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If DPHY sub core is initialised sucessfully
+*		- XST_SUCCESS If DPHY sub core is initialised successfully
 *		- XST_FAILURE If DPHY sub core initialization failed
 *
 * @note		None
@@ -711,6 +719,7 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 	}
 
 	/* Compute absolute base address */
+#ifndef SDT
 	AbsAddr = 0;
 	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
 					CsiSsPtr->Config.HighAddr,
@@ -721,6 +730,9 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 			"address (0x%x) invalid %d\n\r", AbsAddr);
 		return XST_FAILURE;
 	}
+#else
+	AbsAddr = ConfigPtr->BaseAddr;
+#endif
 
 	/* Initialize core */
 	Status = XDphy_CfgInitialize(CsiSsPtr->DphyPtr, ConfigPtr, AbsAddr);
@@ -742,7 +754,7 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If DPHY sub core is initialised sucessfully
+*		- XST_SUCCESS If DPHY sub core is initialised successfully
 *		- XST_FAILURE If DPHY sub core initialization failed
 *
 * @note		None
@@ -765,6 +777,7 @@ static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
 	}
 
 	/* Compute absolute base address */
+#ifndef SDT
 	AbsAddr = 0;
 	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
 					CsiSsPtr->Config.HighAddr,
@@ -775,6 +788,9 @@ static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
 			"address (0x%x) invalid %d\n\r", AbsAddr);
 		return XST_FAILURE;
 	}
+#else
+	AbsAddr = ConfigPtr->BaseAddr;
+#endif
 
 	/* Initialize core */
 	Status = XMipi_Rx_Phy_CfgInitialize(CsiSsPtr->MipiRxPhyPtr, ConfigPtr, AbsAddr);

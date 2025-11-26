@@ -135,6 +135,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gaba2c3b0d2480b34ccad95c9fdd7f5478"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dcdma.html#gaba2c3b0d2480b34ccad95c9fdd7f5478">XDcDma_GetNewDescId</a> (<a class="el" href="struct_x_dc_dma.html">XDcDma</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gaba2c3b0d2480b34ccad95c9fdd7f5478"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function incremeants the LastDescId of DcDma Instance.  <a href="#gaba2c3b0d2480b34ccad95c9fdd7f5478">More...</a><br/></td></tr>
 <tr class="separator:gaba2c3b0d2480b34ccad95c9fdd7f5478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga74f4612f706aaf02b9f780c0046c99e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mmi__dcdma.html#ga74f4612f706aaf02b9f780c0046c99e1">XDcDma_SetAudioChCtrl</a> (<a class="el" href="struct_x_dc_dma.html">XDcDma</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga74f4612f706aaf02b9f780c0046c99e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets DcDma Audio Channel Control.  <a href="#ga74f4612f706aaf02b9f780c0046c99e1">More...</a><br/></td></tr>
+<tr class="separator:ga74f4612f706aaf02b9f780c0046c99e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga3416ce41bac7a473de1c1b9665019800"></a>
@@ -478,6 +481,33 @@ Functions</h2></td></tr>
 <p>References <a class="el" href="xdcdma__hw_8h.html#a13fb2099da9eb0e145e4551f03572908">XDCDMA_GBL</a>, and <a class="el" href="xdcdma__hw_8h.html#a14cc73efebb537d35586569e9f64fd24">XDcDma_WriteReg</a>.</p>
 
 <p>Referenced by <a class="el" href="group__mmi__dcdma.html#ga731efbd7eed1559de335f1e93dd6ac1c">XDcDma_VSyncHandler()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga74f4612f706aaf02b9f780c0046c99e1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XDcDma_SetAudioChCtrl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_dc_dma.html">XDcDma</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function sets DcDma Audio Channel Control. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_dc_dma.html" title="This typedef defines the DCDMA configration. ">XDcDma</a> instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="xdcdma__hw_8h.html#a9a6e190e3d9a169d6202601553bec00a">XDCDMA_AUD_CTRL</a>, and <a class="el" href="xdcdma__hw_8h.html#a14cc73efebb537d35586569e9f64fd24">XDcDma_WriteReg</a>.</p>
 
 </div>
 </div>

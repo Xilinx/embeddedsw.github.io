@@ -1,5 +1,7 @@
 var xmipi__rx__phy_8h =
 [
+    [ "XMIPI_RX_PHY_DISABLE_FLAG", "xmipi__rx__phy_8h.html#gaf4e1dd0a01fee5503124e2bd532f02ce", null ],
+    [ "XMIPI_RX_PHY_ENABLE_FLAG", "xmipi__rx__phy_8h.html#ga52cb6c5b38df470a0f7e71c41d7e059e", null ],
     [ "XMIPI_RX_PHY_ESCAPE_MODE", "xmipi__rx__phy_8h.html#ga6ff6bab049c8e69e8ccbebc8b43b6eb7", null ],
     [ "XMIPI_RX_PHY_H_", "xmipi__rx__phy_8h.html#ga47f2481f1db47714aff2cff40ae1805a", null ],
     [ "XMIPI_RX_PHY_HANDLE_CLKLANE", "xmipi__rx__phy_8h.html#gaa79e40f54ad9778f3995f8ccfcb09fd8", null ],
@@ -19,6 +21,9 @@ var xmipi__rx__phy_8h =
     [ "XMIPI_RX_PHY_HANDLE_MIN", "xmipi__rx__phy_8h.html#ga0039d3d6608c07dff89ab4b92d2e4159", null ],
     [ "XMIPI_RX_PHY_HANDLE_WAKEUP", "xmipi__rx__phy_8h.html#gaa08e333d5f15043cd3487c45ce478248", null ],
     [ "XMIPI_RX_PHY_HIGH_POWER_MODE", "xmipi__rx__phy_8h.html#ga83b17604d921493045f62887dff773ca", null ],
+    [ "XMIPI_RX_PHY_HS_SETTLE_MAX_VALUE", "xmipi__rx__phy_8h.html#ga379ac70918b08991b5629895cdbdca0f", null ],
+    [ "XMIPI_RX_PHY_HS_TIMEOUT_MAX_VALUE", "xmipi__rx__phy_8h.html#ga1d7f56650d0da43285295644eb951100", null ],
+    [ "XMIPI_RX_PHY_HS_TIMEOUT_MIN_VALUE", "xmipi__rx__phy_8h.html#ga368643a84916a08df985dd961cf42d52", null ],
     [ "XMIPI_RX_PHY_LOW_POWER_MODE", "xmipi__rx__phy_8h.html#ga12575a833db166780c85a10a45b142c8", null ],
     [ "XMIPI_RX_PHY_MAX_LANES_V10", "xmipi__rx__phy_8h.html#ga91cf5eb7c138a6a6f2bc4f05be160ea8", null ],
     [ "XMIPI_RX_PHY_MODE_MAX", "xmipi__rx__phy_8h.html#ga34e4e2c11b6b212760e6e372cccde8e1", null ],

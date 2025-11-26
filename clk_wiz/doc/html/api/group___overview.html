@@ -133,6 +133,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga0456881555560b358b47fb336542a4d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga0456881555560b358b47fb336542a4d3">XClk_Wiz_SetInputRate</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr, double Rate)</td></tr>
 <tr class="memdesc:ga0456881555560b358b47fb336542a4d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the Input frequency to the given rate.  <a href="#ga0456881555560b358b47fb336542a4d3">More...</a><br/></td></tr>
 <tr class="separator:ga0456881555560b358b47fb336542a4d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7c7165398cf3a2578d5dfd1c3947b43c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga7c7165398cf3a2578d5dfd1c3947b43c">XClk_Wiz_GetInputRate</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr)</td></tr>
+<tr class="memdesc:ga7c7165398cf3a2578d5dfd1c3947b43c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Input frequency.  <a href="#ga7c7165398cf3a2578d5dfd1c3947b43c">More...</a><br/></td></tr>
+<tr class="separator:ga7c7165398cf3a2578d5dfd1c3947b43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3ad6007a242ec441ccb612d7ff2050c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga3ad6007a242ec441ccb612d7ff2050c0">XClk_Wiz_GetInterruptSettings</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga3ad6007a242ec441ccb612d7ff2050c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">XClk_Wiz_GetInterruptSettings will get the information from clock wizard IER and ISR Registers.  <a href="#ga3ad6007a242ec441ccb612d7ff2050c0">More...</a><br/></td></tr>
 <tr class="separator:ga3ad6007a242ec441ccb612d7ff2050c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,6 +288,18 @@ Device registers</h2></td></tr>
 <tr class="memitem:ga0b52940d0a236e7c554cd4cf6e6b749c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0b52940d0a236e7c554cd4cf6e6b749c"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_REG26_OFFSET</b>&#160;&#160;&#160;0x000003FC</td></tr>
 <tr class="separator:ga0b52940d0a236e7c554cd4cf6e6b749c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafa2b2cfbe6e272742dcc2e34b6b85e29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafa2b2cfbe6e272742dcc2e34b6b85e29"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_PRIM_L_OFFSET</b>&#160;&#160;&#160;0x000003B0</td></tr>
+<tr class="separator:gafa2b2cfbe6e272742dcc2e34b6b85e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadda287640b316b00c39ee54db353b3a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadda287640b316b00c39ee54db353b3a2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_PRIM_H_OFFSET</b>&#160;&#160;&#160;0x000003B4</td></tr>
+<tr class="separator:gadda287640b316b00c39ee54db353b3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga19db1ef993e47e4cea3ba42457fedbc5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga19db1ef993e47e4cea3ba42457fedbc5"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_SEC_L_OFFSET</b>&#160;&#160;&#160;0x000003B8</td></tr>
+<tr class="separator:ga19db1ef993e47e4cea3ba42457fedbc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6e6d247b1bc9ef9a94afba81dd9a410d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6e6d247b1bc9ef9a94afba81dd9a410d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_SEC_H_OFFSET</b>&#160;&#160;&#160;0x000003BC</td></tr>
+<tr class="separator:ga6e6d247b1bc9ef9a94afba81dd9a410d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga770802596d8178917c74a1f576706311"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga770802596d8178917c74a1f576706311"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>XCLK_WIZ_ZYNQMP_REG0_OFFSET</b>&#160;&#160;&#160;0x00000200</td></tr>
 <tr class="separator:ga770802596d8178917c74a1f576706311"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1766,8 +1781,6 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 
 <p>Reconfig Register. </p>
 
-<p>Referenced by <a class="el" href="xclk__wiz__versal__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ga142028c206e507df8633d0b91b0ef273"></a>
@@ -2074,6 +2087,34 @@ Bitmasks and offsets of XCLK_WIZ_IER_OFFSET register</h2></td></tr>
 </dd></dl>
 
 <p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>, and <a class="el" href="group___overview.html#ga9c0c8a7ada27a0cfba39c0f3aa922c7d">XCLK_WIZ_REG3_USED</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga7c7165398cf3a2578d5dfd1c3947b43c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XClk_Wiz_GetInputRate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the Input frequency. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> instance to operate on.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Clock frequency in KHz</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Should be called only if the input provider clock is changed eg input clock is si570. </dd></dl>
+
+<p>References <a class="el" href="struct_x_clk___wiz.html#a28ae78d16753f81178e32cdbb0758e52">XClk_Wiz::Config</a>, and <a class="el" href="struct_x_clk___wiz.html#a8d30680f0e4edf48a59f5391aeb4df29">XClk_Wiz::IsReady</a>.</p>
 
 </div>
 </div>

@@ -28,6 +28,9 @@
 
 /***************************** Include Files *********************************/
 #include "xhdmi_menu.h"
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
+#include "xv_hdmirx1_frl.h"
+#endif
 
 /************************** Constant Definitions *****************************/
 #ifdef XPAR_XV_HDMITXSS1_NUM_INSTANCES
@@ -1322,12 +1325,15 @@ static XHdmi_MenuType XHdmi_EdidMenu(XHdmi_Menu *InstancePtr, u8 Input) {
 	    /* Read TX edid */
 	    xil_printf("\r\n");
 
-	    Status = XV_HdmiTxSs1_ReadEdid_extension(&HdmiTxSs, &EdidHdmi_t.EdidCtrlParam);
+	    Status = XV_HdmiTxSs1_ReadEdid_extension(&HdmiTxSs, &EdidHdmi_t.EdidCtrlParam,
+						     (u8*)&Buffer, sizeof(Buffer));
 	    /* Only Parse the EDID when the Read EDID success */
 	    if (Status == XST_SUCCESS) {
-		XV_VidC_parse_edid((u8*)&Buffer,
-				    &EdidHdmi_t.EdidCtrlParam,
-				    XVIDC_VERBOSE_ENABLE);
+			/* EDID parsing is already done in the extension function,
+			   but we can enable verbose mode by parsing again */
+			XV_VidC_parse_edid((u8*)&Buffer,
+						&EdidHdmi_t.EdidCtrlParam,
+						XVIDC_VERBOSE_ENABLE);
 	    } else {
 		xil_printf(ANSI_COLOR_YELLOW "EDID parsing has failed.\r\n"
 			    ANSI_COLOR_RESET);
@@ -2490,8 +2496,8 @@ static void XHdmi_DisplayDebugMainMenu(void) {
 static XHdmi_MenuType XHdmi_DebugMainMenu(XHdmi_Menu *InstancePtr, u8 Input) {
     /* Variables */
     XHdmi_MenuType  Menu;
-#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES)
-    XV_HdmiRx1_FrlLtp Temp;
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
+	XV_HdmiRx1_FrlLtp Temp;
 #endif
     u32 RegOffset;
     /* Default */
@@ -2571,7 +2577,7 @@ static XHdmi_MenuType XHdmi_DebugMainMenu(XHdmi_Menu *InstancePtr, u8 Input) {
 	    xil_printf("Enter Selection -> ");
 	    break;
 #endif
-#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES)
+	#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	case 10 :
 	    Temp.Byte[0] = 0x5;
 	    Temp.Byte[1] = 0x6;
@@ -2592,8 +2598,9 @@ static XHdmi_MenuType XHdmi_DebugMainMenu(XHdmi_Menu *InstancePtr, u8 Input) {
 	    break;
 
 	case 13:
-	    XV_HdmiRx1_RestartFrlLt(HdmiRxSs.HdmiRx1Ptr);
-	    break;
+		XV_HdmiRx1_RestartFrlLt(HdmiRxSs.HdmiRx1Ptr);
+		break;
+	#endif
 
 	case 14:
 	    XHdmiphy1_ResetGtTxRx(&Hdmiphy1,
@@ -2655,7 +2662,6 @@ static XHdmi_MenuType XHdmi_DebugMainMenu(XHdmi_Menu *InstancePtr, u8 Input) {
 
     return Menu;
 }
-#endif
 
 /*****************************************************************************/
 /**

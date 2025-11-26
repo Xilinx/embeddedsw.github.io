@@ -34,7 +34,9 @@ var xv__hdmitxss1_8h =
       [ "XV_HDMITXSS1_HDCP_NONE", "xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470a01f677d86577b9fe8b731a7854d4be3e", null ],
       [ "XV_HDMITXSS1_HDCP_14", "xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470a622afa582ce21152e807512ab52e70df", null ],
       [ "XV_HDMITXSS1_HDCP_22", "xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470a197b5e4be4a1f4a0f4ce55aa5e5cd8c6", null ],
-      [ "XV_HDMITXSS1_HDCP_BOTH", "xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470adef791b14ca92a3aa971e6427a17d5b6", null ],
+      [ "XV_HDMITXSS1_HDCP_BOTH", "xv__hdmitxss1_8h.html#a4934fefc2258a7e60fd8fd893b52e470adef791b14ca92a3aa971e6427a17d5b6", null ]
+    ] ],
+    [ "XV_HdmiTxSs1_HpdToleranceType", "xv__hdmitxss1_8h.html#aaada5d3120ac619251742ad9765d658e", [
       [ "XV_HDMITXSS1_LEADING_TOLERANCE", "xv__hdmitxss1_8h.html#aaada5d3120ac619251742ad9765d658ea08fa788a24b8dd63c8459000806e4130", null ],
       [ "XV_HDMITXSS1_LAGGING_TOLERANCE", "xv__hdmitxss1_8h.html#aaada5d3120ac619251742ad9765d658ea112b516808ee7ba0c4a3dae36e5fa466", null ],
       [ "XV_HDMITXSS1_UNKNOWN", "xv__hdmitxss1_8h.html#aaada5d3120ac619251742ad9765d658ea32512d3b4e590b1be9a9eb010fab8e11", null ]
@@ -105,6 +107,7 @@ var xv__hdmitxss1_8h =
     [ "XV_HdmiTxSs1_GetFrlLanes", "xv__hdmitxss1_8h.html#a58409fd5bb72cdbfaf50810095719766", null ],
     [ "XV_HdmiTxSs1_GetFrlLineRate", "xv__hdmitxss1_8h.html#a92e32f9c6a246cebb8c3d3f322717b8c", null ],
     [ "XV_HdmiTxSs1_GetFrlRate", "xv__hdmitxss1_8h.html#adf8082778f8fc014b16e0c0d79228772", null ],
+    [ "XV_HdmiTxSs1_GetScdcEdRegisters", "xv__hdmitxss1_8h.html#a1aeee9dca9d8b15b0cf54196627d727c", null ],
     [ "XV_HdmiTxSs1_GetTmdsClockFreqHz", "xv__hdmitxss1_8h.html#a69f502cb925595f31978636bc18e1af7", null ],
     [ "XV_HdmiTxSs1_GetTransportMode", "xv__hdmitxss1_8h.html#a32f9289cb938ce3fb96a83196d1c815d", null ],
     [ "XV_HdmiTxSs1_GetTxFfe", "xv__hdmitxss1_8h.html#a7b804f087adb5702f2f80eb79e26680b", null ],
@@ -130,7 +133,7 @@ var xv__hdmitxss1_8h =
     [ "XV_HdmiTxSS1_MaskSetGreen", "xv__hdmitxss1_8h.html#aff714b53254953cd5b5fce6cfe15b3fb", null ],
     [ "XV_HdmiTxSS1_MaskSetRed", "xv__hdmitxss1_8h.html#a50375d84e75140bdcaf7cfce183bdbe9", null ],
     [ "XV_HdmiTxSs1_ReadEdid", "xv__hdmitxss1_8h.html#ab9ebe1b56d24f5ccb66e73d57c488778", null ],
-    [ "XV_HdmiTxSs1_ReadEdid_extension", "xv__hdmitxss1_8h.html#aad065785449967c6dd121c8eed4f8934", null ],
+    [ "XV_HdmiTxSs1_ReadEdid_extension", "xv__hdmitxss1_8h.html#acd33c4623d20bb5482a7b0ffadc7e2cf", null ],
     [ "XV_HdmiTxSs1_ReadEdidSegment", "xv__hdmitxss1_8h.html#abb2671202f109b367734299d387fc582", null ],
     [ "XV_HdmiTxSs1_RefClockChangeInit", "xv__hdmitxss1_8h.html#a9b8761762576eff1b60d907eedc3e290", null ],
     [ "XV_HdmiTxSs1_RegisterDebug", "xv__hdmitxss1_8h.html#a3f0a51a41b4b0a2f0a5f1d6df6adbf1e", null ],

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -55,6 +55,7 @@
 #include "xinterrupt_wrap.h"
 #endif
 #include "xil_util.h"
+#include "xplatform_info.h"
 
 /************************** Function Prototypes ******************************/
 
@@ -101,7 +102,7 @@ u32 DstBuf[300]; /**< Destination buffer */
 #else
 u32 DstBuf[300] __attribute__ ((aligned (64))); /**< Destination buffer */
 #endif
-volatile static u32 Done = 0;	/**< Done Flag for interrupt generation */
+static volatile u32 Done = 0;	/**< Done Flag for interrupt generation */
 
 /*****************************************************************************/
 /**
@@ -250,7 +251,14 @@ int XZDma_WriteOnlyExample(UINTPTR BaseAddress)
 		XZDma_WOData(&ZDma, SrcBuf);
 	}
 
-	if (!Config->IsCacheCoherent) {
+	if(XIOCoherencySupported())
+	{
+		if (!Config->IsCacheCoherent) {
+			Xil_DCacheFlushRange((INTPTR)DstBuf, SIZE);
+		}
+	}
+	else
+	{
 		Xil_DCacheFlushRange((INTPTR)DstBuf, SIZE);
 	}
 
@@ -269,7 +277,14 @@ int XZDma_WriteOnlyExample(UINTPTR BaseAddress)
 	/* Before the destination buffer data is accessed do one more invalidation
 	 * to ensure that the latest data is read. This is as per ARM recommendations.
 	 */
-	if (!Config->IsCacheCoherent) {
+	if(XIOCoherencySupported())
+	{
+		if (!Config->IsCacheCoherent) {
+			Xil_DCacheInvalidateRange((INTPTR)DstBuf, SIZE);
+		}
+	}
+	else
+	{
 		Xil_DCacheInvalidateRange((INTPTR)DstBuf, SIZE);
 	}
 	/* Validation */

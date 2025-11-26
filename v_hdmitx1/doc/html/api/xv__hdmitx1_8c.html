@@ -190,7 +190,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a9a71a92b44c225aa265a3c5852971df7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a9a71a92b44c225aa265a3c5852971df7">XV_HdmiTx1_DdcReadReg</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, u8 Slave, u16 Length, u8 RegAddr, u8 *Buffer)</td></tr>
 <tr class="memdesc:a9a71a92b44c225aa265a3c5852971df7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads specified register from DDC peripheral from given slave address.  <a href="#a9a71a92b44c225aa265a3c5852971df7">More...</a><br/></td></tr>
 <tr class="separator:a9a71a92b44c225aa265a3c5852971df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9b6a97a3396e177e52f69f6b5d88123"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ab9b6a97a3396e177e52f69f6b5d88123">XV_HdmiTx1_DdcWriteField</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XV_HdmiTx1_ScdcFieldType Field, u8 Value)</td></tr>
+<tr class="memitem:ab9b6a97a3396e177e52f69f6b5d88123"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ab9b6a97a3396e177e52f69f6b5d88123">XV_HdmiTx1_DdcWriteField</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, <a class="el" href="xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03b">XV_HdmiTx1_ScdcFieldType</a> Field, u8 Value)</td></tr>
 <tr class="memdesc:ab9b6a97a3396e177e52f69f6b5d88123"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function writes the specified SCDC Field.  <a href="#ab9b6a97a3396e177e52f69f6b5d88123">More...</a><br/></td></tr>
 <tr class="separator:ab9b6a97a3396e177e52f69f6b5d88123"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ac2f0429e283d420ab2498273c288a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a0ac2f0429e283d420ab2498273c288a4">XV_HdmiTx1_Aux_Dsc_Send_Header</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, u32 Data)</td></tr>
@@ -232,15 +232,30 @@ Functions</h2></td></tr>
 <tr class="memitem:a58b5302d9843f58fcf1336d2a0ab9bcd"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a58b5302d9843f58fcf1336d2a0ab9bcd">XV_HdmiTxSs1_GetAudioNVal</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a58b5302d9843f58fcf1336d2a0ab9bcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gets the programmed ACR N Value.  <a href="#a58b5302d9843f58fcf1336d2a0ab9bcd">More...</a><br/></td></tr>
 <tr class="separator:a58b5302d9843f58fcf1336d2a0ab9bcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23a20e6c1144064686e03fd0650ec46f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a23a20e6c1144064686e03fd0650ec46f">XV_HdmiTx1_SetAudioFormat</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XV_HdmiTx1_AudioFormatType Value)</td></tr>
+<tr class="memitem:a23a20e6c1144064686e03fd0650ec46f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a23a20e6c1144064686e03fd0650ec46f">XV_HdmiTx1_SetAudioFormat</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, <a class="el" href="xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415ab">XV_HdmiTx1_AudioFormatType</a> Value)</td></tr>
 <tr class="memdesc:a23a20e6c1144064686e03fd0650ec46f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the active audio format.  <a href="#a23a20e6c1144064686e03fd0650ec46f">More...</a><br/></td></tr>
 <tr class="separator:a23a20e6c1144064686e03fd0650ec46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2022f3a37591ca01f2028e0e938e331"><td class="memItemLeft" align="right" valign="top">XV_HdmiTx1_AudioFormatType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ae2022f3a37591ca01f2028e0e938e331">XV_HdmiTx1_GetAudioFormat</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
+<tr class="memitem:ae2022f3a37591ca01f2028e0e938e331"><td class="memItemLeft" align="right" valign="top"><a class="el" href="xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415ab">XV_HdmiTx1_AudioFormatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ae2022f3a37591ca01f2028e0e938e331">XV_HdmiTx1_GetAudioFormat</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ae2022f3a37591ca01f2028e0e938e331"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gets the active audio format.  <a href="#ae2022f3a37591ca01f2028e0e938e331">More...</a><br/></td></tr>
 <tr class="separator:ae2022f3a37591ca01f2028e0e938e331"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4623f1c32afecde613bfb2c4517597b1"><td class="memItemLeft" align="right" valign="top">u8 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a4623f1c32afecde613bfb2c4517597b1">XV_HdmiTx1_GetScdcEdRegisters</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:a4623f1c32afecde613bfb2c4517597b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function reads the CED and RSED registers from the sink and returns the pointer to the data structure which stores the CED related readings (from SCDC register 0x50 to 0x5A).  <a href="#a4623f1c32afecde613bfb2c4517597b1">More...</a><br/></td></tr>
 <tr class="separator:a4623f1c32afecde613bfb2c4517597b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31dc0ffe0c8f9d57f57c9c9d454682a4"><td class="memItemLeft" align="right" valign="top">XV_HdmiC_VideoTimingExtMeta *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a31dc0ffe0c8f9d57f57c9c9d454682a4">XV_HdmiTx1_GetVidTimingExtMeta</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
+<tr class="memdesc:a31dc0ffe0c8f9d57f57c9c9d454682a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns Video Timing Extended Metadata.  <a href="#a31dc0ffe0c8f9d57f57c9c9d454682a4">More...</a><br/></td></tr>
+<tr class="separator:a31dc0ffe0c8f9d57f57c9c9d454682a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab285cd32e3670001da349e24ebc2e815"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ab285cd32e3670001da349e24ebc2e815">XV_HdmiTx1_GenerateVideoTimingExtMetaIF</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XV_HdmiC_VideoTimingExtMeta *ExtMeta)</td></tr>
+<tr class="memdesc:ab285cd32e3670001da349e24ebc2e815"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the HDMI transmitter with extended video timing metadata such as QMS (Quick Media Switching), VRR (Variable Refresh Rate), and other timing-related parameters.  <a href="#ab285cd32e3670001da349e24ebc2e815">More...</a><br/></td></tr>
+<tr class="separator:ab285cd32e3670001da349e24ebc2e815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8d17f9e6f32fb30869192cbaec1fd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a0b8d17f9e6f32fb30869192cbaec1fd2">XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XV_HdmiC_VideoTimingExtMeta *ExtMeta, u16 Sync, u16 DataSetLen)</td></tr>
+<tr class="memdesc:a0b8d17f9e6f32fb30869192cbaec1fd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function allows fine-grained control over the VTEM InfoFrame generation by accepting custom values for the sync enable and dataset length fields.  <a href="#a0b8d17f9e6f32fb30869192cbaec1fd2">More...</a><br/></td></tr>
+<tr class="separator:a0b8d17f9e6f32fb30869192cbaec1fd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5423804312f3905e5cc174221d3e0d46"><td class="memItemLeft" align="right" valign="top">XV_HdmiC_SrcProdDescIF *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#a5423804312f3905e5cc174221d3e0d46">XV_HdmiTx1_GetSrcProdDescIF</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr)</td></tr>
+<tr class="memdesc:a5423804312f3905e5cc174221d3e0d46"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function returns a pointer to the SrcProdDescIF which contains the Source Product Descriptor InfoFrame data used in HDMI VRR (Variable Refresh Rate) or other auxiliary metadata transmission.  <a href="#a5423804312f3905e5cc174221d3e0d46">More...</a><br/></td></tr>
+<tr class="separator:a5423804312f3905e5cc174221d3e0d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab10cd24a2b719e790f69bbdad9b7b69b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1_8c.html#ab10cd24a2b719e790f69bbdad9b7b69b">XV_HdmiTx1_GenerateSrcProdDescInfoframe</a> (<a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *InstancePtr, XV_HdmiC_SrcProdDescIF *SpdIfPtr)</td></tr>
+<tr class="memdesc:ab10cd24a2b719e790f69bbdad9b7b69b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the HDMI transmitter with Source Product Descriptor metadata, including FreeSync and FreeSync Pro capabilities.  <a href="#ab10cd24a2b719e790f69bbdad9b7b69b">More...</a><br/></td></tr>
+<tr class="separator:ab10cd24a2b719e790f69bbdad9b7b69b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -466,7 +481,7 @@ Variables</h2></td></tr>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#ac110c3e0296b6f95e3647410e3ddadd2">XV_HdmiTx1_Stream::Audio</a>, <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#aef6b3f6753d278df67f1c9803f667e08">XV_HdmiTx1::ConnectCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a7fa66e3baa8894a6c59b3fbc96d18354">XV_HdmiTx1_Stream::CorePixPerClk</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a2b619bbff33578107cf420cacecd2e18">XV_HdmiTx1::DscDecodeFailCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#aa75eb56d2fcf4058da44bb2a2c3eba9b">XV_HdmiTx1::DynHdrMtwCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#aeb7e0c79ea8b44c2eac37ce9a063587e">XV_HdmiTx1_Stream::Frl</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#ac495d5b8980b11427969918c7ea6eb56">XV_HdmiTx1::FrlConfigCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#ada61680a6092bdfeb4057cbd70e07584">XV_HdmiTx1::FrlFfeCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a4a76a4f44c11da6514bfcd2b366ee79a">XV_HdmiTx1::FrlStartCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#abc1b2a59bc184f8461952572773a3b1d">XV_HdmiTx1::FrlStopCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#afa7e042159e99edf7f02139af8cba046">XV_HdmiTx1_Stream::IsConnected</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#abc4e2c7cd581d8e407d845f1a620d3d8">XV_HdmiTx1::IsReady</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#ac95410542d1d4eed581f66c49e70a9bb">XV_HdmiTx1_Frl::Lanes</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#a7ae9e5018c441354a23323082dc6aa76">XV_HdmiTx1_Frl::MaxFrlRate</a>, <a class="el" href="struct_x_v___hdmi_tx1___config.html#a7f80ad7a8e8dd3c68792fcda5196f74a">XV_HdmiTx1_Config::MaxFrlRate</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a9947243bcf378409927347939617a886">XV_HdmiTx1_Stream::OverrideScrambler</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#ade3e232e0d44b497785c50202a441ef6">XV_HdmiTx1_Frl::RateLock</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a59d80fb969eedd5ca7c59960fe5460a7">XV_HdmiTx1_Stream::State</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a4929690dcb3684990ea7cb5d2f6cb497">XV_HdmiTx1::StreamDownCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a01870b62d198af5f708b320a2339f9d3">XV_HdmiTx1::StreamUpCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a7be7f63d8a5bd9f54b4e186dc82820bc">XV_HdmiTx1::TmdsConfigCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#af48a03329a29f3358af6bc289f510797">XV_HdmiTx1::ToggleCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#afb1cf1b7d51092ef7429b95a4353ab4d">XV_HdmiTx1_Frl::TrainingState</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a529cf861436423034baa776592647e3e">XV_HdmiTx1::VsCallback</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a279874e2cee1de19fee34f5f25fe4198">XV_HDMITX1_AUD_CTRL_CLR_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac630a1dbb83be6d4e64757a3d09c2cc0">XV_HDMITX1_AUD_CTRL_SET_OFFSET</a>, <a class="el" href="xv__hdmitx1_8h.html#ac80822fe192ddd125e321cdf4c9d4608">XV_HdmiTx1_AudioDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a885cea7ad25eb7470e839cbe329b8ec4">XV_HdmiTx1_AuxDisable</a>, <a class="el" href="xv__hdmitx1_8c.html#a626c53ccaef2fea0d712d363e80691ac">XV_HdmiTx1_Clear()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a5f8f27b07f3e43e7bf04c5bda2e1179f">XV_HDMITX1_CONNECT_CONF_OFFSET</a>, <a class="el" href="xv__hdmitx1_8h.html#a48c24836f4ff579b8bf3ed1dfc298747">XV_HdmiTx1_DdcDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a1a4bb321f73f08e71204821bb3c68b3d">XV_HdmiTx1_DdcIntrClear</a>, <a class="el" href="xv__hdmitx1_8h.html#a8f3afde27c63f277de13d600ae3118ef">XV_HdmiTx1_FrlExecute()</a>, <a class="el" href="xv__hdmitx1_8h.html#a8c3339f7859efd76ec6a3ee262e20caa">XV_HdmiTx1_FrlExtVidCkeSource()</a>, <a class="el" href="xv__hdmitx1__frl_8h.html#a58012592af0eafb0b1bdbce08aa70169">XV_HdmiTx1_FrlIntrDisable</a>, <a class="el" href="xv__hdmitx1__frl_8h.html#aaa2b17ec29b80b19f9fa18abadeef78b">XV_HdmiTx1_FrlIntrEnable</a>, <a class="el" href="xv__hdmitx1_8h.html#a9ae3d651a0d9b2258415a0fcd243ee0c">XV_HdmiTx1_FrlReset()</a>, <a class="el" href="xv__hdmitx1_8h.html#ab4c65e1485f6003c182e86c2423d1934">XV_HdmiTx1_GetTime1Ms</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a8239e53495feea5050dbda9cad646119">XV_HDMITX1_HPD_TIMEGRID_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a02751a20bad34eb921ded41ecd6449bd">XV_HDMITX1_MASK_16</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a85275d4df3edf2c08d38d544b5928c95">XV_HDMITX1_PIO_ID</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a771c245a4146fa673670d145a49ab42c">XV_HDMITX1_PIO_ID_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a47d0be5976cb417367f227882aba616a">XV_HDMITX1_PIO_IN_BRDG_LOCKED_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ad7989878b63e6d1ccc17b9fffebdb1e7">XV_HDMITX1_PIO_IN_BRDG_OVERFLOW_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a9d53bbc6e4513d332030da84a4d5366c">XV_HDMITX1_PIO_IN_BRDG_UNDERFLOW_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a0840f8be0f908f0ebf7f88da62919041">XV_HDMITX1_PIO_IN_EVT_FE_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a083e42899636cd5e11e57dc81ed473d1">XV_HDMITX1_PIO_IN_EVT_RE_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a8e4ab9f93df19e5011f0abc4b62d6d68">XV_HDMITX1_PIO_IN_HPD_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#acaa33be8f32fd160bc231fe83d8e4e7b">XV_HDMITX1_PIO_IN_HPD_TOGGLE_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a9c67bb4f654071b9bbd7c0bb57bd431b">XV_HDMITX1_PIO_IN_LNK_RDY_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aa69dc4de1fcc61075bb66a5f72498f09">XV_HDMITX1_PIO_IN_VS_MASK</a>, <a class="el" href="xv__hdmitx1_8h.html#adc65c495c5346d5026795fd9ae6d7cd7">XV_HdmiTx1_PioDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a7e5757f2158d4aae374aa076fbc147e7">XV_HdmiTx1_PioIntrClear</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>, <a class="el" href="xv__hdmitx1_8c.html#a214597c0aaa431427bb76ec6948563b8">XV_HdmiTx1_SetHdmiTmdsMode()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a52b7d366cc179f1aa90b20ae9ed5a6de">XV_HDMITX1_SHIFT_16</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a3154f6e901d66ba2320ccf5ab4d08821">XV_HDMITX1_TOGGLE_CONF_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
+<p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#ac110c3e0296b6f95e3647410e3ddadd2">XV_HdmiTx1_Stream::Audio</a>, <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#aef6b3f6753d278df67f1c9803f667e08">XV_HdmiTx1::ConnectCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a7fa66e3baa8894a6c59b3fbc96d18354">XV_HdmiTx1_Stream::CorePixPerClk</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a2b619bbff33578107cf420cacecd2e18">XV_HdmiTx1::DscDecodeFailCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#aa75eb56d2fcf4058da44bb2a2c3eba9b">XV_HdmiTx1::DynHdrMtwCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#aeb7e0c79ea8b44c2eac37ce9a063587e">XV_HdmiTx1_Stream::Frl</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#ac495d5b8980b11427969918c7ea6eb56">XV_HdmiTx1::FrlConfigCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#ada61680a6092bdfeb4057cbd70e07584">XV_HdmiTx1::FrlFfeCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a4a76a4f44c11da6514bfcd2b366ee79a">XV_HdmiTx1::FrlStartCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#abc1b2a59bc184f8461952572773a3b1d">XV_HdmiTx1::FrlStopCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#afa7e042159e99edf7f02139af8cba046">XV_HdmiTx1_Stream::IsConnected</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#abc4e2c7cd581d8e407d845f1a620d3d8">XV_HdmiTx1::IsReady</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#ac95410542d1d4eed581f66c49e70a9bb">XV_HdmiTx1_Frl::Lanes</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#a7ae9e5018c441354a23323082dc6aa76">XV_HdmiTx1_Frl::MaxFrlRate</a>, <a class="el" href="struct_x_v___hdmi_tx1___config.html#a7f80ad7a8e8dd3c68792fcda5196f74a">XV_HdmiTx1_Config::MaxFrlRate</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a9947243bcf378409927347939617a886">XV_HdmiTx1_Stream::OverrideScrambler</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#ade3e232e0d44b497785c50202a441ef6">XV_HdmiTx1_Frl::RateLock</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a59d80fb969eedd5ca7c59960fe5460a7">XV_HdmiTx1_Stream::State</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a4929690dcb3684990ea7cb5d2f6cb497">XV_HdmiTx1::StreamDownCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a01870b62d198af5f708b320a2339f9d3">XV_HdmiTx1::StreamUpCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a7be7f63d8a5bd9f54b4e186dc82820bc">XV_HdmiTx1::TmdsConfigCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#af48a03329a29f3358af6bc289f510797">XV_HdmiTx1::ToggleCallback</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#afb1cf1b7d51092ef7429b95a4353ab4d">XV_HdmiTx1_Frl::TrainingState</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a529cf861436423034baa776592647e3e">XV_HdmiTx1::VsCallback</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a279874e2cee1de19fee34f5f25fe4198">XV_HDMITX1_AUD_CTRL_CLR_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac630a1dbb83be6d4e64757a3d09c2cc0">XV_HDMITX1_AUD_CTRL_SET_OFFSET</a>, <a class="el" href="xv__hdmitx1_8h.html#ac80822fe192ddd125e321cdf4c9d4608">XV_HdmiTx1_AudioDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a885cea7ad25eb7470e839cbe329b8ec4">XV_HdmiTx1_AuxDisable</a>, <a class="el" href="xv__hdmitx1_8c.html#a626c53ccaef2fea0d712d363e80691ac">XV_HdmiTx1_Clear()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a5f8f27b07f3e43e7bf04c5bda2e1179f">XV_HDMITX1_CONNECT_CONF_OFFSET</a>, <a class="el" href="xv__hdmitx1_8h.html#a48c24836f4ff579b8bf3ed1dfc298747">XV_HdmiTx1_DdcDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a1a4bb321f73f08e71204821bb3c68b3d">XV_HdmiTx1_DdcIntrClear</a>, <a class="el" href="xv__hdmitx1_8h.html#a8f3afde27c63f277de13d600ae3118ef">XV_HdmiTx1_FrlExecute()</a>, <a class="el" href="xv__hdmitx1_8h.html#a8c3339f7859efd76ec6a3ee262e20caa">XV_HdmiTx1_FrlExtVidCkeSource()</a>, <a class="el" href="xv__hdmitx1__frl_8h.html#a58012592af0eafb0b1bdbce08aa70169">XV_HdmiTx1_FrlIntrDisable</a>, <a class="el" href="xv__hdmitx1__frl_8h.html#aaa2b17ec29b80b19f9fa18abadeef78b">XV_HdmiTx1_FrlIntrEnable</a>, <a class="el" href="xv__hdmitx1_8h.html#a9ae3d651a0d9b2258415a0fcd243ee0c">XV_HdmiTx1_FrlReset()</a>, <a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359dacd9d0355cd5368f0a7bb5a52032ddc0f">XV_HDMITX1_FRLSTATE_LTS_L</a>, <a class="el" href="xv__hdmitx1_8h.html#ab4c65e1485f6003c182e86c2423d1934">XV_HdmiTx1_GetTime1Ms</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a8239e53495feea5050dbda9cad646119">XV_HDMITX1_HPD_TIMEGRID_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a02751a20bad34eb921ded41ecd6449bd">XV_HDMITX1_MASK_16</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a85275d4df3edf2c08d38d544b5928c95">XV_HDMITX1_PIO_ID</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a771c245a4146fa673670d145a49ab42c">XV_HDMITX1_PIO_ID_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a47d0be5976cb417367f227882aba616a">XV_HDMITX1_PIO_IN_BRDG_LOCKED_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ad7989878b63e6d1ccc17b9fffebdb1e7">XV_HDMITX1_PIO_IN_BRDG_OVERFLOW_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a9d53bbc6e4513d332030da84a4d5366c">XV_HDMITX1_PIO_IN_BRDG_UNDERFLOW_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a0840f8be0f908f0ebf7f88da62919041">XV_HDMITX1_PIO_IN_EVT_FE_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a083e42899636cd5e11e57dc81ed473d1">XV_HDMITX1_PIO_IN_EVT_RE_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a8e4ab9f93df19e5011f0abc4b62d6d68">XV_HDMITX1_PIO_IN_HPD_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#acaa33be8f32fd160bc231fe83d8e4e7b">XV_HDMITX1_PIO_IN_HPD_TOGGLE_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a9c67bb4f654071b9bbd7c0bb57bd431b">XV_HDMITX1_PIO_IN_LNK_RDY_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aa69dc4de1fcc61075bb66a5f72498f09">XV_HDMITX1_PIO_IN_VS_MASK</a>, <a class="el" href="xv__hdmitx1_8h.html#adc65c495c5346d5026795fd9ae6d7cd7">XV_HdmiTx1_PioDisable</a>, <a class="el" href="xv__hdmitx1_8h.html#a7e5757f2158d4aae374aa076fbc147e7">XV_HdmiTx1_PioIntrClear</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>, <a class="el" href="xv__hdmitx1_8c.html#a214597c0aaa431427bb76ec6948563b8">XV_HdmiTx1_SetHdmiTmdsMode()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a52b7d366cc179f1aa90b20ae9ed5a6de">XV_HDMITX1_SHIFT_16</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a3154f6e901d66ba2320ccf5ab4d08821">XV_HDMITX1_TOGGLE_CONF_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
 
 </div>
 </div>
@@ -609,6 +624,11 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>Non-zero if the ACK bit is set (acknowledgment received).</li>
+<li>Zero if the ACK bit is not set.</li>
+</ul>
+</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a7a18917060714340b40a33de19976226">XV_HDMITX1_DDC_STA_ACK_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a76a8d1762bfc7aafed3ae667630f47d6">XV_HDMITX1_DDC_STA_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>.</p>
@@ -745,6 +765,11 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>A byte of data read from the DDC FIFO if available.</li>
+<li>0 if the DDC engine is not running or the FIFO is empty</li>
+</ul>
+</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a446a4adab4ed3b06eb0834191bfa15d9">XV_HDMITX1_DDC_CTRL_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a7ff97e413ac155c87891bc822fa79213">XV_HDMITX1_DDC_CTRL_RUN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#afaa80a0d738dde8b78bf9eff80002872">XV_HDMITX1_DDC_DAT_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#af92b02d943db10c03bd66537c4b73e3d">XV_HDMITX1_DDC_STA_DAT_EMPTY</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a76a8d1762bfc7aafed3ae667630f47d6">XV_HDMITX1_DDC_STA_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>.</p>
@@ -802,8 +827,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">Slave</td><td>specifies the slave address from where data needs to be read. </td></tr>
     <tr><td class="paramname">Length</td><td>specifies number of bytes to be read. </td></tr>
     <tr><td class="paramname">RegAddr</td><td>specifies the register address from where data needs to be read. </td></tr>
-    <tr><td class="paramname">Buffer</td><td>specifies a pointer to u8 variable that will be filled with data. </td></tr>
-    <tr><td class="paramname">Stop</td><td>specifies the stop flag which is either TRUE/FALSE.</td></tr>
+    <tr><td class="paramname">Buffer</td><td>specifies a pointer to u8 variable that will be filled with data.</td></tr>
   </table>
   </dd>
 </dl>
@@ -841,7 +865,14 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if the DDC operation completed successfully.<ul>
+<li>XST_FAILURE if the operation timed out or the DDC controller was not running</li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function blocks until the DDC operation completes or fails. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a446a4adab4ed3b06eb0834191bfa15d9">XV_HDMITX1_DDC_CTRL_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a7ff97e413ac155c87891bc822fa79213">XV_HDMITX1_DDC_CTRL_RUN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a0e2070bd8eb10e5ab04afd78224a7c7f">XV_HDMITX1_DDC_STA_DONE_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a76a8d1762bfc7aafed3ae667630f47d6">XV_HDMITX1_DDC_STA_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aa139f217587a626986768317c2efb5e3">XV_HDMITX1_DDC_STA_TIMEOUT_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
 
@@ -942,7 +973,8 @@ Variables</h2></td></tr>
 <p>This function writes data into the command fifo. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_tx1.html" title="The XV_HdmiTx1 driver instance data. ">XV_HdmiTx1</a> core instance.</td></tr>
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_tx1.html" title="The XV_HdmiTx1 driver instance data. ">XV_HdmiTx1</a> core instance. </td></tr>
+    <tr><td class="paramname">Cmd</td><td>is a 32-bit command to be written to the DDC command FIFO</td></tr>
   </table>
   </dd>
 </dl>
@@ -967,7 +999,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">XV_HdmiTx1_ScdcFieldType&#160;</td>
+          <td class="paramtype"><a class="el" href="xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03b">XV_HdmiTx1_ScdcFieldType</a>&#160;</td>
           <td class="paramname"><em>Field</em>, </td>
         </tr>
         <tr>
@@ -1165,7 +1197,6 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Active audio format of HDMI Tx</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#ac110c3e0296b6f95e3647410e3ddadd2">XV_HdmiTx1_Stream::Audio</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#aeb7e0c79ea8b44c2eac37ce9a063587e">XV_HdmiTx1_Stream::Frl</a>, <a class="el" href="struct_x_v___hdmi_tx1___frl.html#a8d9f5de0ab29699e3308bbcd372d7888">XV_HdmiTx1_Frl::LineRate</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a07578cb7628cd825336759685d553253">XV_HDMITX1_AUD_ACR_N_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a279874e2cee1de19fee34f5f25fe4198">XV_HDMITX1_AUD_CTRL_CLR_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac630a1dbb83be6d4e64757a3d09c2cc0">XV_HDMITX1_AUD_CTRL_SET_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
@@ -1174,12 +1205,143 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0b8d17f9e6f32fb30869192cbaec1fd2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XV_HdmiC_VideoTimingExtMeta *&#160;</td>
+          <td class="paramname"><em>ExtMeta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>Sync</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16&#160;</td>
+          <td class="paramname"><em>DataSetLen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function allows fine-grained control over the VTEM InfoFrame generation by accepting custom values for the sync enable and dataset length fields. </p>
+<p>It is useful for debugging or advanced HDMI configurations where default behavior needs to be overridden.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XHdmiTx1 core instance. </td></tr>
+    <tr><td class="paramname">ExtMeta</td><td>is a pointer to the structure containing extended video timing metadata. </td></tr>
+    <tr><td class="paramname">Sync</td><td>Value to set the Sync Enable bit (0 or 1). </td></tr>
+    <tr><td class="paramname">DataSetLen</td><td>Value to set the Dataset Length Enable bit (0 or 1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aa7fbb4e056d64a238f8170e398b20aed">XV_HDMITX1_AUX_CTRL_DATASET_LEN_EN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a50a0ddd2870cfaa6f8354b6c9bd05682">XV_HDMITX1_AUX_CTRL_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a3d2adfe31e66634e41b25537eb029883">XV_HDMITX1_AUX_CTRL_SYNC_EN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac512408565b031446c94da5f6a1d723d">XV_HDMITX1_AUX_VTEM_OFFSET</a>, <a class="el" href="xv__hdmitx1_8c.html#a31dc0ffe0c8f9d57f57c9c9d454682a4">XV_HdmiTx1_GetVidTimingExtMeta()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab10cd24a2b719e790f69bbdad9b7b69b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiTx1_GenerateSrcProdDescInfoframe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XV_HdmiC_SrcProdDescIF *&#160;</td>
+          <td class="paramname"><em>SpdIfPtr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function configures the HDMI transmitter with Source Product Descriptor metadata, including FreeSync and FreeSync Pro capabilities. </p>
+<p>It prepares the data based on the provided structure and writes it to the appropriate auxiliary registers</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XHdmiTx1 core instance. </td></tr>
+    <tr><td class="paramname">SpdIfPtr</td><td>is a pointer to the structure containing SPD InfoFrame data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a78c4e1ae6b49260a4f3337a7695d28f1">XV_HDMITX1_AUX_FSYNC_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aaa5bed5a9c240264e98a7821cd7d9945">XV_HDMITX1_AUX_FSYNC_PRO_OF</a>, <a class="el" href="xv__hdmitx1_8c.html#a5423804312f3905e5cc174221d3e0d46">XV_HdmiTx1_GetSrcProdDescIF()</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab285cd32e3670001da349e24ebc2e815"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XV_HdmiTx1_GenerateVideoTimingExtMetaIF </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XV_HdmiC_VideoTimingExtMeta *&#160;</td>
+          <td class="paramname"><em>ExtMeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function configures the HDMI transmitter with extended video timing metadata such as QMS (Quick Media Switching), VRR (Variable Refresh Rate), and other timing-related parameters. </p>
+<p>It prepares the VTEM data based on the provided metadata structure and writes it to the appropriate auxiliary registers.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XHdmiTx1 core instance.</td></tr>
+    <tr><td class="paramname">ExtMeta</td><td>is a pointer to the structure containing extended video timing metadata.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx1___config.html#ac9448a4fb60f4bf571da4e1c49bf0056">XV_HdmiTx1_Config::BaseAddress</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a821b6ed4f07983491f150fb061ba224e">XV_HdmiTx1::Config</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#aa7fbb4e056d64a238f8170e398b20aed">XV_HDMITX1_AUX_CTRL_DATASET_LEN_EN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a50a0ddd2870cfaa6f8354b6c9bd05682">XV_HDMITX1_AUX_CTRL_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a3d2adfe31e66634e41b25537eb029883">XV_HDMITX1_AUX_CTRL_SYNC_EN_MASK</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac512408565b031446c94da5f6a1d723d">XV_HDMITX1_AUX_VTEM_OFFSET</a>, <a class="el" href="xv__hdmitx1_8c.html#a31dc0ffe0c8f9d57f57c9c9d454682a4">XV_HdmiTx1_GetVidTimingExtMeta()</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a374eee1fb3e859285b0e6deeb5cd3b7b">XV_HdmiTx1_ReadReg</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ae2022f3a37591ca01f2028e0e938e331"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">XV_HdmiTx1_AudioFormatType XV_HdmiTx1_GetAudioFormat </td>
+          <td class="memname"><a class="el" href="xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415ab">XV_HdmiTx1_AudioFormatType</a> XV_HdmiTx1_GetAudioFormat </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
           <td class="paramname"><em>InstancePtr</em></td><td>)</td>
@@ -1223,10 +1385,40 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a pointer to the local buffer containing the SCDC character error detection readings</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Reading the SCDC registers will clear the values at the sink </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a94632fdfed2327f40f06b80162ae6244">XV_HdmiTx1_Stream::ScdcEd</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, and <a class="el" href="xv__hdmitx1_8c.html#a9a71a92b44c225aa265a3c5852971df7">XV_HdmiTx1_DdcReadReg()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5423804312f3905e5cc174221d3e0d46"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XV_HdmiC_SrcProdDescIF* XV_HdmiTx1_GetSrcProdDescIF </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function returns a pointer to the SrcProdDescIF which contains the Source Product Descriptor InfoFrame data used in HDMI VRR (Variable Refresh Rate) or other auxiliary metadata transmission. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XHdmiTx1 core instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XV_HdmiC_SrcProdDescIF</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx1.html#a4a1bc4a517334ce2cba4b9c0eb2f4a10">XV_HdmiTx1::VrrIF</a>.</p>
+
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#ab10cd24a2b719e790f69bbdad9b7b69b">XV_HdmiTx1_GenerateSrcProdDescInfoframe()</a>.</p>
 
 </div>
 </div>
@@ -1260,6 +1452,36 @@ Variables</h2></td></tr>
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a9516babecbb4fd2a295df625a12473d5">XV_HdmiTx1_Stream::PixelClk</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, and <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a294dfd0caf934682685fafc257d49e2b">XV_HdmiTx1_Stream::Video</a>.</p>
 
 <p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a7a20221c997a381a61b4e7e98c5a4370">XV_HdmiTx1_SetStream()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a31dc0ffe0c8f9d57f57c9c9d454682a4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XV_HdmiC_VideoTimingExtMeta* XV_HdmiTx1_GetVidTimingExtMeta </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_v___hdmi_tx1.html">XV_HdmiTx1</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function returns Video Timing Extended Metadata. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the XHdmiTx1 core instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XV_HdmiC_VideoTimingExtMeta</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_v___hdmi_tx1.html#a4a1bc4a517334ce2cba4b9c0eb2f4a10">XV_HdmiTx1::VrrIF</a>.</p>
+
+<p>Referenced by <a class="el" href="xv__hdmitx1_8h.html#a0b8d17f9e6f32fb30869192cbaec1fd2">XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF()</a>, and <a class="el" href="xv__hdmitx1_8h.html#ab285cd32e3670001da349e24ebc2e815">XV_HdmiTx1_GenerateVideoTimingExtMetaIF()</a>.</p>
 
 </div>
 </div>
@@ -1550,12 +1772,13 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_tx1.html" title="The XV_HdmiTx1 driver instance data. ">XV_HdmiTx1</a> core instance.</td></tr>
+    <tr><td class="paramname">Value</td><td>is number of active audio channels</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><ul>
 <li>XST_SUCCESS if active channels were set.</li>
-<li>XST_FAILURE if no active channles were set.</li>
+<li>XST_FAILURE if no active channels were set.</li>
 </ul>
 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
@@ -1577,7 +1800,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">XV_HdmiTx1_AudioFormatType&#160;</td>
+          <td class="paramtype"><a class="el" href="xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415ab">XV_HdmiTx1_AudioFormatType</a>&#160;</td>
           <td class="paramname"><em>Value</em>&#160;</td>
         </tr>
         <tr>
@@ -1592,6 +1815,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___hdmi_tx1.html" title="The XV_HdmiTx1 driver instance data. ">XV_HdmiTx1</a> core instance.</td></tr>
+    <tr><td class="paramname">Value</td><td>specifies the audio format</td></tr>
   </table>
   </dd>
 </dl>
@@ -2028,7 +2252,7 @@ Variables</h2></td></tr>
     <tr><td class="paramname">FVaFactor</td><td>- Fast Video Active Factor </td></tr>
     <tr><td class="paramname">VrrEnabled</td><td>- VRR is enabled or not </td></tr>
     <tr><td class="paramname">CnmvrrEnabled</td><td>- Negative VRR supported flag </td></tr>
-    <tr><td class="paramname">TmdsClock,reference</td><td>clock calculated based on the input parameters.</td></tr>
+    <tr><td class="paramname">TmdsClock</td><td>- reference clock calculated based on the input parameters.</td></tr>
   </table>
   </dd>
 </dl>
@@ -2144,7 +2368,6 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Active audio format of HDMI Tx</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___hdmi_tx1___stream.html#ac110c3e0296b6f95e3647410e3ddadd2">XV_HdmiTx1_Stream::Audio</a>, <a class="el" href="struct_x_v___hdmi_tx1.html#a8812d5981337da9bcf42bd9ea41bb8ea">XV_HdmiTx1::Stream</a>, <a class="el" href="struct_x_v___hdmi_tx1___stream.html#a07e8f7fff100be805de99a80219c2f8c">XV_HdmiTx1_Stream::TMDSClock</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a07578cb7628cd825336759685d553253">XV_HDMITX1_AUD_ACR_N_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#a279874e2cee1de19fee34f5f25fe4198">XV_HDMITX1_AUD_CTRL_CLR_OFFSET</a>, <a class="el" href="xv__hdmitx1__hw_8h.html#ac630a1dbb83be6d4e64757a3d09c2cc0">XV_HDMITX1_AUD_CTRL_SET_OFFSET</a>, and <a class="el" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>.</p>

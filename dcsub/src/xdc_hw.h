@@ -45,6 +45,9 @@ extern "C" {
 #define XDC_BUF_10BIT_SF	0x10040
 #define XDC_BUF_12BIT_SF 	0x10000
 
+#define XDC_MAX_CH_STATUS_REG	6
+#define XDC_MAX_CH_DATA_REG	6
+
 /******************************************************************************/
 /**
  * Address mapping for DC.
@@ -2013,6 +2016,9 @@ extern "C" {
 #define XDC_DP_SDP_ACK_SEL_SHIFT   0
 #define XDC_DP_SDP_ACK_SEL_WIDTH   1
 #define XDC_DP_SDP_ACK_SEL_MASK    0x00000001
+
+#define XDC_SDP_DP_ACK		1
+#define XDC_SDP_PL_ACK		0
 
 /**
  *  * Register: XDC_DC_VID_CLK

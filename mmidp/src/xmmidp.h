@@ -26,6 +26,10 @@
 
 #define XMMIDP_MAX_LANES	4
 #define XMMIDP_MAX_EDID_READ	128
+#define XMMIDP_RBR_LINK_RATE	162
+#define XMMIDP_HBR_LINK_RATE	270
+#define XMMIDP_HBR2_LINK_RATE	540
+#define XMMIDP_HBR3_LINK_RATE	810
 
 /****************************** Type Definitions ******************************/
 
@@ -37,93 +41,93 @@ typedef struct {
  * This typedef describes PHY LANES
  */
 typedef enum {
-	PHY_LANES_1 = 0x0,
-	PHY_LANES_2 = 0x1,
-	PHY_LANES_4 = 0x2,
+	XMMIDP_PHY_LANES_1 = 0x0,
+	XMMIDP_PHY_LANES_2 = 0x1,
+	XMMIDP_PHY_LANES_4 = 0x2,
 } XMmiDp_PhyLanes;
 
 /**
  * This typedef describes PHY RATE
  */
 typedef enum {
-	PHY_RATE_RBR_162GBPS  = 0x0,
-	PHY_RATE_HBR_270GBPS  = 0x1,
-	PHY_RATE_HBR2_540GBPS = 0x2,
-	PHY_RATE_HBR3_810GBPS = 0x3,
+	XMMIDP_PHY_RATE_RBR_162GBPS  = 0x0,
+	XMMIDP_PHY_RATE_HBR_270GBPS  = 0x1,
+	XMMIDP_PHY_RATE_HBR2_540GBPS = 0x2,
+	XMMIDP_PHY_RATE_HBR3_810GBPS = 0x3,
 } XMmiDp_PhyRate;
 
 /**
- * This typedef describes PHY TrainingPattern
+ * This typedef describes PHY Training Pattern
  */
 typedef enum {
-	PHY_NO_TRAIN 		= 0x0,
-	PHY_TPS1 		= 0x1,
-	PHY_TPS2 		= 0x2,
-	PHY_TPS3 		= 0x3,
-	PHY_TPS4 		= 0x4,
-	PHY_SYMBOL_ERR_RATE 	= 0x5,
-	PHY_PRBS7 		= 0x6,
-	PHY_CUSTOMPAT 		= 0x7,
-	PHY_CP2520_PAT_1 	= 0x8,
-	PHY_CP2520_PAT_2 	= 0x9,
+	XMMIDP_PHY_NO_TRAIN 		= 0x0,
+	XMMIDP_PHY_TPS1 		= 0x1,
+	XMMIDP_PHY_TPS2 		= 0x2,
+	XMMIDP_PHY_TPS3 		= 0x3,
+	XMMIDP_PHY_TPS4 		= 0x4,
+	XMMIDP_PHY_SYMBOL_ERR_RATE 	= 0x5,
+	XMMIDP_PHY_PRBS7 		= 0x6,
+	XMMIDP_PHY_CUSTOMPAT 		= 0x7,
+	XMMIDP_PHY_CP2520_PAT_1 	= 0x8,
+	XMMIDP_PHY_CP2520_PAT_2 	= 0x9,
 } XMmiDp_PhyTrainingPattern;
 
 /**
  * This typedef describes PHY VSWING Level
  */
 typedef enum {
-	PHY_VSWING_LEVEL0 = 0x0,
-	PHY_VSWING_LEVEL1 = 0x1,
-	PHY_VSWING_LEVEL2 = 0x2,
-	PHY_VSWING_LEVEL3 = 0x3,
+	XMMIDP_PHY_VSWING_LEVEL0 = 0x0,
+	XMMIDP_PHY_VSWING_LEVEL1 = 0x1,
+	XMMIDP_PHY_VSWING_LEVEL2 = 0x2,
+	XMMIDP_PHY_VSWING_LEVEL3 = 0x3,
 } XMmiDp_PhyVSwing;
 
 /**
  * This typedef describes PHY PREEMP Level
  */
 typedef enum {
-	PHY_PREEMP_LEVEL0 = 0x0,
-	PHY_PREEMP_LEVEL1 = 0x1,
-	PHY_PREEMP_LEVEL2 = 0x2,
-	PHY_PREEMP_LEVEL3 = 0x3,
+	XMMIDP_PHY_PREEMP_LEVEL0 = 0x0,
+	XMMIDP_PHY_PREEMP_LEVEL1 = 0x1,
+	XMMIDP_PHY_PREEMP_LEVEL2 = 0x2,
+	XMMIDP_PHY_PREEMP_LEVEL3 = 0x3,
 } XMmiDp_PhyPreEmp;
 
 /**
  * This typedef describes PHY XMIT ENABLE
  */
 typedef enum {
-	PHY_XMIT_EN_LANE0 = 0x1,
-	PHY_XMIT_EN_LANE1 = 0x2,
-	PHY_XMIT_EN_LANE2 = 0x4,
-	PHY_XMIT_EN_LANE3 = 0x8,
+	XMMIDP_PHY_XMIT_EN_LANE0 = 0x1,
+	XMMIDP_PHY_XMIT_EN_LANE1 = 0x2,
+	XMMIDP_PHY_XMIT_EN_LANE2 = 0x4,
+	XMMIDP_PHY_XMIT_EN_LANE3 = 0x8,
 } XMmiDp_PhyXmitEn;
 
 /**
  * This typedef describes PHY BUSY
  */
 typedef enum {
-	PHY_BUSY_LANE0 = 0x1,
-	PHY_BUSY_LANE1 = 0x2,
-	PHY_BUSY_LANE2 = 0x4,
-	PHY_BUSY_LANE3 = 0x8,
+	XMMIDP_PHY_BUSY_LANE0 = 0x1,
+	XMMIDP_PHY_BUSY_LANE1 = 0x2,
+	XMMIDP_PHY_BUSY_LANE2 = 0x4,
+	XMMIDP_PHY_BUSY_LANE3 = 0x8,
 } XMmiDp_PhyBusy;
 
 /**
  * This typedef describes PHY POWERDOWN CTRL
  */
 typedef enum {
-	PHY_POWER_ON 	   = 0x0,
-	PHY_INTER_P2_POWER = 0x2,
-	PHY_POWER_DOWN 	   = 0x3,
-	PHY_POWER_STATE    = 0xC,
+	XMMIDP_PHY_POWER_ON	  = 0x0,
+	XMMIDP_PHY_INTER_P2_POWER = 0x2,
+	XMMIDP_PHY_POWER_DOWN 	  = 0x3,
+	XMMIDP_PHY_POWER_STATE    = 0xC,
 } XMmiDp_PhyPwrDown;
 
 /**
  * This typedef describes PHY POWERDOWN CTRL
  */
 typedef enum {
-	PHY_20BIT = 0x0,
-	PHY_40BIT = 0x1,
+	XMMIDP_PHY_20BIT = 0x0,
+	XMMIDP_PHY_40BIT = 0x1,
 } XMmiDp_PhyWidth;
 
 /**
@@ -131,12 +135,12 @@ typedef enum {
  * during the link training process.
  */
 typedef enum {
-	XMMIDP_TS_CLOCK_RECOVERY,
-	XMMIDP_TS_CHANNEL_EQUALIZATION,
-	XMMIDP_TS_ADJUST_LINK_RATE,
-	XMMIDP_TS_ADJUST_LANE_COUNT,
-	XMMIDP_TS_FAILURE,
-	XMMIDP_TS_SUCCESS,
+	XMMIDP_TS_CLOCK_RECOVERY	= 0x0,
+	XMMIDP_TS_CHANNEL_EQUALIZATION	= 0x1,
+	XMMIDP_TS_ADJUST_LINK_RATE	= 0x2,
+	XMMIDP_TS_ADJUST_LANE_COUNT	= 0x3,
+	XMMIDP_TS_FAILURE		= 0x4,
+	XMMIDP_TS_SUCCESS		= 0x5,
 } XMmiDp_TrainingState;
 
 /**
@@ -180,47 +184,100 @@ typedef enum {
 	XMMIDP_RAW_16BPC 	= 0x1B,
 } XMmiDp_VidMap;
 
+/**
+ * This typedef gets Audio Interface mapping
+ */
+typedef enum {
+	XMMIDP_AUD_INF_I2S = 0x0,
+	XMMIDP_AUD_INF_SPDIF = 0x1,
+} XMmiDp_AudioInterfaceSel;
+
+/**
+ * This typedef gets Audio Data Width mapping
+ */
+typedef enum {
+	XMMIDP_AUDIO_INPUT_16_BIT	= 0x10,
+	XMMIDP_AUDIO_INPUT_17_BIT	= 0x11,
+	XMMIDP_AUDIO_INPUT_18_BIT	= 0x12,
+	XMMIDP_AUDIO_INPUT_19_BIT	= 0x13,
+	XMMIDP_AUDIO_INPUT_20_BIT	= 0x14,
+	XMMIDP_AUDIO_INPUT_21_BIT	= 0x15,
+	XMMIDP_AUDIO_INPUT_22_BIT	= 0x16,
+	XMMIDP_AUDIO_INPUT_23_BIT	= 0x17,
+	XMMIDP_AUDIO_INPUT_24_BIT	= 0x18,
+
+} XMmiDp_AudioDataWidth;
+
+/**
+ * This typedef gets Audio Num Channels mapping
+ */
+typedef enum {
+	XMMIDP_AUDIO_1_CHANNEL	= 0x0,
+	XMMIDP_AUDIO_2_CHANNEL	= 0x1,
+	XMMIDP_AUDIO_3_CHANNEL  = 0x2,
+	XMMIDP_AUDIO_4_CHANNEL  = 0x3,
+	XMMIDP_AUDIO_5_CHANNEL  = 0x4,
+	XMMIDP_AUDIO_6_CHANNEL  = 0x5,
+	XMMIDP_AUDIO_7_CHANNEL  = 0x6,
+	XMMIDP_AUDIO_8_CHANNEL	= 0x7,
+
+} XMmiDp_AudioNumChannels;
+
+/**
+ * This typedef gets Audio Clk Multiplier Freq mapping
+ */
+typedef enum {
+	XMMIDP_AUDIO_CLK_512FS	= 0x0,
+	XMMIDP_AUDIO_CLK_256FS	= 0x1,
+	XMMIDP_AUDIO_CLK_128FS	= 0x2,
+	XMMIDP_AUDIO_CLK_64FS	= 0x3,
+
+} XMmiDp_AudioClkMultFs;
+
 typedef struct {
+	u8 *VsLevel;
+	u8 *PeLevel;
 	u8 LaneCount;
 	u8 NumLanes;
 	u8 LinkRate;
 	u8 LinkBW;
 	u8 TrainingPattern;
-	u8 *VsLevel;
-	u8 *PeLevel;
 	u8 XmitEn;
 	u8 ScrambleEn;
 	u8 SSCEn;
 	u8 PwrDown;
+	u8 Reserved[3];
 } XMmiDp_PhyConfig;
 
 typedef struct {
 	u8 Edid[XMMIDP_MAX_EDID_READ];
 	u8 EdidNext[XMMIDP_MAX_EDID_READ];
+	u32 TrainingAuxRdInterval;
+	u8 LaneStatusAdjReqs[6];
 	u8 MaxLaneCount;
 	u8 MaxNumLanes;
 	u8 EnhancedFrameCap;
 	u8 PostLtAdjReqSupported;
 	u8 Tps3Supported;
-	u8 MaxLinkRate;
+	u16 MaxLinkRate;
 	u8 MaxLinkBW;
-	u32 TrainingAuxRdInterval;
-	u8 LaneStatusAdjReqs[6];
 	u8 Tps4Supported;
 	u8 NoAuxLinkTraining;
 	u8 MaxDownspread;
 	u8 DpcdRev;
 	u8 ExtendedReceiverCap;
+	u8 MstCap;
+	u8 Reserved[2];
 } XMmiDp_RxConfig;
 
 typedef struct {
-	u8 LaneCount;
-	u8 NumLanes;
-	u8 LinkRate;
-	u8 LinkBW;
-	u8 FastLinkTrainEn;
 	u8 VsLevel[XMMIDP_MAX_LANES];
 	u8 PeLevel[XMMIDP_MAX_LANES];
+	u8 LaneCount;
+	u8 NumLanes;
+	u16 LinkRate;
+	u8 LinkBW;
+	u8 FastLinkTrainEn;
 	u8 SpreadAmp;
 	u8 ChannelCodingSet;
 	u8 CrDoneCnt;
@@ -236,8 +293,6 @@ typedef struct {
  */
 typedef struct {
 	XVidC_VideoTimingMode Vtm;
-	u8 BitsPerColor;
-	u8 PixelClockHz;
 	u32 HStart;
 	u32 VStart;
 	u32 Misc0;
@@ -245,37 +300,41 @@ typedef struct {
 	u32 Misc1;
 	u32 NVid;
 	u32 HBlankInterval;
+	u8 BitsPerColor;
+	u64 PixelClockHz;
+	u8 Reserved[2];
 } XMmiDp_MainStreamAttributes;
 
 /**
  * typedef contains VideoConfig values
  */
 typedef struct {
-	u8 DeInPolarity;
-	u8 HSyncInPolarity;
-	u8 VSyncInPolarity;
 	u16 HActive;
 	u16 HBlank;
-	u8 I_P;
-	u8 RVBlankInOsc;
 	u16 VBlank;
 	u16 VActive;
 	u16 HSyncWidth;
 	u16 VSyncWidth;
+	u8 DeInPolarity;
+	u8 HSyncInPolarity;
+	u8 VSyncInPolarity;
+	u8 I_P;
+	u8 RVBlankInOsc;
 	u8 InitThresholdHi;
 	u8 En3DFrameFieldSeq;
 	u8 AvgBytesPerTuFrac;
 	u8 InitThreshold;
 	u8 AvgBytesPerTu;
+	u8 Reserved[2];
 } XMmiDp_VideoConfig;
 
 typedef struct {
+	XMmiDp_PPC PixModeSel;
+	XMmiDp_VidMap VideoMapping;
 	u8 LinkUpdPps;
 	u8 StreamType;
 	u8 EncryptionEnable;
 	u8 DscEn;
-	XMmiDp_PPC PixModeSel;
-	XMmiDp_VidMap VideoMapping;
 	u8 VidMapIpiEn;
 	u8 VidStreamEn;
 	u8 BcbStuffData;
@@ -284,7 +343,58 @@ typedef struct {
 	u8 BcbDataStuffEn;
 	u8 GyStuffData;
 	u8 RcrStuffData;
+	u8 Reserved[2];
 } XMmiDp_VSampleCtrl;
+
+typedef struct {
+	XMmiDp_AudioClkMultFs ClkMultFs;
+	u8 TimeStampVerNum;
+	u8 PktId;
+	u8 AudioMute;
+	XMmiDp_AudioNumChannels NumChannels;
+	u8 HbrModeEn;
+	XMmiDp_AudioDataWidth DataWidth;
+	u8 DataInEn;
+	XMmiDp_AudioInterfaceSel InterfaceSel;
+	u8 Reserved[3];
+} XMmiDp_AudioConfig;
+
+typedef struct {
+	u32 EnVerticalSdp;
+	u8 FixedPriorityArb;
+	u8 DisableExtSdp;
+	u8 En128Bytes;
+	u8 EnAudioStreamSdp;
+	u8 EnAudioTimeStampSdp;
+	u8 Reserved[3];
+} XMmiDp_SdpVerticalCtrl;
+
+typedef struct {
+	u32 EnHorizontalSdp;
+	u8 FixedPriorityArb;
+	u8 EnAudioStreamSdp;
+	u8 EnAudioTimeStampSdp;
+	u8 Reserved;
+} XMmiDp_SdpHorizontalCtrl;
+
+typedef struct {
+	u8 OverrideBytesReqHBlank;
+	u8 OverrideBytesReqVBlank;
+} XMmiDp_SdpConfig;
+
+typedef struct {
+	u8 ScrambleDis;
+	u8 EnhanceFramingEn;
+	u8 EnhanceFramingWithFecEn;
+	u8 FastLinkTrainEn;
+	u8 ScaleDownModeEn;
+	u8 DisableInterleaving;
+	u8 SelAuxTimeout32Ms;
+	u8 MstModeEn;
+	u8 FecEn;
+	u8 eDpEn;
+	u8 InitiateMstActSeq;
+} XMmiDp_Controller;
 
 typedef void (*XMmiDp_HpdIrqHandler)(void *InstancePtr);
 typedef void (*XMmiDp_HpdHotPlugHandler)(void *InstancePtr);
@@ -295,20 +405,27 @@ typedef void (*XMmiDp_HpdHotPlugHandler)(void *InstancePtr);
  * this type is then passed to the driver API functions.
  */
 typedef struct {
-
-	u32 AuxDelayUs;
-	XMmiDp_Config Config;
-	XMmiDp_PhyConfig PhyConfig;
+	XMmiDp_MainStreamAttributes MsaConfig[XMMIDP_MAX_LANES];
 	XMmiDp_RxConfig RxConfig;
-	XMmiDp_LinkConfig LinkConfig;
 	XMmiDp_VideoConfig VideoConfig[XMMIDP_MAX_LANES];
 	XMmiDp_VSampleCtrl VSampleCtrl[XMMIDP_MAX_LANES];
-	XMmiDp_MainStreamAttributes MsaConfig[XMMIDP_MAX_LANES];
-	XMmiDp_HpdIrqHandler HpdIrqHandler;
-	void *HpdIrqCallbackRef;
-	XMmiDp_HpdHotPlugHandler HpdHotPlugHandler;
+	XMmiDp_AudioConfig AudCfg[XMMIDP_MAX_LANES];
+	XMmiDp_SdpVerticalCtrl SdpVertCtrl[XMMIDP_MAX_LANES];
+	XMmiDp_SdpHorizontalCtrl SdpHorCtrl[XMMIDP_MAX_LANES];
+	XMmiDp_PhyConfig PhyConfig;
+	XMmiDp_LinkConfig LinkConfig;
+	u32 SdpManualCtrl[XMMIDP_MAX_LANES];
+	XMmiDp_SdpConfig SdpCfg1[XMMIDP_MAX_LANES];
+	XMmiDp_SdpConfig SdpCfg2[XMMIDP_MAX_LANES];
+	XMmiDp_SdpConfig SdpCfg3[XMMIDP_MAX_LANES];
+	u32 SdpRegBank[XMMIDP_MAX_LANES];
+	XMmiDp_Controller CtrlConfig[XMMIDP_MAX_LANES];
+	u32 AuxDelayUs;
+	XMmiDp_Config Config;
 	void *HpdHotPlugCallbackRef;
-
+	void *HpdIrqCallbackRef;
+	XMmiDp_HpdIrqHandler HpdIrqHandler;
+	XMmiDp_HpdHotPlugHandler HpdHotPlugHandler;
 } XMmiDp;
 
 /**************************** Function Prototypes *****************************/
@@ -328,11 +445,11 @@ void XMmiDp_DpcdReadModifyWrite(XMmiDp *InstancePtr, u32 RegOffset, u32
 				Mask, u32 Shift, u32 Val);
 /* Phy Control Config */
 
-int GetLaneCount(XMmiDp *InstancePtr, u8 NumLanes);
-int GetNumLanes(XMmiDp *InstancePtr, u8 LaneCount);
+u8 XMmiDp_GetLaneCount(XMmiDp *InstancePtr, u8 NumLanes);
+u8 XMmiDp_GetNumLanes(XMmiDp *InstancePtr, u8 LaneCount);
 void XMmiDp_SetPhyLaneCount(XMmiDp *InstancePtr, XMmiDp_PhyLanes);
-int GetLinkRate(XMmiDp *InstancePtr, u8 LinkBw);
-int GetLinkBW(XMmiDp *InstancePtr, u8 LinkRate);
+u16 XMmiDp_GetLinkRate(XMmiDp *InstancePtr, u8 LinkBw);
+u8 XMmiDp_GetLinkBW(XMmiDp *InstancePtr, u8 LinkRate);
 void XMmiDp_SetPhyLinkRate(XMmiDp *InstancePtr, XMmiDp_PhyRate LinkRate);
 void XMmiDp_SetPhyTrainingPattern(XMmiDp *InstancePtr,
 				  XMmiDp_PhyTrainingPattern TrainingPattern);
@@ -350,7 +467,7 @@ void XMmiDp_SetPhyPowerdown(XMmiDp *InstancePtr, XMmiDp_PhyPwrDown Control);
 void XMmiDp_SetPhyWidth(XMmiDp *InstancePtr, XMmiDp_PhyWidth Width);
 void XMmiDp_SetAux_250Us_Cnt_Limit(XMmiDp *InstancePtr, u16 Limit);
 void XMmiDp_SetAux_2000Us_Cnt_Limit(XMmiDp *InstancePtr, u16 Limit);
-void XMmiDp_SetAux_100000Us_Cnt_Limit(XMmiDp *InstancePtr, u16 Limit);
+void XMmiDp_SetAux_100000Us_Cnt_Limit(XMmiDp *InstancePtr, u32 Limit);
 void XMmiDp_SetPmConfig1(XMmiDp *InstancePtr, u32 Val);
 void XMmiDp_SetPmConfig2(XMmiDp *InstancePtr, u32 Val);
 
@@ -369,6 +486,7 @@ u32 XMmiDp_GetEdidBlock(XMmiDp *InstancePtr, u8 *Data, u8 BlockNum);
 /* Interrupt Enable */
 void XMmiDp_GeneralInterruptEnable(XMmiDp *InstancePtr, u32 Mask);
 void XMmiDp_HpdInterruptEnable(XMmiDp *InstancePtr, u32 Mask);
+void XMmiDp_SdpStatusInterruptEnable(XMmiDp *InstancePtr, u32 Mask);
 
 /* DPCD */
 void XMmiDp_SetDpcdLaneCount(XMmiDp *InstancePtr);
@@ -384,6 +502,7 @@ u32 XMmiDp_GetRxMaxLinkRate(XMmiDp *InstancePtr);
 u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr);
 void XMmiDp_GetDpcdTrainingAuxRdInterval(XMmiDp *InstancePtr);
 u32 XMmiDp_GetDpcdLaneStatusAdjReqs(XMmiDp *InstancePtr);
+u32 XMmiDp_GetRxMstModeCap(XMmiDp *InstancePtr);
 
 /* Link Training */
 void XMmiDp_FastLinkTrainEnable(XMmiDp *InstancePtr);
@@ -440,4 +559,54 @@ void XMmiDp_SetVideoMapping(XMmiDp *InstancePtr,
 void XMmiDp_SetVidStreamEnable(XMmiDp *InstancePtr, u8 Stream,
 			       u8 StreamEnable);
 
+void XMmiDp_ConfigureAudioController(XMmiDp *InstancePtr, u8 Stream);
+void XMmiDp_SetAudStreamInterfaceSel(XMmiDp *InstancePtr, u8 Stream, u8 InterfaceSel);
+void XMmiDp_SetAudDataInputEn(XMmiDp *InstancePtr, u8 Stream, u8 ActiveDataInput);
+void XMmiDp_SetAudDataWidth(XMmiDp *InstancePtr, u8 Stream, u8 DataWidth);
+void XMmiDp_SetAudHbrModeEn(XMmiDp *InstancePtr, u8 Stream, u8 HbrModeEn);
+void XMmiDp_SetAudNumChannels(XMmiDp *InstancePtr, u8 Stream, u8 NumChannels);
+void XMmiDp_SetAudMuteFlag(XMmiDp *InstancePtr, u8 Stream, u8 AudioMute);
+void XMmiDp_SetAudPktId(XMmiDp *InstancePtr, u8 Stream, u8 PktId);
+void XMmiDp_SetAudTimeStampVerNum(XMmiDp *InstancePtr, u8 Stream, u8 VerNum);
+void XMmiDp_SetAudClkMultFs(XMmiDp *InstancePtr, u8 Stream, u8 ClkMultFs);
+void XMmiDp_SetAudioConfig1(XMmiDp *InstancePtr, u8 Stream);
+void XMmiDp_SetSdpVertAudTimeStampEn(XMmiDp *InstancePtr, u8 Stream, u8 EnAudTimeStamp);
+void XMmiDp_SetSdpVertAudStreamEn(XMmiDp *InstancePtr, u8 Stream, u8 EnAudStream);
+void XMmiDp_SetSdpVertEn(XMmiDp *InstancePtr, u8 Stream, u32 EnVerticalSdp);
+void XMmiDp_SetSdpVertEn128Bytes(XMmiDp *InstancePtr, u8 Stream, u8 En128Bytes);
+void XMmiDp_SetDisableExternalSdp(XMmiDp *InstancePtr, u8 Stream, u8 DisExternalSdp);
+void XMmiDp_SetSdpVertFixedPriority(XMmiDp *InstancePtr, u8 Stream, u8 EnFixedPriority);
+void XMmiDp_SetSdpVerticalCtrl(XMmiDp *InstancePtr, u8 Stream);
+void XMmiDp_SetSdpHorAudTimeStampEn(XMmiDp *InstancePtr, u8 Stream, u8 EnAudTimeStamp);
+void XMmiDp_SetSdpHorAudStreamEn(XMmiDp *InstancePtr, u8 Stream, u8 EnAudStream);
+void XMmiDp_SetSdpHorizontalEn(XMmiDp *InstancePtr, u8 Stream, u32 EnHorizontalSdp);
+void XMmiDp_SetSdpHorFixedPriority(XMmiDp *InstancePtr, u8 Stream, u8 EnFixedPriority);
+void XMmiDp_SetSdpHorizontalCtrl(XMmiDp *InstancePtr, u8 Stream);
+void XMmiDp_SetControllerScrambleDis(XMmiDp *InstancePtr, u8 Stream, u8 ScrambleDis);
+void XMmiDp_SetControllerEnhanceFramingEn(XMmiDp *InstancePtr, u8 Stream, u8 EnhanceFramingEn);
+void XMmiDp_SetControllerEnhanceFramingWithFecEn(XMmiDp *InstancePtr, u8 Stream,
+	u8 EnhanceFramingWithFecEn);
+void XMmiDp_SetControllerFastLinkTrainEn(XMmiDp *InstancePtr, u8 Stream, u8 FastLinkTrainEn);
+void XMmiDp_SetControllerScaleDownModeEn(XMmiDp *InstancePtr, u8 Stream, u8 ScaleDownModeEn);
+void XMmiDp_SetControllerDisableInterleaving(XMmiDp *InstancePtr, u8 Stream,
+	u8 DisableInterleaving);
+void XMmiDp_SetControllerSelAuxTimeout32Ms(XMmiDp *InstancePtr, u8 Stream, u8 SelAuxTimeout32Ms);
+void XMmiDp_SetControllerMstModeEn(XMmiDp *InstancePtr, u8 Stream, u8 MstModeEn);
+void XMmiDp_SetControllerFecEn(XMmiDp *InstancePtr, u8 Stream, u8 FecEn);
+void XMmiDp_SetControllereDpEn(XMmiDp *InstancePtr, u8 Stream, u8 eDpEn);
+void XMmiDp_SetControllerInitiateMstActSeq(XMmiDp *InstancePtr, u8 Stream, u8 InitiateMstActSeq);
+void XMmiDp_SetCoreCtrl(XMmiDp *InstancePtr, u8 Stream);
+void XMmiDp_MstActSeqEnable(XMmiDp *InstancePtr);
+void XMmiDp_MstModeEnable(XMmiDp *InstancePtr);
+u32 XMmiDp_WaitPayloadTableUpdateStatus(XMmiDp *InstancePtr);
+u32 XMmiDp_WaitActHandledStatus(XMmiDp *InstancePtr);
+u32 XMmiDp_InitiateActSeq(XMmiDp *InstancePtr);
+void XMmiDp_SetMstVcpTable0(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable1(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable2(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable3(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable4(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable5(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable6(XMmiDp *InstancePtr, u32 Payload);
+void XMmiDp_SetMstVcpTable7(XMmiDp *InstancePtr, u32 Payload);
 #endif /* __XMMIDP_H__ */

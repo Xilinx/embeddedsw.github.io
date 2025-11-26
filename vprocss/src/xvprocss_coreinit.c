@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,7 +10,7 @@
 * @file xvprocss_coreinit.c
 * @addtogroup vprocss Overview
 * @{
-* @details
+* @brief
 
 * Video Processing Subsystem Sub-Cores initialization
 * The functions in this file provides an abstraction from the initialization
@@ -39,12 +39,8 @@
 /************************** Constant Definitions *****************************/
 
 /************************** Function Prototypes ******************************/
-static int ComputeSubcoreAbsAddr(UINTPTR subsys_baseaddr,
-		                         UINTPTR subsys_highaddr,
-		                         u32 subcore_offset,
-								 UINTPTR *subcore_baseaddr);
 
-
+#ifndef SDT
 /*****************************************************************************/
 /**
 * This function computes the subcore absolute address on axi-lite interface
@@ -65,7 +61,7 @@ static int ComputeSubcoreAbsAddr(UINTPTR subsys_baseaddr,
 static int ComputeSubcoreAbsAddr(UINTPTR subsys_baseaddr,
 		                         UINTPTR subsys_highaddr,
 		                         u32 subcore_offset,
-								 UINTPTR *subcore_baseaddr)
+					 UINTPTR *subcore_baseaddr)
 {
   int status;
   UINTPTR absAddr;
@@ -84,6 +80,7 @@ static int ComputeSubcoreAbsAddr(UINTPTR subsys_baseaddr,
 
   return(status);
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -116,7 +113,8 @@ int XVprocSs_SubcoreInitResetAxis(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.RstAxis.AddrOffset,
@@ -127,6 +125,9 @@ int XVprocSs_SubcoreInitResetAxis(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_INIT_RESAXIS, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XGpio_CfgInitialize(XVprocSsPtr->RstAxisPtr,
@@ -175,7 +176,8 @@ int XVprocSs_SubcoreInitResetAximm(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.RstAximm.AddrOffset,
@@ -186,6 +188,9 @@ int XVprocSs_SubcoreInitResetAximm(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_INIT_RESAXIM, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XGpio_CfgInitialize(XVprocSsPtr->RstAximmPtr,
@@ -234,7 +239,8 @@ int XVprocSs_SubcoreInitRouter(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Router.AddrOffset,
@@ -245,6 +251,9 @@ int XVprocSs_SubcoreInitRouter(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_INIT_ROUTER, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XAxisScr_CfgInitialize(XVprocSsPtr->RouterPtr,
@@ -293,7 +302,8 @@ int XVprocSs_SubcoreInitCsc(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Csc.AddrOffset,
@@ -304,6 +314,9 @@ int XVprocSs_SubcoreInitCsc(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_CSC, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_csc_CfgInitialize(&XVprocSsPtr->CscPtr->Csc,
@@ -353,7 +366,8 @@ int XVprocSs_SubcoreInitHScaler(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Hscale.AddrOffset,
@@ -364,6 +378,9 @@ int XVprocSs_SubcoreInitHScaler(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_HSCALER, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_hscaler_CfgInitialize(&XVprocSsPtr->HscalerPtr->Hsc,
@@ -412,7 +429,8 @@ int XVprocSs_SubcoreInitVScaler(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Vscale.AddrOffset,
@@ -423,6 +441,9 @@ int XVprocSs_SubcoreInitVScaler(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_VSCALER, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_vscaler_CfgInitialize(&XVprocSsPtr->VscalerPtr->Vsc,
@@ -471,7 +492,8 @@ int XVprocSs_SubcoreInitHCrsmplr(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.HCrsmplr.AddrOffset,
@@ -482,6 +504,9 @@ int XVprocSs_SubcoreInitHCrsmplr(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_HCR, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_hcresampler_CfgInitialize(&XVprocSsPtr->HcrsmplrPtr->Hcr,
@@ -537,7 +562,8 @@ int XVprocSs_SubcoreInitVCrsmpleIn(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.VCrsmplrIn.AddrOffset,
@@ -548,6 +574,9 @@ int XVprocSs_SubcoreInitVCrsmpleIn(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_VCRI, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_vcresampler_CfgInitialize(&XVprocSsPtr->VcrsmplrInPtr->Vcr,
@@ -602,7 +631,8 @@ int XVprocSs_SubcoreInitVCrsmpleOut(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.VCrsmplrOut.AddrOffset,
@@ -613,6 +643,9 @@ int XVprocSs_SubcoreInitVCrsmpleOut(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_VCRO, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_vcresampler_CfgInitialize(&XVprocSsPtr->VcrsmplrOutPtr->Vcr,
@@ -668,7 +701,8 @@ int XVprocSs_SubcoreInitLetterbox(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Lbox.AddrOffset,
@@ -679,6 +713,9 @@ int XVprocSs_SubcoreInitLetterbox(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_INIT_LBOX, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_letterbox_CfgInitialize(&XVprocSsPtr->LboxPtr->Lbox,
@@ -727,7 +764,8 @@ int XVprocSs_SubcoreInitVdma(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Vdma.AddrOffset,
@@ -738,6 +776,9 @@ int XVprocSs_SubcoreInitVdma(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_INIT_VDMA, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XAxiVdma_CfgInitialize(XVprocSsPtr->VdmaPtr,
@@ -786,7 +827,8 @@ int XVprocSs_SubcoreInitDeinterlacer(XVprocSs *XVprocSsPtr)
     }
 
 	/* Compute absolute base address */
-    AbsAddr = 0;
+#ifndef SDT
+	AbsAddr = 0;
     status = ComputeSubcoreAbsAddr(XVprocSsPtr->Config.BaseAddress,
 		                           XVprocSsPtr->Config.HighAddress,
 		                           XVprocSsPtr->Config.Deint.AddrOffset,
@@ -797,6 +839,9 @@ int XVprocSs_SubcoreInitDeinterlacer(XVprocSs *XVprocSsPtr)
       XVprocSs_LogWrite(XVprocSsPtr, XVPROCSS_EVT_CFG_DEINT, XVPROCSS_EDAT_BADADDR);
       return(XST_FAILURE);
     }
+#else
+	AbsAddr = pConfig->BaseAddress;
+#endif
 
 	/* Initialize core */
     status = XV_deinterlacer_CfgInitialize(&XVprocSsPtr->DeintPtr->Deint,

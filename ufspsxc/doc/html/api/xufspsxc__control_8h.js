@@ -13,6 +13,7 @@ var xufspsxc__control_8h =
     [ "XUfsPsxc_FillWriteCmdUpiu", "xufspsxc__control_8h.html#ga3c13cdebf8362d85f77b3b15fe52d2c3", null ],
     [ "XUfsPsxc_GetLUNInfo", "xufspsxc__control_8h.html#ga353f784dcc8a50185ea407bc0dcb4768", null ],
     [ "XUfsPsxc_HostInitialize", "xufspsxc__control_8h.html#gae0db9d094adbe197913f6c107e0f02ef", null ],
+    [ "XUfsPsxc_OverridePhyRxReq", "xufspsxc__control_8h.html#ga16fd74d7320f10b5240412d467ff82c6", null ],
     [ "XUfsPsxc_PhyInit", "xufspsxc__control_8h.html#ga2c5da410d2eefa54129eb56efb13bc3f", null ],
     [ "XUfsPsxc_ProcessUpiu", "xufspsxc__control_8h.html#ga5c93689c07193dfa1a85d9b093596b0e", null ],
     [ "XUfsPsxc_ReadDeviceInfo", "xufspsxc__control_8h.html#ga029d0b5ef73c6cd4daaf455d82afbd57", null ],

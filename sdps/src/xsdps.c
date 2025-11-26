@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -92,6 +92,7 @@
 *                       for SD/eMMC.
 * 4.2   ro     06/12/23 Added support for system device-tree flow.
 * 4.3   ap     11/29/23 Add support for Sanitize feature.
+* 4.5   sk     10/28/25 Update IsCacheCoherent logic to include EL1_NS mode.
 *
 * </pre>
 *
@@ -347,10 +348,15 @@ s32 XSdPs_ReadPolled(XSdPs *InstancePtr, u32 Arg, u32 BlkCnt, u8 *Buff)
 		goto RETURN_PATH;
 	}
 
+#if defined(EL1_NONSECURE) && (EL1_NONSECURE == 1U)
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheInvalidateRange((INTPTR)Buff,
 					  ((INTPTR)BlkCnt * (INTPTR)InstancePtr->BlkSize));
 	}
+#else
+	Xil_DCacheInvalidateRange((INTPTR)Buff,
+			((INTPTR)BlkCnt * (INTPTR)InstancePtr->BlkSize));
+#endif
 
 RETURN_PATH:
 #if defined  (XCLOCKING)

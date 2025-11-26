@@ -16,7 +16,7 @@ var xmmidp__phy_8c =
     [ "XMmiDp_PhySSCEnable", "xmmidp__phy_8c.html#ga2a67ae0694619bb601b9a555513322fc", null ],
     [ "XMmiDp_PhyWaitReady", "xmmidp__phy_8c.html#ga98fc24f84370a48e2cad677269274f47", null ],
     [ "XMmiDp_RegReadModifyWrite", "xmmidp__phy_8c.html#ga17587910f82d3b484ea19be728e228ce", null ],
-    [ "XMmiDp_SetAux_100000Us_Cnt_Limit", "xmmidp__phy_8c.html#gae57dca21aa34824661f67454fa8c8ebb", null ],
+    [ "XMmiDp_SetAux_100000Us_Cnt_Limit", "xmmidp__phy_8c.html#ga47ed0b4f27fb0badafec87dddca81df3", null ],
     [ "XMmiDp_SetAux_2000Us_Cnt_Limit", "xmmidp__phy_8c.html#gac08c9347c5b9c108aa9f34221256a225", null ],
     [ "XMmiDp_SetAux_250Us_Cnt_Limit", "xmmidp__phy_8c.html#gaa5dc71e26942b66fa2b182eb7401f7e1", null ],
     [ "XMmiDp_SetDpcdLaneCount", "xmmidp__phy_8c.html#ga1c9569c6c5ebf64a307e313ccd804198", null ],

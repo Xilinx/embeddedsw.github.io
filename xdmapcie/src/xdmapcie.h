@@ -115,9 +115,8 @@ typedef  struct {
 					 */
 #endif
 	u8  IncludeRootComplex;		/**< Is IP built as root complex */
-	u32 IATUAddress;		/** IATU Region Address for versal2*/
+	u32 IATUAddress;		/** IATU Region Address for versal_2ve_2vm*/
 
-#if defined(__aarch64__) || defined(__arch64__)
 #if defined(SDT)
 	u64 Ecam;
 	u32     NpMemBaseAddr;          /**< non prefetchable memory base address */
@@ -130,11 +129,6 @@ typedef  struct {
 	u64	PMemBaseAddr;		/**< prefetchable memory base address */
 	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
 	u64	PMemMaxAddr;	/**< prefetchable memory max base address */
-#endif
-#else
-	u32 Ecam;
-	u32	NpMemBaseAddr;		/**< non prefetchable memory base address */
-	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
 #endif
 
 } XDmaPcie_Config;
@@ -271,6 +265,7 @@ void XDmaPcie_WriteRemoteConfigSpace(XDmaPcie *InstancePtr, u8 Bus, u8 Device,
 u32 XDmaPcie_ComposeExternalConfigAddress(u8 Bus, u8 Device, u8 Function,
 								 u16 Offset);
 void XDmaPcie_EnumerateFabric(XDmaPcie *XdmaPciePtr);
+int XDmaPcie_IicInit(void);
 
 /*
  * Interrupt Functions.

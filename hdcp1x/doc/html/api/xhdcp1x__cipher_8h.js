@@ -39,6 +39,7 @@ var xhdcp1x__cipher_8h =
     [ "XHdcp1x_CipherSetK", "xhdcp1x__cipher_8h.html#ga89ff306031805dad1e1ff7af0c836873", null ],
     [ "XHdcp1x_CipherSetKeySelect", "xhdcp1x__cipher_8h.html#ga6f0a88da0a794b63e3f6caafa912dc10", null ],
     [ "XHdcp1x_CipherSetLinkStateCheck", "xhdcp1x__cipher_8h.html#gac3912c6a86498e0559470ce8ce148cd1", null ],
+    [ "XHdcp1x_CipherSetMode", "xhdcp1x__cipher_8h.html#ga8438aa18360e551721d2803cf11004a2", null ],
     [ "XHdcp1x_CipherSetNumLanes", "xhdcp1x__cipher_8h.html#gad104aebb80bb03cb66c31eaabf21247a", null ],
     [ "XHdcp1x_CipherSetRemoteKsv", "xhdcp1x__cipher_8h.html#ga320b0410ab8e10a8bc5c2a6278ed06d7", null ],
     [ "XHdcp1x_CipherSetRiUpdate", "xhdcp1x__cipher_8h.html#gae2ae95918ecd46e725812a9bce8f6478", null ]

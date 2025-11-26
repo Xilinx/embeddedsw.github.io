@@ -15,6 +15,7 @@ var xmmidp__link_8c =
     [ "XMmiDp_GetRxCapabilities", "xmmidp__link_8c.html#gac3135a219580b68794c555360df8d81b", null ],
     [ "XMmiDp_GetRxMaxLaneCount", "xmmidp__link_8c.html#ga6afea29dca33e18ef73737cd72f1020e", null ],
     [ "XMmiDp_GetRxMaxLinkRate", "xmmidp__link_8c.html#ga80cd6c15cc6633c38929058475a46451", null ],
+    [ "XMmiDp_GetRxMstModeCap", "xmmidp__link_8c.html#ga9863cd6de09dab984927d51f56b1736e", null ],
     [ "XMmiDp_GetTrainingDelay", "xmmidp__link_8c.html#ga7618de05e6ccfe9c3e512255948f413a", null ],
     [ "XMmiDp_RunTraining", "xmmidp__link_8c.html#ga2faa4352f70a9938766d8d266bb20b2a", null ],
     [ "XMmiDp_SetLaneCount", "xmmidp__link_8c.html#gadcd1b3f213ccabc37a9915473556c171", null ],

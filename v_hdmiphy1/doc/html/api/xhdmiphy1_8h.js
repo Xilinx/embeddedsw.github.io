@@ -1,5 +1,14 @@
 var xhdmiphy1_8h =
 [
+    [ "XHDMIPHY1_CH2IDX", "xhdmiphy1_8h.html#ga69ae1625b41480778aa00b6b7f40f9cb", null ],
+    [ "XHDMIPHY1_ISCH", "xhdmiphy1_8h.html#ga0c19278d1c72339ecef013ff01dd9400", null ],
+    [ "XHDMIPHY1_ISCMN", "xhdmiphy1_8h.html#gac325f9063e8d18e65ee89d4c8a379ac7", null ],
+    [ "XHDMIPHY1_ISRXMMCM", "xhdmiphy1_8h.html#gaaf269ae525857ecd7641ad98a490ec0a", null ],
+    [ "XHdmiphy1_IsRxUsingCpll", "xhdmiphy1_8h.html#ga22e4224f5da99f2222a5813e3ac0fb72", null ],
+    [ "XHdmiphy1_IsRxUsingQpll", "xhdmiphy1_8h.html#ga8a56411c7caa7bf53a038ce5d4bcd70c", null ],
+    [ "XHDMIPHY1_ISTXMMCM", "xhdmiphy1_8h.html#gaefd18cb0307f9edc1c822310bba085d1", null ],
+    [ "XHdmiphy1_IsTxUsingCpll", "xhdmiphy1_8h.html#ga17f7c0f80270c3ac676d59ebac22b116", null ],
+    [ "XHdmiphy1_IsTxUsingQpll", "xhdmiphy1_8h.html#ga018b4db1ade86e456ea095a91597f37c", null ],
     [ "XHdmiphy1_Callback", "xhdmiphy1_8h.html#ga14ce1c0f480526922f42b9e7ff8dee8f", null ],
     [ "XHdmiphy1_ErrorCallback", "xhdmiphy1_8h.html#gadcff193d2a45fbd03c48f595fe8fdf55", null ],
     [ "XHdmiphy1_IntrHandler", "xhdmiphy1_8h.html#ga5ff00002844b75068ea21b03514fcf04", null ],

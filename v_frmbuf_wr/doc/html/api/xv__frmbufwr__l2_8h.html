@@ -182,8 +182,11 @@ Macros</h2></td></tr>
 <tr class="memdesc:af1c1f6becc743bf969e23fcb3beeb138"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if interlaced support is available.  <a href="#af1c1f6becc743bf969e23fcb3beeb138">More...</a><br/></td></tr>
 <tr class="separator:af1c1f6becc743bf969e23fcb3beeb138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a117565ff1e2a1f51b7761da20d3e84cf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__frmbufwr__l2_8h.html#a117565ff1e2a1f51b7761da20d3e84cf">XVFrmbufWr_IsTileFormatEnabled</a>(InstancePtr)&#160;&#160;&#160;((InstancePtr)-&gt;FrmbufWr.Config.IsTileFormat)</td></tr>
-<tr class="memdesc:a117565ff1e2a1f51b7761da20d3e84cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if Video Format Y16 is available.  <a href="#a117565ff1e2a1f51b7761da20d3e84cf">More...</a><br/></td></tr>
+<tr class="memdesc:a117565ff1e2a1f51b7761da20d3e84cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if Tile format is enabled.  <a href="#a117565ff1e2a1f51b7761da20d3e84cf">More...</a><br/></td></tr>
 <tr class="separator:a117565ff1e2a1f51b7761da20d3e84cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47323597d6c93aad6acaa9c8bee72dd6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__frmbufwr__l2_8h.html#a47323597d6c93aad6acaa9c8bee72dd6">XVFrmbufWr_IsEnSyncSignals</a>(InstancePtr)&#160;&#160;&#160;((InstancePtr)-&gt;FrmbufWr.Config.EnSyncSignals)</td></tr>
+<tr class="memdesc:a47323597d6c93aad6acaa9c8bee72dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro returns if Low latency support is enabled.  <a href="#a47323597d6c93aad6acaa9c8bee72dd6">More...</a><br/></td></tr>
+<tr class="separator:a47323597d6c93aad6acaa9c8bee72dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -364,6 +367,32 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 <p>Referenced by <a class="el" href="group__v__frmbuf__wr.html#ga4951453d9f7373886327dbbcb8b3ada2">XVFrmbufWr_SetMemFormat()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a47323597d6c93aad6acaa9c8bee72dd6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XVFrmbufWr_IsEnSyncSignals</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">InstancePtr</td><td>)</td>
+          <td>&#160;&#160;&#160;((InstancePtr)-&gt;FrmbufWr.Config.EnSyncSignals)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This macro returns if Low latency support is enabled. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the core instance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Enabled(1)/Disabled(0)</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
 </div>
 </div>
@@ -549,7 +578,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This macro returns if Video Format Y16 is available. </p>
+<p>This macro returns if Tile format is enabled. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the core instance.</td></tr>

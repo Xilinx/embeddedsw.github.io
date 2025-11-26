@@ -28,24 +28,28 @@
 
 #include "xmmidp.h"
 
-#define XMMIDP_AUX_MAX_DATA_WRITE_SIZE	0x4
+#define XMMIDP_AUX_MAX_DATA_WRITE_SIZE		0x4
 #define XMMIDP_AUX_MAX_TIMEOUT_COUNT		50
 #define XMMIDP_AUX_MAX_DEFER_COUNT		50
 #define XMMIDP_AUX_MAX_WAIT			20000
-#define XMMIDP_IS_CONNECTED_MAX_TIMEOUT_COUNT 50
+#define XMMIDP_IS_CONNECTED_MAX_TIMEOUT_COUNT	50
+#define XMMIDP_AUX_REPLY_TIMEOUT_TIMER		20
+#define XMMIDP_AUX_REQUEST_TIMEOUT_TIMER	3200
+#define XMMIDP_AUX_MAX_DATA_BYTES		16
 
-#define XMMIDP_EDID_BLOCK_SIZE		128
+#define XMMIDP_EDID_BLOCK_SIZE			128
 #define XMMIDP_EDID_ADDR			0x50
 #define XMMIDP_SEGPTR_ADDR			0x30
+#define XMMIDP_MAX_SEGMENT_SIZE			256
 
 /**
  * This typedef describes an AUX transaction.
  */
 typedef struct {
-	u16 Cmd;
-	u8 NumBytes;
 	u32 Address;
 	u8 *Data;
+	u16 Cmd;
+	u8 NumBytes;
 } XMmiDp_AuxTransaction;
 
 /******************************************************************************/
@@ -63,7 +67,7 @@ void XMmiDp_WaitUs(XMmiDp *InstancePtr, u32 MicroSeconds)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	if (MicroSeconds == 0) {
+	if (!MicroSeconds) {
 		return;
 	}
 	/* Wait the requested amount of time. */
@@ -81,10 +85,13 @@ void XMmiDp_WaitUs(XMmiDp *InstancePtr, u32 MicroSeconds)
 *******************************************************************************/
 static void XMmiDp_ClearAuxData(XMmiDp *InstancePtr)
 {
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA0_0, 0);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA1_0, 0);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA2_0, 0);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA3_0, 0);
+	u32 Index;
+
+	for (Index = 0; Index < 4; Index++) {
+		XMmiDp_WriteReg(InstancePtr->Config.BaseAddr,
+				XMMIDP_AUX_DATA0_0 + (Index * 4), 0);
+
+	}
 
 }
 
@@ -112,10 +119,10 @@ static void XMmiDp_SetAuxData(XMmiDp *InstancePtr, XMmiDp_AuxTransaction *Reques
 		data[Index / 4] |= (Request->Data[Index] << ((Index % 4) * 8));
 	}
 
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA0_0, data[0]);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA1_0, data[1]);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA2_0, data[2]);
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA3_0, data[3]);
+	for (Index = 0; Index < 4; Index++) {
+		XMmiDp_WriteReg(InstancePtr->Config.BaseAddr,
+				XMMIDP_AUX_DATA0_0 + (Index * 4), data[Index]);
+	}
 
 }
 
@@ -160,10 +167,11 @@ static u32 XMmiDp_GetAuxData(XMmiDp *InstancePtr, XMmiDp_AuxTransaction *Request
 	} while (BytesRead != Request->NumBytes);
 
 	/* Read AUX_DATA_0 Registers */
-	data[0] = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA0_0);
-	data[1] = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA1_0);
-	data[2] = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA2_0);
-	data[3] = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_DATA3_0);
+
+	for (Index = 0; Index < 4; Index++) {
+		data[Index] = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr,
+					     XMMIDP_AUX_DATA0_0 + (Index * 4));
+	}
 
 	for (Index = 0; Index < Request->NumBytes; Index++) {
 		Request->Data[Index] = (data[Index / 4] >> ((Index % 4) * 8)) & 0xFF;
@@ -200,7 +208,7 @@ static u32 XMmiDp_AuxWaitReady(XMmiDp *InstancePtr)
 			return XST_ERROR_COUNT_MAX;
 		}
 
-		XMmiDp_WaitUs(InstancePtr, 20);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_AUX_REPLY_TIMEOUT_TIMER);
 
 	} while (Status & XMMIDP_GEN_INT0_AUX_REPLY_EVENT_MASK);
 
@@ -252,7 +260,7 @@ static u32 XMmiDp_AuxWaitReply(XMmiDp *InstancePtr)
 		}
 
 		(Timeout--);
-		XMmiDp_WaitUs(InstancePtr, 20);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_AUX_REPLY_TIMEOUT_TIMER);
 	}
 
 	return XST_ERROR_COUNT_MAX;
@@ -290,7 +298,7 @@ static u32 XMmiDp_SetAuxRequest(XMmiDp *InstancePtr, XMmiDp_AuxTransaction *Requ
 	do {
 		Status = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_STATUS0);
 
-		XMmiDp_WaitUs(InstancePtr, 20);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_AUX_REPLY_TIMEOUT_TIMER);
 		TimeoutCount++;
 		if (TimeoutCount >= XMMIDP_AUX_MAX_TIMEOUT_COUNT) {
 			return XST_ERROR_COUNT_MAX;
@@ -408,10 +416,10 @@ static u32 XMmiDp_AuxRequest(XMmiDp *InstancePtr, XMmiDp_AuxTransaction *Request
 			return Status;
 		}
 
-		XMmiDp_WaitUs(InstancePtr, 3200);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_AUX_REQUEST_TIMEOUT_TIMER);
 
-	} while ((DeferCount <  XMMIDP_AUX_MAX_DEFER_COUNT) && (TimeoutCount <
-		 XMMIDP_AUX_MAX_TIMEOUT_COUNT));
+	} while ((DeferCount <  XMMIDP_AUX_MAX_DEFER_COUNT) &&
+		 (TimeoutCount < XMMIDP_AUX_MAX_TIMEOUT_COUNT));
 
 	return XST_ERROR_COUNT_MAX;
 }
@@ -443,7 +451,6 @@ static u32 XMmiDp_AuxRequest(XMmiDp *InstancePtr, XMmiDp_AuxTransaction *Request
 static u32 XMmiDp_AuxChanCommand(XMmiDp *InstancePtr, u32 AuxCmdType, u32
 				 Address, u32 Bytes, u8 *Data)
 {
-
 	u32 Status;
 	u32 BytesLeft;
 	XMmiDp_AuxTransaction Request;
@@ -455,15 +462,15 @@ static u32 XMmiDp_AuxChanCommand(XMmiDp *InstancePtr, u32 AuxCmdType, u32
 	while (BytesLeft > 0) {
 		Request.Cmd = AuxCmdType;
 
-		if ((Request.Cmd == XMMIDP_AUX_CMD_NATIVE_WRITE) || (Request.Cmd
-			== XMMIDP_AUX_CMD_NATIVE_READ)) {
+		if ((Request.Cmd == XMMIDP_AUX_CMD_NATIVE_WRITE) ||
+		    (Request.Cmd == XMMIDP_AUX_CMD_NATIVE_READ)) {
 			Request.Address = Address + (Bytes - BytesLeft);
 		}
 
 		Request.Data = &Data[Bytes - BytesLeft];
 
-		if (BytesLeft > 16) {
-			Request.NumBytes = 16;
+		if (BytesLeft > XMMIDP_AUX_MAX_DATA_BYTES) {
+			Request.NumBytes = XMMIDP_AUX_MAX_DATA_BYTES;
 		} else {
 			Request.NumBytes = BytesLeft;
 		}
@@ -478,7 +485,7 @@ static u32 XMmiDp_AuxChanCommand(XMmiDp *InstancePtr, u32 AuxCmdType, u32
 			Request.Cmd == XMMIDP_AUX_CMD_I2C_MOT_READ;
 		}
 
-		XMmiDp_WaitUs(InstancePtr, 30000);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_AUX_REQUEST_TIMEOUT_TIMER);
 
 		Status = XMmiDp_AuxRequest(InstancePtr, &Request);
 		if (Status != XST_SUCCESS) {
@@ -535,7 +542,7 @@ u32 XMmiDp_AuxWrite(XMmiDp *InstancePtr, u32 DpcdAddr, u32 Bytes, void *Data)
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       DpcdAddress is the starting address to read from the RX device.
- * @param       BytesToRead is the number of bytes to read from the RX device.
+ * @param       Bytes is the number of bytes to read from the RX device.
  * @param       Data is a pointer to the data buffer that will be filled
  *              with read data.
  *
@@ -593,13 +600,23 @@ u32 XMmiDp_I2cWrite(XMmiDp *InstancePtr, u32 I2cAddr, u32 Bytes, void *Data)
 
 /******************************************************************************/
 /**
- * This function performs an I2C read over the AUX channel.
+ * This function performs an I2C read over the AUX channel. The read message
+ *  will be divided into multiple transactions if the requested data spans
+ *  multiple segmetns. The segment pointer is automatically incremented and
+ *  the offset is calibrated as needed. E.g. For an overall offset of:
+ *	- 128, an I2C read is done on segptr=0; offset=128.
+ *	- 256, an I2C read is done on segptr=1; offset=0.
+ *	- 384, an I2C read is done on segptr=1; offset=128.
+ *	- 512, an I2C read is done on segptr=2; offset=0.
+ *	- etc.
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       IicAddress is the address on the I2C bus of the target device.
- * @param       BytesToWrite is the number of bytes to write.
- * @param       WriteData is a pointer to a buffer which will be used as the
- *              data source for the write.
+ * @param       Offset is the offset at specified address of targeted I2C device
+		 that the read will start from.
+ * @param	Bytes is the number of bytes to read.
+ * @param	ReadData is a pointer to a buffer that will be filled with the
+ *		I2C read data.
  *
  * @return
  *              - XST_SUCCESS if the I2C write has successfully completed with
@@ -631,13 +648,13 @@ u32 XMmiDp_I2cRead(XMmiDp *InstancePtr, u32 I2cAddr, u16 Offset, u32 Bytes, void
 	BytesLeft = Bytes;
 
 	SegPtr = 0;
-	if ( Offset > 255 ) {
-		SegPtr += Offset / 256;
-		Offset %= 256;
+	if ( Offset > (XMMIDP_MAX_SEGMENT_SIZE - 1)) {
+		SegPtr += Offset / XMMIDP_MAX_SEGMENT_SIZE;
+		Offset %= XMMIDP_MAX_SEGMENT_SIZE;
 	}
 
 	Offset8 = Offset;
-	NumBytesLeftInSeg = 256 - Offset8;
+	NumBytesLeftInSeg = XMMIDP_MAX_SEGMENT_SIZE - Offset8;
 
 	XMmiDp_AuxChanCommand(InstancePtr, XMMIDP_AUX_CMD_I2C_MOT_WRITE, XMMIDP_SEGPTR_ADDR, 1, &SegPtr);
 
@@ -646,9 +663,8 @@ u32 XMmiDp_I2cRead(XMmiDp *InstancePtr, u32 I2cAddr, u16 Offset, u32 Bytes, void
 		/* Read the remaining number of bytes as requested. */
 		if (NumBytesLeftInSeg >= BytesLeft) {
 			CurrBytesToRead = BytesLeft;
-		}
-		/* Read the remaining data in the current segment boundary. */
-		else {
+		} else {
+			/* Read the remaining data in the current segment boundary. */
 			CurrBytesToRead = NumBytesLeftInSeg;
 		}
 
@@ -676,8 +692,8 @@ u32 XMmiDp_I2cRead(XMmiDp *InstancePtr, u32 I2cAddr, u16 Offset, u32 Bytes, void
 			/* Increment the segment pointer to access more I2C
 			 * address space, if required. */
 			if (BytesLeft > 0) {
-				NumBytesLeftInSeg = 256;
-				Offset %= 256;
+				NumBytesLeftInSeg = XMMIDP_MAX_SEGMENT_SIZE;
+				Offset %= XMMIDP_MAX_SEGMENT_SIZE;
 				SegPtr++;
 
 				XMmiDp_AuxChanCommand(InstancePtr,
@@ -686,15 +702,13 @@ u32 XMmiDp_I2cRead(XMmiDp *InstancePtr, u32 I2cAddr, u16 Offset, u32 Bytes, void
 
 			}
 			Offset8 = Offset;
-		}
-		/* Last I2C read. */
-		else {
+		} else {
+			/* Last I2C read. */
 			BytesLeft = 0;
 		}
 	}
 
 	return Status;
-
 }
 
 /******************************************************************************/
@@ -717,7 +731,7 @@ u32 XMmiDp_I2cRead(XMmiDp *InstancePtr, u32 I2cAddr, u16 Offset, u32 Bytes, void
 void XMmiDp_RegReadModifyWrite(XMmiDp *InstancePtr, u32 RegOffset,
 			       u32 Mask, u32 Shift, u32 Val)
 {
-	u32 RegVal = 0;
+	u32 RegVal;
 
 	RegVal = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr,
 				RegOffset);
@@ -747,7 +761,7 @@ void XMmiDp_RegReadModifyWrite(XMmiDp *InstancePtr, u32 RegOffset,
 void XMmiDp_DpcdReadModifyWrite(XMmiDp *InstancePtr, u32 DpcdReg,
 				u32 Mask, u32 Shift, u32 Val)
 {
-	u32 DpcdVal = 0;
+	u32 DpcdVal;
 
 	/* Read Rx DPCD register val */
 	XMmiDp_AuxRead(InstancePtr, DpcdReg, 0x1, &DpcdVal);
@@ -760,37 +774,29 @@ void XMmiDp_DpcdReadModifyWrite(XMmiDp *InstancePtr, u32 DpcdReg,
 
 }
 
-int GetLaneCount(XMmiDp *InstancePtr, u8 NumLanes)
+u8 XMmiDp_GetLaneCount(XMmiDp *InstancePtr, u8 NumLanes)
 {
 	if (NumLanes == 4) {
-		return PHY_LANES_4;
+		return XMMIDP_PHY_LANES_4;
+	} else if (NumLanes == 2) {
+		return XMMIDP_PHY_LANES_2;
+	} else {
+		return XMMIDP_PHY_LANES_1;
 	}
-	if (NumLanes == 2) {
-		return PHY_LANES_2;
-	}
-	if (NumLanes == 1) {
-		return PHY_LANES_1;
-	}
-
-	return 0;
 }
 
-int GetNumLanes(XMmiDp *InstancePtr, u8 LaneCount)
+u8 XMmiDp_GetNumLanes(XMmiDp *InstancePtr, u8 LaneCount)
 {
 
-	if (LaneCount == PHY_LANES_1) {
+	if (LaneCount == XMMIDP_PHY_LANES_1) {
 		return 0x1;
-	}
-
-	if (LaneCount == PHY_LANES_2) {
+	} else if (LaneCount == XMMIDP_PHY_LANES_2) {
 		return 0x2;
-	}
-
-	if (LaneCount == PHY_LANES_4) {
+	} else if (LaneCount == XMMIDP_PHY_LANES_4) {
 		return 0x4;
+	} else {
+		return 0;
 	}
-
-	return 0;
 }
 
 /******************************************************************************/
@@ -837,7 +843,7 @@ void XMmiDp_SetPhyLaneCount(XMmiDp *InstancePtr, XMmiDp_PhyLanes LaneCount)
 	InstancePtr->PhyConfig.LaneCount = LaneCount;
 
 	/* Get Number of Lanes from LaneCount option */
-	InstancePtr->PhyConfig.NumLanes = GetNumLanes(InstancePtr, LaneCount);
+	InstancePtr->PhyConfig.NumLanes = XMmiDp_GetNumLanes(InstancePtr, LaneCount);
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHYIF_CTRL_0,
 				  XMMIDP_PHYIF_CTRL_0_PHY_LANES_MASK,
@@ -846,48 +852,34 @@ void XMmiDp_SetPhyLaneCount(XMmiDp *InstancePtr, XMmiDp_PhyLanes LaneCount)
 
 }
 
-int GetLinkRate(XMmiDp *InstancePtr, u8 LinkBW)
+u16 XMmiDp_GetLinkRate(XMmiDp *InstancePtr, u8 LinkBW)
 {
-
-	if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_162GBPS) {
-		return PHY_RATE_RBR_162GBPS;
-	}
-
+	u16 link_rate;
 	if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_270GBPS) {
-		return PHY_RATE_HBR_270GBPS;
+		link_rate = XMMIDP_HBR_LINK_RATE;
+	} else if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_540GBPS) {
+		link_rate = XMMIDP_HBR2_LINK_RATE;
+	} else if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_810GBPS) {
+		link_rate = XMMIDP_HBR3_LINK_RATE;
+	} else {
+		link_rate = XMMIDP_RBR_LINK_RATE;
 	}
-
-	if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_540GBPS) {
-		return PHY_RATE_HBR2_540GBPS;
-	}
-
-	if (LinkBW == XMMIDP_DPCD_LINK_BW_SET_810GBPS) {
-		return PHY_RATE_HBR3_810GBPS;
-	}
-
-	return 0;
+	return link_rate;
 }
 
-int GetLinkBW(XMmiDp *InstancePtr, u8 LinkRate)
+u8 XMmiDp_GetLinkBW(XMmiDp *InstancePtr, u8 LinkRate)
 {
-	if (LinkRate == PHY_RATE_RBR_162GBPS) {
+	if (LinkRate == XMMIDP_PHY_RATE_RBR_162GBPS) {
 		return XMMIDP_DPCD_LINK_BW_SET_162GBPS;
-	}
-
-	if (LinkRate == PHY_RATE_HBR_270GBPS) {
+	} else if (LinkRate == XMMIDP_PHY_RATE_HBR_270GBPS) {
 		return XMMIDP_DPCD_LINK_BW_SET_270GBPS;
-	}
-
-	if (LinkRate == PHY_RATE_HBR2_540GBPS) {
+	} else if (LinkRate == XMMIDP_PHY_RATE_HBR2_540GBPS) {
 		return XMMIDP_DPCD_LINK_BW_SET_540GBPS;
-	}
-
-	if (LinkRate == PHY_RATE_HBR3_810GBPS) {
+	} else if (LinkRate == XMMIDP_PHY_RATE_HBR3_810GBPS) {
 		return XMMIDP_DPCD_LINK_BW_SET_810GBPS;
+	} else {
+		return 0;
 	}
-
-	return 0;
-
 }
 
 /******************************************************************************/
@@ -944,20 +936,10 @@ void XMmiDp_SetPhyLinkRate(XMmiDp *InstancePtr, XMmiDp_PhyRate LinkRate)
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	InstancePtr->PhyConfig.LinkRate = LinkRate;
-	InstancePtr->PhyConfig.LinkBW = GetLinkBW(InstancePtr, LinkRate);
+	InstancePtr->PhyConfig.LinkBW = XMmiDp_GetLinkBW(InstancePtr, LinkRate);
 
-	switch (LinkRate) {
-		case PHY_RATE_RBR_162GBPS:
-		case PHY_RATE_HBR_270GBPS:
-			/* Set 20-bit PHY width */
-			XMmiDp_SetPhyWidth(InstancePtr, PHY_20BIT);
-			break;
-		case PHY_RATE_HBR2_540GBPS:
-		case PHY_RATE_HBR3_810GBPS:
-			/* Set 40-bit PHY width */
-			XMmiDp_SetPhyWidth(InstancePtr, PHY_40BIT);
-			break;
-	}
+	/* Set 20-bit PHY width */
+	XMmiDp_SetPhyWidth(InstancePtr, XMMIDP_PHY_20BIT);
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHYIF_CTRL_0,
 				  XMMIDP_PHYIF_CTRL_0_PHY_RATE_MASK,
@@ -974,16 +956,16 @@ void XMmiDp_SetPhyLinkRate(XMmiDp *InstancePtr, XMmiDp_PhyRate LinkRate)
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       Pattern select to be used over the main link based on
  *              one of the following selects:
- *		 PHY_NO_TRAIN = 0x0,
- *		 PHY_TPS1 = 0x1,
- *		 PHY_TPS2 = 0x2,
- *		 PHY_TPS3 = 0x3,
- *		 PHY_TPS4 = 0x4,
- *		 PHY_SYMBOL_ERR_RATE = 0x5,
- *		 PHY_PRBS7 = 0x6,
- *		 PHY_CUSTOMPAT = 0x7,
- *		 PHY_CP2520_PAT_1 = 0x8,
- *		 PHY_CP2520_PAT_2 = 0x9,
+ *		 XMMIDP_PHY_NO_TRAIN = 0x0,
+ *		 XMMIDP_PHY_TPS1 = 0x1,
+ *		 XMMIDP_PHY_TPS2 = 0x2,
+ *		 XMMIDP_PHY_TPS3 = 0x3,
+ *		 XMMIDP_PHY_TPS4 = 0x4,
+ *		 XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5,
+ *		 XMMIDP_PHY_PRBS7 = 0x6,
+ *		 XMMIDP_PHY_CUSTOMPAT = 0x7,
+ *		 XMMIDP_PHY_CP2520_PAT_1 = 0x8,
+ *		 XMMIDP_PHY_CP2520_PAT_2 = 0x9,
  *
  * @return
  *              - none.
@@ -1000,15 +982,15 @@ void XMmiDp_SetDpcdLinkQualPattern(XMmiDp *InstancePtr,
 	u32 Shift = XMMIDP_DPCD_LINK_QUAL_PATTERN_SET_SHIFT;
 	u32 Mask = XMMIDP_DPCD_LINK_QUAL_PATTERN_SET_MASK;
 
-	if (Pattern == PHY_SYMBOL_ERR_RATE) {
+	if (Pattern == XMMIDP_PHY_SYMBOL_ERR_RATE) {
 		Val = 0x2;
-	} else if (Pattern == PHY_PRBS7) {
+	} else if (Pattern == XMMIDP_PHY_PRBS7) {
 		Val = 0x3;
-	} else if (Pattern == PHY_CUSTOMPAT) {
+	} else if (Pattern == XMMIDP_PHY_CUSTOMPAT) {
 		Val = 0x4;
-	} else if (Pattern == PHY_CP2520_PAT_1) {
+	} else if (Pattern == XMMIDP_PHY_CP2520_PAT_1) {
 		Val = 0x5;
-	} else if (Pattern == PHY_CP2520_PAT_2) {
+	} else if (Pattern == XMMIDP_PHY_CP2520_PAT_2) {
 		Val = 0x6;
 	} else {
 		Val = 0x0;
@@ -1031,16 +1013,16 @@ void XMmiDp_SetDpcdLinkQualPattern(XMmiDp *InstancePtr,
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       Pattern select to be used over the main link based on
  *              one of the following selects:
- *		 PHY_NO_TRAIN = 0x0,
- *		 PHY_TPS1 = 0x1,
- *		 PHY_TPS2 = 0x2,
- *		 PHY_TPS3 = 0x3,
- *		 PHY_TPS4 = 0x4,
- *		 PHY_SYMBOL_ERR_RATE = 0x5,
- *		 PHY_PRBS7 = 0x6,
- *		 PHY_CUSTOMPAT = 0x7,
- *		 PHY_CP2520_PAT_1 = 0x8,
- *		 PHY_CP2520_PAT_2 = 0x9,
+ *		 XMMIDP_PHY_NO_TRAIN = 0x0,
+ *		 XMMIDP_PHY_TPS1 = 0x1,
+ *		 XMMIDP_PHY_TPS2 = 0x2,
+ *		 XMMIDP_PHY_TPS3 = 0x3,
+ *		 XMMIDP_PHY_TPS4 = 0x4,
+ *		 XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5,
+ *		 XMMIDP_PHY_PRBS7 = 0x6,
+ *		 XMMIDP_PHY_CUSTOMPAT = 0x7,
+ *		 XMMIDP_PHY_CP2520_PAT_1 = 0x8,
+ *		 XMMIDP_PHY_CP2520_PAT_2 = 0x9,
  *
  * @return
  *              - none.
@@ -1061,11 +1043,11 @@ void XMmiDp_SetDpcdTrainingPattern(XMmiDp *InstancePtr,
 
 	Val = Pattern;
 
-	if (Pattern == PHY_NO_TRAIN) {
+	if (Pattern == XMMIDP_PHY_NO_TRAIN) {
 		ScrambleEn = 0x0;
 	}
 
-	if (Pattern == PHY_TPS4) {
+	if (Pattern == XMMIDP_PHY_TPS4) {
 		Val = 0x7;
 	}
 
@@ -1091,16 +1073,16 @@ void XMmiDp_SetDpcdTrainingPattern(XMmiDp *InstancePtr,
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       Pattern select to be used over the main link based on
  *              one of the following selects:
- *		 PHY_NO_TRAIN = 0x0,
- *		 PHY_TPS1 = 0x1,
- *		 PHY_TPS2 = 0x2,
- *		 PHY_TPS3 = 0x3,
- *		 PHY_TPS4 = 0x4,
- *		 PHY_SYMBOL_ERR_RATE = 0x5,
- *		 PHY_PRBS7 = 0x6,
- *		 PHY_CUSTOMPAT = 0x7,
- *		 PHY_CP2520_PAT_1 = 0x8,
- *		 PHY_CP2520_PAT_2 = 0x9,
+ *		 XMMIDP_PHY_NO_TRAIN = 0x0,
+ *		 XMMIDP_PHY_TPS1 = 0x1,
+ *		 XMMIDP_PHY_TPS2 = 0x2,
+ *		 XMMIDP_PHY_TPS3 = 0x3,
+ *		 XMMIDP_PHY_TPS4 = 0x4,
+ *		 XMMIDP_PHY_SYMBOL_ERR_RATE = 0x5,
+ *		 XMMIDP_PHY_PRBS7 = 0x6,
+ *		 XMMIDP_PHY_CUSTOMPAT = 0x7,
+ *		 XMMIDP_PHY_CP2520_PAT_1 = 0x8,
+ *		 XMMIDP_PHY_CP2520_PAT_2 = 0x9,
  *
  * @return
  *              - none.
@@ -1153,10 +1135,10 @@ static void XMmiDp_GetVoltageSwingMask(u32 Lane, u32 *VsShift, u32 *VsMask)
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       VoltageSwing for each lane to be used over the main link based on
  *              one of the following selects:
- *		- PHY_VSWING_LEVEL0
- *		- PHY_VSWING_LEVEL1
- *		- PHY_VSWING_LEVEL2
- *		- PHY_VSWING_LEVEL3
+ *		- XMMIDP_PHY_VSWING_LEVEL0
+ *		- XMMIDP_PHY_VSWING_LEVEL1
+ *		- XMMIDP_PHY_VSWING_LEVEL2
+ *		- XMMIDP_PHY_VSWING_LEVEL3
  * @return
  *              - none.
  *
@@ -1185,10 +1167,10 @@ void XMmiDp_SetDpcdVoltageSwing(XMmiDp *InstancePtr, XMmiDp_PhyVSwing *VsLevel)
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       VoltageSwing for each lane to be used over the main link based on
  *              one of the following selects:
- *		- PHY_VSWING_LEVEL0
- *		- PHY_VSWING_LEVEL1
- *		- PHY_VSWING_LEVEL2
- *		- PHY_VSWING_LEVEL3
+ *		- XMMIDP_PHY_VSWING_LEVEL0
+ *		- XMMIDP_PHY_VSWING_LEVEL1
+ *		- XMMIDP_PHY_VSWING_LEVEL2
+ *		- XMMIDP_PHY_VSWING_LEVEL3
  * @return
  *              - none.
  *
@@ -1197,16 +1179,17 @@ void XMmiDp_SetDpcdVoltageSwing(XMmiDp *InstancePtr, XMmiDp_PhyVSwing *VsLevel)
 *******************************************************************************/
 void XMmiDp_SetPhyVoltageSwing(XMmiDp *InstancePtr, u8 *VsLevel)
 {
+	u32 Index;
 	u32 VsShift = 0;
 	u32 VsMask = 0;
 	u32 Val = 0;
 
-	for (u32 Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
+	for (Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
 		XMmiDp_GetVoltageSwingMask(Index, &VsShift, &VsMask);
 
 		InstancePtr->PhyConfig.VsLevel[Index] = VsLevel[Index];
 
-		Val = (u8)VsLevel[Index];
+		Val = VsLevel[Index];
 		XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHY_TX_EQ,
 					  VsMask, VsShift, Val);
 	}
@@ -1255,10 +1238,12 @@ static void XMmiDp_GetPreEmphasisMask(u32 Lane, u32 *PeShift, u32 *PeMask)
 *******************************************************************************/
 void XMmiDp_SetDpcdPreEmphasis(XMmiDp *InstancePtr, XMmiDp_PhyPreEmp *PeLevel)
 {
+	u32 Index;
+
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(PeLevel != NULL);
 
-	for (u32 Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
+	for (Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
 
 		InstancePtr->PhyConfig.PeLevel[Index] = PeLevel[Index];
 
@@ -1278,10 +1263,10 @@ void XMmiDp_SetDpcdPreEmphasis(XMmiDp *InstancePtr, XMmiDp_PhyPreEmp *PeLevel)
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       VoltageSwing for each lane to be used over the main link based on
  *              one of the following selects:
- *		- PHY_PREEMP_LEVEL0
- *		- PHY_PREEMP_LEVEL1
- *		- PHY_PREEMP_LEVEL2
- *		- PHY_PREEMP_LEVEL3
+ *		- XMMIDP_PHY_PREEMP_LEVEL0
+ *		- XMMIDP_PHY_PREEMP_LEVEL1
+ *		- XMMIDP_PHY_PREEMP_LEVEL2
+ *		- XMMIDP_PHY_PREEMP_LEVEL3
  * @return
  *              - none.
  *
@@ -1290,15 +1275,16 @@ void XMmiDp_SetDpcdPreEmphasis(XMmiDp *InstancePtr, XMmiDp_PhyPreEmp *PeLevel)
 *******************************************************************************/
 void XMmiDp_SetPhyPreEmphasis(XMmiDp *InstancePtr, u8 *PeLevel)
 {
+	u32 Index;
 	u32 PeShift = 0;
 	u32 PeMask = 0;
 	u32 Val = 0;
 
-	for (u32 Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
+	for (Index = 0; Index < InstancePtr->PhyConfig.NumLanes; Index++) {
 		XMmiDp_GetPreEmphasisMask(Index, &PeShift, &PeMask);
 
 		InstancePtr->PhyConfig.PeLevel[Index] = PeLevel[Index];
-		Val = (u8)PeLevel[Index];
+		Val = PeLevel[Index];
 
 		XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHY_TX_EQ,
 					  PeMask, PeShift, Val);
@@ -1326,12 +1312,14 @@ void XMmiDp_SetPhyXmitEnable(XMmiDp *InstancePtr)
 
 	switch ( InstancePtr->PhyConfig.LaneCount ) {
 		case 2:
-			XmitEn |= PHY_XMIT_EN_LANE3 |
-				  PHY_XMIT_EN_LANE2;
+			XmitEn |= XMMIDP_PHY_XMIT_EN_LANE3 |
+				  XMMIDP_PHY_XMIT_EN_LANE2;
+		/* fall through */
 		case 1:
-			XmitEn |= PHY_XMIT_EN_LANE1;
+			XmitEn |= XMMIDP_PHY_XMIT_EN_LANE1;
+		/* fall through */
 		case 0:
-			XmitEn |= PHY_XMIT_EN_LANE0;
+			XmitEn |= XMMIDP_PHY_XMIT_EN_LANE0;
 			break;
 	}
 
@@ -1364,12 +1352,14 @@ void XMmiDp_SetPhyXmitDisable(XMmiDp *InstancePtr)
 
 	switch ( InstancePtr->PhyConfig.LaneCount ) {
 		case 2:
-			XmitEn &= (~PHY_XMIT_EN_LANE3) &
-				  (~PHY_XMIT_EN_LANE2);
+			XmitEn &= (~XMMIDP_PHY_XMIT_EN_LANE3) &
+				  (~XMMIDP_PHY_XMIT_EN_LANE2);
+		/* fall through */
 		case 1:
-			XmitEn &= ~PHY_XMIT_EN_LANE1;
+			XmitEn &= ~XMMIDP_PHY_XMIT_EN_LANE1;
+		/* fall through */
 		case 0:
-			XmitEn &= ~PHY_XMIT_EN_LANE0;
+			XmitEn &= ~XMMIDP_PHY_XMIT_EN_LANE0;
 			break;
 	}
 
@@ -1395,7 +1385,7 @@ void XMmiDp_SetPhyXmitDisable(XMmiDp *InstancePtr)
 *******************************************************************************/
 void XMmiDp_PhyScrambleEnable(XMmiDp *InstancePtr)
 {
-	InstancePtr->PhyConfig.ScrambleEn = 0x0;
+	InstancePtr->PhyConfig.ScrambleEn = 0;
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
 				  XMMIDP_CCTL0_SCRAMBLE_DIS_MASK,
@@ -1417,7 +1407,7 @@ void XMmiDp_PhyScrambleEnable(XMmiDp *InstancePtr)
 *******************************************************************************/
 void XMmiDp_PhyScrambleDisable(XMmiDp *InstancePtr)
 {
-	InstancePtr->PhyConfig.ScrambleEn = 0x1;
+	InstancePtr->PhyConfig.ScrambleEn = 1;
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
 				  XMMIDP_CCTL0_SCRAMBLE_DIS_MASK,
@@ -1433,8 +1423,8 @@ void XMmiDp_PhyScrambleDisable(XMmiDp *InstancePtr)
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  *
  * @return
- *              - TRUE if there is a connection.
- *              - FALSE if there is no connection.
+ *              - 1 if there is a connection.
+ *              - 0 if there is no connection.
  *
 *******************************************************************************/
 u32 XMmiDp_IsConnected(XMmiDp *InstancePtr)
@@ -1459,6 +1449,7 @@ u32 XMmiDp_IsConnected(XMmiDp *InstancePtr)
 
 		Retries++;
 		XMmiDp_WaitUs(InstancePtr, 1000);
+
 	} while (Status == XMMIDP_HPD_STATUS0_NOT_CON);
 
 	return 1;
@@ -1502,12 +1493,12 @@ u32 XMmiDp_PhyWaitReady(XMmiDp *InstancePtr)
 
 	switch ( InstancePtr->PhyConfig.LaneCount ) {
 		case 2:
-			BusyLanes |= PHY_BUSY_LANE3 |
-				     PHY_BUSY_LANE2;
+			BusyLanes |= XMMIDP_PHY_BUSY_LANE3 |
+				     XMMIDP_PHY_BUSY_LANE2;
 		case 1:
-			BusyLanes |= PHY_BUSY_LANE1;
+			BusyLanes |= XMMIDP_PHY_BUSY_LANE1;
 		case 0:
-			BusyLanes |= PHY_BUSY_LANE0;
+			BusyLanes |= XMMIDP_PHY_BUSY_LANE0;
 			break;
 	}
 
@@ -1621,7 +1612,7 @@ u32 XMmiDp_GetEdidBlock(XMmiDp *InstancePtr, u8 *Data, u8 BlockNum)
 *******************************************************************************/
 void XMmiDp_PhySSCEnable(XMmiDp *InstancePtr)
 {
-	InstancePtr->PhyConfig.SSCEn = 0x0;
+	InstancePtr->PhyConfig.SSCEn = 0;
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHYIF_CTRL_0,
 				  XMMIDP_PHYIF_CTRL_0_SSC_DIS_MASK,
@@ -1643,7 +1634,7 @@ void XMmiDp_PhySSCEnable(XMmiDp *InstancePtr)
 *******************************************************************************/
 void XMmiDp_PhySSCDisable(XMmiDp *InstancePtr)
 {
-	InstancePtr->PhyConfig.SSCEn = 0x1;
+	InstancePtr->PhyConfig.SSCEn = 1;
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_PHYIF_CTRL_0,
 				  XMMIDP_PHYIF_CTRL_0_SSC_DIS_MASK,
@@ -1665,56 +1656,31 @@ void XMmiDp_PhySSCDisable(XMmiDp *InstancePtr)
 *******************************************************************************/
 void XMmiDp_Initialize(XMmiDp *InstancePtr)
 {
-	/* PHY Config */
-	InstancePtr->PhyConfig.LaneCount = 0;
-	InstancePtr->PhyConfig.NumLanes = 0;
-	InstancePtr->PhyConfig.LinkRate = 0;
-	InstancePtr->PhyConfig.LinkBW = 0;
-	InstancePtr->PhyConfig.TrainingPattern = 0;
-	InstancePtr->PhyConfig.VsLevel = NULL;
-	InstancePtr->PhyConfig.PeLevel = NULL;
-	InstancePtr->PhyConfig.XmitEn = 0;
-	InstancePtr->PhyConfig.ScrambleEn = 0;
-	InstancePtr->PhyConfig.SSCEn = 0;
 
-	InstancePtr->RxConfig.MaxNumLanes = 0;
-	InstancePtr->RxConfig.MaxLaneCount = 0;
-	InstancePtr->RxConfig.EnhancedFrameCap = 0;
-	InstancePtr->RxConfig.PostLtAdjReqSupported = 0;
-	InstancePtr->RxConfig.Tps3Supported = 0;
-	InstancePtr->RxConfig.MaxLinkRate = 0;
-	InstancePtr->RxConfig.MaxLinkBW = 0;
-	InstancePtr->RxConfig.TrainingAuxRdInterval = 0;
-	InstancePtr->RxConfig.Tps4Supported = 0;
-	InstancePtr->RxConfig.NoAuxLinkTraining = 0;
-	InstancePtr->RxConfig.MaxDownspread = 0;
-	InstancePtr->RxConfig.DpcdRev = 0;
-	InstancePtr->RxConfig.ExtendedReceiverCap = 0;
-	memset(InstancePtr->RxConfig.LaneStatusAdjReqs, 0, 6);
+	memset(&InstancePtr->PhyConfig, 0, sizeof(XMmiDp_PhyConfig));
+	memset(&InstancePtr->RxConfig, 0, sizeof(XMmiDp_RxConfig));
+	memset(&InstancePtr->LinkConfig, 0, sizeof(XMmiDp_LinkConfig));
 
-	memset(InstancePtr->LinkConfig.VsLevel, 0, 4);
-	memset(InstancePtr->LinkConfig.PeLevel, 0, 4);
+	memset(&InstancePtr->MsaConfig[0], 0, sizeof(XMmiDp_MainStreamAttributes));
+	memset(&InstancePtr->MsaConfig[1], 0, sizeof(XMmiDp_MainStreamAttributes));
+	memset(&InstancePtr->MsaConfig[2], 0, sizeof(XMmiDp_MainStreamAttributes));
+	memset(&InstancePtr->MsaConfig[3], 0, sizeof(XMmiDp_MainStreamAttributes));
 
-	InstancePtr->LinkConfig.FastLinkTrainEn = 0x0;
-	InstancePtr->LinkConfig.LaneCount = 0;
-	InstancePtr->LinkConfig.NumLanes = 0;
-	InstancePtr->LinkConfig.LinkRate = 0;
-	InstancePtr->LinkConfig.LinkBW = 0;
-	InstancePtr->LinkConfig.SpreadAmp = 1;
-	InstancePtr->LinkConfig.ChannelCodingSet = 1;
-	InstancePtr->LinkConfig.CrDoneCnt = 0;
-	InstancePtr->LinkConfig.VsLevelUpdated = FALSE;
-	InstancePtr->LinkConfig.PeLevelUpdated = FALSE;
+	memset(&InstancePtr->VideoConfig[0], 0, sizeof(XMmiDp_VideoConfig));
+	memset(&InstancePtr->VideoConfig[1], 0, sizeof(XMmiDp_VideoConfig));
+	memset(&InstancePtr->VideoConfig[2], 0, sizeof(XMmiDp_VideoConfig));
+	memset(&InstancePtr->VideoConfig[3], 0, sizeof(XMmiDp_VideoConfig));
 
-	memset(&InstancePtr->VideoConfig[0], 0, 22);
-	memset(&InstancePtr->VideoConfig[1], 0, 22);
-	memset(&InstancePtr->VideoConfig[2], 0, 22);
-	memset(&InstancePtr->VideoConfig[3], 0, 22);
+	memset(&InstancePtr->VSampleCtrl[0], 0, sizeof(XMmiDp_VSampleCtrl));
+	memset(&InstancePtr->VSampleCtrl[1], 0, sizeof(XMmiDp_VSampleCtrl));
+	memset(&InstancePtr->VSampleCtrl[2], 0, sizeof(XMmiDp_VSampleCtrl));
+	memset(&InstancePtr->VSampleCtrl[3], 0, sizeof(XMmiDp_VSampleCtrl));
 
-	memset(&InstancePtr->VSampleCtrl[0], 0, 14);
-	memset(&InstancePtr->VSampleCtrl[1], 0, 14);
-	memset(&InstancePtr->VSampleCtrl[2], 0, 14);
-	memset(&InstancePtr->VSampleCtrl[3], 0, 14);
+	memset(&InstancePtr->CtrlConfig[0], 0, sizeof(XMmiDp_Controller));
+	memset(&InstancePtr->CtrlConfig[1], 0, sizeof(XMmiDp_Controller));
+	memset(&InstancePtr->CtrlConfig[2], 0, sizeof(XMmiDp_Controller));
+	memset(&InstancePtr->CtrlConfig[3], 0, sizeof(XMmiDp_Controller));
+
 }
 
 /******************************************************************************/
@@ -1822,12 +1788,11 @@ void XMmiDp_SetAux_2000Us_Cnt_Limit(XMmiDp *InstancePtr, u16 Limit)
  * @note        None.
  *
 *******************************************************************************/
-void XMmiDp_SetAux_100000Us_Cnt_Limit(XMmiDp *InstancePtr, u16 Limit)
+void XMmiDp_SetAux_100000Us_Cnt_Limit(XMmiDp *InstancePtr, u32 Limit)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_AUX_100000US_CNT_LIMIT_0, Limit);
-
 }
 
 /******************************************************************************/

@@ -18,6 +18,7 @@ var xhdcp1x__hw_8h =
     [ "XHDCP1X_CIPHER_BITMASK_KEYMGMT_CONTROL_SET_SELECT", "xhdcp1x__hw_8h.html#gaf042b01ec650012737670869f098b0bc", null ],
     [ "XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_Km_READY", "xhdcp1x__hw_8h.html#ga74f6d8a048e1f8b3c386e5755d77b2bc", null ],
     [ "XHDCP1X_CIPHER_BITMASK_KEYMGMT_STATUS_KSV_READY", "xhdcp1x__hw_8h.html#ga5ac122eb8e2456759a8207831615cc0c", null ],
+    [ "XHDCP1X_CIPHER_BITMASK_MODE", "xhdcp1x__hw_8h.html#gac6a1df11b9bce083f4396c73d2e66208", null ],
     [ "XHDCP1X_CIPHER_BITMASK_TYPE_DIRECTION", "xhdcp1x__hw_8h.html#ga84b710cd1da8802a7dce1a7a637fb7f4", null ],
     [ "XHDCP1X_CIPHER_BITMASK_TYPE_PROTOCOL", "xhdcp1x__hw_8h.html#ga0798856f180c219e38c507a192e3ae1f", null ],
     [ "XHDCP1X_CIPHER_REG_BLANK_SEL", "xhdcp1x__hw_8h.html#gac375f416684e4c6180a85c3689a149d4", null ],

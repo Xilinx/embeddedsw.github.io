@@ -83,9 +83,9 @@ MODIFICATION HISTORY:</pre><pre>Ver Who Date   Changes
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab29b199c8ec2cd0ed0fee03752826661"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xclk__wiz__versal__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example</a> (<a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *IntcInstancePtr, u32 DeviceId)</td></tr>
-<tr class="memdesc:ab29b199c8ec2cd0ed0fee03752826661"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the main entry point for the versal example using the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> driver.  <a href="#ab29b199c8ec2cd0ed0fee03752826661">More...</a><br/></td></tr>
-<tr class="separator:ab29b199c8ec2cd0ed0fee03752826661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35fe542e629f6c41502f67458005acb1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xclk__wiz__versal__example_8c.html#a35fe542e629f6c41502f67458005acb1">ClkWiz_Example</a> (u32 DeviceId)</td></tr>
+<tr class="memdesc:a35fe542e629f6c41502f67458005acb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the main entry point for the versal example using the <a class="el" href="struct_x_clk___wiz.html" title="The XClk_Wiz driver instance data. ">XClk_Wiz</a> driver.  <a href="#a35fe542e629f6c41502f67458005acb1">More...</a><br/></td></tr>
+<tr class="separator:a35fe542e629f6c41502f67458005acb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ac72face0b386c645cdba25e6d99967"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xclk__wiz__versal__example_8c.html#a7ac72face0b386c645cdba25e6d99967">XClk_WaitForLock</a> (<a class="el" href="struct_x_clk___wiz___config.html">XClk_Wiz_Config</a> *CfgPtr_Dynamic)</td></tr>
 <tr class="memdesc:a7ac72face0b386c645cdba25e6d99967"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the XClk_WaitForLock function, it will wait for lock to settle change frequency value.  <a href="#a7ac72face0b386c645cdba25e6d99967">More...</a><br/></td></tr>
 <tr class="separator:a7ac72face0b386c645cdba25e6d99967"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -94,26 +94,16 @@ Functions</h2></td></tr>
 <tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ab29b199c8ec2cd0ed0fee03752826661"></a>
+<a class="anchor" id="a35fe542e629f6c41502f67458005acb1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">u32 ClkWiz_Example </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_x_clk___wiz.html">XClk_Wiz</a> *&#160;</td>
-          <td class="paramname"><em>IntcInstancePtr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">u32&#160;</td>
-          <td class="paramname"><em>DeviceId</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>DeviceId</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -131,8 +121,6 @@ Functions</h2></td></tr>
 <li>XST_SUCCESS if successful. </li>
 </ul>
 </dd></dl>
-
-<p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>, <a class="el" href="struct_x_clk___wiz___config.html#ad27e675e3da734bc59621ddb146dc927">XClk_Wiz_Config::NumClocks</a>, <a class="el" href="xclk__wiz__versal__example_8c.html#a7ac72face0b386c645cdba25e6d99967">XClk_WaitForLock()</a>, <a class="el" href="group___overview.html#ga96e21929b605502ed7b693c0a2132b4e">XClk_Wiz_CfgInitialize()</a>, <a class="el" href="group___overview.html#ga5da48627691e7e979b7c4fbcb608796a">XClk_Wiz_GetRate()</a>, <a class="el" href="group___overview.html#ga862887391d91e336afb089947d1eea22">XClk_Wiz_LookupConfig()</a>, <a class="el" href="group___overview.html#ga8d853c1eaeeb4b89d06b7de0ff13d999">XCLK_WIZ_RECONFIG_OFFSET</a>, <a class="el" href="group___overview.html#gad966194a45d93fa34d0eb8ab8c2de08d">XClk_Wiz_SetLeafRateHz()</a>, and <a class="el" href="group___overview.html#ga0408e2c4fba6d9237aeb72db5c38164b">XClk_Wiz_SetRateHz()</a>.</p>
 
 </div>
 </div>
@@ -196,8 +184,6 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>None </dd></dl>
 
 <p>References <a class="el" href="struct_x_clk___wiz___config.html#aa737385b3fd370d1bb677f0b366cdbd0">XClk_Wiz_Config::BaseAddr</a>.</p>
-
-<p>Referenced by <a class="el" href="xclk__wiz__versal__example_8c.html#ab29b199c8ec2cd0ed0fee03752826661">ClkWiz_Example()</a>.</p>
 
 </div>
 </div>

@@ -62,83 +62,26 @@ $(document).ready(function(){initNavTree('group__vprocss.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#enumval-members">Enumerator</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Overview</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ga09b5aca39b98e5dd8f5aa4beeaf83fc8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga09b5aca39b98e5dd8f5aa4beeaf83fc8">XVPROCSS_LOG_H</a></td></tr>
-<tr class="memdesc:ga09b5aca39b98e5dd8f5aa4beeaf83fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; prevent circular inclusions by using protection macros  <a href="#ga09b5aca39b98e5dd8f5aa4beeaf83fc8">More...</a><br/></td></tr>
-<tr class="separator:ga09b5aca39b98e5dd8f5aa4beeaf83fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga463361d1b27cc99ddbad5d50e1385afa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga463361d1b27cc99ddbad5d50e1385afa">XVPROCSS_EVT_BUFFSIZE</a>&#160;&#160;&#160;256</td></tr>
-<tr class="memdesc:ga463361d1b27cc99ddbad5d50e1385afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data structure for the event logging mechanism for debug.  <a href="#ga463361d1b27cc99ddbad5d50e1385afa">More...</a><br/></td></tr>
-<tr class="separator:ga463361d1b27cc99ddbad5d50e1385afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabeba7bd429b2f9f668ddf656a0c7ba3f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gabeba7bd429b2f9f668ddf656a0c7ba3f">XVPROCSS_EDAT_SUCCESS</a>&#160;&#160;&#160;0x00</td></tr>
-<tr class="memdesc:gabeba7bd429b2f9f668ddf656a0c7ba3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event Log status codes.  <a href="#gabeba7bd429b2f9f668ddf656a0c7ba3f">More...</a><br/></td></tr>
-<tr class="separator:gabeba7bd429b2f9f668ddf656a0c7ba3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:gad407806f5fa37872bb836071c96cd1d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gad407806f5fa37872bb836071c96cd1d3">XVPROCSS_VDMA_CH_UPDATE</a> </td></tr>
 <tr class="memdesc:gad407806f5fa37872bb836071c96cd1d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef enumerates the VDMA channel that needs update.  <a href="group__vprocss.html#gad407806f5fa37872bb836071c96cd1d3">More...</a><br/></td></tr>
 <tr class="separator:gad407806f5fa37872bb836071c96cd1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadda80cee8527fb0dac1e98e657f12cd9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gadda80cee8527fb0dac1e98e657f12cd9">XVprocSs_LogEvent</a> { <br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a3ba0825358703c04ed25a3745c47a192">XVPROCSS_EVT_NONE</a> = 1, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9acc9fe81f5f5652e44b0769a046a02490">XVPROCSS_EVT_INIT</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a304e31ecbdc687845d0b702c919188c5">XVPROCSS_EVT_INIT_RESAXIS</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a85020f2589cda4a8ad9bf8fce8b043bc">XVPROCSS_EVT_INIT_RESAXIM</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a8fb36e2d02ae8e0438c8e67791fe388c">XVPROCSS_EVT_INIT_ROUTER</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a2816ccbb3f218ce27a57bf6539570d40">XVPROCSS_EVT_INIT_LBOX</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ab119fb162d69df3ab5da8f8e0b96763e">XVPROCSS_EVT_INIT_VDMA</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30">XVPROCSS_EVT_CFGERR_VDMA</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208">XVPROCSS_EVT_OPERR_VDMA</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262">XVPROCSS_EVT_CFG_HSCALER</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15">XVPROCSS_EVT_CFG_VSCALER</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da">XVPROCSS_EVT_CFG_CSC</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a6a8c4711e68ded9fb3d4c64b74a94b22">XVPROCSS_EVT_CFG_DEINT</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a730776a8501e9615a0710c25ee779450">XVPROCSS_EVT_CFG_VCRI</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ad7b48ab5518ddc0f71d4e620450d76a9">XVPROCSS_EVT_CFG_VCRO</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a2bc1af33195315cf16b38d7b11e872bd">XVPROCSS_EVT_CFG_HCR</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9abda5efa3b8a91c89e006631e59bea90a">XVPROCSS_EVT_CFG_VPSS</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a54ab50f0d2e7e4a55cc54245d6facabb">XVPROCSS_EVT_CHK_TOPO</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a203a442aec1615b0fe26d4586e23fc5a">XVPROCSS_EVT_CHK_BASEADDR</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a59c1a12d3255327b3fd10fe3c6e1cbd7">XVPROCSS_EVT_SET_PIPMODE</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a558e3ec01039cf251147be690d2bd9ec">XVPROCSS_EVT_SET_ZOOMMODE</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a54b4e1dc8b52c05a12e3e3cd9f4f8c18">XVPROCSS_EVT_SET_PIPWIN</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a0a17a2771f447b75dd3c1236bc1bb298">XVPROCSS_EVT_SET_ZOOMWIN</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a6da55aee92eef69c31de0744ed118d0a">XVPROCSS_EVT_GET_ZPWIN</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9af2ff6134491d7c3675540e4cec7d2cbb">XVPROCSS_EVT_UPDATE_ZPWIN</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a6b5ae254ff201393e86716ec62425f29">XVPROCSS_EVT_RESET_VPSS</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a3bcee1ee986b5f86f45468e2e9fac5f6">XVPROCSS_EVT_START_VPSS</a>, 
-<br/>
-&#160;&#160;<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a7f440bf73b91e8287f25032ff2b63020">XVPROCSS_EVT_STOP_VPSS</a>, 
-<a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ad0f8885a219b90be8a513ad6665c130d">XVPROCSS_EVT_LAST_ENUM</a>
-<br/>
- }</td></tr>
-<tr class="memdesc:gadda80cee8527fb0dac1e98e657f12cd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This typedef contains the Event Log identifiers.  <a href="group__vprocss.html#gadda80cee8527fb0dac1e98e657f12cd9">More...</a><br/></td></tr>
-<tr class="separator:gadda80cee8527fb0dac1e98e657f12cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga6b64728317d3423d1f5ff03c3c13d024"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga6b64728317d3423d1f5ff03c3c13d024">XVprocSs_VdmaStart</a> (<a class="el" href="struct_x_vproc_ss.html">XVprocSs</a> *XVprocSsPtr)</td></tr>
-<tr class="memdesc:ga6b64728317d3423d1f5ff03c3c13d024"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function starts Read and Write channels.  <a href="#ga6b64728317d3423d1f5ff03c3c13d024">More...</a><br/></td></tr>
+<tr class="memdesc:ga6b64728317d3423d1f5ff03c3c13d024"><td class="mdescLeft">&#160;</td><td class="mdescRight">This Function Starts the VDMA (Video Direct Memory Access) engine for the given Video Processing Subsystem instance.  <a href="#ga6b64728317d3423d1f5ff03c3c13d024">More...</a><br/></td></tr>
 <tr class="separator:ga6b64728317d3423d1f5ff03c3c13d024"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa008524bc41fd7b4c133242cea493ba7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gaa008524bc41fd7b4c133242cea493ba7">XVprocSs_VdmaStop</a> (<a class="el" href="struct_x_vproc_ss.html">XVprocSs</a> *XVprocSsPtr)</td></tr>
-<tr class="memdesc:gaa008524bc41fd7b4c133242cea493ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function stops Read and Write channels.  <a href="#gaa008524bc41fd7b4c133242cea493ba7">More...</a><br/></td></tr>
+<tr class="memdesc:gaa008524bc41fd7b4c133242cea493ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This Function Stops the VDMA (Video Direct Memory Access) engine for the given Video Processing Subsystem instance.  <a href="#gaa008524bc41fd7b4c133242cea493ba7">More...</a><br/></td></tr>
 <tr class="separator:gaa008524bc41fd7b4c133242cea493ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8672772229f2c9fbeac4d0c7a3581008"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga8672772229f2c9fbeac4d0c7a3581008">XVprocSs_VdmaReset</a> (<a class="el" href="struct_x_vproc_ss.html">XVprocSs</a> *XVprocSsPtr)</td></tr>
 <tr class="memdesc:ga8672772229f2c9fbeac4d0c7a3581008"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function resets Read and Write channels.  <a href="#ga8672772229f2c9fbeac4d0c7a3581008">More...</a><br/></td></tr>
@@ -159,7 +102,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga8d81441b93df3b6c3d4d09583b17c97e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function configures the VDMA RD/WR channel for UP scale (or 1:1) mode.  <a href="#ga8d81441b93df3b6c3d4d09583b17c97e">More...</a><br/></td></tr>
 <tr class="separator:ga8d81441b93df3b6c3d4d09583b17c97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga569a5a2939bd864d0297e06330cca44b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga569a5a2939bd864d0297e06330cca44b">XVprocSs_VdmaDbgReportStatus</a> (<a class="el" href="struct_x_vproc_ss.html">XVprocSs</a> *XVprocSsPtr, u32 PixelWidthInBits)</td></tr>
-<tr class="memdesc:ga569a5a2939bd864d0297e06330cca44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function prints VDMA status on the console.  <a href="#ga569a5a2939bd864d0297e06330cca44b">More...</a><br/></td></tr>
+<tr class="memdesc:ga569a5a2939bd864d0297e06330cca44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">XVprocSs_VdmaDbgReportStatus - Used for reporting the status of the VDMA IP.  <a href="#ga569a5a2939bd864d0297e06330cca44b">More...</a><br/></td></tr>
 <tr class="separator:ga569a5a2939bd864d0297e06330cca44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad19dfad7c200c92b4f3aa56427cd3a5c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gad19dfad7c200c92b4f3aa56427cd3a5c">XVprocSs_SubcoreInitResetAxis</a> (<a class="el" href="struct_x_vproc_ss.html">XVprocSs</a> *XVprocSsPtr)</td></tr>
 <tr class="memdesc:gad19dfad7c200c92b4f3aa56427cd3a5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function initializes the included sub-core to it's static configuration.  <a href="#gad19dfad7c200c92b4f3aa56427cd3a5c">More...</a><br/></td></tr>
@@ -209,178 +152,8 @@ Functions</h2></td></tr>
 <tr class="memitem:gae1122f4587efc719f26e180560081e55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_x_vproc_ss___config.html">XVprocSs_Config</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#gae1122f4587efc719f26e180560081e55">XVprocSs_LookupConfig</a> (u32 DeviceId)</td></tr>
 <tr class="memdesc:gae1122f4587efc719f26e180560081e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function looks for the device configuration based on the unique device ID.  <a href="#gae1122f4587efc719f26e180560081e55">More...</a><br/></td></tr>
 <tr class="separator:gae1122f4587efc719f26e180560081e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ga6fb4f6fc13e8e5929c5a15de095955fe"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga6fb4f6fc13e8e5929c5a15de095955fe">XVprocSs_Log::DataBuffer</a> [<a class="el" href="group__vprocss.html#ga463361d1b27cc99ddbad5d50e1385afa">XVPROCSS_EVT_BUFFSIZE</a>]</td></tr>
-<tr class="memdesc:ga6fb4f6fc13e8e5929c5a15de095955fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log buffer with event data.  <a href="#ga6fb4f6fc13e8e5929c5a15de095955fe">More...</a><br/></td></tr>
-<tr class="separator:ga6fb4f6fc13e8e5929c5a15de095955fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga39591f9a8c77d388dbd9dba4d9ef7108"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga39591f9a8c77d388dbd9dba4d9ef7108">XVprocSs_Log::HeadIndex</a></td></tr>
-<tr class="memdesc:ga39591f9a8c77d388dbd9dba4d9ef7108"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">Index of the head entry of the
-</pre><p> Event/DataBuffer.  <a href="#ga39591f9a8c77d388dbd9dba4d9ef7108">More...</a><br/></td></tr>
-<tr class="separator:ga39591f9a8c77d388dbd9dba4d9ef7108"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4e3fa3c7e468ff5cd05092a1645bc045"><td class="memItemLeft" align="right" valign="top">u8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vprocss.html#ga4e3fa3c7e468ff5cd05092a1645bc045">XVprocSs_Log::TailIndex</a></td></tr>
-<tr class="memdesc:ga4e3fa3c7e468ff5cd05092a1645bc045"><td class="mdescLeft">&#160;</td><td class="mdescRight"><pre class="fragment">Index of the tail entry of the
-</pre><p> Event/DataBuffer.  <a href="#ga4e3fa3c7e468ff5cd05092a1645bc045">More...</a><br/></td></tr>
-<tr class="separator:ga4e3fa3c7e468ff5cd05092a1645bc045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="gabeba7bd429b2f9f668ddf656a0c7ba3f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define XVPROCSS_EDAT_SUCCESS&#160;&#160;&#160;0x00</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Event Log status codes. </p>
-<p>These are the event data values.</p>
-<p>0x00 - 0x0F : Successful events - applicable to VPSS and subcores 0xF0 - 0xFF : Error events - applicable to VPSS and subcores</p>
-<p>0x10 ... : Successful events - applicable to particular subcores ... 0xEF : Error events - applicable to particular subcores </p>
-
-<p>Referenced by <a class="el" href="xvprocss_8h.html#a55d0807b3f476d2608a8c49b44388fec">XVprocSs_GetZoomPipWindow()</a>, <a class="el" href="xvprocss__log_8c.html#a7b5f492aa1f70696ace6462ac901c137">XVprocSs_LogDisplay()</a>, <a class="el" href="xvprocss_8h.html#ab65fda7ce63456d82274a463a4d4b72a">XVprocSs_Reset()</a>, <a class="el" href="xvprocss_8h.html#a8293d3dc637bc8c481b205d2272b4fc2">XVprocSs_SetZoomPipWindow()</a>, <a class="el" href="xvprocss_8h.html#a0f673d448bb7702661b702519de94fd9">XVprocSs_Start()</a>, <a class="el" href="xvprocss_8h.html#a1f28821282af5defa07408d1c00c2bfe">XVprocSs_Stop()</a>, and <a class="el" href="xvprocss_8h.html#a4bdc6a00278cb1c847429d7498f8505e">XVprocSs_UpdateZoomPipWindow()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga463361d1b27cc99ddbad5d50e1385afa"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define XVPROCSS_EVT_BUFFSIZE&#160;&#160;&#160;256</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Data structure for the event logging mechanism for debug. </p>
-
-<p>Referenced by <a class="el" href="xvprocss__log_8c.html#adf3fd2ffbed19ddf48ee19ef9368e5ac">XVprocSs_LogRead()</a>, and <a class="el" href="xvprocss__log_8c.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga09b5aca39b98e5dd8f5aa4beeaf83fc8"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define XVPROCSS_LOG_H</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>&lt; prevent circular inclusions by using protection macros </p>
-
-</div>
-</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="gadda80cee8527fb0dac1e98e657f12cd9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group__vprocss.html#gadda80cee8527fb0dac1e98e657f12cd9">XVprocSs_LogEvent</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This typedef contains the Event Log identifiers. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a3ba0825358703c04ed25a3745c47a192"></a>XVPROCSS_EVT_NONE</em>&nbsp;</td><td class="fielddoc">
-<p>Log event none. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9acc9fe81f5f5652e44b0769a046a02490"></a>XVPROCSS_EVT_INIT</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a304e31ecbdc687845d0b702c919188c5"></a>XVPROCSS_EVT_INIT_RESAXIS</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init status of Reset Axis subcore. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a85020f2589cda4a8ad9bf8fce8b043bc"></a>XVPROCSS_EVT_INIT_RESAXIM</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init status of Reset Aximm subcore. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a8fb36e2d02ae8e0438c8e67791fe388c"></a>XVPROCSS_EVT_INIT_ROUTER</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init status of Router subcore. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a2816ccbb3f218ce27a57bf6539570d40"></a>XVPROCSS_EVT_INIT_LBOX</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init status of Letterbox subcore. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9ab119fb162d69df3ab5da8f8e0b96763e"></a>XVPROCSS_EVT_INIT_VDMA</em>&nbsp;</td><td class="fielddoc">
-<p>Log event init status of VDMA subcore. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30"></a>XVPROCSS_EVT_CFGERR_VDMA</em>&nbsp;</td><td class="fielddoc">
-<p>Log event VDMA configuration error. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208"></a>XVPROCSS_EVT_OPERR_VDMA</em>&nbsp;</td><td class="fielddoc">
-<p>Log event VDMA operation error. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262"></a>XVPROCSS_EVT_CFG_HSCALER</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Scaler config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15"></a>XVPROCSS_EVT_CFG_VSCALER</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Scaler config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da"></a>XVPROCSS_EVT_CFG_CSC</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Csc config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a6a8c4711e68ded9fb3d4c64b74a94b22"></a>XVPROCSS_EVT_CFG_DEINT</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Deinterlacer config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a730776a8501e9615a0710c25ee779450"></a>XVPROCSS_EVT_CFG_VCRI</em>&nbsp;</td><td class="fielddoc">
-<p>Log event VCResampler config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9ad7b48ab5518ddc0f71d4e620450d76a9"></a>XVPROCSS_EVT_CFG_VCRO</em>&nbsp;</td><td class="fielddoc">
-<p>Log event VCResampler config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a2bc1af33195315cf16b38d7b11e872bd"></a>XVPROCSS_EVT_CFG_HCR</em>&nbsp;</td><td class="fielddoc">
-<p>Log event HCResampler config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5"></a>XVPROCSS_EVT_CFG_MAX</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Full Fledged config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9abda5efa3b8a91c89e006631e59bea90a"></a>XVPROCSS_EVT_CFG_VPSS</em>&nbsp;</td><td class="fielddoc">
-<p>Log event VPSS config status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a54ab50f0d2e7e4a55cc54245d6facabb"></a>XVPROCSS_EVT_CHK_TOPO</em>&nbsp;</td><td class="fielddoc">
-<p>Log event check Topology. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a203a442aec1615b0fe26d4586e23fc5a"></a>XVPROCSS_EVT_CHK_BASEADDR</em>&nbsp;</td><td class="fielddoc">
-<p>Log event check Frame buffer base address. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a59c1a12d3255327b3fd10fe3c6e1cbd7"></a>XVPROCSS_EVT_SET_PIPMODE</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Set Pip Mode. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a558e3ec01039cf251147be690d2bd9ec"></a>XVPROCSS_EVT_SET_ZOOMMODE</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Set Zoom Mode. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a54b4e1dc8b52c05a12e3e3cd9f4f8c18"></a>XVPROCSS_EVT_SET_PIPWIN</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Set Pip window. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a0a17a2771f447b75dd3c1236bc1bb298"></a>XVPROCSS_EVT_SET_ZOOMWIN</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Set Zoom window. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a6da55aee92eef69c31de0744ed118d0a"></a>XVPROCSS_EVT_GET_ZPWIN</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Get Zoom/Pip window. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9af2ff6134491d7c3675540e4cec7d2cbb"></a>XVPROCSS_EVT_UPDATE_ZPWIN</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Update Zoom/Pip window status. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a6b5ae254ff201393e86716ec62425f29"></a>XVPROCSS_EVT_RESET_VPSS</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Reset the VPSS. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a3bcee1ee986b5f86f45468e2e9fac5f6"></a>XVPROCSS_EVT_START_VPSS</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Start the VPSS. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9a7f440bf73b91e8287f25032ff2b63020"></a>XVPROCSS_EVT_STOP_VPSS</em>&nbsp;</td><td class="fielddoc">
-<p>Log event Stop the VPSS. </p>
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ggadda80cee8527fb0dac1e98e657f12cd9ad0f8885a219b90be8a513ad6665c130d"></a>XVPROCSS_EVT_LAST_ENUM</em>&nbsp;</td><td class="fielddoc">
-<p>(dummy event: marks last enum) </p>
-</td></tr>
-</table>
-
-</div>
-</div>
 <a class="anchor" id="gad407806f5fa37872bb836071c96cd1d3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -420,7 +193,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if routing table can be created else XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss___context_data.html#a3e2a334b8f135ad9e1eb1d860c8fa694">XVprocSs_ContextData::CscIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a9f81ff065d74d35606a3f1b72133cd96">XVprocSs_ContextData::CscOut</a>, <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac529cc738b0a6263f3f2d9d43e521461">XVprocSs_ContextData::HcrIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a2a14c0f46d29da1f0f630e33d3f07151">XVprocSs_ContextData::HcrOut</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac81c1474fea35a89b9f6830a87692aec">XVprocSs_ContextData::ScaleMode</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8e3923646d6b89ff1970f62e0d63d259">XVprocSs_ContextData::StrmCformat</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a6440efa76dbba290ebfdd4b603cff0b2">XVprocSs::VidIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a554de1e27e74f1a96cf0823093ac17f4">XVprocSs_ContextData::VidInHeight</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#adeb3dc191f2aa011b52f7d8d503e71ab">XVprocSs_ContextData::VidInWidth</a>, <a class="el" href="struct_x_vproc_ss.html#a1fce9dc484558616980012f4a77764ee">XVprocSs::VidOut</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss___context_data.html#a3e2a334b8f135ad9e1eb1d860c8fa694">XVprocSs_ContextData::CscIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a9f81ff065d74d35606a3f1b72133cd96">XVprocSs_ContextData::CscOut</a>, <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac529cc738b0a6263f3f2d9d43e521461">XVprocSs_ContextData::HcrIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a2a14c0f46d29da1f0f630e33d3f07151">XVprocSs_ContextData::HcrOut</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac81c1474fea35a89b9f6830a87692aec">XVprocSs_ContextData::ScaleMode</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8e3923646d6b89ff1970f62e0d63d259">XVprocSs_ContextData::StrmCformat</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a6440efa76dbba290ebfdd4b603cff0b2">XVprocSs::VidIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a554de1e27e74f1a96cf0823093ac17f4">XVprocSs_ContextData::VidInHeight</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#adeb3dc191f2aa011b52f7d8d503e71ab">XVprocSs_ContextData::VidInWidth</a>, <a class="el" href="struct_x_vproc_ss.html#a1fce9dc484558616980012f4a77764ee">XVprocSs::VidOut</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 </div>
 </div>
@@ -475,7 +248,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss.html#ae31f2a9f76251d0b9f102a0b90408f79">XVprocSs::RouterPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss.html#ae31f2a9f76251d0b9f102a0b90408f79">XVprocSs::RouterPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 </div>
 </div>
@@ -503,7 +276,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss___context_data.html#a3e2a334b8f135ad9e1eb1d860c8fa694">XVprocSs_ContextData::CscIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a9f81ff065d74d35606a3f1b72133cd96">XVprocSs_ContextData::CscOut</a>, <a class="el" href="struct_x_vproc_ss.html#a70745e8e343154d82af157d3a50eca31">XVprocSs::CscPtr</a>, <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a77a8ad41b6cc8dc4800d859b33a6762b">XVprocSs_ContextData::DeintBufAddr</a>, <a class="el" href="struct_x_vproc_ss.html#ae5a31f08bd16f24a746eceb0ebe7dd09">XVprocSs::DeintPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac529cc738b0a6263f3f2d9d43e521461">XVprocSs_ContextData::HcrIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a2a14c0f46d29da1f0f630e33d3f07151">XVprocSs_ContextData::HcrOut</a>, <a class="el" href="struct_x_vproc_ss.html#a554c32cace7c2bcc2637919e17ad0945">XVprocSs::HcrsmplrPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a96d7da785b43ce54736523b9de33ee3e">XVprocSs::HscalerPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8f080227d4a5195ea3ec54dc12206e33">XVprocSs_ContextData::LboxBkgndColor</a>, <a class="el" href="struct_x_vproc_ss.html#a7cc8183d534f77c5bf240616db3df97d">XVprocSs::LboxPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a4ea15beae039b9b0a7ae82ec89d57c80">XVprocSs_ContextData::RdWindow</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac81c1474fea35a89b9f6830a87692aec">XVprocSs_ContextData::ScaleMode</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa02a961464f60d239452ebc287a02b98">XVprocSs_ContextData::StartCore</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8e3923646d6b89ff1970f62e0d63d259">XVprocSs_ContextData::StrmCformat</a>, <a class="el" href="struct_x_vproc_ss.html#a62f9ab872ac328e7e5ecbccafe65a7e6">XVprocSs::VcrsmplrInPtr</a>, <a class="el" href="struct_x_vproc_ss.html#add2fbe91511d24e070039c1cba33f7c1">XVprocSs::VcrsmplrOutPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a6440efa76dbba290ebfdd4b603cff0b2">XVprocSs::VidIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a554de1e27e74f1a96cf0823093ac17f4">XVprocSs_ContextData::VidInHeight</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#adeb3dc191f2aa011b52f7d8d503e71ab">XVprocSs_ContextData::VidInWidth</a>, <a class="el" href="struct_x_vproc_ss.html#a1fce9dc484558616980012f4a77764ee">XVprocSs::VidOut</a>, <a class="el" href="struct_x_vproc_ss.html#ad8ca19d5dd2ac25e58be55ff8ba2b3fa">XVprocSs::VscalerPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a79a5e7387a84068901a397e67c494e4d">XVprocSs_ContextData::WrWindow</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da">XVPROCSS_EVT_CFG_CSC</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262">XVPROCSS_EVT_CFG_HSCALER</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15">XVPROCSS_EVT_CFG_VSCALER</a>, <a class="el" href="xvprocss_8h.html#ad74f8b4febd82852c67f9808edd8d583">XVprocSs_GetColorDepth</a>, <a class="el" href="xvprocss_8h.html#a2ce543275b5cd3b7f24c31897aecf5fa">XVprocSs_IsPipModeOn</a>, <a class="el" href="xvprocss_8h.html#a85ac472cadd748d636762b1ef1a2c418">XVprocSs_IsZoomModeOn</a>, <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>, <a class="el" href="xvprocss_8c.html#a0f673d448bb7702661b702519de94fd9">XVprocSs_Start()</a>, <a class="el" href="group__vprocss.html#gab5d63a660b49c3f252366e48befcbf30">XVprocSs_VdmaSetWinToDnScaleMode()</a>, and <a class="el" href="group__vprocss.html#ga8d81441b93df3b6c3d4d09583b17c97e">XVprocSs_VdmaSetWinToUpScaleMode()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss___context_data.html#a3e2a334b8f135ad9e1eb1d860c8fa694">XVprocSs_ContextData::CscIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a9f81ff065d74d35606a3f1b72133cd96">XVprocSs_ContextData::CscOut</a>, <a class="el" href="struct_x_vproc_ss.html#a70745e8e343154d82af157d3a50eca31">XVprocSs::CscPtr</a>, <a class="el" href="struct_x_vproc_ss.html#ad05c179ff8b000570b16a8ac39f885d7">XVprocSs::CtxtData</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a77a8ad41b6cc8dc4800d859b33a6762b">XVprocSs_ContextData::DeintBufAddr</a>, <a class="el" href="struct_x_vproc_ss.html#ae5a31f08bd16f24a746eceb0ebe7dd09">XVprocSs::DeintPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac529cc738b0a6263f3f2d9d43e521461">XVprocSs_ContextData::HcrIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a2a14c0f46d29da1f0f630e33d3f07151">XVprocSs_ContextData::HcrOut</a>, <a class="el" href="struct_x_vproc_ss.html#a554c32cace7c2bcc2637919e17ad0945">XVprocSs::HcrsmplrPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a96d7da785b43ce54736523b9de33ee3e">XVprocSs::HscalerPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8f080227d4a5195ea3ec54dc12206e33">XVprocSs_ContextData::LboxBkgndColor</a>, <a class="el" href="struct_x_vproc_ss.html#a7cc8183d534f77c5bf240616db3df97d">XVprocSs::LboxPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a4ea15beae039b9b0a7ae82ec89d57c80">XVprocSs_ContextData::RdWindow</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a1f6d058b4f99c7ee70b88b652b829ed0">XVprocSs_ContextData::RtngTable</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa726534c304cb8438dcee4b6fc5f502f">XVprocSs_ContextData::RtrNumCores</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#ac81c1474fea35a89b9f6830a87692aec">XVprocSs_ContextData::ScaleMode</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#aa02a961464f60d239452ebc287a02b98">XVprocSs_ContextData::StartCore</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a8e3923646d6b89ff1970f62e0d63d259">XVprocSs_ContextData::StrmCformat</a>, <a class="el" href="struct_x_vproc_ss.html#a62f9ab872ac328e7e5ecbccafe65a7e6">XVprocSs::VcrsmplrInPtr</a>, <a class="el" href="struct_x_vproc_ss.html#add2fbe91511d24e070039c1cba33f7c1">XVprocSs::VcrsmplrOutPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="struct_x_vproc_ss.html#a6440efa76dbba290ebfdd4b603cff0b2">XVprocSs::VidIn</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a554de1e27e74f1a96cf0823093ac17f4">XVprocSs_ContextData::VidInHeight</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#adeb3dc191f2aa011b52f7d8d503e71ab">XVprocSs_ContextData::VidInWidth</a>, <a class="el" href="struct_x_vproc_ss.html#a1fce9dc484558616980012f4a77764ee">XVprocSs::VidOut</a>, <a class="el" href="struct_x_vproc_ss.html#ad8ca19d5dd2ac25e58be55ff8ba2b3fa">XVprocSs::VscalerPtr</a>, <a class="el" href="struct_x_vproc_ss___context_data.html#a79a5e7387a84068901a397e67c494e4d">XVprocSs_ContextData::WrWindow</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da">XVPROCSS_EVT_CFG_CSC</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262">XVPROCSS_EVT_CFG_HSCALER</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9aa5ff04f787a710ae81939f109520f7d5">XVPROCSS_EVT_CFG_MAX</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15">XVPROCSS_EVT_CFG_VSCALER</a>, <a class="el" href="xvprocss_8h.html#ad74f8b4febd82852c67f9808edd8d583">XVprocSs_GetColorDepth</a>, <a class="el" href="xvprocss_8h.html#a2ce543275b5cd3b7f24c31897aecf5fa">XVprocSs_IsPipModeOn</a>, <a class="el" href="xvprocss_8h.html#a85ac472cadd748d636762b1ef1a2c418">XVprocSs_IsZoomModeOn</a>, <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>, <a class="el" href="xvprocss_8c.html#a0f673d448bb7702661b702519de94fd9">XVprocSs_Start()</a>, <a class="el" href="group__vprocss.html#gab5d63a660b49c3f252366e48befcbf30">XVprocSs_VdmaSetWinToDnScaleMode()</a>, and <a class="el" href="group__vprocss.html#ga8d81441b93df3b6c3d4d09583b17c97e">XVprocSs_VdmaSetWinToUpScaleMode()</a>.</p>
 
 </div>
 </div>
@@ -530,7 +303,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_vproc_ss___config.html#a83a1c418e04ad75f33ba6297ddffb4c9">XVprocSs_Config::Csc</a>, <a class="el" href="struct_x_vproc_ss.html#a70745e8e343154d82af157d3a50eca31">XVprocSs::CscPtr</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da">XVPROCSS_EVT_CFG_CSC</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_vproc_ss___config.html#a83a1c418e04ad75f33ba6297ddffb4c9">XVprocSs_Config::Csc</a>, <a class="el" href="struct_x_vproc_ss.html#a70745e8e343154d82af157d3a50eca31">XVprocSs::CscPtr</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a69ed478af62bfb13c0e68251ca18b3da">XVPROCSS_EVT_CFG_CSC</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -559,7 +332,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_vproc_ss___config.html#a91cc153579f91eff07ae147ea1503889">XVprocSs_Config::Deint</a>, <a class="el" href="struct_x_vproc_ss.html#ae5a31f08bd16f24a746eceb0ebe7dd09">XVprocSs::DeintPtr</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a6a8c4711e68ded9fb3d4c64b74a94b22">XVPROCSS_EVT_CFG_DEINT</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_vproc_ss___config.html#a91cc153579f91eff07ae147ea1503889">XVprocSs_Config::Deint</a>, <a class="el" href="struct_x_vproc_ss.html#ae5a31f08bd16f24a746eceb0ebe7dd09">XVprocSs::DeintPtr</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a6a8c4711e68ded9fb3d4c64b74a94b22">XVPROCSS_EVT_CFG_DEINT</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -588,7 +361,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a0b75199199889e666ef6593f005609ff">XVprocSs_Config::HCrsmplr</a>, <a class="el" href="struct_x_vproc_ss.html#a554c32cace7c2bcc2637919e17ad0945">XVprocSs::HcrsmplrPtr</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a2bc1af33195315cf16b38d7b11e872bd">XVPROCSS_EVT_CFG_HCR</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a0b75199199889e666ef6593f005609ff">XVprocSs_Config::HCrsmplr</a>, <a class="el" href="struct_x_vproc_ss.html#a554c32cace7c2bcc2637919e17ad0945">XVprocSs::HcrsmplrPtr</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a2bc1af33195315cf16b38d7b11e872bd">XVPROCSS_EVT_CFG_HCR</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -617,7 +390,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a49cce61f7784539662034c4fc070e491">XVprocSs_Config::Hscale</a>, <a class="el" href="struct_x_vproc_ss.html#a96d7da785b43ce54736523b9de33ee3e">XVprocSs::HscalerPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262">XVPROCSS_EVT_CFG_HSCALER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a49cce61f7784539662034c4fc070e491">XVprocSs_Config::Hscale</a>, <a class="el" href="struct_x_vproc_ss.html#a96d7da785b43ce54736523b9de33ee3e">XVprocSs::HscalerPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9afdaaf23d284f472e2236b3c39a544262">XVPROCSS_EVT_CFG_HSCALER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -646,7 +419,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ae02c21fc750bc3c2ebf8963ac9ca1e23">XVprocSs_Config::Lbox</a>, <a class="el" href="struct_x_vproc_ss.html#a7cc8183d534f77c5bf240616db3df97d">XVprocSs::LboxPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a2816ccbb3f218ce27a57bf6539570d40">XVPROCSS_EVT_INIT_LBOX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ae02c21fc750bc3c2ebf8963ac9ca1e23">XVprocSs_Config::Lbox</a>, <a class="el" href="struct_x_vproc_ss.html#a7cc8183d534f77c5bf240616db3df97d">XVprocSs::LboxPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a2816ccbb3f218ce27a57bf6539570d40">XVPROCSS_EVT_INIT_LBOX</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -675,7 +448,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a57cf0d0564daea322134b1bf4cc99e37">XVprocSs_Config::RstAximm</a>, <a class="el" href="struct_x_vproc_ss.html#a1ae29293edf26b756464dcd743391ed3">XVprocSs::RstAximmPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a85020f2589cda4a8ad9bf8fce8b043bc">XVPROCSS_EVT_INIT_RESAXIM</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a57cf0d0564daea322134b1bf4cc99e37">XVprocSs_Config::RstAximm</a>, <a class="el" href="struct_x_vproc_ss.html#a1ae29293edf26b756464dcd743391ed3">XVprocSs::RstAximmPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a85020f2589cda4a8ad9bf8fce8b043bc">XVPROCSS_EVT_INIT_RESAXIM</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -704,7 +477,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a77b2477be8e9d2fc62f56f43bf6879a3">XVprocSs_Config::RstAxis</a>, <a class="el" href="struct_x_vproc_ss.html#a60d8aa2a5128b89edef5173f34fbf5ff">XVprocSs::RstAxisPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a304e31ecbdc687845d0b702c919188c5">XVPROCSS_EVT_INIT_RESAXIS</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a77b2477be8e9d2fc62f56f43bf6879a3">XVprocSs_Config::RstAxis</a>, <a class="el" href="struct_x_vproc_ss.html#a60d8aa2a5128b89edef5173f34fbf5ff">XVprocSs::RstAxisPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a304e31ecbdc687845d0b702c919188c5">XVPROCSS_EVT_INIT_RESAXIS</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -733,7 +506,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a8fae7e0ee6d66763fa1afe1e07e400b5">XVprocSs_Config::Router</a>, <a class="el" href="struct_x_vproc_ss.html#ae31f2a9f76251d0b9f102a0b90408f79">XVprocSs::RouterPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a8fb36e2d02ae8e0438c8e67791fe388c">XVPROCSS_EVT_INIT_ROUTER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a8fae7e0ee6d66763fa1afe1e07e400b5">XVprocSs_Config::Router</a>, <a class="el" href="struct_x_vproc_ss.html#ae31f2a9f76251d0b9f102a0b90408f79">XVprocSs::RouterPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a8fb36e2d02ae8e0438c8e67791fe388c">XVPROCSS_EVT_INIT_ROUTER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -762,7 +535,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a5878fcc0fd3ceefa0e699b0022542a9a">XVprocSs_Config::VCrsmplrIn</a>, <a class="el" href="struct_x_vproc_ss.html#a62f9ab872ac328e7e5ecbccafe65a7e6">XVprocSs::VcrsmplrInPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9a730776a8501e9615a0710c25ee779450">XVPROCSS_EVT_CFG_VCRI</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a5878fcc0fd3ceefa0e699b0022542a9a">XVprocSs_Config::VCrsmplrIn</a>, <a class="el" href="struct_x_vproc_ss.html#a62f9ab872ac328e7e5ecbccafe65a7e6">XVprocSs::VcrsmplrInPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9a730776a8501e9615a0710c25ee779450">XVPROCSS_EVT_CFG_VCRI</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -791,7 +564,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ab69534c54d385bf7991fe0aa866a69a1">XVprocSs_Config::VCrsmplrOut</a>, <a class="el" href="struct_x_vproc_ss.html#add2fbe91511d24e070039c1cba33f7c1">XVprocSs::VcrsmplrOutPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ad7b48ab5518ddc0f71d4e620450d76a9">XVPROCSS_EVT_CFG_VCRO</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ab69534c54d385bf7991fe0aa866a69a1">XVprocSs_Config::VCrsmplrOut</a>, <a class="el" href="struct_x_vproc_ss.html#add2fbe91511d24e070039c1cba33f7c1">XVprocSs::VcrsmplrOutPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9ad7b48ab5518ddc0f71d4e620450d76a9">XVPROCSS_EVT_CFG_VCRO</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -820,7 +593,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ab213491c94f1eb1fa33a9593906e5e03">XVprocSs_Config::Vdma</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ab119fb162d69df3ab5da8f8e0b96763e">XVPROCSS_EVT_INIT_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#ab213491c94f1eb1fa33a9593906e5e03">XVprocSs_Config::Vdma</a>, <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9ab119fb162d69df3ab5da8f8e0b96763e">XVPROCSS_EVT_INIT_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -849,7 +622,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS/XST_FAILURE </dd></dl>
 
-<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a84985461605b631f056d204d73ec1733">XVprocSs_Config::Vscale</a>, <a class="el" href="struct_x_vproc_ss.html#ad8ca19d5dd2ac25e58be55ff8ba2b3fa">XVprocSs::VscalerPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15">XVPROCSS_EVT_CFG_VSCALER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_sub_core.html#a00bf4cc423b497d91af168835e454a52">XSubCore::AddrOffset</a>, <a class="el" href="struct_x_vproc_ss___config.html#af561818387a2c40b466a1884faeb3310">XVprocSs_Config::BaseAddress</a>, <a class="el" href="struct_x_vproc_ss.html#a63bcaaaf281c28f90fb0ca06167cb658">XVprocSs::Config</a>, <a class="el" href="struct_x_sub_core.html#adf1ae1761058f236a912d6e50365bf78">XSubCore::DeviceId</a>, <a class="el" href="struct_x_vproc_ss___config.html#a54f3cda6d7a4cda0564c0346c255418f">XVprocSs_Config::HighAddress</a>, <a class="el" href="struct_x_vproc_ss___config.html#a84985461605b631f056d204d73ec1733">XVprocSs_Config::Vscale</a>, <a class="el" href="struct_x_vproc_ss.html#ad8ca19d5dd2ac25e58be55ff8ba2b3fa">XVprocSs::VscalerPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9abc5ae18af47d9b7409f1ba41612f5b15">XVPROCSS_EVT_CFG_VSCALER</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#aac138624e6b5449040be8bd02710a512">XVprocSs_CfgInitialize()</a>.</p>
 
@@ -879,15 +652,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function prints VDMA status on the console. </p>
+<p>XVprocSs_VdmaDbgReportStatus - Used for reporting the status of the VDMA IP. </p>
+<p>This function prints debug information about the current status of the VDMA (Video Direct Memory Access) associated with the given <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance. It reports both the read and write channel settings, including height, width, and stride, with values interpreted according to the specified pixel width in bits. The function also clears DMA channel errors and dumps relevant register values for both channels.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">XVdmaPtr</td><td>is the instance pointer to the DMA engine. </td></tr>
-    <tr><td class="paramname">Bpp</td><td>is Bytes per pixel to be used for data transfer</td></tr>
+    <tr><td class="paramname">XVprocSsPtr,:</td><td>Pointer to the <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance containing the VDMA pointer. </td></tr>
+    <tr><td class="paramname">PixelWidthInBits,:</td><td>The width of a pixel in bits, used to calculate bytes per pixel and interpret register values.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>: None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>.</p>
 
@@ -958,7 +732,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30">XVPROCSS_EVT_CFGERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30">XVPROCSS_EVT_CFGERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__vprocss.html#gab5d63a660b49c3f252366e48befcbf30">XVprocSs_VdmaSetWinToDnScaleMode()</a>, and <a class="el" href="group__vprocss.html#ga8d81441b93df3b6c3d4d09583b17c97e">XVprocSs_VdmaSetWinToUpScaleMode()</a>.</p>
 
@@ -987,7 +761,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208">XVPROCSS_EVT_OPERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208">XVPROCSS_EVT_OPERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#ab65fda7ce63456d82274a463a4d4b72a">XVprocSs_Reset()</a>.</p>
 
@@ -1087,14 +861,15 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function starts Read and Write channels. </p>
+<p>This Function Starts the VDMA (Video Direct Memory Access) engine for the given Video Processing Subsystem instance. </p>
+<p>This function initiates both the write and read channels of the VDMA associated with the specified <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance. It checks if the VDMA pointer is valid before starting the DMA operations.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">XVdmaPtr</td><td>is the pointer to core instance to be worked on</td></tr>
+    <tr><td class="paramname">XVprocSsPtr</td><td>Pointer to the <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance containing the VDMA configuration.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>.</p>
 
@@ -1125,7 +900,7 @@ Variables</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Currently the return value is ignored at subsystem level. </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208">XVPROCSS_EVT_OPERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9ae5ccb3686b40801af76a470a6b74b208">XVPROCSS_EVT_OPERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="xvprocss_8h.html#a0f673d448bb7702661b702519de94fd9">XVprocSs_Start()</a>, and <a class="el" href="xvprocss_8h.html#a4bdc6a00278cb1c847429d7498f8505e">XVprocSs_UpdateZoomPipWindow()</a>.</p>
 
@@ -1145,14 +920,15 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function stops Read and Write channels. </p>
+<p>This Function Stops the VDMA (Video Direct Memory Access) engine for the given Video Processing Subsystem instance. </p>
+<p>This function stops both the write and read channels of the VDMA associated with the specified <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance. It checks if the VDMA pointer is valid before starting the DMA operations.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">XVdmaPtr</td><td>is the pointer to core instance to be worked on</td></tr>
+    <tr><td class="paramname">XVprocSsPtr</td><td>Pointer to the <a class="el" href="struct_x_vproc_ss.html" title="The XVprocSs driver instance data. ">XVprocSs</a> instance containing the VDMA configuration.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>.</p>
 
@@ -1222,54 +998,9 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the setup is successful, XST_FAILURE otherwise. </dd></dl>
 
-<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="group__vprocss.html#ggadda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30">XVPROCSS_EVT_CFGERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
+<p>References <a class="el" href="struct_x_vproc_ss.html#a7110cce03d4d2ff4c4972bfe460eee42">XVprocSs::VdmaPtr</a>, <a class="el" href="xvprocss__log_8h.html#adda80cee8527fb0dac1e98e657f12cd9aa8ac981b143e5cbdd3109631b1788b30">XVPROCSS_EVT_CFGERR_VDMA</a>, and <a class="el" href="xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25">XVprocSs_LogWrite()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__vprocss.html#gab5d63a660b49c3f252366e48befcbf30">XVprocSs_VdmaSetWinToDnScaleMode()</a>, and <a class="el" href="group__vprocss.html#ga8d81441b93df3b6c3d4d09583b17c97e">XVprocSs_VdmaSetWinToUpScaleMode()</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="ga6fb4f6fc13e8e5929c5a15de095955fe"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u16 XVprocSs_Log::DataBuffer[<a class="el" href="group__vprocss.html#ga463361d1b27cc99ddbad5d50e1385afa">XVPROCSS_EVT_BUFFSIZE</a>]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Log buffer with event data. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga39591f9a8c77d388dbd9dba4d9ef7108"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u8 XVprocSs_Log::HeadIndex</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">Index of the head entry of the
-</pre><p> Event/DataBuffer. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga4e3fa3c7e468ff5cd05092a1645bc045"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">u8 XVprocSs_Log::TailIndex</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><pre class="fragment">Index of the tail entry of the
-</pre><p> Event/DataBuffer. </p>
 
 </div>
 </div>

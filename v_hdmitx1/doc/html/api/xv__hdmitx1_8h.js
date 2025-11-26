@@ -53,10 +53,13 @@ var xv__hdmitx1_8h =
     [ "XV_HdmiTx1_SetMode", "xv__hdmitx1_8h.html#af3a6c361d3eb8f9bc43cc1d4f6bc2269", null ],
     [ "XV_HdmiTx1_SetScrambler", "xv__hdmitx1_8h.html#a669f967b9baf869d60aa8dc35297ee3a", null ],
     [ "XV_HdmiTx1_VrrControl", "xv__hdmitx1_8h.html#ae2f8cf0015a6f22105b8e63f0388ff28", null ],
-    [ "XV_HdmiTx1_Callback", "xv__hdmitx1_8h.html#a5bb0fa4a27e544cf4df3fa3aad14011a", [
+    [ "XV_HdmiTx1_Callback", "xv__hdmitx1_8h.html#a5bb0fa4a27e544cf4df3fa3aad14011a", null ],
+    [ "XV_HdmiTx1_AudioFormatType", "xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415ab", [
       [ "XV_HDMITX1_AUDFMT_LPCM", "xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415abaade1f061ff92bd82aa4db1baa8a93269", null ],
       [ "XV_HDMITX1_AUDFMT_HBR", "xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415aba6fa79c8481fafe7b7323a85e996a546d", null ],
-      [ "XV_HDMITX1_AUDFMT_3D", "xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415abaefdf29b91170981fa1478757192551ec", null ],
+      [ "XV_HDMITX1_AUDFMT_3D", "xv__hdmitx1_8h.html#afd608daa8882c5fa37f9b47e732415abaefdf29b91170981fa1478757192551ec", null ]
+    ] ],
+    [ "XV_HdmiTx1_CTSNSource", "xv__hdmitx1_8h.html#a3feb2d8f651db69c07d0a28f2f367ab9", [
       [ "XV_HDMITX1_EXTERNAL_CTS_N", "xv__hdmitx1_8h.html#a3feb2d8f651db69c07d0a28f2f367ab9a6047e235ba0cd9005c4e7ab3c52c571e", null ],
       [ "XV_HDMITX1_INTERNAL_CTS_N", "xv__hdmitx1_8h.html#a3feb2d8f651db69c07d0a28f2f367ab9abc51aeef1395e77cb5513dbcac8b3ea7", null ]
     ] ],
@@ -83,7 +86,9 @@ var xv__hdmitx1_8h =
       [ "XV_HDMITX1_HANDLER_FRL_LTSL", "xv__hdmitx1_8h.html#af9b30d0cba10a37e4719114fe400ea64a075929599ba9b010f8c57a7869627ab0", null ],
       [ "XV_HDMITX1_HANDLER_CED_UPDATE", "xv__hdmitx1_8h.html#af9b30d0cba10a37e4719114fe400ea64a88a64b3e4b6e6082f4052decb7ed01d6", null ],
       [ "XV_HDMITX1_HANDLER_DYNHDR_MWT", "xv__hdmitx1_8h.html#af9b30d0cba10a37e4719114fe400ea64a400f7259b937b730c566e9fc305a7dca", null ],
-      [ "XV_HDMITX1_HANDLER_DSCDECODE_FAIL", "xv__hdmitx1_8h.html#af9b30d0cba10a37e4719114fe400ea64a85c185785dcb12fc78bf249a34c98a92", null ],
+      [ "XV_HDMITX1_HANDLER_DSCDECODE_FAIL", "xv__hdmitx1_8h.html#af9b30d0cba10a37e4719114fe400ea64a85c185785dcb12fc78bf249a34c98a92", null ]
+    ] ],
+    [ "XV_HdmiTx1_ScdcFieldType", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03b", [
       [ "XV_HDMITX1_SCDCFIELD_SOURCE_VER", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba358c8540a5d94b1e0ed09f3d84daf752", null ],
       [ "XV_HDMITX1_SCDCFIELD_SNK_CFG0", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba7bac5718021caa61ab21686b9f457e33", null ],
       [ "XV_HDMITX1_SCDCFIELD_SNK_CFG1", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba60684f9be110be135bea9f050f248ca4", null ],
@@ -92,7 +97,9 @@ var xv__hdmitx1_8h =
       [ "XV_HDMITX1_SCDCFIELD_FRL_START", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba70f2bef8333e88213f4b7fc34e3fab46", null ],
       [ "XV_HDMITX1_SCDCFIELD_FLT_UPDATE", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba92a251a297cda48c08bcb348cf60cbba", null ],
       [ "XV_HDMITX1_SCDCFIELD_FLT_NO_RETRAIN", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba921e55cc5be36473498f4c449b7aa1a8", null ],
-      [ "XV_HDMITX1_SCDCFIELD_SIZE", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba58c62c57aa2f3cdf3a20a20ae1576206", null ],
+      [ "XV_HDMITX1_SCDCFIELD_SIZE", "xv__hdmitx1_8h.html#a89af94c46325012d2281a258ec1bd03ba58c62c57aa2f3cdf3a20a20ae1576206", null ]
+    ] ],
+    [ "XV_HdmiTx1_State", "xv__hdmitx1_8h.html#afdfa1de50e03ac7983bc1dff7d4d0a4f", [
       [ "XV_HDMITX1_STATE_STREAM_DOWN", "xv__hdmitx1_8h.html#afdfa1de50e03ac7983bc1dff7d4d0a4faf1fa66c63bd3007ea5b4798e9609294c", null ],
       [ "XV_HDMITX1_STATE_STREAM_UP", "xv__hdmitx1_8h.html#afdfa1de50e03ac7983bc1dff7d4d0a4fa2c99ce4c1ffc739462503f9753263242", null ]
     ] ],
@@ -126,10 +133,15 @@ var xv__hdmitx1_8h =
     [ "XV_HdmiTx1_FrlStreamStart", "xv__hdmitx1_8h.html#a86472ba3e4497749a3b0af4fd446137d", null ],
     [ "XV_HdmiTx1_FrlStreamStop", "xv__hdmitx1_8h.html#aa70824573b3a13e9aadcc96eca9842a6", null ],
     [ "XV_HdmiTx1_FrlTrainingInit", "xv__hdmitx1_8h.html#a730bc782f3ed005fbff8e45c1dbd055a", null ],
+    [ "XV_HdmiTx1_GenerateCustomVideoTimingExtMetaIF", "xv__hdmitx1_8h.html#a0b8d17f9e6f32fb30869192cbaec1fd2", null ],
+    [ "XV_HdmiTx1_GenerateSrcProdDescInfoframe", "xv__hdmitx1_8h.html#ab10cd24a2b719e790f69bbdad9b7b69b", null ],
+    [ "XV_HdmiTx1_GenerateVideoTimingExtMetaIF", "xv__hdmitx1_8h.html#ab285cd32e3670001da349e24ebc2e815", null ],
     [ "XV_HdmiTx1_GetAudioFormat", "xv__hdmitx1_8h.html#ae2022f3a37591ca01f2028e0e938e331", null ],
     [ "XV_HdmiTx1_GetFrlTimer", "xv__hdmitx1_8h.html#abe9d06ce9943cedc448f905806cbc6a2", null ],
     [ "XV_HdmiTx1_GetScdcEdRegisters", "xv__hdmitx1_8h.html#a4623f1c32afecde613bfb2c4517597b1", null ],
+    [ "XV_HdmiTx1_GetSrcProdDescIF", "xv__hdmitx1_8h.html#a5423804312f3905e5cc174221d3e0d46", null ],
     [ "XV_HdmiTx1_GetTmdsClk", "xv__hdmitx1_8h.html#a2fdc16b8be464514b4d72ddfb947cee9", null ],
+    [ "XV_HdmiTx1_GetVidTimingExtMeta", "xv__hdmitx1_8h.html#a31dc0ffe0c8f9d57f57c9c9d454682a4", null ],
     [ "XV_HdmiTx1_Info", "xv__hdmitx1_8h.html#ab0ff2a9927fe900b25456955341dfa31", null ],
     [ "XV_HdmiTx1_INT_LRST", "xv__hdmitx1_8h.html#aecd47642f9aa91941d14c04543f73827", null ],
     [ "XV_HdmiTx1_INT_VRST", "xv__hdmitx1_8h.html#adf9e5c73a5f308d04eea85dd4db8f42f", null ],

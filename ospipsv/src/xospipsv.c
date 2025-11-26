@@ -48,6 +48,9 @@
 * 1.10	sb   02/09/24 Add support for Infineon flash part S28HS02G.
 * 1.11  ng  08/20/24 Add spartanup device support
 * 1.12  sb  01/28/25 Use stig read for byte count less than 8bytes.
+* 1.13  sb  06/26/25 Set the required configurations for SpartanUp in
+*                    SDR-PHY & DDR-PHY mode.
+* 1.13  sb  10/28/25 Added cache invalidate when EL1_NONSECURE is not defined.
 *
 * </pre>
 *
@@ -65,6 +68,11 @@
 #define SILICON_VERSION_1	0x10U	/**< Silicon version */
 
 #define READ_ID		0x9FU	/**< Read Id opcode */
+
+#if defined (SPARTANUP)
+#define MAX_PHASE_SELECTOR_SPARTANUP     7U    /**< Max Phase selector for Spartanup */
+#define MIN_PHASE_SELECTOR_SPARTANUP     2U    /**< Min Phase selector for Spartanup */
+#endif
 
 /**************************** Type Definitions *******************************/
 
@@ -133,7 +141,17 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->Extra_DummyCycle = 0U;
 		InstancePtr->DllMode = XOSPIPSV_DLL_BYPASS_MODE;
 		InstancePtr->DualByteOpcodeEn = 0U;
+#if defined (SPARTANUP)
+		/* Workaround for SpartanUP platform.
+		 * SpartanUP design does not include frequency information
+		 * in the OSPI IP configuration properties, causing
+		 * ConfigPtr->InputClockHz to be initialized to zero by default.
+		 * This results in prescaler configuration failure. To avoid
+		 * this issue, initialize InstancePtr->Config.InputClockHz to 160MHz.
+		 */
+		InstancePtr->Config.InputClockHz = 160000000;
 
+#endif
 #if defined (versal) && !defined (VERSAL_NET) && !defined (SPARTANUP)
 		if (XGetPSVersion_Info() != SILICON_VERSION_1) {
 #endif
@@ -420,38 +438,9 @@ u32 XOspiPsv_PollTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 
 	XOspiPsv_Setup_Devsize(InstancePtr, Msg);
 	if ((Msg->Flags & XOSPIPSV_MSG_FLAG_RX) != (u32)FALSE) {
-		XOspiPsv_Setup_Dev_Read_Instr_Reg(InstancePtr, Msg);
-		InstancePtr->RxBytes = Msg->ByteCount;
-		InstancePtr->SendBufferPtr = NULL;
-		InstancePtr->RecvBufferPtr = Msg->RxBfrPtr;
-		if ((InstancePtr->OpMode == XOSPIPSV_IDAC_MODE) ||
-					(Msg->Addrvalid == 0U)) {
-			if ((Msg->Addrvalid == 0U) || ((Msg->ByteCount <= 8U) &&
-						((Msg->Proto == XOSPIPSV_READ_1_1_1) || (Msg->Proto == XOSPIPSV_READ_8_8_8)))) {
-				Status = XOspiPsv_Stig_Read(InstancePtr, Msg);
-			} else {
-				Status = XOspiPsv_Dma_Read(InstancePtr,Msg);
-			}
-		} else {
-			Status = XOspiPsv_Dac_Read(InstancePtr, Msg);
-		}
+		Status = XOspiPsv_PollRecvData(InstancePtr, Msg);
 	} else {
-		XOspiPsv_Setup_Dev_Write_Instr_Reg(InstancePtr, Msg);
-		InstancePtr->TxBytes = Msg->ByteCount;
-		InstancePtr->SendBufferPtr = Msg->TxBfrPtr;
-		InstancePtr->RecvBufferPtr = NULL;
-		if((InstancePtr->OpMode == XOSPIPSV_DAC_MODE) &&
-				(InstancePtr->TxBytes != 0U)) {
-			Status = XOspiPsv_Dac_Write(InstancePtr, Msg);
-		} else {
-			if (InstancePtr->TxBytes > 8U) {
-				XOspiPsv_ConfigureMux_Linear(InstancePtr);
-				Status = XOspiPsv_IDac_Write(InstancePtr, Msg);
-				XOspiPsv_ConfigureMux_Dma(InstancePtr);
-			} else {
-				Status = XOspiPsv_Stig_Write(InstancePtr, Msg);
-			}
-		}
+		Status = XOspiPsv_PollSendData(InstancePtr, Msg);
 	}
 
 	/* Clear the ISR */
@@ -589,10 +578,14 @@ u32 XOspiPsv_CheckDmaDone(XOspiPsv *InstancePtr)
 		XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
 			XOSPIPSV_IRQ_STATUS_REG));
 
+#if defined(EL1_NONSECURE) && (EL1_NONSECURE==1U)
 	if ((Msg->Xfer64bit != (u8)1U) &&
 			(InstancePtr->Config.IsCacheCoherent == 0U)) {
 		Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 	}
+#else
+	Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
+#endif
 
 	Status = XOspiPsv_CheckOspiIdle(InstancePtr);
 
@@ -620,9 +613,6 @@ ERROR_PATH:
 u32 XOspiPsv_IntrTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 {
 	u32 Status;
-	u32 ByteCount;
-	u8 WriteDataEn;
-	u32 Reqaddr;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(Msg != NULL);
@@ -663,66 +653,9 @@ u32 XOspiPsv_IntrTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 	XOspiPsv_Setup_Devsize(InstancePtr, Msg);
 
 	if ((Msg->Flags & XOSPIPSV_MSG_FLAG_RX) != 0U) {
-		XOspiPsv_Setup_Dev_Read_Instr_Reg(InstancePtr, Msg);
-		InstancePtr->RxBytes = Msg->ByteCount;
-		InstancePtr->RecvBufferPtr = Msg->RxBfrPtr;
-		InstancePtr->SendBufferPtr = NULL;
-		if (Msg->Addrvalid == 0U) {
-			XOspiPsv_Setup_Stig_Ctrl(InstancePtr, (u32)Msg->Opcode,
-				1, (u32)InstancePtr->RxBytes - (u32)1, Msg->Addrvalid, 0,
-				(u32)Msg->Addrsize - (u32)1, 0, 0, (u32)Msg->Dummy, 0);
-			/* Execute the command */
-			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-				XOSPIPSV_FLASH_CMD_CTRL_REG,
-				(XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
-					XOSPIPSV_FLASH_CMD_CTRL_REG) |
-					(u32)XOSPIPSV_FLASH_CMD_CTRL_REG_CMD_EXEC_FLD_MASK));
-		} else {
-			if (Msg->ByteCount >= (u32)4) {
-				if ((Msg->ByteCount % 4U) != 0U) {
-					InstancePtr->IsUnaligned = 1U;
-				}
-				Msg->ByteCount -= (Msg->ByteCount % 4U);
-			} else {
-				Msg->ByteCount = 4;
-				Msg->RxBfrPtr = InstancePtr->UnalignReadBuffer;
-				InstancePtr->IsUnaligned = 0U;
-			}
-			XOspiPsv_Config_Dma(InstancePtr,Msg);
-			XOspiPsv_Config_IndirectAhb(InstancePtr,Msg);
-			/* Start the transfer */
-			XOspiPsv_Start_Indr_RdTransfer(InstancePtr);
-		}
+		XOspiPsv_IntrRecvData(InstancePtr, Msg);
 	} else {
-		XOspiPsv_Setup_Dev_Write_Instr_Reg(InstancePtr, Msg);
-		InstancePtr->TxBytes = Msg->ByteCount;
-		InstancePtr->SendBufferPtr = Msg->TxBfrPtr;
-		InstancePtr->RecvBufferPtr = NULL;
-		if (Msg->Addrvalid != 0U) {
-			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-				XOSPIPSV_FLASH_CMD_ADDR_REG, Msg->Addr);
-			Reqaddr = 1;
-		} else {
-			Reqaddr = 0U;
-		}
-		if (InstancePtr->TxBytes != 0U) {
-			WriteDataEn = 1;
-			ByteCount = InstancePtr->TxBytes;
-			XOspiPsv_FifoWrite(InstancePtr, Msg);
-		} else {
-			WriteDataEn = 0U;
-			ByteCount = 1;
-		}
-		XOspiPsv_Setup_Stig_Ctrl(InstancePtr, (u32)Msg->Opcode,
-			0, 0, Reqaddr, 0, (u32)Msg->Addrsize - (u32)1,
-			WriteDataEn, (u32)ByteCount - (u32)1, 0, 0);
-
-		/* Execute the command */
-		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
-			XOSPIPSV_FLASH_CMD_CTRL_REG,
-			(XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress,
-				XOSPIPSV_FLASH_CMD_CTRL_REG) |
-				(u32)XOSPIPSV_FLASH_CMD_CTRL_REG_CMD_EXEC_FLD_MASK));
+		XOspiPsv_IntrSendData(InstancePtr, Msg);
 	}
 
 	Status = (u32)XST_SUCCESS;
@@ -762,9 +695,13 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 				XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG,
 				(XOSPIPSV_INDIRECT_READ_XFER_CTRL_REG_IND_OPS_DONE_STATUS_FLD_MASK));
 			if (Msg->Xfer64bit != (u8)1U) {
+#if defined(EL1_NONSECURE) && (EL1_NONSECURE==1U)
 				if (InstancePtr->Config.IsCacheCoherent == 0U) {
 					Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
 				}
+#else
+				Xil_DCacheInvalidateRange((INTPTR)Msg->RxBfrPtr, (INTPTR)Msg->ByteCount);
+#endif
 			}
 			/* Clear the ISR */
 			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
@@ -893,6 +830,10 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 #else
 	u8 ReadBfrPtr[8]__attribute__ ((aligned(4))) = {0};
 #endif
+#if defined (SPARTANUP)
+	u32 PhaseSel;
+	u32 PhyMstrCntrlReg;
+#endif
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -960,14 +901,33 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 					XOSPIPSV_PHY_CONFIGURATION_REG, 0x0);
 		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 					XOSPIPSV_PHY_MASTER_CONTROL_REG, 0x4);
+#if defined (SPARTANUP)
+		for (PhaseSel = MIN_PHASE_SELECTOR_SPARTANUP; PhaseSel <= MAX_PHASE_SELECTOR_SPARTANUP;
+				PhaseSel++) {
+			PhyMstrCntrlReg = XOspiPsv_ReadReg(InstancePtr->Config.BaseAddress, XOSPIPSV_PHY_MASTER_CONTROL_REG);
+			PhyMstrCntrlReg = (~XOSPIPSV_PHY_MASTER_PHASE_DETECT_SELECTOR_FLD_MASK & PhyMstrCntrlReg) |
+				(PhaseSel << XOSPIPSV_PHY_MASTER_PHASE_DETECT_SELECTOR_FLD_SHIFT);
+			XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress, XOSPIPSV_PHY_MASTER_CONTROL_REG, PhyMstrCntrlReg);
+#endif
 		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_PHY_CONFIGURATION_REG,
 				XOSPIPSV_PHY_CONFIGURATION_REG_PHY_CONFIG_RESET_FLD_MASK);
 		Status = XOspiPsv_WaitForLock(InstancePtr,
 				XOSPIPSV_DLL_OBSERVABLE_LOWER_LOOPBACK_LOCK_FLD_MASK);
+#if defined (SPARTANUP)
+			if (Status == (u32)XST_SUCCESS) {
+				break;
+			}
+		}
+		if (PhaseSel > MAX_PHASE_SELECTOR_SPARTANUP) {
+			Status = XST_FAILURE;
+			goto RETURN_PATH;
+		}
+#else
 		if (Status != (u32)XST_SUCCESS) {
 			goto RETURN_PATH;
 		}
+#endif
 		XOspiPsv_WriteReg(InstancePtr->Config.BaseAddress,
 				XOSPIPSV_PHY_CONFIGURATION_REG,
 				XOSPIPSV_PHY_CONFIGURATION_REG_PHY_CONFIG_RESET_FLD_MASK);

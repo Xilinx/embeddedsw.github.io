@@ -29,6 +29,8 @@
 #include "xmmidp.h"
 
 #define XMMIDP_CR_TIMEOUT_COUNT 50
+#define XMMIDP_MAX_VSLEVEL_CNT 5
+#define XMMIDP_LINK_CR_DONE_AUX_RD_INTERVAL 100
 
 /******************************************************************************/
 /**
@@ -91,7 +93,7 @@ void XMmiDp_FastLinkTrainDisable(XMmiDp *InstancePtr)
 *******************************************************************************/
 u32 XMmiDp_GetRxMaxLaneCount(XMmiDp *InstancePtr)
 {
-	u32 DpcdVal = 0;
+	u32 DpcdVal;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -103,7 +105,7 @@ u32 XMmiDp_GetRxMaxLaneCount(XMmiDp *InstancePtr)
 		>> XMMIDP_DPCD_MAX_LANE_COUNT_SHIFT;
 
 	InstancePtr->RxConfig.MaxLaneCount =
-		GetLaneCount(InstancePtr, InstancePtr->RxConfig.MaxNumLanes);
+		XMmiDp_GetLaneCount(InstancePtr, InstancePtr->RxConfig.MaxNumLanes);
 
 	InstancePtr->RxConfig.EnhancedFrameCap =
 		(DpcdVal & XMMIDP_DPCD_ENHANCED_FRAME_CAP_MASK)
@@ -133,7 +135,7 @@ u32 XMmiDp_GetRxMaxLaneCount(XMmiDp *InstancePtr)
 *******************************************************************************/
 u32 XMmiDp_GetRxMaxLinkRate(XMmiDp *InstancePtr)
 {
-	u32 Status = 0;
+	u32 Status;
 	u32 MaxLinkBW = 0;
 
 	Status = XMmiDp_AuxRead(InstancePtr,
@@ -145,11 +147,39 @@ u32 XMmiDp_GetRxMaxLinkRate(XMmiDp *InstancePtr)
 
 	InstancePtr->RxConfig.MaxLinkBW = MaxLinkBW;
 	InstancePtr->RxConfig.MaxLinkRate =
-		GetLinkRate(InstancePtr, MaxLinkBW);
+		XMmiDp_GetLinkRate(InstancePtr, MaxLinkBW);
 
 	return XST_SUCCESS;
 }
 
+/******************************************************************************/
+/**
+ * This function reads MST_CAP  from Rx DPCD register
+ *
+ * @param       InstancePtr is a pointer to the XDpPsu instance.
+ * @return
+ *              - none.
+ *
+ * @note        None.
+ *
+*******************************************************************************/
+u32 XMmiDp_GetRxMstModeCap(XMmiDp *InstancePtr)
+{
+	u32 Status;
+	u32 MstCap = 0;
+
+	Status = XMmiDp_AuxRead(InstancePtr,
+				XMMIDP_DPCD_MSTM_CAP, 1, &MstCap);
+
+	if ( Status != XST_SUCCESS ) {
+		xil_printf("AuxRead Err: %d\n", Status);
+		return Status;
+	}
+
+	InstancePtr->RxConfig.MstCap = (MstCap & XMMIDP_DPCD_MSTM_CAP_MST_CAP_MASK);
+
+	return XST_SUCCESS;
+}
 /******************************************************************************/
 /**
  * This function initates link training sequence with the Rx
@@ -163,8 +193,6 @@ u32 XMmiDp_GetRxMaxLinkRate(XMmiDp *InstancePtr)
 *******************************************************************************/
 u32 XMmiDp_StartLinkXmit(XMmiDp *InstancePtr)
 {
-	u32 Status = 0;
-
 	XMmiDp_SetPhyLaneCount(InstancePtr,
 			       InstancePtr->RxConfig.MaxLaneCount);
 
@@ -174,8 +202,8 @@ u32 XMmiDp_StartLinkXmit(XMmiDp *InstancePtr)
 	XMmiDp_SetPhyVoltageSwing(InstancePtr, InstancePtr->LinkConfig.VsLevel);
 	XMmiDp_SetPhyPreEmphasis(InstancePtr, InstancePtr->LinkConfig.PeLevel);
 
-	XMmiDp_SetPhyTrainingPattern(InstancePtr, PHY_NO_TRAIN);
-	XMmiDp_SetDpcdTrainingPattern(InstancePtr, PHY_NO_TRAIN);
+	XMmiDp_SetPhyTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
+	XMmiDp_SetDpcdTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
 
 	XMmiDp_SetPhyXmitEnable(InstancePtr);
 
@@ -197,6 +225,7 @@ u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr)
 {
 	u32 MaxLinkBW = InstancePtr->RxConfig.MaxLinkBW;
 	u32 ChannelCodingSet = InstancePtr->LinkConfig.ChannelCodingSet;
+	u8 MstmCtrl = 0x6 | InstancePtr->RxConfig.MstCap;
 
 	/* Link BW Set */
 	XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_LINK_BW_SET,
@@ -220,6 +249,9 @@ u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr)
 	XMmiDp_AuxWrite(InstancePtr,
 			XMMIDP_DPCD_MAIN_LINK_CHANNEL_CODING_SET,
 			0x1, &ChannelCodingSet);
+
+	/* MultiStream Mode support*/
+	XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_MSTM_CTRL, 0x1, &MstmCtrl);
 
 	return XST_SUCCESS;
 }
@@ -294,7 +326,9 @@ void XMmiDp_GetDpcdTrainingAuxRdInterval(XMmiDp *InstancePtr)
 
 /******************************************************************************/
 /**
- * This function returngs the training aux interval
+ * This function returns the training aux interval. The lowest time is 400us.
+ * All other WaitTimes are direct multiples of lowest time and value read from
+ * DPCD register.
  *
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  *
@@ -370,7 +404,7 @@ u32 XMmiDp_CheckClockRecovery(XMmiDp *InstancePtr, u8 LaneCount)
 {
 	/* Check that all LANEx_CR_DONE bits are set. */
 	switch (LaneCount) {
-		case PHY_LANES_4:
+		case XMMIDP_PHY_LANES_4:
 
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE0_CR_DONE_MASK) >>
@@ -399,7 +433,7 @@ u32 XMmiDp_CheckClockRecovery(XMmiDp *InstancePtr, u8 LaneCount)
 			InstancePtr->LinkConfig.CrDoneCnt =
 				XMMIDP_LANE_ALL_CR_DONE;
 
-		case PHY_LANES_2:
+		case XMMIDP_PHY_LANES_2:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE0_CR_DONE_MASK) >>
 			      XMMIDP_DPCD_LANE0_CR_DONE_SHIFT)) {
@@ -415,7 +449,7 @@ u32 XMmiDp_CheckClockRecovery(XMmiDp *InstancePtr, u8 LaneCount)
 			InstancePtr->LinkConfig.CrDoneCnt =
 				XMMIDP_LANE_2_CR_DONE;
 
-		case PHY_LANES_1:
+		case XMMIDP_PHY_LANES_1:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE0_CR_DONE_MASK) >>
 			      XMMIDP_DPCD_LANE0_CR_DONE_SHIFT)) {
@@ -527,8 +561,9 @@ u32 XMmiDp_AdjVswingPreemp(XMmiDp *InstancePtr)
 *******************************************************************************/
 void XMmiDp_SetVswingPreemp(XMmiDp *InstancePtr, u8 *AuxData)
 {
+	u32 Index;
 
-	for (int Index = 0; Index < InstancePtr->LinkConfig.NumLanes; Index++) {
+	for (Index = 0; Index < InstancePtr->LinkConfig.NumLanes; Index++) {
 
 		/* The maximum voltage swing has been reached. */
 		if (InstancePtr->LinkConfig.VsLevel[Index] >= XMMIDP_MAX_VS_LEVEL) {
@@ -580,7 +615,7 @@ u32 XMmiDp_SetTrainingPattern(XMmiDp *InstancePtr, XMmiDp_PhyTrainingPattern Pat
 
 	XMmiDp_SetPhyTrainingPattern(InstancePtr, Pattern);
 
-	if (Pattern == PHY_TPS4) {
+	if (Pattern == XMMIDP_PHY_TPS4) {
 		Val = 0x7;
 		InstancePtr->LinkConfig.ScrambleEn = 0x1;
 		XMmiDp_PhyScrambleDisable(InstancePtr);
@@ -594,7 +629,7 @@ u32 XMmiDp_SetTrainingPattern(XMmiDp *InstancePtr, XMmiDp_PhyTrainingPattern Pat
 
 	XMmiDp_SetVswingPreemp(InstancePtr, &AuxData[1]);
 
-	if (Pattern == PHY_NO_TRAIN)
+	if (Pattern == XMMIDP_PHY_NO_TRAIN)
 		Status = XMmiDp_AuxWrite(InstancePtr,
 					 XMMIDP_DPCD_TRAINING_PATTERN_SET, 1, AuxData);
 	else
@@ -624,7 +659,7 @@ u32 XMmiDp_SetLinkRate(XMmiDp *InstancePtr, XMmiDp_PhyRate LinkRate)
 {
 	u32 Status = 0;
 
-	XMmiDp_SetPhyPowerdown(InstancePtr, PHY_POWER_DOWN);
+	XMmiDp_SetPhyPowerdown(InstancePtr, XMMIDP_PHY_POWER_DOWN);
 	Status = XMmiDp_PhyWaitReady(InstancePtr);
 	if ( Status != XST_SUCCESS ) {
 		xil_printf("Phy Busy Timeout %d\n", Status);
@@ -632,10 +667,10 @@ u32 XMmiDp_SetLinkRate(XMmiDp *InstancePtr, XMmiDp_PhyRate LinkRate)
 	}
 
 	InstancePtr->LinkConfig.LinkRate = LinkRate;
-	InstancePtr->LinkConfig.LinkBW = GetLinkBW(InstancePtr, LinkRate);
+	InstancePtr->LinkConfig.LinkBW = XMmiDp_GetLinkBW(InstancePtr, LinkRate);
 
 	XMmiDp_SetPhyLinkRate(InstancePtr, LinkRate);
-	XMmiDp_SetPhyPowerdown(InstancePtr, PHY_POWER_ON);
+	XMmiDp_SetPhyPowerdown(InstancePtr, XMMIDP_PHY_POWER_ON);
 
 	XMmiDp_SetDpcdLinkRate(InstancePtr);
 
@@ -658,7 +693,7 @@ void XMmiDp_SetLaneCount(XMmiDp *InstancePtr, XMmiDp_PhyLanes LaneCount)
 {
 
 	InstancePtr->LinkConfig.LaneCount = LaneCount;
-	InstancePtr->LinkConfig.NumLanes = GetNumLanes(InstancePtr, LaneCount);
+	InstancePtr->LinkConfig.NumLanes = XMmiDp_GetNumLanes(InstancePtr, LaneCount);
 
 	XMmiDp_SetPhyLaneCount(InstancePtr, LaneCount);
 	XMmiDp_SetDpcdLaneCount(InstancePtr);
@@ -706,14 +741,14 @@ XMmiDp_TrainingState XMmiDp_TrainingStateClockRecovery(XMmiDp *InstancePtr)
 	memset(InstancePtr->LinkConfig.VsLevel, 0, 4);
 	memset(InstancePtr->LinkConfig.PeLevel, 0, 4);
 
-	Status = XMmiDp_SetTrainingPattern(InstancePtr, PHY_TPS1);
+	Status = XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_TPS1);
 
 	if ( Status != XST_SUCCESS ) {
 		return XMMIDP_TS_FAILURE;
 	}
 
 	while (TimeOutCnt <= XMMIDP_CR_TIMEOUT_COUNT) {
-		XMmiDp_WaitUs(InstancePtr, 100);
+		XMmiDp_WaitUs(InstancePtr, XMMIDP_LINK_CR_DONE_AUX_RD_INTERVAL);
 
 		Status = XMmiDp_GetDpcdLaneStatusAdjReqs(InstancePtr);
 		if (Status != XST_SUCCESS) {
@@ -735,7 +770,7 @@ XMmiDp_TrainingState XMmiDp_TrainingStateClockRecovery(XMmiDp *InstancePtr)
 			SameVsLevelCnt++;
 		}
 
-		if (SameVsLevelCnt >= 5) {
+		if (SameVsLevelCnt >= XMMIDP_MAX_VSLEVEL_CNT) {
 			break;
 		}
 
@@ -753,7 +788,7 @@ XMmiDp_TrainingState XMmiDp_TrainingStateClockRecovery(XMmiDp *InstancePtr)
 	if (InstancePtr->LinkConfig.LinkRate ==  XMMIDP_DPCD_LINK_BW_SET_162GBPS) {
 		if ((InstancePtr->LinkConfig.CrDoneCnt != XMMIDP_LANE_ALL_CR_DONE) &&
 		    (InstancePtr->LinkConfig.CrDoneCnt != XMMIDP_LANE_0_CR_DONE)) {
-			Status = XMmiDp_SetTrainingPattern(InstancePtr, PHY_NO_TRAIN);
+			Status = XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
 			XMmiDp_SetLinkRate(InstancePtr,
 					   XMMIDP_DPCD_LINK_BW_SET_810GBPS);
 			XMmiDp_SetLaneCount(InstancePtr,
@@ -793,17 +828,17 @@ XMmiDp_TrainingState XMmiDp_TrainingStateAdjustLinkRate(XMmiDp *InstancePtr)
 	switch (InstancePtr->LinkConfig.LinkBW) {
 		case XMMIDP_DPCD_LINK_BW_SET_810GBPS:
 			XMmiDp_SetLinkRate(InstancePtr,
-					   PHY_RATE_HBR2_540GBPS);
+					   XMMIDP_PHY_RATE_HBR2_540GBPS);
 			Status = XMMIDP_TS_CLOCK_RECOVERY;
 			break;
 		case XMMIDP_DPCD_LINK_BW_SET_540GBPS:
 			XMmiDp_SetLinkRate(InstancePtr,
-					   PHY_RATE_HBR_270GBPS);
+					   XMMIDP_PHY_RATE_HBR_270GBPS);
 			Status = XMMIDP_TS_CLOCK_RECOVERY;
 			break;
 		case XMMIDP_DPCD_LINK_BW_SET_270GBPS:
 			XMmiDp_SetLinkRate(InstancePtr,
-					   PHY_RATE_RBR_162GBPS);
+					   XMMIDP_PHY_RATE_RBR_162GBPS);
 			Status = XMMIDP_TS_CLOCK_RECOVERY;
 			break;
 		default:
@@ -843,14 +878,14 @@ XMmiDp_TrainingState XMmiDp_TrainingStateAdjustLaneCount(XMmiDp *InstancePtr)
 	u32 Status;
 
 	switch (InstancePtr->LinkConfig.LaneCount) {
-		case PHY_LANES_4:
-			XMmiDp_SetLaneCount(InstancePtr, PHY_LANES_2);
+		case XMMIDP_PHY_LANES_4:
+			XMmiDp_SetLaneCount(InstancePtr, XMMIDP_PHY_LANES_2);
 			XMmiDp_SetLinkRate(InstancePtr, InstancePtr->RxConfig.MaxLinkRate);
 			Status = XMMIDP_TS_CLOCK_RECOVERY;
 			break;
 
-		case PHY_LANES_2:
-			XMmiDp_SetLaneCount(InstancePtr, PHY_LANES_1);
+		case XMMIDP_PHY_LANES_2:
+			XMmiDp_SetLaneCount(InstancePtr, XMMIDP_PHY_LANES_1);
 			XMmiDp_SetLinkRate(InstancePtr, InstancePtr->RxConfig.MaxLinkRate);
 			Status = XMMIDP_TS_CLOCK_RECOVERY;
 			break;
@@ -943,13 +978,15 @@ u32 XMmiDp_GetRxCapabilities(XMmiDp *InstancePtr)
 
 	XMmiDp_GetDpcdTrainingAuxRdInterval(InstancePtr);
 
+	XMmiDp_GetRxMstModeCap(InstancePtr);
+
 	if (InstancePtr->RxConfig.ExtendedReceiverCap) {
 		XMmiDp_AuxRead(InstancePtr, XMMIDP_DPCD_MAX_LINK_RATE_EXTENDED, 1, &MaxLinkBW);
 
 		InstancePtr->RxConfig.MaxLinkBW = (InstancePtr->RxConfig.MaxLinkBW <= MaxLinkBW)
 						  ? MaxLinkBW : InstancePtr->RxConfig.MaxLinkBW;
 		InstancePtr->RxConfig.MaxLinkRate =
-			GetLinkRate(InstancePtr, InstancePtr->RxConfig.MaxLinkBW);
+			XMmiDp_GetLinkRate(InstancePtr, InstancePtr->RxConfig.MaxLinkBW);
 	}
 
 	InstancePtr->LinkConfig.CrDoneCnt = InstancePtr->RxConfig.MaxLaneCount;
@@ -983,7 +1020,7 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
 	u8 InterlaneAlign = 0;
 
 	switch (LaneCount) {
-		case PHY_LANES_4:
+		case XMMIDP_PHY_LANES_4:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[1] &
 			       XMMIDP_DPCD_LANE3_CHANNEL_EQ_DONE_MASK) >>
 			      XMMIDP_DPCD_LANE3_CHANNEL_EQ_DONE_SHIFT)) {
@@ -996,14 +1033,18 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
 				return XST_FAILURE;
 			}
 
-		case PHY_LANES_2:
+		/* fall through */
+
+		case XMMIDP_PHY_LANES_2:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE1_CHANNEL_EQ_DONE_MASK) >>
 			      XMMIDP_DPCD_LANE1_CHANNEL_EQ_DONE_SHIFT)) {
 				return XST_FAILURE;
 			}
 
-		case PHY_LANES_1:
+		/* fall through */
+
+		case XMMIDP_PHY_LANES_1:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE0_CHANNEL_EQ_DONE_MASK) >>
 			      XMMIDP_DPCD_LANE0_CHANNEL_EQ_DONE_SHIFT)) {
@@ -1016,7 +1057,7 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
 	}
 
 	switch (LaneCount) {
-		case PHY_LANES_4:
+		case XMMIDP_PHY_LANES_4:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[1] &
 			       XMMIDP_DPCD_LANE3_SYMBOL_LOCKED_MASK) >>
 			      XMMIDP_DPCD_LANE3_SYMBOL_LOCKED_SHIFT)) {
@@ -1029,14 +1070,18 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
 				return XST_FAILURE;
 			}
 
-		case PHY_LANES_2:
+		/* fall through */
+
+		case XMMIDP_PHY_LANES_2:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE1_SYMBOL_LOCKED_MASK) >>
 			      XMMIDP_DPCD_LANE1_SYMBOL_LOCKED_SHIFT)) {
 				return XST_FAILURE;
 			}
 
-		case PHY_LANES_1:
+		/* fall through */
+
+		case XMMIDP_PHY_LANES_1:
 			if (!((InstancePtr->RxConfig.LaneStatusAdjReqs[0] &
 			       XMMIDP_DPCD_LANE0_SYMBOL_LOCKED_MASK) >>
 			      XMMIDP_DPCD_LANE0_SYMBOL_LOCKED_SHIFT)) {
@@ -1051,6 +1096,7 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
 	InterlaneAlign = (InstancePtr->RxConfig.LaneStatusAdjReqs[2]
 			  & XMMIDP_DPCD_INTERLANE_ALIGN_DONE_MASK)
 			 >> XMMIDP_DPCD_INTERLANE_ALIGN_DONE_SHIFT;
+
 	if (!(InterlaneAlign)) {
 		return XST_FAILURE;
 	}
@@ -1080,7 +1126,7 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount)
  *          requested by the RX device.
  *      2e) Loop back to 2a.
  * For a more detailed description of the channel equalization sequence, see
- * section 3.5.1.2.2 of the DisplayPort 1.2a specification document.
+ * section 3.5.1.2.2 of the DisplayPort 1.4a specification document.
  *
  * @param       InstancePtr is a pointer to the XDp instance.
  *
@@ -1105,11 +1151,11 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
 	DelayUs = XMmiDp_GetTrainingDelay(InstancePtr);
 
 	if (InstancePtr->RxConfig.Tps4Supported) {
-		Status =  XMmiDp_SetTrainingPattern(InstancePtr, PHY_TPS4);
+		Status =  XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_TPS4);
 	} else if (InstancePtr->RxConfig.Tps3Supported) {
-		Status = XMmiDp_SetTrainingPattern(InstancePtr, PHY_TPS3);
+		Status = XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_TPS3);
 	} else {
-		Status = XMmiDp_SetTrainingPattern(InstancePtr, PHY_TPS2);
+		Status = XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_TPS2);
 	}
 
 	if (Status != XST_SUCCESS) {
@@ -1128,7 +1174,6 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
 						   InstancePtr->LinkConfig.LaneCount);
 		if (Status != XST_SUCCESS) {
 			CrFailed = 1;
-
 		}
 
 		Status = XMmiDp_CheckChannelEqualization(InstancePtr,
@@ -1137,7 +1182,6 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
 		if (Status == XST_SUCCESS) {
 			CeFailed = 0;
 			return XMMIDP_TS_SUCCESS;
-
 		} else {
 			CeFailed = 1;
 		}
@@ -1145,7 +1189,6 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
 		Status = XMmiDp_AdjVswingPreemp(InstancePtr);
 		if (Status != XST_SUCCESS) {
 			return XMMIDP_TS_FAILURE;
-
 		}
 
 		LoopCount++;
@@ -1158,7 +1201,7 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
 		InstancePtr->LinkConfig.LaneCount =
 			InstancePtr->RxConfig.MaxLaneCount;
 		InstancePtr->LinkConfig.NumLanes =
-			GetNumLanes(InstancePtr, InstancePtr->LinkConfig.LaneCount);
+			XMmiDp_GetNumLanes(InstancePtr, InstancePtr->LinkConfig.LaneCount);
 
 		InstancePtr->LinkConfig.CrDoneOldState =
 			InstancePtr->RxConfig.MaxLaneCount;
@@ -1179,7 +1222,8 @@ XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr
  * This function checks if the Rx DisplayPort Configuration Data (DPCD)
  * indicates the receiver has achieved and maintained clock recovery, channel
  * equalization, symbol lock, and interlane alignment for all lanes currently in
- * use.
+ * use.The DP 1.4 spec specifies checking for the above bits max 5 times before
+ * retraining link at lower link rate.
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       LaneCount is the number of lanes to check.
@@ -1250,7 +1294,9 @@ u32 XMmiDp_CheckLinkStatus(XMmiDp *InstancePtr, u8 LaneCount)
 u32 XMmiDp_RunTraining(XMmiDp *InstancePtr)
 {
 
-	u32 Status = 0;
+	u32 Status;
+	u32 Data;
+
 	XMmiDp_TrainingState TrainingState = XMMIDP_TS_CLOCK_RECOVERY;
 
 	while (1) {
@@ -1291,7 +1337,7 @@ u32 XMmiDp_RunTraining(XMmiDp *InstancePtr)
 		}
 		if ((TrainingState == XMMIDP_TS_ADJUST_LINK_RATE) ||
 		    (TrainingState == XMMIDP_TS_ADJUST_LANE_COUNT)) {
-			Status = XMmiDp_SetTrainingPattern(InstancePtr, PHY_NO_TRAIN);
+			Status = XMmiDp_SetTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
 			if (Status != XST_SUCCESS) {
 				return XST_FAILURE;
 			}
@@ -1300,7 +1346,6 @@ u32 XMmiDp_RunTraining(XMmiDp *InstancePtr)
 	}
 
 	/* Post LT ADJ */
-	u32 Data = 0;
 	Status = XMmiDp_AuxRead(InstancePtr, XMMIDP_DPCD_LANE_COUNT_SET, 1, &Data);
 	Data |= 0x20;
 	XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_LANE_COUNT_SET, 1, &Data);

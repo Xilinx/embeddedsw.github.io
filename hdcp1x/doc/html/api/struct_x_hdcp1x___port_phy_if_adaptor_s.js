@@ -9,6 +9,7 @@ var struct_x_hdcp1x___port_phy_if_adaptor_s =
     [ "IsCapable", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#ac2c8553a0119a61454b55a636301ac22", null ],
     [ "IsRepeater", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#acffa4b66e65db9e791093cc0b5dd2af6", null ],
     [ "Read", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#ae57bfa58871123955d691a0e764b3e0c", null ],
+    [ "SetEcfSlots", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#a10c99a915286786bde14fb6cdb16cf02", null ],
     [ "SetRepeater", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#a184af78bafe34409e91dd15a96cca351", null ],
     [ "Write", "struct_x_hdcp1x___port_phy_if_adaptor_s.html#ad9892dcb133381504c00b6db21e3a485", null ]
 ];

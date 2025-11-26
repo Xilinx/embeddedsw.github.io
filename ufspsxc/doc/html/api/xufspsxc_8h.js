@@ -67,6 +67,7 @@ var xufspsxc_8h =
       [ "XUFSPSXC_INVALID_LUNID", "xufspsxc_8h.html#gga8166a9b46d56cb1dafc946a5303550a7ab919ea6102154e5e37950c37b85ea27e", null ],
       [ "XUFSPSXC_INVALID_MEMTYPE", "xufspsxc_8h.html#gga8166a9b46d56cb1dafc946a5303550a7aff5fd9bfca9a3c3fc9344959f994cdfc", null ],
       [ "XUFSPSXC_INVALID_TRANS_CODE", "xufspsxc_8h.html#gga8166a9b46d56cb1dafc946a5303550a7a38036d0621f99b6e449818519115ca2c", null ],
+      [ "XUFSPSXC_PHY_NOT_CALIBRATED", "xufspsxc_8h.html#gga8166a9b46d56cb1dafc946a5303550a7add7eb7fc9cae29033b7ed3c4b13c8813", null ],
       [ "XUFSPSXC_FAILURE", "xufspsxc_8h.html#gga8166a9b46d56cb1dafc946a5303550a7ab5fa37283e655ce4671e2a05855cb35d", null ],
       [ "XUFSPSXC_HCE_DISABLE", "xufspsxc_8h.html#ggaf9b168bb820007591178cae08462113ca46e879a3de0e5df5b5028d5660c16d32", null ],
       [ "XUFSPSXC_HCE_ENABLE", "xufspsxc_8h.html#ggaf9b168bb820007591178cae08462113cabdad2a0bf02caed141c785430c661eed", null ],

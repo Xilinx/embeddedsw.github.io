@@ -62,7 +62,8 @@ $(document).ready(function(){initNavTree('xv__hdmitx1__frl_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">xv_hdmitx1_frl.h File Reference</div>  </div>
 </div><!--header-->
@@ -136,18 +137,6 @@ Macros</h2></td></tr>
 <tr class="memitem:a278ba63cb581ced213ae23aabafe201b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#a278ba63cb581ced213ae23aabafe201b">XV_HDMITX1_FRL_H_</a></td></tr>
 <tr class="memdesc:a278ba63cb581ced213ae23aabafe201b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevent circular inclusions by using protection macros.  <a href="#a278ba63cb581ced213ae23aabafe201b">More...</a><br/></td></tr>
 <tr class="separator:a278ba63cb581ced213ae23aabafe201b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader">HDMI TX FRL training state</div></td></tr>
-<tr class="memitem:a835a33b58542988390ee91c443f6359d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_FrlTrainingState</b> </td></tr>
-<tr class="separator:a835a33b58542988390ee91c443f6359d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader">HDMI TX LTP Type</div></td></tr>
-<tr class="memitem:afd0877f78089682c46d57eb1012ba6e9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_FrlLtpType</b> </td></tr>
-<tr class="separator:afd0877f78089682c46d57eb1012ba6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
-HDMI TX FRL Active Mode</h2></td></tr>
 <tr class="memitem:aaa2b17ec29b80b19f9fa18abadeef78b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#aaa2b17ec29b80b19f9fa18abadeef78b">XV_HdmiTx1_FrlIntrEnable</a>(InstancePtr)</td></tr>
 <tr class="memdesc:aaa2b17ec29b80b19f9fa18abadeef78b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro enables interrupt in the HDMI TX FRL peripheral.  <a href="#aaa2b17ec29b80b19f9fa18abadeef78b">More...</a><br/></td></tr>
 <tr class="separator:aaa2b17ec29b80b19f9fa18abadeef78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,7 +161,45 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <tr class="memitem:adeff1a67ca25514ca8095cefbdb2a937"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#adeff1a67ca25514ca8095cefbdb2a937">XV_HdmiTx1_FrlRateLockDisable</a>(InstancePtr)&#160;&#160;&#160;(InstancePtr)-&gt;Stream.Frl.RateLock = FALSE</td></tr>
 <tr class="memdesc:adeff1a67ca25514ca8095cefbdb2a937"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro disables FRL Rate Lock.  <a href="#adeff1a67ca25514ca8095cefbdb2a937">More...</a><br/></td></tr>
 <tr class="separator:adeff1a67ca25514ca8095cefbdb2a937"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b99df30b0bf9c96608c0167750bbfb6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>XV_HdmiTx1_FrlActiveMode</b> </td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a835a33b58542988390ee91c443f6359d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359d">XV_HdmiTx1_FrlTrainingState</a> { <br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359dacd9d0355cd5368f0a7bb5a52032ddc0f">XV_HDMITX1_FRLSTATE_LTS_L</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da18f01a39b69d7e83798eddd44fe2ef36">XV_HDMITX1_FRLSTATE_LTS_1</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359dad85c4ec956e3588c7c58418b7a17e892">XV_HDMITX1_FRLSTATE_LTS_2</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da420d4cb835ab97462b3152d8a3bb9863">XV_HDMITX1_FRLSTATE_LTS_3_ARM</a>, 
+<br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da38a10a25ab5b09c35df19edd837e14c5">XV_HDMITX1_FRLSTATE_LTS_3</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da706fbc773b7963e5c9580150a001bf30">XV_HDMITX1_FRLSTATE_LTS_4</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359daabb9f58282792461caeac209a65e09ce">XV_HDMITX1_FRLSTATE_LTS_P_ARM</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da0e5f640157ee4f09a6c786d71272fdf2">XV_HDMITX1_FRLSTATE_LTS_P</a>, 
+<br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da5c3364011f03752ebb97241c7f170f84">XV_HDMITX1_FRLSTATE_LTS_P_FRL_RDY</a>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a835a33b58542988390ee91c443f6359d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This enumeration defines the various training states for the HDMI TX FRL link.  <a href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359d">More...</a><br/></td></tr>
+<tr class="separator:a835a33b58542988390ee91c443f6359d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd0877f78089682c46d57eb1012ba6e9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9">XV_HdmiTx1_FrlLtpType</a> { <br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a986cd1bc5dcff1a19e5ccd11dc51b782">XV_HDMITX1_LTP_NO_LTP</a> = 0, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9abcd4e4155ea31d3890898a6c9367d63f">XV_HDMITX1_LTP_ALL_ONES</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9adbd05e744a8dab78d6ff395ecb51030b">XV_HDMITX1_LTP_ALL_ZEROES</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9ab69c787ea3095c837ff2cdd92178576f">XV_HDMITX1_LTP_NYQUIST_CLOCK</a>, 
+<br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a483fb68ea5454b4cefd52fe3903d0191">XV_HDMITX1_LTP_TXDDE_COMPLIANCE</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a0c2af811836d8fd014882dde23951ab8">XV_HDMITX1_LTP_LFSR0</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a0313c6ed67c598835809768477b1f63a">XV_HDMITX1_LTP_LFSR1</a>, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a14eecb0a86d48eb996ea8071ad8856db">XV_HDMITX1_LTP_LFSR2</a>, 
+<br/>
+&#160;&#160;<a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a2bb7e96b44eb23962dc5f006996bad3c">XV_HDMITX1_LTP_LFSR3</a>
+<br/>
+ }</td></tr>
+<tr class="memdesc:afd0877f78089682c46d57eb1012ba6e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">This enumeration defines the possible Link Training Patterns (LTP) used by the HDMI TX FRL link.  <a href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9">More...</a><br/></td></tr>
+<tr class="separator:afd0877f78089682c46d57eb1012ba6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b99df30b0bf9c96608c0167750bbfb6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6">XV_HdmiTx1_FrlActiveMode</a> { <a class="el" href="xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a63b192ec1136617d40f54f343862e930">XV_HDMITX1_FRL_ACTIVE_MODE_GAP_ONLY</a> = 0, 
+<a class="el" href="xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a50d833ccc4376d8f1cc8ffbb8efb6ec1">XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM</a>
+ }</td></tr>
+<tr class="memdesc:a5b99df30b0bf9c96608c0167750bbfb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This enumeration defines the operational modes for the HDMI transmitter when using FRL.  <a href="xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6">More...</a><br/></td></tr>
 <tr class="separator:a5b99df30b0bf9c96608c0167750bbfb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -206,9 +233,9 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a>), \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a>))</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_aa5da06390a2ac2dc17a7581c3cc7f81a"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_CLR_OFFSET</div><div class="ttdoc">FRL Control Register Clear offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:571</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_a143c3655dacc300a41dac7cbe34c4ed7"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_IE_MASK</div><div class="ttdoc">FRL Control Interrupt Enable mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:600</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_aa5da06390a2ac2dc17a7581c3cc7f81a"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_CLR_OFFSET</div><div class="ttdoc">FRL Control Register Clear offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:569</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_a143c3655dacc300a41dac7cbe34c4ed7"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_IE_MASK</div><div class="ttdoc">FRL Control Interrupt Enable mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:598</div></div>
 </div><!-- fragment -->
 <p>This macro disables interrupt in the HDMI TX FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -240,9 +267,9 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a>), \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a>))</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_a143c3655dacc300a41dac7cbe34c4ed7"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_IE_MASK</div><div class="ttdoc">FRL Control Interrupt Enable mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:600</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae76270b448224670d8cd9615dbac2091"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_SET_OFFSET</div><div class="ttdoc">FRL Control Register Set offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:568</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_a143c3655dacc300a41dac7cbe34c4ed7"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a143c3655dacc300a41dac7cbe34c4ed7">XV_HDMITX1_FRL_CTRL_IE_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_IE_MASK</div><div class="ttdoc">FRL Control Interrupt Enable mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:598</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae76270b448224670d8cd9615dbac2091"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_SET_OFFSET</div><div class="ttdoc">FRL Control Register Set offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:566</div></div>
 </div><!-- fragment -->
 <p>This macro enables interrupt in the HDMI TX FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -328,9 +355,9 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a>), \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a>))</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_a796e498d647fa273f085bc9a561b32b0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_TST_RC_MASK</div><div class="ttdoc">FRL RC Compress mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:612</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae76270b448224670d8cd9615dbac2091"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_SET_OFFSET</div><div class="ttdoc">FRL Control Register Set offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:568</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_a796e498d647fa273f085bc9a561b32b0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_TST_RC_MASK</div><div class="ttdoc">FRL RC Compress mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:610</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae76270b448224670d8cd9615dbac2091"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae76270b448224670d8cd9615dbac2091">XV_HDMITX1_FRL_CTRL_SET_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_SET_OFFSET</div><div class="ttdoc">FRL Control Register Set offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:566</div></div>
 </div><!-- fragment -->
 <p>This macro disables repeat count in the packetizer (with RC compress) in the HDMI TX FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -360,9 +387,9 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line"><a class="code" href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a>((InstancePtr)-&gt;Config.BaseAddress, \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a>), \</div>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a>))</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_aa5da06390a2ac2dc17a7581c3cc7f81a"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_CLR_OFFSET</div><div class="ttdoc">FRL Control Register Clear offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:571</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_a796e498d647fa273f085bc9a561b32b0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_TST_RC_MASK</div><div class="ttdoc">FRL RC Compress mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:612</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_aa5da06390a2ac2dc17a7581c3cc7f81a"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#aa5da06390a2ac2dc17a7581c3cc7f81a">XV_HDMITX1_FRL_CTRL_CLR_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_CLR_OFFSET</div><div class="ttdoc">FRL Control Register Clear offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:569</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_a796e498d647fa273f085bc9a561b32b0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#a796e498d647fa273f085bc9a561b32b0">XV_HDMITX1_FRL_CTRL_TST_RC_MASK</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_CTRL_TST_RC_MASK</div><div class="ttdoc">FRL RC Compress mask. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:610</div></div>
 </div><!-- fragment -->
 <p>This macro enables repeat count in the packetizer (with RC compress) in the HDMI TX FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -404,8 +431,8 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#abcfb2ad0c96c0240bd2211dba81810d0">XV_HDMITX1_FRL_LNK_CLK_OFFSET</a>), \</div>
 <div class="line">                            (Value)); \</div>
 <div class="line">}</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_abcfb2ad0c96c0240bd2211dba81810d0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#abcfb2ad0c96c0240bd2211dba81810d0">XV_HDMITX1_FRL_LNK_CLK_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_LNK_CLK_OFFSET</div><div class="ttdoc">FRL Link Clock Register offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:580</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_abcfb2ad0c96c0240bd2211dba81810d0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#abcfb2ad0c96c0240bd2211dba81810d0">XV_HDMITX1_FRL_LNK_CLK_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_LNK_CLK_OFFSET</div><div class="ttdoc">FRL Link Clock Register offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:578</div></div>
 </div><!-- fragment -->
 <p>This macro sets the link clock of TX Core's FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -448,8 +475,8 @@ HDMI TX FRL Active Mode</h2></td></tr>
 <div class="line">                            (<a class="code" href="xv__hdmitx1__hw_8h.html#ae77246dd4776e8a41f7b92c093c4e1a0">XV_HDMITX1_FRL_VID_CLK_OFFSET</a>), \</div>
 <div class="line">                            (Value)); \</div>
 <div class="line">}</div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:763</div></div>
-<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae77246dd4776e8a41f7b92c093c4e1a0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae77246dd4776e8a41f7b92c093c4e1a0">XV_HDMITX1_FRL_VID_CLK_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_VID_CLK_OFFSET</div><div class="ttdoc">FRL Video Clock Register offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:583</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_af4ba16c8e4e0505aa1e7ea79d06eb2d4"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#af4ba16c8e4e0505aa1e7ea79d06eb2d4">XV_HdmiTx1_WriteReg</a></div><div class="ttdeci">#define XV_HdmiTx1_WriteReg(BaseAddress, RegOffset, Data)</div><div class="ttdoc">This macro writes a value to a HDMI TX register. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:761</div></div>
+<div class="ttc" id="xv__hdmitx1__hw_8h_html_ae77246dd4776e8a41f7b92c093c4e1a0"><div class="ttname"><a href="xv__hdmitx1__hw_8h.html#ae77246dd4776e8a41f7b92c093c4e1a0">XV_HDMITX1_FRL_VID_CLK_OFFSET</a></div><div class="ttdeci">#define XV_HDMITX1_FRL_VID_CLK_OFFSET</div><div class="ttdoc">FRL Video Clock Register offset. </div><div class="ttdef"><b>Definition:</b> xv_hdmitx1_hw.h:581</div></div>
 </div><!-- fragment -->
 <p>This macro sets the video clock of TX Core's FRL peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -461,6 +488,118 @@ HDMI TX FRL Active Mode</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>C-style signature: void <a class="el" href="xv__hdmitx1__frl_8h.html#a0d9362b70a136651d8c779620a25af58" title="This macro sets the video clock of TX Core&#39;s FRL peripheral. ">XV_HdmiTx1_SetFrlVidClock(XV_HdmiTx1 *InstancePtr, u16 Value)</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="a5b99df30b0bf9c96608c0167750bbfb6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6">XV_HdmiTx1_FrlActiveMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This enumeration defines the operational modes for the HDMI transmitter when using FRL. </p>
+<p>It indicates whether the transmitter is sending only gap sequences or the full HDMI stream including video, audio, and auxiliary data. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a5b99df30b0bf9c96608c0167750bbfb6a63b192ec1136617d40f54f343862e930"></a>XV_HDMITX1_FRL_ACTIVE_MODE_GAP_ONLY</em>&nbsp;</td><td class="fielddoc">
+<p>     *. </p>
+<p>Gap-only mode.      * Only FRL gap sequences are transmitted. No active video or audio data is sent.      </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a5b99df30b0bf9c96608c0167750bbfb6a50d833ccc4376d8f1cc8ffbb8efb6ec1"></a>XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM</em>&nbsp;</td><td class="fielddoc">
+<p>     *. </p>
+<p>Full stream mode.      * The full HDMI stream is transmitted over FRL, including video, audio, and auxiliary data.      </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9">XV_HdmiTx1_FrlLtpType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This enumeration defines the possible Link Training Patterns (LTP) used by the HDMI TX FRL link. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a986cd1bc5dcff1a19e5ccd11dc51b782"></a>XV_HDMITX1_LTP_NO_LTP</em>&nbsp;</td><td class="fielddoc">
+<p>No LTP pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9abcd4e4155ea31d3890898a6c9367d63f"></a>XV_HDMITX1_LTP_ALL_ONES</em>&nbsp;</td><td class="fielddoc">
+<p>All ones pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9adbd05e744a8dab78d6ff395ecb51030b"></a>XV_HDMITX1_LTP_ALL_ZEROES</em>&nbsp;</td><td class="fielddoc">
+<p>All zeroes pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9ab69c787ea3095c837ff2cdd92178576f"></a>XV_HDMITX1_LTP_NYQUIST_CLOCK</em>&nbsp;</td><td class="fielddoc">
+<p>Nyquist clock pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a483fb68ea5454b4cefd52fe3903d0191"></a>XV_HDMITX1_LTP_TXDDE_COMPLIANCE</em>&nbsp;</td><td class="fielddoc">
+<p>TXDDE compliance pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a0c2af811836d8fd014882dde23951ab8"></a>XV_HDMITX1_LTP_LFSR0</em>&nbsp;</td><td class="fielddoc">
+<p>LFSR0 pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a0313c6ed67c598835809768477b1f63a"></a>XV_HDMITX1_LTP_LFSR1</em>&nbsp;</td><td class="fielddoc">
+<p>LFSR1 pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a14eecb0a86d48eb996ea8071ad8856db"></a>XV_HDMITX1_LTP_LFSR2</em>&nbsp;</td><td class="fielddoc">
+<p>LFSR2 pattern. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="afd0877f78089682c46d57eb1012ba6e9a2bb7e96b44eb23962dc5f006996bad3c"></a>XV_HDMITX1_LTP_LFSR3</em>&nbsp;</td><td class="fielddoc">
+<p>LFSR3 pattern. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a class="anchor" id="a835a33b58542988390ee91c443f6359d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359d">XV_HdmiTx1_FrlTrainingState</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This enumeration defines the various training states for the HDMI TX FRL link. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359dacd9d0355cd5368f0a7bb5a52032ddc0f"></a>XV_HDMITX1_FRLSTATE_LTS_L</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:L. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da18f01a39b69d7e83798eddd44fe2ef36"></a>XV_HDMITX1_FRLSTATE_LTS_1</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:1. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359dad85c4ec956e3588c7c58418b7a17e892"></a>XV_HDMITX1_FRLSTATE_LTS_2</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:2. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da420d4cb835ab97462b3152d8a3bb9863"></a>XV_HDMITX1_FRLSTATE_LTS_3_ARM</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:3 (ARM) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da38a10a25ab5b09c35df19edd837e14c5"></a>XV_HDMITX1_FRLSTATE_LTS_3</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:3. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da706fbc773b7963e5c9580150a001bf30"></a>XV_HDMITX1_FRLSTATE_LTS_4</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:4. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359daabb9f58282792461caeac209a65e09ce"></a>XV_HDMITX1_FRLSTATE_LTS_P_ARM</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:P (Step 1) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da0e5f640157ee4f09a6c786d71272fdf2"></a>XV_HDMITX1_FRLSTATE_LTS_P</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:P. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a835a33b58542988390ee91c443f6359da5c3364011f03752ebb97241c7f170f84"></a>XV_HDMITX1_FRLSTATE_LTS_P_FRL_RDY</em>&nbsp;</td><td class="fielddoc">
+<p>LTS:P (FRL_START = 1) </p>
+</td></tr>
+</table>
 
 </div>
 </div>

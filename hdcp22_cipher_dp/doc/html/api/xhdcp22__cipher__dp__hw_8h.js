@@ -9,6 +9,7 @@ var xhdcp22__cipher__dp__hw_8h =
     [ "XHDCP22_CIPHER_REG_CTRL_LANE_CNT_BIT_POS", "xhdcp22__cipher__dp__hw_8h.html#gab5dee148b2f2a1a0fe878271ef7def20", null ],
     [ "XHDCP22_CIPHER_REG_CTRL_LANE_CNT_MASK", "xhdcp22__cipher__dp__hw_8h.html#gafd3521e0b63138e5f07ef22a55c1f529", null ],
     [ "XHDCP22_CIPHER_REG_CTRL_MODE_MASK", "xhdcp22__cipher__dp__hw_8h.html#gaf9999b5a4f4b113af9b79e583fd9a391", null ],
+    [ "XHDCP22_CIPHER_REG_CTRL_MST_BIT_POS", "xhdcp22__cipher__dp__hw_8h.html#ga1ad320e9f9daefb0a1b25a44eacb84a6", null ],
     [ "XHDCP22_CIPHER_REG_CTRL_NOISE_MASK", "xhdcp22__cipher__dp__hw_8h.html#ga89090e6ad57ea04fa92013b6dc1025f0", null ],
     [ "XHDCP22_CIPHER_REG_CTRL_OFFSET", "xhdcp22__cipher__dp__hw_8h.html#ga59baf4064cf447a8bc0991c8242f7221", null ],
     [ "XHDCP22_CIPHER_REG_CTRL_RUN_MASK", "xhdcp22__cipher__dp__hw_8h.html#ga242122ae1fa2499518f3e2d978190a10", null ],

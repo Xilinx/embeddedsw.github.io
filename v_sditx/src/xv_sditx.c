@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -303,9 +303,14 @@ u32 XV_SdiTx_SetStream(XV_SdiTx *InstancePtr, XV_SdiTx_StreamSelId SelId,
 		break;
 
 	case XV_SDITX_STREAMSELID_BPC:
-		Xil_AssertNonvoid((u32)Data == XVIDC_BPC_10);
+		Xil_AssertNonvoid(((u32)Data == XVIDC_BPC_8) ||
+				  ((u32)Data == XVIDC_BPC_10) ||
+				  ((u32)Data == XVIDC_BPC_12));
 
 		InstancePtr->Stream[StreamId].Video.ColorDepth = (u32)Data;
+		#ifdef XPAR_XV_SDITX_0_DBPC
+		XV_SdiTx_ConfigureDynamicBpc(InstancePtr);
+		#endif
 		break;
 
 	case XV_SDITX_STREAMSELID_PPC:
@@ -1002,7 +1007,11 @@ void XV_SdiTx_StreamStart(XV_SdiTx *InstancePtr)
 		(InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_RGB)) {
 			MuxPattern = XV_SDITX_MUX_4STREAM_6G;
 		} else if (InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_YCRCB_422) {
+			#ifdef XPAR_XV_SDITX_0_DBPC
+			MuxPattern = (InstancePtr->Stream[0].Video.ColorDepth == 10) ? XV_SDITX_MUX_8STREAM_6G_12G : XV_SDITX_MUX_4STREAM_6G;
+			#else
 			MuxPattern = (InstancePtr->bitdepth == 10) ? XV_SDITX_MUX_8STREAM_6G_12G : XV_SDITX_MUX_4STREAM_6G;
+			#endif
 		} else {
 			MuxPattern = XV_SDITX_MUX_8STREAM_6G_12G;
 		}
@@ -1015,6 +1024,14 @@ void XV_SdiTx_StreamStart(XV_SdiTx *InstancePtr)
 	default:
 		MuxPattern = 0;
 		break;
+	}
+
+	if ((InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_YCRCB_444) ||
+		(InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_RGB) ||
+		(InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_MEM_YUVX10)) {
+			XV_SdiTx_SetYCbCr444_RGB_10bit(InstancePtr);
+	} else if (InstancePtr->Stream[0].Video.ColorFormatId == XVIDC_CSF_YCRCB_422) {
+			XV_SdiTx_ClearYCbCr444_RGB_10bit(InstancePtr);
 	}
 
 #ifndef versal
@@ -1043,6 +1060,15 @@ void XV_SdiTx_StreamStart(XV_SdiTx *InstancePtr)
 					MuxPattern);
 	}
 #endif
+	/*
+	 * Dynamic BPC Configuration in SDI Tx.
+	 * Note: Pass throgh app directly passing the structure.
+	 * to make application to work seemlessly adding the Dynamic
+	 * configuration in below.
+	 */
+	#ifdef XPAR_XV_SDITX_0_DBPC
+	XV_SdiTx_ConfigureDynamicBpc(InstancePtr);
+	#endif
 
 	InstancePtr->State = XV_SDITX_STATE_GTRESETDONE_NORMAL;
 	XV_SdiTx_StartSdi(InstancePtr, InstancePtr->Transport.TMode,
@@ -1666,7 +1692,7 @@ void XV_SdiTx_ClearYCbCr444_RGB_10bit(XV_SdiTx *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function sets the video bit depth of SDI-TX
+* This function sets the video bit depth of SDI-TX and configures dynamic BPC support
 *
 * @param	InstancePtr is a pointer to the XV_SdiTx core instance.
 *
@@ -1680,4 +1706,39 @@ void XV_SdiTx_Set_Bpc(XV_SdiTx *InstancePtr, XVidC_ColorDepth bitdepth)
 	Xil_AssertVoid(InstancePtr != NULL);
 
 	InstancePtr->bitdepth = bitdepth;
+
+	/* The Dynamic BPC support in SDI Tx IP */
+	#ifdef XPAR_XV_SDITX_0_DBPC
+	XV_SdiTx_ConfigureDynamicBpc(InstancePtr);
+	#endif
 }
+#ifdef XPAR_XV_SDITX_0_DBPC
+/*****************************************************************************/
+/**
+*
+* This function configures dynamic BPC support based on the color depth
+* information from the stream configuration.
+*
+* @param	InstancePtr is a pointer to the XV_SdiTx core instance.
+* @param	StreamId is the stream ID for which to configure dynamic BPC.
+*
+* @return	None.
+*
+* @note     This function implements dynamic BPC similar to SDI RX implementation.
+*
+******************************************************************************/
+void XV_SdiTx_ConfigureDynamicBpc(XV_SdiTx *InstancePtr)
+{
+	u32 regval = 0;
+	regval = XV_SdiTx_ReadReg(InstancePtr->Config.BaseAddress, XV_SDITX_MDL_CTRL_OFFSET);
+	/* Clear bits 27:26 */
+	regval &= ~(0x3 << XV_SDITX_MDL_CTRL_DYNAMIC_BPC_SHIFT);
+	if (InstancePtr->Stream[0].Video.ColorDepth == XVIDC_BPC_8 ||
+	    InstancePtr->Stream[0].Video.ColorDepth == XVIDC_BPC_10) {
+	    regval |= (0x1 << XV_SDITX_MDL_CTRL_DYNAMIC_BPC_SHIFT);
+	} else if (InstancePtr->Stream[0].Video.ColorDepth == XVIDC_BPC_12) {
+		regval |= (0x2 << XV_SDITX_MDL_CTRL_DYNAMIC_BPC_SHIFT);
+	}
+	XV_SdiTx_WriteReg((InstancePtr)->Config.BaseAddress, XV_SDITX_MDL_CTRL_OFFSET, regval);
+}
+#endif

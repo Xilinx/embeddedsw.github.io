@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  *****************************************************************************/
 
@@ -20,6 +20,7 @@
  * 1.0   rb   28/03/18 First release
  * 1.5   vak  13/02/19 Added support for versal
  * 1.5   vak  03/25/19 Fixed incorrect data_alignment pragma directive for IAR
+ * 1.18  ka   08/21/25 Fixed GCC warnings
  *
  *</pre>
  *****************************************************************************/
@@ -88,7 +89,7 @@ static u8 BufferPtrTemp[1024];
 #endif
 const static SCSI_INQUIRY scsiInquiry[] = {
 #else
-const static SCSI_INQUIRY scsiInquiry[] ALIGNMENT_CACHELINE = {
+static const SCSI_INQUIRY scsiInquiry[] ALIGNMENT_CACHELINE = {
 #endif
 	{
 		0x00,
@@ -168,7 +169,9 @@ s32 Usb_DfuSetState(struct dfu_if *DFU, u8 dfu_state)
 				 */
 				DFU->runtime_to_dfu = 1;
 
-				/* fall through */
+				DFU->curr_state = STATE_DFU_IDLE;
+				DFU->next_state = STATE_DFU_DOWNLOAD_SYNC;
+				break;
 			} else if (DFU->curr_state == STATE_DFU_IDLE) {
 #ifdef DFU_DEBUG
 				xil_printf("Waiting for USB reset to"
@@ -227,6 +230,7 @@ stall:
 ******************************************************************************/
 void USB_DfuSetDwloadState(struct dfu_if *DFU, u8 *status)
 {
+	(void)status;
 
 	if (DFU->got_dnload_rqst != 1) {
 		return;
@@ -792,6 +796,7 @@ static void Usb_DfuClassReq(struct Usb_DevData *InstancePtr, SetupPacket *SetupD
 				StopTransfer(InstancePtr->PrivateData, 0, USB_EP_DIR_OUT);
 				Usb_DfuSetState(dfu, STATE_DFU_IDLE);
 			}
+			break;
 		default:
 
 			/* Unsupported command. Stall the end point. */

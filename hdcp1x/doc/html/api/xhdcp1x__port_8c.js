@@ -8,5 +8,6 @@ var xhdcp1x__port_8c =
     [ "XHdcp1x_PortIsRepeater", "xhdcp1x__port_8c.html#ga41b5285a790690159dece6baa5afadf9", null ],
     [ "XHdcp1x_PortRead", "xhdcp1x__port_8c.html#ga6e36b9c8a021600e2c9e3766f94b6dc7", null ],
     [ "XHdcp1x_PortSetRepeater", "xhdcp1x__port_8c.html#ga4ddc37a110b704b91553dea3646d18e2", null ],
-    [ "XHdcp1x_PortWrite", "xhdcp1x__port_8c.html#ga46da74febe033d53ef2420d318fd63b9", null ]
+    [ "XHdcp1x_PortWrite", "xhdcp1x__port_8c.html#ga46da74febe033d53ef2420d318fd63b9", null ],
+    [ "XHdcp1x_SetEcfSlots", "xhdcp1x__port_8c.html#gabaa138ac8e69b6b515fc1abf6cf0b83d", null ]
 ];

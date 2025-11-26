@@ -37,8 +37,8 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 #define SEC_TO_MSEC		1000000U
-#define XUFSPSXC_HSG1A_MIN_BPS		157286400U
-#define XUFSPSXC_HSG1B_MIN_BPS		188743680U
+#define XUFSPSXC_HSG1A_MIN_BPS		78643200U
+#define XUFSPSXC_HSG1B_MIN_BPS		83886080U
 #define XUFSPSXC_PWMG1_MIN_BPS		393216U
 /************************** Function Prototypes ******************************/
 
@@ -557,7 +557,7 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 	}
 
 	if ((u8)(InstancePtr->PowerMode >> 8U) == XUFSPSXC_TX_RX_FAST) {
-		if ((u8)(InstancePtr->PowerMode >> 8U) == XUFSPSXC_HSSERIES_A) {
+		if ((u8)(InstancePtr->PowerMode >> 16U) == XUFSPSXC_HSSERIES_A) {
 			MinBytes = XUFSPSXC_HSG1A_MIN_BPS;
 		} else {
 			MinBytes = XUFSPSXC_HSG1B_MIN_BPS;
@@ -566,8 +566,7 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 		MinBytes = XUFSPSXC_PWMG1_MIN_BPS;
 	}
 
-	MinBytes = (MinBytes << ((u8)InstancePtr->PowerMode - 1U));
-	TimeOut = ((u32)(CmdDescPtr->ReqUpiu.CmdUpiu.ExpDataXferLen / MinBytes) * SEC_TO_MSEC) + (5U * SEC_TO_MSEC);
+	TimeOut = ((u32)(Xil_EndianSwap32(CmdDescPtr->ReqUpiu.CmdUpiu.ExpDataXferLen) / MinBytes) * SEC_TO_MSEC) + (5U * SEC_TO_MSEC);
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
 		Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.UpiuHeader, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.UpiuHeader));
@@ -575,7 +574,7 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.NopOutUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.NopOutUpiu));
 		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_CMD_UPIU_TRANS_CODE) {
 			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.CmdUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.CmdUpiu));
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->Prdt, (INTPTR)sizeof(CmdDescPtr->Prdt) * (INTPTR)XUFSPSXC_PRDT_ENTRIES);
+			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->Prdt, (INTPTR)sizeof(CmdDescPtr->Prdt));
 		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_QRY_UPIU_TRANS_CODE) {
 			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.QueryReqUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.QueryReqUpiu));
 			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.QueryReqUpiu.Tsf, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.QueryReqUpiu.Tsf));
@@ -777,6 +776,75 @@ u32 XUfsPsxc_PhyInit(const XUfsPsxc *InstancePtr)
 	Status = XUfsPsxc_EnableMPhy(InstancePtr);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
 		goto ERROR;
+	}
+
+ERROR:
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* This API Overrides the PHY rx_req.
+*
+* @param	InstancePtr is a pointer to the XUfsPsxc instance.
+* @param	RxReq indicates PHY should be receiver mode or not
+* @param	NumLanes indicates Number of connected lanes
+*
+* @return	XUFSPSXC_SUCCESS or Error codes.
+*
+******************************************************************************/
+u32 XUfsPsxc_OverridePhyRxReq(const XUfsPsxc *InstancePtr, u32 RxReq, u32 NumLanes)
+{
+	XUfsPsxc_UicCmd UicCmd = {0};
+	volatile u32 Status = (u32)XUFSPSXC_FAILURE;
+	u32 TimeLeft;
+	u32 ReadReg;
+	u32 Lane;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* Override PHY rx_req for each connected lane */
+	for (Lane = 0U; Lane < NumLanes; Lane++) {
+		TimeLeft = 1000000U;
+		Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, (0x3006U + (Lane * 0x100U)), &ReadReg);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
+			goto ERROR;
+		}
+
+		ReadReg |= 0x8U; /* Enable PHY RX Override */
+		if (RxReq) {
+			ReadReg |= 0x4U; /* Set MPHY_RX_OVRD_VAL */
+		} else {
+			ReadReg &= ~0x4U; /* Clear MPHY_RX_OVRD_VAL */
+		}
+
+		Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, (0x3006U + (Lane * 0x100U)), ReadReg);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
+			goto ERROR;
+		}
+
+		/* Poll PHY rx_ack for the current connected lane */
+		do {
+			Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, (0x300FU + (Lane * 0x100U)), &ReadReg);
+			if (Status != (u32)XUFSPSXC_SUCCESS) {
+				goto ERROR;
+			}
+
+			/* check MPHY_RX_ACK_MASK */
+			ReadReg &= 0x1U;
+			if (ReadReg == RxReq) {
+				break;
+			}
+
+			TimeLeft--;
+			usleep(1);
+		} while (TimeLeft != 0U);
+
+		if (TimeLeft == 0U) {
+			Status = (u32)XUFSPSXC_FAILURE;
+			goto ERROR;
+		}
 	}
 
 ERROR:

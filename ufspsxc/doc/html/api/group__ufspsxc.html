@@ -201,6 +201,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga46c30f50e646ad1e1a080ef88b80eb70"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ufspsxc.html#ga46c30f50e646ad1e1a080ef88b80eb70">XUfsPsxc_EnableMPhy</a> (const <a class="el" href="struct_x_ufs_psxc.html">XUfsPsxc</a> *InstancePtr)</td></tr>
 <tr class="memdesc:ga46c30f50e646ad1e1a080ef88b80eb70"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API enable the MPHY and wait for Rx/Tx busy de-assertion.  <a href="#ga46c30f50e646ad1e1a080ef88b80eb70">More...</a><br/></td></tr>
 <tr class="separator:ga46c30f50e646ad1e1a080ef88b80eb70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga16fd74d7320f10b5240412d467ff82c6"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ufspsxc.html#ga16fd74d7320f10b5240412d467ff82c6">XUfsPsxc_OverridePhyRxReq</a> (const <a class="el" href="struct_x_ufs_psxc.html">XUfsPsxc</a> *InstancePtr, u32 RxReq, u32 NumLanes)</td></tr>
+<tr class="memdesc:ga16fd74d7320f10b5240412d467ff82c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API Overrides the PHY rx_req.  <a href="#ga16fd74d7320f10b5240412d467ff82c6">More...</a><br/></td></tr>
+<tr class="separator:ga16fd74d7320f10b5240412d467ff82c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9d5217db85b9198686faa9f2dabd07b4"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ufspsxc.html#ga9d5217db85b9198686faa9f2dabd07b4">XUfsPsxc_ConfigureTxRxAttributes</a> (const <a class="el" href="struct_x_ufs_psxc.html">XUfsPsxc</a> *InstancePtr, u32 SpeedGear, u32 RxTermCap, u32 TxTermCap)</td></tr>
 <tr class="memdesc:ga9d5217db85b9198686faa9f2dabd07b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">This API Configures the Tx/Rx Attributes.  <a href="#ga9d5217db85b9198686faa9f2dabd07b4">More...</a><br/></td></tr>
 <tr class="separator:ga9d5217db85b9198686faa9f2dabd07b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -537,7 +540,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XUFSPSXC_SUCCESS or Error codes. </dd></dl>
 
-<p>References <a class="el" href="group__ufspsxc.html#ga3466d6c88ad459aef56d2d686ff077c8">XUfsPsxc_SendUICCmd()</a>.</p>
+<p>References <a class="el" href="group__ufspsxc.html#ga16fd74d7320f10b5240412d467ff82c6">XUfsPsxc_OverridePhyRxReq()</a>, <a class="el" href="group__ufspsxc.html#ga35add787c05c073b7b1a404d54425f78">XUfsPsxc_ReadPhyReg()</a>, <a class="el" href="group__ufspsxc.html#ga3466d6c88ad459aef56d2d686ff077c8">XUfsPsxc_SendUICCmd()</a>, and <a class="el" href="group__ufspsxc.html#ga506adfb0eda2bedee784c7abee535397">XUfsPsxc_WritePhyReg()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__ufspsxc.html#ga76dd7620ac6f336d4a9aaa5108e009d6">XUfsPsxc_ConfigureSpeedGear()</a>.</p>
 
@@ -1064,6 +1067,53 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga16fd74d7320f10b5240412d467ff82c6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XUfsPsxc_OverridePhyRxReq </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_x_ufs_psxc.html">XUfsPsxc</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>RxReq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>NumLanes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This API Overrides the PHY rx_req. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_ufs_psxc.html" title="The XUfsPsxc driver instance data. ">XUfsPsxc</a> instance. </td></tr>
+    <tr><td class="paramname">RxReq</td><td>indicates PHY should be receiver mode or not </td></tr>
+    <tr><td class="paramname">NumLanes</td><td>indicates Number of connected lanes</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>XUFSPSXC_SUCCESS or Error codes. </dd></dl>
+
+<p>References <a class="el" href="group__ufspsxc.html#ga35add787c05c073b7b1a404d54425f78">XUfsPsxc_ReadPhyReg()</a>, and <a class="el" href="group__ufspsxc.html#ga506adfb0eda2bedee784c7abee535397">XUfsPsxc_WritePhyReg()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ufspsxc.html#ga9d5217db85b9198686faa9f2dabd07b4">XUfsPsxc_ConfigureTxRxAttributes()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga2c5da410d2eefa54129eb56efb13bc3f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1224,7 +1274,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="group__ufspsxc.html#ga3466d6c88ad459aef56d2d686ff077c8">XUfsPsxc_SendUICCmd()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ufspsxc.html#ga2c5da410d2eefa54129eb56efb13bc3f">XUfsPsxc_PhyInit()</a>.</p>
+<p>Referenced by <a class="el" href="group__ufspsxc.html#ga9d5217db85b9198686faa9f2dabd07b4">XUfsPsxc_ConfigureTxRxAttributes()</a>, <a class="el" href="group__ufspsxc.html#ga16fd74d7320f10b5240412d467ff82c6">XUfsPsxc_OverridePhyRxReq()</a>, and <a class="el" href="group__ufspsxc.html#ga2c5da410d2eefa54129eb56efb13bc3f">XUfsPsxc_PhyInit()</a>.</p>
 
 </div>
 </div>
@@ -1513,7 +1563,7 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="group__ufspsxc.html#ga3466d6c88ad459aef56d2d686ff077c8">XUfsPsxc_SendUICCmd()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ufspsxc.html#ga2c5da410d2eefa54129eb56efb13bc3f">XUfsPsxc_PhyInit()</a>.</p>
+<p>Referenced by <a class="el" href="group__ufspsxc.html#ga9d5217db85b9198686faa9f2dabd07b4">XUfsPsxc_ConfigureTxRxAttributes()</a>, <a class="el" href="group__ufspsxc.html#ga16fd74d7320f10b5240412d467ff82c6">XUfsPsxc_OverridePhyRxReq()</a>, and <a class="el" href="group__ufspsxc.html#ga2c5da410d2eefa54129eb56efb13bc3f">XUfsPsxc_PhyInit()</a>.</p>
 
 </div>
 </div>

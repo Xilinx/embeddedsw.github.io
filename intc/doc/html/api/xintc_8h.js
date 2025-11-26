@@ -3,6 +3,7 @@ var xintc_8h =
     [ "XIN_REAL_MODE", "xintc_8h.html#ga56b4aa3cb483ea5c882e2e36a4800af2", null ],
     [ "XIN_SIMULATION_MODE", "xintc_8h.html#gaefd5527cecdc1a6444b624d1e1a2514f", null ],
     [ "XIN_SVC_SGL_ISR_OPTION", "xintc_8h.html#gaf4bce8e2035f391b702686e49c66c839", null ],
+    [ "LookupConfigByBaseAddress", "xintc_8h.html#gaf8c9b9342d3f4190fe131c29765a1e02", null ],
     [ "XIntc_Acknowledge", "xintc_8h.html#ga8604653ac3a24bbb49c5fecb6a9ebfc7", null ],
     [ "XIntc_Connect", "xintc_8h.html#gaee9ec5873a764994d64b4da35a110084", null ],
     [ "XIntc_ConnectFastHandler", "xintc_8h.html#ga24a344d15b12b8acd82cd4c49a020d74", null ],

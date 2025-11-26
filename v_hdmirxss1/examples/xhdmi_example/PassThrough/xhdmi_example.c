@@ -950,6 +950,14 @@ u32 Exdes_SysTmrInitialize(XHdmi_Exdes *InstancePtr, u32 TmrBaseAddr)
 	XIntc_Enable(InstancePtr->hdmi_tx_ctlr->Intc, TmrIntrId);
 #endif
 #endif
+#else
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES)
+	Status = XSetupInterruptSystem(InstancePtr,
+				       Exdes_SysTimerIntrHandler,
+				       InstancePtr->SysTmrInst.Config.IntrId,
+				       InstancePtr->SysTmrInst.Config.IntrParent,
+				       XINTERRUPT_DEFAULT_PRIORITY);
+#endif
 #endif
 	return Status;
 }
@@ -2460,21 +2468,28 @@ void Exdes_AcrConvCfg_Passthru()
 	u8 TxRate = 0;
 	u8 RxRate = 0;
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	RxTransportIsFrl = HdmiRxSs.HdmiRx1Ptr->Stream.IsFrl;
 	TxTransportIsFrl = HdmiTxSs.HdmiTx1Ptr->Stream.IsFrl;
-
+#else
+	RxTransportIsFrl = 0;
+	TxTransportIsFrl = 0;
+#endif
 	/* RX Mode */
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	if (RxTransportIsFrl == TRUE) {
 		XhdmiACRCtrl_RxMode(&AudioGen, ACR_FRL_MODE);
 		AudSampFreq =
 			XV_Rx_GetFrlAudSampFreq(&xhdmi_example_rx_controller);
 		RxRate = HdmiRxSs.HdmiRx1Ptr->Stream.Frl.LineRate;
 	} else {
+#endif
 		XhdmiACRCtrl_RxMode(&AudioGen, ACR_TMDS_MODE);
 		AudSampFreq =
 			XV_Rx_GetTmdsAudSampFreq(&xhdmi_example_rx_controller);
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	}
-
+#endif
 	/* TX Mode */
 	if (TxTransportIsFrl == TRUE) {
 		XhdmiACRCtrl_TxMode(&AudioGen, ACR_FRL_MODE);
@@ -3446,24 +3461,44 @@ void CloneTxEdid(void)
 {
 #ifdef XPAR_XV_HDMIRXSS1_NUM_INSTANCES
 	u8 Buffer[XV_HdmiRx1_DdcGetEdidWords(&HdmiRxSs)];
+	XV_VidC_EdidCntrlParam EdidCtrlParam;
 	u32 Status;
+	u32 TotalEdidSize = 0;
 
-	/* Read TX edid */
-	Status = XV_HdmiTxSs1_ReadEdid(&HdmiTxSs, (u8*)&Buffer, sizeof(Buffer));
+	/* Initialize EDID control parameter structure */
+	XV_VidC_EdidCtrlParamInit(&EdidCtrlParam);
+
+	/* Read TX EDID using optimized extension function with raw buffer support */
+	Status = XV_HdmiTxSs1_ReadEdid_extension(&HdmiTxSs, &EdidCtrlParam,
+						 (u8*)&Buffer, sizeof(Buffer));
 
 	/* Check if read was successful */
 	if (Status == (XST_SUCCESS)) {
-		/* Load new EDID */
-		XV_HdmiRxSs1_LoadEdid(&HdmiRxSs, (u8*)&Buffer, sizeof(Buffer));
+		/* Calculate total EDID size: base block (128) + extensions (128 each) */
+		TotalEdidSize = 128 + (EdidCtrlParam.Extensions * 128);
 
-		/* Toggle HPD after loading new HPD */
+		/* Ensure the total size doesn't exceed our buffer */
+		if (TotalEdidSize > sizeof(Buffer)) {
+			TotalEdidSize = sizeof(Buffer);
+			xil_printf("Warning: EDID size truncated to fit buffer.\r\n");
+		}
+
+		/* Load new EDID using the raw buffer data from the extension function */
+		XV_HdmiRxSs1_LoadEdid(&HdmiRxSs, (u8*)&Buffer, TotalEdidSize);
+
+		/* Toggle HPD after loading new EDID */
 		ToggleHdmiRxHpd(&Hdmiphy1, &HdmiRxSs);
 
 		xil_printf("\r\n");
-		xil_printf("Successfully cloned EDID and toggled HPD.\r\n");
+		xil_printf("Successfully cloned EDID\r\n");
+		xil_printf("EDID Info: %s, Extensions: %d, Total Size: %d bytes\r\n",
+			   (EdidCtrlParam.IsHdmi == XVIDC_ISHDMI) ? "HDMI" : "DVI",
+			   EdidCtrlParam.Extensions, TotalEdidSize);
+	} else {
+		xil_printf("Error: Failed to read EDID using extension function.\r\n");
 	}
 #else
-	xil_printf("\r\nEdid Cloning no possible with HDMI RX SS.\r\n");
+	xil_printf("\r\nEdid Cloning not possible with HDMI RX SS.\r\n");
 #endif
 }
 
@@ -3886,12 +3921,13 @@ int I2cClk(u32 InFreq, u32 OutFreq)
 ******************************************************************************/
 void XV_ReportDynamicHDR(void)
 {
+	u8 pktype = 0;
     xil_printf("\r\n");
     xil_printf("Dynamic HDR \r\n");
     xil_printf("------------\r\n");
-
+    pktype = (RX_DynHDR_Info.pkt_type<7)?RX_DynHDR_Info.pkt_type:0;
 	xil_printf("Packet type: 0x%x (%s) \r\n",RX_DynHDR_Info.pkt_type,
-			Dynamic_hdr_type[RX_DynHDR_Info.pkt_type]);
+			Dynamic_hdr_type[pktype]);
 	xil_printf("Packet Length: 0x%x \r\n",RX_DynHDR_Info.pkt_length);
 	xil_printf("Graphics Overlay Flag: 0x%x \r\n",RX_DynHDR_Info.gof);
 	xil_printf("Packet Error: 0x%x \r\n",RX_DynHDR_Info.err);
@@ -4021,6 +4057,13 @@ void DetailedInfo(void)
 	xil_printf("AuxFifo Overflow Count: %d\r\n", AuxFifoOvrFlowCnt);
 #endif
 #if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES)
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
+	/* Get the ratio and print. */
+	ActivePixFRLRatio = XV_HdmiRx1_GetFrlActivePixRatio(HdmiRxSs.HdmiRx1Ptr);
+	TotalPixFRLRatio  = XV_HdmiRx1_GetFrlTotalPixRatio(HdmiRxSs.HdmiRx1Ptr);
+	xil_printf ("ActivePixFRLRatio ,%d\r\n", ActivePixFRLRatio);
+	xil_printf ("TotalPixFRLRatio ,%d\r\n", TotalPixFRLRatio);
+#endif
 	xil_printf("AuxCounter: %d\r\n", AuxCounter);
 	AuxCounter = 0;
 #endif
@@ -4032,11 +4075,13 @@ void DetailedInfo(void)
 	AuxHwFullCounter = 0;
 #endif
 #if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES)
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	/* Get the ratio and print. */
 	ActivePixFRLRatio = XV_HdmiRx1_GetFrlActivePixRatio(HdmiRxSs.HdmiRx1Ptr);
 	TotalPixFRLRatio  = XV_HdmiRx1_GetFrlTotalPixRatio(HdmiRxSs.HdmiRx1Ptr);
 	xil_printf ("ActivePixFRLRatio ,%d\r\n", ActivePixFRLRatio);
 	xil_printf ("TotalPixFRLRatio ,%d\r\n", TotalPixFRLRatio);
+#endif
 #endif
 	xil_printf("------------\r\n");
 	xil_printf("Bridge Status\r\n");
@@ -4502,6 +4547,7 @@ void XV_Tx_HdmiTrigCb_GetFRLClk(void *InstancePtr)
 	u32 ActivePixFRLRatio;
 	u32 HdmiTxRefClkHz;
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	if ((xhdmi_exdes_ctrlr.ForceIndependent == FALSE) && IsRx && IsTx) {
 		ActivePixFRLRatio =
 			XV_HdmiRx1_GetFrlActivePixRatio(HdmiRxSs.HdmiRx1Ptr) / 1000;
@@ -4525,6 +4571,7 @@ void XV_Tx_HdmiTrigCb_GetFRLClk(void *InstancePtr)
 
 		XV_TxInst->VidPhy->HdmiTxRefClkHz = HdmiTxRefClkHz;
 	}
+	#endif
 #endif
 }
 
@@ -4834,12 +4881,14 @@ void XV_Tx_HdmiTrigCb_StreamOn(void *InstancePtr)
 		xil_printf("\tTX     Mode:              TMDS\r\n");
 	}
 #if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES)
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	if ((HdmiRxSs.HdmiRx1Ptr->Stream.IsFrl == TRUE) &&
 		(IsRx && IsTx) && (xhdmi_exdes_ctrlr.ForceIndependent == FALSE)) {
 		xil_printf("\tRX FRL Rate:              %d lanes @ %d Gbps\r\n",
 				HdmiRxSs.HdmiRx1Ptr->Stream.Frl.Lanes,
 				HdmiRxSs.HdmiRx1Ptr->Stream.Frl.LineRate);
 	}
+#endif
 #endif
 	xil_printf("--------\r\n");
 
@@ -5526,11 +5575,13 @@ void XV_Rx_HdmiTrigCb_StreamOn(void *InstancePtr)
 
 	if (PrintRxInfo == TRUE) {
 		XVidC_ReportStreamInfo(HdmiRxSsVidStreamPtr);
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 		if (HdmiRxSs.HdmiRx1Ptr->Stream.IsFrl == TRUE) {
 			xil_printf("\tRX FRL Rate:              %d lanes @ %d Gbps\r\n",
 					HdmiRxSs.HdmiRx1Ptr->Stream.Frl.Lanes,
 					HdmiRxSs.HdmiRx1Ptr->Stream.Frl.LineRate);
 		}
+#endif
 		xil_printf("--------\r\n");
 	}
 #if (VRR_MODE ==1) // Manual Mode
@@ -5826,16 +5877,20 @@ void XV_Rx_HdmiTrigCb_StreamOff(void *InstancePtr)
 ******************************************************************************/
 void XV_Rx_HdmiTrigCb_VfmcDataClkSel(void *InstancePtr)
 {
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl ==
 	    TRUE) {
 		EXDES_DBG_PRINT("sysEventDebug:%s  FRL Mode -> RX Ch4 as Data\r\n",
 				__func__);
 		Vfmc_Gpio_Ch4_DataClock_Sel(&Vfmc[0], VFMC_GPIO_RX_CH4_As_Data);
 	} else {
+#endif
 		EXDES_DBG_PRINT("sysEventDebug:%s: TMDS/DVI Mode -> RX "
 				"Ch4 as Clock\r\n", __func__);
 		Vfmc_Gpio_Ch4_DataClock_Sel(&Vfmc[0], VFMC_GPIO_RX_CH4_As_Clock);
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	}
+#endif
 }
 
 /*****************************************************************************/
@@ -5855,31 +5910,39 @@ void XV_Rx_HdmiTrigCb_VfmcRxClkSel(void *InstancePtr)
 
 	XV_Rx *XV_RxInst = (XV_Rx *)InstancePtr;
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	u64 LineRate =
 		((u64)(XV_RxInst->HdmiRxSs->HdmiRx1Ptr->Stream.Frl.LineRate)) *
 			((u64)(1e9));
 
 	u8 Lanes = XV_RxInst->HdmiRxSs->HdmiRx1Ptr->Stream.Frl.Lanes;
-
-	if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl ==
-	    TRUE) {
-#if !(defined (XPS_BOARD_VEK280) || \
-	defined (XPS_BOARD_VEK385))
-		Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0],
-			VFMC_MEZZ_RxRefclk_From_Si5344);
-		XHdmiphy1_ClkDetFreqReset(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
+#else
+	u64 LineRate = 0;
+	u8 Lanes = 0;
 #endif
 
-		Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 1, LineRate, Lanes);
-	} else if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->
-			Stream.IsFrl == FALSE) {
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
+	if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl == TRUE) {
 #if !(defined (XPS_BOARD_VEK280) || \
 	defined (XPS_BOARD_VEK385))
-		Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0],
-			VFMC_MEZZ_RxRefclk_From_Cable);
+		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Si5344);
+		 XHdmiphy1_ClkDetFreqReset(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
 #endif
-		Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 0, LineRate, Lanes);
+		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 1, LineRate, Lanes);
+	} else if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl == FALSE) {
+#if !(defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385))
+		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Cable);
+#endif
+		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 0, LineRate, Lanes);
 	}
+#else
+#if !(defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385))
+		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Cable);
+#endif
+		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 0, LineRate, Lanes);
+#endif
 }
 #endif /* XPAR_XV_HDMIRXSS1_NUM_INSTANCES */
 
@@ -6676,8 +6739,14 @@ u32 Exdes_AxisSwitchInitialize(XAxis_Switch *AxisSwitchPtr,u32 baseaddr)
 	Status = XAxisScr_CfgInitialize(AxisSwitchPtr, AxisSwitchConfigPtr,
 					AxisSwitchConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
+#ifndef SDT
 		xil_printf("ERR:: AXIS Stream Switch \r\n "
-				"Initialization failed for Device ID:%d,Status:\r\n",deviceid,Status);
+                   "Initialization failed for Device ID: %d, Status: %d\r\n", deviceid, Status);
+#else
+		xil_printf("ERR:: AXIS Stream Switch \r\n "
+                   "Initialization failed for Base Address: 0x%08x, Status: %d\r\n", baseaddr, Status);
+#endif
+
 		return (XST_FAILURE);
 	}
 	return Status;
@@ -7121,12 +7190,14 @@ int main()
 	/* Set the default Link Training Patterns to be requested by RX
 	 * during FRL Link Training
 	 */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	XV_HdmiRx1_FrlLtp DefaultLtp;
 	DefaultLtp.Byte[0] = XV_HDMIRX1_LTP_LFSR0;
 	DefaultLtp.Byte[1] = XV_HDMIRX1_LTP_LFSR1;
 	DefaultLtp.Byte[2] = XV_HDMIRX1_LTP_LFSR2;
 	DefaultLtp.Byte[3] = XV_HDMIRX1_LTP_LFSR3;
 	XV_HdmiRxSs1_FrlModeEnable(&HdmiRxSs, 150, DefaultLtp, TRUE);
+#endif
 #endif
 #if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES)
 	/* Set the data and clock selection on channel 4

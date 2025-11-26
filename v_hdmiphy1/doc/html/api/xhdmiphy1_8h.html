@@ -62,6 +62,7 @@ $(document).ready(function(){initNavTree('xhdmiphy1_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -96,6 +97,36 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="struct_x_hdmiphy1.html" title="The XHdmiphy1 driver instance data. ">XHdmiphy1</a> driver instance data.  <a href="struct_x_hdmiphy1.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ga69ae1625b41480778aa00b6b7f40f9cb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga69ae1625b41480778aa00b6b7f40f9cb">XHDMIPHY1_CH2IDX</a>(Id)&#160;&#160;&#160;((Id) - XHDMIPHY1_CHANNEL_ID_CH1)</td></tr>
+<tr class="memdesc:ga69ae1625b41480778aa00b6b7f40f9cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert channel ID to array index.  <a href="group__xhdmiphy1.html#ga69ae1625b41480778aa00b6b7f40f9cb">More...</a><br/></td></tr>
+<tr class="separator:ga69ae1625b41480778aa00b6b7f40f9cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0c19278d1c72339ecef013ff01dd9400"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga0c19278d1c72339ecef013ff01dd9400">XHDMIPHY1_ISCH</a>(Id)</td></tr>
+<tr class="memdesc:ga0c19278d1c72339ecef013ff01dd9400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if channel ID is a regular channel.  <a href="group__xhdmiphy1.html#ga0c19278d1c72339ecef013ff01dd9400">More...</a><br/></td></tr>
+<tr class="separator:ga0c19278d1c72339ecef013ff01dd9400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac325f9063e8d18e65ee89d4c8a379ac7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gac325f9063e8d18e65ee89d4c8a379ac7">XHDMIPHY1_ISCMN</a>(Id)</td></tr>
+<tr class="memdesc:gac325f9063e8d18e65ee89d4c8a379ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if channel ID is a common channel.  <a href="group__xhdmiphy1.html#gac325f9063e8d18e65ee89d4c8a379ac7">More...</a><br/></td></tr>
+<tr class="separator:gac325f9063e8d18e65ee89d4c8a379ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaefd18cb0307f9edc1c822310bba085d1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gaefd18cb0307f9edc1c822310bba085d1">XHDMIPHY1_ISTXMMCM</a>(Id)&#160;&#160;&#160;((Id) == XHDMIPHY1_CHANNEL_ID_TXMMCM)</td></tr>
+<tr class="memdesc:gaefd18cb0307f9edc1c822310bba085d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if channel ID is the TX MMCM channel.  <a href="group__xhdmiphy1.html#gaefd18cb0307f9edc1c822310bba085d1">More...</a><br/></td></tr>
+<tr class="separator:gaefd18cb0307f9edc1c822310bba085d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf269ae525857ecd7641ad98a490ec0a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gaaf269ae525857ecd7641ad98a490ec0a">XHDMIPHY1_ISRXMMCM</a>(Id)&#160;&#160;&#160;((Id) == XHDMIPHY1_CHANNEL_ID_RXMMCM)</td></tr>
+<tr class="memdesc:gaaf269ae525857ecd7641ad98a490ec0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if channel ID is the RX MMCM channel.  <a href="group__xhdmiphy1.html#gaaf269ae525857ecd7641ad98a490ec0a">More...</a><br/></td></tr>
+<tr class="separator:gaaf269ae525857ecd7641ad98a490ec0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga018b4db1ade86e456ea095a91597f37c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga018b4db1ade86e456ea095a91597f37c">XHdmiphy1_IsTxUsingQpll</a>(InstancePtr, QuadId, ChId)</td></tr>
+<tr class="memdesc:ga018b4db1ade86e456ea095a91597f37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if TX is using QPLL.  <a href="group__xhdmiphy1.html#ga018b4db1ade86e456ea095a91597f37c">More...</a><br/></td></tr>
+<tr class="separator:ga018b4db1ade86e456ea095a91597f37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8a56411c7caa7bf53a038ce5d4bcd70c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga8a56411c7caa7bf53a038ce5d4bcd70c">XHdmiphy1_IsRxUsingQpll</a>(InstancePtr, QuadId, ChId)</td></tr>
+<tr class="memdesc:ga8a56411c7caa7bf53a038ce5d4bcd70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if RX is using QPLL.  <a href="group__xhdmiphy1.html#ga8a56411c7caa7bf53a038ce5d4bcd70c">More...</a><br/></td></tr>
+<tr class="separator:ga8a56411c7caa7bf53a038ce5d4bcd70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga17f7c0f80270c3ac676d59ebac22b116"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga17f7c0f80270c3ac676d59ebac22b116">XHdmiphy1_IsTxUsingCpll</a>(InstancePtr, QuadId, ChId)</td></tr>
+<tr class="memdesc:ga17f7c0f80270c3ac676d59ebac22b116"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if TX is using CPLL.  <a href="group__xhdmiphy1.html#ga17f7c0f80270c3ac676d59ebac22b116">More...</a><br/></td></tr>
+<tr class="separator:ga17f7c0f80270c3ac676d59ebac22b116"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga22e4224f5da99f2222a5813e3ac0fb72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga22e4224f5da99f2222a5813e3ac0fb72">XHdmiphy1_IsRxUsingCpll</a>(InstancePtr, QuadId, ChId)</td></tr>
+<tr class="memdesc:ga22e4224f5da99f2222a5813e3ac0fb72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if RX is using CPLL.  <a href="group__xhdmiphy1.html#ga22e4224f5da99f2222a5813e3ac0fb72">More...</a><br/></td></tr>
+<tr class="separator:ga22e4224f5da99f2222a5813e3ac0fb72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -158,6 +189,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="group__xhdmiphy1.html#gga19e4c793abee3457123797eca4f61cd0af0bd0b978b52982e2caf6a30afc3f57d">XHDMIPHY1_GT_STATE_READY</a>
 <br/>
  }</td></tr>
+<tr class="memdesc:ga19e4c793abee3457123797eca4f61cd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of possible states a transceiver can be in.  <a href="group__xhdmiphy1.html#ga19e4c793abee3457123797eca4f61cd0">More...</a><br/></td></tr>
 <tr class="separator:ga19e4c793abee3457123797eca4f61cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga507763f75897762cabf8819fde24ab8f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga507763f75897762cabf8819fde24ab8f">XHdmiphy1_LogEvent</a> { <br/>
 &#160;&#160;<a class="el" href="group__xhdmiphy1.html#gga507763f75897762cabf8819fde24ab8fa05c6742ec935bcbad19af54685b3d9f5">XHDMIPHY1_LOG_EVT_NONE</a> = 1, 
@@ -246,6 +278,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="group__xhdmiphy1.html#gga507763f75897762cabf8819fde24ab8fac5e344d7d6b6232fbba3fa5698de8532">XHDMIPHY1_LOG_EVT_DUMMY</a>
 <br/>
  }</td></tr>
+<tr class="memdesc:ga507763f75897762cabf8819fde24ab8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of log events for the HDMI PHY driver.  <a href="group__xhdmiphy1.html#ga507763f75897762cabf8819fde24ab8f">More...</a><br/></td></tr>
 <tr class="separator:ga507763f75897762cabf8819fde24ab8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga99fd3078ca6a97efc41ebae0ab9848b4"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga99fd3078ca6a97efc41ebae0ab9848b4">XHdmiphy1_HdmiTx_Patgen</a> { <br/>
 &#160;&#160;<a class="el" href="group__xhdmiphy1.html#gga99fd3078ca6a97efc41ebae0ab9848b4a2287e71d5eb5822fdad68ffc7014727d">XHDMIPHY1_Patgen_Ratio_10</a> = 0x1, 
@@ -256,6 +289,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="group__xhdmiphy1.html#gga99fd3078ca6a97efc41ebae0ab9848b4a54e14196cdba218c9339ab646bc6f183">XHDMIPHY1_Patgen_Ratio_50</a> = 0x5
 <br/>
  }</td></tr>
+<tr class="memdesc:ga99fd3078ca6a97efc41ebae0ab9848b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of linerate to TMDS clock ratio for HDMI TX pattern generator.  <a href="group__xhdmiphy1.html#ga99fd3078ca6a97efc41ebae0ab9848b4">More...</a><br/></td></tr>
 <tr class="separator:ga99fd3078ca6a97efc41ebae0ab9848b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3532b332baefc7e9454c8d485aedb4c9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga3532b332baefc7e9454c8d485aedb4c9">XHdmiphy1_PrbsPattern</a> { <br/>
 &#160;&#160;<a class="el" href="group__xhdmiphy1.html#gga3532b332baefc7e9454c8d485aedb4c9ae0898365a0b18b77ba8aa9ff62ae6cc8">XHDMIPHY1_PRBSSEL_STD_MODE</a> = 0x0, 
@@ -310,7 +344,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga041ec28c400f1b4cb662d9670e0feff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX/RXPRBSEL of the GT.  <a href="group__xhdmiphy1.html#ga041ec28c400f1b4cb662d9670e0feff3">More...</a><br/></td></tr>
 <tr class="separator:ga041ec28c400f1b4cb662d9670e0feff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae474ac8f1f2997229ec25e7584a4b827"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">XHdmiphy1_TxPrbsForceError</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 ForceErr)</td></tr>
-<tr class="memdesc:gae474ac8f1f2997229ec25e7584a4b827"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX/RXPRBSEL of the GT.  <a href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">More...</a><br/></td></tr>
+<tr class="memdesc:gae474ac8f1f2997229ec25e7584a4b827"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will force an error in the TX PRBS pattern for the GT.  <a href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">More...</a><br/></td></tr>
 <tr class="separator:gae474ac8f1f2997229ec25e7584a4b827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa01b2c0214336ba205fcac3c8fd7675d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gaa01b2c0214336ba205fcac3c8fd7675d">XHdmiphy1_SetTxVoltageSwing</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 Vs)</td></tr>
 <tr class="memdesc:gaa01b2c0214336ba205fcac3c8fd7675d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX voltage swing value for a given channel.  <a href="group__xhdmiphy1.html#gaa01b2c0214336ba205fcac3c8fd7675d">More...</a><br/></td></tr>
@@ -319,7 +353,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gad9dd0d271c9be7416e55adc535257cea"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX pre-emphasis value for a given channel.  <a href="group__xhdmiphy1.html#gad9dd0d271c9be7416e55adc535257cea">More...</a><br/></td></tr>
 <tr class="separator:gad9dd0d271c9be7416e55adc535257cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga755a209f0abe848a3508017f83ad4c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">XHdmiphy1_SetTxPostCursor</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 Pc)</td></tr>
-<tr class="memdesc:ga755a209f0abe848a3508017f83ad4c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX post-curosr value for a given channel.  <a href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">More...</a><br/></td></tr>
+<tr class="memdesc:ga755a209f0abe848a3508017f83ad4c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX post-cursor value for a given channel.  <a href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">More...</a><br/></td></tr>
 <tr class="separator:ga755a209f0abe848a3508017f83ad4c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga704b9c7161c4ac92beaa07113caaa36c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga704b9c7161c4ac92beaa07113caaa36c">XHdmiphy1_SetRxLpm</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, XHdmiphy1_DirectionType Dir, u8 Enable)</td></tr>
 <tr class="memdesc:ga704b9c7161c4ac92beaa07113caaa36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will enable or disable the LPM logic in the Video PHY core.  <a href="group__xhdmiphy1.html#ga704b9c7161c4ac92beaa07113caaa36c">More...</a><br/></td></tr>
@@ -352,13 +386,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga9569d5080ff8e2396239ecfb7d1de91d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will print the entire log.  <a href="group__xhdmiphy1.html#ga9569d5080ff8e2396239ecfb7d1de91d">More...</a><br/></td></tr>
 <tr class="separator:ga9569d5080ff8e2396239ecfb7d1de91d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga67dcfc543f278ca875c99f6dada92520"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga67dcfc543f278ca875c99f6dada92520">XHdmiphy1_LogReset</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr)</td></tr>
-<tr class="memdesc:ga67dcfc543f278ca875c99f6dada92520"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will reset the driver's logginc mechanism.  <a href="group__xhdmiphy1.html#ga67dcfc543f278ca875c99f6dada92520">More...</a><br/></td></tr>
+<tr class="memdesc:ga67dcfc543f278ca875c99f6dada92520"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will reset the driver's logging mechanism.  <a href="group__xhdmiphy1.html#ga67dcfc543f278ca875c99f6dada92520">More...</a><br/></td></tr>
 <tr class="separator:ga67dcfc543f278ca875c99f6dada92520"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafef83d134d6ba3cf7ed6ff58c5aa76c0"><td class="memItemLeft" align="right" valign="top">u16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gafef83d134d6ba3cf7ed6ff58c5aa76c0">XHdmiphy1_LogRead</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gafef83d134d6ba3cf7ed6ff58c5aa76c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will read the last event from the log.  <a href="group__xhdmiphy1.html#gafef83d134d6ba3cf7ed6ff58c5aa76c0">More...</a><br/></td></tr>
 <tr class="separator:gafef83d134d6ba3cf7ed6ff58c5aa76c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabda0c5df35f1e8c13b871c8edf38ff38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gabda0c5df35f1e8c13b871c8edf38ff38">XHdmiphy1_LogWrite</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, <a class="el" href="group__xhdmiphy1.html#ga507763f75897762cabf8819fde24ab8f">XHdmiphy1_LogEvent</a> Evt, u8 Data)</td></tr>
-<tr class="memdesc:gabda0c5df35f1e8c13b871c8edf38ff38"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will insert an event in the driver's logginc mechanism.  <a href="group__xhdmiphy1.html#gabda0c5df35f1e8c13b871c8edf38ff38">More...</a><br/></td></tr>
+<tr class="memdesc:gabda0c5df35f1e8c13b871c8edf38ff38"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will insert an event in the driver's logging mechanism.  <a href="group__xhdmiphy1.html#gabda0c5df35f1e8c13b871c8edf38ff38">More...</a><br/></td></tr>
 <tr class="separator:gabda0c5df35f1e8c13b871c8edf38ff38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacb93fcb29ad3045d260d3fbbaa0be81e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gacb93fcb29ad3045d260d3fbbaa0be81e">XHdmiphy1_InterruptHandler</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr)</td></tr>
 <tr class="memdesc:gacb93fcb29ad3045d260d3fbbaa0be81e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is the interrupt handler for the <a class="el" href="struct_x_hdmiphy1.html" title="The XHdmiphy1 driver instance data. ">XHdmiphy1</a> driver.  <a href="group__xhdmiphy1.html#gacb93fcb29ad3045d260d3fbbaa0be81e">More...</a><br/></td></tr>

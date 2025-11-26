@@ -179,7 +179,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a83c0ffc2e7ff9fe6c428dc6894bcc7fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function disables 10bit YUV444 color format support for SDI Tx.  <a href="#a83c0ffc2e7ff9fe6c428dc6894bcc7fd">More...</a><br/></td></tr>
 <tr class="separator:a83c0ffc2e7ff9fe6c428dc6894bcc7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85b51809e07e7b0599d012d7d470d32b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xv__sditx_8c.html#a85b51809e07e7b0599d012d7d470d32b">XV_SdiTx_Set_Bpc</a> (<a class="el" href="struct_x_v___sdi_tx.html">XV_SdiTx</a> *InstancePtr, XVidC_ColorDepth bitdepth)</td></tr>
-<tr class="memdesc:a85b51809e07e7b0599d012d7d470d32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the video bit depth of SDI-TX.  <a href="#a85b51809e07e7b0599d012d7d470d32b">More...</a><br/></td></tr>
+<tr class="memdesc:a85b51809e07e7b0599d012d7d470d32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function sets the video bit depth of SDI-TX and configures dynamic BPC support.  <a href="#a85b51809e07e7b0599d012d7d470d32b">More...</a><br/></td></tr>
 <tr class="separator:a85b51809e07e7b0599d012d7d470d32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -376,6 +376,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
 
 <p>References <a class="el" href="struct_x_v___sdi_tx___config.html#a55bc404bba9a241e65bc618992c289a3">XV_SdiTx_Config::BaseAddress</a>, <a class="el" href="struct_x_v___sdi_tx.html#a3fe081b6dd8372f1128ccda2c2a1d825">XV_SdiTx::Config</a>, <a class="el" href="xv__sditx__hw_8h.html#a473ff53a4f74d89a57e04a65c72416af">XV_SdiTx_ReadReg</a>, and <a class="el" href="xv__sditx__hw_8h.html#a97b4db43e94f9ed2d5ef407db6607d59">XV_SdiTx_WriteReg</a>.</p>
+
+<p>Referenced by <a class="el" href="xv__sditx_8h.html#a8ad731d07be9932825ca0ef037ae2299">XV_SdiTx_StreamStart()</a>.</p>
 
 </div>
 </div>
@@ -797,7 +799,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function sets the video bit depth of SDI-TX. </p>
+<p>This function sets the video bit depth of SDI-TX and configures dynamic BPC support. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InstancePtr</td><td>is a pointer to the <a class="el" href="struct_x_v___sdi_tx.html" title="The XV_SdiTx driver instance data. ">XV_SdiTx</a> core instance.</td></tr>
@@ -1145,6 +1147,8 @@ Functions</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_v___sdi_tx___config.html#a55bc404bba9a241e65bc618992c289a3">XV_SdiTx_Config::BaseAddress</a>, <a class="el" href="struct_x_v___sdi_tx.html#a3fe081b6dd8372f1128ccda2c2a1d825">XV_SdiTx::Config</a>, <a class="el" href="xv__sditx__hw_8h.html#a473ff53a4f74d89a57e04a65c72416af">XV_SdiTx_ReadReg</a>, and <a class="el" href="xv__sditx__hw_8h.html#a97b4db43e94f9ed2d5ef407db6607d59">XV_SdiTx_WriteReg</a>.</p>
 
+<p>Referenced by <a class="el" href="xv__sditx_8h.html#a8ad731d07be9932825ca0ef037ae2299">XV_SdiTx_StreamStart()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ac68a902fd4b2c666020356621c33700d"></a>
@@ -1316,7 +1320,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>None.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>None. </dd></dl>
 
-<p>References <a class="el" href="struct_x_v___sdi_tx___config.html#a55bc404bba9a241e65bc618992c289a3">XV_SdiTx_Config::BaseAddress</a>, <a class="el" href="struct_x_v___sdi_tx.html#ae263a574a1cda2b8183a39b64f11cb0e">XV_SdiTx::bitdepth</a>, <a class="el" href="struct_x_v___sdi_tx.html#a3fe081b6dd8372f1128ccda2c2a1d825">XV_SdiTx::Config</a>, <a class="el" href="struct_x_v___sdi_tx.html#a8ebd6fcfa9c90369985092a766d0507a">XV_SdiTx::State</a>, <a class="el" href="struct_x_v___sdi_tx.html#a42e2cdd202410a1d20b69bbd520c129b">XV_SdiTx::Stream</a>, <a class="el" href="struct_x_v___sdi_tx.html#a973312cc838aaf0e1e0bd7807cb48822">XV_SdiTx::Transport</a>, <a class="el" href="struct_x_v___sdi_tx___stream.html#a67d1eca335b783a62a02761cd4c6f3d4">XV_SdiTx_Stream::Video</a>, <a class="el" href="xv__sditx__hw_8h.html#a473ff53a4f74d89a57e04a65c72416af">XV_SdiTx_ReadReg</a>, <a class="el" href="xv__sditx_8c.html#acda96db01dd02a1a0f9142c10d177036">XV_SdiTx_SetPayloadId()</a>, and <a class="el" href="xv__sditx_8c.html#aac2a887b9e8db796240c9018c311f2ab">XV_SdiTx_StartSdi()</a>.</p>
+<p>References <a class="el" href="struct_x_v___sdi_tx___config.html#a55bc404bba9a241e65bc618992c289a3">XV_SdiTx_Config::BaseAddress</a>, <a class="el" href="struct_x_v___sdi_tx.html#ae263a574a1cda2b8183a39b64f11cb0e">XV_SdiTx::bitdepth</a>, <a class="el" href="struct_x_v___sdi_tx.html#a3fe081b6dd8372f1128ccda2c2a1d825">XV_SdiTx::Config</a>, <a class="el" href="struct_x_v___sdi_tx.html#a8ebd6fcfa9c90369985092a766d0507a">XV_SdiTx::State</a>, <a class="el" href="struct_x_v___sdi_tx.html#a42e2cdd202410a1d20b69bbd520c129b">XV_SdiTx::Stream</a>, <a class="el" href="struct_x_v___sdi_tx.html#a973312cc838aaf0e1e0bd7807cb48822">XV_SdiTx::Transport</a>, <a class="el" href="struct_x_v___sdi_tx___stream.html#a67d1eca335b783a62a02761cd4c6f3d4">XV_SdiTx_Stream::Video</a>, <a class="el" href="xv__sditx_8c.html#a83c0ffc2e7ff9fe6c428dc6894bcc7fd">XV_SdiTx_ClearYCbCr444_RGB_10bit()</a>, <a class="el" href="xv__sditx__hw_8h.html#a473ff53a4f74d89a57e04a65c72416af">XV_SdiTx_ReadReg</a>, <a class="el" href="xv__sditx_8c.html#acda96db01dd02a1a0f9142c10d177036">XV_SdiTx_SetPayloadId()</a>, <a class="el" href="xv__sditx_8c.html#a8907423180d202770dbdeb89cf94f0a9">XV_SdiTx_SetYCbCr444_RGB_10bit()</a>, and <a class="el" href="xv__sditx_8c.html#aac2a887b9e8db796240c9018c311f2ab">XV_SdiTx_StartSdi()</a>.</p>
 
 </div>
 </div>

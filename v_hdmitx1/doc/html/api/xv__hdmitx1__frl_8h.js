@@ -9,9 +9,12 @@ var xv__hdmitx1__frl_8h =
     [ "XV_HdmiTx1_FrlRcDisable", "xv__hdmitx1__frl_8h.html#a2502d7c8116ff5b4586bf81e0001296b", null ],
     [ "XV_HdmiTx1_FrlRcEnable", "xv__hdmitx1__frl_8h.html#a22ee7036ae97717d94a76b551a6ade52", null ],
     [ "XV_HdmiTx1_SetFrlLinkClock", "xv__hdmitx1__frl_8h.html#a2190d9b351c0d93b52da5ecdf7d0ccc8", null ],
-    [ "XV_HdmiTx1_SetFrlVidClock", "xv__hdmitx1__frl_8h.html#a0d9362b70a136651d8c779620a25af58", [
+    [ "XV_HdmiTx1_SetFrlVidClock", "xv__hdmitx1__frl_8h.html#a0d9362b70a136651d8c779620a25af58", null ],
+    [ "XV_HdmiTx1_FrlActiveMode", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6", [
       [ "XV_HDMITX1_FRL_ACTIVE_MODE_GAP_ONLY", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a63b192ec1136617d40f54f343862e930", null ],
-      [ "XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a50d833ccc4376d8f1cc8ffbb8efb6ec1", null ],
+      [ "XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a50d833ccc4376d8f1cc8ffbb8efb6ec1", null ]
+    ] ],
+    [ "XV_HdmiTx1_FrlLtpType", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9", [
       [ "XV_HDMITX1_LTP_NO_LTP", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a986cd1bc5dcff1a19e5ccd11dc51b782", null ],
       [ "XV_HDMITX1_LTP_ALL_ONES", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9abcd4e4155ea31d3890898a6c9367d63f", null ],
       [ "XV_HDMITX1_LTP_ALL_ZEROES", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9adbd05e744a8dab78d6ff395ecb51030b", null ],
@@ -20,7 +23,9 @@ var xv__hdmitx1__frl_8h =
       [ "XV_HDMITX1_LTP_LFSR0", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a0c2af811836d8fd014882dde23951ab8", null ],
       [ "XV_HDMITX1_LTP_LFSR1", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a0313c6ed67c598835809768477b1f63a", null ],
       [ "XV_HDMITX1_LTP_LFSR2", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a14eecb0a86d48eb996ea8071ad8856db", null ],
-      [ "XV_HDMITX1_LTP_LFSR3", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a2bb7e96b44eb23962dc5f006996bad3c", null ],
+      [ "XV_HDMITX1_LTP_LFSR3", "xv__hdmitx1__frl_8h.html#afd0877f78089682c46d57eb1012ba6e9a2bb7e96b44eb23962dc5f006996bad3c", null ]
+    ] ],
+    [ "XV_HdmiTx1_FrlTrainingState", "xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359d", [
       [ "XV_HDMITX1_FRLSTATE_LTS_L", "xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359dacd9d0355cd5368f0a7bb5a52032ddc0f", null ],
       [ "XV_HDMITX1_FRLSTATE_LTS_1", "xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359da18f01a39b69d7e83798eddd44fe2ef36", null ],
       [ "XV_HDMITX1_FRLSTATE_LTS_2", "xv__hdmitx1__frl_8h.html#a835a33b58542988390ee91c443f6359dad85c4ec956e3588c7c58418b7a17e892", null ],

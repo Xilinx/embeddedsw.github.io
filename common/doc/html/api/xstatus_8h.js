@@ -1,5 +1,6 @@
 var xstatus_8h =
 [
+    [ "XST_FEATURE_DEPRECATE", "xstatus_8h.html#gabe44a12c874942d60f182e4c3790e8a3", null ],
     [ "XST_IIC_ARB_LOST", "xstatus_8h.html#gace983c3ece347e5f339e78fb678c0ea9", null ],
     [ "XST_IIC_NOT_SLAVE", "xstatus_8h.html#ga266a003fe41f5b94811cdeefcece10b7", null ],
     [ "XST_SPI_COMMAND_ERROR", "xstatus_8h.html#aff8d908b5eb37296359493bda011c897", null ],

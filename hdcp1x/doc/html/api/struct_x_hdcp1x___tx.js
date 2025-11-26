@@ -16,6 +16,7 @@ var struct_x_hdcp1x___tx =
     [ "IsDdcWriteSet", "struct_x_hdcp1x___tx.html#aff2f62fca46ff41d487edf0fe34dc2a6", null ],
     [ "IsRepeaterExchangeCallbackSet", "struct_x_hdcp1x___tx.html#a3e2bb59f4101bf76db71060e0e2f310e", null ],
     [ "IsUnauthenticatedCallbackSet", "struct_x_hdcp1x___tx.html#af22151e0777ff7de84b9ae6e3da0561d", null ],
+    [ "mode", "struct_x_hdcp1x___tx.html#a20b95a9c1799854115a8a86496cc4a4b", null ],
     [ "PendingEvents", "struct_x_hdcp1x___tx.html#a25f831507baa26aeccd5f41a2232a9f3", null ],
     [ "PreviousState", "struct_x_hdcp1x___tx.html#a68b51570127d707615a8ae4324c08b02", null ],
     [ "RepeaterExchangeCallback", "struct_x_hdcp1x___tx.html#a447d308ccbf30a72a603ebdeb534d3ce", null ],

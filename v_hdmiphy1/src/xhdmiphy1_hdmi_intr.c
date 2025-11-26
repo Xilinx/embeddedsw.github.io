@@ -1,5 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
+* Copyright 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -39,6 +40,7 @@
 extern void XHdmiphy1_Ch2Ids(XHdmiphy1 *InstancePtr, XHdmiphy1_ChannelId ChId,
         u8 *Id0, u8 *Id1);
 
+extern u32 Xhdmiphy1_RefClkValue(void);
 static void XHdmiphy1_HdmiGtHandler(XHdmiphy1 *InstancePtr);
 static void XHdmiphy1_ClkDetHandler(XHdmiphy1 *InstancePtr);
 
@@ -102,7 +104,7 @@ void XHdmiphy1_SetHdmiCallback(XHdmiphy1 *InstancePtr,
 
 /*****************************************************************************/
 /**
-* This function sets the appropriate HDMI interupt handlers.
+* This function sets the appropriate HDMI interrupt handlers.
 *
 * @param    InstancePtr is a pointer to the HDMIPHY instance.
 *
@@ -741,8 +743,6 @@ void XHdmiphy1_HdmiTxClkDetFreqChangeHandler(XHdmiphy1 *InstancePtr)
     /* Mask the MMCM Lock */
     XHdmiphy1_MmcmLockedMaskEnable(InstancePtr, 0, XHDMIPHY1_DIR_TX, TRUE);
 
-    /* Disable TX MMCM. */
-    /* XHdmiphy1_MmcmPowerDown(InstancePtr, 0, XHDMIPHY1_DIR_TX, TRUE); */
 
     /* Clear TX timer. */
     XHdmiphy1_ClkDetTimerClear(InstancePtr, 0, XHDMIPHY1_DIR_TX);

@@ -260,6 +260,18 @@ Functions</h2></td></tr>
 <tr class="memitem:gabef79236b8c8e5ada4f6ddb58132e35c"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv__api.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *FlashMsg, u8 *AvgRXTap, u8 *MaxWindowSize, u8 DummyIncr, u32 TXTap)</td></tr>
 <tr class="memdesc:gabef79236b8c8e5ada4f6ddb58132e35c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the Max window size and the corresponding Average Rx Tap.  <a href="#gabef79236b8c8e5ada4f6ddb58132e35c">More...</a><br/></td></tr>
 <tr class="separator:gabef79236b8c8e5ada4f6ddb58132e35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga034a9ae49aa555c3c94396e5b821a4b1"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga034a9ae49aa555c3c94396e5b821a4b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a polled data receive operation.  <a href="#ga034a9ae49aa555c3c94396e5b821a4b1">More...</a><br/></td></tr>
+<tr class="separator:ga034a9ae49aa555c3c94396e5b821a4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6b7b4e2f6b2fde2908649918699e86b0"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga6b7b4e2f6b2fde2908649918699e86b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a polled data send operation.  <a href="#ga6b7b4e2f6b2fde2908649918699e86b0">More...</a><br/></td></tr>
+<tr class="separator:ga6b7b4e2f6b2fde2908649918699e86b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga15aade843d6401d997e3d67afcd0a2cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga15aade843d6401d997e3d67afcd0a2cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs an interrupt-based data receive operation.  <a href="#ga15aade843d6401d997e3d67afcd0a2cc">More...</a><br/></td></tr>
+<tr class="separator:ga15aade843d6401d997e3d67afcd0a2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga065d5ced624e31f2a9699482cc6aa743"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData</a> (<a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *InstancePtr, <a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *Msg)</td></tr>
+<tr class="memdesc:ga065d5ced624e31f2a9699482cc6aa743"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs an interrupt-based data send operation.  <a href="#ga065d5ced624e31f2a9699482cc6aa743">More...</a><br/></td></tr>
+<tr class="separator:ga065d5ced624e31f2a9699482cc6aa743"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -830,7 +842,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>Macros to select INDAC and DAC modes. </p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gae5a31f79cc2df46027e4b9f26cad97ad">XOspiPsv_CfgInitialize()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a08e2382b1a337e871524e10a23f1b984">XOspiPsv_Get_Proto()</a>, <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv__api.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gae5a31f79cc2df46027e4b9f26cad97ad">XOspiPsv_CfgInitialize()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a08e2382b1a337e871524e10a23f1b984">XOspiPsv_Get_Proto()</a>, <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>, <a class="el" href="group__ospipsv__api.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -907,7 +919,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>Macros to select Read and Write prototype. </p>
 
-<p>Referenced by <a class="el" href="xospipsv__flash__intr__example_8c.html#a08e2382b1a337e871524e10a23f1b984">XOspiPsv_Get_Proto()</a>, <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>.</p>
+<p>Referenced by <a class="el" href="xospipsv__flash__intr__example_8c.html#a08e2382b1a337e871524e10a23f1b984">XOspiPsv_Get_Proto()</a>, <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>, and <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>.</p>
 
 </div>
 </div>
@@ -937,7 +949,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>Low level macros to read/write memory. </p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>, <a class="el" href="group__ospipsv__api.html#ga816c6bf2a419d38bd2e4d51a266a6d3b">XOspiPsv_CheckDmaDone()</a>, <a class="el" href="group__ospipsv__api.html#gabba4009ea62fb0b8c856a8582ed9f77b">XOspiPsv_ConfigDualByteOpcode()</a>, <a class="el" href="group__ospipsv__api.html#gaec5aab7a4cee335804494e31429b53ec">XOspiPsv_ConfigureAutoPolling()</a>, <a class="el" href="group__ospipsv__api.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv__api.html#ga26ffa91c5d5d79028535a2e3381174e6">XOspiPsv_DeviceResetViaOspi()</a>, <a class="el" href="group__ospipsv__api.html#gaa2f584dfcca76360b59188e58c60b770">XOspiPsv_Exec_Dma()</a>, <a class="el" href="group__ospipsv__api.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv__api.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead()</a>, <a class="el" href="group__ospipsv__api.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv__api.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv__api.html#ga70d2c317de32d39ddab3b585c9da5d69">XOspiPsv_Idle()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv__api.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, <a class="el" href="group__ospipsv__api.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv__api.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>, <a class="el" href="group__ospipsv__api.html#ga816c6bf2a419d38bd2e4d51a266a6d3b">XOspiPsv_CheckDmaDone()</a>, <a class="el" href="group__ospipsv__api.html#gabba4009ea62fb0b8c856a8582ed9f77b">XOspiPsv_ConfigDualByteOpcode()</a>, <a class="el" href="group__ospipsv__api.html#gaec5aab7a4cee335804494e31429b53ec">XOspiPsv_ConfigureAutoPolling()</a>, <a class="el" href="group__ospipsv__api.html#ga16fcc38cab80027ea601c99569517067">XOspiPsv_DeviceReset()</a>, <a class="el" href="group__ospipsv__api.html#ga26ffa91c5d5d79028535a2e3381174e6">XOspiPsv_DeviceResetViaOspi()</a>, <a class="el" href="group__ospipsv__api.html#gaa2f584dfcca76360b59188e58c60b770">XOspiPsv_Exec_Dma()</a>, <a class="el" href="group__ospipsv__api.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv__api.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead()</a>, <a class="el" href="group__ospipsv__api.html#ga19324f8c6c1156b26c84cc9d413a4801">XOspiPsv_GetOptions()</a>, <a class="el" href="group__ospipsv__api.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv__api.html#ga70d2c317de32d39ddab3b585c9da5d69">XOspiPsv_Idle()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, <a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData()</a>, <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, <a class="el" href="group__ospipsv__api.html#ga3946ea37da6d9ce478f29eca239b597b">XOspiPsv_SetDllDelay()</a>, <a class="el" href="group__ospipsv__api.html#gab47df170b16816d4cc11dee6c3008e3c">XOspiPsv_SetOptions()</a>, <a class="el" href="group__ospipsv__api.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv__api.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
 
 </div>
 </div>
@@ -1245,7 +1257,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___config.html#a215dbf976af5b97426b6ac5638c06607">XOspiPsv_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_ospi_psv___msg.html#abaa1e4b4bd1883e86018d400c49d438a">XOspiPsv_Msg::RxAddr64bit</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#af3b6091e16d13e4be338d18494c63485">XOspiPsv_Msg::Xfer64bit</a>, and <a class="el" href="group__ospipsv__api.html#ga5cc34e95babfb307ef694eec5cae4067">XOSPIPSV_RXADDR_OVER_32BIT</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -1285,7 +1297,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, and <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -1466,7 +1478,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, and <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>.</p>
 
 </div>
 </div>
@@ -1512,7 +1524,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, and <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData()</a>.</p>
 
 </div>
 </div>
@@ -1639,7 +1651,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___config.html#a215dbf976af5b97426b6ac5638c06607">XOspiPsv_Config::IsCacheCoherent</a>, <a class="el" href="struct_x_ospi_psv.html#a37393464bab76176fb86de030eb4f144">XOspiPsv::IsUnaligned</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv___msg.html#af3b6091e16d13e4be338d18494c63485">XOspiPsv_Msg::Xfer64bit</a>, <a class="el" href="group__ospipsv__api.html#ga7dd7305678eaea4774657b38046cc5e4">XOspiPsv_Config_Dma()</a>, <a class="el" href="group__ospipsv__api.html#gae199f0006d6d3282aad2a18c4e87d479">XOspiPsv_Config_IndirectAhb()</a>, and <a class="el" href="group__ospipsv__api.html#gaa2f584dfcca76360b59188e58c60b770">XOspiPsv_Exec_Dma()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>.</p>
 
 </div>
 </div>
@@ -1847,7 +1859,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, and <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
 
 </div>
 </div>
@@ -1920,7 +1932,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="group__ospipsv__api.html#ga2837097f3f203eeff26f5cfc61947bcf">MAX_IDAC_DELAY_CNT</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, and <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData()</a>.</p>
 
 </div>
 </div>
@@ -1985,6 +1997,86 @@ Dual Byte opcode selection</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga15aade843d6401d997e3d67afcd0a2cc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XOspiPsv_IntrRecvData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs an interrupt-based data receive operation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_ospi_psv.html" title="The XOspiPsv driver instance data. ">XOspiPsv</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>Pointer to the structure containing transfer data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv.html#a37393464bab76176fb86de030eb4f144">XOspiPsv::IsUnaligned</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="group__ospipsv__api.html#ga7dd7305678eaea4774657b38046cc5e4">XOspiPsv_Config_Dma()</a>, <a class="el" href="group__ospipsv__api.html#gae199f0006d6d3282aad2a18c4e87d479">XOspiPsv_Config_IndirectAhb()</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gafb4ad780fc9faa2f91aa7208ceb91583">XOspiPsv_Setup_Stig_Ctrl()</a>, and <a class="el" href="group__ospipsv__api.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga065d5ced624e31f2a9699482cc6aa743"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XOspiPsv_IntrSendData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs an interrupt-based data send operation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_ospi_psv.html" title="The XOspiPsv driver instance data. ">XOspiPsv</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>Pointer to the structure containing transfer data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>None. </dd></dl>
+
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv__api.html#ga54d82d31820cd30d9c32055380e0ab04">XOspiPsv_FifoWrite()</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, and <a class="el" href="group__ospipsv__api.html#gafb4ad780fc9faa2f91aa7208ceb91583">XOspiPsv_Setup_Stig_Ctrl()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="gaaf23d7567b974cfac69ecadd2919999d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2023,7 +2115,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a37393464bab76176fb86de030eb4f144">XOspiPsv::IsUnaligned</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga7dd7305678eaea4774657b38046cc5e4">XOspiPsv_Config_Dma()</a>, <a class="el" href="group__ospipsv__api.html#gae199f0006d6d3282aad2a18c4e87d479">XOspiPsv_Config_IndirectAhb()</a>, <a class="el" href="group__ospipsv__api.html#ga54d82d31820cd30d9c32055380e0ab04">XOspiPsv_FifoWrite()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv__api.html#gafb4ad780fc9faa2f91aa7208ceb91583">XOspiPsv_Setup_Stig_Ctrl()</a>, and <a class="el" href="group__ospipsv__api.html#ga4eb9614740f6df4c7a372d9125d5b5e1">XOspiPsv_Start_Indr_RdTransfer()</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, <a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, and <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>.</p>
 
 <p>Referenced by <a class="el" href="xospipsv__flash__intr__example_8c.html#a223a0d4b5dd8fb7fca1b1e42872d3521">BulkErase()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a7ceb61abe9a7b767c75ad57929adf3b3">DieErase()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a929e1c114b2752e00136aa5ebb3cbeda">FlashEnterExit4BAddMode()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a6d28e30d23e136e4af00a436d43c9923">FlashErase()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a8337d4d551570e7ecaa44321605280a7">FlashIoWrite()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a1355d0e2c6bb04d1f65ca815d71d5996">FlashRead()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a19dbfab221d6a11c3fa45674c1304f2e">FlashReadID()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a92ee697864550c95e476b41c43c0764f">FlashSetSDRDDRMode()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#ab01ca7bff4098e88b315bd230b948658">MxConfigDummy()</a>, and <a class="el" href="xospipsv__flash__intr__example_8c.html#af2bad08ca36b22108da68d87e5d29201">SpansionSetEccMode()</a>.</p>
 
@@ -2056,6 +2148,94 @@ Dual Byte opcode selection</h2></td></tr>
 <p>References <a class="el" href="group__ospipsv__api.html#ga992d9fa781379e0cc76acdc13cb8b54c">XOspiPsv_ConfigTable</a>.</p>
 
 <p>Referenced by <a class="el" href="xospipsv__flash__non__blocking__read__example_8c.html#add3e41c7ec3ce5d1ae9f84b65b180829">OspiPsvFlashNonBlockingReadExample()</a>, <a class="el" href="xospipsv__flash__intr__example_8c.html#a034bc36898a4bbba7b539ae8918e4f3c">OspiPsvInterruptFlashExample()</a>, and <a class="el" href="xospipsv__flash__polled__example_8c.html#a47495bff6dd24133e2922fd1d1af277a">OspiPsvPolledFlashExample()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga034a9ae49aa555c3c94396e5b821a4b1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XOspiPsv_PollRecvData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs a polled data receive operation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_ospi_psv.html" title="The XOspiPsv driver instance data. ">XOspiPsv</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>Pointer to the structure containing transfer data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE if transfer fails. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="group__ospipsv__api.html#ga9f70d70b4dcd8a325a7dacc3aa31a5ef">XOspiPsv_Dac_Read()</a>, <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gad90cde53aa1c59a7a9a8450c8b109782">XOSPIPSV_IDAC_MODE</a>, <a class="el" href="group__ospipsv__api.html#ga2cadd5891ddc5aaa4344c4c5f04df53f">XOSPIPSV_READ_1_1_1</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, and <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga6b7b4e2f6b2fde2908649918699e86b0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">u32 XOspiPsv_PollSendData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv.html">XOspiPsv</a> *&#160;</td>
+          <td class="paramname"><em>InstancePtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_x_ospi_psv___msg.html">XOspiPsv_Msg</a> *&#160;</td>
+          <td class="paramname"><em>Msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function performs a polled data send operation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InstancePtr</td><td>Pointer to the <a class="el" href="struct_x_ospi_psv.html" title="The XOspiPsv driver instance data. ">XOspiPsv</a> instance. </td></tr>
+    <tr><td class="paramname">Msg</td><td>Pointer to the structure containing transfer data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>XST_SUCCESS if successful.</li>
+<li>XST_FAILURE if transfer fails. </li>
+</ul>
+</dd></dl>
+
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv__api.html#gadb1ae4f737c07e890039cdaf3a006b26">XOspiPsv_Dac_Write()</a>, <a class="el" href="group__ospipsv__api.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
 
 </div>
 </div>
@@ -2099,7 +2279,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="struct_x_ospi_psv.html#abb16a8f44c9ec93487044060e9fb522e">XOspiPsv::OpMode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, <a class="el" href="struct_x_ospi_psv.html#af9d2352cda8abe04913cfd09201e3cab">XOspiPsv::RecvBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b">XOspiPsv::SendBufferPtr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga9f70d70b4dcd8a325a7dacc3aa31a5ef">XOspiPsv_Dac_Read()</a>, <a class="el" href="group__ospipsv__api.html#gadb1ae4f737c07e890039cdaf3a006b26">XOspiPsv_Dac_Write()</a>, <a class="el" href="group__ospipsv__api.html#gab882c01ec4fd29b29a58e0a07075414d">XOspiPsv_Dma_Read()</a>, <a class="el" href="group__ospipsv__api.html#gad90cde53aa1c59a7a9a8450c8b109782">XOSPIPSV_IDAC_MODE</a>, <a class="el" href="group__ospipsv__api.html#ga8400388c80d471a4535fa7357104f07b">XOspiPsv_IDac_Write()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv__api.html#ga2cadd5891ddc5aaa4344c4c5f04df53f">XOSPIPSV_READ_1_1_1</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv__api.html#gaf618dd1d9a3b5fe6a60feedd9cfca12b">XOspiPsv_Setup_Dev_Read_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gaa347217a72ad5240a86eb29dacec9270">XOspiPsv_Setup_Dev_Write_Instr_Reg()</a>, <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>, <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv.html#a9b9e338c1d571e790ff16645246952f1">XOspiPsv::IsBusy</a>, <a class="el" href="struct_x_ospi_psv.html#a486b1d77ef231104cdfb09d61972c74c">XOspiPsv::IsReady</a>, <a class="el" href="struct_x_ospi_psv.html#a92c14bd0533b97db4837dca410bb7ab5">XOspiPsv::Msg</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>, <a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData()</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, and <a class="el" href="group__ospipsv__api.html#gab0a1fd4b1edb33eeb7f14588f09a8355">XOspiPsv_Setup_Devsize()</a>.</p>
 
 <p>Referenced by <a class="el" href="xospipsv__flash__polled__example_8c.html#a6fff73aa13d90cd15521ab1f7de503dc">FlashLinearWrite()</a>, <a class="el" href="xospipsv__flash__polled__example_8c.html#a48b07e8e007e2da190edcfc0cc1d389b">SetBlockProtect()</a>, and <a class="el" href="group__ospipsv__api.html#gabef79236b8c8e5ada4f6ddb58132e35c">XOspiPsv_CalculateRxTap()</a>.</p>
 
@@ -2259,7 +2439,7 @@ Dual Byte opcode selection</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#ade8b294559fe3e26e9cc9ae94afa9926">XOspiPsv::DllMode</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv.html#a3262e9917d4a04314a8a469c390fdbd2">XOspiPsv::Extra_DummyCycle</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a5a9c4b0b141795207120a3d62c6d5144">XOspiPsv_Msg::IsDDROpCode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, <a class="el" href="group__ospipsv__api.html#gae90b7e8c7fe9d94c5c156a07e57fc27c">READ_ID</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#acf4693770163d8061cd9eb4bdaa32605">XOspiPsv::SdrDdrMode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga3ac73304cb055f7184181eb4b176637e">XOspiPsv_ExecuteRxTuning()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv__api.html#gaa2ca88550aec15d0444ecfeede909e96">XOSPIPSV_SDR_TX_VAL</a>, and <a class="el" href="group__ospipsv__api.html#ga943852604b61a80a53f42a143bf87241">XOspiPsv_WaitForLock()</a>.</p>
+<p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv___msg.html#ab46554545943ecf8f1a0152c237489f4">XOspiPsv_Msg::ByteCount</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#ade8b294559fe3e26e9cc9ae94afa9926">XOspiPsv::DllMode</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv.html#a3262e9917d4a04314a8a469c390fdbd2">XOspiPsv::Extra_DummyCycle</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a960350cdb6c3c5dc679c637ca1e21be0">XOspiPsv_Msg::Flags</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a5a9c4b0b141795207120a3d62c6d5144">XOspiPsv_Msg::IsDDROpCode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, <a class="el" href="group__ospipsv__api.html#gae90b7e8c7fe9d94c5c156a07e57fc27c">READ_ID</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a584672579015305052780c6b14e5a576">XOspiPsv_Msg::RxBfrPtr</a>, <a class="el" href="struct_x_ospi_psv.html#acf4693770163d8061cd9eb4bdaa32605">XOspiPsv::SdrDdrMode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a95f5d41c7ebd3d5b5da41c6289049e6f">XOspiPsv_Msg::TxBfrPtr</a>, <a class="el" href="group__ospipsv__api.html#ga289baf1466add8dfa4a70a3952354cd7">XOspiPsv_CheckOspiIdle()</a>, <a class="el" href="group__ospipsv__api.html#ga3ac73304cb055f7184181eb4b176637e">XOspiPsv_ExecuteRxTuning()</a>, <a class="el" href="group__ospipsv__api.html#ga21e9a7cc8b92ff2dcc84fafa3f0c21fa">XOSPIPSV_MSG_FLAG_RX</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, <a class="el" href="group__ospipsv__api.html#gaa2ca88550aec15d0444ecfeede909e96">XOSPIPSV_SDR_TX_VAL</a>, and <a class="el" href="group__ospipsv__api.html#ga943852604b61a80a53f42a143bf87241">XOspiPsv_WaitForLock()</a>.</p>
 
 <p>Referenced by <a class="el" href="group__ospipsv__api.html#ga45c51bcfa1e2d996298847c2b7910ba6">XOspiPsv_SetClkPrescaler()</a>, and <a class="el" href="group__ospipsv__api.html#ga74efb98d92b16935c3ea41e4f77cecea">XOspiPsv_SetSdrDdrMode()</a>.</p>
 
@@ -2442,7 +2622,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a5a9c4b0b141795207120a3d62c6d5144">XOspiPsv_Msg::IsDDROpCode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, <a class="el" href="struct_x_ospi_psv.html#acf4693770163d8061cd9eb4bdaa32605">XOspiPsv::SdrDdrMode</a>, <a class="el" href="group__ospipsv__api.html#ga2cadd5891ddc5aaa4344c4c5f04df53f">XOSPIPSV_READ_1_1_1</a>, and <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>, and <a class="el" href="group__ospipsv__api.html#ga4fe1250ba300d83c1acb4291301429f9">XOspiPsv_StartDmaTransfer()</a>.</p>
 
 </div>
 </div>
@@ -2483,7 +2663,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a9d8c2658ecdf8c0e9d7f4196844cccf0">XOspiPsv_Msg::Proto</a>, and <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, and <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData()</a>, and <a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData()</a>.</p>
 
 </div>
 </div>
@@ -2626,7 +2806,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, and <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>, <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>, <a class="el" href="group__ospipsv__api.html#ga065d5ced624e31f2a9699482cc6aa743">XOspiPsv_IntrSendData()</a>, <a class="el" href="group__ospipsv__api.html#ga6af9f098248cd39891e92d9caa1d75c8">XOspiPsv_Stig_Read()</a>, and <a class="el" href="group__ospipsv__api.html#ga1b1a6b7fd20d9183ad58f84d3303eeec">XOspiPsv_Stig_Write()</a>.</p>
 
 </div>
 </div>
@@ -2655,7 +2835,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, and <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, and <a class="el" href="group__ospipsv__api.html#gaaf23d7567b974cfac69ecadd2919999d">XOspiPsv_IntrTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#gaa415227de8c6663e478041a82887dd5b">XOspiPsv_IntrHandler()</a>, and <a class="el" href="group__ospipsv__api.html#ga15aade843d6401d997e3d67afcd0a2cc">XOspiPsv_IntrRecvData()</a>.</p>
 
 </div>
 </div>
@@ -2743,7 +2923,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aee5814ae840542f0968358c6c00371d8">XOspiPsv_Msg::Dummy</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv.html#ab006c89c9b2e2e9e3eddef303ed06054">XOspiPsv::RxBytes</a>, <a class="el" href="group__ospipsv__api.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv__api.html#ga621f2c47a2e8fdf59de28b2333d6da6f">XOspiPsv_FifoRead()</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, and <a class="el" href="group__ospipsv__api.html#gafb4ad780fc9faa2f91aa7208ceb91583">XOspiPsv_Setup_Stig_Ctrl()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga034a9ae49aa555c3c94396e5b821a4b1">XOspiPsv_PollRecvData()</a>.</p>
 
 </div>
 </div>
@@ -2790,7 +2970,7 @@ Dual Byte opcode selection</h2></td></tr>
 
 <p>References <a class="el" href="struct_x_ospi_psv___msg.html#af8358bd6a8075c4abacf9b0a7b10a490">XOspiPsv_Msg::Addr</a>, <a class="el" href="struct_x_ospi_psv___msg.html#aed44f5b363f17a6ebb50ec89b032f112">XOspiPsv_Msg::Addrsize</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a3df927f0564ffc2896abff80b63e5601">XOspiPsv_Msg::Addrvalid</a>, <a class="el" href="struct_x_ospi_psv___config.html#afae7c066f010841cb9a5214d9ff1e455">XOspiPsv_Config::BaseAddress</a>, <a class="el" href="struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c">XOspiPsv::Config</a>, <a class="el" href="struct_x_ospi_psv.html#a4796e4047cf6a5cb697cfdb5e4799aa7">XOspiPsv::DualByteOpcodeEn</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a63025a20ca549b4b65f2c6d611d40abc">XOspiPsv_Msg::ExtendedOpcode</a>, <a class="el" href="struct_x_ospi_psv___msg.html#a55ac289317d94775757cac9529ea51c2">XOspiPsv_Msg::Opcode</a>, <a class="el" href="struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e">XOspiPsv::TxBytes</a>, <a class="el" href="group__ospipsv__api.html#ga8bb2848b91c02f54adca66fae6820e7e">XOspiPsv_Exec_Flash_Cmd()</a>, <a class="el" href="group__ospipsv__api.html#ga54d82d31820cd30d9c32055380e0ab04">XOspiPsv_FifoWrite()</a>, <a class="el" href="group__ospipsv__api.html#ga1101ef0b6b567210a26c9b95e3ef2de5">XOspiPsv_ReadReg</a>, and <a class="el" href="group__ospipsv__api.html#gafb4ad780fc9faa2f91aa7208ceb91583">XOspiPsv_Setup_Stig_Ctrl()</a>.</p>
 
-<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga808cc2759798221d0d4f44eef27c0629">XOspiPsv_PollTransfer()</a>.</p>
+<p>Referenced by <a class="el" href="group__ospipsv__api.html#ga6b7b4e2f6b2fde2908649918699e86b0">XOspiPsv_PollSendData()</a>.</p>
 
 </div>
 </div>

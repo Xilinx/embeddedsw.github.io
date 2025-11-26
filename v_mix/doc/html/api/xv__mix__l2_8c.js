@@ -20,6 +20,7 @@ var xv__mix__l2_8c =
     [ "XVMix_LoadLogoPixelAlpha", "xv__mix__l2_8c.html#gad7d9ee2b4aeabf501f0a0dd0703543d5", null ],
     [ "XVMix_MoveLayerWindow", "xv__mix__l2_8c.html#ga8a30c176c1bc5810577622e42d102ec6", null ],
     [ "XVMix_SetBackgndColor", "xv__mix__l2_8c.html#ga945667e7c19dfcecad7c289f0517f242", null ],
+    [ "XVMix_SetCscCoeffs", "xv__mix__l2_8c.html#ga6c170f73b18b237aa6a735df762e8219", null ],
     [ "XVMix_SetLayerAlpha", "xv__mix__l2_8c.html#ga283cb29bb936ce5d0539782422ff3c3e", null ],
     [ "XVMix_SetLayerBufferAddr", "xv__mix__l2_8c.html#ga8d317845835bcbcc2b9f877ce0274691", null ],
     [ "XVMix_SetLayerChromaBuffer2Addr", "xv__mix__l2_8c.html#gaaf18b72d5323b64b3c7d58703918bb2c", null ],

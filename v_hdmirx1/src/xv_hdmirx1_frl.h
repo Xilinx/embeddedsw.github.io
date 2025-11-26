@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -28,6 +29,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 /***************************** Include Files *********************************/
 #include "xil_types.h"
@@ -77,6 +79,7 @@ typedef enum {
 	XV_HDMIRX1_SCDCFIELD_SIZE
 } XV_HdmiRx1_FrlScdcFieldType;
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 /** @name HDMI RX FRL training state
 * @ {
 */
@@ -125,6 +128,7 @@ typedef union {
 	u32 Data;
 	u8  Byte[4];
 } XV_HdmiRx1_FrlLtp;
+#endif
 
 /**
 * This typedef contains DDC registers offset, mask, shift.
@@ -136,6 +140,7 @@ typedef struct {
 	u8 Shift;				/**< Bits shift */
 } XV_HdmiRx1_FrlScdcField;
 
+#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 /**
 * This typedef contains audio stream specific data structure
 */
@@ -270,6 +275,8 @@ typedef struct {
 /************************** Variable Declarations ****************************/
 
 /************************** Variable Declarations ****************************/
+
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 #ifdef __cplusplus
 }

@@ -3,62 +3,93 @@ var xmmidp_8h =
     [ "XMmiDp_MainStreamAttributes", "struct_x_mmi_dp___main_stream_attributes.html", null ],
     [ "XMmiDp_VideoConfig", "struct_x_mmi_dp___video_config.html", null ],
     [ "XMmiDp", "struct_x_mmi_dp.html", null ],
+    [ "XMmiDp_AudioClkMultFs", "xmmidp_8h.html#a20d9129cb07e16b8f139b4cd989a22da", [
+      [ "XMMIDP_AUDIO_CLK_512FS", "xmmidp_8h.html#a20d9129cb07e16b8f139b4cd989a22daa8ef58a02ae831ccb9225ba79d61da94f", null ],
+      [ "XMMIDP_AUDIO_CLK_256FS", "xmmidp_8h.html#a20d9129cb07e16b8f139b4cd989a22daa67407599d4b01f4ed3267e637a25931b", null ],
+      [ "XMMIDP_AUDIO_CLK_128FS", "xmmidp_8h.html#a20d9129cb07e16b8f139b4cd989a22daa8421a6e486075d1ac99d5b6627f5d348", null ],
+      [ "XMMIDP_AUDIO_CLK_64FS", "xmmidp_8h.html#a20d9129cb07e16b8f139b4cd989a22daa413698708bf1526918545d7fcc453e25", null ]
+    ] ],
+    [ "XMmiDp_AudioDataWidth", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435", [
+      [ "XMMIDP_AUDIO_INPUT_16_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a44bb6bbdb65bd8f42e2e109588dc6fc7", null ],
+      [ "XMMIDP_AUDIO_INPUT_17_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a6a050adc982dfc45f455d7caaa1ab5bf", null ],
+      [ "XMMIDP_AUDIO_INPUT_18_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a603df3651856ae106e55c874fe5b924a", null ],
+      [ "XMMIDP_AUDIO_INPUT_19_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a0b5f3763945d4fd6f56ab656dc0c69db", null ],
+      [ "XMMIDP_AUDIO_INPUT_20_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a57511db081f4db4dc11fdfa007ff2083", null ],
+      [ "XMMIDP_AUDIO_INPUT_21_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435acce6ac542032845c7d31b824095efa64", null ],
+      [ "XMMIDP_AUDIO_INPUT_22_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435adc811a2467a48d50ab48c0df782145bc", null ],
+      [ "XMMIDP_AUDIO_INPUT_23_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435ad3765ffb31909a91a7b313b333551119", null ],
+      [ "XMMIDP_AUDIO_INPUT_24_BIT", "xmmidp_8h.html#a4cda1076b1893694ba19d802ac530435a7cfe7ea411ff3fd419de72c2d2860149", null ]
+    ] ],
+    [ "XMmiDp_AudioInterfaceSel", "xmmidp_8h.html#ae69764e47190fd3fa808c434bdbdd268", [
+      [ "XMMIDP_AUD_INF_I2S", "xmmidp_8h.html#ae69764e47190fd3fa808c434bdbdd268a5529189a16e7e60a8ca384f25ef37e3d", null ],
+      [ "XMMIDP_AUD_INF_SPDIF", "xmmidp_8h.html#ae69764e47190fd3fa808c434bdbdd268a145a4802bf3c794537a11bad0d860612", null ]
+    ] ],
+    [ "XMmiDp_AudioNumChannels", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79", [
+      [ "XMMIDP_AUDIO_1_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a4510b46cece6a66cbead38239d66c559", null ],
+      [ "XMMIDP_AUDIO_2_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a7f23f71ad8cd7f77982df13d20675f07", null ],
+      [ "XMMIDP_AUDIO_3_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79ac095b969540b20fab136c4acda51c8a4", null ],
+      [ "XMMIDP_AUDIO_4_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a311a79e9d5ee11c40eb1b6a32bd7a6b4", null ],
+      [ "XMMIDP_AUDIO_5_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a35f3036286ce23126ffa5d84a5cd5d22", null ],
+      [ "XMMIDP_AUDIO_6_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a3aaf1a6ec44426cd6388338ced6920f0", null ],
+      [ "XMMIDP_AUDIO_7_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a4d3a588cc241e001c797418f9e81f4c8", null ],
+      [ "XMMIDP_AUDIO_8_CHANNEL", "xmmidp_8h.html#ad661635f5ed6bbabbf9dfed4bfde2e79a276e0513b5466ee176a57f74a19378e9", null ]
+    ] ],
     [ "XMmiDp_PhyBusy", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3", [
-      [ "PHY_BUSY_LANE0", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3a66870936c2268198d2cc1a01ea8be3f2", null ],
-      [ "PHY_BUSY_LANE1", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3abd5290b6e2360325be56c52e8cb354f4", null ],
-      [ "PHY_BUSY_LANE2", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3a8cb3bb7f14f80e0740e09921d825af4a", null ],
-      [ "PHY_BUSY_LANE3", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3a977d79767419428350307767e1610e23", null ]
+      [ "XMMIDP_PHY_BUSY_LANE0", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3abc68212be397eaf0d8df2f2d9fc6572a", null ],
+      [ "XMMIDP_PHY_BUSY_LANE1", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3a8e84710fe3b73be79b0911cb9f24e4c2", null ],
+      [ "XMMIDP_PHY_BUSY_LANE2", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3adbb0d41367430a08b069173df4be600a", null ],
+      [ "XMMIDP_PHY_BUSY_LANE3", "xmmidp_8h.html#af56e506bf5548847c2d1b3166ab600c3aba944fd651bfcbfa0d2556126cce3e92", null ]
     ] ],
     [ "XMmiDp_PhyLanes", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70", [
-      [ "PHY_LANES_1", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70a158002b1d1d8af8cab6b3a433832d485", null ],
-      [ "PHY_LANES_2", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70ab880e74372db7c3e7e2f49cab47398d4", null ],
-      [ "PHY_LANES_4", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70a7c5cb2cb253d41327f0dffa775cd5b55", null ]
+      [ "XMMIDP_PHY_LANES_1", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70aacb0508c949a872fa2244b469bcd8138", null ],
+      [ "XMMIDP_PHY_LANES_2", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70a0de937aefea55907e2320123000b7bb6", null ],
+      [ "XMMIDP_PHY_LANES_4", "xmmidp_8h.html#a87908243f791b86e296721175ca2bf70af96d28ad79f2e31cb08f427421f51c16", null ]
     ] ],
     [ "XMmiDp_PhyPreEmp", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0be", [
-      [ "PHY_PREEMP_LEVEL0", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0bea2076dd701bc1f705efdf74e19b2415d7", null ],
-      [ "PHY_PREEMP_LEVEL1", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0bea7eb79420bac4520563feeb8927c64d42", null ],
-      [ "PHY_PREEMP_LEVEL2", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0beaaf5c92dc25ad9594cc59a16d15a2e908", null ],
-      [ "PHY_PREEMP_LEVEL3", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0beaedc1f5451ef8050f995c3272fd37c67e", null ]
+      [ "XMMIDP_PHY_PREEMP_LEVEL0", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0beafd381c4012397d5751abc4808fb3095e", null ],
+      [ "XMMIDP_PHY_PREEMP_LEVEL1", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0bead2d9de56cf16293c87c6d13f3f1dc057", null ],
+      [ "XMMIDP_PHY_PREEMP_LEVEL2", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0bea04d0fc14fc29ae57437ab2c431d24eb3", null ],
+      [ "XMMIDP_PHY_PREEMP_LEVEL3", "xmmidp_8h.html#a96a6c12db5b9bde44092222ce489e0bea278d421d16bdd528e8d0bb826efca306", null ]
     ] ],
     [ "XMmiDp_PhyPwrDown", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814f", [
-      [ "PHY_POWER_ON", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fa598858317a0dd433d72653a1f289de15", null ],
-      [ "PHY_INTER_P2_POWER", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fa500861504d905a675e570af4232aae25", null ],
-      [ "PHY_POWER_DOWN", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814faeec263e1564a45c07d60ea3c190ddebd", null ],
-      [ "PHY_POWER_STATE", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fa006711972337b5bf3ff58f4c0c57c5bf", null ]
+      [ "XMMIDP_PHY_POWER_ON", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814faa9b06e926fda797dd10714447ee3acce", null ],
+      [ "XMMIDP_PHY_INTER_P2_POWER", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fae9c9c158963a2dfec387b62e7e9c3a5f", null ],
+      [ "XMMIDP_PHY_POWER_DOWN", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fafe30cb3106f5b482605a1de702c10ecb", null ],
+      [ "XMMIDP_PHY_POWER_STATE", "xmmidp_8h.html#adc65cf448de8dcdacaa713a2fd3e814fa3b46ccdba041eb97062a2a092a95776b", null ]
     ] ],
     [ "XMmiDp_PhyRate", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89", [
-      [ "PHY_RATE_RBR_162GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89aaf39f89fb17125d0cad92496f37fc695", null ],
-      [ "PHY_RATE_HBR_270GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89a3e3047538a27449c2cd199ebe3f323fe", null ],
-      [ "PHY_RATE_HBR2_540GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89a8b73a43a9a362497f072dc69689bb8c6", null ],
-      [ "PHY_RATE_HBR3_810GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89af4c9ea455226c92a7368083cf302c55c", null ]
+      [ "XMMIDP_PHY_RATE_RBR_162GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89ab1fa77eabd3de943a9e37c802471f81a", null ],
+      [ "XMMIDP_PHY_RATE_HBR_270GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89a5944b34ca4510dd9331e683eca305ec2", null ],
+      [ "XMMIDP_PHY_RATE_HBR2_540GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89a7e58e1acd2c77748c0a3d06bb6a953ce", null ],
+      [ "XMMIDP_PHY_RATE_HBR3_810GBPS", "xmmidp_8h.html#a682ad51689f681acd8f1d60342331e89a63d2584b4f4a923a5e98c4c3709ef184", null ]
     ] ],
     [ "XMmiDp_PhyTrainingPattern", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807", [
-      [ "PHY_NO_TRAIN", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807aecd2b252eb89a0510f8bf28a563f7d11", null ],
-      [ "PHY_TPS1", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a7458c951f01f49b5375e0a3e7f14c9b1", null ],
-      [ "PHY_TPS2", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807ac50b161fc4c46744c98b785fb051f165", null ],
-      [ "PHY_TPS3", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a0a7035d95731b093eb69ea6e35b055d7", null ],
-      [ "PHY_TPS4", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a6445590e0ef471226cabae7d7cb4c2f5", null ],
-      [ "PHY_SYMBOL_ERR_RATE", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a9c46f6126e524b8d6dd9e4ea5d363582", null ],
-      [ "PHY_PRBS7", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807ad4107279ccb659dacecdb5ecd1035393", null ],
-      [ "PHY_CUSTOMPAT", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807acb22eb8d6b0a42224e743aa5d708d585", null ],
-      [ "PHY_CP2520_PAT_1", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a9f9fe1a58c485915e1445aac0bc46f5f", null ],
-      [ "PHY_CP2520_PAT_2", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a025f765b0a9ff9797df60ce93fe803d2", null ]
+      [ "XMMIDP_PHY_NO_TRAIN", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807aea1dc10949ddc92a372fc8f20f1da8c3", null ],
+      [ "XMMIDP_PHY_TPS1", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a7686f80b9ada80dc74711128c8e86fcb", null ],
+      [ "XMMIDP_PHY_TPS2", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a146905aee3bb66057227ef664c898ffd", null ],
+      [ "XMMIDP_PHY_TPS3", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a0e0c43169afd8869cfd737c23506b457", null ],
+      [ "XMMIDP_PHY_TPS4", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807aedf47bc76045830e95a71a675b12abe6", null ],
+      [ "XMMIDP_PHY_SYMBOL_ERR_RATE", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807aa85fd03ab5e99f261a549f3199c0a213", null ],
+      [ "XMMIDP_PHY_PRBS7", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807a54af8da278cf9b0706b7d28fbf306927", null ],
+      [ "XMMIDP_PHY_CUSTOMPAT", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807ad541c92006ef9140db320a4a1d7bb753", null ],
+      [ "XMMIDP_PHY_CP2520_PAT_1", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807aceff1f7cbcd1eb3098c045afdc055b84", null ],
+      [ "XMMIDP_PHY_CP2520_PAT_2", "xmmidp_8h.html#aa8bfa39c54f83f39298fdc84adaee807ab11f44f65dc13e8ca8570198c73b1815", null ]
     ] ],
     [ "XMmiDp_PhyVSwing", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4", [
-      [ "PHY_VSWING_LEVEL0", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a93439baf9d0c8f312a57bac9f788762a", null ],
-      [ "PHY_VSWING_LEVEL1", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a52197a8019b721955d4668b643b11825", null ],
-      [ "PHY_VSWING_LEVEL2", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a572ab4245a196954ec08f17b4961b6f2", null ],
-      [ "PHY_VSWING_LEVEL3", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a3626d743d8d74ebba3d1c2eb986c4689", null ]
+      [ "XMMIDP_PHY_VSWING_LEVEL0", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4aec87bb77233c1b04bf6cd92db471a23e", null ],
+      [ "XMMIDP_PHY_VSWING_LEVEL1", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4ae50529cc236e4ff8e4ef12aa9e54e03c", null ],
+      [ "XMMIDP_PHY_VSWING_LEVEL2", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a19d5e1c5d5485b5ebd442b014251a255", null ],
+      [ "XMMIDP_PHY_VSWING_LEVEL3", "xmmidp_8h.html#a1ea6a82f75ed070e6bff9f3d05fcb5f4a67e0277057b392730dad484caba47ee6", null ]
     ] ],
     [ "XMmiDp_PhyWidth", "xmmidp_8h.html#a86d9b3c381e31c166f06513440b613b9", [
-      [ "PHY_20BIT", "xmmidp_8h.html#a86d9b3c381e31c166f06513440b613b9afcf33d64bb85238544df47a63bba5b4f", null ],
-      [ "PHY_40BIT", "xmmidp_8h.html#a86d9b3c381e31c166f06513440b613b9a2e15cd72b903d48aac582642318ad2f7", null ]
+      [ "XMMIDP_PHY_20BIT", "xmmidp_8h.html#a86d9b3c381e31c166f06513440b613b9ad964a13893865473cae4f7a4e50320ac", null ],
+      [ "XMMIDP_PHY_40BIT", "xmmidp_8h.html#a86d9b3c381e31c166f06513440b613b9a4974a0a48ea41dfe5326e90293e8a25e", null ]
     ] ],
     [ "XMmiDp_PhyXmitEn", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5ae", [
-      [ "PHY_XMIT_EN_LANE0", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aea6a6dd03377aa6a07eb736c8eb1628d74", null ],
-      [ "PHY_XMIT_EN_LANE1", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aeacadff6dc7f34ad9b63a0e172c1272553", null ],
-      [ "PHY_XMIT_EN_LANE2", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aea84845a98fc603c090a013f0e24c2182d", null ],
-      [ "PHY_XMIT_EN_LANE3", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aeab708910680f5ff4dcea6ebacb7910f62", null ]
+      [ "XMMIDP_PHY_XMIT_EN_LANE0", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aeac10ffa98a53fea1562566a2c2add635e", null ],
+      [ "XMMIDP_PHY_XMIT_EN_LANE1", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aeaa3f4f0ecafad34c7caa06821ff7ba90d", null ],
+      [ "XMMIDP_PHY_XMIT_EN_LANE2", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aeab14455d0c20d15d7a6d7711a1281246b", null ],
+      [ "XMMIDP_PHY_XMIT_EN_LANE3", "xmmidp_8h.html#a16356a9e68a4cffa5b99572f143fa5aea7d79e526151f3ed79cb1f26c07e593cc", null ]
     ] ],
     [ "XMmiDp_PPC", "xmmidp_8h.html#a2ecf7e476c9c9e00d10207425a8152e3", [
       [ "XMMIDP_SINGLE_PIX_MODE", "xmmidp_8h.html#a2ecf7e476c9c9e00d10207425a8152e3a8f00977c61bf3256b84189e789044b2a", null ],
@@ -113,6 +144,7 @@ var xmmidp_8h =
     [ "XMmiDp_ClearMsaValues", "xmmidp_8h.html#ga8395176062765d2ce0129595146ccdc4", null ],
     [ "XMmiDp_ClearVideoConfigValues", "xmmidp_8h.html#gac6ccb66a7196a25e1b548f9ddc8e1623", null ],
     [ "XMmiDp_ClearVideoController", "xmmidp_8h.html#ga2db74c9e089470df8915747461b7ddcb", null ],
+    [ "XMmiDp_ConfigureAudioController", "xmmidp_8h.html#ga58e09571b65d872ceb65da9e0517c4b1", null ],
     [ "XMmiDp_ConfigureVideoController", "xmmidp_8h.html#ga44bcbe8e5fec3b218113d8c959f0c791", null ],
     [ "XMmiDp_DisableVideoStream", "xmmidp_8h.html#ga6f3c5f1e710332e8e5b96ca5fdd3e5db", null ],
     [ "XMmiDp_DpcdReadModifyWrite", "xmmidp_8h.html#ga72ca39b12a1ec4c495f4b5f405950baf", null ],
@@ -128,13 +160,17 @@ var xmmidp_8h =
     [ "XMmiDp_GetRxCapabilities", "xmmidp_8h.html#gac3135a219580b68794c555360df8d81b", null ],
     [ "XMmiDp_GetRxMaxLaneCount", "xmmidp_8h.html#ga6afea29dca33e18ef73737cd72f1020e", null ],
     [ "XMmiDp_GetRxMaxLinkRate", "xmmidp_8h.html#ga80cd6c15cc6633c38929058475a46451", null ],
+    [ "XMmiDp_GetRxMstModeCap", "xmmidp_8h.html#ga9863cd6de09dab984927d51f56b1736e", null ],
     [ "XMmiDp_GetTrainingDelay", "xmmidp_8h.html#ga7618de05e6ccfe9c3e512255948f413a", null ],
     [ "XMmiDp_HpdInterruptEnable", "xmmidp_8h.html#ga5b83c2480de23efa469ff14a2660bb24", null ],
     [ "XMmiDp_HpdInterruptHandler", "xmmidp_8h.html#ga3a1716c1aca49a915c57d0f3ddfbb57a", null ],
     [ "XMmiDp_I2cRead", "xmmidp_8h.html#ga74d3745c9b78752579ab0457d266d6a9", null ],
     [ "XMmiDp_I2cWrite", "xmmidp_8h.html#ga090261e373ee6881e30c22f3e6081eed", null ],
     [ "XMmiDp_Initialize", "xmmidp_8h.html#ga8d179f7c6034c9329c8a9871bc466025", null ],
+    [ "XMmiDp_InitiateActSeq", "xmmidp_8h.html#ga637998cd412788fe3b1bcd33130e1902", null ],
     [ "XMmiDp_IsConnected", "xmmidp_8h.html#gad828e78a21d5b2700e1318b80116e71c", null ],
+    [ "XMmiDp_MstActSeqEnable", "xmmidp_8h.html#gaa9a796e9233f2d5bb9cd15ba3e1d3f91", null ],
+    [ "XMmiDp_MstModeEnable", "xmmidp_8h.html#ga39b2ada01525a228afd7e382c8fac774", null ],
     [ "XMmiDp_PhyScrambleDisable", "xmmidp_8h.html#ga2fe71a7af196b6276c50c427fcb2e199", null ],
     [ "XMmiDp_PhyScrambleEnable", "xmmidp_8h.html#ga0eecafe2437dcd87202407eaf95de2a8", null ],
     [ "XMmiDp_PhySoftReset", "xmmidp_8h.html#ga75d6b1acab7dbdcf0603054c287cc506", null ],
@@ -143,9 +179,33 @@ var xmmidp_8h =
     [ "XMmiDp_PhyWaitReady", "xmmidp_8h.html#ga98fc24f84370a48e2cad677269274f47", null ],
     [ "XMmiDp_RegReadModifyWrite", "xmmidp_8h.html#ga17587910f82d3b484ea19be728e228ce", null ],
     [ "XMmiDp_RunTraining", "xmmidp_8h.html#ga2faa4352f70a9938766d8d266bb20b2a", null ],
-    [ "XMmiDp_SetAux_100000Us_Cnt_Limit", "xmmidp_8h.html#gae57dca21aa34824661f67454fa8c8ebb", null ],
+    [ "XMmiDp_SdpStatusInterruptEnable", "xmmidp_8h.html#gad4553e478558bc70246a73bc49d43799", null ],
+    [ "XMmiDp_SetAudClkMultFs", "xmmidp_8h.html#gabcbf2b40c8edd0ef82839ddab6252b86", null ],
+    [ "XMmiDp_SetAudDataInputEn", "xmmidp_8h.html#ga44fbca3f44db483c77090ea27441abfd", null ],
+    [ "XMmiDp_SetAudDataWidth", "xmmidp_8h.html#ga9956757e5a4b26d65bc37621cb06fc4e", null ],
+    [ "XMmiDp_SetAudHbrModeEn", "xmmidp_8h.html#ga2da75c922ab4089b196965d5bfdc16b3", null ],
+    [ "XMmiDp_SetAudioConfig1", "xmmidp_8h.html#gafc127205d8d8485a2f9265af632f7b7b", null ],
+    [ "XMmiDp_SetAudMuteFlag", "xmmidp_8h.html#ga235cd874e0e11094e6090a549681e900", null ],
+    [ "XMmiDp_SetAudNumChannels", "xmmidp_8h.html#ga17f7e2b43faeaa1f32cc22f5c8a09f59", null ],
+    [ "XMmiDp_SetAudPktId", "xmmidp_8h.html#ga6225e22ab7bcf76fec27a9e4a6b0d38c", null ],
+    [ "XMmiDp_SetAudStreamInterfaceSel", "xmmidp_8h.html#ga141cf14bd09824562395b2388d65bbea", null ],
+    [ "XMmiDp_SetAudTimeStampVerNum", "xmmidp_8h.html#ga6968916ae15e97fa3b03d62208ecf8e1", null ],
+    [ "XMmiDp_SetAux_100000Us_Cnt_Limit", "xmmidp_8h.html#ga47ed0b4f27fb0badafec87dddca81df3", null ],
     [ "XMmiDp_SetAux_2000Us_Cnt_Limit", "xmmidp_8h.html#gac08c9347c5b9c108aa9f34221256a225", null ],
     [ "XMmiDp_SetAux_250Us_Cnt_Limit", "xmmidp_8h.html#gaa5dc71e26942b66fa2b182eb7401f7e1", null ],
+    [ "XMmiDp_SetControllerDisableInterleaving", "xmmidp_8h.html#ga5aee931e22d6aeb6c1ae24e1651e9e88", null ],
+    [ "XMmiDp_SetControllereDpEn", "xmmidp_8h.html#gaf6369afcfc8245e35dd3904ac2129caf", null ],
+    [ "XMmiDp_SetControllerEnhanceFramingEn", "xmmidp_8h.html#gacd46cf48165f2fb5b2a2029b12c60cbe", null ],
+    [ "XMmiDp_SetControllerEnhanceFramingWithFecEn", "xmmidp_8h.html#ga8e15890ceac9d8d29c0a50a01269d825", null ],
+    [ "XMmiDp_SetControllerFastLinkTrainEn", "xmmidp_8h.html#gaaf83cbea85a7c96a252ff305d135dad1", null ],
+    [ "XMmiDp_SetControllerFecEn", "xmmidp_8h.html#ga000ad5667a09d24c5c212ea627169ed6", null ],
+    [ "XMmiDp_SetControllerInitiateMstActSeq", "xmmidp_8h.html#gaf065764ad84b4dfa69ab078238d1ac38", null ],
+    [ "XMmiDp_SetControllerMstModeEn", "xmmidp_8h.html#gaaecb4ea6bd4e26bdd078987d3e9d9a32", null ],
+    [ "XMmiDp_SetControllerScaleDownModeEn", "xmmidp_8h.html#gae9dea3bb5cbbb9090890909d7392ba1a", null ],
+    [ "XMmiDp_SetControllerScrambleDis", "xmmidp_8h.html#ga552e5cfdd334bb97506a62e141778183", null ],
+    [ "XMmiDp_SetControllerSelAuxTimeout32Ms", "xmmidp_8h.html#ga2ee75a9a9cb805170706db4b13f63b00", null ],
+    [ "XMmiDp_SetCoreCtrl", "xmmidp_8h.html#gabd2a67461b0e2fc53ee3ffef555012f7", null ],
+    [ "XMmiDp_SetDisableExternalSdp", "xmmidp_8h.html#gac19815c8b497a69fab66784b38229c70", null ],
     [ "XMmiDp_SetDpcdLaneCount", "xmmidp_8h.html#ga1c9569c6c5ebf64a307e313ccd804198", null ],
     [ "XMmiDp_SetDpcdLinkQualPattern", "xmmidp_8h.html#ga14948f99793fbcff34c501b4fa68ae60", null ],
     [ "XMmiDp_SetDpcdLinkRate", "xmmidp_8h.html#gaad32ead102701bc9f6b7f6844f4b4619", null ],
@@ -158,6 +218,7 @@ var xmmidp_8h =
     [ "XMmiDp_SetLaneCount", "xmmidp_8h.html#gadcd1b3f213ccabc37a9915473556c171", null ],
     [ "XMmiDp_SetLinkRate", "xmmidp_8h.html#gabe76cd229ac512b271396a8ac6da638f", null ],
     [ "XMmiDp_SetMsaBpc", "xmmidp_8h.html#gae299ecf851312fa0d9bd78f54344b860", null ],
+    [ "XMmiDp_SetMstVcpTable0", "xmmidp_8h.html#gafa8478cbb478e7f747bf349036c0a57b", null ],
     [ "XMmiDp_SetPhyLaneCount", "xmmidp_8h.html#gacbd938ad89bbc72cdf5815257f7e6406", null ],
     [ "XMmiDp_SetPhyLinkRate", "xmmidp_8h.html#gab36c129f0d8da121a10db84b7a5aea18", null ],
     [ "XMmiDp_SetPhyPowerdown", "xmmidp_8h.html#ga7f943b0eb7f8a68e639806d547774adc", null ],
@@ -170,6 +231,17 @@ var xmmidp_8h =
     [ "XMmiDp_SetPixModeSel", "xmmidp_8h.html#ga045dd94f5c42a270395bdf68cffe41be", null ],
     [ "XMmiDp_SetPmConfig1", "xmmidp_8h.html#ga94ea5d18a9840a52eb740c92f564b77f", null ],
     [ "XMmiDp_SetPmConfig2", "xmmidp_8h.html#ga8059d2320ca0639377be58174b7eb2ee", null ],
+    [ "XMmiDp_SetSdpHorAudStreamEn", "xmmidp_8h.html#ga0472c1deb843c0bf183966d98906f0d7", null ],
+    [ "XMmiDp_SetSdpHorAudTimeStampEn", "xmmidp_8h.html#gab1b8cf70119281fa641d36b4e4cf334f", null ],
+    [ "XMmiDp_SetSdpHorFixedPriority", "xmmidp_8h.html#ga3631e8793ab57333cdf68b99d8ced007", null ],
+    [ "XMmiDp_SetSdpHorizontalCtrl", "xmmidp_8h.html#gaf339d0ff4a882b171fe3b26ed52d4ad1", null ],
+    [ "XMmiDp_SetSdpHorizontalEn", "xmmidp_8h.html#ga8281004ada291d97dafa8e06843d41a0", null ],
+    [ "XMmiDp_SetSdpVertAudStreamEn", "xmmidp_8h.html#ga33196b52f8e59b73c1045db0ba397b2d", null ],
+    [ "XMmiDp_SetSdpVertAudTimeStampEn", "xmmidp_8h.html#ga521326ac06c089f4bb64006ff8513de8", null ],
+    [ "XMmiDp_SetSdpVertEn", "xmmidp_8h.html#ga9f3eccc85c55ac1df29ecc213ff4f0f1", null ],
+    [ "XMmiDp_SetSdpVertEn128Bytes", "xmmidp_8h.html#ga65bb46a40a4433a23e7bd0f69e7e936f", null ],
+    [ "XMmiDp_SetSdpVertFixedPriority", "xmmidp_8h.html#ga0f9fc6aae71f8c26baaf2156bb0de9c9", null ],
+    [ "XMmiDp_SetSdpVerticalCtrl", "xmmidp_8h.html#ga742d7fc4e69057b6f3a0e5737189b066", null ],
     [ "XMmiDp_SetSinkDpcdLinkCfgField", "xmmidp_8h.html#gaa2be5c46b0fd535d97e25a149beaa37f", null ],
     [ "XMmiDp_SetTrainingPattern", "xmmidp_8h.html#gaba866a232fbcb901567ac120595ba267", null ],
     [ "XMmiDp_SetVideoConfig1", "xmmidp_8h.html#ga355fb08fbde6c72eade5548afe01e58d", null ],
@@ -190,5 +262,7 @@ var xmmidp_8h =
     [ "XMmiDp_TrainingStateAdjustLinkRate", "xmmidp_8h.html#gab080158ac3d4e3a3074414ce2b6737da", null ],
     [ "XMmiDp_TrainingStateChannelEqualization", "xmmidp_8h.html#gaa56c95a1a342ab85ddccb12c7b531e81", null ],
     [ "XMmiDp_TrainingStateClockRecovery", "xmmidp_8h.html#ga952daae3354ffe758e5b3db18c9127c1", null ],
+    [ "XMmiDp_WaitActHandledStatus", "xmmidp_8h.html#gafb22147451b141af5abab760ef234e33", null ],
+    [ "XMmiDp_WaitPayloadTableUpdateStatus", "xmmidp_8h.html#gaf8aeb8c282f9f029d38987c697bce0a6", null ],
     [ "XMmiDp_WaitUs", "xmmidp_8h.html#ga0ce3540c32ce1bdcbe2b43fecb15e47d", null ]
 ];

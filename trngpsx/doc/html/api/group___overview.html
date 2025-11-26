@@ -88,7 +88,7 @@ Macros</h2></td></tr>
 <tr class="memitem:gab156d67eb4a798f294dc6ddebe8ab53b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gab156d67eb4a798f294dc6ddebe8ab53b">XTRNGPSX_MIN_SEEDLIFE</a>&#160;&#160;&#160;1U</td></tr>
 <tr class="memdesc:gab156d67eb4a798f294dc6ddebe8ab53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum seed life.  <a href="#gab156d67eb4a798f294dc6ddebe8ab53b">More...</a><br/></td></tr>
 <tr class="separator:gab156d67eb4a798f294dc6ddebe8ab53b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga369bd60024827c90f5863cb1e82baa59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga369bd60024827c90f5863cb1e82baa59">XTRNGPSX_MAX_SEEDLIFE</a>&#160;&#160;&#160;0x80000</td></tr>
+<tr class="memitem:ga369bd60024827c90f5863cb1e82baa59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga369bd60024827c90f5863cb1e82baa59">XTRNGPSX_MAX_SEEDLIFE</a>&#160;&#160;&#160;0x80000U</td></tr>
 <tr class="memdesc:ga369bd60024827c90f5863cb1e82baa59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum seed life 2^19.  <a href="#ga369bd60024827c90f5863cb1e82baa59">More...</a><br/></td></tr>
 <tr class="separator:ga369bd60024827c90f5863cb1e82baa59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga613878c668ba11cca5bfffd493caccba"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga613878c668ba11cca5bfffd493caccba">XTRNGPSX_SEC_STRENGTH_IN_BURSTS</a>&#160;&#160;&#160;2U</td></tr>
@@ -112,9 +112,6 @@ Macros</h2></td></tr>
 <tr class="memitem:gacf4e638c7db3dcb2f105857b8d69880e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gacf4e638c7db3dcb2f105857b8d69880e">XTRNGPSX_REPCOUNTTESTCUTOFF_MAX_VAL</a>&#160;&#160;&#160;0x1FFU</td></tr>
 <tr class="memdesc:gacf4e638c7db3dcb2f105857b8d69880e"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum repcounttest cutoff value  <a href="#gacf4e638c7db3dcb2f105857b8d69880e">More...</a><br/></td></tr>
 <tr class="separator:gacf4e638c7db3dcb2f105857b8d69880e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf0628cfa849c9b93b2bc3ddb0e59870b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#gaf0628cfa849c9b93b2bc3ddb0e59870b">XTRNGPSX_DEFAULT_SEED_LIFE</a>&#160;&#160;&#160;256U</td></tr>
-<tr class="memdesc:gaf0628cfa849c9b93b2bc3ddb0e59870b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default seed life.  <a href="#gaf0628cfa849c9b93b2bc3ddb0e59870b">More...</a><br/></td></tr>
-<tr class="separator:gaf0628cfa849c9b93b2bc3ddb0e59870b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga77e0b07d55f767a322cb870bb0521da3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___overview.html#ga77e0b07d55f767a322cb870bb0521da3">XTRNGPSX_PERS_STRING_LEN_IN_WORDS</a>&#160;&#160;&#160;12U</td></tr>
 <tr class="memdesc:ga77e0b07d55f767a322cb870bb0521da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Personalization string length in words.  <a href="#ga77e0b07d55f767a322cb870bb0521da3">More...</a><br/></td></tr>
 <tr class="separator:ga77e0b07d55f767a322cb870bb0521da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -434,20 +431,6 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gaf0628cfa849c9b93b2bc3ddb0e59870b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define XTRNGPSX_DEFAULT_SEED_LIFE&#160;&#160;&#160;256U</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Default seed life. </p>
-
-</div>
-</div>
 <a class="anchor" id="gacdb1fbfdbaf6706a613cabfe35e4b23d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -562,7 +545,7 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define XTRNGPSX_MAX_SEEDLIFE&#160;&#160;&#160;0x80000</td>
+          <td class="memname">#define XTRNGPSX_MAX_SEEDLIFE&#160;&#160;&#160;0x80000U</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -874,6 +857,8 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 <li>XTRNGPSX_INVALID_PARAM if invalid parameter passed to this function. </li>
 </ul>
 </dd></dl>
+<p>Validate input parameters.</p>
+<p>Populate Config parameters </p>
 
 <p>References <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2aea69652aba529ca2df1550310a5b92cc">XTRNGPSX_ERROR</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13">XTRNGPSX_INVALID_PARAM</a>, and <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fab40d38d0bc64cb683a4ade9c3d07bd1b">XTRNGPSX_UNINITIALIZED_STATE</a>.</p>
 
@@ -981,6 +966,18 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 </ul>
 </li>
 </ul>
+<p>Validate input arguments.</p>
+<p>Wait for reseed operation and check CTF flag</p>
+<p>Store prediction resistance setting for hardware configuration during data collection</p>
+<p>Enable ring oscillators for random seed source</p>
+<p>Configure TRNG control: enable TRSS, EU mode for PTRNG operation</p>
+<p>Trigger generate and collect random data</p>
+<p>State machine update: transition to generate state indicating successful operation</p>
+<p>Update seed life and handle HRNG automatic reseed logic</p>
+<p>HRNG automatic reseed logic: maintain fresh entropy based on configured seed life</p>
+<p>Auto reseed in HRNG mode</p>
+<p>Automatic reseed with internal entropy: maintain cryptographic strength</p>
+<p>Update error state on failure (preserve catastrophic state) </p>
 
 <p>References <a class="el" href="group___overview.html#ga627ca508102e338acd949acd07143efc">TRNG_CTRL</a>, <a class="el" href="group___overview.html#ga67d733d1c108e408b09b96db25076861">TRNG_OSC_EN</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a026fb1ebe44fe8daa96bb6a7b27e98c9">XTRNG_PSX_INVALID_PREDRES_VALUE</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2ac8bf6bfdece57626cb0915eb4d8772b4">XTRNGPSX_CATASTROPHIC</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2aea69652aba529ca2df1550310a5b92cc">XTRNGPSX_ERROR</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fabf5f966ef2781b173f3d0126aa1aa1d3">XTRNGPSX_GENERATE_STATE</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2a519e903ee50abb8ccf5050c6bde24740">XTRNGPSX_HEALTHY</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fa6256a9f5a1ae6be94d94216a77e47d1c">XTRNGPSX_INSTANTIATE_STATE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79ab478bf676839153009c7a5bc91005079">XTRNGPSX_INVALID_BUF_SIZE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79abea04f8cfe70d6dc5a8e7a78d8a9929a">XTRNGPSX_INVALID_MODE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13">XTRNGPSX_INVALID_PARAM</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a21c4b76c9247554959c5f0ff66568ac0">XTRNGPSX_INVALID_STATE</a>, <a class="el" href="group___overview.html#ga27d626b65acc3b1e97573f4c2d2ee8e1">XTrngpsx_Reseed()</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a45649834be62e2cac315b4ed8db133f9">XTRNGPSX_RESEED_REQUIRED_ERROR</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fa0ec15ca3bf0e6216ad396aab80cd64db">XTRNGPSX_RESEED_STATE</a>, <a class="el" href="group___overview.html#ga6633fc0a90497ef7a28b75e708053d77">XTRNGPSX_SEC_STRENGTH_IN_BYTES</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2a7c767c57bf2693d05df2a4aa7ed49b60">XTRNGPSX_STARTUP_TEST</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a750afc0bc2b7948b06e719628dce4ec4">XTRNGPSX_UNHEALTHY_STATE</a>, and <a class="el" href="group___overview.html#ga9ef3e8b4f65633065b5de8de9f7429b4">XTRNGPSX_WORD_LEN_IN_BYTES</a>.</p>
 
@@ -1094,6 +1091,15 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 <li>XST_FAILURE On unexpected failure </li>
 </ul>
 </dd></dl>
+<p>Validate input arguments</p>
+<p>Secure copy user configuration to driver instance</p>
+<p>Bring TRNG and PRNG unit core out of reset</p>
+<p>Configure health monitoring and DIT for PTRNG/HRNG</p>
+<p>Configure cutoff values</p>
+<p>Configure default DIT value</p>
+<p>Do reseed operation when mode is DRNG/HRNG</p>
+<p>Mark TRNG as healthy and ready for operation</p>
+<p>Set error state on failure (except catastrophic failures) </p>
 
 <p>References <a class="el" href="group___overview.html#ga0644d7e73c8645812333618387619c84">XTRNGPSX_ADAPTPROPTESTCUTOFF_MAX_VAL</a>, <a class="el" href="group___overview.html#gaebafd9bdd9fd17cc76f7d644f2661b4c">XTRNGPSX_BLOCK_LEN_IN_BYTES</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2ac8bf6bfdece57626cb0915eb4d8772b4">XTRNGPSX_CATASTROPHIC</a>, <a class="el" href="group___overview.html#gacdb1fbfdbaf6706a613cabfe35e4b23d">XTRNGPSX_DF_MAX_LENGTH</a>, <a class="el" href="group___overview.html#ga0cd1496d0e68ec8adf6f020b4ee07639">XTRNGPSX_DF_MIN_LENGTH</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2aea69652aba529ca2df1550310a5b92cc">XTRNGPSX_ERROR</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2a519e903ee50abb8ccf5050c6bde24740">XTRNGPSX_HEALTHY</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fa6256a9f5a1ae6be94d94216a77e47d1c">XTRNGPSX_INSTANTIATE_STATE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a892ff927b85e5aeb786102b701523766">XTRNGPSX_INVALID_ADAPTPROPTEST_CUTOFF_VALUE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a07e0d5857d20d9872791857be99cd964">XTRNGPSX_INVALID_BLOCKING_MODE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79ace1309d483b3c71b4648cfc74ffc5944">XTRNGPSX_INVALID_DF_LENGTH</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79abea04f8cfe70d6dc5a8e7a78d8a9929a">XTRNGPSX_INVALID_MODE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13">XTRNGPSX_INVALID_PARAM</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a4879ffc6bc8dbbef89413a41af0bef1f">XTRNGPSX_INVALID_REPCOUNTTEST_CUTOFF_VALUE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a95625aa33c96fc9e65543064eb4e973e">XTRNGPSX_INVALID_SEED_LENGTH</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a75b95f1933476804c7b9aabc342b465f">XTRNGPSX_INVALID_SEED_LIFE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79aaf19eaa7b8db854d074a23c6722bc99d">XTRNGPSX_INVALID_SEED_VALUE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a21c4b76c9247554959c5f0ff66568ac0">XTRNGPSX_INVALID_STATE</a>, <a class="el" href="group___overview.html#ga369bd60024827c90f5863cb1e82baa59">XTRNGPSX_MAX_SEEDLIFE</a>, <a class="el" href="group___overview.html#gab156d67eb4a798f294dc6ddebe8ab53b">XTRNGPSX_MIN_SEEDLIFE</a>, <a class="el" href="group___overview.html#gacf4e638c7db3dcb2f105857b8d69880e">XTRNGPSX_REPCOUNTTESTCUTOFF_MAX_VAL</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fab40d38d0bc64cb683a4ade9c3d07bd1b">XTRNGPSX_UNINITIALIZED_STATE</a>, and <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a12c6a942189e26d4ef054ec3b4e5a39f">XTRNGPSX_USER_CFG_COPY_ERROR</a>.</p>
 
@@ -1215,6 +1221,9 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 </ul>
 </li>
 </ul>
+<p>Validate input arguments.</p>
+<p>Wait for reseed operation and check CTF flag</p>
+<p>Execute reseed operation with temporal protection against fault attacks </p>
 
 <p>References <a class="el" href="group___overview.html#gacdb1fbfdbaf6706a613cabfe35e4b23d">XTRNGPSX_DF_MAX_LENGTH</a>, <a class="el" href="group___overview.html#ga0cd1496d0e68ec8adf6f020b4ee07639">XTRNGPSX_DF_MIN_LENGTH</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2a519e903ee50abb8ccf5050c6bde24740">XTRNGPSX_HEALTHY</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79ace1309d483b3c71b4648cfc74ffc5944">XTRNGPSX_INVALID_DF_LENGTH</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79abea04f8cfe70d6dc5a8e7a78d8a9929a">XTRNGPSX_INVALID_MODE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13">XTRNGPSX_INVALID_PARAM</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79aaf19eaa7b8db854d074a23c6722bc99d">XTRNGPSX_INVALID_SEED_VALUE</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a21c4b76c9247554959c5f0ff66568ac0">XTRNGPSX_INVALID_STATE</a>, <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fa0ec15ca3bf0e6216ad396aab80cd64db">XTRNGPSX_RESEED_STATE</a>, <a class="el" href="group___overview.html#ggabf665f37f1800c3d3859681db4fb46c2a7c767c57bf2693d05df2a4aa7ed49b60">XTRNGPSX_STARTUP_TEST</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a750afc0bc2b7948b06e719628dce4ec4">XTRNGPSX_UNHEALTHY_STATE</a>, and <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fab40d38d0bc64cb683a4ade9c3d07bd1b">XTRNGPSX_UNINITIALIZED_STATE</a>.</p>
 
@@ -1254,6 +1263,9 @@ Constant definitions for parameters used for Health and KAT tests</h2></td></tr>
 </ul>
 </li>
 </ul>
+<p>Bring cores in to reset state</p>
+<p>Disable ring oscillators as a random seed source</p>
+<p>Retain the error state </p>
 
 <p>References <a class="el" href="group___overview.html#ga67d733d1c108e408b09b96db25076861">TRNG_OSC_EN</a>, <a class="el" href="group___overview.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13">XTRNGPSX_INVALID_PARAM</a>, and <a class="el" href="group___overview.html#gga1a37c0faa6994f63b7c2c62ffe43562fab40d38d0bc64cb683a4ade9c3d07bd1b">XTRNGPSX_UNINITIALIZED_STATE</a>.</p>
 

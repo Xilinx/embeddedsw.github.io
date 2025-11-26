@@ -85,20 +85,8 @@ MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
 1.2   ssh  22/07/22 Added multi gt support and updated the frl and
                        dru clk freq to 200MHz for -1 GTHE4 and GTYE4 device
 1.3   ssh  18/10/22 Updated the extended txdiffctrl mask and added
-                       support for NI-DRU diabled case
+                       support for NI-DRU disabled case
 1.4   ssh  10/09/24 Added DPLL clock primitive support for Versal
-</pre><p>See <a class="el" href="xhdmiphy1_8h.html">xhdmiphy1.h</a> for a detailed description of the driver.</p>
-<dl class="section note"><dt>Note</dt><dd>None.</dd></dl>
-<pre>
-MODIFICATION HISTORY:</pre><pre>Ver   Who  Date     Changes
-</p>
-<hr/>
-<p>
-           dd/mm/yy
-</p>
-<hr/>
-<p>
-1.0   gm   10/12/18 Initial release.
 </pre> </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -136,7 +124,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga041ec28c400f1b4cb662d9670e0feff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX/RXPRBSEL of the GT.  <a href="group__xhdmiphy1.html#ga041ec28c400f1b4cb662d9670e0feff3">More...</a><br/></td></tr>
 <tr class="separator:ga041ec28c400f1b4cb662d9670e0feff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae474ac8f1f2997229ec25e7584a4b827"><td class="memItemLeft" align="right" valign="top">u32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">XHdmiphy1_TxPrbsForceError</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 ForceErr)</td></tr>
-<tr class="memdesc:gae474ac8f1f2997229ec25e7584a4b827"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX/RXPRBSEL of the GT.  <a href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">More...</a><br/></td></tr>
+<tr class="memdesc:gae474ac8f1f2997229ec25e7584a4b827"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will force an error in the TX PRBS pattern for the GT.  <a href="group__xhdmiphy1.html#gae474ac8f1f2997229ec25e7584a4b827">More...</a><br/></td></tr>
 <tr class="separator:gae474ac8f1f2997229ec25e7584a4b827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa01b2c0214336ba205fcac3c8fd7675d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#gaa01b2c0214336ba205fcac3c8fd7675d">XHdmiphy1_SetTxVoltageSwing</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 Vs)</td></tr>
 <tr class="memdesc:gaa01b2c0214336ba205fcac3c8fd7675d"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX voltage swing value for a given channel.  <a href="group__xhdmiphy1.html#gaa01b2c0214336ba205fcac3c8fd7675d">More...</a><br/></td></tr>
@@ -145,7 +133,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gad9dd0d271c9be7416e55adc535257cea"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX pre-emphasis value for a given channel.  <a href="group__xhdmiphy1.html#gad9dd0d271c9be7416e55adc535257cea">More...</a><br/></td></tr>
 <tr class="separator:gad9dd0d271c9be7416e55adc535257cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga755a209f0abe848a3508017f83ad4c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">XHdmiphy1_SetTxPostCursor</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, u8 Pc)</td></tr>
-<tr class="memdesc:ga755a209f0abe848a3508017f83ad4c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX post-curosr value for a given channel.  <a href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">More...</a><br/></td></tr>
+<tr class="memdesc:ga755a209f0abe848a3508017f83ad4c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will set the TX post-cursor value for a given channel.  <a href="group__xhdmiphy1.html#ga755a209f0abe848a3508017f83ad4c62">More...</a><br/></td></tr>
 <tr class="separator:ga755a209f0abe848a3508017f83ad4c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga704b9c7161c4ac92beaa07113caaa36c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__xhdmiphy1.html#ga704b9c7161c4ac92beaa07113caaa36c">XHdmiphy1_SetRxLpm</a> (<a class="el" href="struct_x_hdmiphy1.html">XHdmiphy1</a> *InstancePtr, u8 QuadId, <a class="el" href="group__xhdmiphy1.html#ga54f72201d2012e3c638ec92b5e310f23">XHdmiphy1_ChannelId</a> ChId, XHdmiphy1_DirectionType Dir, u8 Enable)</td></tr>
 <tr class="memdesc:ga704b9c7161c4ac92beaa07113caaa36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function will enable or disable the LPM logic in the Video PHY core.  <a href="group__xhdmiphy1.html#ga704b9c7161c4ac92beaa07113caaa36c">More...</a><br/></td></tr>

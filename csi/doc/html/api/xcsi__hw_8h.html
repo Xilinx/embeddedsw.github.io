@@ -446,8 +446,8 @@ Macros</h2></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>The interrupts are grouped into DPHY Level Errors, Protocol Decoding Errors, Packet Level Errors, Normal Errors, Frame Received interrupt and Short Packet related.</p>
 <p>These are used in XCsi_InterruptHandler() to determine the particular callback </p>
 </div></td></tr>
-<tr class="memitem:gaa6a4492341d6b195ad646e1153efa554"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa6a4492341d6b195ad646e1153efa554"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_PROT_MASK</b></td></tr>
+<tr class="memitem:gaa6a4492341d6b195ad646e1153efa554"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#gaa6a4492341d6b195ad646e1153efa554">XCSI_INTR_PROT_MASK</a></td></tr>
+<tr class="memdesc:gaa6a4492341d6b195ad646e1153efa554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protocol decoding error mask for VC0-3.  <a href="group__csi.html#gaa6a4492341d6b195ad646e1153efa554">More...</a><br/></td></tr>
 <tr class="separator:gaa6a4492341d6b195ad646e1153efa554"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga71025979a59dca3d2d559f36f8b3302e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#ga71025979a59dca3d2d559f36f8b3302e">XCSI_ISR_VC15FSYNCERR_MASK</a>&#160;&#160;&#160;0x00800000</td></tr>
 <tr class="memdesc:ga71025979a59dca3d2d559f36f8b3302e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame Sync Error on Virtual Channel 15.  <a href="group__csi.html#ga71025979a59dca3d2d559f36f8b3302e">More...</a><br/></td></tr>
@@ -521,26 +521,26 @@ Macros</h2></td></tr>
 <tr class="memitem:ga7b43f31c97c79853b5fc11430cf46ce2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#ga7b43f31c97c79853b5fc11430cf46ce2">XCSI_ISR_VC4FLVLERR_MASK</a>&#160;&#160;&#160;0x00000001</td></tr>
 <tr class="memdesc:ga7b43f31c97c79853b5fc11430cf46ce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame Level Error on Virtual Channel 4.  <a href="group__csi.html#ga7b43f31c97c79853b5fc11430cf46ce2">More...</a><br/></td></tr>
 <tr class="separator:ga7b43f31c97c79853b5fc11430cf46ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4111a9b1dc87e7c977ee50067d0e5d50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4111a9b1dc87e7c977ee50067d0e5d50"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_VCFE_MASK</b></td></tr>
+<tr class="memitem:ga4111a9b1dc87e7c977ee50067d0e5d50"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#ga4111a9b1dc87e7c977ee50067d0e5d50">XCSI_INTR_VCFE_MASK</a></td></tr>
+<tr class="memdesc:ga4111a9b1dc87e7c977ee50067d0e5d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual channel frame error mask for VC4-15.  <a href="group__csi.html#ga4111a9b1dc87e7c977ee50067d0e5d50">More...</a><br/></td></tr>
 <tr class="separator:ga4111a9b1dc87e7c977ee50067d0e5d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab8c4b2bac55a3e55b32a86d19e2bf850"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab8c4b2bac55a3e55b32a86d19e2bf850"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_PKTLVL_MASK</b></td></tr>
+<tr class="memitem:gab8c4b2bac55a3e55b32a86d19e2bf850"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#gab8c4b2bac55a3e55b32a86d19e2bf850">XCSI_INTR_PKTLVL_MASK</a></td></tr>
+<tr class="memdesc:gab8c4b2bac55a3e55b32a86d19e2bf850"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet level error interrupt mask.  <a href="group__csi.html#gab8c4b2bac55a3e55b32a86d19e2bf850">More...</a><br/></td></tr>
 <tr class="separator:gab8c4b2bac55a3e55b32a86d19e2bf850"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga35bdf5775bb2ab64a69b92eaa2040afe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga35bdf5775bb2ab64a69b92eaa2040afe"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_DPHY_MASK</b></td></tr>
+<tr class="memitem:ga35bdf5775bb2ab64a69b92eaa2040afe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#ga35bdf5775bb2ab64a69b92eaa2040afe">XCSI_INTR_DPHY_MASK</a></td></tr>
+<tr class="memdesc:ga35bdf5775bb2ab64a69b92eaa2040afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">D-PHY level error interrupt mask.  <a href="group__csi.html#ga35bdf5775bb2ab64a69b92eaa2040afe">More...</a><br/></td></tr>
 <tr class="separator:ga35bdf5775bb2ab64a69b92eaa2040afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab000e47ba8b499d6702071d100e131d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab000e47ba8b499d6702071d100e131d5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_SPKT_MASK</b></td></tr>
+<tr class="memitem:gab000e47ba8b499d6702071d100e131d5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#gab000e47ba8b499d6702071d100e131d5">XCSI_INTR_SPKT_MASK</a></td></tr>
+<tr class="memdesc:gab000e47ba8b499d6702071d100e131d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Short packet FIFO interrupt mask.  <a href="group__csi.html#gab000e47ba8b499d6702071d100e131d5">More...</a><br/></td></tr>
 <tr class="separator:gab000e47ba8b499d6702071d100e131d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa5b5ffa22bd55af6dcbc562d609bcfcf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa5b5ffa22bd55af6dcbc562d609bcfcf"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_FRAMERCVD_MASK</b>&#160;&#160;&#160;(<a class="el" href="group__csi.html#ga92dc3b2b6b12f81c20169d031df90f06">XCSI_ISR_FR_MASK</a>)</td></tr>
+<tr class="memitem:gaa5b5ffa22bd55af6dcbc562d609bcfcf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#gaa5b5ffa22bd55af6dcbc562d609bcfcf">XCSI_INTR_FRAMERCVD_MASK</a>&#160;&#160;&#160;(<a class="el" href="group__csi.html#ga92dc3b2b6b12f81c20169d031df90f06">XCSI_ISR_FR_MASK</a>)</td></tr>
+<tr class="memdesc:gaa5b5ffa22bd55af6dcbc562d609bcfcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame received interrupt mask.  <a href="group__csi.html#gaa5b5ffa22bd55af6dcbc562d609bcfcf">More...</a><br/></td></tr>
 <tr class="separator:gaa5b5ffa22bd55af6dcbc562d609bcfcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga94cf100f2a6ed500f62879a88cd6b4d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga94cf100f2a6ed500f62879a88cd6b4d5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_VCXFE_MASK</b>&#160;&#160;&#160;(<a class="el" href="group__csi.html#ga376c33323cc8d9e936d8ccd59c30819c">XCSI_ISR_VCXFE_MASK</a>)</td></tr>
+<tr class="memitem:ga94cf100f2a6ed500f62879a88cd6b4d5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#ga94cf100f2a6ed500f62879a88cd6b4d5">XCSI_INTR_VCXFE_MASK</a>&#160;&#160;&#160;(<a class="el" href="group__csi.html#ga376c33323cc8d9e936d8ccd59c30819c">XCSI_ISR_VCXFE_MASK</a>)</td></tr>
+<tr class="memdesc:ga94cf100f2a6ed500f62879a88cd6b4d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">VCX frame error interrupt mask.  <a href="group__csi.html#ga94cf100f2a6ed500f62879a88cd6b4d5">More...</a><br/></td></tr>
 <tr class="separator:ga94cf100f2a6ed500f62879a88cd6b4d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac80f26402c7d8e3abaf1d4da0e0035a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac80f26402c7d8e3abaf1d4da0e0035a4"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>XCSI_INTR_ERR_MASK</b></td></tr>
+<tr class="memitem:gac80f26402c7d8e3abaf1d4da0e0035a4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__csi.html#gac80f26402c7d8e3abaf1d4da0e0035a4">XCSI_INTR_ERR_MASK</a></td></tr>
+<tr class="memdesc:gac80f26402c7d8e3abaf1d4da0e0035a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Other error interrupt mask.  <a href="group__csi.html#gac80f26402c7d8e3abaf1d4da0e0035a4">More...</a><br/></td></tr>
 <tr class="separator:gac80f26402c7d8e3abaf1d4da0e0035a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Bitmasks and offsets of XCSI_IER_OFFSET register</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>This register contains the interrupt enable masks </p>

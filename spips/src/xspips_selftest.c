@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -24,6 +25,8 @@
 * 3.2   aru    01/20/19 Fixes violations according to MISRAC-2012
 *                       in safety mode and done changes such as
 *                       Added goto statements.
+* 3.13  sb     09/09/25 Fix chip selection issues.
+* 3.13  sb     09/17/25 Corrected register masking logic in XSpiPs_SelfTest function.
 * </pre>
 *
 ******************************************************************************/
@@ -88,6 +91,7 @@ s32 XSpiPs_SelfTest(XSpiPs *InstancePtr)
 	 */
 	Register = XSpiPs_ReadReg(InstancePtr->Config.BaseAddress,
 				 XSPIPS_CR_OFFSET);
+	Register &= ~XSPIPS_CR_SSCTRL_MASK;
 	if (Register != XSPIPS_CR_RESET_STATE) {
 		Status = (s32)XST_REGISTER_ERROR;
 		goto END;

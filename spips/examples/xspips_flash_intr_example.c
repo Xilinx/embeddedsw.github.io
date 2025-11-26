@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -31,6 +31,7 @@
 *                    generation.
 * 3.2  nsk  03/26/19 Add support for versal
 * 3.9  sb   07/05/23 Added support for system device-tree flow.
+* 3.13 sb   09/09/25 Fix flash status register check in erase function
 *</pre>
 *
 ******************************************************************************/
@@ -132,10 +133,12 @@ static int is_sst;
 
 /************************** Function Prototypes ******************************/
 
+#ifndef SDT
 static int SpiPsSetupIntrSystem(XScuGic *IntcInstancePtr,
 				XSpiPs *SpiInstancePtr, u16 SpiIntrId);
 
 static void SpiPsDisableIntrSystem(XScuGic *IntcInstancePtr, u16 SpiIntrId);
+#endif
 
 void SpiPsHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount);
 
@@ -164,7 +167,9 @@ static int SST_GlobalBlkProtectUnlk(XSpiPs *SpiInstancePtr);
  * but should at least be static so they are zeroed.
  */
 #ifndef TESTAPP_GEN
+#ifndef SDT
 static XScuGic IntcInstance;
+#endif
 static XSpiPs SpiInstance;
 #endif
 
@@ -491,6 +496,8 @@ int SpiPsFlashIntrExample(XSpiPs *SpiInstancePtr, UINTPTR BaseAddress)
 ******************************************************************************/
 void SpiPsHandler(void *CallBackRef, u32 StatusEvent, unsigned int ByteCount)
 {
+	(void)CallBackRef;
+	(void)ByteCount;
 	/*
 	 * Indicate the transfer on the SPI bus is no longer in progress
 	 * regardless of the status event
@@ -871,7 +878,7 @@ static void FlashErase(XSpiPs *SpiPtr)
 		 * device slave select is possibly incorrect such that
 		 * the device status is not being read
 		 */
-		if ((FlashStatus[1] & 0x1C) == 0x0) {
+		if ((FlashStatus[1] & 0x3D) == 0x0) {
 			break;
 		}
 	}

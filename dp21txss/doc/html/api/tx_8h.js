@@ -1,6 +1,5 @@
 var tx_8h =
 [
-    [ "config_phy", "tx_8h.html#abc3b5b8be57b7512acb3aefb43ea5f42", null ],
     [ "DpPt_CustomWaitUs", "tx_8h.html#a5d15e19beea7bc6ae8407543fd333bb9", null ],
     [ "DpPt_HpdEventHandler", "tx_8h.html#a447f6616df8f90d9d99ca9f8ff9d3f9d", null ],
     [ "DpPt_HpdPulseHandler", "tx_8h.html#a9e50f6016fe9f36c15696a53f9cbf5fa", null ],

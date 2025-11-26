@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -56,6 +56,10 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 * 3.18  mus  03/27/24 Added handling for FAST interrupts.
+* 3.20  ml   05/06/24 Fixed GCC warnings by correcting qualifier order and adding
+*                     appropriate typecasts
+* 3.21  ml   09/13/25 Updated example to run with GIC-based interrupt routing
+*                     under SDT
 * </pre>
 ******************************************************************************/
 
@@ -68,6 +72,13 @@
 #include "xil_exception.h"
 #include "xil_printf.h"
 
+#if defined(XPAR_SCUGIC)
+#include "xscugic.h"
+#endif
+
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#endif
 /************************** Constant Definitions *****************************/
 
 /*
@@ -107,8 +118,13 @@ void DeviceDriverHandler(void *CallbackRef);
  * Create a shared variable to be used by the main thread of processing and
  * the interrupt processing
  */
-volatile static int InterruptProcessed = FALSE;
+static volatile int InterruptProcessed = FALSE;
+static XIntc_Config *CfgPtr;
 
+#if defined(XPAR_SCUGIC)
+XScuGic InterruptController;
+static XScuGic_Config *GicConfig;
+#endif
 /*****************************************************************************/
 /**
 *
@@ -164,7 +180,6 @@ int main(void)
 int IntcLowLevelExample(u32 IntcBaseAddress)
 {
 	UINTPTR vector_base;
-	XIntc_Config *CfgPtr;
 	u8 Id;
 
 	/*
@@ -224,6 +239,7 @@ int IntcLowLevelExample(u32 IntcBaseAddress)
 	 */
 	XIntc_Out32(IntcBaseAddress + XIN_ISR_OFFSET, INTC_DEVICE_INT_MASK);
 
+
 	/*
 	 * Wait for the interrupt to be processed, if the interrupt does not
 	 * occur this loop will wait forever.
@@ -260,6 +276,15 @@ int IntcLowLevelExample(u32 IntcBaseAddress)
 ******************************************************************************/
 void SetupInterruptSystem()
 {
+#if defined(XPAR_SCUGIC)
+	u16 IntrId = XGet_IntrId(CfgPtr->IntrId) + 32;
+	GicConfig = XScuGic_LookupConfig(CfgPtr->IntrParent);
+
+	XScuGic_CfgInitialize(&InterruptController, GicConfig,
+				       GicConfig->CpuBaseAddress);
+
+#endif
+
 	/*
 	 * Initialize the exception table.
 	 */
@@ -271,18 +296,29 @@ void SetupInterruptSystem()
 #ifndef SDT
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
 				     (Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
-				     INTC_DEVICE_ID);
+				     (void *)INTC_DEVICE_ID);
 #else
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+	if (XGet_IntcType(CfgPtr->IntrParent) == XINTC_TYPE_IS_INTC) {
+		Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
 				     (Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
-				     INTC_BASEADDR);
+				     (void *)INTC_BASEADDR);
+	} else {
+#if defined(XPAR_SCUGIC)
+		Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+				     (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+				     (void *)&InterruptController);
+		XScuGic_Connect(&InterruptController, IntrId,
+				 (Xil_ExceptionHandler)XIntc_DeviceInterruptHandler,
+				 (void *)INTC_BASEADDR);
+		XScuGic_Enable(&InterruptController, IntrId);
+#endif
+	}
 #endif
 
 	/*
 	 * Enable exceptions.
 	 */
 	Xil_ExceptionEnable();
-
 }
 
 
@@ -312,6 +348,7 @@ void SetupInterruptSystem()
 ******************************************************************************/
 void DeviceDriverHandler(void *CallbackRef)
 {
+	(void)CallbackRef;
 	/*
 	 * Indicate the interrupt has been processed using a shared variable.
 	 */

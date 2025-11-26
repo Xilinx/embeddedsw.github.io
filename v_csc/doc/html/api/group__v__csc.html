@@ -78,6 +78,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ga83b645a410a8dc7e5d4f9c27bb624816"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__csc.html#ga83b645a410a8dc7e5d4f9c27bb624816">XV_CSC_CTRL_ADDR_AP_CTRL</a>&#160;&#160;&#160;0x000</td></tr>
+<tr class="memdesc:ga83b645a410a8dc7e5d4f9c27bb624816"><td class="mdescLeft">&#160;</td><td class="mdescRight">XV_CSC Hardware Register Definitions.  <a href="#ga83b645a410a8dc7e5d4f9c27bb624816">More...</a><br/></td></tr>
+<tr class="separator:ga83b645a410a8dc7e5d4f9c27bb624816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga64197c10301089d2df889c814d682276"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__v__csc.html#ga64197c10301089d2df889c814d682276">XV_CscSetColorDepth</a>(InstancePtr, val)&#160;&#160;&#160;((InstancePtr)-&gt;ColorDepth = val)</td></tr>
 <tr class="memdesc:ga64197c10301089d2df889c814d682276"><td class="mdescLeft">&#160;</td><td class="mdescRight">This macro sets color depth for CSC core.  <a href="#ga64197c10301089d2df889c814d682276">More...</a><br/></td></tr>
 <tr class="separator:ga64197c10301089d2df889c814d682276"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,6 +182,55 @@ Functions</h2></td></tr>
 <tr class="separator:ga457129c97acda4bcd19b2ec799fe43f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="ga83b645a410a8dc7e5d4f9c27bb624816"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XV_CSC_CTRL_ADDR_AP_CTRL&#160;&#160;&#160;0x000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>XV_CSC Hardware Register Definitions. </p>
+<p>This header file defines the register addresses and bit widths for the XV_CSC hardware module. The XV_CSC module is typically used for color space conversion operations in embedded systems.</p>
+<p>Register Address Map:</p>
+<ul>
+<li>Control and Status Registers:<ul>
+<li>XV_CSC_CTRL_ADDR_AP_CTRL: Control register</li>
+<li>XV_CSC_CTRL_ADDR_GIE: Global interrupt enable</li>
+<li>XV_CSC_CTRL_ADDR_IER: Interrupt enable register</li>
+<li>XV_CSC_CTRL_ADDR_ISR: Interrupt status register</li>
+</ul>
+</li>
+<li>Configuration Registers:<ul>
+<li>HWREG_INVIDEOFORMAT_DATA: Input video format (8 bits)</li>
+<li>HWREG_OUTVIDEOFORMAT_DATA: Output video format (8 bits)</li>
+<li>HWREG_WIDTH_DATA: Frame width (16 bits)</li>
+<li>HWREG_HEIGHT_DATA: Frame height (16 bits)</li>
+<li>HWREG_COLSTART_DATA / HWREG_COLEND_DATA: Column start/end (16 bits)</li>
+<li>HWREG_ROWSTART_DATA / HWREG_ROWEND_DATA: Row start/end (16 bits)</li>
+</ul>
+</li>
+<li>Color Space Conversion Coefficients:<ul>
+<li>HWREG_K11_DATA to HWREG_K33_DATA: 3x3 matrix coefficients (16 bits each)</li>
+<li>HWREG_ROFFSET_V_DATA, HWREG_GOFFSET_V_DATA, HWREG_BOFFSET_V_DATA: RGB offsets (12 bits each)</li>
+<li>HWREG_CLAMPMIN_V_DATA, HWREG_CLIPMAX_V_DATA: Clamp min/max values (10 bits each)</li>
+</ul>
+</li>
+<li>Secondary Coefficient Set:<ul>
+<li>HWREG_K11_2_DATA to HWREG_K33_2_DATA: Alternate 3x3 matrix coefficients (16 bits each)</li>
+<li>HWREG_ROFFSET_2_V_DATA, HWREG_GOFFSET_2_V_DATA, HWREG_BOFFSET_2_V_DATA: Alternate RGB offsets (12 bits each)</li>
+<li>HWREG_CLAMPMIN_2_V_DATA, HWREG_CLIPMAX_2_V_DATA: Alternate clamp min/max values (10 bits each)</li>
+</ul>
+</li>
+</ul>
+<p>Each register address is defined as an offset from the base address of the XV_CSC hardware module. The corresponding bit width for each register is also defined for proper data handling. </p>
+
+<p>Referenced by <a class="el" href="xv__csc_8h.html#aec496e7295e4b195af47b5a49703f451">XV_csc_DisableAutoRestart()</a>, <a class="el" href="xv__csc_8h.html#a1f9b6ae52bfa2222ebbe3f75aa573508">XV_csc_EnableAutoRestart()</a>, <a class="el" href="xv__csc_8h.html#a0a6d268b5f168e65c99376b2a052d44d">XV_csc_IsDone()</a>, <a class="el" href="xv__csc_8h.html#a8dc1ebd5815055fe03ef358cc9e74a00">XV_csc_IsIdle()</a>, <a class="el" href="xv__csc_8h.html#a719f8d4a659dac2ddeb418d894138d04">XV_csc_IsReady()</a>, <a class="el" href="xv__csc_8h.html#a581de2fe3bbb051d654bd27413200a88">XV_csc_Start()</a>, and <a class="el" href="group__v__csc.html#ga457129c97acda4bcd19b2ec799fe43f3">XV_CscDbgReportStatus()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ga09e0fb8bf2b17717b6e014d6b89a40a0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -659,7 +711,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="struct_x_v__csc___config.html#a1f297fa0ed983778047000e20bfacc2d">XV_csc_Config::BaseAddress</a>, <a class="el" href="struct_x_v__csc.html#aa5c39284c336caccb3d700680b1f73ed">XV_csc::Config</a>, <a class="el" href="group__v__csc.html#ga91c4bc0d3d5629de2513e11f5c8f597e">XV_CscIs420Enabled</a>, <a class="el" href="group__v__csc.html#gaf7d53698d5230e388a1250a060785643">XV_CscIs422Enabled</a>, and <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
+<p>References <a class="el" href="struct_x_v__csc___config.html#a1f297fa0ed983778047000e20bfacc2d">XV_csc_Config::BaseAddress</a>, <a class="el" href="struct_x_v__csc.html#aa5c39284c336caccb3d700680b1f73ed">XV_csc::Config</a>, <a class="el" href="group__v__csc.html#ga83b645a410a8dc7e5d4f9c27bb624816">XV_CSC_CTRL_ADDR_AP_CTRL</a>, <a class="el" href="xv__csc_8c.html#ae42005a17542d24272f720b3caed35f8">XV_csc_Get_HwReg_BOffset_2_V()</a>, <a class="el" href="xv__csc_8c.html#ad98d76905b03c3db6a1cd8ed7a48596c">XV_csc_Get_HwReg_BOffset_V()</a>, <a class="el" href="xv__csc_8c.html#ab90ed6c8a94b0e0e45d5f0703977ee54">XV_csc_Get_HwReg_ClampMin_2_V()</a>, <a class="el" href="xv__csc_8c.html#a87a996c7449fe599b556001891398aa0">XV_csc_Get_HwReg_ClampMin_V()</a>, <a class="el" href="xv__csc_8c.html#a65327fb05fce3c084015bba495bd0dce">XV_csc_Get_HwReg_ClipMax_2_V()</a>, <a class="el" href="xv__csc_8c.html#a37a6fa57effd58b482af27beb0f70b52">XV_csc_Get_HwReg_ClipMax_V()</a>, <a class="el" href="xv__csc_8c.html#aae3fa4d2bc63ebd92a435b0e92ffdc40">XV_csc_Get_HwReg_ColEnd()</a>, <a class="el" href="xv__csc_8c.html#aed9a23dda1e8bd1f2df9505f8f2c4f5d">XV_csc_Get_HwReg_ColStart()</a>, <a class="el" href="xv__csc_8c.html#a6bb1e97d755318c356aaa765963571df">XV_csc_Get_HwReg_GOffset_2_V()</a>, <a class="el" href="xv__csc_8c.html#a4240e6c41352852e7149fedf18495f46">XV_csc_Get_HwReg_GOffset_V()</a>, <a class="el" href="xv__csc_8c.html#a181bbd14d25d0a00fd0fa9a768617e21">XV_csc_Get_HwReg_height()</a>, <a class="el" href="xv__csc_8c.html#a41c21697ba4370619266f107e2a564ab">XV_csc_Get_HwReg_InVideoFormat()</a>, <a class="el" href="xv__csc_8c.html#a7216117d3f10d0b79f2ca05136222587">XV_csc_Get_HwReg_K11()</a>, <a class="el" href="xv__csc_8c.html#a5850ebe7b62db9e9fa0f9ba5e5ad1282">XV_csc_Get_HwReg_K11_2()</a>, <a class="el" href="xv__csc_8c.html#a970a5d8f1fc900355f5d9996530b3ea6">XV_csc_Get_HwReg_K12()</a>, <a class="el" href="xv__csc_8c.html#a5df661bedc7bd2bfd49b00b2c1a0d3da">XV_csc_Get_HwReg_K12_2()</a>, <a class="el" href="xv__csc_8c.html#a1b64e290be48fdbbd136961d8eaae8a8">XV_csc_Get_HwReg_K13()</a>, <a class="el" href="xv__csc_8c.html#ab599dea538bb8d247b29a8ed21603e47">XV_csc_Get_HwReg_K13_2()</a>, <a class="el" href="xv__csc_8c.html#a3e8ec952e8331025a362ef3d0acac8d0">XV_csc_Get_HwReg_K21()</a>, <a class="el" href="xv__csc_8c.html#a97db008681e8e0c47cdfbbf98259ea66">XV_csc_Get_HwReg_K21_2()</a>, <a class="el" href="xv__csc_8c.html#ac2e62bbe175cc4cfa8a9b46a3d9c24f1">XV_csc_Get_HwReg_K22()</a>, <a class="el" href="xv__csc_8c.html#a2833b85659c94f15b3ca94458f854302">XV_csc_Get_HwReg_K22_2()</a>, <a class="el" href="xv__csc_8c.html#aa65f1084f09f69546f15215da1548c56">XV_csc_Get_HwReg_K23()</a>, <a class="el" href="xv__csc_8c.html#a578075406869631aad822139241f5d4a">XV_csc_Get_HwReg_K23_2()</a>, <a class="el" href="xv__csc_8c.html#ac9b5e6422f7c22d0da3d587be6495d55">XV_csc_Get_HwReg_K31()</a>, <a class="el" href="xv__csc_8c.html#ae20ccca45067096347713ac4798e9950">XV_csc_Get_HwReg_K31_2()</a>, <a class="el" href="xv__csc_8c.html#ad8975ad96ac269ca8398e1ef0262d5d6">XV_csc_Get_HwReg_K32()</a>, <a class="el" href="xv__csc_8c.html#a73c1e70493bcb6d56d4f8e92781dfadc">XV_csc_Get_HwReg_K32_2()</a>, <a class="el" href="xv__csc_8c.html#a4b2079eb4a597a20a46f4162a62a865a">XV_csc_Get_HwReg_K33()</a>, <a class="el" href="xv__csc_8c.html#ac56d6c355abd342e932230daca7dd7b2">XV_csc_Get_HwReg_K33_2()</a>, <a class="el" href="xv__csc_8c.html#a61b1d34bc8b1e8f7deb2447328ed0323">XV_csc_Get_HwReg_OutVideoFormat()</a>, <a class="el" href="xv__csc_8c.html#a48d62c832cb0318b86638dcf5873f465">XV_csc_Get_HwReg_ROffset_2_V()</a>, <a class="el" href="xv__csc_8c.html#ac45c3e29178cd4b9f1ad4884606dea66">XV_csc_Get_HwReg_ROffset_V()</a>, <a class="el" href="xv__csc_8c.html#a477a37e00231d7173258fc57d86a0a93">XV_csc_Get_HwReg_RowEnd()</a>, <a class="el" href="xv__csc_8c.html#a1be2750d8f4806b9f5e71af55ede8d26">XV_csc_Get_HwReg_RowStart()</a>, <a class="el" href="xv__csc_8c.html#ad890d086dca06e33581d16e10d0826f2">XV_csc_Get_HwReg_width()</a>, <a class="el" href="xv__csc_8c.html#a0a6d268b5f168e65c99376b2a052d44d">XV_csc_IsDone()</a>, <a class="el" href="xv__csc_8c.html#a8dc1ebd5815055fe03ef358cc9e74a00">XV_csc_IsIdle()</a>, <a class="el" href="xv__csc_8c.html#a719f8d4a659dac2ddeb418d894138d04">XV_csc_IsReady()</a>, <a class="el" href="group__v__csc.html#ga91c4bc0d3d5629de2513e11f5c8f597e">XV_CscIs420Enabled</a>, <a class="el" href="group__v__csc.html#gaf7d53698d5230e388a1250a060785643">XV_CscIs422Enabled</a>, and <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
 
 </div>
 </div>
@@ -697,7 +749,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if device is found and initialized XST_DEVICE_NOT_FOUND if device is not found </dd></dl>
 
-<p>References <a class="el" href="group__v__csc.html#ga7c7f84f16fce5fe23a6920bc79c5c95f">XV_CscSetPowerOnDefaultState()</a>.</p>
+<p>References <a class="el" href="xv__csc_8h.html#a6291a841dc92c7282358d1452785402b">XV_csc_Initialize()</a>, and <a class="el" href="group__v__csc.html#ga7c7f84f16fce5fe23a6920bc79c5c95f">XV_CscSetPowerOnDefaultState()</a>.</p>
 
 </div>
 </div>
@@ -742,7 +794,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
-<p>References <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
+<p>References <a class="el" href="xv__csc_8c.html#a30b3c72b21e3173884300993c536a54a">XV_csc_Set_HwReg_ColEnd()</a>, <a class="el" href="xv__csc_8c.html#a98ba79ef63d272819249c122a0be9498">XV_csc_Set_HwReg_ColStart()</a>, <a class="el" href="xv__csc_8c.html#a35c88ca527cee1ca2900237915b0c6e4">XV_csc_Set_HwReg_height()</a>, <a class="el" href="xv__csc_8c.html#aff6a75865ec9dbbe528a81330fb39e47">XV_csc_Set_HwReg_RowEnd()</a>, <a class="el" href="xv__csc_8c.html#a2992ce020280a7131e122e2c281704de">XV_csc_Set_HwReg_RowStart()</a>, <a class="el" href="xv__csc_8c.html#a5a75fe188408191dcfabcccfa6d7368a">XV_csc_Set_HwReg_width()</a>, and <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
 
 </div>
 </div>
@@ -883,7 +935,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if the requested color format is allowed XST_FAILURE if YUV422/420 color format is requested but not allowed </dd></dl>
 
-<p>References <a class="el" href="group__v__csc.html#ga91c4bc0d3d5629de2513e11f5c8f597e">XV_CscIs420Enabled</a>, and <a class="el" href="group__v__csc.html#gaf7d53698d5230e388a1250a060785643">XV_CscIs422Enabled</a>.</p>
+<p>References <a class="el" href="xv__csc_8c.html#a6ce5722b5dcca57855b376e22ca955b7">XV_csc_Set_HwReg_InVideoFormat()</a>, <a class="el" href="xv__csc_8c.html#a27a1dc48278f8fe5174adcf6547d7750">XV_csc_Set_HwReg_OutVideoFormat()</a>, <a class="el" href="group__v__csc.html#ga91c4bc0d3d5629de2513e11f5c8f597e">XV_CscIs420Enabled</a>, and <a class="el" href="group__v__csc.html#gaf7d53698d5230e388a1250a060785643">XV_CscIs422Enabled</a>.</p>
 
 </div>
 </div>
@@ -959,7 +1011,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>XST_SUCCESS if this core instance has the demo window enabled XST_FAILURE if this instance does not have the demo window enabled </dd></dl>
 
-<p>References <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
+<p>References <a class="el" href="xv__csc_8c.html#a30b3c72b21e3173884300993c536a54a">XV_csc_Set_HwReg_ColEnd()</a>, <a class="el" href="xv__csc_8c.html#a98ba79ef63d272819249c122a0be9498">XV_csc_Set_HwReg_ColStart()</a>, <a class="el" href="xv__csc_8c.html#aff6a75865ec9dbbe528a81330fb39e47">XV_csc_Set_HwReg_RowEnd()</a>, <a class="el" href="xv__csc_8c.html#a2992ce020280a7131e122e2c281704de">XV_csc_Set_HwReg_RowStart()</a>, and <a class="el" href="group__v__csc.html#ga15d61516819df5462ec57bdc5b647c15">XV_CscIsDemoWindowEnabled</a>.</p>
 
 </div>
 </div>
@@ -1124,6 +1176,8 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
 
+<p>References <a class="el" href="xv__csc_8c.html#a1f9b6ae52bfa2222ebbe3f75aa573508">XV_csc_EnableAutoRestart()</a>, and <a class="el" href="xv__csc_8c.html#a581de2fe3bbb051d654bd27413200a88">XV_csc_Start()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ga42801845038afafff53e9c6d993c289b"></a>
@@ -1148,6 +1202,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+
+<p>References <a class="el" href="xv__csc_8c.html#aec496e7295e4b195af47b5a49703f451">XV_csc_DisableAutoRestart()</a>.</p>
 
 </div>
 </div>

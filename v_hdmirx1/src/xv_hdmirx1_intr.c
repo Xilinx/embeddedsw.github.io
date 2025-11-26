@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -51,7 +51,9 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr);
 static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr);
 static void HdmiRx1_AudIntrHandler(XV_HdmiRx1 *InstancePtr);
 static void HdmiRx1_LinkStatusIntrHandler(XV_HdmiRx1 *InstancePtr);
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 static void HdmiRx1_FrlIntrHandler(XV_HdmiRx1 *InstancePtr);
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 
 /************************** Variable Definitions *****************************/
 
@@ -167,7 +169,7 @@ void XV_HdmiRx1_IntrHandler(void *InstancePtr)
 		HdmiRx1_LinkStatusIntrHandler(HdmiRx1Ptr);
 	}
 
-	/* FRL */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	Data = XV_HdmiRx1_ReadReg(HdmiRx1Ptr->Config.BaseAddress,
 				 (XV_HDMIRX1_FRL_STA_OFFSET)) &
 				 (XV_HDMIRX1_FRL_STA_IRQ_MASK);
@@ -177,6 +179,7 @@ void XV_HdmiRx1_IntrHandler(void *InstancePtr)
 		/* Jump to Link Status handler */
 		HdmiRx1_FrlIntrHandler(HdmiRx1Ptr);
 	}
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 }
 
 /*****************************************************************************/
@@ -536,10 +539,12 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_VTD_STA_OFFSET),
 				    (XV_HDMIRX1_VTD_STA_TIMEBASE_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Check if we are in lock state */
 		if (InstancePtr->Stream.State == XV_HDMIRX1_STATE_STREAM_LOCK) {
@@ -595,6 +600,7 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					UncompressedTiming->VSyncPolarity = InstancePtr->Stream.Video.Timing.VSyncPolarity;
 				}
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 				if (InstancePtr->Stream.IsFrl == TRUE) {
 					/*Get the ratio and print */
 					ActivePixFRLRatio = XV_HdmiRx1_Divide(XV_HdmiRx1_GetFrlActivePixRatio(InstancePtr), 1000);
@@ -609,9 +615,11 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 #endif
 					}
 				}
+#endif
 
 				XV_HdmiRx1_SetPixelClk(InstancePtr);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 				if (InstancePtr->Stream.IsFrl == TRUE) {
 					VidClk = (InstancePtr->Stream.PixelClk / 100000) /
 							InstancePtr->Stream.CorePixPerClk;
@@ -624,6 +632,7 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 					XV_HdmiRx1_SetFrlVClkVckeRatio(InstancePtr, VidClk);
 				}
+#endif
 
 				/* If the colorspace is YUV420, then the
 				 * frame rate must be doubled */
@@ -796,12 +805,6 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					}
 
 
-					/* Enable sync loss */
-					/* XV_HdmiRx1_WriteReg(
-					*	InstancePtr->Config.BaseAddress,
-					*	(XV_HDMIRX1_VTD_CTRL_SET_OFFSET),
-					*	(XV_HDMIRX1_VTD_CTRL_SYNC_LOSS_MASK));
-					*/
 
 					/* Enable the Dynamic HDR Datamover */
 					XV_HdmiRx1_DynHDR_DM_Enable(InstancePtr);
@@ -835,12 +838,6 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					}
 				}
 			} else {
-				/* Disable sync loss */
-				/* XV_HdmiRx1_WriteReg(
-				 *	InstancePtr->Config.BaseAddress,
-				 *	(XV_HDMIRX1_VTD_CTRL_CLR_OFFSET),
-				 *	(XV_HDMIRX1_VTD_CTRL_SYNC_LOSS_MASK));
-				 */
 
 #ifdef DEBUG_RX_FRL_VERBOSITY
 				XVidC_ReportTiming(
@@ -848,8 +845,11 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					InstancePtr->Stream.Video.IsInterlaced);
 #endif
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 				if (InstancePtr->Stream.IsFrl != TRUE) {
+#endif
 					InstancePtr->Stream.State = XV_HDMIRX1_STATE_STREAM_LOCK;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 				} else {
 #ifdef DEBUG_RX_FRL_VERBOSITY
 					xil_printf(ANSI_COLOR_YELLOW "===FRL "
@@ -878,6 +878,7 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 					XV_HdmiRx1_Tmr1Start(InstancePtr,
 							    TIME_200MS);
 				}
+#endif
 			}
 		}
 
@@ -891,10 +892,12 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_VTD_STA_OFFSET),
 				    (XV_HDMIRX1_VTD_STA_SYNC_LOSS_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		if (InstancePtr->Stream.State == XV_HDMIRX1_STATE_STREAM_UP) {
 			/* Enable the Stream Up + Sync Loss Flag */
@@ -950,10 +953,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_WMSG_NEW_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->HdcpCallback) {
@@ -970,10 +975,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_RMSG_END_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->HdcpCallback) {
@@ -990,10 +997,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_RMSG_NC_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->HdcpCallback) {
@@ -1010,10 +1019,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_AKSV_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->HdcpCallback) {
@@ -1030,10 +1041,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_1_PROT_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->Hdcp14ProtEvtCallback) {
@@ -1050,10 +1063,12 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_DDC_STA_OFFSET),
 				    (XV_HDMIRX1_DDC_STA_HDCP_2_PROT_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->Hdcp22ProtEvtCallback) {
@@ -1075,10 +1090,11 @@ static void HdmiRx1_DdcIntrHandler(XV_HdmiRx1 *InstancePtr)
 		 * Clear the DSC Decode fail bit 7 in 0x40 SCDC register as per
 		 * spec
 		 */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		XV_HdmiRx1_FrlDdcWriteField(InstancePtr,
 					   XV_HDMIRX1_SCDCFIELD_DSC_DECODE_FAIL,
 					   0);
-
+#endif
 		if (InstancePtr->DSCStsUpdtEvtCallback) {
 			InstancePtr->DSCStsUpdtEvtCallback(
 					InstancePtr->DSCStsUpdtEvtRef);
@@ -1125,11 +1141,14 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 #endif
 			/* Set connected flag*/
 			InstancePtr->Stream.IsConnected = (TRUE);
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			XV_HdmiRx1_FrlReset(InstancePtr, FALSE);
-
+#endif
 			/* Clears IsFrl and IsHdmi flags */
 			InstancePtr->Stream.IsHdmi = FALSE;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			InstancePtr->Stream.IsFrl = FALSE;
+#endif
 
 			/* Check if user callback has been registered*/
 			if (InstancePtr->ConnectCallback) {
@@ -1153,10 +1172,15 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 			/* Clear connected flag*/
 			InstancePtr->Stream.IsConnected = (FALSE);
 
+			InstancePtr->Stream.IsHdmi = FALSE;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
+			InstancePtr->Stream.IsFrl = FALSE;
+#endif
 			/* Clear SCDC variables*/
 			XV_HdmiRx1_DdcScdcClear(InstancePtr);
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			XV_HdmiRx1_FrlReset(InstancePtr, TRUE);
-
+#endif
 			/* Disable the Dynamic HDR Datamover */
 			XV_HdmiRx1_DynHDR_DM_Disable(InstancePtr);
 
@@ -1171,6 +1195,7 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 	/* Link ready event has occurred*/
 	if ((Event) & (XV_HDMIRX1_PIO_IN_LNK_RDY_MASK)) {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			if ((Data) & (XV_HDMIRX1_PIO_IN_LNK_RDY_MASK)) {
@@ -1219,6 +1244,7 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 					ANSI_COLOR_RESET);
 #endif
 		} else {
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */
 #ifdef DEBUG_RX_FRL_VERBOSITY
 			xil_printf(ANSI_COLOR_RED "LNK_RDY TMDS!\r\n" ANSI_COLOR_RESET);
 #endif
@@ -1229,11 +1255,14 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 			/* Load timer*/
 			XV_HdmiRx1_Tmr1Start(InstancePtr,
 				XV_HdmiRx1_GetTime10Ms(InstancePtr)); /* 10 ms*/
+	#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		}
+	#endif
 	}
 
 	/* Video ready event has occurred*/
 	if ((Event) & (XV_HDMIRX1_PIO_IN_VID_RDY_MASK)) {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State == XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			if ((Data) & (XV_HDMIRX1_PIO_IN_VID_RDY_MASK)) {
 				switch (InstancePtr->Stream.Frl.TrainingState) {
@@ -1269,7 +1298,6 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 				/* VID_RDY goes down*/
 			}
 
-/*    		return;*/
 		} else if (InstancePtr->Stream.IsFrl == TRUE) {
 			InstancePtr->DBMessage = 0x80;
 
@@ -1282,8 +1310,8 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 			xil_printf(ANSI_COLOR_RED "VID_RDY during FRL Link!\r\n"
 					ANSI_COLOR_RESET);
 #endif
-/*    		return;*/
 		} else {
+#endif
 			/* Ready*/
 			if ((Data) & (XV_HDMIRX1_PIO_IN_VID_RDY_MASK)) {
 				/* Check the previous state*/
@@ -1369,7 +1397,9 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 							InstancePtr->VidRdyErrorRef);
 				}
 			}
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		}
+#endif
 	}
 
 	/* SCDC Scrambler Enable*/
@@ -1398,8 +1428,11 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 	/* Mode*/
 	if (InstancePtr->Stream.State != XV_HDMIRX1_STATE_FRL_LINK_TRAINING &&
-			(Event) & (XV_HDMIRX1_PIO_IN_MODE_MASK) &&
-			InstancePtr->Stream.IsFrl != TRUE) {
+			(Event) & (XV_HDMIRX1_PIO_IN_MODE_MASK)
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
+			&& InstancePtr->Stream.IsFrl != TRUE
+#endif
+		) {
 		/* HDMI Mode*/
 		if ((Data) & (XV_HDMIRX1_PIO_IN_MODE_MASK)) {
 			InstancePtr->Stream.IsHdmi = TRUE;
@@ -1450,9 +1483,9 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 	/* DSC Stream Change Event */
 	if (Event & XV_HDMIRX1_PIO_IN_DSC_EN_STRM_CHG_EVT_MASK) {
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		u32 val = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
 					     XV_HDMIRX1_PIO_IN_OFFSET);
-
 		if (!(XV_HDMIRX1_PIO_IN_DSC_EN_STRM_MASK & val)) {
 			/*
 			 * When the DSC CVT is not preset, clear bit 7 DSC
@@ -1462,7 +1495,7 @@ static void HdmiRx1_PioIntrHandler(XV_HdmiRx1 *InstancePtr)
 						    XV_HDMIRX1_SCDCFIELD_DSC_DECODE_FAIL,
 						    0);
 		}
-
+#endif
 		if (InstancePtr->DSCStreamChangeEventCallback) {
 			InstancePtr->DSCStreamChangeEventCallback(
 					InstancePtr->DSCStrmChgEvtRef);
@@ -1506,6 +1539,7 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_TMR_STA_OFFSET),
 				    (XV_HDMIRX1_TMR1_STA_CNT_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			switch (InstancePtr->Stream.Frl.TrainingState) {
@@ -1525,13 +1559,16 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 			}
 			return;
 		}
+#endif
 
 		/* Idle state*/
 		if (InstancePtr->Stream.State == XV_HDMIRX1_STATE_STREAM_IDLE) {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			if (InstancePtr->Stream.IsFrl != TRUE ||
-			    (InstancePtr->Stream.IsFrl == TRUE &&
-			     InstancePtr->Stream.Frl.TrainingState ==
-					     XV_HDMIRX1_FRLSTATE_LTS_P_VID_RDY)) {
+				(InstancePtr->Stream.IsFrl == TRUE &&
+				 InstancePtr->Stream.Frl.TrainingState ==
+						 XV_HDMIRX1_FRLSTATE_LTS_P_VID_RDY)) {
+#endif
 				/* The link is stable now*/
 				/* Then the aux and audio peripherals can be enabled*/
 				XV_HdmiRx1_AuxEnable(InstancePtr);
@@ -1549,11 +1586,9 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 				/* Clear GetVideoPropertiesTries*/
 				InstancePtr->Stream.GetVideoPropertiesTries = 0;
-				/* xil_printf(ANSI_COLOR_RED "Skew Locked!\r\n" ANSI_COLOR_RESET); */
-			} else {
-				/*xil_printf(ANSI_COLOR_RED "Skew Unlocked!\r\n" ANSI_COLOR_RESET); */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			}
-
+#endif
 			/* Load timer - 200 ms (one UHD frame is 40 ms, 5 frames)*/
 			XV_HdmiRx1_Tmr1Start(InstancePtr,
 					XV_HdmiRx1_GetTime200Ms(InstancePtr));
@@ -1567,6 +1602,7 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 				XV_HdmiRx1_SetPixelClk(InstancePtr);
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 				if (InstancePtr->Stream.IsFrl == TRUE) {
 #ifdef DEBUG_RX_FRL_VERBOSITY
 					xil_printf("Virtual Vid_Rdy:"
@@ -1591,6 +1627,9 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 					XV_HdmiRx1_Tmr1Start(InstancePtr,
 					XV_HdmiRx1_GetTime200Ms(InstancePtr));
 				} else if (InstancePtr->StreamInitCallback) {
+#else
+				if (InstancePtr->StreamInitCallback) {
+#endif
 					/* Call stream init callback*/
 					InstancePtr->StreamInitCallback(
 							InstancePtr->StreamInitRef);
@@ -1620,14 +1659,21 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 			/* Set stream status to lock */
 			InstancePtr->Stream.State =
 					XV_HDMIRX1_STATE_STREAM_LOCK;
-			if (InstancePtr->Stream.IsFrl == FALSE) {
-				XV_HdmiRx1_Tmr1Start(InstancePtr,
-						TIME_500MS);
-			}
+			#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
+						if (InstancePtr->Stream.IsFrl == FALSE) {
+							XV_HdmiRx1_Tmr1Start(InstancePtr, TIME_500MS);
+						}
+			#else
+						XV_HdmiRx1_Tmr1Start(InstancePtr, TIME_500MS);
+			#endif
 		} else {
 			if ((InstancePtr->Stream.State ==
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			    XV_HDMIRX1_STATE_STREAM_LOCK) &&
 			   (InstancePtr->Stream.IsFrl == FALSE)) {
+#else
+				XV_HDMIRX1_STATE_STREAM_LOCK)) {
+#endif
 				if (InstancePtr->PhyResetCallback)
 					InstancePtr->PhyResetCallback(InstancePtr->PhyResetRef);
 
@@ -1641,7 +1687,7 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 				(XV_HDMIRX1_TMR_STA_OFFSET),
 				(XV_HDMIRX1_TMR2_STA_CNT_EVT_MASK));
 	}
-
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	if ((Status) & (XV_HDMIRX1_TMR3_STA_CNT_EVT_MASK)) {
 		/* Clear counter event */
 		XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
@@ -1650,7 +1696,7 @@ static void HdmiRx1_TmrIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 		XV_HdmiRx1_PhyResetPoll(InstancePtr);
 	}
-
+#endif
 	if ((Status) & (XV_HDMIRX1_TMR4_STA_CNT_EVT_MASK)) {
 		/* Clear counter event*/
 		XV_HdmiRx1_WriteReg(InstancePtr->Config.BaseAddress,
@@ -1677,7 +1723,9 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 {
 	u32 Status;
 	u8 Index;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	u8 CurFVAFactMinus1;
+#endif
 
 	/* Read Status register */
 	Status = XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
@@ -1701,15 +1749,17 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_AUX_STA_OFFSET),
 				    (XV_HDMIRX1_AUX_STA_GCP_CD_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		if ((Status) & (XV_HDMIRX1_AUX_STA_GCP_MASK)) {
 			InstancePtr->Stream.Video.ColorDepth =
 					XV_HdmiRx1_GetGcpColorDepth(InstancePtr);
-
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 			if (InstancePtr->Stream.IsFrl == TRUE) {
 #ifdef DEBUG_RX_FRL_VERBOSITY
 				xil_printf(ANSI_COLOR_YELLOW "===FRL - "
@@ -1730,6 +1780,7 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 				InstancePtr->Stream.State = XV_HDMIRX1_STATE_STREAM_INIT;
 				XV_HdmiRx1_Tmr1Start(InstancePtr, TIME_200MS);
 			}
+#endif
 		}
 	}
 
@@ -1746,10 +1797,14 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 		}
 
 		/* Set HDMI flag in TMDS Mode */
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
+		/* Set HDMI flag in TMDS Mode */
 		if (InstancePtr->Stream.IsFrl != TRUE) {
 			InstancePtr->Stream.IsHdmi = TRUE;
 		}
-
+#else
+		InstancePtr->Stream.IsHdmi = TRUE;
+#endif
 		/* Read header word and update AUX header field */
 		InstancePtr->Aux.Header.Data =
 			XV_HdmiRx1_ReadReg(InstancePtr->Config.BaseAddress,
@@ -1774,10 +1829,12 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_AUX_STA_OFFSET),
 				    (XV_HDMIRX1_AUX_STA_ERR_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Callback */
 		if (InstancePtr->LinkErrorCallback) {
@@ -1802,6 +1859,7 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_AUX_STA_VRR_CD_EVT_MASK));
 
 		InstancePtr->VrrIF.VrrIfType = XV_HDMIC_VRRINFO_TYPE_VTEM;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		CurFVAFactMinus1 =
 			InstancePtr->VrrIF.VidTimingExtMeta.FVAFactorMinus1;
 		XV_HdmiRx1_ParseVideoTimingExtMetaIF(InstancePtr);
@@ -1842,12 +1900,14 @@ static void HdmiRx1_AuxIntrHandler(XV_HdmiRx1 *InstancePtr)
 			}
 
 		} else {
+#endif
 		   InstancePtr->IsFirstVtemReceived = TRUE ;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		}
-
+#endif
 		if (InstancePtr->VrrRdyCallback)
 			InstancePtr->VrrRdyCallback(InstancePtr->VrrRdyRef);
-	}
+		}
 }
 
 /*****************************************************************************/
@@ -1878,10 +1938,12 @@ static void HdmiRx1_AudIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_AUD_STA_OFFSET),
 				    (XV_HDMIRX1_AUD_STA_ACT_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		InstancePtr->Stream.Audio.Active = (TRUE);
 	}
@@ -1894,10 +1956,12 @@ static void HdmiRx1_AudIntrHandler(XV_HdmiRx1 *InstancePtr)
 				    (XV_HDMIRX1_AUD_STA_OFFSET),
 				    (XV_HDMIRX1_AUD_STA_CH_EVT_MASK));
 
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 		if (InstancePtr->Stream.State ==
 		    XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 			return;
 		}
+#endif
 
 		/* Audio Format*/
 		InstancePtr->AudFormat = (XV_HdmiRx1_AudioFormatType)
@@ -1982,9 +2046,11 @@ static void HdmiRx1_AudIntrHandler(XV_HdmiRx1 *InstancePtr)
 ******************************************************************************/
 static void HdmiRx1_LinkStatusIntrHandler(XV_HdmiRx1 *InstancePtr)
 {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	if (InstancePtr->Stream.State == XV_HDMIRX1_STATE_FRL_LINK_TRAINING) {
 		return;
 	}
+#endif
 
 	/* Callback */
 	if (InstancePtr->LnkStaCallback) {
@@ -2007,6 +2073,7 @@ static void HdmiRx1_LinkStatusIntrHandler(XV_HdmiRx1 *InstancePtr)
 * @note     None.
 *
 ******************************************************************************/
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 static void HdmiRx1_FrlIntrHandler(XV_HdmiRx1 *InstancePtr)
 {
 	u32 Data;
@@ -2034,7 +2101,6 @@ static void HdmiRx1_FrlIntrHandler(XV_HdmiRx1 *InstancePtr)
 		InstancePtr->Stream.Frl.TrainingState =
 					XV_HDMIRX1_FRLSTATE_LTS_3_RATE_CH;
 		XV_HdmiRx1_ExecFrlState(InstancePtr);
-/*        XV_HdmiRx1_SetFrl10MicroSecondsTimer(InstancePtr);*/
 	}
 
 	/* Source has cleared FLT_update flag */
@@ -2079,7 +2145,6 @@ xil_printf(ANSI_COLOR_YELLOW "RX: INTR LTP_DET\r\n" ANSI_COLOR_RESET);
 					XV_HDMIRX1_FRLSTATE_LTS_3_LTP_DET;
 
 			XV_HdmiRx1_ExecFrlState(InstancePtr);
-/*			XV_HdmiRx1_SetFrl10MicroSecondsTimer(InstancePtr);*/
 		}
 	}
 
@@ -2106,7 +2171,6 @@ xil_printf(ANSI_COLOR_YELLOW "RX: INTR LTP_DET\r\n" ANSI_COLOR_RESET);
 				    "FRL_START\r\n" ANSI_COLOR_RESET);
 #endif
 			 XV_HdmiRx1_ExecFrlState(InstancePtr);
-/*			 XV_HdmiRx1_SetFrl10MicroSecondsTimer(InstancePtr);*/
 		}
 	}
 
@@ -2199,3 +2263,4 @@ xil_printf(ANSI_COLOR_YELLOW "RX: INTR LTP_DET\r\n" ANSI_COLOR_RESET);
 		}
 	}
 }
+#endif /* XPAR_XV_HDMI_RX_FRL_ENABLE */

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -74,7 +74,6 @@ int XV_HdmiTx1_StartTmdsMode(XV_HdmiTx1 *InstancePtr)
 	xil_printf(ANSI_COLOR_CYAN "TX: Start TMDS Mode\r\n" ANSI_COLOR_RESET);
 #endif
 
-/*    InstancePtr->Stream.VidMode = XHDMIC_VIDMODE_HDMI_FRL;*/
 	InstancePtr->Stream.Frl.TrainingState = XV_HDMITX1_FRLSTATE_LTS_L;
 
 	/* Clear timer event flag*/
@@ -392,9 +391,6 @@ static int XV_HdmiTx1_ExecFrlState_Lts2(XV_HdmiTx1 *InstancePtr)
 			/* Disable timer */
 			XV_HdmiTx1_SetFrlTimer(InstancePtr, 0);
 
-/*			if (InstancePtr->Stream.Frl.RateLock == FALSE) {*/
-			/* Start FRL rate with maximum supported rate */
-/*			}*/
 
 			/* Reset LaneFfeAdjReq so application can reset TxFFE */
 			InstancePtr->Stream.Frl.LaneFfeAdjReq.Data = 0;
@@ -431,9 +427,6 @@ static int XV_HdmiTx1_ExecFrlState_Lts2(XV_HdmiTx1 *InstancePtr)
 						InstancePtr->FrlLts2Ref);
 			}
 
-			/* xil_printf(ANSI_COLOR_CYAN "TX: FRL LTS:2 endless"
-			 *	      " loop\r\n" ANSI_COLOR_RESET);*/
-			/* while (1);*/
 
 		}
 	} else { /* Timeout, fallback to LTS:L */
@@ -445,6 +438,18 @@ static int XV_HdmiTx1_ExecFrlState_Lts2(XV_HdmiTx1 *InstancePtr)
 	return Status;
 }
 
+/*****************************************************************************/
+/**
+*
+* This function executes the FRL Training State 2.
+*
+* @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
+*
+* @return
+*
+* @note     None.
+*
+******************************************************************************/
 static int XV_HdmiTx1_ExecFrlState_Lts2_RateWr(XV_HdmiTx1 *InstancePtr)
 {
 	int Status = XST_FAILURE;
@@ -687,7 +692,7 @@ xil_printf("\r\n" ANSI_COLOR_RESET);
 	}
 
 	/* Clears FLT_update */
-	/* Note : We need to be careful of this implementation as it doesnot
+	/* Note : We need to be careful of this implementation as it doesn't
 	 * ensures that this will get sent out within 10 ms after
 	 * FLT_update == 1. This might timeout with just 2ms */
 	Status = XV_HdmiTx1_DdcWriteField(InstancePtr,
@@ -926,16 +931,21 @@ static int XV_HdmiTx1_ExecFrlState_LtsP(XV_HdmiTx1 *InstancePtr)
 
 /*****************************************************************************/
 /**
-*
-* This function executes the different of states of FRL.
-*
-* @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
-*
-* @return
-*
-* @note     None.
-*
-******************************************************************************/
+ * This function handles the state machine for FRL training by executing the
+ * appropriate sub-state function based on the current training state stored
+ * in the HDMI TX core instance. It transitions through various FRL states
+ * such as LTS_L, LTS_1, LTS_2, LTS_3, LTS_4, and LTS_P to complete the
+ * FRL link training process with the sink.
+ *
+ * @param InstancePtr is a pointer to the XV_HdmiTx1 core instance.
+ *
+ * @return
+ *        - XST_SUCCESS if the FRL state was executed successfully.
+ *        - XST_FAILURE if an error occurred during state execution.
+ *
+ * @note This function clears the FRL timer event flag after execution.
+ *
+ ******************************************************************************/
 int XV_HdmiTx1_ExecFrlState(XV_HdmiTx1 *InstancePtr)
 {
 	int Status = XST_FAILURE;
@@ -1010,17 +1020,24 @@ int XV_HdmiTx1_ExecFrlState(XV_HdmiTx1 *InstancePtr)
 
 /*****************************************************************************/
 /**
-*
-* This function starts FRL video stream. This should be called after the bridge,
-* video, audio are all active.
-*
-* @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
-*
-* @return
-*
-* @note     None.
-*
-******************************************************************************/
+ * @brief Starts the FRL (Fixed Rate Link) video stream.
+ *
+ * This function initiates the FRL stream transmission. It should be called
+ * only after the bridge, video, and audio systems are fully active. The function
+ * sets the FRL mode to full stream, updates the stream state, and triggers the
+ * stream-up callback if registered.
+ *
+ * @param InstancePtr is a pointer to the XV_HdmiTx1 core instance.
+ *
+ * @return
+ *        - XST_SUCCESS if the stream was started successfully.
+ *        - XST_FAILURE if the operation failed.
+ *
+ * @note This function assumes that all necessary subsystems (bridge, video, audio)
+ *       are already active before it is called.
+ *
+ ******************************************************************************/
+
 int XV_HdmiTx1_FrlStreamStart(XV_HdmiTx1 *InstancePtr)
 {
 	/* Verify argument. */
@@ -1042,8 +1059,6 @@ int XV_HdmiTx1_FrlStreamStart(XV_HdmiTx1 *InstancePtr)
 				XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM);
 
 /*	/\* Clears FRL_Start *\/*/
-/*	Status = XV_HdmiTx1_DdcWriteField(InstancePtr,*/
-/*					  XV_HDMITX1_SCDCFIELD_FRL_START, 1);*/
 
 	/* Set stream status to up */
 	InstancePtr->Stream.State = XV_HDMITX1_STATE_STREAM_UP;
@@ -1066,8 +1081,10 @@ int XV_HdmiTx1_FrlStreamStart(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @return
-*
+ * @return
+ *        - XST_SUCCESS if the stream stopped successfully.
+ *        - XST_FAILURE if the operation failed.
+
 * @note     None.
 *
 ******************************************************************************/
@@ -1087,13 +1104,6 @@ int XV_HdmiTx1_FrlStreamStop(XV_HdmiTx1 *InstancePtr)
 	/* Disable the AUX peripheral interrupt */
 	XV_HdmiTx1_AuxIntrDisable(InstancePtr);
 
-/*	/\* FRL transmission includes video, audio and control packets *\/ */
-/*	XV_HdmiTx1_SetFrlActive(InstancePtr,*/
-/*				XV_HDMITX1_FRL_ACTIVE_MODE_GAP_ONLY);*/
-
-/*	/\* Clear FLT_start *\/ */
-/*	Status = XV_HdmiTx1_DdcWriteField(InstancePtr,*/
-/*					  XV_HDMITX1_SCDCFIELD_FRL_START, 1);*/
 
 	/* Set stream status to up */
 	InstancePtr->Stream.State = XV_HDMITX1_STATE_STREAM_DOWN;
@@ -1316,26 +1326,30 @@ void XV_HdmiTx1_FrlReset(XV_HdmiTx1 *InstancePtr, u8 Reset)
 
 /*****************************************************************************/
 /**
-*
-* This function sets the TX core's FRL Rate and sends encoded FRL_Rate data and
-* FFE Levels to the sink through SCDC.
-*
-* @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
-*
-* @param    MaxFrlRate specifies maximum rates supported
-* 			- 0 = FRL Not Supported
-* 			- 1 = 3 Lanes 3Gbps
-* 			- 2 = 4 Lanes 3Gbps
-*			- 3 = 4 Lanes 6Gbsp
-*			- 4 = 4 Lanes 8Gbps
-*			- 5 = 4 Lanes 10Gbps
-*			- 6 = 4 Lanes 12Gbps
-*
-* @return
-*
-* @note     None.
-*
-******************************************************************************/
+ * @brief Sets the TX core's FRL Rate and sends encoded FRL_Rate and FFE Levels
+ *        to the sink via SCDC.
+ *
+ * This function configures the HDMI transmitter's FRL (Fixed Rate Link) rate and
+ * communicates the selected FRL rate and FFE (Forward Error Correction) levels
+ * to the HDMI sink using the SCDC (Status and Control Data Channel).
+ *
+ * @param InstancePtr Pointer to the XV_HdmiTx1 core instance.
+ * @param FrlRate Specifies the maximum FRL rate supported:
+ *        - 0: FRL Not Supported
+ *        - 1: 3 Lanes @ 3 Gbps
+ *        - 2: 4 Lanes @ 3 Gbps
+ *        - 3: 4 Lanes @ 6 Gbps
+ *        - 4: 4 Lanes @ 8 Gbps
+ *        - 5: 4 Lanes @ 10 Gbps
+ *        - 6: 4 Lanes @ 12 Gbps
+ *
+ * @return
+ *        - XST_SUCCESS if the FRL rate was set and SCDC updated successfully.
+ *        - XST_FAILURE if the SCDC update failed or the DDC interface was unavailable.
+ *
+ * @note None.
+ *
+ ******************************************************************************/
 int XV_HdmiTx1_FrlRate(XV_HdmiTx1 *InstancePtr, u8 FrlRate)
 {
 	/* Verify argument. */
@@ -1421,6 +1435,8 @@ void XV_HdmiTx1_FrlExecute(XV_HdmiTx1 *InstancePtr)
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
 * @return
+* 	- XST_SUCCESS if initialization and SCDC configuration succeed.
+* 	- XST_FAILURE if any step fails
 *
 * @note     None.
 *
@@ -1459,7 +1475,7 @@ int XV_HdmiTx1_FrlTrainingInit(XV_HdmiTx1 *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XHdmi_Tx core instance.
 *
-* @param	Value specifies the timer's frequency (in milliseconds)
+* @param	Milliseconds specifies the timer's frequency (in milliseconds)
 *
 * @return	None.
 *
@@ -1528,8 +1544,6 @@ void XV_HdmiTx1_SetFrlTimerClockCycles(XV_HdmiTx1 *InstancePtr,
 * This function sets the timer of TX Core's FRL peripheral for 10 Microseconds.
 *
 * @param	InstancePtr is a pointer to the XHdmi_Tx core instance.
-*
-* @param	None.
 *
 * @return	None.
 *
