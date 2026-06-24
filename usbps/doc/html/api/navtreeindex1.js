@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"xusbps__endpoint_8h.html#ga5e3ba25e78a33f9f7676109281cbad59":[2,15,35],
 "xusbps__endpoint_8h.html#ga5ebb95d2a416b4da0fe787e7a73f81c9":[2,15,5],
 "xusbps__endpoint_8h.html#ga711b9e3ec5886510d1647017b171b7a7":[2,15,21],
 "xusbps__endpoint_8h.html#ga79336f2e95c4eeb4a5c01ca58439a5f0":[2,15,40],
@@ -205,6 +206,6 @@ var NAVTREEINDEX1 =
 "xusbps__intr__example_8c.html":[2,20],
 "xusbps__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,20,0],
 "xusbps__sinit_8c.html":[2,21],
-"xusbps__sinit_8c.html#gadda6870b9ef5c1d4e7b345433c44bac2":[2,21,1],
-"xusbps__sinit_8c.html#gafcaf2c53431ef206d3435d677867f818":[2,21,0]
+"xusbps__sinit_8c.html#gac79e39dc62c743463e360c400f33d194":[2,21,0],
+"xusbps__sinit_8c.html#gadda6870b9ef5c1d4e7b345433c44bac2":[2,21,1]
 };

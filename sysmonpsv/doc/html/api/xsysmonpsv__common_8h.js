@@ -21,6 +21,7 @@ var xsysmonpsv__common_8h =
     [ "XSYSMONPSV_LOCK_CODE", "xsysmonpsv__common_8h.html#a4a8eae39bcb70012826037830d666b7f", null ],
     [ "XSYSMONPSV_LOW_SAT_SIGNED_VAL", "xsysmonpsv__common_8h.html#aa0a6c963122b8943036348714117761d", null ],
     [ "XSYSMONPSV_LOW_SAT_VAL", "xsysmonpsv__common_8h.html#af705be69c8ce9bae5e89d20d4c430266", null ],
+    [ "XSYSMONPSV_MILLI_SCALE", "xsysmonpsv__common_8h.html#a517e5f074fba7abc6939f126ca701392", null ],
     [ "XSYSMONPSV_UP_SAT_SIGNED_VAL", "xsysmonpsv__common_8h.html#ac51ecf1a7056923d5ee7b2d79c2ad917", null ],
     [ "XSYSMONPSV_UP_SAT_VAL", "xsysmonpsv__common_8h.html#acf16c31d3d1a905cce7a11808c1b2f22", null ],
     [ "XSysMonPsv_EventDir", "xsysmonpsv__common_8h.html#afa09b3eb6bf7927a1217cfee24fdaa86", [

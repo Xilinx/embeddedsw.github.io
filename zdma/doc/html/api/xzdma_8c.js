@@ -13,5 +13,6 @@ var xzdma_8c =
     [ "XZDma_SetChDscrConfig", "xzdma_8c.html#ga860cde1482bc78429ea5c6f1d3da9014", null ],
     [ "XZDma_SetMode", "xzdma_8c.html#gaf1772f190fe0a67a17c78f5f23fc8024", null ],
     [ "XZDma_Start", "xzdma_8c.html#ga70f7466e97aae2126181727774f6e6bb", null ],
+    [ "XZDma_Stop", "xzdma_8c.html#gadb6efafcf9f5a1a77808dfc8d9a9f82a", null ],
     [ "XZDma_WOData", "xzdma_8c.html#ga15a0124d42f8ff48e54f32c1b643fe7b", null ]
 ];

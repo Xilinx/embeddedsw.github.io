@@ -34,14 +34,14 @@ var xcan_8h =
     [ "XCan_GetECCCount", "xcan_8h.html#ga5cf8f7db6b6726cd217e58e6224d56ad", null ],
     [ "XCan_GetMode", "xcan_8h.html#ga6b437133a6a2f40f56cf3c80102f5b0d", null ],
     [ "XCan_GetStatus", "xcan_8h.html#ga502a294405726d96834c2abf574a96e8", null ],
-    [ "XCan_Initialize", "xcan_8h.html#gacbd9f5e256dcbd948afe916d13bc7b35", null ],
+    [ "XCan_Initialize", "xcan_8h.html#gaf070d43e1240f9396a9b6f325bcf5fcb", null ],
     [ "XCan_InterruptClear", "xcan_8h.html#gac53101769980d4aa036844100ac732af", null ],
     [ "XCan_InterruptDisable", "xcan_8h.html#ga163cd737c7421ddbd0ff492883e32558", null ],
     [ "XCan_InterruptEnable", "xcan_8h.html#ga1abd3a018094fd4d586599d708c33e4f", null ],
     [ "XCan_InterruptGetEnabled", "xcan_8h.html#ga5670f843250e65969ce6ef36d0e06e24", null ],
     [ "XCan_InterruptGetStatus", "xcan_8h.html#ga26bb19c641bfce1cb3dac4f5c0b7f71d", null ],
     [ "XCan_IntrHandler", "xcan_8h.html#gaafc4a0e025e8e3eb800778eba5a00c66", null ],
-    [ "XCan_LookupConfig", "xcan_8h.html#ga5ea4b468a9ac5d22eb5411cff7a59353", null ],
+    [ "XCan_LookupConfig", "xcan_8h.html#gaf6d18b900bb0896517949dbde898524b", null ],
     [ "XCan_Recv", "xcan_8h.html#ga1d8ac17789423c440872ffd4585b8c3c", null ],
     [ "XCan_Reset", "xcan_8h.html#ga6c52fb4d4b12d62e3e713ad182f00d8b", null ],
     [ "XCan_ResetECC", "xcan_8h.html#ga0b5089d7561e88dec96e54fa618a6da4", null ],
@@ -51,5 +51,5 @@ var xcan_8h =
     [ "XCan_SetBaudRatePrescaler", "xcan_8h.html#ga75aabbb82d96151cadfd3c26a2a285e9", null ],
     [ "XCan_SetBitTiming", "xcan_8h.html#gaf60120410396727f6e9304ce9ba65980", null ],
     [ "XCan_SetHandler", "xcan_8h.html#ga3a7838a033b61a842b06e3ee4b06a614", null ],
-    [ "XCan_VmInitialize", "xcan_8h.html#gae0829418cbc177e93388daebe5fba0c6", null ]
+    [ "XCan_VmInitialize", "xcan_8h.html#ga9ad0e65a90ab46e6b7e56d7aae7910e9", null ]
 ];

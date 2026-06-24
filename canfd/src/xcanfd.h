@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -260,6 +260,10 @@ exclusion
 * 2.8	ht   06/19/23 Added support for system device-tree flow.
 * 2.8	gm   06/22/23 Add XCanFd_stop to support release node.
 * 2.8	ht   07/18/23 Fixed GCC warnings.
+* 2.12  vlt  11/05/25 Add 64-bit Addressing support.
+* 2.12  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
+*       vlt  01/27/26 Fixed codespell issues
+*       ht   02/26/26 Fix TX buffer transmitted check
 * </pre>
 *
 ******************************************************************************/
@@ -340,7 +344,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	u32 Rx_Mode;			/**< 1-Mailbox 0-sequential */
@@ -567,7 +571,7 @@ typedef struct {
 #define XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer)	\
 	(((XCanFd_ReadReg((InstancePtr)->CanFdConfig.BaseAddress, \
 			  XCANFD_TRR_OFFSET) & ((u32)1 << (TxBuffer))) \
-	  == (u32)1) ? FALSE : TRUE)
+	  != (u32)0U) ? FALSE : TRUE)
 
 
 /****************************************************************************/
@@ -1008,7 +1012,7 @@ typedef struct {
 /**
 *
 * This routine returns Number of RxBuffers
-* user can Desing RxBuffers as 48,32,16.
+* user can Design RxBuffers as 48,32,16.
 *
 * @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
 *
@@ -1056,7 +1060,7 @@ void XCanFd_AcceptFilterGet(XCanFd *InstancePtr, u32 FilterIndex,
 #ifndef SDT
 XCanFd_Config *XCanFd_LookupConfig(u16 DeviceId);
 #else
-XCanFd_Config *XCanFd_LookupConfig(u32 BaseAddress);
+XCanFd_Config *XCanFd_LookupConfig(UINTPTR BaseAddress);
 #endif
 XCanFd_Config *XCanFd_GetConfig(unsigned int InstanceIndex);
 int XCanFd_GetDlc2len(u32 Dlc, u32 Edl);

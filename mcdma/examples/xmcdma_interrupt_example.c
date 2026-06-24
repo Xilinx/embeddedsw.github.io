@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -91,44 +91,13 @@
 #define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
 #endif
 
-#ifdef XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR		XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#elif XPAR_MIG7SERIES_0_BASEADDR
-#define DDR_BASE_ADDR	XPAR_MIG7SERIES_0_BASEADDR
-#elif XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#define DDR_BASE_ADDR	XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#elif XPAR_PSU_DDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR	XPAR_PSU_DDR_0_S_AXI_BASEADDR
-#endif
-
-#ifdef XPAR_PSU_DDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR	XPAR_PSU_DDR_0_S_AXI_BASEADDR
-#endif
-
-#ifdef XPAR_PSU_R5_DDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR	XPAR_PSU_R5_DDR_0_S_AXI_BASEADDR
-#endif
-
 #else
 
 #ifdef XPAR_MEM0_BASEADDRESS
-#define DDR_BASE_ADDR		XPAR_MEM0_BASEADDRESS
+/* Note: DDR_BASE_ADDR no longer needed - using global buffer allocation */
 #endif
 #define MCDMA_BASE_ADDR         XPAR_XMCDMA_0_BASEADDR
 #endif
-
-#ifndef DDR_BASE_ADDR
-#warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-DEFAULT SET TO 0x01000000
-#define MEM_BASE_ADDR		0x01000000
-#else
-#define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x10000000)
-#endif
-
-#define TX_BD_SPACE_BASE	(MEM_BASE_ADDR)
-#define RX_BD_SPACE_BASE	(MEM_BASE_ADDR + 0x10000000)
-#define TX_BUFFER_BASE		(MEM_BASE_ADDR + 0x20000000)
-#define RX_BUFFER_BASE		(MEM_BASE_ADDR + 0x50000000)
 
 #define NUMBER_OF_BDS_PER_PKT		10
 #define NUMBER_OF_PKTS_TO_TRANSFER 	100
@@ -192,10 +161,36 @@ volatile u32 Error;
 int num_channels;
 
 
+ /* Global buffer allocation */
+
+/* Calculate buffer and BD space sizes - using maximum possible channels (16)*/
+#define MAX_CHANNELS		16
+#define TX_BUFFER_SIZE		(NUMBER_OF_BDS_TO_TRANSFER * MAX_PKT_LEN * MAX_CHANNELS )
+#define RX_BUFFER_SIZE		(NUMBER_OF_BDS_TO_TRANSFER * MAX_PKT_LEN * MAX_CHANNELS )
+#define TX_BD_SPACE_SIZE	(NUMBER_OF_BDS_TO_TRANSFER * sizeof(XMcdma_Bd) * MAX_CHANNELS)
+#define RX_BD_SPACE_SIZE	(NUMBER_OF_BDS_TO_TRANSFER * sizeof(XMcdma_Bd) * MAX_CHANNELS)
+
 /*
- * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
+ * Global buffers for DMA transfers - aligned for optimal performance
+ * Buffer descriptors need special alignment and cache attributes
  */
-UINTPTR *Packet = (UINTPTR *) TX_BUFFER_BASE;
+
+static u8 TxBuffer[TX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+static u8 RxBuffer[RX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+#ifdef __aarch64__
+static u8 TxBdSpace[TX_BD_SPACE_SIZE] __attribute__ ((aligned(BLOCK_SIZE_2MB)));
+static u8 RxBdSpace[RX_BD_SPACE_SIZE] __attribute__ ((aligned(BLOCK_SIZE_2MB)));
+#else
+static u8 TxBdSpace[TX_BD_SPACE_SIZE] __attribute__ ((aligned(64)));
+static u8 RxBdSpace[RX_BD_SPACE_SIZE] __attribute__ ((aligned(64)));
+#endif
+
+
+/* Buffer pointers for runtime access - initialized in main() */
+static UINTPTR TxBufferPtr;
+static UINTPTR RxBufferPtr;
+static UINTPTR TxBdSpacePtr;
+static UINTPTR RxBdSpacePtr;
 
 /*****************************************************************************/
 /**
@@ -223,15 +218,23 @@ int main(void)
 
 	xil_printf("\r\n--- Entering main() --- \r\n");
 
+	/* Initialize global buffer pointers */
+	TxBufferPtr = (UINTPTR)TxBuffer;
+	RxBufferPtr = (UINTPTR)RxBuffer;
+	TxBdSpacePtr = (UINTPTR)TxBdSpace;
+	RxBdSpacePtr = (UINTPTR)RxBdSpace;
+
+	/* Set memory attributes for buffer descriptors to be non-cached */
 #ifdef __aarch64__
-#if (TX_BD_SPACE_BASE < 0x100000000UL)
-	for (i = 0; i < (RX_BD_SPACE_BASE - TX_BD_SPACE_BASE) / BLOCK_SIZE_2MB; i++) {
-		Xil_SetTlbAttributes(TX_BD_SPACE_BASE + (i * BLOCK_SIZE_2MB), NORM_NONCACHE);
-		Xil_SetTlbAttributes(RX_BD_SPACE_BASE + (i * BLOCK_SIZE_2MB), NORM_NONCACHE);
-	}
-#else
-	Xil_SetTlbAttributes(TX_BD_SPACE_BASE, NORM_NONCACHE);
-#endif
+	/* For ARM64, set BD spaces as non-cacheable */
+	Xil_SetTlbAttributes((UINTPTR)TxBdSpace & ~(BLOCK_SIZE_2MB - 1), NORM_NONCACHE);
+	Xil_SetTlbAttributes((UINTPTR)RxBdSpace & ~(BLOCK_SIZE_2MB - 1), NORM_NONCACHE);
+#elif defined(ARMR5)
+        Xil_SetTlbAttributes((UINTPTR)TxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+        Xil_SetTlbAttributes((UINTPTR)RxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+#elif !defined(__MICROBLAZE__)
+        Xil_SetTlbAttributes((UINTPTR)TxBdSpace, DEVICE_MEMORY);
+        Xil_SetTlbAttributes((UINTPTR)RxBdSpace, DEVICE_MEMORY);
 #endif
 
 
@@ -330,11 +333,14 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 	u32 i, j;
 	u32 buf_align;
 
-	RxBufferPtr = RX_BUFFER_BASE;
-	RxBdSpacePtr = RX_BD_SPACE_BASE;
+	RxBufferPtr = (UINTPTR)RxBuffer;
+	RxBdSpacePtr = (UINTPTR)RxBdSpace;
 
 
 	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
+
+		RxBufferPtr = (UINTPTR)RxBuffer + ((ChanId-1) * NUMBER_OF_BDS_TO_TRANSFER * MAX_PKT_LEN);
+
 		Rx_Chan = XMcdma_GetMcdmaRxChan(McDmaInstPtr, ChanId);
 
 		/* Disable all interrupts */
@@ -377,14 +383,6 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 				}
 			}
 
-			RxBufferPtr += MAX_PKT_LEN;
-			if (!Rx_Chan->Has_Rxdre) {
-				buf_align = RxBufferPtr % 64;
-				if (buf_align > 0) {
-					buf_align = 64 - buf_align;
-				}
-				RxBufferPtr += buf_align;
-			}
 			XMcdma_SetChanCoalesceDelay(Rx_Chan, PACKETS_PER_IRQ, 255);
 		}
 
@@ -392,15 +390,6 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 		if (Status != XST_SUCCESS) {
 			xil_printf("XMcDma_ChanToHw failed\n\r");
 			return XST_FAILURE;
-		}
-
-		RxBufferPtr += MAX_PKT_LEN;
-		if (!Rx_Chan->Has_Rxdre) {
-			buf_align = RxBufferPtr % 64;
-			if (buf_align > 0) {
-				buf_align = 64 - buf_align;
-			}
-			RxBufferPtr += buf_align;
 		}
 
 		RxBdSpacePtr += BdCount * Rx_Chan->Separation;
@@ -455,8 +444,8 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 	u32 i, j;
 	u32 buf_align;
 
-	TxBufferPtr = TX_BUFFER_BASE;
-	TxBdSpacePtr = TX_BD_SPACE_BASE;
+	TxBufferPtr = (UINTPTR)TxBuffer;
+	TxBdSpacePtr = (UINTPTR)TxBdSpace;
 
 	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
@@ -491,15 +480,6 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 				/* Clear the receive buffer, so we can verify data */
 				memset((void *)TxBufferPtr, 0, MAX_PKT_LEN);
 
-			}
-
-			TxBufferPtr += MAX_PKT_LEN;
-			if (!Tx_Chan->Has_Txdre) {
-				buf_align = TxBufferPtr % 64;
-				if (buf_align > 0) {
-					buf_align = 64 - buf_align;
-				}
-				TxBufferPtr += buf_align;
 			}
 		}
 
@@ -579,7 +559,7 @@ static int SendPacket(XMcdma *McDmaInstPtr)
 	u8 Value;
 	u32 ChanId;
 
-	BdCurPtr = (XMcdma_Bd *)TX_BD_SPACE_BASE;
+	BdCurPtr = (XMcdma_Bd *)TxBdSpacePtr;
 	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
 
@@ -619,7 +599,7 @@ static int SendPacket(XMcdma *McDmaInstPtr)
 			}
 		}
 
-		BdCurPtr = (XMcdma_Bd *)(TX_BD_SPACE_BASE +
+		BdCurPtr = (XMcdma_Bd *)(TxBdSpacePtr +
 					 (sizeof(XMcdma_Bd) * NUMBER_OF_BDS_TO_TRANSFER * ChanId));
 		Status = XMcDma_ChanToHw(Tx_Chan);
 		if (Status != XST_SUCCESS) {

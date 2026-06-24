@@ -116,7 +116,7 @@ var xsysmon_8h =
     [ "XSysMon_IntrGetStatus", "xsysmon_8h.html#ga49bbe691a17f0d77753754fb18cfadb4", null ],
     [ "XSysMon_IntrGlobalDisable", "xsysmon_8h.html#ga025ee112aa4af95e592b05ce99b07497", null ],
     [ "XSysMon_IntrGlobalEnable", "xsysmon_8h.html#ga10375fa7b5de21898a2184fa934d04ca", null ],
-    [ "XSysMon_LookupConfig", "xsysmon_8h.html#gaf2f837d4a34ab56e268078a2874389d4", null ],
+    [ "XSysMon_LookupConfig", "xsysmon_8h.html#ga54b145e1592c8df09b3041eb12cd283a", null ],
     [ "XSysMon_Reset", "xsysmon_8h.html#ga7f77755a291cf2bac28ff12a5cdd5d8a", null ],
     [ "XSysMon_ResetAdc", "xsysmon_8h.html#ga9efcdd44a813be1e9b0e33b64c616cb3", null ],
     [ "XSysMon_SelfTest", "xsysmon_8h.html#ga23b6bce798cabbee7cb637d36edd54da", null ],

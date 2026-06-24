@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -181,7 +181,7 @@
 *		     Master mode (XQSPIPS_MASTER_OPTION) and
 *		     Flash interface mode (XQSPIPS_FLASH_MODE_OPTION) option
 *		     as the QSPI driver supports the Master mode
-*		     and Flash Interface mode and doesnot support
+*		     and Flash Interface mode and doesn't support
 *		     Slave mode or the legacy mode.
 *		     Modified the XQspiPs_PolledTransfer and XQspiPs_Transfer
 *		     APIs so that the last argument (IsInst) specifying whether
@@ -273,6 +273,9 @@
 * 3.8	akm 09/02/20 Updated the Makefile to support parallel make execution.
 * 3.11	akm 07/10/23 Update the driver to support for system device-tree flow.
 * 3.12	sb  02/20/24 Add missing parenthesis for macro expansions.
+* 3.15  vlt 12/30/25 Update Doxygen comments to include SDT flow details.
+* 3.15  vlt 03/15/26 Updated BaseAddress type from u32 to UINTPTR
+*                    to support 64-bit addressing.
 *
 * </pre>
 *
@@ -490,9 +493,9 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
-	u32 BaseAddress;	/**< Base address of the device */
+	UINTPTR BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
 	u8  ConnectionMode; /**< Single, Stacked and Parallel mode */
 #ifdef SDT

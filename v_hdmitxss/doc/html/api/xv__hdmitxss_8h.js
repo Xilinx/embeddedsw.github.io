@@ -4,6 +4,9 @@ var xv__hdmitxss_8h =
     [ "XV_HdmiTxSs_SubCore", "struct_x_v___hdmi_tx_ss___sub_core.html", "struct_x_v___hdmi_tx_ss___sub_core" ],
     [ "XV_HdmiTxSs_Config", "struct_x_v___hdmi_tx_ss___config.html", "struct_x_v___hdmi_tx_ss___config" ],
     [ "XV_HdmiTxSs", "struct_x_v___hdmi_tx_ss.html", "struct_x_v___hdmi_tx_ss" ],
+    [ "ANSI_COLOR_RED", "xv__hdmitxss_8h.html#a34995b955465f6bbb37c359173d50477", null ],
+    [ "ANSI_COLOR_RESET", "xv__hdmitxss_8h.html#a92a364c2b863dde1a024a77eac2a5b3b", null ],
+    [ "ANSI_COLOR_YELLOW", "xv__hdmitxss_8h.html#a5a123b382640b3aa65dd5db386002fbc", null ],
     [ "HDMITXSS_H", "xv__hdmitxss_8h.html#a9e0a72bdbc1622a75e63754a916c3245", null ],
     [ "XV_HdmiTxSs_Callback", "xv__hdmitxss_8h.html#a1205ca5563406047c94172d9394632cd", null ],
     [ "XV_HdmiTxSs_HandlerType", "xv__hdmitxss_8h.html#ab33aa43cac6faa5a98d29b2067fb8d0a", [
@@ -23,7 +26,9 @@ var xv__hdmitxss_8h =
       [ "XV_HDMITXSS_HDCP_NONE", "xv__hdmitxss_8h.html#ae5b01347d8bef95b2b6696a9df03715daac8020e5cbc2a02efd15877b22572965", null ],
       [ "XV_HDMITXSS_HDCP_14", "xv__hdmitxss_8h.html#ae5b01347d8bef95b2b6696a9df03715da0ac9cbdc7d8cb2851d920930a376b0a3", null ],
       [ "XV_HDMITXSS_HDCP_22", "xv__hdmitxss_8h.html#ae5b01347d8bef95b2b6696a9df03715da1a1b397d94a578680e4ea043d82b82f2", null ],
-      [ "XV_HDMITXSS_HDCP_BOTH", "xv__hdmitxss_8h.html#ae5b01347d8bef95b2b6696a9df03715da8edf884baa46bf92c9203338e291e27c", null ],
+      [ "XV_HDMITXSS_HDCP_BOTH", "xv__hdmitxss_8h.html#ae5b01347d8bef95b2b6696a9df03715da8edf884baa46bf92c9203338e291e27c", null ]
+    ] ],
+    [ "XV_HdmiTxSs_HpdToleranceType", "xv__hdmitxss_8h.html#a27da77131ca2507c7c786518bc2a9cb7", [
       [ "XV_HDMITXSS_LEADING_TOLERANCE", "xv__hdmitxss_8h.html#a27da77131ca2507c7c786518bc2a9cb7af578628a19522d852efb566f216744e0", null ],
       [ "XV_HDMITXSS_LAGGING_TOLERANCE", "xv__hdmitxss_8h.html#a27da77131ca2507c7c786518bc2a9cb7abff59c1d9e9e6b1ace1bbfd4f5718086", null ],
       [ "XV_HDMITXSS_UNKNOWN", "xv__hdmitxss_8h.html#a27da77131ca2507c7c786518bc2a9cb7a71d57cf4b9607b51d2a44c9a9ef29e2a", null ]
@@ -66,6 +71,7 @@ var xv__hdmitxss_8h =
     [ "XV_HdmiTxSs_GetAudioInfoframe", "xv__hdmitxss_8h.html#a25d70c52e0192568f9baa27951ea2e7a", null ],
     [ "XV_HdmiTxSs_GetAuxiliary", "xv__hdmitxss_8h.html#a75e0c4c16875b294389b12e2dd1910d8", null ],
     [ "XV_HdmiTxSs_GetAviInfoframe", "xv__hdmitxss_8h.html#a64baf7a67735b16f23b3ae4aa3db6a18", null ],
+    [ "XV_HdmiTxSs_GetDrvIndex", "xv__hdmitxss_8h.html#addd4ba1ab1d472da573ea2c6dc519576", null ],
     [ "XV_HdmiTxSs_GetTmdsClockFreqHz", "xv__hdmitxss_8h.html#ad3f21f86b6abc00a736416e435067085", null ],
     [ "XV_HdmiTxSs_GetVideoStream", "xv__hdmitxss_8h.html#ae0188b2e6efd4b22b2c0c8203a180f52", null ],
     [ "XV_HdmiTxSs_GetVSIF", "xv__hdmitxss_8h.html#a5d7b94dcf090118a688144c74cbd9442", null ],
@@ -80,7 +86,7 @@ var xv__hdmitxss_8h =
     [ "XV_HdmiTxSs_LogRead", "xv__hdmitxss_8h.html#ae6ed5157a8dbfe946f4a762d6c23ab4d", null ],
     [ "XV_HdmiTxSs_LogReset", "xv__hdmitxss_8h.html#af956a862c4edf0e7a47b832875337a7c", null ],
     [ "XV_HdmiTxSs_LogWrite", "xv__hdmitxss_8h.html#ad0c1b30d849344a197178cf8316fa9b3", null ],
-    [ "XV_HdmiTxSs_LookupConfig", "xv__hdmitxss_8h.html#ga09aabd104fd037dd4f5213a9996fec91", null ],
+    [ "XV_HdmiTxSs_LookupConfig", "xv__hdmitxss_8h.html#ac41347532d96ebbd3f55642d75c82505", null ],
     [ "XV_HdmiTxSS_MaskDisable", "xv__hdmitxss_8h.html#a6a2655edd57c2f26437458caaaf0e850", null ],
     [ "XV_HdmiTxSS_MaskEnable", "xv__hdmitxss_8h.html#a8222704653be72e1babef7a4bce0f26f", null ],
     [ "XV_HdmiTxSS_MaskNoise", "xv__hdmitxss_8h.html#a98e7c828f9533ef0fba06f6a5d847042", null ],

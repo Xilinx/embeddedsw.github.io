@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -46,24 +46,32 @@
 /**************************** Type Definitions *******************************/
 
 /**
- * This typedef declares the driver instances of all the cores in the subsystem
+ * @brief DSI TX Subsystem sub-core driver instances container.
+ *
+ * This structure aggregates all driver instances for sub-cores included in
+ * the MIPI DSI TX Subsystem, including the DSI controller core, optional
+ * MIPI TX PHY, and optional DPHY core.
  */
 typedef struct {
-	XDsi DsiInst;
+	XDsi DsiInst; /**< DSI controller driver instance */
 #if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
-	XMipi_Tx_Phy MipiTxPhyInst;
+	XMipi_Tx_Phy MipiTxPhyInst; /**< MIPI TX PHY driver instance */
 #endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
-	XDphy DphyInst;
+	XDphy DphyInst; /**< DPHY driver instance */
 #endif
 } XDsiTxSs_SubCores;
 
 /**************************** Variable Definitions ***********************************/
-/**< Define Driver instance of all sub-core included in the design */
+/**
+ * Global array of DSI TX Subsystem sub-core instances. Each array element
+ * contains the driver instances for all sub-cores (DSI, MIPI TX PHY, DPHY)
+ * associated with an instance of the DSI TX Subsystem.
+ */
 #ifndef SDT
 XDsiTxSs_SubCores DsiTxSsSubCores[XPAR_XDSITXSS_NUM_INSTANCES];
 #else
-XDsiTxSs_SubCores DsiTxSsSubCores[];
+XDsiTxSs_SubCores DsiTxSsSubCores[XPAR_XDSITXSS_NUM_INSTANCES];
 #endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -78,8 +86,11 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr);
 #if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
 static u32 DsiTxSs_SubCoreInitMipiTxPhy(XDsiTxSs *DsiTxSsPtr);
 #endif
+
+#ifndef SDT
 static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 					u32 Offset, UINTPTR *BaseAddr);
+#endif
 
 /************************** Function Definitions ******************************/
 
@@ -189,7 +200,7 @@ u32 XDsiTxSs_DefaultConfigure(XDsiTxSs *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be worked on.
 * @param	core is used to denote the subcore of subsystem
-* @param        Flag is used to denote whether to enable or disable the subsystem
+* @param	Flag is used to denote whether to enable or disable the subsystem
 *
 * @return	XST_SUCCESS is returned if subcore(DSI/DPHY) was
 *			successfully enabled or disabled
@@ -230,7 +241,6 @@ int XDsiTxSs_Activate(XDsiTxSs *InstancePtr, XDsiSS_Subcore core, u8 Flag)
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be worked on.
 *
-* @return	None
 *
 * @note		None.
 *
@@ -255,7 +265,6 @@ void XDsiTxSs_Reset(XDsiTxSs *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the DSI TX Subsystem instance.
 *
-* @return	None
 *
 * @note		None.
 *
@@ -348,7 +357,6 @@ int XDsiTxSs_SendCmdModePacket(XDsiTxSs *InstancePtr)
 *
 * @param	InstancePtr is the XDsiTxSs instance to operate on
 *
-* @return	None
 *
 * @note		None.
 *
@@ -366,8 +374,6 @@ void XDsiTxSs_SendShortPacket(XDsiTxSs *InstancePtr)
 * This function will get the information from the GUI settings
 *
 * @param	InstancePtr is the XDsi instance to operate on
-*
-* @return 	None
 *
 * @note		None.
 *
@@ -695,7 +701,7 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr)
 * @param	DsiTxSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If DPHY sub core is initialised sucessfully
+*		- XST_SUCCESS If DPHY sub core is initialised successfully
 *		- XST_FAILURE If DPHY sub core initialization failed
 *
 * @note		None
@@ -744,6 +750,8 @@ static u32 DsiTxSs_SubCoreInitMipiTxPhy(XDsiTxSs *DsiTxSsPtr)
 	return XST_SUCCESS;
 }
 #endif
+
+#ifndef SDT
 /*****************************************************************************/
 /**
 * This function computes the subcore absolute address on axi-lite interface
@@ -790,3 +798,4 @@ static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
 	return Status;
 }
 /** @} */
+#endif

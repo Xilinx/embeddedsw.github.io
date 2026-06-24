@@ -6,5 +6,5 @@ var xusb__mouse_8c =
     [ "InitUsbInterface", "xusb__mouse_8c.html#a3b40155d0d9fa44133905dd9f6f02ee7", null ],
     [ "main", "xusb__mouse_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "UsbIfIntrHandler", "xusb__mouse_8c.html#a8bd3ecc4e2acd07b864ea2392a0394f4", null ],
-    [ "UsbMouseExample", "xusb__mouse_8c.html#a714c06502349d8b6e0d080156ef14a1b", null ]
+    [ "UsbMouseExample", "xusb__mouse_8c.html#a6e79a835f2be08e5725fd210740126f0", null ]
 ];

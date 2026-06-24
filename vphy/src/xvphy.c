@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -59,6 +59,7 @@
  * 1.9   gm   14/05/18 Added XVphy_SetRxLpm from xvphy_i.c/.h
  * 1.10  ssh  16/08/22 Added support for multi gt (GTHE4 and GTYE4)
  * 1.11  ssh  04/02/24 Added support for DP2.1
+ * 1.12  ssh  30/01/26 Updated QPLL0 and QPLL1 DRP values for DP2.1
  *
  * </pre>
  *
@@ -372,7 +373,7 @@ u32 XVphy_GetVersion(XVphy *InstancePtr)
 * @param	InstancePtr is a pointer to the XVphy core instance.
 * @param	QuadId is the GT quad ID to operate on.
 * @param	ChId is the channel ID to operate on.
-* @param	LineRate is the line rate to configure software.
+* @param	LineRateHz is the line rate in Hz to configure software.
 *
 * @return
 *		- XST_SUCCESS if the reference clock type is valid.
@@ -902,7 +903,6 @@ u32 XVphy_SetPrbsSel(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 * @param	InstancePtr is a pointer to the XVphy core instance.
 * @param	QuadId is the GT quad ID to operate on.
 * @param	ChId is the channel ID which to operate on.
-* @param	Dir is an indicator for TX or RX.
 * @param	ForceErr 0-No Error 1-Force Error
 *
 * @return
@@ -1021,12 +1021,12 @@ void XVphy_SetTxPreEmphasis(XVphy *InstancePtr, u8 QuadId,
 
 /*****************************************************************************/
 /**
-* This function will set the TX post-curosr value for a given channel.
+* This function will set the TX post-cursor value for a given channel.
 *
 * @param	InstancePtr is a pointer to the XVphy core instance.
 * @param	QuadId is the GT quad ID to operate on.
 * @param	ChId is the channel ID to operate on.
-* @param	Pe is the pre-emphasis value to write.
+* @param	Pc is the post-cursor value to write.
 *
 * @return	None.
 *
@@ -1291,6 +1291,7 @@ void XVphy_MmcmStart(XVphy *InstancePtr, u8 QuadId, XVphy_DirectionType Dir)
 * This function enables the TX or RX IBUFDS peripheral.
 *
 * @param	InstancePtr is a pointer to the XVphy core instance.
+* @param	QuadId is the GT quad ID to operate on.
 * @param	Dir is an indicator for TX or RX.
 * @param	Enable specifies TRUE/FALSE value to either enable or disable
 *		the IBUFDS, respectively.
@@ -1492,7 +1493,9 @@ void XVphy_Set8b10b(XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 * @param	QuadId is the GT quad ID to operate on.
 * @param	ChId is the channel ID to operate on.
 * @param	Dir is an indicator for TX or RX.
-* @param	Enable will enable (if 1) or disable (if 0) the LPM logic.
+* @param	Rate is the line rate configured.
+* @param	RefClkSel is the reference clock selected.
+* @param	PllSelect is the PLL selected.
 *
 * @return	None.
 *
@@ -1504,7 +1507,9 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		XVphy_PllType PllSelect)
 {
 	u32 RegVal;
-	u32 Status = XST_SUCCESS;
+
+	/* Suppress Warning Messages */
+	ChId = ChId;
 
 	RegVal = XVphy_ReadReg(InstancePtr->Config.BaseAddr,
 			XVPHY_CLKDET_CTRL_REG);
@@ -1513,7 +1518,7 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		  (Rate == 0x14) ||
 		  (Rate == 0x0A) ||
 		  (Rate == 0x06) ) {
-          //write '1' to [bit 31] of x200; DP1.4 select /40 from MMCM
+          /* write '1' to [bit 31] of x200; DP1.4 select /40 from MMCM */
 	if (!Dir) {
           XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
 			  RegVal | 0x80000000);
@@ -1524,54 +1529,13 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 			  RegVal | 0x40000000);
 	}
       } else {
-          //write '0' to bit[31] x200; DP2.0 select /32 from GT
+          /* write '0' to bit[31] x200; DP2.0 select /32 from GT */
 	if (!Dir) {
           XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
 			  RegVal & 0x7FFFFFFF);
           XVphy_SetRxLpm(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX,
 			0);
 	} else {
-		if (Rate == 0x02) {
-			for (ChId = 1; ChId <= 4; ChId++) {
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_ADAPT_CFG1, 0xFB1C);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_0, 0x4040);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_1, 0x1040);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_0, 0x4040);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_1, 0x0040);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXDRV_FREQBAND, 0x8285);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG1, 0xAA00);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG2, 0xAA00);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG3, 0xAA00);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPHDLY_CFG1, 0xE);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPI_CFG0, 0x3000);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPI_CFG1, 0x0000);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TX_PI_BIASSET, 0x224);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CH_HSPMUX, 0x6060);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXOUT_DIV, 0x1E8);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_RTX_BUF_CML_CTRL, 0x6);
-				Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TX_CLK25_DIV, 0xA806);
-			}
-		} else {
-			for (ChId = 1; ChId <= 4; ChId++) {
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_ADAPT_CFG1, 0xF81C);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_0, 0xC0C0);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL1_CFG_1, 0x10C0);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_0, 0xC0C0);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CKCAL2_CFG_1, 0x80C0);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXDRV_FREQBAND, 0x8085);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG1, 0x6C00);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG2, 0x6C00);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXFE_CFG3, 0x6C00);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPHDLY_CFG1, 0xF);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPI_CFG0, 0x100);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXPI_CFG1, 0x1000);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TX_PI_BIASSET, 0x222);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_CH_HSPMUX, 0x4020);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TXOUT_DIV, 0x3E8);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_RTX_BUF_CML_CTRL, 0x4);
-			Status |= XVphy_DrpWr(InstancePtr, QuadId, ChId, XVPHY_GTYE4_CHANNEL_TX_CLK25_DIV, 0x8806);
-		}
-        }
             XVphy_WriteReg(InstancePtr->Config.BaseAddr, XVPHY_CLKDET_CTRL_REG,
 			  RegVal & 0xBFFFFFFF);
 	}
@@ -1600,7 +1564,7 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 				XVPHY_CHANNEL_ID_CHA, RefClkSel);
         } else if (PllSelect == XVPHY_PLL_TYPE_QPLL0) {
 		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
-				XVPHY_CHANNEL_ID_CMNA, RefClkSel);
+				XVPHY_CHANNEL_ID_CMN0, RefClkSel);
         } else if (PllSelect == XVPHY_PLL_TYPE_QPLL1) {
 		XVphy_CfgPllRefClkSel(InstancePtr, QuadId,
 				XVPHY_CHANNEL_ID_CMN1, RefClkSel);
@@ -1608,7 +1572,7 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 	}
 	XVphy_WriteCfgRefClkSelReg(InstancePtr, QuadId);
 
-	//forcing CPLL for RX, QPLL for TX as of now for 10G
+	/* forcing CPLL for RX, QPLL for TX as of now for 10G */
 	if (!Dir) {
 		if (PllSelect == XVPHY_PLL_TYPE_CPLL) {
 			XVphy_ClkInitialize(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX);
@@ -1628,6 +1592,21 @@ void XVphy_SetupDP21Phy (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 	}
 }
 
+/*****************************************************************************/
+/**
+* This function resets the PHY for DP2.1
+*
+* @param	InstancePtr is a pointer to the XVphy core instance.
+* @param	QuadId is the GT quad ID to operate on.
+* @param	ChId is the channel ID to operate on.
+* @param	Dir is an indicator for TX or RX.
+*
+* @return
+*		- XST_SUCCESS.
+*
+* @note		None.
+*
+******************************************************************************/
 
 u16 XVphy_DP21PhyReset (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		XVphy_DirectionType Dir)
@@ -1635,7 +1614,8 @@ u16 XVphy_DP21PhyReset (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 	u32 Status;
 	u32 Retry;
 
-	u8 PllSelect = XVphy_GetPllType (InstancePtr, QuadId, Dir, ChId);
+	/* Suppress Warning Messages */
+	QuadId = QuadId;
 
 	if (!Dir) {
 	XVphy_BufgGtReset(InstancePtr, XVPHY_DIR_RX,(TRUE));
@@ -1665,77 +1645,32 @@ u16 XVphy_DP21PhyReset (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 		}
 	}
 	} else {
-		if (InstancePtr->Config.DpTxProtocol == 0) {
-			XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-					XVPHY_PLL_RESET_REG,
-					(XVPHY_PLL_RESET_QPLL0_MASK |
-							XVPHY_PLL_RESET_QPLL1_MASK)); // 0x06
-		} else if  (InstancePtr->Config.DpTxProtocol == 1) {
-			if (PllSelect == XVPHY_PLL_TYPE_CPLL) {
-				XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-						XVPHY_PLL_RESET_REG,
-						XVPHY_PLL_RESET_CPLL_MASK); // 0x06
-			} else if (PllSelect == XVPHY_PLL_TYPE_QPLL0) {
-				XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-						XVPHY_PLL_RESET_REG,
-						XVPHY_PLL_RESET_QPLL0_MASK); // 0x06
-			} else if (PllSelect == XVPHY_PLL_TYPE_QPLL1) {
-				XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-						XVPHY_PLL_RESET_REG,
-						XVPHY_PLL_RESET_QPLL1_MASK); // 0x06
-			}
-		}
-		XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-				XVPHY_PLL_RESET_REG, 0x0);
-
-//		XVphy_BufgGtReset(InstancePtr, XVPHY_DIR_TX,(TRUE));
+	XVphy_BufgGtReset(InstancePtr, XVPHY_DIR_TX,(TRUE));
+	if (InstancePtr->Config.DpTxProtocol == 0) {
+		XVphy_ResetGtPll(InstancePtr, 0, ChId,
+				XVPHY_DIR_TX,(TRUE));
+		XVphy_ResetGtPll(InstancePtr, 0, ChId,
+				XVPHY_DIR_TX, (FALSE));
+	} else if (InstancePtr->Config.DpTxProtocol == 1) {
 		XVphy_ResetGtPll(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				XVPHY_DIR_TX,(TRUE));
 		XVphy_ResetGtPll(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				XVPHY_DIR_TX, (FALSE));
-//		XVphy_BufgGtReset(InstancePtr, XVPHY_DIR_TX, (FALSE));
-		Status = XVphy_WaitForResetDone(InstancePtr, 0, ChId,
-				XVPHY_DIR_TX);
-		Status |= XVphy_WaitForPllLock(InstancePtr, 0, ChId);
+	}
+	XVphy_BufgGtReset(InstancePtr, XVPHY_DIR_TX, (FALSE));
+	Status = XVphy_WaitForResetDone(InstancePtr, 0, ChId,
+			XVPHY_DIR_TX);
+	Status |= XVphy_WaitForPllLock(InstancePtr, 0, ChId);
 
-		XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_TX, FALSE);
-		Retry = 0;
-		while (!XVphy_MmcmLocked(InstancePtr, 0, XVPHY_DIR_TX)) {
-			Retry++;
-			if (Retry > 2000) {
-				Status |= XST_FAILURE;
-				break;
-			}
+	XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_TX, FALSE);
+	Retry = 0;
+	while (!XVphy_MmcmLocked(InstancePtr, 0, XVPHY_DIR_TX)) {
+		Retry++;
+		if (Retry > 2000) {
+			Status = XST_FAILURE;
+			break;
 		}
-
-//		XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-//				XVPHY_PLL_RESET_REG,
-//				(XVPHY_PLL_RESET_QPLL0_MASK |
-//				 XVPHY_PLL_RESET_QPLL1_MASK)); // 0x06
-//		XVphy_WriteReg(InstancePtr->Config.BaseAddr,
-//				XVPHY_PLL_RESET_REG, 0x0);
-//
-//		XVphy_ResetGtPll(InstancePtr, QuadId,
-//				XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_TX,(FALSE));
-//
-//		Status = XVphy_WaitForPmaResetDone(InstancePtr, 0,
-//				ChId, XVPHY_DIR_TX);
-//
-//		Status |= XVphy_WaitForPllLock(InstancePtr, 0, ChId);
-//
-//		Status |= XVphy_WaitForResetDone(InstancePtr, 0,
-//				ChId, XVPHY_DIR_TX);
-//
-//		XVphy_MmcmReset (InstancePtr, 0, XVPHY_DIR_TX, FALSE);
-//		Retry = 0;
-//		while (!XVphy_MmcmLocked(InstancePtr, 0, XVPHY_DIR_TX)) {
-//			Retry++;
-//			if (Retry > 2000) {
-//				Status = XST_FAILURE;
-//				break;
-//			}
-//		}
-
+	}
 	}
 	return Status;
 }
@@ -1748,6 +1683,8 @@ u16 XVphy_DP21PhyReset (XVphy *InstancePtr, u8 QuadId, XVphy_ChannelId ChId,
 * from the same (RX) reference clock.
 *
 * @param	InstancePtr is a pointer to the XVphy core instance.
+* @param	QuadId is the GT quad ID to operate on.
+* @param	ChId is the channel ID to check.
 *
 * @return	TRUE if the RX and TX are using the same PLL, FALSE otherwise.
 *

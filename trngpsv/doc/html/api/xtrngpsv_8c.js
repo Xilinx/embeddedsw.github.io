@@ -18,6 +18,7 @@ var xtrngpsv_8c =
     [ "XTRNGPSV_RESEED_TIMEOUT", "xtrngpsv_8c.html#ga08661f569f5eaed8ccfce4bbe77418ee", null ],
     [ "XTRNGPSV_SEC_STRENGTH_SHIFT", "xtrngpsv_8c.html#ga384cd70c07b942e5ff526389092d1d5c", null ],
     [ "XTRNGPSV_WORD_ALIGN_MASK", "xtrngpsv_8c.html#ga2cc784a2d2b3207f518ea452784acfa4", null ],
+    [ "XTrngpsv_CfgInitialize", "xtrngpsv_8c.html#ga092381b1f5b73eed497579c6fce84b91", null ],
     [ "XTrngpsv_Generate", "xtrngpsv_8c.html#ga2d5b1c7182c8de3767e0345a3435ffe5", null ],
     [ "XTrngpsv_Instantiate", "xtrngpsv_8c.html#ga7b6a82053b11bedbd37a2a82dd0ba14d", null ],
     [ "XTrngpsv_Reseed", "xtrngpsv_8c.html#ga7740e9622a48052d5ebb9ddf10165138", null ],

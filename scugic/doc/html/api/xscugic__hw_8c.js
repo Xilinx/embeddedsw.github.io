@@ -1,7 +1,7 @@
 var xscugic__hw_8c =
 [
     [ "DEFAULT_PRIORITY", "xscugic__hw_8c.html#ga0756f011ef667460d583017366823244", null ],
-    [ "XScuGic_DeviceInitialize", "xscugic__hw_8c.html#ga2cbf5d5ac5273e00c0b16bd33ad0707f", null ],
+    [ "XScuGic_DeviceInitialize", "xscugic__hw_8c.html#ga9a39b7ce56a0c803c6c94b4ee147647e", null ],
     [ "XScuGic_DeviceInterruptHandler", "xscugic__hw_8c.html#ga96bfe161e3b4e401f76f2b35df9fab86", null ],
     [ "XScuGic_DisableIntr", "xscugic__hw_8c.html#ga0d183d23d05aac5d61cd640c5b39b275", null ],
     [ "XScuGic_EnableIntr", "xscugic__hw_8c.html#gadaa95193630e661a6a578f35a5e3ea1a", null ],

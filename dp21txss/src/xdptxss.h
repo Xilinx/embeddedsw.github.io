@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -95,14 +95,14 @@
 * 5.0  tu  09/08/17 Added two interrupt handler that addresses driver's
 *                   internal callback function of application
 *                   DrvHpdEventHandler and DrvHpdPulseHandler
-*                   Added HPD user data stucture XDpTxSs_UsrHpdPulseData
+*                   Added HPD user data structure XDpTxSs_UsrHpdPulseData
 *                   and XDpTxSs_UsrHpdEventData
 * 5.0  jb  02/21/19 Added HDCP22 support.
 * 					Made the Timer counter available for both HDCP1x and 22.
 * 6.4  rg  09/01/20 Added handler type as enum for extended packet transmit
 *                   done interrupt.
 * 6.4  rg  09/26/20 Added support for YUV420 color format.
-*
+* 6.5  pam 03/18/26 Added Function prototype for XDpTxSs_SendAudioInfoFrame API
 * </pre>
 *
 ******************************************************************************/
@@ -421,6 +421,14 @@ typedef struct {
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
+/* Stream-specific encryption register values for MST mode */
+#define XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1      0x0000FFFF  /**< Enhanced frame enable for stream 1 */
+#define XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_2      0xFFFF0000  /**< Enhanced frame enable for stream 2 */
+#define XDPTXSS_REG_TRAINING_PATTERN_STREAM_3       0x0000FFFF  /**< Training pattern for stream 3 */
+#define XDPTXSS_REG_TRAINING_PATTERN_STREAM_4       0xFFFF0000  /**< Training pattern for stream 4 */
+#define XDPTXSS_REG_STREAM_ZERO                     0x00000000  /**< No stream encryption */
+#define XDPTXSS_REG_ALL_STREAMS_ENCRYPT             0xFFFFFFFF  /**< Encrypt all streams */
+
 /**
 * Callback type which represents a custom timer wait handler.
 */
@@ -484,6 +492,7 @@ u32 XDpTxSs_SetVideoStream(XDpTxSs *InstancePtr, XVidC_VideoStream *VidStream,
 u8 XDpTxSs_GetNumOfMstStreams(XDpTxSs *InstancePtr);
 u32 XDpTxSs_GetSinkCapabilities(XDpTxSs *InstancePtr, u8 *SinkCap, u8 *SinkExtendedCap,
 		u8 *MaxLinkrate_128B);
+void XDpTxSs_SendAudioInfoFrame(XDpTxSs *InstancePtr, XDp_TxAudioInfoFrame *xilInfoFrame);
 #if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
 /* Optional HDCP related functions */
 u32 XDpTxSs_Authenticate(XDpTxSs *InstancePtr);
@@ -497,6 +506,7 @@ int XDpTxSs_HdcpSetProtocol(XDpTxSs *InstancePtr,
 		XDpTxSs_HdcpProtocol Protocol);
 u32 XDpTxSs_EnableEncryption(XDpTxSs *InstancePtr, u64 StreamMap);
 u32 XDpTxSs_DisableEncryption(XDpTxSs *InstancePtr, u64 StreamMap);
+void XDpTxSs_ConfigureStreamEncryption(XDpTxSs *InstancePtr, u64 stream_map);
 #endif
 #if (XPAR_XHDCP_NUM_INSTANCES > 0)
 u32 XDpTxSs_Poll(XDpTxSs *InstancePtr);
@@ -574,7 +584,7 @@ void XDpTxSs_WriteVscExtPktProcess(void * InstancePtr);
  * This function macro enables MST-TX audio on a given stream on the main link.
  *
  * @param      InstancePtr is a pointer to the XDpTxSs core instance.
- * @param      Stream Id to be enabled audio
+ * @param      StreamId to be enabled audio
  *
  * @return     None.
  *
@@ -600,24 +610,6 @@ void XDpTxSs_WriteVscExtPktProcess(void * InstancePtr);
  ******************************************************************************/
 #define XDpTxSs_Mst_AudioDisable(InstancePtr) \
         XDp_TxAudioDis((InstancePtr)->DpPtr)
-
-/*****************************************************************************/
-/**
- *
- * This function macro sends audio infoframe packets on the main link.
- *
- * @param        InstancePtr is a pointer to the XDpTxSs core instance.
- * @param		xilInfoFrame is a pointer to the InfoFrame buffer.
- *
- * @return       None.
- *
- * @note         C-style signature:
- *               void XDpTxSs_SendAudioInfoFrame(XDpTxSs *InstancePtr,
- *               			XDp_TxAudioInfoFrame *xilInfoFrame)
- *
- ******************************************************************************/
-#define XDpTxSs_SendAudioInfoFrame(InstancePtr, xilInfoFrame) \
-	XDp_TxSendAudioInfoFrame((InstancePtr)->DpPtr, xilInfoFrame)
 
 #ifdef __cplusplus
 }

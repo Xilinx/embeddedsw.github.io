@@ -12,7 +12,7 @@ var xscutimer_8h =
     [ "XScuTimer_RestartTimer", "xscutimer_8h.html#gaf1976650946668999ca5107fef691e53", null ],
     [ "XScuTimer_CfgInitialize", "xscutimer_8h.html#ga59badd651be237aab4099cedd96621d2", null ],
     [ "XScuTimer_GetPrescaler", "xscutimer_8h.html#ga56d8c36e4aa28168de3ba5d7f87feb2d", null ],
-    [ "XScuTimer_LookupConfig", "xscutimer_8h.html#ga1e7db0f5795151c2d6538dae1fd07a16", null ],
+    [ "XScuTimer_LookupConfig", "xscutimer_8h.html#ga58903096d235b860a31f50c4ab70c853", null ],
     [ "XScuTimer_SelfTest", "xscutimer_8h.html#gac3036b3f9f6e7735d3e6a6eb74a28e95", null ],
     [ "XScuTimer_SetPrescaler", "xscutimer_8h.html#gac6cd65141b00c0d1940d0b8f2a081faf", null ],
     [ "XScuTimer_Start", "xscutimer_8h.html#gabf24fad576d3adab4b53eebdef424bde", null ],

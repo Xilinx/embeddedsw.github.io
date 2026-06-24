@@ -35,7 +35,7 @@ var xusb_8h =
     [ "XUsb_IntrEnable", "xusb_8h.html#gafcd3e91e72783087a0c6902724b8087f", null ],
     [ "XUsb_IntrHandler", "xusb_8h.html#gacc119aa9f628ab0cc3fac2f63073e386", null ],
     [ "XUsb_IntrSetHandler", "xusb_8h.html#gada7caf770f82936ab7493b67d143b9a9", null ],
-    [ "XUsb_LookupConfig", "xusb_8h.html#ga833556c2bbb9beb055873006fea7b2ed", null ],
+    [ "XUsb_LookupConfig", "xusb_8h.html#ga83ca5d56b85bf4f28c99338a05c9a856", null ],
     [ "XUsb_ReadErrorCounters", "xusb_8h.html#gaf1806727cc17345c2b9a900804e3b322", null ],
     [ "XUsb_SetDeviceAddress", "xusb_8h.html#gaa2f7958d25023d2ed18cfaabfb2baa0f", null ],
     [ "XUsb_SetTestMode", "xusb_8h.html#ga4d5a367719f199ad49b9020f0fdd22ab", null ],

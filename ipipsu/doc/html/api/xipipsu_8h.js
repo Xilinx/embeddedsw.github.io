@@ -15,12 +15,11 @@ var xipipsu_8h =
     [ "XIPIPSU_W0_TO_W6_SIZE", "xipipsu_8h.html#ga60f742faef33529c730b02614441789b", null ],
     [ "XIpiPsu_WriteReg", "xipipsu_8h.html#ga72bcaac2f32ad480f79204f868309c31", null ],
     [ "XIpiPsu_CfgInitialize", "xipipsu_8h.html#ga9fb4494480ae0079422956f2af1da357", null ],
-    [ "XIpiPsu_LookupConfig", "xipipsu_8h.html#ga156d31f0b6ec62b917d9ce4a2d3684e3", null ],
+    [ "XIpiPsu_LookupConfig", "xipipsu_8h.html#gacb9c27ce83faa62ddce4b6898ddb419e", null ],
     [ "XIpiPsu_PollForAck", "xipipsu_8h.html#ga8153ea7257d7db9dd3f2ac0dd03e2ee2", null ],
     [ "XIpiPsu_ReadMessage", "xipipsu_8h.html#ga64113249dac23760b5cc0e9d038f8361", null ],
     [ "XIpiPsu_Reset", "xipipsu_8h.html#ga9c55b8deb0e6b0a4ff355ad3a74aa2f1", null ],
-    [ "XIpiPsu_SetConfigTable", "xipipsu_8h.html#gab4466706c8ede1b9b6e5b592a075afa7", null ],
     [ "XIpiPsu_TriggerIpi", "xipipsu_8h.html#ga8aa0005ec03abef3b3c1a506cb924e6e", null ],
     [ "XIpiPsu_WriteMessage", "xipipsu_8h.html#ga429d934e93e38c71d92ad98775b9cd92", null ],
-    [ "XIpiPsu_ConfigTable", "xipipsu_8h.html#gaf954c1864f8c4c66c0a887d8868cbc3e", null ]
+    [ "XIpiPsu_ConfigTable", "xipipsu_8h.html#ga3d2dd48cfc18bf089c15ce6b61c3f031", null ]
 ];

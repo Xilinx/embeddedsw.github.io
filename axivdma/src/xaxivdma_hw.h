@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -88,7 +88,7 @@ extern "C" {
 
 /**
  * Frame/Line Mismatch Error
- * This is a typical DMA Internal Error, which on detection doesnt require
+ * This is a typical DMA Internal Error, which on detection does not require
  * a reset (as opposed to other errors). So a MSB bit is set to identify it,
  * from other DMA Internal Errors.
  *

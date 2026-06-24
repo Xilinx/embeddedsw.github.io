@@ -9,7 +9,6 @@ var xcsiss__intr__example_8c =
     [ "CsiSs_PktLvlEventHandler", "xcsiss__intr__example_8c.html#a47f73352e5fdacd0a5781d75837711f1", null ],
     [ "CsiSs_PlatformInit", "xcsiss__intr__example_8c.html#a2616eb2221d62da082b74d1a3c1ae937", null ],
     [ "CsiSs_ProtLvlEventHandler", "xcsiss__intr__example_8c.html#adb83f55711bd51c4c70dc552e1d080db", null ],
-    [ "CsiSs_SetupIntrSystem", "xcsiss__intr__example_8c.html#af1c6b925e48cc09ea28725ed345e0476", null ],
     [ "CsiSs_SPktEventHandler", "xcsiss__intr__example_8c.html#aa82de58a14571625b9b396dca82a5627", null ],
     [ "Delay", "xcsiss__intr__example_8c.html#aa93f4f357d4911b56121f95a2917cd1a", null ],
     [ "main", "xcsiss__intr__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4", null ]

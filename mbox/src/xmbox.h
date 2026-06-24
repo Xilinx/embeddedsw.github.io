@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -21,7 +21,7 @@
 *   to send messages in a FIFO fashion, where the receiver is intended to be
 *   software on another processor.
 * - The mailbox implementation provides for a way to "send" and "receive" in
-*   an atomic fashion using seperate FIFOs in the mailbox core.
+*   an atomic fashion using separate FIFOs in the mailbox core.
 * - The API itself does not stop the use case where there is more than one
 *   sender on the transmit side and more than one receiver on the receiving side
 *   (just like TCP/IP sockets). However, unless there is a protocol implemented
@@ -49,7 +49,7 @@
 *     replaces the physical address present in the configuration structure.
 *     The EffectiveAddress argument is required regardless of operating system
 *     environment, i.e. in standalone, CfgPtr->BaseAddress is recommended, not
-*     the xparameters.h #define.
+*     the xparameters.h.
 *
 *
 * <b>Interrupts</b>
@@ -140,7 +140,10 @@
 *       sd   07/26/17 Modified tcl file to prevent false unconnected flagging.
 * 4.5   sd   09/03/20 Updated makefile for parallel execution.
 * 4.6   ht   07/06/23 Added support for system device-tree flow.
-*</pre>
+* 4.10  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
+*       vlt  01/28/26 Fixed codespell issues.
+* 4.10  ht   02/24/26 Fix doxygen warnings
+* </pre>
 *
 ******************************************************************************/
 
@@ -167,7 +170,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID of device */
 #else
-	char *Name;
+	char *Name;              /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;	/**< Register base address */
 	u8 UseFSL;		/**< use the FSL for the interface. */
@@ -175,9 +178,9 @@ typedef struct {
 	u8 RecvID;		/**< FSL link for the read i/f mailbox. */
 
 #ifdef SDT
-	u32 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
+	u32 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
-	UINTPTR IntrParent;	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XMbox_Config;

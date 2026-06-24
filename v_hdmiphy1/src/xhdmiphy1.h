@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2018 – 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -707,7 +707,7 @@ typedef struct {
                                  design. */
     u8  HdmiFastSwitch;     /**< HDMI fast switching is enabled in the
                                  design. */
-    u8  TransceiverWidth;   /**< Transceiver Width seeting in the design */
+    u8  TransceiverWidth;   /**< Transceiver Width setting in the design */
     u32 ErrIrq;             /**< Error IRQ is enabled in design */
     u32 AxiLiteClkFreq;     /**< AXI Lite Clock Frequency in Hz */
     u32 DrpClkFreq;         /**< DRP Clock Frequency in Hz */
@@ -1005,7 +1005,10 @@ void XHdmiphy1_ClkDetFreqReset(XHdmiphy1 *InstancePtr, u8 QuadId,
         XHdmiphy1_DirectionType Dir);
 u32 XHdmiphy1_ClkDetGetRefClkFreqHz(XHdmiphy1 *InstancePtr,
         XHdmiphy1_DirectionType Dir);
+u32 XHdmiphy1_ClkDetGetRefClkFreqHzRaw(XHdmiphy1 *InstancePtr,
+        XHdmiphy1_DirectionType Dir);
 u32 XHdmiphy1_DruGetRefClkFreqHz(XHdmiphy1 *InstancePtr);
+u32 XHdmiphy1_DruGetRefClkFreqHzRaw(XHdmiphy1 *InstancePtr);
 void XHdmiphy1_HdmiDebugInfo(XHdmiphy1 *InstancePtr, u8 QuadId,
         XHdmiphy1_ChannelId ChId);
 void XHdmiphy1_SetHdmiCallback(XHdmiphy1 *InstancePtr,

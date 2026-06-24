@@ -8,7 +8,7 @@ var xqspips__g128__flash__example_8c =
     [ "FlashWrite", "xqspips__g128__flash__example_8c.html#a1275835da99a222bbf97b10723925116", null ],
     [ "GetRealAddr", "xqspips__g128__flash__example_8c.html#a8dcc4059afd09dacccfa2ab80669aa91", null ],
     [ "main", "xqspips__g128__flash__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
-    [ "QspiG128FlashExample", "xqspips__g128__flash__example_8c.html#a124f20a4738c2c9c86d92590dab986e3", null ],
+    [ "QspiG128FlashExample", "xqspips__g128__flash__example_8c.html#a231588ab2ebd6c354ac94aca5820ed0f", null ],
     [ "SendBankSelect", "xqspips__g128__flash__example_8c.html#a0f034b18fdbb5e1217e3aa862ec91cf0", null ],
     [ "Flash_Config_Table", "xqspips__g128__flash__example_8c.html#a3542e5a3c9c7b059411efb09e844f62e", null ]
 ];

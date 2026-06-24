@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -17,6 +17,9 @@
 * Ver   Who    Date     Changes
 * ----- -----  -------- -----------------------------------------------
 * 4.0   se	   11/10/22 Secure and Non-Secure mode integration
+* 5.3   se     03/12/26 Enhancements: NULL checks, range validation,
+*                       standardize return values to XST_FAILURE
+*       se     03/13/26 Fix secure mode and PCSR re-lock in SDT flow
 *
 * </pre>
 *
@@ -60,11 +63,19 @@ static XStatus XSysMonPsv_IpiConfigure(XSysMonPsv *InstancePtr, XScuGic *const G
 	int Status = XST_FAILURE;
 	XIpiPsu_Config *IpiCfgPtr;
 
+
+	if (NULL == InstancePtr) {
+		goto done;
+	}
 	if (NULL == IpiInst) {
 		goto done;
 	}
 	/* Look Up the config data */
+#ifndef SDT
 	IpiCfgPtr = XIpiPsu_LookupConfig(InstancePtr->IpiDeviceId);
+#else
+	IpiCfgPtr = XIpiPsu_LookupConfig(InstancePtr->IpiBaseAddress);
+#endif
 	if (NULL == IpiCfgPtr) {
 		Status = XST_FAILURE;
 		xil_printf("%s ERROR in getting CfgPtr\n", __func__);
@@ -83,17 +94,17 @@ static XStatus XSysMonPsv_IpiConfigure(XSysMonPsv *InstancePtr, XScuGic *const G
 	/* Clear Any existing Interrupts */
 	XIpiPsu_ClearInterruptStatus(IpiInst, XIPIPSU_ALL_MASK);
 
-	if (NULL == GicInst) {
-		goto done;
+	if (NULL != GicInst) {
+		Status = XScuGic_Connect(GicInst, InstancePtr->IpiIntrId,
+					 (Xil_ExceptionHandler)XSysMonPsv_IpiIrqHandler, IpiInst);
+		if (XST_SUCCESS != Status) {
+			xil_printf("%s ERROR #%d in GIC connect\n", __func__, Status);
+			goto done;
+		}
+		XScuGic_Enable(GicInst, InstancePtr->IpiIntrId);
 	}
-	Status = XScuGic_Connect(GicInst, InstancePtr->IpiIntrId,
-				 (Xil_ExceptionHandler)XSysMonPsv_IpiIrqHandler, IpiInst);
-	if (XST_SUCCESS != Status) {
-		xil_printf("%s ERROR #%d in GIC connect\n", __func__, Status);
-		goto done;
-	}
-	/* Enable IPI interrupt at GIC */
-	XScuGic_Enable(GicInst, InstancePtr->IpiIntrId);
+
+	Status = XST_SUCCESS;
 
 done:
 
@@ -186,6 +197,8 @@ done:
 void XSysMonPsv_ReadReg32(XSysMonPsv *InstancePtr, u32 Offset, u32 *Data)
 {
 	u32 Payload[3];
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(Data != NULL);
 	(void)InstancePtr;
 
 	Payload[0] = Offset;
@@ -213,6 +226,7 @@ void XSysMonPsv_WriteReg32(XSysMonPsv *InstancePtr, u32 Offset, u32 Data)
 	u32 Payload[3];
 	u32 Response[5];
 	(void)InstancePtr;
+	Xil_AssertVoid(InstancePtr != NULL);
 
 	Payload[0] = Offset;
 	Payload[1] = XSYSMONPSV_SECURE_WRITE_DEFAULT;
@@ -238,6 +252,8 @@ void XSysMonPsv_UpdateReg32(XSysMonPsv *InstancePtr, u32 Offset, u32 Mask,
 {
 	u32 Val;
 
+
+	Xil_AssertVoid(InstancePtr != NULL);
 	XSysMonPsv_ReadReg32(InstancePtr, Offset, &Val);
 	XSysMonPsv_WriteReg32(InstancePtr, Offset,
 			     (Val & ~Mask) | (Mask & Data));

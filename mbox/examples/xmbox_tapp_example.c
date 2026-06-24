@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -56,12 +56,15 @@
 * 4.8   ht   08/08/24 Optimize wait time with timeout reduction and usleep()
 *                     inclusion.
 * 4.9   ht   04/17/25 Update Canonical definition to be inline with xsct flow.
-*</pre>
+* 4.10  vlt  12/14/25 Update Doxygen comments to include SDT flow details.
+* 4.10  ht   02/04/26 Fix GCC warnings for unused variables in SDT flow.
+* </pre>
 *****************************************************************************/
 
 /**************************** Include Files **********************************/
 
 #include "xmbox.h"
+#include "sleep.h"
 #include "xstatus.h"
 #include "xparameters.h"
 
@@ -104,7 +107,9 @@
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Variable Definitions *****************************/
+#if !(defined (SDT) && defined (TESTAPP_GEN))
 static XMbox Mbox;	/* Instance of the Mailbox driver */
+#endif
 
 /* Buffer for storing received the message */
 char RecvMsg[MSGSIZ] __attribute__ ((aligned(4)));
@@ -130,8 +135,7 @@ static int MailboxExample_Receive(XMbox *MboxInstancePtr, int CPU_Id);
 /**
 * This function is the main function for the mailbox example.
 *
-* @param	None.
-*
+
 * @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful.
 *
 * @note		None.
@@ -165,13 +169,20 @@ int main(void)
 * This function sends a message to and receives a message from the other
 * processor.
 *
+* @if SDT
+* @param	MboxInstancePtr is a pointer to the Mailbox instance
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	MboxDeviceID is the device Id of the MailBox.
+* @endif
 *
 * @return
 *		- XST_SUCCESS if the test passes.
 *		- XST_FAILURE if the test fails.
 *
-* @note		None.
+* @note	        In XSCT/classic flow, DeviceId is used to look up the
+*               device configuration.
+*
 *
 ******************************************************************************/
 #ifndef SDT
@@ -184,6 +195,11 @@ int MailboxExample(XMbox *MboxInstancePtr, UINTPTR BaseAddress)
 
 	XMbox_Config *ConfigPtr;
 	int Status;
+#ifdef SDT
+	XMbox *MboxPtr = MboxInstancePtr;
+#else
+	XMbox *MboxPtr = &Mbox;
+#endif
 
 	/*
 	 * Lookup configuration data in the device configuration table.
@@ -202,19 +218,19 @@ int MailboxExample(XMbox *MboxInstancePtr, UINTPTR BaseAddress)
 	/*
 	 * Perform the rest of the initialization.
 	 */
-	Status = XMbox_CfgInitialize(&Mbox, ConfigPtr, ConfigPtr->BaseAddress);
+	Status = XMbox_CfgInitialize(MboxPtr, ConfigPtr, ConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	/* Send the hello */
-	Status = MailboxExample_Send(&Mbox, MY_CPU_ID);
+	Status = MailboxExample_Send(MboxPtr, MY_CPU_ID);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
 
 	/* Receive the hello and verify the message */
-	Status = MailboxExample_Receive(&Mbox, MY_CPU_ID);
+	Status = MailboxExample_Receive(MboxPtr, MY_CPU_ID);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -239,10 +255,10 @@ int MailboxExample(XMbox *MboxInstancePtr, UINTPTR BaseAddress)
 static int MailboxExample_Send(XMbox *MboxInstancePtr, int CPU_Id)
 {
 	int Status;
-	u32 Nbytes;
 	u32 BytesSent;
+	u32 Nbytes = 0;
 
-	Nbytes = 0;
+	(void)CPU_Id;
 
 	while (Nbytes != HELLO_SIZE) {
 		/* Write a message to the mbox */
@@ -277,12 +293,11 @@ static int MailboxExample_Send(XMbox *MboxInstancePtr, int CPU_Id)
 static int MailboxExample_Receive(XMbox *MboxInstancePtr, int CPU_Id)
 {
 	int Status;
-	u32 Nbytes;
 	u32 BytesRcvd;
-	int Timeout;
+	u32 Nbytes = 0;
+	int Timeout = 0;
 
-	Nbytes = 0;
-	Timeout = 0;
+	(void)CPU_Id;
 
 	while (Nbytes < HELLO_SIZE) {
 		/* Read a message from the mbox */

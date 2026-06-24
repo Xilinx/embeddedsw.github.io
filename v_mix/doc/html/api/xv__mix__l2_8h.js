@@ -70,7 +70,7 @@ var xv__mix__l2_8h =
     [ "XVMix_GetLayerScaleFactor", "xv__mix__l2_8h.html#ga694fb356c5458509b2ceb615a0cb4008", null ],
     [ "XVMix_GetLayerWindow", "xv__mix__l2_8h.html#ga7294d87809e7c940e83234bf6d0730db", null ],
     [ "XVMix_GetLogoColorKey", "xv__mix__l2_8h.html#gaca5e7221f1af27ee75c91d68d407ea11", null ],
-    [ "XVMix_Initialize", "xv__mix__l2_8h.html#ga58ff6dc9ac3a65cb92e5f975846e1e09", null ],
+    [ "XVMix_Initialize", "xv__mix__l2_8h.html#gab7ebc26eaf614e09344e1df2c97f3954", null ],
     [ "XVMix_InterruptDisable", "xv__mix__l2_8h.html#ga730ead6b1406bec7411131a76556f63b", null ],
     [ "XVMix_InterruptEnable", "xv__mix__l2_8h.html#ga349918aa3590f7bac1257e8fade0ee4c", null ],
     [ "XVMix_InterruptHandler", "xv__mix__l2_8h.html#ga11c3c9f8be66807a720a0043195e5382", null ],

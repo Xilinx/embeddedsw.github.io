@@ -4,6 +4,7 @@ var files =
     [ "xvidc.h", "xvidc_8h.html", "xvidc_8h" ],
     [ "xvidc_edid.c", "xvidc__edid_8c.html", "xvidc__edid_8c" ],
     [ "xvidc_edid.h", "xvidc__edid_8h.html", "xvidc__edid_8h" ],
+    [ "xvidc_edid_ext.c", "xvidc__edid__ext_8c.html", "xvidc__edid__ext_8c" ],
     [ "xvidc_edid_print_example.c", "xvidc__edid__print__example_8c.html", "xvidc__edid__print__example_8c" ],
     [ "xvidc_edid_print_example.h", "xvidc__edid__print__example_8h.html", "xvidc__edid__print__example_8h" ],
     [ "xvidc_parse_edid.c", "xvidc__parse__edid_8c.html", "xvidc__parse__edid_8c" ],

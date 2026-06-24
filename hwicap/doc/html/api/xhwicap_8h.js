@@ -31,7 +31,7 @@ var xhwicap_8h =
     [ "XHwIcap_FlushFifo", "xhwicap_8h.html#ga92dbad9de7f4a4e41fcde30fc2ebda1c", null ],
     [ "XHwIcap_GetConfigReg", "xhwicap_8h.html#ga305707eb013da39d038183c7f0d8fed9", null ],
     [ "XHwIcap_IntrHandler", "xhwicap_8h.html#ga9cf1ff1dd1056a11f65a903c47492842", null ],
-    [ "XHwIcap_LookupConfig", "xhwicap_8h.html#gadead7aef30c83eb98380b986884b0e6f", null ],
+    [ "XHwIcap_LookupConfig", "xhwicap_8h.html#ga56a4670419991c549bdda6868a22b4f0", null ],
     [ "XHwIcap_Reset", "xhwicap_8h.html#ga6c516a5e0cb9f928e591a152cd567dca", null ],
     [ "XHwIcap_SelfTest", "xhwicap_8h.html#ga0716d6a3c65aabb73344bee9c4c9cfc7", null ],
     [ "XHwIcap_SetInterruptHandler", "xhwicap_8h.html#gaa2f2f23cf842c10f443509f8861a194a", null ]

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -891,7 +891,7 @@ void main_loop(){
 				xil_printf("Sink supports VSC\r\n");
 			}
 			else{
-				xil_printf("Sink doesnt support VSC\r\n");
+				xil_printf("Sink doesn't support VSC\r\n");
 				break;
 			}
 
@@ -1305,7 +1305,7 @@ static char inbyte_local(void){
 * @param	timeout_ms
 *
 * @return
-*		- received charactor
+*		- received character
 *
 * @note		None.
 *
@@ -1348,7 +1348,7 @@ static u32 xil_gethex(u8 num_chars){
 static char RecvByte_NonBlocking(){
     u32 RecievedByte;
 #ifdef versal
-    RecievedByte = XUartPsv_ReadReg(STDIN_BASEADDRESS, XUARTPSV_UARTDR_OFFSET);
+	RecievedByte = XUartPsv_RecvByte(STDIN_BASEADDRESS);
 #else
     RecievedByte = XUartPs_ReadReg(STDIN_BASEADDRESS, XUARTPS_FIFO_OFFSET);
 #endif
@@ -1369,7 +1369,7 @@ static char RecvByte_NonBlocking(){
 * @param	timeout_ms
 *
 * @return
-*		- received charactor
+*		- received character
 *
 * @note		None.
 *

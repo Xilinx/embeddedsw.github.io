@@ -60,6 +60,7 @@ var xvprocss_8h =
       [ "XVPROCSS_WIN_NUM_SUPPORTED", "xvprocss_8h.html#a0743bfb208145c415f5af1ba231245a6afa54496c91558c9f09512ebcc0f135a0", null ]
     ] ],
     [ "XVprocSs_CfgInitialize", "xvprocss_8h.html#aac138624e6b5449040be8bd02710a512", null ],
+    [ "XVprocSs_GetDrvIndex", "xvprocss_8h.html#ga35d95efae8c3e41c5c3a6d5d5996efcc", null ],
     [ "XVprocSs_GetPictureBrightness", "xvprocss_8h.html#a84c2f382ff78d4cc1c42628d0821870c", null ],
     [ "XVprocSs_GetPictureColorRange", "xvprocss_8h.html#a0b0ba7cd1d7384d9acd813d3b38f2979", null ],
     [ "XVprocSs_GetPictureColorStdIn", "xvprocss_8h.html#a0002b9c7a313219e4701514fe3acae7b", null ],
@@ -74,7 +75,7 @@ var xvprocss_8h =
     [ "XVprocSs_LogRead", "xvprocss_8h.html#adf3fd2ffbed19ddf48ee19ef9368e5ac", null ],
     [ "XVprocSs_LogReset", "xvprocss_8h.html#a7bde6b4ee20f3546da3db9c8b3295d59", null ],
     [ "XVprocSs_LogWrite", "xvprocss_8h.html#a477ddfa18fa5fda8658ec72fb29a2d25", null ],
-    [ "XVprocSs_LookupConfig", "xvprocss_8h.html#gae1122f4587efc719f26e180560081e55", null ],
+    [ "XVprocSs_LookupConfig", "xvprocss_8h.html#gaea7e0f3a01027389e89cd2e70e8a919f", null ],
     [ "XVprocSs_ReportSubcoreStatus", "xvprocss_8h.html#acc2dd89a8c01c86bf6093d842db67262", null ],
     [ "XVprocSs_ReportSubsystemConfig", "xvprocss_8h.html#abe70027604ba640917538338703b4a7f", null ],
     [ "XVprocSs_ReportSubsystemCoreInfo", "xvprocss_8h.html#af3ef2fc6d79df8ccb528644f8e539828", null ],

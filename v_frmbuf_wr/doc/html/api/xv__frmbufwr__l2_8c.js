@@ -7,7 +7,7 @@ var xv__frmbufwr__l2_8c =
     [ "XVFrmbufWr_GetFieldID", "xv__frmbufwr__l2_8c.html#ga02ac61b5da119e29efb4fcb6bb0a8340", null ],
     [ "XVFrmbufWr_GetVChromaBufferAddr", "xv__frmbufwr__l2_8c.html#gaf5b5f5abec7d6763bd3333f3ef4df008", null ],
     [ "XVFrmbufWr_GetVideoStream", "xv__frmbufwr__l2_8c.html#ga628707a22dc9888af5371e4e7fc82b68", null ],
-    [ "XVFrmbufWr_Initialize", "xv__frmbufwr__l2_8c.html#ga5453dda299a1e77ed1c692f31dbcb844", null ],
+    [ "XVFrmbufWr_Initialize", "xv__frmbufwr__l2_8c.html#ga7168bd4d28a15731f7c8c64d00785464", null ],
     [ "XVFrmbufWr_InterruptDisable", "xv__frmbufwr__l2_8c.html#gacb9da6afd1c85b903b5d19048f2079f4", null ],
     [ "XVFrmbufWr_InterruptEnable", "xv__frmbufwr__l2_8c.html#ga918ae9aa7c4a277140c79880b91b5217", null ],
     [ "XVFrmbufWr_SetBufferAddr", "xv__frmbufwr__l2_8c.html#ga65a4ff585ac85c574eb6111848e3b2c9", null ],

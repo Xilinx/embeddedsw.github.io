@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 1986 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -97,7 +97,7 @@
 * ----- ---- -------- -------------------------------------------------------
 * 1.00  rco   10/29/15   Initial Release
 *             12/14/15   Added interrupt handler
-*             02/12/16   Added Stride and memory Alignement requirements
+*             02/12/16   Added Stride and memory Alignment requirements
 *             02/25/16   Replace GetColorFromat function with a macro
 *             03/08/16   Replace GetColorFromat macro with function and added
 *                        master layer video format
@@ -169,7 +169,7 @@ typedef enum
 * [4] http://en.wikipedia.org/wiki/YCbCr
 * Coefficient table supports BT601 / BT709 / BT2020 encoding schemes
 * and 16-235 / 16-240 / 0-255 range.
-* These are defined in signed interger format and divided with 10000
+* These are defined in signed integer format and divided with 10000
 * to get fractional values.
 */
 
@@ -309,7 +309,9 @@ typedef struct {
                                 callback */
 
     XVMix_Layer Layer[XVMIX_MAX_SUPPORTED_LAYERS];  /**< Layer configuration
-                                                         structure */
+                                                         structure for master
+                                                         and overlay layers */
+    XVMix_Layer LogoLayer;  /**< Logo layer configuration structure */
     XVMix_BackgroundId BkgndColor;
 
     XVidC_VideoStream Stream;    /**< Input AXIS */
@@ -568,14 +570,6 @@ void XVMix_InterruptHandler(void *InstancePtr);
 int XVMix_SetCallback(XV_Mix_l2 *InstancePtr, void *CallbackFunc, void *CallbackRef);
 void XVMix_InterruptEnable(XV_Mix_l2 *InstancePtr);
 void XVMix_InterruptDisable(XV_Mix_l2 *InstancePtr);
-static void XVMix_SetCoeffForYuvToRgb(XV_Mix_l2 *InstancePtr,
-		XVidC_ColorStd colorStandard,
-		XVidC_ColorRange colorRange,
-		u8 colorDepth);
-static void XVMix_SetCoeffForRgbToYuv(XV_Mix_l2 *InstancePtr,
-		XVidC_ColorStd ColorStd,
-		XVidC_ColorRange colorRange,
-		u8 colorDepth);
 u32 XVMix_SetCscCoeffs(XV_Mix_l2 *InstancePtr,
 		XVidC_ColorStd ColorStd,
 		XVidC_ColorRange colorRange,

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -201,7 +201,6 @@ int XV_SdiRx_CfgInitialize(XV_SdiRx *InstancePtr, XV_SdiRx_Config *CfgPtr,
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
 *
 * @note		This is required after a reset or init.
 *
@@ -233,7 +232,7 @@ void XV_SdiRx_ResetStream(XV_SdiRx *InstancePtr)
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 * @param	SelId specifies which debug information to be printed out
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -444,7 +443,7 @@ int XV_SdiRx_Stop(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -468,7 +467,7 @@ void XV_SdiRx_FramerEnable(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -501,7 +500,7 @@ void XV_SdiRx_FramerDisable(XV_SdiRx *InstancePtr)
 *		- 10 = XV_SDIRX_MULTISEARCHMODE where the supported modes will be
 *				enabled by XV_SdiRx_EnableMode function
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -588,7 +587,7 @@ u32 XV_SdiRx_ReportDetectedError(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 ******************************************************************************/
 
@@ -614,7 +613,7 @@ void XV_SdiRx_SetYCbCr444_RGB_10bit(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 ******************************************************************************/
 void XV_SdiRx_ClearYCbCr444_RGB_10bit(XV_SdiRx *InstancePtr)
@@ -639,7 +638,7 @@ void XV_SdiRx_ClearYCbCr444_RGB_10bit(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -663,7 +662,7 @@ void XV_SdiRx_VidBridgeEnable(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -687,7 +686,7 @@ void XV_SdiRx_VidBridgeDisable(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -712,7 +711,7 @@ void XV_SdiRx_Axi4sBridgeEnable(XV_SdiRx *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -776,7 +775,7 @@ u32 XV_SdiRx_GetPayloadId(XV_SdiRx *InstancePtr, u8 DataStream)
 * This function is used to wait for the payload valid bit to be set.
 * This has to be called from application based on the callback indication of
 * the video lock interrupt handler. Without this function being called, it may
-* be guaranteed that payload bits are valid after video lock interrupt occured.
+* be guaranteed that payload bits are valid after video lock interrupt occurred.
 *
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 *
@@ -833,7 +832,7 @@ u32 XV_SdiRx_WaitforPayLoad(XV_SdiRx *InstancePtr)
 	/*
 	 * Wait for 50 ms, the maximum frame time for any SDI supported
 	 * resolution. The highest frametime is 1/23.98 ~ 41 ms. With some
-	 * buffer we consider 50 ms wait time affter which we can ensure that
+	 * buffer we consider 50 ms wait time after which we can ensure that
 	 * a frame has been passed.
 	 */
 	usleep(50000);
@@ -887,7 +886,7 @@ u32 XV_SdiRx_GetSdiMode(XV_SdiRx *InstancePtr)
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 * @param	Data specifies the clock period.
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -913,20 +912,20 @@ void XV_SdiRx_SetVidLckWindow(XV_SdiRx *InstancePtr, u32 Data)
 *		- Bit 1 = ANC EDA error
 *		- Bit 2 = ANC IDH error
 *		- Bit 3 = ANC IDA error
-*		- Bit 4 = ANC UES error
+*		- Bit 4 = ANC Unknown Error Status error
 *		- Bit 5 = FF EDH error
 *		- Bit 6 = FF EDA error
 *		- Bit 7 = FF IDH error
 *		- Bit 8 = FF IDA error
-*		- Bit 9 = FF UES error
+*		- Bit 9 = FF Unknown Error Status error
 *		- Bit 10 = AP EDH error
 *		- Bit 11 = AP EDA error
 *		- Bit 12 = AP IDH error
 *		- Bit 13 = AP IDA error
-*		- Bit 14 = AP UES error
+*		- Bit 14 = AP Unknown Error Status error
 *		- Bit 15 = EDH packet checksum-error
 *
-* @return	None.
+*
 *
 * @note		None.
 *
@@ -954,7 +953,7 @@ void XV_SdiRx_SetEdhErrCntTrigger(XV_SdiRx *InstancePtr, u32 Enable)
 * @param	SupportModes specifies which SDI mode is to be supported from SDI
 *			mode detection logic.
 *
-* @return	None.
+*
 *
 * @note		XV_SDIRX_MULTISEARCHMODE must be selected in the XV_SdiRx_Start
 *			function.
@@ -986,7 +985,7 @@ void XV_SdiRx_EnableMode(XV_SdiRx *InstancePtr,
 * @param	RemoveModes specifies which SDI mode is to be removed from SDI mode
 *			detection logic.
 *
-* @return	None.
+*
 *
 * @note         None.
 *
@@ -1008,7 +1007,7 @@ void XV_SdiRx_DisableMode(XV_SdiRx *InstancePtr,
 * @param	InstancePtr is a pointer to the XV_SdiRx core instance.
 * @param	BitDepth specifies which BitDepth to be set
 *
-* @return	None.
+*
 *
 * @note         None.
 *
@@ -1030,7 +1029,6 @@ void XV_SdiRx_SetBitDepth(XV_SdiRx *InstancePtr, XVidC_ColorDepth BitDepth)
 * 			0 is to disable
 * 			1 is to enable
 *
-* @return	None
 *
 ******************************************************************************/
 void XV_SdiRx_HandleNoPayload(XV_SdiRx *InstancePtr, u8 enable)
@@ -1057,7 +1055,7 @@ void XV_SdiRx_HandleNoPayload(XV_SdiRx *InstancePtr, u8 enable)
 *		layer when setting the callback functions, and passed back to
 *		the upper layer when the callback is invoked.
 *
-* @return	None.
+*
 *
 * @note		None.
 *

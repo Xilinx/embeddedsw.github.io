@@ -6,7 +6,7 @@ var xuartlite_8h =
     [ "XUartLite_DisableInterrupt", "xuartlite_8h.html#gaaa1b67ac0d2f5bf69ce6084ea49cef39", null ],
     [ "XUartLite_EnableInterrupt", "xuartlite_8h.html#gaca08a21fa15779ce8dedd2ac9f25971e", null ],
     [ "XUartLite_GetStats", "xuartlite_8h.html#ga081d00a44aeebe19ed77e195a063b4e1", null ],
-    [ "XUartLite_Initialize", "xuartlite_8h.html#gacf1026cbafbd78e1f3a7fd0ee433d001", null ],
+    [ "XUartLite_Initialize", "xuartlite_8h.html#ga3c83194bde1d39a420bc5ff1b6c8677d", null ],
     [ "XUartLite_InterruptHandler", "xuartlite_8h.html#ga399463f89d7b4e846a4a4089e9cd54fb", null ],
     [ "XUartLite_IsSending", "xuartlite_8h.html#ga40bc490d296a7a929f1cc5d07bb29b3c", null ],
     [ "XUartLite_Recv", "xuartlite_8h.html#gaa30ed8bfedba1acdc67dc94e77d5a41d", null ],

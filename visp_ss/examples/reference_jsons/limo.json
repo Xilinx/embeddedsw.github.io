@@ -9,10 +9,10 @@
 		"workMode": 1,       "//": "1:Stream_mode  2:Mcm_mode  3:Rdma_mode",
 		"modeInfo":
 		{
-			"reserved":0,
-			"portId":1
+			"reserved":0
 		},
 		"streamDuration": 30, "//": "Second",
+		"fineTuneJson": "vvbcfg/project_json_file/ISP8200_V2311_20260305_144649.json",
 		"pathCfg":[
 		{
 			"pathName": "MP",
@@ -20,26 +20,31 @@
 			"bufferNumber": 6,
 			"pathWidth": 1920,
                         "pathHeight": 1080,
-			"format": "YUV422SP"
+			"format": "RGB888"
 		}
 		],
 
 		"sensorInfo":
 		{
 			"sensorName": "ox03f10",
-			"sensorDevId": 3 ,
-			"calibrationName": "OX03f10.xml",
+			"sensorDevId": 6 ,
 			"modeIndex": 0,
 			"resolutionWidth": 1920,
 			"resolutionHeight": 1080,
 			"illumType": "D50",
 			"fps": 10,
-			"virtualChannelId": 1, "//": "0: Default"
+			"virtualChannelId": 0, "//": "0: Default"
 		},
 		"wdrInfo":
 		{
 			"enable": 1,
 			"usecfg": 1
+		},
+		"gtmInfo":
+		{
+			"enable": 1,
+			"usecfg": 1,
+			"mode": 1
 		},
 		"cpdInfo":
 		{
@@ -47,6 +52,35 @@
 			"usecfg": 1
 		},
 		"dmscInfo":
+		{
+			"enable": 1,
+			"usecfg": 1
+		},
+		"gcInfo":
+		{
+			"enable": 1,
+			"usecfg": 1,
+			"mode": 0
+		},
+		"aeInfo":
+		{
+			"enable": 1,
+			"usecfg": 1,
+			"mode": 1
+		},
+		"awbInfo":
+		{
+			"enable": 1,
+			"usecfg": 1,
+			"mode": 1
+		},
+		"ccmInfo":
+		{
+			"enable": 1,
+			"usecfg": 1,
+			"mode": 1
+		},
+		"wbInfo":
 		{
 			"enable": 1,
 			"usecfg": 1

@@ -4,6 +4,7 @@ var xmipi__rx__phy_8c =
     [ "XMipi_Rx_Phy_CfgInitialize", "xmipi__rx__phy_8c.html#gadd043232c820116d069c13766ce1d432", null ],
     [ "XMipi_Rx_Phy_ClearDataLane", "xmipi__rx__phy_8c.html#gac84fac31ab197bd3198dd11ca3896435", null ],
     [ "XMipi_Rx_Phy_Configure", "xmipi__rx__phy_8c.html#ga60a0033eef09e3af1f3d38b2642bc990", null ],
+    [ "XMipi_Rx_Phy_DynamicLineRateConfig", "xmipi__rx__phy_8c.html#ga2e429c448748bd186ad8563e23df7e4f", null ],
     [ "XMipi_Rx_Phy_GetClkLaneMode", "xmipi__rx__phy_8c.html#ga0c21c9093da86aa4159da50ded9b27c5", null ],
     [ "XMipi_Rx_Phy_GetClkLaneStatus", "xmipi__rx__phy_8c.html#gafa9a8618d0efffc43b5001c4456dec8c", null ],
     [ "XMipi_Rx_Phy_GetDataLaneMode", "xmipi__rx__phy_8c.html#gaca06750514da41ca96625aeebf2cee64", null ],

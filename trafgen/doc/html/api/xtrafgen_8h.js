@@ -73,7 +73,7 @@ var xtrafgen_8h =
     [ "XTrafGen_CfgInitialize", "xtrafgen_8h.html#ga4d40f6d5551836dab49e0d22e8d5e1eb", null ],
     [ "XTrafGen_EraseAllCommands", "xtrafgen_8h.html#ga539d4976ad3ace9e15d993e2b18143a0", null ],
     [ "XTrafGen_GetLastValidIndex", "xtrafgen_8h.html#ga262d850cbfc5b0495fbc2d84334a1fba", null ],
-    [ "XTrafGen_LookupConfig", "xtrafgen_8h.html#gacbf906e378777e17e7d68729315993ec", null ],
+    [ "XTrafGen_LookupConfig", "xtrafgen_8h.html#gac3cbfc258cf7a91a271140e9ffc33c76", null ],
     [ "XTrafGen_PrintCmds", "xtrafgen_8h.html#gad9654a81e902175a963c83edb0c37144", null ],
     [ "XTrafGen_WriteCmdsToHw", "xtrafgen_8h.html#ga14377a8884e99ce01c0c76128c939c49", null ]
 ];

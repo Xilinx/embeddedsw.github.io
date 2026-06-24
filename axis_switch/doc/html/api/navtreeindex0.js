@@ -1,11 +1,12 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,3],
 "globals_func.html":[1,1],
@@ -27,15 +28,14 @@ var NAVTREEINDEX0 =
 "xaxis__switch_8h.html#ga91d899fe6d8456f8460acd4a122dce64":[2,1,3],
 "xaxis__switch_8h.html#ga943a402b210b5f2901b6d6e7ae323d50":[2,1,9],
 "xaxis__switch_8h.html#ga993cbd838dd30de44a943c7f4a046101":[2,1,4],
-"xaxis__switch_8h.html#gaa631f268bd77eca8acc9534775649df1":[2,1,6],
 "xaxis__switch_8h.html#gaa82658cbc43e600c53a429fce04d3a4c":[2,1,2],
+"xaxis__switch_8h.html#gac2d1165dcc6dd3f7ef777b77c7752c0d":[2,1,6],
 "xaxis__switch_8h.html#gad9c646b6e8d7f5d6c431c2985592fb4b":[2,1,10],
 "xaxis__switch_8h.html#gafc168e986cd2b401045578c06bc90869":[2,1,1],
 "xaxis__switch__example_8c.html":[2,2],
-"xaxis__switch__example_8c.html#a6c9c949af1b8249e863d8f032191c9bf":[2,2,3],
-"xaxis__switch__example_8c.html#aa2a34a2df24773fe27ebbb97e2716456":[2,2,0],
-"xaxis__switch__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,2,2],
-"xaxis__switch__example_8c.html#afb4a902539841ccf21c9b6daf08e36ff":[2,2,1],
+"xaxis__switch__example_8c.html#a2f2888c4ad40580a4c7aeff37fe1314e":[2,2,0],
+"xaxis__switch__example_8c.html#a6c9c949af1b8249e863d8f032191c9bf":[2,2,2],
+"xaxis__switch__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,2,1],
 "xaxis__switch__g_8c.html":[2,3],
 "xaxis__switch__hw_8h.html":[2,4],
 "xaxis__switch__hw_8h.html#ga009bec9091359e44e8bf434e3528c2eb":[2,4,3],
@@ -53,5 +53,5 @@ var NAVTREEINDEX0 =
 "xaxis__switch__selftest_8c.html":[2,5],
 "xaxis__switch__selftest_8c.html#gad9c646b6e8d7f5d6c431c2985592fb4b":[2,5,0],
 "xaxis__switch__sinit_8c.html":[2,6],
-"xaxis__switch__sinit_8c.html#gaa631f268bd77eca8acc9534775649df1":[2,6,0]
+"xaxis__switch__sinit_8c.html#gac2d1165dcc6dd3f7ef777b77c7752c0d":[2,6,0]
 };

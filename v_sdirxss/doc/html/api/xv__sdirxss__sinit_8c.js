@@ -1,4 +1,5 @@
 var xv__sdirxss__sinit_8c =
 [
-    [ "XV_SdiRxSs_LookupConfig", "xv__sdirxss__sinit_8c.html#a0e23415bd6bf917e5b2279c2ae6d3cc4", null ]
+    [ "XV_SdiRxSs_GetDrvIndex", "xv__sdirxss__sinit_8c.html#a2bc192ac9326e1043470bf684cd80843", null ],
+    [ "XV_SdiRxSs_LookupConfig", "xv__sdirxss__sinit_8c.html#a6477e5d562f985c1492fa3efdea84ffe", null ]
 ];

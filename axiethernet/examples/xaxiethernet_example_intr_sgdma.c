@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -420,6 +420,13 @@ int main(void)
 * and receiving frames in interrupt driven SGDMA mode.
 *
 *
+* @if SDT
+* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+*		AxiEthernet component.
+* @param	DmaInstancePtr is a pointer to the instance of the AXIDMA
+*		component.
+* @param	AxiEthernetBaseAddress contains the base address of the AxiEthernet device
+* @else
 * @param	IntcInstancePtr is a pointer to the instance of the Intc
 *		component.
 * @param	AxiEthernetInstancePtr is a pointer to the instance of the
@@ -439,6 +446,7 @@ int main(void)
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMARX_INTR
 * @param	DmaTxIntrId is the interrupt id for DMA Tx and is typically
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMATX_INTR
+* @endif
 *
 * @return	-XST_SUCCESS to indicate success
 *		-XST_FAILURE to indicate failure
@@ -1382,13 +1390,13 @@ int AxiEthernetSgDmaPartialChecksumOffloadExample(XAxiEthernet
 	XAxiDma_BdSetBufAddr(BdPtr, (UINTPTR)&RxFrame);
 #ifndef SDT
 #ifndef XPAR_AXIDMA_0_ENABLE_MULTI_CHANNEL
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame));
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE);
 #else
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame),
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE,
 			RxRingPtr->MaxTransferLen);
 #endif
 #else
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame),
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE,
 			RxRingPtr->MaxTransferLen);
 #endif
 
@@ -1470,6 +1478,15 @@ int AxiEthernetSgDmaPartialChecksumOffloadExample(XAxiEthernet
 	Status = XAxiDma_BdRingToHw(TxRingPtr, 1, BdPtr);
 	if (Status != XST_SUCCESS) {
 		AxiEthernetUtilErrorTrap("Error committing TxBD to HW");
+		return XST_FAILURE;
+	}
+
+	/*
+	 * Start DMA TX channel. Transmission starts
+	 */
+	Status = XAxiDma_BdRingStart(TxRingPtr);
+	if (Status != XST_SUCCESS) {
+		AxiEthernetUtilErrorTrap("Error starting TX DMA channel");
 		return XST_FAILURE;
 	}
 
@@ -1834,13 +1851,13 @@ int AxiEthernetSgDmaFullChecksumOffloadExample(XAxiEthernet
 	XAxiDma_BdSetBufAddr(BdPtr, (UINTPTR)&RxFrame);
 #ifndef SDT
 #ifndef XPAR_AXIDMA_0_ENABLE_MULTI_CHANNEL
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame));
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE);
 #else
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame),
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE,
 				RxRingPtr->MaxTransferLen);
 #endif
 #else
-	XAxiDma_BdSetLength(BdPtr, sizeof(RxFrame),
+	XAxiDma_BdSetLength(BdPtr, XAE_MAX_JUMBO_FRAME_SIZE,
 				RxRingPtr->MaxTransferLen);
 #endif
 
@@ -1904,6 +1921,15 @@ int AxiEthernetSgDmaFullChecksumOffloadExample(XAxiEthernet
 	Status = XAxiDma_BdRingToHw(TxRingPtr, 1, BdPtr);
 	if (Status != XST_SUCCESS) {
 		AxiEthernetUtilErrorTrap("Error committing TxBD to HW");
+		return XST_FAILURE;
+	}
+
+	/*
+	* Start DMA TX channel. Transmission starts.
+	*/
+	Status = XAxiDma_BdRingStart(TxRingPtr);
+	if (Status != XST_SUCCESS) {
+		AxiEthernetUtilErrorTrap("Error starting TX DMA channel");
 		return XST_FAILURE;
 	}
 
@@ -2501,7 +2527,7 @@ void AxiEthernetErrorFastHandler(void)
 /*****************************************************************************/
 /**
 *
-* Fast Tramsmit Handler which calls TxIntrHandler.
+* Fast Transmit Handler which calls TxIntrHandler.
 *
 * @param	None
 *

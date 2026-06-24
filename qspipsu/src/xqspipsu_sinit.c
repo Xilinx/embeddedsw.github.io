@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -22,6 +22,9 @@
 * 1.0   hk  08/21/14 First release
 * 1.15  akm 10/26/21 Fix MISRA-C violations.
 * 1.18  sb  06/07/23 Added support for system device-tree flow.
+* 1.23  vlt 12/16/25 Update Doxygen comments to include SDT flow details.
+* 1.23  vlt 03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                    to support 64-bit addressing.
 * </pre>
 *
 ******************************************************************************/
@@ -47,17 +50,21 @@
 /*****************************************************************************/
 /**
 *
-* Looks up the device configuration based on the unique device ID. A table
-* contains the configuration info for each device in the system.
+* Looks up the device configuration based on the unique device ID/BaseAddress.
+* The XQspiPsu_ConfigTable[] contains the configuration info for each device
+* in the system.
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
+* @param	DeviceId contains the unique ID of the device
+* @endif
 *
-* @param	DeviceId Contains the ID of the device to look up the
-*		configuration for.
+* @return       A pointer to the configuration found or NULL if the specified
+*               device ID/BaseAddress was not found. See xqspipsu.h for the
+*               definition of XQspiPsu_Config.
 *
-* @return	A pointer to the configuration found or NULL if the specified
-* 		device ID was not found. See xqspipsu.h for the definition of
-* 		XQspiPsu_Config.
-*
-* @note		None.
+* @note        In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -75,7 +82,7 @@ XQspiPsu_Config *XQspiPsu_LookupConfig(u16 DeviceId)
 	return (XQspiPsu_Config *)CfgPtr;
 }
 #else
-XQspiPsu_Config *XQspiPsu_LookupConfig(u32 BaseAddress)
+XQspiPsu_Config *XQspiPsu_LookupConfig(UINTPTR BaseAddress)
 {
        XQspiPsu_Config *CfgPtr = NULL;
        s32 Index;

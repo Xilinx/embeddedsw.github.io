@@ -7,6 +7,7 @@ var struct_x_mipi___rx___phy___config =
     [ "HSLineRate", "struct_x_mipi___rx___phy___config.html#ada9fd1285aad6ea5fbe0edc54f633b2f", null ],
     [ "HSTimeOut", "struct_x_mipi___rx___phy___config.html#a05e041c93ffdd9e6728c70cc0cd77faf", null ],
     [ "IsDphy", "struct_x_mipi___rx___phy___config.html#a4cb2986e0b22c7b0c06bc5d95f51159c", null ],
+    [ "IsDynamicLineRate", "struct_x_mipi___rx___phy___config.html#aa748374e998a4ba576a1979e2338e3f8", null ],
     [ "IsRegisterPresent", "struct_x_mipi___rx___phy___config.html#a75232bef192fd87b24590e009404289d", null ],
     [ "MaxLanesPresent", "struct_x_mipi___rx___phy___config.html#a4b2de91b88796e464b637910c8ae2989", null ],
     [ "Wakeup", "struct_x_mipi___rx___phy___config.html#a9e5b8571ae49376b5837e54621579389", null ]

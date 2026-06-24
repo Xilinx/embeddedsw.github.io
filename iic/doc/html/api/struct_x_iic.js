@@ -1,6 +1,7 @@
 var struct_x_iic =
 [
     [ "AddrOfSlave", "struct_x_iic.html#ac8791f24ad6311a916cedb2ebd6b3774", null ],
+    [ "AxiClkFreq", "struct_x_iic.html#a49d641dc9939a2df6265df4a17d6fa18", null ],
     [ "BaseAddress", "struct_x_iic.html#a389e4b8500329c37d7835098408b5ed3", null ],
     [ "BNBOnly", "struct_x_iic.html#a309fbb83dcbf11ecb031fc3283c21bd1", null ],
     [ "GpOutWidth", "struct_x_iic.html#a19e2155bd464d4dc9e13d5008e22b404", null ],
@@ -18,6 +19,7 @@ var struct_x_iic =
     [ "SendByteCount", "struct_x_iic.html#a754131dbb0faeda957f6124df82eecf0", null ],
     [ "SendCallBackRef", "struct_x_iic.html#a42ba7a5a3635caf03b7e15fa3348b32f", null ],
     [ "SendHandler", "struct_x_iic.html#aeb346adbf6b1c39840c28e52bb5283e0", null ],
+    [ "SerialClkDelay", "struct_x_iic.html#ae9c85429fc4c93fc189315dccdc4a2d6", null ],
     [ "Stats", "struct_x_iic.html#a823a2f7407e2c6990f1eb507ea742e85", null ],
     [ "StatusCallBackRef", "struct_x_iic.html#a97be26eed0e2551b19c3a296c1c20909", null ],
     [ "StatusHandler", "struct_x_iic.html#a7e5b8273cb34338759107df1121d03d1", null ],

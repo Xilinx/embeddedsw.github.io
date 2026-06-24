@@ -39,6 +39,6 @@ var NAVTREEINDEX1 =
 "xv__csc__l2_8h.html#gga5727999afb7f47264f4cd625c8b56f8aafc83971dcde4121aa9dba9d917c651c9":[2,5,15,18],
 "xv__csc__sinit_8c.html":[2,6],
 "xv__csc__sinit_8c.html#a152ebb16096cf7a0468721600238be96":[2,6,2],
-"xv__csc__sinit_8c.html#a6291a841dc92c7282358d1452785402b":[2,6,0],
-"xv__csc__sinit_8c.html#ae6fd5cf81275a730146917ecd7b0ef14":[2,6,1]
+"xv__csc__sinit_8c.html#a84c5de6224bb013d089fb70e67940be9":[2,6,0],
+"xv__csc__sinit_8c.html#ad3f2ec7413b90793bf2c87ace2a53b00":[2,6,1]
 };

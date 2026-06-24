@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -127,8 +127,11 @@
  *                   to volatile.
  * 1.18 ht  07/18/23 Fixed GCC warnings.
  * 1.18 sb  08/01/23 Added support for Feed back clock
- * 1.19 sb  01/12/24 Added support for baud rate divisior
+ * 1.19 sb  01/12/24 Added support for baud rate divisor
  * 1.20 ht  09/27/24 Fix IAR warning.
+ * 1.23 vlt 12/16/25 Update Doxygen comments to include SDT flow details.
+ * 1.23 vlt 03/14/26 Updated BaseAddress type from u32 to UINTPTR
+ *                   to support 64-bit addressing.
  *
  * </pre>
  *
@@ -198,7 +201,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
@@ -206,9 +209,9 @@ typedef struct {
 	u8  BusWidth;		/**< Bus width available on board */
 	u8 IsCacheCoherent;	/**< Describes whether Cache Coherent or not */
 #ifdef SDT
-	u16 IntrId;             /** Bits[11:0] Interrupt-id Bits[15:12]
+	u16 IntrId;             /**< Bits[11:0] Interrupt-id Bits[15:12]
                                 * trigger type and level flags */
-	UINTPTR IntrParent;     /** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent;     /**< Bit[0] Interrupt parent type Bit[64/32:1]
                                 * Parent base address */
 #endif
 #if defined  (XCLOCKING) || defined (SDT)
@@ -494,7 +497,7 @@ static inline void StubStatusHandler(const void *CallBackRef, u32 StatusEvent,
 #ifndef SDT
 XQspiPsu_Config *XQspiPsu_LookupConfig(u16 DeviceId);
 #else
-XQspiPsu_Config *XQspiPsu_LookupConfig(u32 BaseAddress);
+XQspiPsu_Config *XQspiPsu_LookupConfig(UINTPTR BaseAddress);
 #endif
 s32 XQspiPsu_CfgInitialize(XQspiPsu *InstancePtr,
 			   const XQspiPsu_Config *ConfigPtr,

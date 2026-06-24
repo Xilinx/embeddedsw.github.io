@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -209,7 +209,11 @@ static void Uart550_Setup(void)
 * The example to do the simple transfer through polling. The constant
 * NUMBER_OF_TRANSFERS defines how many times a simple transfer is repeated.
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	DeviceId is the Device Id of the XAxiDma instance
+* @endif
 *
 * @return
 *		- XST_SUCCESS if example finishes successfully
@@ -301,7 +305,7 @@ int XAxiDma_SimplePollExample(UINTPTR BaseAddress)
 			return XST_FAILURE;
 		}
 
-		/*Wait till tranfer is done or 1usec * 10^6 iterations of timeout occurs*/
+		/*Wait till transfer is done or 1usec * 10^6 iterations of timeout occurs*/
 		while (TimeOut) {
 			if (!(XAxiDma_Busy(&AxiDma, XAXIDMA_DEVICE_TO_DMA)) &&
 			    !(XAxiDma_Busy(&AxiDma, XAXIDMA_DMA_TO_DEVICE))) {

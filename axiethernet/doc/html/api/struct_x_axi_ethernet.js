@@ -1,5 +1,6 @@
 var struct_x_axi_ethernet =
 [
+    [ "AxiDevType", "struct_x_axi_ethernet.html#a4a8eeec4a322f477a7c709acd6e85961", null ],
     [ "Config", "struct_x_axi_ethernet.html#adda2f024038f99905bb2ca8ab85854eb", null ],
     [ "Flags", "struct_x_axi_ethernet.html#adebe741501e7c32e56ea5f4b62f6c125", null ],
     [ "IsReady", "struct_x_axi_ethernet.html#a36f21814635085cc6476a7cb835e4c34", null ],

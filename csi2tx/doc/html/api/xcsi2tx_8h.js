@@ -22,7 +22,7 @@ var xcsi2tx_8h =
     [ "XCsi2Tx_IntrEnable", "xcsi2tx_8h.html#ga2caa416a631b37b3414f3ebe811fb50e", null ],
     [ "XCsi2Tx_IntrHandler", "xcsi2tx_8h.html#gafc4a705bd3a295ac372fa02eb578af4d", null ],
     [ "XCsi2Tx_IsActiveLaneCountValid", "xcsi2tx_8h.html#gac3002b53f14fc92a2f9dbd70466fb54f", null ],
-    [ "XCsi2Tx_LookupConfig", "xcsi2tx_8h.html#gaf7407d28ef78a246a921b758e837dd90", null ],
+    [ "XCsi2Tx_LookupConfig", "xcsi2tx_8h.html#ga920b2c593a32fc0824594c699e087cf0", null ],
     [ "XCsi2Tx_Reset", "xcsi2tx_8h.html#ga5a0232c79ceea489774863ec4cc3d9e0", null ],
     [ "XCsi2Tx_SelfTest", "xcsi2tx_8h.html#ga8c4f599fd297b0b87b7b5028bc59a1a4", null ],
     [ "XCsi2Tx_SetCallBack", "xcsi2tx_8h.html#ga4dd6f019a905c50bfa662e9823cf5b00", null ],

@@ -142,7 +142,7 @@ var xresetps_8h =
       [ "XRESETPS_RESETASSERTED", "xresetps_8h.html#gga817684309b117563ee54a4237f505ad6a074922f86cd6a23cef5df26dffaf0074", null ]
     ] ],
     [ "XResetPs_CfgInitialize", "xresetps_8h.html#gaa07a2af5abb40332c21bb77963841dcd", null ],
-    [ "XResetPs_LookupConfig", "xresetps_8h.html#ga78d0522f1b5ba2524d73c93896433404", null ],
+    [ "XResetPs_LookupConfig", "xresetps_8h.html#ga05e84b1c4dcc3e8df420fd6ea2813bd6", null ],
     [ "XResetPs_ResetAssert", "xresetps_8h.html#ga65cfe2715d69c8cd2f34300478107501", null ],
     [ "XResetPs_ResetDeassert", "xresetps_8h.html#ga4bddc4ee235a6971cc1e488cc265fb77", null ],
     [ "XResetPs_ResetPulse", "xresetps_8h.html#gad814235db40b178bbd7834e8c95e6da3", null ],

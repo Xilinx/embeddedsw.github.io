@@ -1,4 +1,5 @@
 var globals_dup =
 [
-    [ "x", "globals.html", null ]
+    [ "b", "globals.html", null ],
+    [ "x", "globals_0x78.html", null ]
 ];

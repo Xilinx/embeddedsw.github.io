@@ -14,7 +14,7 @@ var xhdcp22__cipher_8h =
     [ "XHdcp22Cipher_SetRxMode", "xhdcp22__cipher_8h.html#gae971431dbdca802c188be9bf06fdca4b", null ],
     [ "XHdcp22Cipher_SetTxMode", "xhdcp22__cipher_8h.html#ga0f017a5eb8e9dd5061518ff474d988fe", null ],
     [ "XHdcp22Cipher_CfgInitialize", "xhdcp22__cipher_8h.html#ga5efdef3153d7c5b9953ee764d69a30b0", null ],
-    [ "XHdcp22Cipher_LookupConfig", "xhdcp22__cipher_8h.html#ga5856e909adc6565d8b3d1cfeceb8d72e", null ],
+    [ "XHdcp22Cipher_LookupConfig", "xhdcp22__cipher_8h.html#ga9d79f79b5c2db18700fb9a46caf9801b", null ],
     [ "XHdcp22Cipher_SetKs", "xhdcp22__cipher_8h.html#ga416c55928fae40ecadc891c4c33445fa", null ],
     [ "XHdcp22Cipher_SetLc128", "xhdcp22__cipher_8h.html#ga847b7f42086ee357022e35311f1d4317", null ],
     [ "XHdcp22Cipher_SetRiv", "xhdcp22__cipher_8h.html#ga9c34621ad21b25631a15efc6525ab49d", null ]

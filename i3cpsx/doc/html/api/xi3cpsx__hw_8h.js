@@ -1,6 +1,9 @@
 var xi3cpsx__hw_8h =
 [
-    [ "XI3CPSX_BASEADDR", "xi3cpsx__hw_8h.html#gab17db7caa0300399b19270491531041d", null ],
+    [ "XI3CPSX_1BIT_MASK", "xi3cpsx__hw_8h.html#gaa839921957c91e420efd8a1712737003", null ],
+    [ "XI3CPSX_2BITS_MASK", "xi3cpsx__hw_8h.html#ga8835b380407ac1f6ed273c68c5331271", null ],
+    [ "XI3CPSX_4BITS_MASK", "xi3cpsx__hw_8h.html#ga56b52044f743a360d07e25b5c9b9e152", null ],
+    [ "XI3CPSX_7BITS_MASK", "xi3cpsx__hw_8h.html#ga424231e46cc3396faf675001d4caa006", null ],
     [ "XI3CPSX_BUS_FREE_AVAIL_TIMING", "xi3cpsx__hw_8h.html#ga5eaf2c0691abe120e818a4d947207a0a", null ],
     [ "XI3CPSX_BUS_IDLE_TIMING", "xi3cpsx__hw_8h.html#ga5ecd513776ff122a902d2552772397ef", null ],
     [ "XI3CPSX_CCC_DEVICE_STATUS", "xi3cpsx__hw_8h.html#ga606f9bf2bd7016f659ca7e726c17cb56", null ],
@@ -68,6 +71,7 @@ var xi3cpsx__hw_8h =
     [ "XI3CPSX_DEVICE_CTRL", "xi3cpsx__hw_8h.html#ga86312f4e34f96f61cea41712d0503cf8", null ],
     [ "XI3CPSX_DEVICE_CTRL_EXTENDED", "xi3cpsx__hw_8h.html#ga6b79bc82d916530b4ff4499da36f3108", null ],
     [ "XI3cPsx_DisableInterrupts", "xi3cpsx__hw_8h.html#gae69d1a2efc9b57f6973783d2267986fd", null ],
+    [ "XI3CPSX_DYNAMIC_ADDR_PARITY_SHIFT", "xi3cpsx__hw_8h.html#gaf7cd4c25cfa4c485eaed0b7e79a340a7", null ],
     [ "XI3CPSX_ECO", "xi3cpsx__hw_8h.html#gac132b9f40bf38a002a3c04a9e1bd2fc6", null ],
     [ "XI3cPsx_EnableInterrupts", "xi3cpsx__hw_8h.html#gae751752afaf12c95e446bd8ea9436f7e", null ],
     [ "XI3CPSX_EXT_DEBUG_REG_1", "xi3cpsx__hw_8h.html#ga11959ac774b350ae31e05e3de81ffe11", null ],

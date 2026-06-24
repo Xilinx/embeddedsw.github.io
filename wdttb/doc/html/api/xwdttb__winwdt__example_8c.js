@@ -6,5 +6,5 @@ var xwdttb__winwdt__example_8c =
     [ "WDTTB_SST_COUNT", "xwdttb__winwdt__example_8c.html#ae8b4b1a275d1d9e87eb2f9aadb1b61dd", null ],
     [ "WDTTB_SW_COUNT", "xwdttb__winwdt__example_8c.html#a8090b9e054a00a126b6baa1cd2118305", null ],
     [ "main", "xwdttb__winwdt__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
-    [ "WinWdtTbExample", "xwdttb__winwdt__example_8c.html#ab62b75f543740c10d9aa3d4391fa3419", null ]
+    [ "WinWdtTbExample", "xwdttb__winwdt__example_8c.html#ab766454433ff6b42cf5c7ebb96e938e3", null ]
 ];

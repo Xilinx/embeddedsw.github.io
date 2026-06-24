@@ -1,13 +1,14 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
 "example.html#ex3":[3,2],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,3],
 "globals_func.html":[1,1],
@@ -50,7 +51,6 @@ var NAVTREEINDEX0 =
 "xaxivdma_8c.html#gaf99dd7738b98367397831df26433843a":[2,2,24],
 "xaxivdma_8h.html":[2,3],
 "xaxivdma_8h.html#ga001373abfc5971ca63943b4088f58e60":[2,3,0],
-"xaxivdma_8h.html#ga0188e06158c255eba62f52141cff5d84":[2,3,32],
 "xaxivdma_8h.html#ga07f81ffdbceb0024e3a675a787ca3d90":[2,3,9],
 "xaxivdma_8h.html#ga0eecc03385d10b80e8b17ff834033ac4":[2,3,21],
 "xaxivdma_8h.html#ga0fc5b39aabb8d4f56b0dd2024ea5bff2":[2,3,31],
@@ -69,6 +69,7 @@ var NAVTREEINDEX0 =
 "xaxivdma_8h.html#ga525d0fa8fc04a9dde871ab55cf6b227b":[2,3,8],
 "xaxivdma_8h.html#ga5fa27b3ce66d947167262fe918fb5373":[2,3,7],
 "xaxivdma_8h.html#ga60ceb86226e513a16d6776a97fcfa50f":[2,3,34],
+"xaxivdma_8h.html#ga731fd42d22c597c0e045970e26f22681":[2,3,32],
 "xaxivdma_8h.html#ga741b4b1607c2ee71a3be16ddd8300656":[2,3,42],
 "xaxivdma_8h.html#ga7dff0c11a9aa88a19519734702904dca":[2,3,11],
 "xaxivdma_8h.html#ga7ed954b5de3073f15b8e47c5736d627b":[2,3,5],
@@ -126,7 +127,7 @@ var NAVTREEINDEX0 =
 "xaxivdma__example__intr_8c.html":[2,5],
 "xaxivdma__example__intr_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,5,0],
 "xaxivdma__example__selftest_8c.html":[2,6],
-"xaxivdma__example__selftest_8c.html#a2bc69805483ffec0bc6e4115a9e2375a":[2,6,0],
+"xaxivdma__example__selftest_8c.html#aba262ec7ce75d7f5c8a5e6dc90e28ddc":[2,6,0],
 "xaxivdma__example__selftest_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,6,1],
 "xaxivdma__g_8c.html":[2,7],
 "xaxivdma__hw_8h.html":[2,8],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "xaxivdma__intr_8c.html#gaaba3bd6f623637f15e16176ea77213b3":[2,10,0],
 "xaxivdma__intr_8c.html#gaad76f2f6ab41e322ddcd240d2af8140d":[2,10,7],
 "xaxivdma__intr_8c.html#gaba9a0ebdb72696e24ccaa48e57802323":[2,10,1],
-"xaxivdma__intr_8c.html#gafd0477fae9534ebd2d2e15cc8885642d":[2,10,6],
-"xaxivdma__porting__guide_8h.html":[2,11]
+"xaxivdma__intr_8c.html#gafd0477fae9534ebd2d2e15cc8885642d":[2,10,6]
 };

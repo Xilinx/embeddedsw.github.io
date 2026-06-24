@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -35,7 +35,7 @@
  * 1.4   gm   29/11/16 Added preprocessor directives for sw footprint reduction
  *                     Added TX datawidth dynamic reconfiguration
  *                     Incorporated AXIlite Freq auto extraction
- *                     Added extra routine for 2/4 byte tranceiver modes
+ *                     Added extra routine for 2/4 byte transceiver modes
  *                     Added logging and register access for ERR_IRQ impl
  *                     Removed XVphy_HdmiMmcmStart API
  *                     Fixed c++ compiler warnings
@@ -52,7 +52,7 @@
  *						 XVphy_HdmiDebugInfo API
  *					   Fixed bug in HdmiCfgCalcMmcmParam when linerate exceeds
  *					     3.4 Gbps when oversampling is enabled
- *                     Changed xil_printf new lines to \r\n
+ *                     Changed xil_printf new lines to carriage return
  *                     Marked XVphy_HdmiInitialize deprecated and replaced by
  *                        XVphy_Hdmi_CfgInitialize
  *                     Added XVPHY_LOG_EVT_DRU_CLK_ERR error condition to
@@ -862,6 +862,60 @@ u32 XVphy_DruGetRefClkFreqHz(XVphy *InstancePtr)
 	}
 	/* Return Failure */
 	return XST_FAILURE;
+}
+
+/*****************************************************************************/
+/**
+* This function returns the raw frequency of the RX/TX reference clock as
+* measured by the clock detector peripheral (unprocessed counter value).
+*
+* @param	InstancePtr is a pointer to the XVphy core instance.
+* @param	Dir is an indicator for RX or TX.
+*
+* @return	The raw measured frequency of the RX/TX reference clock.
+*
+* @note		This function returns the raw counter value without any
+*		processing or validation. Use for debugging purposes.
+*
+******************************************************************************/
+u32 XVphy_ClkDetGetRefClkFreqRawHz(XVphy *InstancePtr, XVphy_DirectionType Dir)
+{
+	u32 RegOffset;
+
+	/* Verify argument. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (Dir == XVPHY_DIR_TX) {
+		RegOffset = XVPHY_CLKDET_FREQ_TX_RAW_REG;
+	}
+	else {
+		RegOffset = XVPHY_CLKDET_FREQ_RX_RAW_REG;
+	}
+
+	return XVphy_ReadReg(InstancePtr->Config.BaseAddr, RegOffset);
+}
+
+/*****************************************************************************/
+/**
+* This function returns the raw frequency of the DRU reference clock as
+* measured by the clock detector peripheral (unprocessed counter value).
+*
+* @param	InstancePtr is a pointer to the XVphy core instance.
+*
+* @return	The raw measured frequency of the DRU reference clock.
+*
+* @note		This function returns the raw counter value without any
+*		processing or validation. Use for debugging purposes.
+*		The design must have a DRU for this function to return a valid value.
+*
+******************************************************************************/
+u32 XVphy_DruGetRefClkFreqRawHz(XVphy *InstancePtr)
+{
+	/* Verify argument. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	return XVphy_ReadReg(InstancePtr->Config.BaseAddr,
+			XVPHY_CLKDET_FREQ_DRU_RAW_REG);
 }
 
 /*****************************************************************************/

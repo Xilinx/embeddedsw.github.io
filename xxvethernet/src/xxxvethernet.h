@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -219,7 +219,7 @@ extern "C" {
  */
 typedef struct XXxvEthernet_Config {
 #ifdef SDT
-	char *Name;
+	char *Name;	/**< Unique name of the device */
 #else
 	u16 DeviceId;	/**< DeviceId is the unique ID  of the device */
 #endif
@@ -240,9 +240,9 @@ typedef struct XXxvEthernet_Config {
 				 *  AXI4-Stream interface.
 				 */
 #ifndef SDT
-	u8 AxiMcDmaChan_Cnt;
-	u8 AxiMcDmaRxIntr[16];
-	u8 AxiMcDmaTxIntr[16];
+	u8 AxiMcDmaChan_Cnt;	/**< Number of AXI MCDMA channels configured */
+	u8 AxiMcDmaRxIntr[16];	/**< RX interrupt numbers for each DMA channel */
+	u8 AxiMcDmaTxIntr[16];	/**< TX interrupt numbers for each DMA channel */
 #endif
 } XXxvEthernet_Config;
 
@@ -371,7 +371,7 @@ typedef struct XXxvEthernet {
 /**
 *
 * XXxvEthernet_IsStatsConfigured returns determines if Statistics gathering.
-* is configured in the harwdare or not.
+* is configured in the hardware or not.
 *
 * @param	InstancePtr is a pointer to the Xxv Ethernet instance to be
 *		worked on.

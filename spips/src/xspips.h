@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -240,6 +240,9 @@
 *                       example.
 * 3.9   sb     07/05/23 Added support for system device-tree flow.
 * 3.12  sb     12/03/24 Fixed GCC warnings.
+* 3.14  vlt    12/18/25 Update Doxygen comments to include SDT flow details.
+* 3.14  vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                       to support 64-bit addressing.
 *
 * </pre>
 *
@@ -254,6 +257,7 @@ extern "C" {
 /***************************** Include Files *********************************/
 
 #include "xstatus.h"
+#include "xil_mem.h"
 #include "xspips_hw.h"
 
 /************************** Constant Definitions *****************************/
@@ -388,10 +392,12 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
+
 #endif
-	u32 BaseAddress;	/**< Base address of the device */
+	UINTPTR BaseAddress;	/**< Base address of the device */
 	u32 InputClockHz;	/**< Input clock frequency */
+	u32 FifoDepth;		/**< Total size of transfer fifo in bytes (witdth * depth) */
 #ifdef SDT
 	u16 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
@@ -419,6 +425,8 @@ typedef struct {
 
 	XSpiPs_StatusHandler StatusHandler;
 	void *StatusRef;  	 /**< Callback reference for status handler */
+	u32 FifoDepth ;		 /**< Depth of the transfer FIFO in Bytes */
+	u32 FifoWidth ;		 /**< Width of the transfer FIFO in Bytes */
 
 } XSpiPs;
 
@@ -654,7 +662,7 @@ typedef struct {
 #ifndef SDT
 XSpiPs_Config *XSpiPs_LookupConfig(u16 DeviceId);
 #else
-XSpiPs_Config *XSpiPs_LookupConfig(u32 BaseAddress);
+XSpiPs_Config *XSpiPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*

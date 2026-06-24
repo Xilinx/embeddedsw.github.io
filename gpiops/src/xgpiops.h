@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -131,6 +131,9 @@
 *                     to add multi-core interrupt support.
 * 3.14  bkv  02/20/25 Changed data type of effective address from u32 to UINTPTR
 *                     to support both 32-bit and 64-bit platforms.
+* 3.15  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
+* 3.15  vlt  03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                     to support 64-bit addressing.
 *
 * </pre>
 *
@@ -220,13 +223,13 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
 	UINTPTR BaseAddr;		/**< Register base address */
 #ifdef SDT
-	u16 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
+	u16 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
-	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XGpioPs_Config;
@@ -312,7 +315,7 @@ void XGpioPs_IntrClearPin(const XGpioPs *InstancePtr, u32 Pin);
 #ifndef SDT
 XGpioPs_Config *XGpioPs_LookupConfig(u16 DeviceId);
 #else
-XGpioPs_Config *XGpioPs_LookupConfig(u32 BaseAddress);
+XGpioPs_Config *XGpioPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 #ifdef __cplusplus
 }

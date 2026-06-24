@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -93,20 +93,20 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;	 /**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;	 /**< Unique name of the device */
 #endif
 	u32 BaseAddress; /**< Base address of device (IPIF) */
 
 #ifdef SDT
-	u32 IntrId[9];		/** Bits[11:0] Interrupt-id Bits[15:12]
+	u32 IntrId[9];		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				* trigger type and level flags */
-	UINTPTR IntrParent;	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XDmaPs_Config;
 
 
-/** DMA channle control structure. It's for AXI bus transaction.
+/** DMA channel control structure. It's for AXI bus transaction.
  * This struct will be translated into a 32-bit channel control register value.
  */
 typedef struct {
@@ -125,7 +125,7 @@ typedef struct {
 					 *   address */
 } XDmaPs_ChanCtrl;
 
-/** DMA block descriptor stucture.
+/** DMA block descriptor structure.
  */
 typedef struct {
 	u32 SrcAddr;		/**< Source starting address */
@@ -153,7 +153,7 @@ typedef struct {
 					  *  DMA program.
 					  */
 
-	void *GeneratedDmaProg;		/**< The DMA program genreated
+	void *GeneratedDmaProg;		/**< The DMA program generated
 					 * by the driver. This field will be
 					 * set if a user invokes the DMA
 					 * program generation function. Or
@@ -323,7 +323,7 @@ void XDmaPs_FaultISR(XDmaPs *InstPtr);
 
 
 /*
- * Static loopup function implemented in xdmaps_sinit.c
+ * Static lookup function implemented in xdmaps_sinit.c
  */
 #ifndef SDT
 XDmaPs_Config *XDmaPs_LookupConfig(u16 DeviceId);

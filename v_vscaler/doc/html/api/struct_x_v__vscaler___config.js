@@ -1,7 +1,6 @@
 var struct_x_v__vscaler___config =
 [
     [ "BaseAddress", "struct_x_v__vscaler___config.html#af6e93f96db0d7fdb7859bfdca31cb9e7", null ],
-    [ "DeviceId", "struct_x_v__vscaler___config.html#a7f5a7a896793757294f92764a414178e", null ],
     [ "Is420Enabled", "struct_x_v__vscaler___config.html#a3d778a318fbf1fc59447c1f043929de7", null ],
     [ "MaxDataWidth", "struct_x_v__vscaler___config.html#a4bbbf6502fbed5860a6b90fc4b9a2056", null ],
     [ "MaxHeight", "struct_x_v__vscaler___config.html#a624be3ff118a7b7fab63cac5548f6a26", null ],

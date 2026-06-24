@@ -6,5 +6,5 @@ var xusb__keyboard_8c =
     [ "InitUsbInterface", "xusb__keyboard_8c.html#a3b40155d0d9fa44133905dd9f6f02ee7", null ],
     [ "main", "xusb__keyboard_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "UsbIfIntrHandler", "xusb__keyboard_8c.html#a8bd3ecc4e2acd07b864ea2392a0394f4", null ],
-    [ "UsbKbdExample", "xusb__keyboard_8c.html#aa8f2bcd4c9e30a4811003990864522af", null ]
+    [ "UsbKbdExample", "xusb__keyboard_8c.html#a8882fbbb39100578edb3cd06a935ada6", null ]
 ];

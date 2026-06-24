@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"xnandpsu__hw_8h.html#gaa4b650601243772063b53a755fb91e5b":[2,6,35],
+"xnandpsu__hw_8h.html#gaa5bb4ebb8858c80a0fbc70bc9ec1c8c4":[2,6,60],
 "xnandpsu__hw_8h.html#gaa6af724c38008c62af9e04e835f674de":[2,6,26],
 "xnandpsu__hw_8h.html#gaa789076d269cb48b93e89cf3c7f82719":[2,6,104],
 "xnandpsu__hw_8h.html#gaadf5933321faab54c9b4a9745b2c0288":[2,6,94],
@@ -146,5 +148,5 @@ var NAVTREEINDEX1 =
 "xnandpsu__onfi_8h.html#gga5cc7c90cb423455c9cbde71127180a6fafb87592a6a94debf1a77991a2c091967":[2,8,63,7],
 "xnandpsu__sinit_8c.html":[2,9],
 "xnandpsu__sinit_8c.html#ga3fcff3ef431cd8ee0f292f0703fe4157":[2,9,1],
-"xnandpsu__sinit_8c.html#ga4d6df6679bb2c84faa7bbec9f4e776ee":[2,9,0]
+"xnandpsu__sinit_8c.html#gab80327280ff56f9211b02cfb9fd62975":[2,9,0]
 };

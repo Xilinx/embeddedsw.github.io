@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -71,6 +71,10 @@
 * 		      Added support for clock stretching and timeout support.
 * 3.18  gm   07/14/23 Added SDT support.
 * 	sd   09/06/23 Compile refclk for SDT
+* 3.23  vlt  12/12/25 Update Doxygen comments to include SDT flow details.
+* 3.23  vlt  03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                     to support 64-bit addressing
+*       vlt  04/03/26 Added prototype for XIicPs_BusRecovery API.
 *
 * </pre>
 *
@@ -165,7 +169,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;     /**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;       /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;  /**< Base address of the device */
 	u32 InputClockHz; /**< Input clock frequency */
@@ -285,7 +289,7 @@ static INLINE u32 XIicPs_RxDataValidStatus(XIicPs *InstancePtr)
 #ifndef SDT
 XIicPs_Config *XIicPs_LookupConfig(u16 DeviceId);
 #else
-XIicPs_Config *XIicPs_LookupConfig(u32 BaseAddress);
+XIicPs_Config *XIicPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /**
@@ -300,6 +304,7 @@ void XIicPs_Reset(XIicPs *InstancePtr);
 
 s32 XIicPs_BusIsBusy(XIicPs *InstancePtr);
 s32 TransmitFifoFill(XIicPs *InstancePtr);
+s32 XIicPs_BusRecovery(XIicPs *InstancePtr);
 /** @} */
 
 /**

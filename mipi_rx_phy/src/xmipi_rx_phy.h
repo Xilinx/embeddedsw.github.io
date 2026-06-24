@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,7 +23,7 @@
 *
 * It is capable of synchronous transfer at high speed mode at 80-1500 Mbps
 * It has one clock lane and up to 4 data lanes. These lanes are unidirectional.
-* It can do asynchronous transfer at upto 10 Mbps in low power mode. The clock
+* It can do asynchronous transfer at up to 10 Mbps in low power mode. The clock
 * lane can be in low power mode or high speed mode whereas the data lanes
 * can be in Low power, High power or Escape mode.
 *
@@ -143,6 +143,13 @@ extern "C" {
 /*@}*/
 
 /**************************** Macros Definitions *****************************/
+/** @name mipi_rx_phy Line Rate range
+ * @{
+*/
+#define XMIPI_RX_PHY_LINERATE_MIN	400	/**< Minimum line rate in Mbps */
+#define XMIPI_RX_PHY_LINERATE_MAX	4500	/**< Maximum line rate in Mbps */
+/*@}*/
+
 /** @name mipi_rx_phy HSTIMEOUT range
  * @{
 */
@@ -268,7 +275,8 @@ typedef struct {
 	u32 IsDphy; /**< CPHY or DPHY Mode */
 	u32 IsRegisterPresent; /**< Is register access allowed */
 	u32 MaxLanesPresent; /**< Number of Lanes. Range 1 - 4 */
-	u32 EscClkPeriod; /**< Escape Clock Peroid */
+	u32 IsDynamicLineRate; /**< Enable dynamic line rate */
+	u32 EscClkPeriod; /**< Escape Clock Period */
 	u32 EscTimeout; /**< Escape Timeout */
 	u32 HSLineRate; /**< High Speed Line Rate */
 	u32 HSTimeOut; /**< Max Frame Length  */
@@ -309,6 +317,15 @@ u8 XMipi_Rx_Phy_GetDLCalibStatus(XMipi_Rx_Phy *InstancePtr, u8 DataLane);
 u32 XMipi_Rx_Phy_GetDataLaneMode(XMipi_Rx_Phy *InstancePtr, u8 DataLane);
 void XMipi_Rx_Phy_Activate(XMipi_Rx_Phy *InstancePtr, u8 Flag);
 u8 XMipi_Rx_Phy_GetRegIntfcPresent(XMipi_Rx_Phy *InstancePtr);
+/* Dynamic line rate configuration in xmipi_rx_phy.c */
+u32 XMipi_Rx_Phy_DynamicLineRateConfig(XMipi_Rx_Phy *InstancePtr,
+			UINTPTR PllBaseAddr, u32 LineRate);
+
+/* X5PLL configuration in xmipi_rx_phy_xpll.c */
+u32 XMipi_Rx_Phy_XPllConfig(UINTPTR PllBaseAddr, u32 LineRate);
+
+/* MMCM configuration in xmipi_rx_phy_mmcm.c */
+u32 XMipi_Rx_Phy_MmcmConfig(XMipi_Rx_Phy *InstancePtr, u32 LineRate);
 
 /* Self test function in xcsiss_selftest.c */
 u32 XMipi_Rx_Phy_SelfTest(XMipi_Rx_Phy *InstancePtr);

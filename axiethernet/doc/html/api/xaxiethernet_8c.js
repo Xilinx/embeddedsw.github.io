@@ -5,6 +5,7 @@ var xaxiethernet_8c =
     [ "XAxiEthernet_ClearOptions", "xaxiethernet_8c.html#gad3e7253d626c02a96ac35f981ac11ba2", null ],
     [ "XAxiEthernet_DisableControlFrameLenCheck", "xaxiethernet_8c.html#ga41049ca22799d42d1279461be627c72e", null ],
     [ "XAxiEthernet_EnableControlFrameLenCheck", "xaxiethernet_8c.html#ga8b71bcdc8be6ae5d6364c59ea0f53aab", null ],
+    [ "XAxiEthernet_Get_Phy_Interface", "xaxiethernet_8c.html#ga49152815615aff9b24094b35820e0d02", null ],
     [ "XAxiEthernet_GetMacAddress", "xaxiethernet_8c.html#gaa5b70a456ac18505132f61f596428ab7", null ],
     [ "XAxiEthernet_GetOperatingSpeed", "xaxiethernet_8c.html#ga8e8caa9c4ac753744bd08ebf103877c3", null ],
     [ "XAxiEthernet_GetOptions", "xaxiethernet_8c.html#gaf48b8f321b842bfb139b473ad7185874", null ],

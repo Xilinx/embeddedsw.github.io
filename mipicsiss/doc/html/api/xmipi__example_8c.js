@@ -17,7 +17,6 @@ var xmipi__example_8c =
     [ "ResetTpg", "xmipi__example_8c.html#a815be228f3c0f5df1cb4624e60e1c5d3", null ],
     [ "SelectDSIOutput", "xmipi__example_8c.html#afcfc70f9d157a135796b76f00bef36c4", null ],
     [ "SelectHDMIOutput", "xmipi__example_8c.html#a56f64108083ce8ee138d8f0448b28fd9", null ],
-    [ "SetupInterruptSystem", "xmipi__example_8c.html#ab458f6ff7df970c30ccf4a575995bc7e", null ],
     [ "StartTxAfterRx", "xmipi__example_8c.html#a09a07df362490e4ba97f77a9ce5edd74", null ],
     [ "TxConnectCallback", "xmipi__example_8c.html#ac493d3aecd3ba27b1c359fac5403bcc4", null ],
     [ "TxStreamDownCallback", "xmipi__example_8c.html#a58d2813cae3d1fee94b6cc619f827911", null ],

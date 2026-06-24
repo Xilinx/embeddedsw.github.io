@@ -1,8 +1,8 @@
 var xzdma_8h =
 [
     [ "XZDma_Descriptor", "struct_x_z_dma___descriptor.html", "struct_x_z_dma___descriptor" ],
-    [ "__attribute__", "struct____attribute____.html", "struct____attribute____" ],
-    [ "__attribute__", "struct____attribute____.html", "struct____attribute____" ],
+    [ "XZDma_LlDscr", "struct_x_z_dma___ll_dscr.html", "struct_x_z_dma___ll_dscr" ],
+    [ "XZDma_LiDscr", "struct_x_z_dma___li_dscr.html", "struct_x_z_dma___li_dscr" ],
     [ "XZDma_DataConfig", "struct_x_z_dma___data_config.html", "struct_x_z_dma___data_config" ],
     [ "XZDma_DscrConfig", "struct_x_z_dma___dscr_config.html", "struct_x_z_dma___dscr_config" ],
     [ "XZDma_Config", "struct_x_z_dma___config.html", "struct_x_z_dma___config" ],
@@ -54,7 +54,7 @@ var xzdma_8h =
     [ "XZDma_GetChDataConfig", "xzdma_8h.html#gacdca22a1e7cd74b3f2acbfec3f0509f4", null ],
     [ "XZDma_GetChDscrConfig", "xzdma_8h.html#ga595ab84007b44249fe04571d18856158", null ],
     [ "XZDma_IntrHandler", "xzdma_8h.html#gaa5012fbb827d2330cae8cb90cafb388c", null ],
-    [ "XZDma_LookupConfig", "xzdma_8h.html#ga1f24016eafb7226d1f8754082a24d95d", null ],
+    [ "XZDma_LookupConfig", "xzdma_8h.html#gaa84a02e7db7d9bdaa524419fae6e50b9", null ],
     [ "XZDma_Reset", "xzdma_8h.html#gaf236c2323636d87ab0888b2d6f55a313", null ],
     [ "XZDma_Resume", "xzdma_8h.html#ga7cb39835692353e5c34d95938b8ce8d0", null ],
     [ "XZDma_ScatterGather", "xzdma_8h.html#ga4e1c01839429d264c285bc7488b42fb8", null ],
@@ -64,5 +64,6 @@ var xzdma_8h =
     [ "XZDma_SetChDscrConfig", "xzdma_8h.html#ga860cde1482bc78429ea5c6f1d3da9014", null ],
     [ "XZDma_SetMode", "xzdma_8h.html#gaf1772f190fe0a67a17c78f5f23fc8024", null ],
     [ "XZDma_Start", "xzdma_8h.html#ga70f7466e97aae2126181727774f6e6bb", null ],
+    [ "XZDma_Stop", "xzdma_8h.html#gadb6efafcf9f5a1a77808dfc8d9a9f82a", null ],
     [ "XZDma_WOData", "xzdma_8h.html#ga15a0124d42f8ff48e54f32c1b643fe7b", null ]
 ];

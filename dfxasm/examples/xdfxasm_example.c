@@ -1,8 +1,9 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 
 /*****************************************************************************/
 /**
@@ -24,7 +25,9 @@
 *                            XDfxasm_TestState() to avoid compilation issue
 *                            with cpp compiler.
 * 1.2   Nava  06/22/2023     Added support for system device-tree flow.
-*
+* 1.3   bdk   12/08/2025     Updated comments to support SDT flow for Doxygen
+*                            documentation.
+* 1.3   Arvd  01/31/2026     Fixed codespell errors.
 * </pre>
 *
 ******************************************************************************/
@@ -102,14 +105,19 @@ int main(void)
 * This function does a minimal test on the DFX Axi shutdown manager driver as a
 * design example.
 *
+* @if SDT
+* @param	BaseAddress is the base address of the device
+* @else
 * @param	DeviceId is the XPAR_<dfxasm_instance>_DEVICE_ID value from
 *		xparameters.h.
+* @endif
 *
 * @return
 *		- XST_SUCCESS if successful
 *		- XST_FAILURE if failed
 *
-* @note		None.
+* @note		In XSCT/classic flow, DeviceId is used to look up the device
+*		configuration.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -169,7 +177,7 @@ u32 XDfxasm_TestState(void)
 	u32 ShutdownState;
 
 	/*
-	 * Loop for 4 times to check atleast two cycles of off/on
+	 * Loop for 4 times to check at least two cycles of off/on
 	 * shutdown.
 	 */
 	for (Index = 0; Index < 4; Index++) {

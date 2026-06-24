@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2025 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -27,14 +27,46 @@ extern "C" {
 
 /******************************* Include Files ********************************/
 #include "xdc_hw.h"
+
+/**
+ * Maximum number of input streams allowed.
+ *
+ * @def XDC_MAX_IN_STREAMS
+ */
+#define XDC_MAX_IN_STREAMS		4
+
 /****************************** Type Definitions ******************************/
 
 /**
- * This structure stores the XDC configuration information.
-**/
+ * This structure stores the per-stream configuration.
+ */
 typedef struct {
-	const char *Name;
-	u32 BaseAddr;
+	const char *mode;	/**< Stream mode: Audio_&_Video or Video_only */
+	u8 pixel_mode;		/**< Pixels per clock: 1, 2, or 4 */
+	u8 sdpen;		/**< SDP enabled flag */
+} XDc_StreamConfig;
+
+/**
+ * This structure stores the XDC configuration information.
+ */
+typedef struct {
+	const char *Name;		/**< Instance name */
+	u32 BaseAddr;			/**< Base address */
+	const char *RegNames;		/**< Register names */
+	u32 interruptId;		/**< Interrupt ID */
+	u32 interruptParent;		/**< Interrupt parent */
+	u32 port;			/**< Port number */
+	const char *operatingmode;	/**< DC_Functional or DC_Bypass */
+	const char *presentationmode;	/**< Non-live, Live, or Mixed */
+	const char *livevideoselect;	/**< Live video select: V01, V02,
+					  *  or Both */
+	const char *livevideo01mode;	/**< Live video 01 mode */
+	const char *livevideo02mode;	/**< Live video 02 mode */
+	u8 livevideoalphaen;		/**< Live video alpha enable */
+	u8 livevideosdpen;		/**< Live video SDP enable */
+	u8 streams;			/**< Number of input streams */
+	XDc_StreamConfig StreamConfig[XDC_MAX_IN_STREAMS];
+					/**< Per-stream configuration */
 } XDc_Config;
 
 /**
@@ -283,11 +315,11 @@ typedef struct {
 	XDc_VideoStream2 VideoSrc2;
 	XDc_AudioStream  AudSrc;
 
-	XDc_VideoAttribute *NonLiveVideo1;
-	XDc_VideoAttribute *NonLiveVideo2;
+	const XDc_VideoAttribute *NonLiveVideo1;
+	const XDc_VideoAttribute *NonLiveVideo2;
 
-	XDc_VideoAttribute *LiveVideo1;
-	XDc_VideoAttribute *LiveVideo2;
+	const XDc_VideoAttribute *LiveVideo1;
+	const XDc_VideoAttribute *LiveVideo2;
 
 	XDc_VideoAttribute *OutputVideo;
 
@@ -314,7 +346,7 @@ typedef struct {
 } XDc_Cursor;
 
 /**
- * This typedef describes the parital blend coords
+ * This typedef describes the partial blend coords
  * */
 typedef struct {
 
@@ -352,8 +384,8 @@ typedef struct {
 
 	XDc_AlphaBlend AlphaEnable;
 	u8 Alpha;
-	u32 *Stream1ScaleFactors;
-	u32 *Stream2ScaleFactors;
+	const u32 *Stream1ScaleFactors;
+	const u32 *Stream2ScaleFactors;
 	u32 *Stream1CSCCoeff;
 	u32 *Stream1CSCOffset;
 	u32 *Stream2CSCCoeff;
@@ -422,7 +454,7 @@ typedef struct {
 
 	u32 VidFrameSwitchCtrl;
 
-	u16 NonLiveLatency;
+	u32 NonLiveLatency;
 
 	u32 StcEn;
 	u32 StcInitVal;
@@ -446,11 +478,11 @@ void XDc_SetBlenderBgColor(XDc *InstancePtr);
 void XDc_SetGlobalAlpha(XDc *InstancePtr);
 void XDc_SetInputVideoSelect(XDc *InstancePtr);
 void XDc_SetInputAudioSelect(XDc *InstancePtr);
-XDc_VideoAttribute *XDc_GetNonLiveVideoAttribute
+const XDc_VideoAttribute *XDc_GetNonLiveVideoAttribute
 (XDc_VideoFormat Format);
 void XDc_SetNonLiveInputFormat(XDc *InstancePtr, u8 VideoSrc,
-			       XDc_VideoAttribute *Video);
-XDc_VideoAttribute *XDc_GetLiveVideoAttribute
+			       const XDc_VideoAttribute *Video);
+const XDc_VideoAttribute *XDc_GetLiveVideoAttribute
 (XDc_VideoFormat Format);
 void XDc_SetOutputVideoFormat(XDc *InstancePtr);
 XDc_VideoAttribute *XDc_GetOutputVideoAttribute

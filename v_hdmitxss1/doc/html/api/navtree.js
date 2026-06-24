@@ -3,6 +3,7 @@ var NAVTREE =
   [ "v_hdmitxss1", "index.html", [
     [ "Data Structures", null, [
       [ "Data Structures", "annotated.html", "annotated" ],
+      [ "Data Structure Index", "classes.html", null ],
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Variables", "functions_vars.html", null ]
@@ -38,15 +39,16 @@ var NAVTREE =
       [ "audio_prbs_genchk_drv.h", "example.html#ex17", [
         [ "NOTES", "example.html#IMPORTANT", null ]
       ] ]
-    ] ]
+    ] ],
+    [ "Deprecated List", "deprecated.html", null ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
 "aes_8c.html",
-"struct_x_v___hdmi_tx_ss1.html#ab9c7709befa6b85a8311d9647d47927e",
-"xv__hdmitxss1_8c.html#aff714b53254953cd5b5fce6cfe15b3fb"
+"struct_x_v___hdmi_tx_ss1.html#ad5186619e28ce571972f0628785b3e2d",
+"xv__hdmitxss1_8h.html#a1aeee9dca9d8b15b0cf54196627d727c"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
@@ -97,7 +99,7 @@ function deleteLink()
 {
   if (localStorageSupported()) {
     window.localStorage.setItem('navpath','');
-  } 
+  }
 }
 
 function cachedLink()
@@ -111,21 +113,21 @@ function cachedLink()
 
 function getScript(scriptName,func,show)
 {
-  var head = document.getElementsByTagName("head")[0]; 
+  var head = document.getElementsByTagName("head")[0];
   var script = document.createElement('script');
   script.id = scriptName;
   script.type = 'text/javascript';
-  script.onload = func; 
-  script.src = scriptName+'.js'; 
-  if ($.browser.msie && $.browser.version<=8) { 
+  script.onload = func;
+  script.src = scriptName+'.js';
+  if ($.browser.msie && $.browser.version<=8) {
     // script.onload does not work with older versions of IE
     script.onreadystatechange = function() {
-      if (script.readyState=='complete' || script.readyState=='loaded') { 
-        func(); if (show) showRoot(); 
+      if (script.readyState=='complete' || script.readyState=='loaded') {
+        func(); if (show) showRoot();
       }
     }
   }
-  head.appendChild(script); 
+  head.appendChild(script);
 }
 
 function createIndent(o,domNode,node,level)
@@ -161,7 +163,7 @@ function createIndent(o,domNode,node,level)
     span.style.height  = '22px';
     span.innerHTML = '&nbsp;';
     domNode.appendChild(span);
-  } 
+  }
 }
 
 var animationInProgress = false;
@@ -171,7 +173,7 @@ function gotoAnchor(anchor,aname,updateLocation)
   var pos, docContent = $('#doc-content');
   if (anchor.parent().attr('class')=='memItemLeft' ||
       anchor.parent().attr('class')=='fieldtype' ||
-      anchor.parent().is(':header')) 
+      anchor.parent().is(':header'))
   {
     pos = anchor.parent().position().top;
   } else if (anchor.position()) {
@@ -233,7 +235,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       var aname = '#'+link.split('#')[1];
       var srcPage = stripPath($(location).attr('pathname'));
       var targetPage = stripPath(link.split('#')[0]);
-      a.href = srcPage!=targetPage ? url : "javascript:void(0)"; 
+      a.href = srcPage!=targetPage ? url : "javascript:void(0)";
       a.onclick = function(){
         storeLink(link);
         if (!$(a).parent().parent().hasClass('selected'))
@@ -251,7 +253,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       a.onclick = function() { storeLink(link); }
     }
   } else {
-    if (childrenData != null) 
+    if (childrenData != null)
     {
       a.className = "nolink";
       a.href = "javascript:void(0)";
@@ -300,7 +302,7 @@ function expandNode(o, node, imm, showRoot)
     } else {
       if (!node.childrenVisited) {
         getNode(o, node);
-      } if (imm || ($.browser.msie && $.browser.version>8)) { 
+      } if (imm || ($.browser.msie && $.browser.version>8)) {
         // somehow slideDown jumps to the start of tree for IE9 :-(
         $(node.getChildrenUL()).show();
       } else {
@@ -565,4 +567,3 @@ function initNavTree(toroot,relpath)
      }
   })
 }
-

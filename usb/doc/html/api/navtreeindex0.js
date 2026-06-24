@@ -1,6 +1,7 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "data_8h.html":[2,0],
 "example.html":[3],
 "example.html#Notes":[3,13,0],
@@ -19,10 +20,10 @@ var NAVTREEINDEX0 =
 "example.html#ex8":[3,7],
 "example.html#ex9":[3,8],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
-"globals.html":[1,0],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0,0],
+"globals.html":[1,0],
 "globals_0x64.html":[1,0,1],
 "globals_0x65.html":[1,0,2],
 "globals_0x67.html":[1,0,3],
@@ -77,7 +78,7 @@ var NAVTREEINDEX0 =
 "xusb_8h.html#ga770274afcbbb1224ab5eec3a84a19acf":[2,2,8],
 "xusb_8h.html#ga793a5e7847d812a5e5de810db648b35a":[2,2,2],
 "xusb_8h.html#ga82e240bb1af0cc302cd2c8b7363161d8":[2,2,23],
-"xusb_8h.html#ga833556c2bbb9beb055873006fea7b2ed":[2,2,35],
+"xusb_8h.html#ga83ca5d56b85bf4f28c99338a05c9a856":[2,2,35],
 "xusb_8h.html#ga8af69babadc9c361e05afca4e350b918":[2,2,25],
 "xusb_8h.html#ga9c50c0ee6d36d4b87a40018c2ad0fd25":[2,2,16],
 "xusb_8h.html#ga9d1522d41344290899ebbf1a40824697":[2,2,43],
@@ -174,8 +175,8 @@ var NAVTREEINDEX0 =
 "xusb__keyboard_8c.html#a3b40155d0d9fa44133905dd9f6f02ee7":[2,9,3],
 "xusb__keyboard_8c.html#a484c46094f8fbdcb3dbc3639e45a90ad":[2,9,2],
 "xusb__keyboard_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,9,4],
+"xusb__keyboard_8c.html#a8882fbbb39100578edb3cd06a935ada6":[2,9,6],
 "xusb__keyboard_8c.html#a8bd3ecc4e2acd07b864ea2392a0394f4":[2,9,5],
-"xusb__keyboard_8c.html#aa8f2bcd4c9e30a4811003990864522af":[2,9,6],
 "xusb__keyboard_8h.html":[2,10],
 "xusb__keyboard_8h.html#a243967b329b332dc3503adfc2950fceb":[2,10,0],
 "xusb__keyboard_8h.html#a386bfc503aaebdfd92028284d6fb63f0":[2,10,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "xusb__l_8h.html#ga6ee35c3d3559831be61c8d02c941b792":[2,11,82],
 "xusb__l_8h.html#ga6efee22c3a6ad61a28db82930603a473":[2,11,5],
 "xusb__l_8h.html#ga6f8272b2f03c9561dbf9c6a1dd6b391c":[2,11,25],
-"xusb__l_8h.html#ga7595c2440208058bdfdfa6bf13bfe597":[2,11,53],
-"xusb__l_8h.html#ga7598429f7ba0bb7f052da4eb95d0908b":[2,11,135]
+"xusb__l_8h.html#ga7595c2440208058bdfdfa6bf13bfe597":[2,11,53]
 };

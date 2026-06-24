@@ -1,15 +1,21 @@
 var files =
 [
-    [ "idt_8t49n24x.c", "idt__8t49n24x_8c.html", "idt__8t49n24x_8c" ],
-    [ "idt_8t49n24x.h", "idt__8t49n24x_8h.html", "idt__8t49n24x_8h" ],
-    [ "si5344drv.c", "si5344drv_8c.html", "si5344drv_8c" ],
-    [ "si5344drv.h", "si5344drv_8h.html", "si5344drv_8h" ],
-    [ "ti_lmk03318.c", "ti__lmk03318_8c.html", "ti__lmk03318_8c" ],
-    [ "ti_lmk03318.h", "ti__lmk03318_8h.html", "ti__lmk03318_8h" ],
-    [ "videofmc_defs.h", "videofmc__defs_8h.html", "videofmc__defs_8h" ],
+    [ "keymgmt.c", "keymgmt_8c.html", "keymgmt_8c" ],
+    [ "keymgmt.h", "keymgmt_8h.html", "keymgmt_8h" ],
+    [ "keymgmt_debug.h", "keymgmt__debug_8h.html", null ],
+    [ "keymgmt_device.c", "keymgmt__device_8c.html", "keymgmt__device_8c" ],
+    [ "keymgmt_device.h", "keymgmt__device_8h.html", "keymgmt__device_8h" ],
+    [ "keymgmt_loader.c", "keymgmt__loader_8c.html", "keymgmt__loader_8c" ],
+    [ "keymgmt_loader.h", "keymgmt__loader_8h.html", "keymgmt__loader_8h" ],
+    [ "keymgmt_testkeys.c", "keymgmt__testkeys_8c.html", "keymgmt__testkeys_8c" ],
+    [ "xdp_hdcp_keys.c", "xdp__hdcp__keys_8c.html", "xdp__hdcp__keys_8c" ],
+    [ "xdp_hdcp_keys.h", "xdp__hdcp__keys_8h.html", "xdp__hdcp__keys_8h" ],
     [ "xdprxss.c", "xdprxss_8c.html", "xdprxss_8c" ],
     [ "xdprxss.h", "xdprxss_8h.html", "xdprxss_8h" ],
     [ "xdprxss_dbg.c", "xdprxss__dbg_8c.html", "xdprxss__dbg_8c" ],
+    [ "xdprxss_dp21_pt.c", "xdprxss__dp21__pt_8c.html", "xdprxss__dp21__pt_8c" ],
+    [ "xdprxss_dp21_pt_hdcp.c", "xdprxss__dp21__pt__hdcp_8c.html", "xdprxss__dp21__pt__hdcp_8c" ],
+    [ "xdprxss_dp21_rx.c", "xdprxss__dp21__rx_8c.html", "xdprxss__dp21__rx_8c" ],
     [ "xdprxss_dprx.c", "xdprxss__dprx_8c.html", null ],
     [ "xdprxss_dprx.h", "xdprxss__dprx_8h.html", "xdprxss__dprx_8h" ],
     [ "xdprxss_hdcp1x.c", "xdprxss__hdcp1x_8c.html", null ],
@@ -22,6 +28,6 @@ var files =
     [ "xdprxss_intr.c", "xdprxss__intr_8c.html", "xdprxss__intr_8c" ],
     [ "xdprxss_selftest.c", "xdprxss__selftest_8c.html", "xdprxss__selftest_8c" ],
     [ "xdprxss_sinit.c", "xdprxss__sinit_8c.html", "xdprxss__sinit_8c" ],
-    [ "xvidframe_crc.c", "xvidframe__crc_8c.html", "xvidframe__crc_8c" ],
-    [ "xvidframe_crc.h", "xvidframe__crc_8h.html", "xvidframe__crc_8h" ]
+    [ "xvid_pat_gen.c", "xvid__pat__gen_8c.html", "xvid__pat__gen_8c" ],
+    [ "xvid_pat_gen.h", "xvid__pat__gen_8h.html", "xvid__pat__gen_8h" ]
 ];

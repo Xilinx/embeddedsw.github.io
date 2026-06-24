@@ -11,7 +11,6 @@ var xcanfd_8c =
     [ "XCanFd_Enable_Tranceiver_Delay_Compensation", "xcanfd_8c.html#ga1559296a8c1bd8620fdaf05996666c83", null ],
     [ "XCanFd_EnterMode", "xcanfd_8c.html#gaaa893768ea4f0db5796f31ab3d8ca431", null ],
     [ "XCanFd_GetBusErrorCounter", "xcanfd_8c.html#ga2d148a32889636871fd043c4664bb3c5", null ],
-    [ "XCanFd_GetConfig", "xcanfd_8c.html#gaf332209904e74e3081b72b230208f938", null ],
     [ "XCanFd_GetDlc2len", "xcanfd_8c.html#ga10fa6a0030a1dc8ca563745ffb5f9c95", null ],
     [ "XCanFd_GetFreeBuffer", "xcanfd_8c.html#gab41b6198a5a28b106e241e7c785fbcae", null ],
     [ "XCanFd_GetLen2Dlc", "xcanfd_8c.html#ga3586b83927030ada806c45a251dadf32", null ],

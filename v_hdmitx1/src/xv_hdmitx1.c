@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -112,6 +112,7 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 
 	InstancePtr->StreamUpCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	InstancePtr->FrlConfigCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
 
 	InstancePtr->FrlFfeCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
@@ -119,6 +120,7 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	InstancePtr->FrlStartCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
 
 	InstancePtr->FrlStopCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
+#endif
 
 	InstancePtr->TmdsConfigCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
 
@@ -126,8 +128,10 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 
 	InstancePtr->DscDecodeFailCallback = (XV_HdmiTx1_Callback)((void *)StubCallback);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	/* Maximum FRL Rate Supported */
 	InstancePtr->Stream.Frl.MaxFrlRate =  InstancePtr->Config.MaxFrlRate;
+#endif
 
 	/* Clear HDMI variables */
 	XV_HdmiTx1_Clear(InstancePtr);
@@ -141,10 +145,12 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	/* Set stream status - The stream is down*/
 	InstancePtr->Stream.State = XV_HDMITX1_STATE_STREAM_DOWN;
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	/* Set FRL State*/
 	InstancePtr->Stream.Frl.TrainingState = XV_HDMITX1_FRLSTATE_LTS_L;
-	InstancePtr->Stream.IsHdmi = FALSE;
 	InstancePtr->Stream.IsFrl = FALSE;
+#endif
+	InstancePtr->Stream.IsHdmi = FALSE;
 
 	/* Clear connected flag*/
 	InstancePtr->Stream.IsConnected = (FALSE);
@@ -159,9 +165,11 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	XV_HdmiTx1_DdcDisable(InstancePtr);
 	XV_HdmiTx1_AudioDisable(InstancePtr);
 	XV_HdmiTx1_AuxDisable(InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	XV_HdmiTx1_FrlIntrDisable(InstancePtr);
 	XV_HdmiTx1_FrlReset(InstancePtr, TRUE);
 	XV_HdmiTx1_FrlExtVidCkeSource(InstancePtr, FALSE);
+#endif
 
 	XV_HdmiTx1_PioIntrClear(InstancePtr);
 	XV_HdmiTx1_DdcIntrClear(InstancePtr);
@@ -219,8 +227,10 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	XV_HdmiTx1_SetHdmiTmdsMode(InstancePtr);
 
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	/* Enable FRL peripheral */
 	XV_HdmiTx1_FrlReset(InstancePtr, FALSE);
+#endif
 
 	/* Release Audio Reset */
 	XV_HdmiTx1_WriteReg((InstancePtr)->Config.BaseAddress,
@@ -229,7 +239,7 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	XV_HdmiTx1_WriteReg((InstancePtr)->Config.BaseAddress,
 			    (XV_HDMITX1_AUD_CTRL_SET_OFFSET),
 			    (XV_HDMITX1_AUD_CTRL_AUDRST_MASK));
-
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	/* Enable FRL Interrupt */
 	XV_HdmiTx1_FrlIntrEnable(InstancePtr);
 	xil_printf("TX: FRL Base: 0x%X\r\n",
@@ -239,6 +249,7 @@ int XV_HdmiTx1_CfgInitialize(XV_HdmiTx1 *InstancePtr, XV_HdmiTx1_Config *CfgPtr,
 	InstancePtr->Stream.Frl.RateLock = FALSE;
 
 	XV_HdmiTx1_FrlExecute(InstancePtr);
+#endif
 
 	/* Reset the hardware and set the flag to indicate the driver is ready */
 	InstancePtr->IsReady = (u32)(XIL_COMPONENT_IS_READY);
@@ -269,6 +280,7 @@ void XV_HdmiTx1_SetAxiClkFreq(XV_HdmiTx1 *InstancePtr, u32 ClkFreq)
 	XV_HdmiTx1_DdcInit(InstancePtr, InstancePtr->CpuClkFreq);
 }
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 /*****************************************************************************/
 /**
 *
@@ -276,8 +288,7 @@ void XV_HdmiTx1_SetAxiClkFreq(XV_HdmiTx1 *InstancePtr, u32 ClkFreq)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @return
-*
+* @return   None.
 *
 * @note     This is required after a reset or init.
 *
@@ -303,6 +314,7 @@ void XV_HdmiTx1_SetHdmiFrlMode(XV_HdmiTx1 *InstancePtr)
 	/* The audio peripheral is enabled at stream up */
 	XV_HdmiTx1_AudioEnable(InstancePtr);
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -311,8 +323,7 @@ void XV_HdmiTx1_SetHdmiFrlMode(XV_HdmiTx1 *InstancePtr)
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
-* @return
-*
+* @return   None.
 *
 * @note     This is required after a reset or init.
 *
@@ -411,13 +422,17 @@ void XV_HdmiTx1_AudioEnable(XV_HdmiTx1 *InstancePtr)
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	if  (InstancePtr->Stream.IsFrl == TRUE) {
 		/* Start FRL ACR */
 		XV_HdmiTx1_FRLACRStart(InstancePtr);
 	} else {
+#endif
 		/* Start TMDS ACR */
 		XV_HdmiTx1_TMDSACRStart(InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	}
+#endif
 
 	/* Run the Audio Module */
 	XV_HdmiTx1_WriteReg((InstancePtr)->Config.BaseAddress,
@@ -551,7 +566,8 @@ u64 XV_HdmiTx1_GetTmdsClk(XV_HdmiTx1 *InstancePtr)
 	InstancePtr->Stream.PixelClk = TmdsClock;
 
 	/* YUV420 */
-	if (InstancePtr->Stream.Video.ColorFormatId == (XVIDC_CSF_YCRCB_420)) {
+	if ( (InstancePtr->Stream.Video.ColorFormatId == (XVIDC_CSF_YCRCB_420)) &&
+	     (!InstancePtr->Stream.Video.IsDSCompressed)) {
 		/* In YUV420 the tmds clock is divided by two*/
 		TmdsClock = TmdsClock >> 1;
 	}
@@ -1453,23 +1469,28 @@ void XV_HdmiTx1_SetColorFormat(XV_HdmiTx1 *InstancePtr)
 			    (XV_HDMITX1_PIO_OUT_MSK_OFFSET),
 			    (XV_HDMITX1_PIO_OUT_COLOR_SPACE_MASK));
 
-	/* Check for color format */
-	switch (InstancePtr->Stream.Video.ColorFormatId) {
-	case (XVIDC_CSF_YCRCB_444):
-		RegValue = 1;
-		break;
-
-	case (XVIDC_CSF_YCRCB_422):
-		RegValue = 2;
-		break;
-
-	case (XVIDC_CSF_YCRCB_420):
-		RegValue = 3;
-		break;
-
-	default:
+	if (InstancePtr->Stream.Video.IsDSCompressed) {
+		/* For DSC, always use RGB (0) */
 		RegValue = 0;
-		break;
+	} else {
+		/* Check for color format */
+		switch (InstancePtr->Stream.Video.ColorFormatId) {
+		case (XVIDC_CSF_YCRCB_444):
+			RegValue = 1;
+			break;
+
+		case (XVIDC_CSF_YCRCB_422):
+			RegValue = 2;
+			break;
+
+		case (XVIDC_CSF_YCRCB_420):
+			RegValue = 3;
+			break;
+
+		default:
+			RegValue = 0;
+			break;
+		}
 	}
 
 	/* Write color space into PIO Out register */
@@ -1502,27 +1523,32 @@ void XV_HdmiTx1_SetColorDepth(XV_HdmiTx1 *InstancePtr)
 			    (XV_HDMITX1_PIO_OUT_MSK_OFFSET),
 			    (XV_HDMITX1_PIO_OUT_COLOR_DEPTH_MASK));
 
-	/* Color depth*/
-	switch (InstancePtr->Stream.Video.ColorDepth) {
-	/* 10 bits*/
-	case (XVIDC_BPC_10):
-		RegValue = 1;
-		break;
-
-	/* 12 bits*/
-	case (XVIDC_BPC_12):
-		RegValue = 2;
-		break;
-
-	/* 16 bits*/
-	case (XVIDC_BPC_16):
-		RegValue = 3;
-		break;
-
-	/* 8 bits*/
-	default:
+	if (InstancePtr->Stream.Video.IsDSCompressed) {
+		/* For DSC, always use 8 bits (0) */
 		RegValue = 0;
-		break;
+	} else {
+		/* Color depth*/
+		switch (InstancePtr->Stream.Video.ColorDepth) {
+		/* 10 bits*/
+		case (XVIDC_BPC_10):
+			RegValue = 1;
+			break;
+
+		/* 12 bits*/
+		case (XVIDC_BPC_12):
+			RegValue = 2;
+			break;
+
+		/* 16 bits*/
+		case (XVIDC_BPC_16):
+			RegValue = 3;
+			break;
+
+		/* 8 bits*/
+		default:
+			RegValue = 0;
+			break;
+		}
 	}
 
 	/* Write color depth into PIO Out register */
@@ -1775,7 +1801,9 @@ int XV_HdmiTx1_DdcWrite(XV_HdmiTx1 *InstancePtr, u8 Slave,
 	u32 Status;
 	u32 Data;
 	u32 Index;
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	u32 TempTimer;
+#endif
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1792,10 +1820,12 @@ int XV_HdmiTx1_DdcWrite(XV_HdmiTx1 *InstancePtr, u8 Slave,
 	/* Disable FRL timer to prevent another DDC transactions from happening
 	 * in the middle of an ongoing DDC transaction
 	 */
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	TempTimer = XV_HdmiTx1_GetFrlTimer(InstancePtr);
 	if (TempTimer != 0) {
 		XV_HdmiTx1_SetFrlTimerClockCycles(InstancePtr, 0);
 	}
+#endif
 
 	/* Status default, assume failure*/
 	Status = XST_FAILURE;
@@ -1890,9 +1920,11 @@ int XV_HdmiTx1_DdcWrite(XV_HdmiTx1 *InstancePtr, u8 Slave,
 
 	/* Enable the interrupts which were disabled earlier*/
 	XV_HdmiTx1_PioIntrEnable(InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	if (TempTimer != 0) {
 		XV_HdmiTx1_SetFrlTimerClockCycles(InstancePtr, TempTimer);
 	}
+#endif
 
 #ifdef DEBUG_DDC_VERBOSITY
 	xil_printf("\r\n");
@@ -1927,7 +1959,9 @@ int XV_HdmiTx1_DdcRead(XV_HdmiTx1 *InstancePtr, u8 Slave, u16 Length,
 	u32 Status;
 	u32 Data;
 	u32 Index;
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	u32 TempTimer;
+#endif
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1944,10 +1978,12 @@ int XV_HdmiTx1_DdcRead(XV_HdmiTx1 *InstancePtr, u8 Slave, u16 Length,
 	/* Disable FRL timer to prevent another DDC transactions from happening
 	 * in the middle of an ongoing DDC transaction
 	 */
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	TempTimer = XV_HdmiTx1_GetFrlTimer(InstancePtr);
 	if (TempTimer != 0) {
 		XV_HdmiTx1_SetFrlTimerClockCycles(InstancePtr, 0);
 	}
+#endif
 
 	/* Status default, assume failure*/
 	Status = XST_FAILURE;
@@ -2038,9 +2074,11 @@ int XV_HdmiTx1_DdcRead(XV_HdmiTx1 *InstancePtr, u8 Slave, u16 Length,
 
 	/* Enable the interrupts which were disabled earlier*/
 	XV_HdmiTx1_PioIntrEnable(InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	if (TempTimer != 0) {
 		XV_HdmiTx1_SetFrlTimerClockCycles(InstancePtr, TempTimer);
 	}
+#endif
 
 #ifdef DEBUG_DDC_VERBOSITY
 	xil_printf("\r\n");
@@ -2329,7 +2367,9 @@ void XV_HdmiTx1_DebugInfo(XV_HdmiTx1 *InstancePtr)
 {
 	u32 Data;
 	u32 Data1;
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	u32 FrlCtrl;
+#endif
 
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -2345,6 +2385,7 @@ void XV_HdmiTx1_DebugInfo(XV_HdmiTx1 *InstancePtr)
 	xil_printf("ADD_CORE_DBG: 0x%X\r\n", (Data >> 16) & 0xFFFF0000);
 
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	FrlCtrl = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
 				(XV_HDMITX1_FRL_CTRL_OFFSET));
 	xil_printf("FRL_MODE, LANES: %d, %d\r\n",
@@ -2353,12 +2394,14 @@ void XV_HdmiTx1_DebugInfo(XV_HdmiTx1 *InstancePtr)
 			(FrlCtrl & XV_HDMITX1_FRL_CTRL_LN_OP_MASK) &&
 			XV_HDMITX1_FRL_CTRL_LN_OP_MASK);
 
+#endif
 	Data = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
 				(XV_HDMITX1_PIO_OUT_OFFSET));
 	xil_printf("HDMI/DVI MODE: %d\r\n",
 			(Data & XV_HDMITX1_PIO_OUT_MODE_MASK) &&
 			XV_HDMITX1_PIO_OUT_MODE_MASK);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	Data = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
 				(XV_HDMITX1_FRL_STA_OFFSET));
 	xil_printf("FRL_LCKE_OOS: %d\r\n",
@@ -2381,6 +2424,7 @@ void XV_HdmiTx1_DebugInfo(XV_HdmiTx1 *InstancePtr)
 				(XV_HDMITX1_VCKE_SYS_CNT_OFFSET));
 	xil_printf("FRL_VCKE_FREQ(Measured Khz): %d\r\n", (5000*400000)/Data);
 
+#endif
 	Data = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
 				(XV_HDMITX1_PIO_IN_OFFSET));
 	xil_printf("TX Bridge Locked: %d\r\n",
@@ -2397,12 +2441,14 @@ void XV_HdmiTx1_DebugInfo(XV_HdmiTx1 *InstancePtr)
 			XV_HDMITX1_DBG_STS_TRIB_ANLZ_VID_TIM_CHG_MASK);
 
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	/* FRL Tribyte Analyzer timing changed counter Status */
 	xil_printf("FRL_ANLZ Video Timing (add_core_dbg=3)\r\n"
 			"  TIM_CHG: %d\r\n",
 			(Data & XV_HDMITX1_DBG_STS_FRL_ANLZ_VID_TIM_CHG_MASK) &&
 			XV_HDMITX1_DBG_STS_FRL_ANLZ_VID_TIM_CHG_MASK);
 
+#endif
 	Data = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
 			(XV_HDMITX1_ANLZ_HBP_HS_OFFSET));
 	Data1 = XV_HdmiTx1_ReadReg(InstancePtr->Config.BaseAddress,
@@ -2435,7 +2481,11 @@ void XV_HdmiTx1_RegisterDebug(XV_HdmiTx1 *InstancePtr)
 	xil_printf("       HDMI TX Register Dump \r\n");
 	xil_printf("-------------------------------------\r\n");
 	for (RegOffset = 0;
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 		RegOffset <= XV_HDMITX1_FRL_FEC_ERR_INJ_OFFSET; ) {
+#else
+		RegOffset <= XV_HDMITX1_MASK_BLUE_OFFSET; ) {
+#endif
 		xil_printf("0x%04x      0x%08x\r\n",RegOffset,
 		XV_HdmiTx1_ReadReg(
 		InstancePtr->Config.BaseAddress, RegOffset));
@@ -2493,6 +2543,7 @@ int XV_HdmiTx1_IsStreamConnected(XV_HdmiTx1 *InstancePtr)
 	return (InstancePtr->Stream.IsConnected);
 }
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 /*****************************************************************************/
 /**
 *
@@ -2572,11 +2623,12 @@ void XV_HdmiTx1_FRLACRStart(XV_HdmiTx1 *InstancePtr)
 			    (XV_HDMITX1_AUD_CTRL_ACR_EN_MASK));
 
 }
+#endif
 
 /*****************************************************************************/
 /**
 *
-* This function Starts the internal ACR module for FRL
+* This function Starts the internal ACR module for TMDS
 *
 * @param    InstancePtr is a pointer to the XV_HdmiTx1 core instance.
 *
@@ -2821,7 +2873,7 @@ u32 XV_HdmiTxSs1_GetAudioNVal(XV_HdmiTx1 *InstancePtr)
 *
 * @return
 *       - XST_SUCCESS if active channels were set.
-*       - XST_FAILURE if no active channles were set.
+*       - XST_FAILURE if no active channels were set.
 *
 * @note     None.
 *

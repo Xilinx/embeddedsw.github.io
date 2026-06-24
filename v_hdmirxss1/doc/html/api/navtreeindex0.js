@@ -85,6 +85,8 @@ var NAVTREEINDEX0 =
 "bigdigits_8h.html#af6837bac786e6c592602feb8a37c52d5":[2,3,41],
 "bigdigits_8h.html#afe97063d506389797a9647a8803edc65":[2,3,38],
 "bigdigits_8h.html#afee0546db3e24c672b9bc35fbe3d24ca":[2,3,17],
+"classes.html":[0,1],
+"deprecated.html":[4],
 "example.html":[3],
 "example.html#IMPORTANT":[3,16,0],
 "example.html#ex1":[3,0],
@@ -105,8 +107,8 @@ var NAVTREEINDEX0 =
 "example.html#ex8":[3,7],
 "example.html#ex9":[3,8],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals.html":[1,0,0],
 "globals_0x61.html":[1,0,1],
@@ -124,8 +126,8 @@ var NAVTREEINDEX0 =
 "globals_defs.html":[1,6],
 "globals_enum.html":[1,4],
 "globals_eval.html":[1,5],
-"globals_func.html":[1,1,0],
 "globals_func.html":[1,1],
+"globals_func.html":[1,1,0],
 "globals_func_0x65.html":[1,1,1],
 "globals_func_0x68.html":[1,1,2],
 "globals_func_0x69.html":[1,1,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "struct_x_v___hdmi_rx_ss1.html#a67e0dd90eac360d84b346c3fc5b6901b":[0,0,5,7],
 "struct_x_v___hdmi_rx_ss1.html#a6de2adb65bcd4b4574641c91a18dc3fc":[0,0,5,40],
 "struct_x_v___hdmi_rx_ss1.html#a6f341788d0657d756bdecd5027e3f8c4":[0,0,5,72],
-"struct_x_v___hdmi_rx_ss1.html#a7000655d167b841b77a154892a0c5937":[0,0,5,74],
-"struct_x_v___hdmi_rx_ss1.html#a72e105dd51975ca027d92afa8b3b6084":[0,0,5,0],
-"struct_x_v___hdmi_rx_ss1.html#a8212a65a1e07fb915720872b68b24a14":[0,0,5,45]
+"struct_x_v___hdmi_rx_ss1.html#a7000655d167b841b77a154892a0c5937":[0,0,5,74]
 };

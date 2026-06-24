@@ -81,7 +81,7 @@ var xqspipsu_8h =
     [ "XQspiPsu_Idle", "xqspipsu_8h.html#ga46a8ddc9fc0b6f9e2d616de84d9c7ed5", null ],
     [ "XQspiPsu_InterruptHandler", "xqspipsu_8h.html#gaa345ea3ab3694a94a60e6217cb8d5e59", null ],
     [ "XQspiPsu_InterruptTransfer", "xqspipsu_8h.html#ga6ae727534cf55b878b9b1974dc72a625", null ],
-    [ "XQspiPsu_LookupConfig", "xqspipsu_8h.html#gafd84d3f23643ccbcbd4637f786ba48fa", null ],
+    [ "XQspiPsu_LookupConfig", "xqspipsu_8h.html#ga76f8802ef15bef7f1a788b38fbb00c69", null ],
     [ "XQspiPsu_PolledTransfer", "xqspipsu_8h.html#ga61de390e2bc4af0ce77448a46763ea39", null ],
     [ "XQspiPsu_Reset", "xqspipsu_8h.html#ga799b60ee7157ed46b84475677aa0dc03", null ],
     [ "XQspiPsu_SelectFlash", "xqspipsu_8h.html#ga28338ae42ed4f7d2685ab18de2d21128", null ],
@@ -92,5 +92,5 @@ var xqspipsu_8h =
     [ "XQspiPsu_SetWP", "xqspipsu_8h.html#ga54cce449d0bda6133fe2c254a164e08e", null ],
     [ "XQspiPsu_StartDmaTransfer", "xqspipsu_8h.html#ga769969b43f91def18f7501555ec35b11", null ],
     [ "XQspiPsu_WriteProtectToggle", "xqspipsu_8h.html#ga0ec97b3d7c6cb24544f0bfa8114b56d7", null ],
-    [ "XQspiPsu_ConfigTable", "xqspipsu_8h.html#ga0a1440bbf114a2e065b65bca531a14c3", null ]
+    [ "XQspiPsu_ConfigTable", "xqspipsu_8h.html#ga07435c645a3bde95933d0461713e4e57", null ]
 ];

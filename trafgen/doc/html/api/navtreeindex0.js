@@ -1,14 +1,15 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
 "example.html#ex3":[3,2],
 "example.html#ex4":[3,3],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0,0],
 "globals.html":[1,0],
 "globals_0x6d.html":[1,0,1],
@@ -89,7 +90,7 @@ var NAVTREEINDEX0 =
 "xtrafgen_8h.html#gab626edcc0e22fa88764d3cabe973a469":[2,1,49],
 "xtrafgen_8h.html#gabc2346365e8d4e0e606633d4f5eda16a":[2,1,64],
 "xtrafgen_8h.html#gac0e4ea9cbcd6fb559351aee0f810d60b":[2,1,6],
-"xtrafgen_8h.html#gacbf906e378777e17e7d68729315993ec":[2,1,73],
+"xtrafgen_8h.html#gac3cbfc258cf7a91a271140e9ffc33c76":[2,1,73],
 "xtrafgen_8h.html#gacd4a2d138602873e0614886c7e11b751":[2,1,52],
 "xtrafgen_8h.html#gad1d6d337106b8d03118d625159a93cf4":[2,1,34],
 "xtrafgen_8h.html#gad9654a81e902175a963c83edb0c37144":[2,1,74],
@@ -242,12 +243,11 @@ var NAVTREEINDEX0 =
 "xtrafgen__hw_8h.html#gafdb598343bdb0bf2c6c5d29f8258f692":[2,3,15],
 "xtrafgen__hw_8h.html#gafee2ca23e3fc2ed4964740ba69dde023":[2,3,92],
 "xtrafgen__interrupt__example_8c.html":[2,4],
+"xtrafgen__interrupt__example_8c.html#a75a5cad222d5705d42542e2e8922350f":[2,4,1],
 "xtrafgen__interrupt__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,4,0],
-"xtrafgen__interrupt__example_8c.html#afb79fd728f1a6cb5493de055332e83a6":[2,4,1],
 "xtrafgen__master__streaming__example_8c.html":[2,5],
-"xtrafgen__master__streaming__example_8c.html#a521d3269309f373eed23de244b585334":[2,5,1],
+"xtrafgen__master__streaming__example_8c.html#a32230b891fe6361bfa9c41865a2949c3":[2,5,1],
 "xtrafgen__master__streaming__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,5,0],
 "xtrafgen__polling__example_8c.html":[2,6],
-"xtrafgen__polling__example_8c.html#ab46a0b5ffdf45d4901f976a856443f99":[2,6,1],
-"xtrafgen__polling__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,6,0]
+"xtrafgen__polling__example_8c.html#a4a65ec7d0aaeb93bcd943db204bd16ae":[2,6,1]
 };

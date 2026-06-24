@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -59,11 +59,27 @@ extern "C" {
 						      *  Status Register */
 #define XMIPI_RX_PHY_DL3STATUS_REG_OFFSET 	0x00000028  /**< Data lane 3 PHY error
 						      *  Status Register */
+#define XMIPI_RX_PHY_DYNAMIC_LINERATE_REG_OFFSET	0x0000000C  /**< Dynamic Line Rate
+							      *  Register */
 #define XMIPI_RX_PHY_HSSETTLE0_REG_OFFSET	0x00000030  /**< HS Settle Register L0*/
+#define XMIPI_RX_PHY_MMCM_MULT_REG_OFFSET	0x00000034  /**< MMCM Multiplier Register */
+#define XMIPI_RX_PHY_MMCM_FRACT_MULT_REG_OFFSET 0x00000038  /**< MMCM Fractional
+							      *  Multiplier Register */
+#define XMIPI_RX_PHY_MMCM_DIV_REG_OFFSET	0x0000003C  /**< MMCM Divider Register */
+#define XMIPI_RX_PHY_MMCM_O_REG_OFFSET		0x00000040  /**< MMCM Output Divider Register */
 #define XMIPI_RX_PHY_HSSETTLE1_REG_OFFSET	0x00000048  /**< HS Settle Register L1*/
 #define XMIPI_RX_PHY_HSSETTLE2_REG_OFFSET	0x0000004C  /**< HS Settle Register L2*/
 #define XMIPI_RX_PHY_HSSETTLE3_REG_OFFSET	0x00000050  /**< HS Settle Register L3*/
 
+/*@}*/
+
+/** @name Bitmasks and offsets of XMIPI_RX_PHY_DYNAMIC_LINERATE_REG_OFFSET register
+ *
+ * This register contains the dynamic line rate.
+ * @{
+ */
+#define XMIPI_RX_PHY_DYNAMIC_LINERATE_REG_LINERATE_MASK	0x0000FFFF /**< Current
+								 *  Line Rate */
 /*@}*/
 
 /** @name Bitmasks and offsets of XMIPI_RX_PHY_CTRL_REG_OFFSET register
@@ -117,7 +133,7 @@ extern "C" {
  * escape mode.
  * @{
  */
-#define XMIPI_RX_PHY_ESCTIMEOUT_REG_VAL_MASK 0xFFFFFFFF /**< Escape Timout Value */
+#define XMIPI_RX_PHY_ESCTIMEOUT_REG_VAL_MASK 0xFFFFFFFF /**< Escape Timeout Value */
 #define XMIPI_RX_PHY_ESCTIMEOUT_REG_VAL_OFFSET 0 /**< Bit offset for Escape Timeout */
 /*@}*/
 

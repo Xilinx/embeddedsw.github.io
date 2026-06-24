@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022-2025 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -22,6 +22,8 @@
 *       dc     01/02/23 Multiband registers update
 * 1.6   dc     06/15/23 Configure all trigger parameters in examples
 * 1.8   dc     08/23/25 Add missing parameter to yaml
+* 1.9   dc     11/25/25 Update doxygen comments, remove not needed code
+*       dc     02/18/26 Correct spelling errors
 *
 * </pre>
 * @addtogroup Overview
@@ -94,8 +96,7 @@ int XDfePrach_2CC3RCReconfigureTestExample()
 	/* Sequence: length 4, ID=0, Use static Schedule, length may depend
 	   on core generics (antenna interleave) */
 	XDfePrach_Init Init = { { { 0, { 0 } }, { 0, { 0 } }, { 0, { 0 } } },
-				1,
-				0 };
+				1 };
 	/* Full CC config structure */
 	XDfePrach_CCCfg CCCfg = { 0 };
 	/* Full RC config structure */
@@ -183,7 +184,6 @@ int XDfePrach_2CC3RCReconfigureTestExample()
 		}
 		/* demodulation configuration: */
 		NcoCfg[Index].UserFreq = Foffset[Index];
-		NcoCfg[Index].PhaseOffset = 0; /* 0 phase offset */
 		NcoCfg[Index].PhaseAcc = 0; /* 0 initial phase */
 		NcoCfg[Index].NcoGain = 0; /* 0dB NCO gain */
 		NcoCfg[Index].DualModCount = 0; /* 0 dual mod count init */
@@ -333,7 +333,7 @@ int XDfePrach_2CC3RCReconfigureTestExample()
 	/* Reconfiguring the third RCID, so remove it from the config */
 	XDfePrach_RemoveRCfromRCCfg(InstancePtr, &RCCfg, RCID[2]);
 
-	/* Addd RCIDs to it */
+	/* Add RCIDs to it */
 	/* Rebuild RCID[2], from "format 0" to "format 4" */
 	DdcCfg[2].DecimationRate = 4U; /* decimation by 16 changed from 24
 		for F0 */

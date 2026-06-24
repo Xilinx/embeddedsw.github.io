@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -359,8 +359,8 @@ void DpPt_pe_vs_adjustHandler(void *InstancePtr){
 				}
 
 #ifdef versal
-        GtCtrl(GT_VSWING_MASK ,(diff_swing << 8), 1);
-        GtCtrl(GT_POSTCUR_MASK,(preemp << 18), 1);
+        GtCtrl(GT_VSWING_MASK ,(diff_swing << VSWING_VAR), 1);
+        GtCtrl(GT_POSTCUR_MASK,(preemp << POSTCUR_VAR), 1);
 #else
 				//setting vswing
 				XVphy_SetTxVoltageSwing(&VPhyInst, 0, XVPHY_CHANNEL_ID_CH1,
@@ -608,7 +608,7 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, XDpTxSs_MainStreamAttributes Msa[4])
 		i2s_started = 0;
 	}
 
-	/* Mask Unsued Interrupts
+	/* Mask unused interrupts
 	 *
 	 */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
@@ -865,7 +865,7 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 			return (XST_FAILURE);
 		}
 	}
-	/* Mask unsused interrupts
+	/* Mask unused interrupts
 	 *
 	 */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
@@ -1002,7 +1002,7 @@ void sendAudioInfoFrame(XDp_TxAudioInfoFrame *xilInfoFrame)
 	u32 temp;
 	u8 RSVD=0;
 
-	//Fixed paramaters
+	//Fixed parameters
 	u8  dp_version   = xilInfoFrame->version;
 
 	//Write #1
@@ -1327,6 +1327,9 @@ u32 config_phy(int LineRate_init_tx){
 	u8 linerate;
 	u32 dptx_sts = 0;
 
+#ifdef VERSAL_2VE_2VM
+usleep (1000);
+#endif
 #if TX_BUFFER_BYPASS
     switch(LineRate_init_tx){
             case XDP_TX_LINK_BW_SET_162GBPS:

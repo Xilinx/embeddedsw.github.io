@@ -1,20 +1,28 @@
 
 /******************************************************************************
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
 /**
  * @file xi3cpsx_intr_example.c
  *
- * Design example to use the I3C device as master in interrupt-driven mode.
+ * This file contains a reference design example demonstrating the use of the
+ * Xilinx I3C controller operating in master mode using an
+ * interrupt-driven data transfer mechanism.
  *
- * It perform read operation with repeated start by first sending register
- * address without TOC and receives data from slave.
- * This example runs on versal net evaluation board.
+ * The example performs a read transaction with a repeated START condition.
+ * The master first transmits the target slave register address without issuing
+ * a Termination On Completion (TOC), and then receives data from the slave
+ * device.
  *
- * LSM6DSO sensor interfaced on I3CPS0 of versal net evaluation board.
- * Refer data sheet of LSM6DSO sensor for slave device registers details.
+ * This application is designed to run on the Versal Net evaluation board.
+ *
+ * An LSM6DSO sensor is connected to the I3CPS0 controller on the
+ * Versal Net board and operates as the I3C slave device.
+ *
+ * Refer to the LSM6DSO sensor datasheet for details on the slave device
+ * register map and supported register addresses.
  *
  * <pre> MODIFICATION HISTORY:
  *
@@ -24,6 +32,7 @@
  * 1.3  sd   11/17/23 Added support for system device-tree flow
  * 1.4  gm   10/06/24 Added return statements and remove resetfifos
  * 1.6  an   07/08/25 Fixed GCC warnings
+ * 1.7  vlt  12/18/25 Update Doxygen comments to include SDT flow details.
  *
  * </pre>
  *
@@ -120,12 +129,17 @@ int main(void)
 *
 * This function uses interrupt driver mode of the I3C.
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	DeviceId is the Device ID of the I3cPsx Device and is the
 *		XPAR_<I3C_instance>_DEVICE_ID value from xparameters.h
+* @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
-* @note
+* @note	       In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 *******************************************************************************/
 #ifndef SDT

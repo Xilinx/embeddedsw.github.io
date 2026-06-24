@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,6 +25,8 @@
 *                     workflow decouplig flow.
 *					  Interrupt wrapper support has also been added.
 * 2.5   dp   09/08/23 Update example to stop wdt at end of the test
+* 2.7   vlt  12/29/25 Update Doxygen comments to include SDT flow details.
+* 2.7   ht   02/10/26 Fix unused parameter warnings.
 * </pre>
 *
 ******************************************************************************/
@@ -134,11 +136,15 @@ int main(void)
 * After one expiration of the timeout interval, an interrupt is generated and
 * the Event flag bit is set in the watchdog interrupt status register.
 *
+* @param	WdtInstancePtr is a pointer to the instance of XScuWdt driver.
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	IntcInstancePtr is a pointer to the instance of the XScuGic
 *		driver.
-* @param	WdtInstancePtr is a pointer to the instance of XScuWdt driver.
 * @param	WdtDeviceId is the Device ID of the XScuWdt device.
 * @param	WdtIntrId is the Interrupt Id of the XScuWdt device.
+* @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
@@ -429,6 +435,7 @@ static int WdtSetupIntrSystem(XScuGic *IntcInstancePtr,
 ******************************************************************************/
 static void WdtIntrHandler(void *CallBackRef)
 {
+	(void)CallBackRef;
 	/*
 	 * WDT timed out and interrupt occurred, let main test loop know.
 	 */

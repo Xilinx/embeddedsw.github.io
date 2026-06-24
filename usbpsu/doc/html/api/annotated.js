@@ -1,6 +1,6 @@
 var annotated =
 [
-    [ "__attribute__", "struct____attribute____.html", "struct____attribute____" ],
+    [ "SetupPacket", "struct_setup_packet.html", "struct_setup_packet" ],
     [ "Usb_DevData", "struct_usb___dev_data.html", "struct_usb___dev_data" ],
     [ "XUsbPsu", "struct_x_usb_psu.html", "struct_x_usb_psu" ],
     [ "XUsbPsu_Config", "struct_x_usb_psu___config.html", "struct_x_usb_psu___config" ],

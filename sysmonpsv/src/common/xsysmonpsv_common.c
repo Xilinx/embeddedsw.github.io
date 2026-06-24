@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,7 +11,7 @@
 * @addtogroup sysmonpsv_api SYSMONPSV APIs
 *
 * Functions in the xsysmonpsv_common.c file are basic driver functions which will be used in the
-* in servies or directly by the user.
+* in services or directly by the user.
 *
 *
 * <pre>
@@ -21,8 +21,13 @@
 * ----- -----  -------- -----------------------------------------------
 * 3.0   cog    03/25/21 Driver Restructure
 * 4.0   se     10/04/22 Update return value definitions
-*		se	   10/27/22 Secure and Non-Secure mode integration
+*       se     10/27/22 Secure and Non-Secure mode integration
 * 5.1   se     03/03/25 Compiler warnings fixed
+* 5.3   dc     02/18/26 Correct spelling errors
+*       se     03/12/26 Enhancements: NULL checks, range validation,
+*                       standardize return values to XST_FAILURE
+*       se     03/25/26 Fix Coverity/MISRA-C violations: U suffix,
+*                       (void) cast, sign conversion, parentheses
 *
 * </pre>
 *
@@ -74,7 +79,7 @@ int XSysMonPsv_TempOffset(XSysMonPsv_TempType Type)
 * @param	Dir Falling or rising direction
 * @param	Offset Upper or lower threshold offset.
 *
-* @return	- -XST_FAILURE when fails
+* @return	- XST_FAILURE when fails
 *		    - XST_SUCCESS when correct params are used.
 *
 ***************************************************************************/
@@ -94,7 +99,7 @@ int XSysMonPsv_TempThreshOffset(XSysMonPsv_TempEvt Event,
 				  XSYSMONPSV_OT_TEMP_TH_FALLING;
 		break;
 	default:
-		RetValue = -XST_FAILURE;
+		RetValue = XST_FAILURE;
 		break;
 	}
 	return RetValue;
@@ -172,7 +177,7 @@ u32 XSysMonPsv_SupplyThreshOffset(XSysMonPsv *InstancePtr, int Supply,
 ***************************************************************************/
 void XSysMonPsv_Q8P7ToCelsius(u32 RawData, int *Val, int *Val2)
 {
-	*Val = (RawData & 0x8000) ? -(twoscomp(RawData)) : RawData;
+	*Val = (RawData & 0x8000U) ? -(int)twoscomp(RawData) : (int)RawData;
 	*Val2 = 128;
 }
 
@@ -182,7 +187,7 @@ void XSysMonPsv_Q8P7ToCelsius(u32 RawData, int *Val, int *Val2)
 * Converts Celsius To Q8P7.
 *
 * @param	RawData Raw Temperature Data.
-* @param	Val Numerator for covnersion to deg C.
+* @param	Val Numerator for conversion to deg C.
 * @param	Val2 Denominator for conversion to deg C in Q8.7 format.
 *
 * @return	None.
@@ -190,7 +195,7 @@ void XSysMonPsv_Q8P7ToCelsius(u32 RawData, int *Val, int *Val2)
 ***************************************************************************/
 void XSysMonPsv_CelsiusToQ8P7(u32 *RawData, int Val, int Val2)
 {
-	int Scale = 1 << 7;
+	int Scale = (1 << 7);
 
 	Val2 = Val2 / 1000;
 	*RawData = (u32)((Val * Scale) + ((Val2 * Scale) / 1000));
@@ -221,7 +226,7 @@ void XSysMonPsv_SupplyRawToProcessed(int RawData, int *Val, int *Val2)
 	*Val2 = 1 << (16 - Exponent);
 	*Val = Mantissa;
 	if (Format && (Mantissa >> XSYSMONPSV_SUPPLY_MANTISSA_SIGN)) {
-		*Val = (~(Mantissa)&XSYSMONPSV_SUPPLY_MANTISSA_MASK) * -1;
+		*Val = -(int)(~(Mantissa) & XSYSMONPSV_SUPPLY_MANTISSA_MASK);
 	}
 }
 
@@ -266,7 +271,7 @@ void XSysMonPsv_SupplyProcessedToRaw(int Val, int Val2, u32 RegVal,
 		}
 	}
 
-	*RawData = Tmp & 0xFFFF;
+	*RawData = Tmp & 0xFFFFU;
 }
 
 /*****************************************************************************/
@@ -319,9 +324,8 @@ u32 XSysMonPsv_IsAlarmPresent(XSysMonPsv *InstancePtr, XSysMonPsv_Supply Supply)
 * @param        InstancePtr Pointer to the driver instance.
 * @param        Supply Enum which indicates the desired supply.
 *
-* @return       True if new data available.
-*               False if new data isn't available.
-*               Invalid if the Supply hasn't been configured.
+* @return       XST_SUCCESS if the alarm was cleared.
+*               XSYSMONPSV_INVALID if the Supply has not been configured.
 *
 ******************************************************************************/
 u32 XSysMonPsv_ClearAlarm(XSysMonPsv *InstancePtr, XSysMonPsv_Supply Supply)
@@ -377,7 +381,7 @@ int XSysMonPsv_InterruptEnable(XSysMonPsv *InstancePtr, u32 Mask, u8 IntrNum)
 	u32 Offset;
 
 	if (InstancePtr == NULL) {
-		return -XST_FAILURE;
+		return XST_FAILURE;
 	}
 
 	/* Calculate the offset of the IER register to be written to */
@@ -411,7 +415,7 @@ int XSysMonPsv_InterruptDisable(XSysMonPsv *InstancePtr, u32 Mask, u8 IntrNum)
 	u32 Offset;
 
 	if (InstancePtr == NULL) {
-		return -XST_FAILURE;
+		return XST_FAILURE;
 	}
 
 	/* Calculate the offset of the IDR register to be written to */
@@ -435,14 +439,14 @@ int XSysMonPsv_InterruptDisable(XSysMonPsv *InstancePtr, u32 Mask, u8 IntrNum)
 * @param	IntrStatus 32-bit value representing the contents of the Interrupt Status
 *		Register (ISR).
 *
-* @return	- -XST_FAILURE when NULL Instance is passed
+* @return	- XST_FAILURE when NULL Instance is passed
 *           - XST_SUCCESS if succeeds
 *
 *****************************************************************************/
 int XSysMonPsv_InterruptGetStatus(XSysMonPsv *InstancePtr, u32 *IntrStatus)
 {
 	if (InstancePtr == NULL) {
-		return -XST_FAILURE;
+		return XST_FAILURE;
 	}
 	/* Return the value read from the AMS ISR. */
 	XSysMonPsv_ReadReg32(InstancePtr, XSYSMONPSV_ISR_OFFSET, IntrStatus);

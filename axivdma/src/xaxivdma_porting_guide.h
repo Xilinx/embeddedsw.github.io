@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -81,7 +81,7 @@
 *
 * Note that API includes data structures and functions. For API functions that
 * use VDMA data structures or their pointers as arguments, the structures need
-* to use the new perfix as well.
+* to use the new prefix as well.
 *
 * The following are the data structures that have prefix changed:
 *

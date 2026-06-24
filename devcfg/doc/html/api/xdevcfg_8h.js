@@ -24,7 +24,7 @@ var xdevcfg_8h =
     [ "XDcfg_IntrGetEnabled", "xdevcfg_8h.html#ga879fec56ba0f64d3b2128f11e2b022f0", null ],
     [ "XDcfg_IntrGetStatus", "xdevcfg_8h.html#ga9ed5382e8c80a2277816a4db98a1ec6f", null ],
     [ "XDcfg_IsDmaBusy", "xdevcfg_8h.html#gab3412c2881ffaa15fd3615770a4225a7", null ],
-    [ "XDcfg_LookupConfig", "xdevcfg_8h.html#gab7512afadad93e25630048943fd72d41", null ],
+    [ "XDcfg_LookupConfig", "xdevcfg_8h.html#ga6f1dabd32e61821d2c089f77aa80f7f4", null ],
     [ "XDcfg_SelfTest", "xdevcfg_8h.html#ga2c24756b9d6f8e81b620d27a86379e15", null ],
     [ "XDcfg_SetConfigRegister", "xdevcfg_8h.html#ga89e1eef15fcfe06cd0e8d8dd7e804ad1", null ],
     [ "XDcfg_SetControlRegister", "xdevcfg_8h.html#gacc8c10b5cc877595c1ade09e1a589296", null ],

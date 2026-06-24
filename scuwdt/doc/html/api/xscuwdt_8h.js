@@ -11,7 +11,7 @@ var xscuwdt_8h =
     [ "XScuWdt_SetTimerMode", "xscuwdt_8h.html#ga816969d609034dc12371ca7bc8444bf3", null ],
     [ "XScuWdt_SetWdMode", "xscuwdt_8h.html#ga8813e9f9df643de43359defc1a7a48bc", null ],
     [ "XScuWdt_CfgInitialize", "xscuwdt_8h.html#ga1fee56fc3ec3c8b003e6ae0528703b1c", null ],
-    [ "XScuWdt_LookupConfig", "xscuwdt_8h.html#ga899e316b67b7eab6cec1f5b99df25e4d", null ],
+    [ "XScuWdt_LookupConfig", "xscuwdt_8h.html#ga24bed0bb643b657bbd3f26ab2921246e", null ],
     [ "XScuWdt_SelfTest", "xscuwdt_8h.html#ga2d6d32ff992704d9b78f93ab00ebdf78", null ],
     [ "XScuWdt_Start", "xscuwdt_8h.html#ga87a7a8230fc5fa80f64cb66210e596b8", null ],
     [ "XScuWdt_Stop", "xscuwdt_8h.html#gae1493503cc6e52afa681f23329e9abef", null ],

@@ -1,5 +1,5 @@
 var xtmrctr__fast__intr__example_8c =
 [
-    [ "TimerCounterHandler", "xtmrctr__fast__intr__example_8c.html#afa0cce7d285718e72442102d4bf56e5a", null ],
-    [ "TmrCtrFastIntrExample", "xtmrctr__fast__intr__example_8c.html#a158edad62d84952adab7646dbdd52a36", null ]
+    [ "main", "xtmrctr__fast__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
+    [ "TmrCtrFastIntrExample", "xtmrctr__fast__intr__example_8c.html#a54a8e8c734acc65446415bf6aab2d995", null ]
 ];

@@ -101,7 +101,7 @@ var xscugic__hw_8h =
     [ "XSCUGIC_SPI_TARGET_OFFSET", "xscugic__hw_8h.html#ga0ff09d2f6f8b9b89f847f756ee0ed408", null ],
     [ "XSCUGIC_SPI_TARGET_OFFSET_CALC", "xscugic__hw_8h.html#aa2cf2e3acd2e8cf537c415276efa3a97", null ],
     [ "XScuGic_WriteReg", "xscugic__hw_8h.html#a01c0f85e48858531c313ce22cbfd2dfa", null ],
-    [ "XScuGic_DeviceInitialize", "xscugic__hw_8h.html#ga2cbf5d5ac5273e00c0b16bd33ad0707f", null ],
+    [ "XScuGic_DeviceInitialize", "xscugic__hw_8h.html#ga9a39b7ce56a0c803c6c94b4ee147647e", null ],
     [ "XScuGic_DeviceInterruptHandler", "xscugic__hw_8h.html#ga96bfe161e3b4e401f76f2b35df9fab86", null ],
     [ "XScuGic_DisableIntr", "xscugic__hw_8h.html#ga0d183d23d05aac5d61cd640c5b39b275", null ],
     [ "XScuGic_EnableIntr", "xscugic__hw_8h.html#gadaa95193630e661a6a578f35a5e3ea1a", null ],

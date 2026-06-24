@@ -1,12 +1,13 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,3],
 "globals_func.html":[1,1],
@@ -25,7 +26,7 @@ var NAVTREEINDEX0 =
 "xtmr__inject_8h.html#ga6ee64c2bc63c5959641f76a24d56b58b":[2,1,2],
 "xtmr__inject_8h.html#gaa8895543796c01ea108b2fe355c13d3a":[2,1,1],
 "xtmr__inject_8h.html#gaa8c496ccf948ca1b3ed359f6f6be485c":[2,1,4],
-"xtmr__inject_8h.html#gad1f56c391e5fa2e2f57437e40b22634d":[2,1,3],
+"xtmr__inject_8h.html#gad6c9a7909d80ab972efd955cdfc9b30c":[2,1,3],
 "xtmr__inject_8h.html#gae03f2de24906f2660c4ab03a869e50cb":[2,1,6],
 "xtmr__inject__g_8c.html":[2,2],
 "xtmr__inject__g_8c.html#ga4808f00f81c65e406651a8c6a1768333":[2,2,0],
@@ -42,7 +43,7 @@ var NAVTREEINDEX0 =
 "xtmr__inject__selftest_8c.html#gae03f2de24906f2660c4ab03a869e50cb":[2,6,0],
 "xtmr__inject__selftest__example_8c.html":[2,7],
 "xtmr__inject__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,7,0],
-"xtmr__inject__selftest__example_8c.html#ab7464457a76f35b9d202bfd4792eeebb":[2,7,1],
+"xtmr__inject__selftest__example_8c.html#ac8dde83b81e536ee959b50d2f3f432e4":[2,7,1],
 "xtmr__inject__sinit_8c.html":[2,8],
-"xtmr__inject__sinit_8c.html#gad1f56c391e5fa2e2f57437e40b22634d":[2,8,0]
+"xtmr__inject__sinit_8c.html#gad6c9a7909d80ab972efd955cdfc9b30c":[2,8,0]
 };

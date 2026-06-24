@@ -27,16 +27,16 @@ var xcframe_8c =
       [ "BLOCKTYPE5", "xcframe_8c.html#a74a6d8fe2ee7821e41f3fe09b4ca0afda551c8da0b87558ad6abdcccb6340cf6f", null ],
       [ "BLOCKTYPE6", "xcframe_8c.html#a74a6d8fe2ee7821e41f3fe09b4ca0afdaf8e4adf6931905069acfce078f8d07b2", null ]
     ] ],
-    [ "XCframe_BramTrim", "xcframe_8c.html#a65d6668bf9168f51452fd8e4fbbe70da", null ],
-    [ "XCframe_CfgInitialize", "xcframe_8c.html#ab9951a1fa7e1ea6fbed8febcda865134", null ],
-    [ "XCframe_ClearCframeErr", "xcframe_8c.html#afe8587be9cc39c028b74977aab82906a", null ],
-    [ "XCframe_CramTrim", "xcframe_8c.html#a2718ef1f8cd748e9eb889297dc945a2f", null ],
-    [ "XCframe_GetLastFrameAddr", "xcframe_8c.html#ad5245d5418200c023e4a39ea591374da", null ],
-    [ "XCframe_ReadReg", "xcframe_8c.html#a91ddf5ccf6f3a8005683d2a56373145d", null ],
-    [ "XCframe_SafetyWriteReg", "xcframe_8c.html#af70a9f3c08ec391872f0a81e067d9bf4", null ],
-    [ "XCframe_SetReadParam", "xcframe_8c.html#ae27e1bdd1d64c2aadabadfdc99e47b95", null ],
-    [ "XCframe_UramTrim", "xcframe_8c.html#a15aec289f8e36b8c163da0026c16d7fd", null ],
-    [ "XCframe_VggTrim", "xcframe_8c.html#a240996c8e6b20583088fd17d40058a6e", null ],
-    [ "XCframe_WriteCmd", "xcframe_8c.html#a61d26dca381aff614de588980622e127", null ],
-    [ "XCframe_WriteReg", "xcframe_8c.html#a0fe587ad348d15faccd9fcefd765af44", null ]
+    [ "XCframe_BramTrim", "xcframe_8c.html#ga65d6668bf9168f51452fd8e4fbbe70da", null ],
+    [ "XCframe_CfgInitialize", "xcframe_8c.html#gab9951a1fa7e1ea6fbed8febcda865134", null ],
+    [ "XCframe_ClearCframeErr", "xcframe_8c.html#gafe8587be9cc39c028b74977aab82906a", null ],
+    [ "XCframe_CramTrim", "xcframe_8c.html#ga2718ef1f8cd748e9eb889297dc945a2f", null ],
+    [ "XCframe_GetLastFrameAddr", "xcframe_8c.html#gad5245d5418200c023e4a39ea591374da", null ],
+    [ "XCframe_ReadReg", "xcframe_8c.html#ga91ddf5ccf6f3a8005683d2a56373145d", null ],
+    [ "XCframe_SafetyWriteReg", "xcframe_8c.html#gaf70a9f3c08ec391872f0a81e067d9bf4", null ],
+    [ "XCframe_SetReadParam", "xcframe_8c.html#gae27e1bdd1d64c2aadabadfdc99e47b95", null ],
+    [ "XCframe_UramTrim", "xcframe_8c.html#ga15aec289f8e36b8c163da0026c16d7fd", null ],
+    [ "XCframe_VggTrim", "xcframe_8c.html#ga240996c8e6b20583088fd17d40058a6e", null ],
+    [ "XCframe_WriteCmd", "xcframe_8c.html#ga61d26dca381aff614de588980622e127", null ],
+    [ "XCframe_WriteReg", "xcframe_8c.html#ga0fe587ad348d15faccd9fcefd765af44", null ]
 ];

@@ -28,7 +28,7 @@ var xospipsv_8h =
     [ "XOspiPsv_Idle", "xospipsv_8h.html#ga70d2c317de32d39ddab3b585c9da5d69", null ],
     [ "XOspiPsv_IntrHandler", "xospipsv_8h.html#gaa415227de8c6663e478041a82887dd5b", null ],
     [ "XOspiPsv_IntrTransfer", "xospipsv_8h.html#gaaf23d7567b974cfac69ecadd2919999d", null ],
-    [ "XOspiPsv_LookupConfig", "xospipsv_8h.html#gaf44a1c9ce528880318fbfd61c256b0d3", null ],
+    [ "XOspiPsv_LookupConfig", "xospipsv_8h.html#gab96043a4ed792c49c8f839b522ac95a1", null ],
     [ "XOspiPsv_PollTransfer", "xospipsv_8h.html#ga808cc2759798221d0d4f44eef27c0629", null ],
     [ "XOspiPsv_Reset", "xospipsv_8h.html#gab43ba912b750cce29cef9d5d652e11af", null ],
     [ "XOspiPsv_SelectFlash", "xospipsv_8h.html#ga2d17525a71d9df7268fcc4269f19270c", null ],

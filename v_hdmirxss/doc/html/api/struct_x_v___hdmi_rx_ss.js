@@ -30,6 +30,8 @@ var struct_x_v___hdmi_rx_ss =
     [ "LnkStaCallback", "struct_x_v___hdmi_rx_ss.html#a53eb52bc6933b67edad6bcf0301cc67c", null ],
     [ "LnkStaRef", "struct_x_v___hdmi_rx_ss.html#afbc89b1043cefced982c32a14d511fbb", null ],
     [ "Log", "struct_x_v___hdmi_rx_ss.html#acfe6927763f451fd1648926fcfb2cc37", null ],
+    [ "PhyErrorCallback", "struct_x_v___hdmi_rx_ss.html#a2c0940393b4d1487f03a84e7fcb76d80", null ],
+    [ "PhyErrorRef", "struct_x_v___hdmi_rx_ss.html#a96c137d9d112096810458643b0ba4c62", null ],
     [ "StreamDownCallback", "struct_x_v___hdmi_rx_ss.html#a77913cb46aa7408e4c34dff859477723", null ],
     [ "StreamDownRef", "struct_x_v___hdmi_rx_ss.html#a178d7591ff45f38f06702109f980f5a1", null ],
     [ "StreamInitCallback", "struct_x_v___hdmi_rx_ss.html#a8e6fb1b63ddeab39f8268a32edb970e5", null ],

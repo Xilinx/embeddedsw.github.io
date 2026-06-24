@@ -17,6 +17,7 @@ var files =
     [ "xdptxss_dptx.c", "xdptxss__dptx_8c.html", "xdptxss__dptx_8c" ],
     [ "xdptxss_dptx.h", "xdptxss__dptx_8h.html", "xdptxss__dptx_8h" ],
     [ "xdptxss_dualsplitter.c", "xdptxss__dualsplitter_8c.html", null ],
+    [ "xdptxss_dualsplitter.h", "xdptxss__dualsplitter_8h.html", "xdptxss__dualsplitter_8h" ],
     [ "xdptxss_hdcp1x.c", "xdptxss__hdcp1x_8c.html", null ],
     [ "xdptxss_hdcp1x.h", "xdptxss__hdcp1x_8h.html", "xdptxss__hdcp1x_8h" ],
     [ "xdptxss_hdcp_example.c", "xdptxss__hdcp__example_8c.html", "xdptxss__hdcp__example_8c" ],

@@ -32,7 +32,7 @@ var xaxivdma_8h =
     [ "XAxiVdma_IntrEnable", "xaxivdma_8h.html#ga4c687431dde198458fb4e42dff22c106", null ],
     [ "XAxiVdma_IntrGetPending", "xaxivdma_8h.html#ga90501638e7f1077232443f0a60b3b40d", null ],
     [ "XAxiVdma_IsBusy", "xaxivdma_8h.html#ga0fc5b39aabb8d4f56b0dd2024ea5bff2", null ],
-    [ "XAxiVdma_LookupConfig", "xaxivdma_8h.html#ga0188e06158c255eba62f52141cff5d84", null ],
+    [ "XAxiVdma_LookupConfig", "xaxivdma_8h.html#ga731fd42d22c597c0e045970e26f22681", null ],
     [ "XAxiVdma_MaskS2MMErrIntr", "xaxivdma_8h.html#ga2650d7820ff062709d027bff2934cf58", null ],
     [ "XAxiVdma_ReadIntrHandler", "xaxivdma_8h.html#ga60ceb86226e513a16d6776a97fcfa50f", null ],
     [ "XAxiVdma_Reset", "xaxivdma_8h.html#ga8dbd2faa070ca571f049e3b61f9bdb1e", null ],

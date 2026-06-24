@@ -1,7 +1,6 @@
 var struct_x_dphy___config =
 [
     [ "BaseAddr", "struct_x_dphy___config.html#a2494e733c95a9a99495333fd0679222c", null ],
-    [ "DeviceId", "struct_x_dphy___config.html#aae49eefd487d5287d24e835c7b17a5e9", null ],
     [ "EnableTimeOutRegs", "struct_x_dphy___config.html#a58f6a8702accf8ef4f5affef6efa5565", null ],
     [ "EscClkPeriod", "struct_x_dphy___config.html#acba394f3ba96faa365d59e2d71add097", null ],
     [ "EscTimeout", "struct_x_dphy___config.html#a255e8ec1757ac017a2bb60c81a914467", null ],

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -73,6 +73,10 @@
 * 1.4  gm   10/07/24 Added functions for Enable, Resume, read response
 * 		     and set threshold for Tx, Rx and command.
 * 		     Update data type of Send and Recv byte counts.
+* 1.7  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
+*      vlt  01/27/26 Fixed codespell issues.
+*      vlt  03/15/26 Updated BaseAddress type from u32 to UINTPTR
+*                    to support 64-bit addressing.
 * </pre>
 *
 ******************************************************************************/
@@ -111,7 +115,7 @@ extern "C" {
 #define XI3CPSX_EVENT_FRAME		0x0003U  /**< Frame Errors */
 #define XI3CPSX_EVENT_IBA_NACK		0x0004U  /**< IBA NACK */
 #define XI3CPSX_EVENT_ADDRESS_NACK		0x0005U  /**< Address NACK */
-#define XI3CPSX_EVENT_TXOVR_OR_RXUNF		0x0006U  /**< Recieve Buffer Underflow or Transmit buffer Overflow */
+#define XI3CPSX_EVENT_TXOVR_OR_RXUNF		0x0006U  /**< Receive Buffer Underflow or Transmit buffer Overflow */
 #define XI3CPSX_EVENT_TRANSF_ABORT		0x0008U  /**< Transfer abort */
 #define XI3CPSX_EVENT_SLV_WR_NACK		0x0009U  /**< I2C Slave write data NACK */
 #define XI3CPSX_EVENT_PEC			0x000CU  /**< PEC */
@@ -135,6 +139,16 @@ extern "C" {
 #define XI3CPSX_DATA_LEN			0x00FFU		/**< Data length */
 #define XI3CPSX_TRANSFER_ERROR			0xF0000000U	/**< Error */
 #define XI3CPSX_TIMEOUT_COUNTER         	2000000U 	/**< Wait for 2 sec in worst case */
+
+/**
+ * Maximum number of entries in the Device Address Table (DAT) supported
+ * by the controller and tracked by the driver.
+ */
+#define XI3CPSX_MAX_DAT_ENTRIES		11U
+
+/** Compile-time array element count helper. */
+#define XI3CPSX_ARRAY_SIZE(Array)	(sizeof(Array) / sizeof((Array)[0U]))
+
 /**************************** Type Definitions *******************************/
 
 /**
@@ -157,7 +171,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;     /**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;       /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;  /**< Base address of the device */
 #ifdef SDT
@@ -172,10 +186,10 @@ typedef struct {
 } XI3cPsx_Config;
 
 typedef struct {
-	u32 TransCmd;
-	u32 TransArg;
-	void *RxBuf;
-	u8 Error;
+	u32 TransCmd;      /**< Transaction command code */
+	u32 TransArg;      /**< Argument associated with the transaction */
+	void *RxBuf;       /**< Pointer to receive buffer for incoming data */
+	u8 Error;          /**< Error status for the transaction */
 } XI3cPsx_Cmd;
 
 /**
@@ -203,7 +217,7 @@ typedef struct {
 	XI3cPsx_Config Config;	/**< Configuration structure */
 	u32 IsReady;		/**< Device is initialized and ready */
 	u32 Options;		/**< Options set in the device */
-	u32 Addr[20]; /**< Dynamic Addresses to be assigned */
+	u32 Addr[XI3CPSX_MAX_DAT_ENTRIES]; /**< Dynamic Addresses to be assigned */
 
 	XI3cPsx_Master_Caps Caps; /**< Cmd, Data fifo depths */
 	u8 *SendBufferPtr;	/**< Pointer to send buffer */
@@ -220,6 +234,8 @@ typedef struct {
 
 	XI3cPsx_IntrHandler StatusHandler;  /**< Event handler function */
 	void *CallBackRef;	/**< Callback reference for event handler */
+
+	u32 SclkHz;	/**< SCL clock frequency */
 } XI3cPsx;
 
 /************************** Variable Definitions *****************************/
@@ -277,6 +293,36 @@ extern XI3cPsx_Config XI3cPsx_ConfigTable[];	/**< Configuration table */
 /*****************************************************************************/
 /**
 * @brief
+* Compute the I3C odd-parity bit for a 7-bit dynamic address.
+*
+* Per the I3C spec and the DEV_ADDR_TABLE_LOC*n*.DEV_DYNAMIC_ADDR field,
+* bit[7] of the 8-bit encoded value must be the odd parity of bits[6:0],
+* i.e. parity = ~XOR(addr[6:0]).  The controller transmits this 8-bit value
+* verbatim during ENTDAA, so a raw address write with bit[7]=0 produces
+* wrong parity for any 7-bit address that has an even number of 1-bits
+* (e.g. 0x09, 0x0A, 0x0C, 0x0F, 0x11, 0x12, ...) and the slave NACKs the
+* address assignment, hanging the controller.
+*
+* @param	Addr is the 7-bit dynamic address (only bits[6:0] are used).
+*
+* @return	0 or 1 — the odd-parity bit to place in bit[7].
+*
+* @note		C-Style signature:
+*		u8 XI3cPsx_OddParity7(u8 Addr)
+*
+****************************************************************************/
+static inline u8 XI3cPsx_OddParity7(u8 Addr)
+{
+	Addr = (u8)((Addr & XI3CPSX_4BITS_MASK) ^ ((Addr >> 4) & XI3CPSX_4BITS_MASK));
+	Addr = (u8)((Addr & XI3CPSX_2BITS_MASK) ^ ((Addr >> 2) & XI3CPSX_2BITS_MASK));
+	Addr = (u8)((Addr & XI3CPSX_1BIT_MASK) ^ ((Addr >> 1) & XI3CPSX_1BIT_MASK));
+
+	return (u8)(!(Addr & XI3CPSX_1BIT_MASK));
+}
+
+/*****************************************************************************/
+/**
+* @brief
 * This function enables the controller
 *
 * @param	InstancePtr is a pointer to the XI3cPsx instance.
@@ -328,7 +374,7 @@ static inline void XI3cPsx_Resume(XI3cPsx *InstancePtr)
 * @param	InstancePtr is a pointer to the XI3cPsx instance.
 *
 * @return
-*		- Response code on sucess.
+*		- Response code on success.
 *		- XST_TIMEOUT on timeout.
 *
 * @note
@@ -429,7 +475,7 @@ static inline void XI3cPsx_SetTxStartThreshold(XI3cPsx *InstancePtr, u32 Val)
 #ifndef SDT
 XI3cPsx_Config *XI3cPsx_LookupConfig(u16 DeviceId);
 #else
-XI3cPsx_Config *XI3cPsx_LookupConfig(u32 BaseAddress);
+XI3cPsx_Config *XI3cPsx_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*
@@ -465,13 +511,13 @@ void XI3cPsx_SetStatusHandler(XI3cPsx *InstancePtr, void *CallBackRef,
  * Functions for device as master, in XI3cPsx_master.c
  */
 s32 XI3cPsx_MasterSend(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount,
-		       XI3cPsx_Cmd Cmd);
+		       XI3cPsx_Cmd Cmds);
 s32 XI3cPsx_MasterRecv(XI3cPsx *InstancePtr, u8 *MsgPtr,
 		       s32 ByteCount, XI3cPsx_Cmd *Cmds);
 s32 XI3cPsx_MasterSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount,
-			     XI3cPsx_Cmd Cmd);
+			     XI3cPsx_Cmd Cmds);
 s32 XI3cPsx_MasterRecvPolled(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount,
-			     XI3cPsx_Cmd *Cmd);
+			     XI3cPsx_Cmd *Cmds);
 void XI3cPsx_MasterInterruptHandler(XI3cPsx *InstancePtr);
 
 /*
@@ -491,15 +537,11 @@ void XI3cPsx_SlaveInterruptHandler(XI3cPsx *InstancePtr);
 s32 XI3cPsx_SelfTest(XI3cPsx *InstancePtr);
 
 /*
- * Functions for setting and getting data rate, in XI3cPsx_options.c
+ * Functions to get and set I3C Scl clock frequency
  */
-s32 XI3cPsx_SetOptions(XI3cPsx *InstancePtr, u32 Options);
-s32 XI3cPsx_ClearOptions(XI3cPsx *InstancePtr, u32 Options);
-u32 XI3cPsx_GetOptions(XI3cPsx *InstancePtr);
-
 s32 XI3cPsx_SetSClk(XI3cPsx *InstancePtr);
-u32 XI3cPsx_GetSClk(XI3cPsx *InstancePtr);
-
+s32 XI3cPsx_SetSClkRate(XI3cPsx *InstancePtr, u32 SclkHz);
+u32 XI3cPsx_GetSClk(const XI3cPsx *InstancePtr);
 
 #ifdef __cplusplus
 }

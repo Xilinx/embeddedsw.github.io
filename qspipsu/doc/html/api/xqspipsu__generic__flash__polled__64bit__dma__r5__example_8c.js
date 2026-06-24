@@ -12,5 +12,5 @@ var xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c =
     [ "FlashWrite", "xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#a333c8e44e9af52811dee98f2cfcacf53", null ],
     [ "GetRealAddr", "xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#af45c38b76bbabbaf848a33cdc889ebfb", null ],
     [ "main", "xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
-    [ "QspiPsuPolledFlashExample", "xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#ac7a0e7a44578f580f46491eb6f6ce726", null ]
+    [ "QspiPsuPolledFlashExample", "xqspipsu__generic__flash__polled__64bit__dma__r5__example_8c.html#a414f5ebcabb6461fc494d784f711f306", null ]
 ];

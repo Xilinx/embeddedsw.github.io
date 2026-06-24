@@ -4,7 +4,6 @@ var struct_x_i_o_module___config =
     [ "BaseAddress", "struct_x_i_o_module___config.html#a96b1120954dbe1fdae2216fa85dac9a8", null ],
     [ "BaseVector", "struct_x_i_o_module___config.html#ae3d8ffe27a2dca77ef6ac33511f0c109", null ],
     [ "BaudRate", "struct_x_i_o_module___config.html#a712c14652d2ff15fe02b91085dc302ad", null ],
-    [ "DeviceId", "struct_x_i_o_module___config.html#a810c8e527dc561b0591c40ee8da5e8d5", null ],
     [ "FastIntr", "struct_x_i_o_module___config.html#aeca1391618560858c7824ad421da3ff7", null ],
     [ "GpoInit", "struct_x_i_o_module___config.html#a3facc890f389449037d148efbdd8e989", null ],
     [ "HandlerTable", "struct_x_i_o_module___config.html#afcb02fbe1f9b90712964890a1429373d", null ],

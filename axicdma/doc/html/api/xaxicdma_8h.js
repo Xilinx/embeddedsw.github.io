@@ -26,7 +26,7 @@ var xaxicdma_8h =
     [ "XAxiCdma_IntrGetEnabled", "xaxicdma_8h.html#ga1a269e884ce6e3552313521dea8032b6", null ],
     [ "XAxiCdma_IntrHandler", "xaxicdma_8h.html#ga8acd5bf5f5f072c6e425a8cc1b589498", null ],
     [ "XAxiCdma_IsBusy", "xaxicdma_8h.html#gaee6e140ed15cd9b7e49145e01220115a", null ],
-    [ "XAxiCdma_LookupConfig", "xaxicdma_8h.html#ga3ecc6331ed89e613e7f1fb53f45a4cb0", null ],
+    [ "XAxiCdma_LookupConfig", "xaxicdma_8h.html#ga856f02999291c9c30d44e2c63822c6e8", null ],
     [ "XAxiCdma_Reset", "xaxicdma_8h.html#gaaf97cc8317af0bf1678973925beff0c5", null ],
     [ "XAxiCdma_ResetIsDone", "xaxicdma_8h.html#ga2575375744593bd55425365dde7744e5", null ],
     [ "XAxiCdma_SelectKeyHole", "xaxicdma_8h.html#ga815f36efce97dba797f67f9acbbb761d", null ],

@@ -16,6 +16,7 @@ var xdptxss_8c =
     [ "XDpTxSs_IsMstCapable", "xdptxss_8c.html#ga00e2cce4e9b8511ed14e9f9a30790175", null ],
     [ "XDpTxSs_OverrideSyncPolarity", "xdptxss_8c.html#gac4d355f49181b25350d705601844836e", null ],
     [ "XDpTxSs_Reset", "xdptxss_8c.html#ga2d3af2f5793e806f2e63a39d1055568c", null ],
+    [ "XDpTxSs_SendAudioInfoFrame", "xdptxss_8c.html#ga67dc4e76afb21f9bbe3d7b77f6574360", null ],
     [ "XDpTxSs_SetBpc", "xdptxss_8c.html#ga8edde5017977263b22afd3abb4ad6a10", null ],
     [ "XDpTxSs_SetHasRedriverInPath", "xdptxss_8c.html#ga1e195acb70afeb93d39f9e487e137356", null ],
     [ "XDpTxSs_SetLaneCount", "xdptxss_8c.html#ga47d0bbf83c92e4f29846002480bf57b0", null ],

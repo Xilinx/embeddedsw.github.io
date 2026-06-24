@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -26,6 +26,7 @@
 #include "xv_hdmitxss1.h"
 #include "xv_hdmitxss1_coreinit.h"
 #include "xvidc_edid_ext.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions *****************************/
 /* Pixel definition in 8 bit resolution in YUV color space*/
@@ -69,11 +70,7 @@ typedef struct
 }XV_HdmiTxSs1_SubCores;
 
 /**************************** Local Global ***********************************/
-#ifndef SDT
 XV_HdmiTxSs1_SubCores XV_HdmiTxSs1_SubCoreRepo[XPAR_XV_HDMITXSS1_NUM_INSTANCES];
-#else
-XV_HdmiTxSs1_SubCores XV_HdmiTxSs1_SubCoreRepo[];
-#endif
                 /**< Define Driver instance of all sub-core
                                     included in the design */
 
@@ -98,12 +95,14 @@ static void XV_HdmiTxSs1_VsCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_StreamUpCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_StreamDownCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_ErrorCallback(void *CallbackRef);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 static void XV_HdmiTxSs1_FrlLtsLCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLts1Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLts2Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLts3Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLts4Callback(void *CallbackRef);
 static void XV_HdmiTxSs1_FrlLtsPCallback(void *CallbackRef);
+#endif
 static void XV_HdmiTxSs1_CedUpdateCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_DynHdrMtwCallback(void *CallbackRef);
 static void XV_HdmiTxSs1_DscDecodeFailCallback(void *CallbackRef);
@@ -143,6 +142,7 @@ static void XV_HdmiTxSs1_ConfigBridgeMode(XV_HdmiTxSs1 *InstancePtr);
 }
 /************************** Function Definition ******************************/
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 /*****************************************************************************/
 /**
  * This function sets the core into HDMI mode
@@ -160,6 +160,7 @@ void XV_HdmiTxSS1_SetHdmiFrlMode(XV_HdmiTxSs1 *InstancePtr)
     }
 #endif
 }
+#endif
 
 /*****************************************************************************/
 /**
@@ -318,6 +319,7 @@ static int XV_HdmiTxSs1_RegisterSubsysCallbacks(XV_HdmiTxSs1 *InstancePtr)
 						  (void *)XV_HdmiTxSs1_StreamDownCallback,
 						  (void *)InstancePtr);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
     XV_HdmiTx1_SetCallback(HdmiTxSs1Ptr->HdmiTx1Ptr,
     					  XV_HDMITX1_HANDLER_FRL_CONFIG,
     					  (void *)XV_HdmiTxSs1_FrlConfigCallback,
@@ -338,11 +340,13 @@ static int XV_HdmiTxSs1_RegisterSubsysCallbacks(XV_HdmiTxSs1 *InstancePtr)
     					  (void *)XV_HdmiTxSs1_FrlStopCallback,
     					  (void *)InstancePtr);
 
+#endif
     XV_HdmiTx1_SetCallback(HdmiTxSs1Ptr->HdmiTx1Ptr,
     					  XV_HDMITX1_HANDLER_TMDS_CONFIG,
     					  (void *)XV_HdmiTxSs1_TmdsConfigCallback,
     					  (void *)InstancePtr);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
     XV_HdmiTx1_SetCallback(HdmiTxSs1Ptr->HdmiTx1Ptr,
     					  XV_HDMITX1_HANDLER_FRL_LTSL,
     					  (void *)XV_HdmiTxSs1_FrlLtsLCallback,
@@ -373,6 +377,7 @@ static int XV_HdmiTxSs1_RegisterSubsysCallbacks(XV_HdmiTxSs1 *InstancePtr)
     					  (void *)XV_HdmiTxSs1_FrlLtsPCallback,
     					  (void *)InstancePtr);
 
+#endif
     XV_HdmiTx1_SetCallback(HdmiTxSs1Ptr->HdmiTx1Ptr,
     					  XV_HDMITX1_HANDLER_CED_UPDATE,
     					  (void *)XV_HdmiTxSs1_CedUpdateCallback,
@@ -895,7 +900,8 @@ static int XV_HdmiTxSs1_VtcSetup(XV_HdmiTxSs1 *HdmiTxSs1Ptr)
   VideoTiming.Interlaced = HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.IsInterlaced;
 
     /* For YUV420 the line width is double there for double the blanking */
-    if (HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420) {
+    if ( (HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420) &&
+	      (!HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.IsDSCompressed)) {
     	/* If the parameters below are not divisible by the current PPC setting,
     	 * log an error as VTC does not support such video timing
     	 */
@@ -938,7 +944,8 @@ static int XV_HdmiTxSs1_VtcSetup(XV_HdmiTxSs1 *HdmiTxSs1Ptr)
         VideoTiming.HSyncWidth;
 
     /* For YUV420 the line width is double there for double the blanking */
-    if (HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420) {
+    if ( (HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420)  &&
+        (!HdmiTxSs1Ptr->HdmiTx1Ptr->Stream.Video.IsDSCompressed)) {
         Vtc_Hblank *= 2;
     }
 
@@ -1566,6 +1573,7 @@ int XV_HdmiTxSs1_SetCallback(XV_HdmiTxSs1 *InstancePtr,
             Status = (XST_SUCCESS);
             break;
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 		/* FRL Config*/
 		case (XV_HDMITXSS1_HANDLER_FRL_CONFIG):
 			InstancePtr->FrlConfigCallback = (XV_HdmiTxSs1_Callback)CallbackFunc;
@@ -1594,6 +1602,7 @@ int XV_HdmiTxSs1_SetCallback(XV_HdmiTxSs1 *InstancePtr,
 			Status = (XST_SUCCESS);
 			break;
 
+#endif
 		/* TMDS Config*/
 		case (XV_HDMITXSS1_HANDLER_TMDS_CONFIG):
 			InstancePtr->TmdsConfigCallback = (XV_HdmiTxSs1_Callback)CallbackFunc;
@@ -1849,6 +1858,8 @@ int XV_HdmiTxSs1_ReadEdid(XV_HdmiTxSs1 *InstancePtr, u8 *Buffer, u32 BufferSize)
 *
 * @param   InstancePtr is a pointer to the HDMI TX Subsystem instance.
 * @param   EdidCtrlParam is a pointer to the EDID control parameter structure.
+* @param   BufferPtr is a pointer to the buffer to store the EDID data.
+* @param   BufferSize is the size of the buffer in bytes.
 *
 * @return  XST_SUCCESS if EDID is read successfully, otherwise XST_FAILURE.
 *
@@ -2675,9 +2686,11 @@ u32 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 			   XVidC_3DInfo *Info3D,
 			   u64 *TmdsClock)
 {
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 	u32 PixelRate = 0;
 	u64 LnkClock;
 	u64 VidClock;
+#endif
 	u8 Error = 0;
 	u32 Status;
 
@@ -2749,6 +2762,7 @@ u32 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 #endif
 
 	/* Calculate Link and Video Clocks */
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
     if (InstancePtr->HdmiTx1Ptr->Stream.IsFrl == TRUE)  {
 
 		if (ColorFormat == XVIDC_CSF_YCRCB_422) {
@@ -2775,6 +2789,7 @@ u32 XV_HdmiTxSs1_SetStream(XV_HdmiTxSs1 *InstancePtr,
 				(u32)LnkClock, (u32)VidClock);
 	}
 
+#endif
 
 	if (*TmdsClock == 0) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,
@@ -3041,13 +3056,17 @@ void XV_HdmiTxSs1_ReportTiming(XV_HdmiTxSs1 *InstancePtr)
         xil_printf("HDMI TX Mode - DVI");
       } else {
         xil_printf("HDMI TX Mode - HDMI ");
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
         if (InstancePtr->HdmiTx1Ptr->Stream.IsFrl == FALSE) {
+#endif
         	xil_printf("TMDS");
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
         } else {
         	xil_printf("FRL (%d lanes @ %d Gbps)",
         			InstancePtr->HdmiTx1Ptr->Stream.Frl.Lanes,
 				InstancePtr->HdmiTx1Ptr->Stream.Frl.LineRate);
         }
+#endif
       }
 
       xil_printf("\r\n");
@@ -3414,7 +3433,11 @@ static void XV_HdmiTxSs1_ConfigBridgeMode(XV_HdmiTxSs1 *InstancePtr) {
          *********************************************************/
          XV_HdmiTxSs1_BridgePixelRepeat(InstancePtr, FALSE);
          AviInfoFramePtr->PixelRepetition = XHDMIC_PIXEL_REPETITION_FACTOR_1;
-         XV_HdmiTxSs1_BridgeYuv420(InstancePtr, TRUE);
+         if (HdmiTxSs1VidStreamPtr->IsDSCompressed) {
+            XV_HdmiTxSs1_BridgeYuv420(InstancePtr, FALSE);
+         } else {
+            XV_HdmiTxSs1_BridgeYuv420(InstancePtr, TRUE);
+         }
     }
     else {
         if ((AviInfoFramePtr->PixelRepetition ==
@@ -3894,6 +3917,7 @@ void XV_HdmiTxSs1_SetCustomVrrIf(XV_HdmiTxSs1 *InstancePtr,
 	}
 }
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 /*****************************************************************************/
 /**
 * This function will Stop the FRL stream
@@ -4016,6 +4040,7 @@ void XV_HdmiTxSS1_StartFRLStream(XV_HdmiTxSs1 *InstancePtr)
 
 	}
 }
+#endif /* XPAR_XV_HDMI_TX_FRL_ENABLE */
 
 /*****************************************************************************/
 /**
@@ -4151,6 +4176,7 @@ u32 XV_HdmiTxSs1_DynHdr_GetErr(XV_HdmiTxSs1 *InstancePtr)
 	return XV_HdmiTx1_DynHdr_GetReadStatus(InstancePtr);
 }
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 /*****************************************************************************/
 /**
  * This function is called when the HDMI TX Subsystem enters the LTSL state
@@ -4276,6 +4302,7 @@ static void XV_HdmiTxSs1_FrlLtsPCallback(void *CallbackRef)
 			HdmiTxSs1Ptr->HdmiTx1Ptr->DBMessage);
 #endif
 }
+#endif /* XPAR_XV_HDMI_TX_FRL_ENABLE */
 
 /*****************************************************************************/
 /**

@@ -1,8 +1,9 @@
 /******************************************************************************
 * Copyright (C) 2021 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
 
 /*****************************************************************************/
 /**
@@ -16,7 +17,7 @@
 * boundary between the static logic and a Reconfigurable Partition during
 * Partial Reconfiguration.
 *
-* The Xilinx DFX AXI Shutdonw manager supports below features
+* The Xilinx DFX AXI Shutdown manager supports below features
 * Multiple Options for Status and Control:
 * The DFX AXI Shutdown Manager core can be controlled and queried using
 * single signals or an AXI4-Lite interface.
@@ -26,7 +27,7 @@
 *
 * <b> Initialization and Configuration </b>
 *
-*    - XDfxasm_LookupConfig(DeviceId) - Use the device identifier to find the
+*    - XDfxasm_LookupConfig(BaseAddress) - Use the device BaseAddress to find the
 *      static configuration structure defined in xdfxasm_g.c. This is setup by
 *      the tools. For some operating systems the config structure will be
 *      initialized by the software and this call is not needed.
@@ -60,6 +61,9 @@
 * ----- -----  -----------   ---------------------------------------------
 * 1.0   dp     07/14/20      First release
 * 1.2   Nava   06/22/23      Added support for system device-tree flow.
+* 1.3   bdk    12/08/25	     Updated comments to support SDT flow for Doxygen
+*                            documentation.
+* 1.3   Arvd   01/31/26      Fixed codespell errors.
 * </pre>
 *
 ******************************************************************************/

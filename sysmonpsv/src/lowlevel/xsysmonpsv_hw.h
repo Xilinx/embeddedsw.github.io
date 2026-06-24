@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,10 +25,13 @@
 * 2.0   aad    10/12/20 MISRAC Violations
 * 2.1   aad    02/24/21 Added additional macro to support production silicon.
 * 2.3   aad    07/26/21 Added doxygen comments for Macros
-*       aad    07/26/21 Removed unsed Macros
+*       aad    07/26/21 Removed unused Macros
 * 3.0   cog    03/25/21 Driver Restructure
 * 5.0   se     08/01/24 Added new APIs to enable, set and get averaging for
 *                       voltage supplies and temperature satellites.
+* 5.3   dc     02/18/26 Correct spelling errors
+*       se     03/25/26 Fix Coverity/MISRA-C violations: U suffix,
+*                       (void) cast, sign conversion, parentheses
 *
 * </pre>
 *
@@ -97,7 +100,7 @@ extern "C" {
 /**< PCSR Lock State Mask */
 /*@}*/
 
-#define XSYSMONPSV_INTR_MASK 0xFFFFFFFF /**< All interrupt Mask */
+#define XSYSMONPSV_INTR_MASK 0xFFFFFFFFU /**< All interrupt Mask */
 
 /**
  * @name Register: XSYSMONPSV_ISR
@@ -629,17 +632,19 @@ extern "C" {
 /*@}*/
 
 /**
- * @name Register: XSYSMONPSV_DEVICE_TEMP_MIN
+ * @name Register: XSYSMONPSV_DEVICE_TEMP_MAX
  * @{
  */
-#define XSYSMONPSV_DEVICE_TEMP_MAX_MAX 0x00001F90
+/** Device Max Temperature Register Offset */
+#define XSYSMONPSV_DEVICE_TEMP_MAX_MAX 0x00001F90U
 /*@}*/
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_MIN
  * @{
  */
-#define XSYSMONPSV_DEVICE_TEMP_MIN_MIN 0x00001F8C
+/** Device Min Temperature Register Offset */
+#define XSYSMONPSV_DEVICE_TEMP_MIN_MIN 0x00001F8CU
 /*@}*/
 
 /**
@@ -1003,16 +1008,16 @@ extern "C" {
 	0 /**< Lower limit unsigned
                                                   saturated val */
 #define XSYSMONPSV_BIPOLAR_UP_SAT                                              \
-	0x7FFF /**< Upper limit bipolar
+	0x7FFFU /**< Upper limit bipolar
                                                   saturated val */
 #define XSYSMONPSV_BIPOLAR_LOW_SAT                                             \
-	0x8000 /**< Lower limit bipolar
+	0x8000U /**< Lower limit bipolar
                                                   saturated val */
 #define XSYSMONPSV_UNIPOLAR_UP_SAT                                             \
-	0xFFFF /**< Upper limit unipolar
+	0xFFFFU /**< Upper limit unipolar
                                                   saturated val */
 #define XSYSMONPSV_UNIPOLAR_LOW_SAT                                            \
-	0x0000 /**< Lower limit unipolar
+	0x0000U /**< Lower limit unipolar
                                                   saturated val */
 #define XSYSMONPSV_ENABLE 1U /**< Enable */
 #define XSYSMONPSV_DISABLE 0U /**< Disable */

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -76,7 +76,7 @@ s32 XCsuDma_SelfTest(XCsuDma *InstancePtr)
 	Data = XCsuDma_ReadReg(InstancePtr->Config.BaseAddress,
 					(u32)(XCSUDMA_CTRL_OFFSET));
 
-	/* Changing Endianess of Source channel */
+	/* Changing Endianness of Source channel */
 
 	XCsuDma_WriteReg(InstancePtr->Config.BaseAddress,
 			(u32)(XCSUDMA_CTRL_OFFSET),

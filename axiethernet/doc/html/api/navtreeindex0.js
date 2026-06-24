@@ -1,6 +1,7 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#IMPORTANT":[3,9,1],
 "example.html#INCLUDING":[3,9,0],
@@ -15,8 +16,8 @@ var NAVTREEINDEX0 =
 "example.html#ex8":[3,7],
 "example.html#ex9":[3,8],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals.html":[1,0,0],
 "globals_0x6d.html":[1,0,1],
@@ -27,8 +28,8 @@ var NAVTREEINDEX0 =
 "globals_defs.html":[1,3,0],
 "globals_defs_0x70.html":[1,3,1],
 "globals_defs_0x78.html":[1,3,2],
-"globals_func.html":[1,1],
 "globals_func.html":[1,1,0],
+"globals_func.html":[1,1],
 "globals_func_0x6d.html":[1,1,1],
 "globals_func_0x70.html":[1,1,2],
 "globals_func_0x73.html":[1,1,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "xavb__ptp__bmca_8c.html#a52eb3269ef7daea39a316315d903c43c":[2,5,1],
 "xavb__ptp__bmca_8c.html#a5eaf575de699cb2f054a43daa8a93849":[2,5,5],
 "xavb__ptp__bmca_8c.html#a5ef1c55c51f5781c4395ff20cc07f410":[2,5,0],
-"xavb__ptp__bmca_8c.html#a7c77fd7953811584a36001e5e74165b3":[2,5,7],
-"xavb__ptp__bmca_8c.html#aa66e9752ef47bf7eafe4784cb59e1093":[2,5,8]
+"xavb__ptp__bmca_8c.html#a7c77fd7953811584a36001e5e74165b3":[2,5,7]
 };

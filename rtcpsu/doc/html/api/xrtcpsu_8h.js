@@ -1,5 +1,8 @@
 var xrtcpsu_8h =
 [
+    [ "EPOCH_WDAY", "xrtcpsu_8h.html#ga5f20a16494c136368d1754bf5f8f8963", null ],
+    [ "EPOCH_YEAR", "xrtcpsu_8h.html#gaa0e47af385cda59b56c1ba71dee795d8", null ],
+    [ "IS_LEAP_YEAR", "xrtcpsu_8h.html#ga2e9e3f0230de087bdabd2246a59ba1d1", null ],
     [ "XRTC_CALIBRATION_VALUE", "xrtcpsu_8h.html#gad7a184022ff2ba6eab442bb895f7df30", null ],
     [ "XRTC_H_", "xrtcpsu_8h.html#ga0dc72bac661426e1056f45a0e3791086", null ],
     [ "XRTC_TYPICAL_OSC_FREQ", "xrtcpsu_8h.html#ga7e8bad01d40368b034d49dfcb4401486", null ],
@@ -24,7 +27,7 @@ var xrtcpsu_8h =
     [ "XRtcPsu_InterruptHandler", "xrtcpsu_8h.html#ga01ca03d23194687c8026dc2f38da6ff7", null ],
     [ "XRtcPsu_IsAlarmEventGenerated", "xrtcpsu_8h.html#ga75de01e02970e25ccbbeb1af33d0e808", null ],
     [ "XRtcPsu_IsSecondsEventGenerated", "xrtcpsu_8h.html#gafe9ec3849cca99b5d67f76ffafcc3ab2", null ],
-    [ "XRtcPsu_LookupConfig", "xrtcpsu_8h.html#ga665fbe64a08c5b13b838ab7b69188e3e", null ],
+    [ "XRtcPsu_LookupConfig", "xrtcpsu_8h.html#gae061b045472720cb345adc5891a8e652", null ],
     [ "XRtcPsu_SecToDateTime", "xrtcpsu_8h.html#gaac3d95ea1a75533a1fd3cd95d62a9914", null ],
     [ "XRtcPsu_SelfTest", "xrtcpsu_8h.html#ga1c969c089715ea9a86cec887c09f9b92", null ],
     [ "XRtcPsu_SetAlarm", "xrtcpsu_8h.html#ga201537801ac896c73018a8719e8637d8", null ],

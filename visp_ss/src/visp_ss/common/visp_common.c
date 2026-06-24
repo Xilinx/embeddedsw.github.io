@@ -1,5 +1,5 @@
 #include <string.h>
-// Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+// Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 #include "visp_common.h"
 int SetATM(void)
 {
@@ -14,20 +14,34 @@ int SetATM(void)
 	packet.payload_size = 0;
 
 	uint8_t *p_data = packet.payload_data;
-	memcpy(p_data, &ATM_ENABLE, sizeof(int));
+
+	/* Send instanceId (0 for now) */
+	uint32_t instanceId = 0;
+	memcpy(p_data, &instanceId, sizeof(uint32_t));
+	p_data += sizeof(uint32_t);
 	packet.payload_size += sizeof(uint32_t);
+
+	/* Send high_mem prefix */
+	uint32_t high_mem = ATM_HIGH_MEM_PREFIX ;
+	memcpy(p_data, &high_mem, sizeof(uint32_t));
+	p_data += sizeof(uint32_t);
+	packet.payload_size += sizeof(uint32_t);
+
+	/* Send is_64bit flag */
+	uint32_t is_64bit = 1;
+	memcpy(p_data, &is_64bit, sizeof(uint32_t));
+	p_data += sizeof(uint32_t);
+	packet.payload_size += sizeof(uint32_t);
+
 	if (packet.payload_size > MAX_ITEM)
 		return RET_OUTOFRANGE;
-	LOGI("%s   %d: after VsiVvdeviceInstanceInit ", __func__, __LINE__);
 
 	result = Send_Command(APU_2_RPU_MB_CMD_SET_ATM, &packet, packet.payload_size + payload_extra_size,
 			      dest_cpu_id, src_cpu_id);
 	if (RET_SUCCESS != result)
 		return RET_FAILURE;
-	LOGI("%s   %d: after VsiVvdeviceInstanceInit ", __func__, __LINE__);
 
 	apu_wait_for_ACK(packet.cookie, packet.payload_data);; //replace with wait_response();
-	LOGI("%s   %d: after VsiVvdeviceInstanceInit ", __func__, __LINE__);
 
 	return result;
 }

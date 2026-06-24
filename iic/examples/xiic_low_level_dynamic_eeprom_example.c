@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2006 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -16,7 +16,7 @@
 *
 * The example is tested on ML300/ML310/ML403/ML501/ML507/ML510 Xilinx boards.
 *
-* The ML310/ML410/ML510 boards have a on-board 64 Kb serial IIC EEPROM
+* The ML310/ML410/ML510/SCU35 boards have a on-board 64 Kb serial IIC EEPROM
 * (Microchip 24LC64A). The WP pin of the IIC EEPROM is hardwired to ground on
 * this board.
 *
@@ -31,14 +31,14 @@
 * IIC EEPROM(STM M24C08). The WP pin of the IIC EEPROM is hardwired to
 * ground on these boards.
 *
-* The AddressType for ML300/ML310/ML410/ML510 boards should be u16 as the
+* The AddressType for ML300/ML310/ML410/ML510/SCU200/SCU35 boards should be u16 as the
 * address pointer in the on board EEPROM is 2 bytes.
 *
 * The AddressType for ML403/ML501/ML505/ML507/ML605/SP601/SP605 boards should
 * be u8 as the address pointer for the on board EEPROM is 1 byte.
 *
 * The 7 bit IIC Slave address of the IIC EEPROM on the ML300/ML310/ML410/ML403/
-* ML501/ML505/ML507/ML510 boards is 0x50.
+* ML501/ML505/ML507/ML510/SCU200 boards is 0x50.
 * The 7 bit IIC Slave address of the IIC EEPROM on the ML605/SP601/SP605 boards
 * is 0x54.
 * Refer to the User Guide's of the respective boards for further information
@@ -76,6 +76,8 @@
 *                     recognize it as documentation block for doxygen
 *                     generation.
 * 3.10  gm   07/09/23 Added SDT support.
+* 3.15  vlt  02/18/26 Updated comments lines for SCU200 and SCU35 EEPROM address,
+*                     page size, and address type used for testing.
 * </pre>
 *
 ******************************************************************************/
@@ -89,7 +91,7 @@
 
 /************************** Constant Definitions *****************************/
 
-/*
+/**
  * The following constants map to the XPAR parameters created in the
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
@@ -97,43 +99,48 @@
 
 #define IIC_BASE_ADDRESS	XPAR_AXI_IIC_0_BASEADDR
 
-/*
+/**
  * The Starting address in the IIC EEPROM on which this test is performed.
  */
 #define EEPROM_TEST_START_ADDRESS	0x80
 
-/*
+/**
  * The following constant defines the address of the IIC Slave device on the
  * IIC bus. Note that since the address is only 7 bits, this constant is the
  * address divided by 2.
  * The 7 bit IIC Slave address of the IIC EEPROM on the ML300/ML310/ML403/ML410/
- * ML501/ML505/ML507/ML510 boards is 0x50. The 7 bit IIC Slave address of the IIC
+ * ML501/ML505/ML507/ML510/SCU200 boards is 0x50. The 7 bit IIC Slave address of the IIC
  * EEPROM on the ML605/SP601/SP605 boards is 0x54.
  * Please refer the User Guide's of the respective boards for further
  * information about the IIC slave address of IIC EEPROM's.
  */
 #define EEPROM_ADDRESS		0x50
 
-/*
+/**
  * The page size determines how much data should be written at a time.
- * The ML310/ML300 board supports a page size of 32 and 16.
+ * The ML310/ML300/SCU200/SCU35 board supports a page size of 32 and 16.
  * The write function should be called with this as a maximum byte count.
  */
 #define PAGE_SIZE	16
 
 #define IIC_SLAVE_ADDRESS	1
 
+/**
+ *  Maximum delay count used for timeout handling
+ */
+#define MAX_DELAY_CNT           10000
+
 /**************************** Type Definitions *******************************/
 
-/*
- * The AddressType for ML300/ML310/ML410/ML510 boards should be u16 as the address
+/**
+ * The AddressType for ML300/ML310/ML410/ML510/SCU200/SCU35 boards should be u16 as the address
  * pointer in the on board EEPROM is 2 bytes.
  * The AddressType for ML403/ML501/ML505/ML507/ML605/SP601/SP605 boards should
  * be u8 as the address pointer in the on board EEPROM is 1 bytes.
  */
 typedef u8 AddressType;
 
-u8 EepromIicAddr;		/* Variable for storing Eeprom IIC address */
+u8 EepromIicAddr;
 
 /************************** Function Prototypes ******************************/
 
@@ -144,15 +151,16 @@ u8 EepromWriteByte(u8 *BufferPtr, u8 ByteCount);
 
 /************************** Variable Definitions *****************************/
 
-u8 WriteBuffer[PAGE_SIZE];	/* Write buffer for writing a page. */
+u8 WriteBuffer[PAGE_SIZE];	/** Write buffer for writing a page. */
 
-u8 ReadBuffer[PAGE_SIZE];	/* Read buffer for reading a page.  */
+u8 ReadBuffer[PAGE_SIZE];	/** Read buffer for reading a page.  */
 
 /************************** Function Definitions *****************************/
 
 /*****************************************************************************/
 /**
 * Main function to call the low level Dynamic EEPROM example.
+*
 *
 *
 * @return	XST_SUCCESS if successful else XST_FAILURE.
@@ -176,13 +184,11 @@ int main(void)
 	return XST_SUCCESS;
 }
 
-/******************************************************************************
+/******************************************************************************/
 /**
 *
 * The function uses the low level driver of IIC to read from the IIC EEPROM on
 * the ML300/ML310 board. The addresses tested starts from 128.
-*
-* @param	None.
 *
 * @return	XST_SUCCESS if successful else XST_FAILURE.
 *
@@ -312,7 +318,7 @@ u8 EepromWriteByte(u8 *BufferPtr, u8 ByteCount)
 	return SentByteCount - sizeof(Address);
 }
 
-/******************************************************************************
+/*****************************************************************************/
 /**
 *
 * This function reads a number of bytes from the IIC serial EEPROM into a
@@ -335,6 +341,7 @@ u8 EepromReadByte(u8 *BufferPtr, u8 ByteCount)
 	u8 SentByteCount;
 	u16 StatusReg;
 	AddressType Address = EEPROM_TEST_START_ADDRESS;
+        int Timeout = MAX_DELAY_CNT;
 
 	/*
 	 * Position the Read pointer to specific location in the EEPROM.
@@ -347,6 +354,10 @@ u8 EepromReadByte(u8 *BufferPtr, u8 ByteCount)
 						     (u8 *) &Address,
 						     sizeof(Address),
 						     XIIC_REPEATED_START);
+			if (Timeout-- == 0) {
+				return XST_FAILURE;   /* timeout exit */
+			}
+
 		}
 
 	} while (SentByteCount != sizeof(Address));
@@ -358,6 +369,10 @@ u8 EepromReadByte(u8 *BufferPtr, u8 ByteCount)
 		ReceivedByteCount = XIic_DynRecv(IIC_BASE_ADDRESS,
 						 EepromIicAddr, BufferPtr,
 						 ByteCount);
+		if (Timeout-- == 0) {
+			return XST_FAILURE;   /* timeout exit */
+		}
+
 	} while (ReceivedByteCount != ByteCount);
 
 	/*

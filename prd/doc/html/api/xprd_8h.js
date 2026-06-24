@@ -6,7 +6,7 @@ var xprd_8h =
     ] ],
     [ "XPrd_CfgInitialize", "xprd_8h.html#ga424f5c8b2cad657a5aea953ba959be55", null ],
     [ "XPrd_GetDecouplerState", "xprd_8h.html#gad37688cbdb9d0b50c481132f6f05cee0", null ],
-    [ "XPrd_LookupConfig", "xprd_8h.html#ga7a83aa6940de765c091dfd07df308ac2", null ],
+    [ "XPrd_LookupConfig", "xprd_8h.html#ga980c446b57a2dd8bb4158762fe671e6b", null ],
     [ "XPrd_SelfTest", "xprd_8h.html#gaf18335c2976ab9b7c9d12a5a0c0a450c", null ],
     [ "XPrd_SetDecouplerState", "xprd_8h.html#gacb64d55940567d71186233e1e230c0d0", null ]
 ];

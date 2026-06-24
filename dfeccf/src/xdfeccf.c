@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022-2025 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022-2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -58,6 +58,9 @@
 * 1.7   cog    02/02/24 Yocto SDT support
 *       dc     03/01/24 Update version number in makefiles
 * 1.9   dc     10/16/25 Fix zero padding and GetActivSets
+* 1.10  dc     12/10/25 Add IsCcfOperational API
+*       dc     02/18/26 Correct spelling errors
+*       dc     03/08/26 Correct compiler warnings
 * </pre>
 * @addtogroup dfeccf Overview
 * @{
@@ -90,7 +93,7 @@
 #define XDFECCF_ACTIVE_SET_NUM (8U) /**< Maximum number of active sets */
 #define XDFECCF_U32_NUM_BITS (32U) /**< Number of bits in register */
 #define XDFECCF_TAP_NUMBER_MAX (256U) /**< Maximum tap number */
-#define XDFECCF_DRIVER_VERSION_MINOR (9U) /**< Driver's minor version number */
+#define XDFECCF_DRIVER_VERSION_MINOR (10U) /**< Driver's minor version number */
 #define XDFECCF_DRIVER_VERSION_MAJOR (1U) /**< Driver's major version number */
 
 /************************** Function Prototypes *****************************/
@@ -548,7 +551,7 @@ static u32 XDfeCcf_NextMappedId(const XDfeCcf *InstancePtr,
 	   "mapped" ID. This is the ID value used by the hard block. Provides
 	   the facility to use any of the CCID values defined at the system
 	   level and map to them to the available hardware IDs. The available
-	   hardware IDs are contrained based IP parameters and are required to
+	   hardware IDs are constrained by IP parameters and are required to
 	   be enumerated from 0. */
 	for (Index = 0U; Index < InstancePtr->Config.NumCCPerAntenna; Index++) {
 		Used[Index] = 0U;
@@ -1581,9 +1584,8 @@ u32 XDfeCcf_SetNextCCCfgAndTriggerSwitchable(XDfeCcf *InstancePtr,
 * @note     Clear event status with XDfeCcf_ClearEventStatus() before
 *           running this API.
 *
-* @attention:  This API is deprecated in the release 2023.2. Source code will
-*              be removed from in the release 2024.1 release. The functionality
-*              of this API can be reproduced with the following API sequence:
+* @note:    This API is deprecated in the release 2023.2. The functionality of
+*           this API can be reproduced with the following API sequence:
 *                  XDfeCcf_GetCurrentCCCfg(InstancePtr, CCCfg);
 *                  XDfeCcf_AddCCtoCCCfg(InstancePtr, CCCfg, CCID, CCSeqBitmap,
 *                      CarrierCfg);
@@ -1662,9 +1664,8 @@ u32 XDfeCcf_AddCC(XDfeCcf *InstancePtr, s32 CCID, u32 CCSeqBitmap,
 * @note     Clear event status with XDfeCcf_ClearEventStatus() before
 *           running this API.
 *
-* @attention:  This API is deprecated in the release 2023.2. Source code will
-*              be removed from in the release 2024.1 release. The functionality
-*              of this API can be reproduced with the following API sequence:
+* @note:    This API is deprecated in the release 2023.2. The functionality of
+*           this API can be reproduced with the following API sequence:
 *                  XDfeCcf_GetCurrentCCCfg(InstancePtr, CCCfg);
 *                  XDfeCcf_RemoveCCfromCCCfg(InstancePtr, CCCfg, CCID);
 *                  XDfeCcf_SetNextCCCfgAndTrigger(InstancePtr, CCCfg);
@@ -1709,9 +1710,8 @@ u32 XDfeCcf_RemoveCC(XDfeCcf *InstancePtr, s32 CCID)
 * @note     Clear event status with XDfeCcf_ClearEventStatus() before
 *           running this API.
 *
-* @attention:  This API is deprecated in the release 2023.2. Source code will
-*              be removed from in the release 2024.1 release. The functionality
-*              of this API can be reproduced with the following API sequence:
+* @note:    This API is deprecated in the release 2023.2. The functionality of
+*           this API can be reproduced with the following API sequence:
 *                  XDfeCcf_GetCurrentCCCfg(InstancePtr, CCCfg);
 *                  XDfeCcf_UpdateCCinCCCfg(InstancePtr, CCCfg, CCID,
 *                      CarrierCfg);
@@ -2148,7 +2148,7 @@ void XDfeCcf_GetActiveSets(const XDfeCcf *InstancePtr, u32 *IsActive)
 			continue;
 		}
 
-		/* CC is enabled, than activate coeficients */
+		/* CC is enabled, than activate coefficients */
 		Offset = XDFECCF_SEQUENCE_CURRENT + (sizeof(u32) * Index);
 		CCID = XDfeCcf_ReadReg(InstancePtr, Offset);
 		Offset = XDFECCF_CARRIER_CONFIGURATION_CURRENT +
@@ -2426,6 +2426,34 @@ void XDfeCcf_SetRegBank(const XDfeCcf *InstancePtr, u32 RegBank)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 	XDfeCcf_WriteReg(InstancePtr, XDFECCF_REG_BANK_OFFSET, RegBank);
+}
+
+/****************************************************************************/
+/**
+*
+* Retrieves the current operational state of CCF.
+*
+* @param    InstancePtr Pointer to the Ccf instance.
+*
+* @return
+*           - XST_SUCCESS CCF is operational.
+*           - XST_FAILURE CCF is NOT operational.
+*
+****************************************************************************/
+u32 XDfeCcf_GetIsCcfOperational(XDfeCcf *InstancePtr)
+{
+	u32 IsOperational;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	IsOperational = XDfeCcf_RdRegBitField(
+		InstancePtr, XDFECCF_STATE_OPERATIONAL_OFFSET,
+		XDFECCF_STATE_OPERATIONAL_BITFIELD_WIDTH,
+		XDFECCF_STATE_OPERATIONAL_BITFIELD_OFFSET);
+	if (IsOperational == XDFECCF_STATE_OPERATIONAL_NO) {
+		return XST_FAILURE;
+	}
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/

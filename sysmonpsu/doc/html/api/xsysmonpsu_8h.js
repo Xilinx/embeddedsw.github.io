@@ -153,7 +153,7 @@ var xsysmonpsu_8h =
     [ "XSysMonPsu_IntrEnable", "xsysmonpsu_8h.html#a97be122426bd5302e93b45ba5a3fc8ec", null ],
     [ "XSysMonPsu_IntrGetEnabled", "xsysmonpsu_8h.html#a78b39afe5e1c62f44a320311d74e2402", null ],
     [ "XSysMonPsu_IntrGetStatus", "xsysmonpsu_8h.html#a3ef44a74426b13480363747a5dedc5d0", null ],
-    [ "XSysMonPsu_LookupConfig", "xsysmonpsu_8h.html#a948f08280b6195869015382d92ba8a50", null ],
+    [ "XSysMonPsu_LookupConfig", "xsysmonpsu_8h.html#a58103c6523a6624346c905932a73d71b", null ],
     [ "XSysMonPsu_Reset", "xsysmonpsu_8h.html#ad6fc9daa41e50955a71e2fe7a107a0e5", null ],
     [ "XSysMonPsu_SelfTest", "xsysmonpsu_8h.html#a39d8d59cc35fe4151b51b5bbafdca2ca", null ],
     [ "XSysMonPsu_SetAdcClkDivisor", "xsysmonpsu_8h.html#a11e8fc0b9dffbe33b41ec4e6825ffc4a", null ],

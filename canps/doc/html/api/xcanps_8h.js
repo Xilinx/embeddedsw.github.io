@@ -43,7 +43,7 @@ var xcanps_8h =
     [ "XCanPs_IntrGetEnabled", "xcanps_8h.html#gac3325adebecffcb97cb01ff3c75391b0", null ],
     [ "XCanPs_IntrGetStatus", "xcanps_8h.html#gac6640f1ea5f9e4027d67af3b4eec4623", null ],
     [ "XCanPs_IntrHandler", "xcanps_8h.html#gad7c797dfe9aef613d20c2a822ed301dc", null ],
-    [ "XCanPs_LookupConfig", "xcanps_8h.html#ga3d3245fb9be426b1f1cca0b20ea90905", null ],
+    [ "XCanPs_LookupConfig", "xcanps_8h.html#ga9883d8be70b9697a32bbe2e38d722cb1", null ],
     [ "XCanPs_Recv", "xcanps_8h.html#gaf821f77f00b8eca7c564b15d6c8f8b5e", null ],
     [ "XCanPs_Reset", "xcanps_8h.html#ga13dce9f4dede25f041852b1c893ebfba", null ],
     [ "XCanPs_SelfTest", "xcanps_8h.html#ga84d18d801c4f8ab5cc8eeadeff33d8b5", null ],

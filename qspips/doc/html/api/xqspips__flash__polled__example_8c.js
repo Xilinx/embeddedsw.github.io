@@ -6,5 +6,5 @@ var xqspips__flash__polled__example_8c =
     [ "FlashReadID", "xqspips__flash__polled__example_8c.html#aa424c9f6fee5f08746f8f3233b7467ed", null ],
     [ "FlashWrite", "xqspips__flash__polled__example_8c.html#aa4691616d85f33bb068a7e9740249b86", null ],
     [ "main", "xqspips__flash__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
-    [ "QspiFlashPolledExample", "xqspips__flash__polled__example_8c.html#a716abd44c4ecfd53189130fa9a73b731", null ]
+    [ "QspiFlashPolledExample", "xqspips__flash__polled__example_8c.html#a69d63032b37169995ad11d3c7591121c", null ]
 ];

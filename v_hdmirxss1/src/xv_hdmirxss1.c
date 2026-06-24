@@ -1,6 +1,6 @@
 /******************************************************************************
 # Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -18,12 +18,15 @@
 * Ver   Who    Date     Changes
 * ----- ---- -------- -------------------------------------------------------
 * 1.00  EB   22/05/18 Initial release.
+* </pre>
+*
 ******************************************************************************/
 
 /***************************** Include Files *********************************/
 #include "sleep.h"
 #include "xv_hdmirxss1.h"
 #include "xv_hdmirxss1_coreinit.h"
+#include "xparameters.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -45,11 +48,7 @@ typedef struct
 
 /**************************** Local Global ***********************************/
 /** Define Driver instance of all sub-core included in the design */
-#ifndef SDT
 XV_HdmiRxSs1_SubCores XV_HdmiRxSs1_SubCoreRepo[XPAR_XV_HDMIRXSS1_NUM_INSTANCES];
-#else
-XV_HdmiRxSs1_SubCores XV_HdmiRxSs1_SubCoreRepo[];
-#endif
 
 /************************** Function Prototypes ******************************/
 #ifndef SDT
@@ -114,6 +113,7 @@ static void XV_HdmiRxSs1_ConfigBridgeMode(XV_HdmiRxSs1 *InstancePtr);
 * This macros selects the bridge pixel repeat mode
 *
 * @param  InstancePtr is a pointer to the HDMI RX Subsystem
+* @param  Enable enables or disables pixel drop mode
 *
 *****************************************************************************/
 #define XV_HdmiRxSs1_BridgePixelDrop(InstancePtr,Enable) \
@@ -472,7 +472,6 @@ static int XV_HdmiRxSs1_RegisterSubsysCallbacks(XV_HdmiRxSs1 *InstancePtr)
 			   XV_HDMIRX1_HANDLER_DYN_HDR,
 			  (void *)XV_HdmiRxSs1_DynHdrEvtCallback,
 			  (void *)InstancePtr);
-#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
     XV_HdmiRx1_SetCallback(HdmiRxSs1Ptr->HdmiRx1Ptr,
 			   XV_HDMIRX1_HANDLER_DSC_STRM_CH,
 			  (void *)XV_HdmiRxSs1_DSCStreamChngCallback,
@@ -487,7 +486,6 @@ static int XV_HdmiRxSs1_RegisterSubsysCallbacks(XV_HdmiRxSs1 *InstancePtr)
 			   XV_HDMIRX1_HANDLER_DSC_STS_UPDT,
 			  (void *)XV_HdmiRxSs1_DSCStatusUpdateCallback,
 			  (void *)InstancePtr);
-#endif
   }
 
   return(XST_SUCCESS);
@@ -827,6 +825,7 @@ void XV_HdmiRxSs1_RXCore_VRST(XV_HdmiRxSs1 *InstancePtr, u8 Reset)
 * of the HDMI subcore within the subsystem
 *
 * @param  InstancePtr is a pointer to the Subsystem instance to be worked on.
+* @param  Reset specifies TRUE/FALSE value to either assert or release reset.
 *
 * @return None
 *
@@ -844,6 +843,7 @@ void XV_HdmiRxSs1_RXCore_LRST(XV_HdmiRxSs1 *InstancePtr, u8 Reset)
 * blocks within the subsystem
 *
 * @param  InstancePtr is a pointer to the Subsystem instance to be worked on.
+* @param  Reset specifies TRUE/FALSE value to either assert or release reset.
 *
 * @return None
 *
@@ -1535,11 +1535,11 @@ static void XV_HdmiRxSs1_StreamUpCallback(void *CallbackRef)
 * (XV_HDMIRXSS1_HANDLER_VS)                  VsCallback
 * (XV_HDMIRXSS1_HANDLER_STREAM_DOWN)         StreamDownCallback
 * (XV_HDMIRXSS1_HANDLER_STREAM_UP)           StreamUpCallback
-* (XV_HDMIRXSS1_HANDLER_HDCP_AUTHENTICATED)
-* (XV_HDMIRXSS1_HANDLER_HDCP_UNAUTHENTICATED)
-* (XV_HDMIRXSS1_HANDLER_HDCP_AUTHENTICATION_REQUEST)
-* (XV_HDMIRXSS1_HANDLER_HDCP_STREAM_MANAGE_REQUEST)
-* (XV_HDMIRXSS1_HANDLER_HDCP_TOPOLOGY_UPDATE)
+* (XV_HDMIRXSS1_HANDLER_HDCP_AUTHENTICATED)  HdcpAuthenticatedCallback
+* (XV_HDMIRXSS1_HANDLER_HDCP_UNAUTHENTICATED) HdcpUnauthenticatedCallback
+* (XV_HDMIRXSS1_HANDLER_HDCP_AUTHENTICATION_REQUEST) HdcpAuthenticationRequestCallback
+* (XV_HDMIRXSS1_HANDLER_HDCP_STREAM_MANAGE_REQUEST) HdcpStreamManageRequestCallback
+* (XV_HDMIRXSS1_HANDLER_HDCP_TOPOLOGY_UPDATE) HdcpTopologyUpdateCallback
 * </pre>
 *
 * @param    InstancePtr is a pointer to the HDMI RX Subsystem instance.
@@ -2824,8 +2824,14 @@ static void XV_HdmiRxSs1_ConfigBridgeMode(XV_HdmiRxSs1 *InstancePtr) {
         /*********************************************************
          * 420 Support
          *********************************************************/
+
          XV_HdmiRxSs1_BridgePixelDrop(InstancePtr, FALSE);
-         XV_HdmiRxSs1_BridgeYuv420(InstancePtr, TRUE);
+         if(HdmiRxSs1VidStreamPtr->IsDSCompressed) {
+		          XV_HdmiRxSs1_BridgeYuv420(InstancePtr, FALSE);
+         } else {
+		          XV_HdmiRxSs1_BridgeYuv420(InstancePtr, TRUE);
+         }
+
     }
     else {
         if (AviInfoFramePtr->PixelRepetition ==
@@ -3039,7 +3045,7 @@ void XV_HdmiRxSs1_DynHDR_DM_Disable(XV_HdmiRxSs1 *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function sets the buffer address for Dyanamic HDR
+* This function sets the buffer address for Dynamic HDR
 *
 * @param  InstancePtr pointer to XV_HdmiRXSs instance
 *
@@ -3069,7 +3075,7 @@ void XV_HdmiRxSs1_DynHDR_SetAddr(XV_HdmiRxSs1 *InstancePtr, u64 Addr)
 /*****************************************************************************/
 /**
 *
-* This function sets the buffer address for Dyanamic HDR
+* This function sets the buffer address for Dynamic HDR
 *
 * @param  InstancePtr pointer to XV_HdmiRXSs instance
 *
@@ -3207,7 +3213,6 @@ u32 XV_HdmiRxSs1_DSC_IsEnableStream(XV_HdmiRxSs1 *InstancePtr)
 	return XV_HdmiRx1_DSC_IsEnableStream(InstancePtr->HdmiRx1Ptr);
 }
 
-#if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 /*****************************************************************************/
 /**
 *
@@ -3321,4 +3326,3 @@ static void XV_HdmiRxSs1_DSCStatusUpdateCallback(void *CallbackRef)
 	if (HdmiRxSs1Ptr->DSCStsUpdtEvtCallback)
 		HdmiRxSs1Ptr->DSCStsUpdtEvtCallback(HdmiRxSs1Ptr->DSCStsUpdtEvtRef);
 }
-#endif

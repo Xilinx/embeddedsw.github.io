@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -48,6 +48,9 @@
  * 2.17 ht 11/25/24  Update Max Message length to accommodate for CRC bytes
  *                   when IPI CRC is enabled
  *	jb 12/26/24 Fixed misrac warnings
+ * 2.19 vlt 12/30/25 Update Doxygen comments to include SDT flow details.
+ * 2.19 vlt 03/15/26 Updated BaseAddress type from u32 to UINTPTR
+*                    to support 64-bit addressing
  * </pre>
  *
  *****************************************************************************/
@@ -138,7 +141,7 @@ typedef struct {
 #ifndef SDT
 	u32 DeviceId; /**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name; /**< Name of the device */
 #endif
 	UINTPTR BaseAddress; /**< Base address of the device */
 	u32 BitMask; /**< BitMask to be used to identify this CPU */
@@ -174,7 +177,7 @@ typedef struct {
 * @return	Value of the specified register
 * @note
 * C-style signature
-*	u32 XIpiPsu_ReadReg(u32 BaseAddress, u32 RegOffset)
+*	u32 XIpiPsu_ReadReg(UINTPTR BaseAddress, u32 RegOffset)
 *
 *****************************************************************************/
 
@@ -192,7 +195,7 @@ typedef struct {
 *
 * @note
 * C-style signature
-*	void XIpiPsu_WriteReg(u32 BaseAddress, u32 RegOffset, u32 Data)
+*	void XIpiPsu_WriteReg(UINTPTR BaseAddress, u32 RegOffset, u32 Data)
 *
 *****************************************************************************/
 
@@ -309,7 +312,7 @@ extern XIpiPsu_Config XIpiPsu_ConfigTable[];
 #ifndef SDT
 XIpiPsu_Config *XIpiPsu_LookupConfig(u32 DeviceId);
 #else
-XIpiPsu_Config *XIpiPsu_LookupConfig(u32 BaseAddress);
+XIpiPsu_Config *XIpiPsu_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /* Interface Functions implemented in xipipsu.c */

@@ -1,9 +1,8 @@
 var files =
 [
-    [ "idt_8t49n24x.c", "idt__8t49n24x_8c.html", "idt__8t49n24x_8c" ],
-    [ "idt_8t49n24x.h", "idt__8t49n24x_8h.html", "idt__8t49n24x_8h" ],
     [ "main.c", "main_8c.html", "main_8c" ],
-    [ "xsdi_example.c", "xsdi__example_8c.html", "xsdi__example_8c" ],
+    [ "si570drv.c", "si570drv_8c.html", "si570drv_8c" ],
+    [ "si570drv.h", "si570drv_8h.html", "si570drv_8h" ],
     [ "xv_sdirxss.c", "xv__sdirxss_8c.html", "xv__sdirxss_8c" ],
     [ "xv_sdirxss.h", "xv__sdirxss_8h.html", "xv__sdirxss_8h" ],
     [ "xv_sdirxss_coreinit.c", "xv__sdirxss__coreinit_8c.html", "xv__sdirxss__coreinit_8c" ],

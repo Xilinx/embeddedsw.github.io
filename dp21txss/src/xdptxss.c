@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -44,14 +44,15 @@
 * 		    both HDCP1x and 22.
 * 6.2  jb  02/14/20 The DP Tx subsystems assumes that the HDCP configuration is
 * 		    same for all the instances in multiple subsystems in the
-* 		    design. This driver wont support for different configuration
+* 		    design. This driver won't support for different configuration
 * 		    of the subsystems.
 * 6.4  rg  09/26/20 Added below list of APIs related to VSC extended packets
 *                   XDpTxSs_CheckVscColorimetrySupport,
 *                   XDpTxSs_SetVscExtendedPacket,
 *                   XDpTxss_EnableVscColorimetry
 * 6.4  rg  09/26/20 Added support for YUV420 color format
-*
+* 6.5 pam  03/18/26 XDpTxSs_SendAudioInfoFrame API is updated to handle Audio control
+* 		    registers
 * </pre>
 *
 ******************************************************************************/
@@ -444,7 +445,6 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 *
 * @param	InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return	None.
 *
 * @note		None.
 *
@@ -537,11 +537,25 @@ u32 XDpTxSs_Start(XDpTxSs *InstancePtr)
 		}
 	}
 #endif
+
+	/* Disable all TX interrupts during link training to
+	 * prevent spurious HPD interrupts from racing the training sequence.
+	 */
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+			XDP_TX_INTERRUPT_MASK, XDPTXSS_INTERRUPT_MASK_ALL_MASK);
+
 	/* Start DisplayPort sub-core configuration */
 	Status = XDpTxSs_DpTxStart(InstancePtr->DpPtr,
 			InstancePtr->UsrOpt.MstSupport,
 				InstancePtr->UsrOpt.Bpc,
 					InstancePtr->UsrOpt.VmId);
+
+	/* Re-enable normal TX interrupts (HPD + IRQ) after
+	 * the training sequence completes, regardless of outcome.
+	 */
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+			XDP_TX_INTERRUPT_MASK, XDPTXSS_INTERRUPT_MASK_NORMAL_MASK);
+
 	if (Status != XST_SUCCESS) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR: DP Start failed "
 			"in %s!\n\r",
@@ -744,7 +758,6 @@ u32 XDpTxSs_StartCustomMsa(XDpTxSs *InstancePtr,
 *
 * @param	InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return	None.
 *
 * @note		None.
 *
@@ -788,8 +801,6 @@ void XDpTxSs_Stop(XDpTxSs *InstancePtr)
 *
 * @param        InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return
-*               - void.
 *
 * @note         None.
 *
@@ -809,8 +820,6 @@ void XDpTxSs_VtcAdjustBSTimingEnable(XDpTxSs *InstancePtr)
 *
 * @param        InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return
-*               - void.
 *
 * @note         None.
 *
@@ -867,8 +876,10 @@ u32 XDpTxSs_SetBpc(XDpTxSs *InstancePtr, u8 Bpc)
  * This function gets the MSA values for the specified video format.
  *
  * @param	InstancePtr is a pointer to the XDpTxSs instance.
- * @param	VidStream is one of the enumerated standard video modes that is
- *		used to determine the MSA values to be used.
+ * @param	msa_tx is the structure that will be used to copy the
+ *		  main stream attributes into (from
+ * 		  InstancePtr->DpPtr->TxInstance.MsaConfig).
+ *
  *
  * @return
  *		- XST_SUCCESS, if MSA values read successfully.
@@ -952,8 +963,8 @@ u32 XDPTxss_SetMsa(XDpTxSs *InstancePtr, XVidC_VideoStream *VidStream, u8 Stream
  *
  * @param	InstancePtr is a pointer to the XDpTxSs instance.
  * @param	VidStream is one of the enumerated standard video modes that is
- *		used to determine the MSA values to be used.
- * @Stream	Streamnumber to set the video params
+ *		  used to determine the MSA values to be used.
+ * @param   Stream	Streamnumber to set the video params
  *
  * @return
  *		- XST_SUCCESS, if video mode set successfully.
@@ -1045,7 +1056,6 @@ u32 XDpTxSs_SetVidMode(XDpTxSs *InstancePtr, XVidC_VideoMode VidMode)
  * @param	InstancePtr is a pointer to the XDpTxSs instance.
  * @param	Stream is the stream number for which to change the Polarity.
  *
- * @return	None.
  *
  * @note	None.
  *
@@ -1069,10 +1079,6 @@ void XDpTxSs_OverrideSyncPolarity(XDpTxSs *InstancePtr, u8 Stream)
  * core.
  *
  * @param	InstancePtr is a pointer to the XDpTxSs instance.
- * @param	LinkRate is the rate at which link needs to be driven.
- *		- XDPTXSS_LINK_BW_SET_162GBPS = 0x06(for a 1.62 Gbps data rate)
- *		- XDPTXSS_LINK_BW_SET_270GBPS = 0x0A(for a 2.70 Gbps data rate)
- *		- XDPTXSS_LINK_BW_SET_540GBPS = 0x14(for a 5.40 Gbps data rate)
  *
  * @return
  *		- XST_SUCCESS if setting the new lane rate was successful.
@@ -1360,8 +1366,9 @@ u32 XDpTxSs_GetRxCapabilities(XDpTxSs *InstancePtr)
  * DisplayPort Configuration Data (DPCD).
  *
  * @param			InstancePtr is a pointer to the XDp instance.
- * @SinkCap			Downstream Capabilities.
- * @SinkExtendedCap	Downstream Extended Capabilities.
+ * @param           SinkCap			Downstream Capabilities.
+ * @param           SinkExtendedCap	Downstream Extended Capabilities.
+ * @param           MaxLinkrate_128B	Maximum Link Rate supported by Sink.
  *
  * @return
  *		- XST_SUCCESS if the DisplayPort Configuration Data was read
@@ -1533,8 +1540,6 @@ u32 XDpTxSs_CheckLinkStatus(XDpTxSs *InstancePtr)
 * @param	InstancePtr is a pointer to the XDpTxSs core instance.
 * @param	UserPixelWidth is the user pixel width to be configured.
 * @param	StreamId is the stream number.
-*
-* @return	None.
 *
 * @note		None.
 *
@@ -1712,7 +1717,6 @@ u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt
  *       - 0 = Disable the sending colorimetry through VSC packet else enable
  *             Enable the sending colorimetry through VSC packet
  *
- * @return
  *
  * @note	None.
  *
@@ -1736,8 +1740,6 @@ void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 Enable)
 *		path.
 *		1 = Set redriver in the DisplayPort output path.
 *		0 = Unset redriver in the DisplayPort output path.
-*
-* @return	None.
 *
 * @note		Set the redriver in the DisplayPort output path before
 *		starting the training.
@@ -2219,6 +2221,7 @@ u32 XDpTxSs_DisableEncryption(XDpTxSs *InstancePtr, u64 StreamMap)
 #endif
 #if (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
 	if (InstancePtr->Hdcp22Ptr)
+				XDp_TxHdcp22Disable(InstancePtr->DpPtr);
 		Status = XHdcp22Tx_Dp_DisableEncryption(InstancePtr->Hdcp22Ptr);
 #endif
 
@@ -2406,7 +2409,6 @@ u32 XDpTxSs_ReadDownstream(XDpTxSs *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return	None.
 *
 * @note		None.
 *
@@ -2677,7 +2679,6 @@ static u32 DpTxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq)
 *
 * @param	InstancePtr is a pointer to the XDpTxSs core instance.
 *
-* @return	None.
 *
 * @note		None.
 *
@@ -3041,6 +3042,86 @@ static u32 DpTxSs_SetupSubCores(XDpTxSs *InstancePtr)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+ *
+ * This function sends audio infoframe and configures audio parameters
+ * including MAUD/NAUD values based on the current link rate.
+ *
+ * @param	InstancePtr is a pointer to the XDpTxSs instance.
+ * @param	xilInfoFrame is a pointer to the audio infoframe structure.
+ *
+ * @note	This function performs the following operations:
+ *		1. Disables audio
+ *		2. Configures the audio infoframe packet
+ *		3. Calculates and sets MAUD/NAUD based on link rate
+ *              4. Enables Audio
+ ******************************************************************************/
+void XDpTxSs_SendAudioInfoFrame(XDpTxSs *InstancePtr, XDp_TxAudioInfoFrame *xilInfoFrame)
+{
+	u32 m_aud, n_aud;
+	u8 LinkRate;
+
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_CONTROL, 0x0);
+
+	XDp_TxSendAudioInfoFrame(InstancePtr->DpPtr, xilInfoFrame);
+
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_CHANNELS, 0x1);
+
+	LinkRate = InstancePtr->DpPtr->TxInstance.LinkConfig.LinkRate;
+
+	/* Calculate MAUD and NAUD based on link rate
+	 * These values are for 48kHz audio sampling rate
+	 * MAUD is fixed at 512 for all link rates
+	 * NAUD = (Link Symbol Rate / 1000) * 27 / 8
+	 */
+	switch (LinkRate) {
+		case XDP_TX_LINK_BW_SET_162GBPS:	/* 1.62 Gbps */
+			m_aud = 512;
+			n_aud = 3375;
+			break;
+		case XDP_TX_LINK_BW_SET_270GBPS:	/* 2.7 Gbps */
+			m_aud = 512;
+			n_aud = 5625;
+			break;
+		case XDP_TX_LINK_BW_SET_540GBPS:	/* 5.4 Gbps */
+			m_aud = 512;
+			n_aud = 11250;
+			break;
+		case XDP_TX_LINK_BW_SET_810GBPS:	/* 8.1 Gbps */
+			m_aud = 512;
+			n_aud = 16875;
+			break;
+		case XDP_TX_LINK_BW_SET_UHBR10:        /* UHBR10 - 10.0 Gbps */
+                        m_aud = 512;
+                        n_aud = 20833;
+                        break;
+                case XDP_TX_LINK_BW_SET_UHBR135:        /* UHBR13.5 - 13.5 Gbps */
+                        m_aud = 512;
+                        n_aud = 28125;
+                        break;
+                case XDP_TX_LINK_BW_SET_UHBR20:        /* UHBR20 - 20.0 Gbps */
+                        m_aud = 512;
+                        n_aud = 41666;
+                        break;
+		default:	/* Default to 1.62 Gbps values */
+			xil_printf("Warning: Unknown link rate 0x%02X, using 1.62Gbps default\r\n", LinkRate);
+			m_aud = 512;
+			n_aud = 3375;
+			break;
+	}
+
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_MAUD, m_aud);
+
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_NAUD, n_aud);
+
+	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_CONTROL, 0x1);
+
+
+	xil_printf("Audio configured: LinkRate=0x%02X, MAUD=%d, NAUD=%d\r\n",
+			LinkRate, m_aud, n_aud);
+}
+
 #if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
@@ -3238,6 +3319,163 @@ void XDpTxSs_Hdcp22SetKey(XDpTxSs *InstancePtr,
 			break;
 	}
 }
+
+/*****************************************************************************/
+/**
+*
+* This function configures stream encryption based on MST/SST mode and the
+* stream_map parameter provided by the application.
+*
+* @param	InstancePtr is a pointer to the XDpTxSs core instance.
+* @param	stream_map is the stream encryption selection from application:
+*		- For 2 streams: 1 (Stream 1), 2 (Stream 2), 3 (All)
+*		- For 3 streams: 1 (Stream 1), 2 (Stream 2), 3 (Stream 3), 4 (All)
+*		- For 4 streams: 1 (Stream 1), 2 (Stream 2), 3 (Stream 3), 4 (Stream 4), 5 (All)
+*
+* @note	- SST mode: Default stream 1
+*		- MST single stream: Default stream 1, register configured
+*		- MST multiple streams: Uses stream_map from application, configures registers
+*
+******************************************************************************/
+void XDpTxSs_ConfigureStreamEncryption(XDpTxSs *InstancePtr, u64 stream_map)
+{
+	u32 enhanced_frame_en_val = 0;
+	u32 training_pattern_set_val = 0;
+	u8 MaxStreams = 0;      // Hardware capability - max streams supported
+	u8 ActiveStreams = 0;   // Current active/enumerated streams
+
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* Fetch hardware capability - max streams supported */
+	MaxStreams = InstancePtr->Config.NumMstStreams;
+
+	/* Fetch current active/enumerated streams */
+	ActiveStreams = XDpTxSs_GetNumOfMstStreams(InstancePtr);
+
+	/* Check if MST is capable/enabled AND hardware supports > 1 stream AND active streams > 1 */
+
+	if (InstancePtr->Config.MstSupport &&
+	    InstancePtr->DpPtr->TxInstance.MstEnable &&
+	    MaxStreams > 1 &&
+		ActiveStreams > 1) {
+
+		/* MST mode with multiple streams - use stream_map from application */
+		/* Validate stream_map based on active streams */
+		if (stream_map == 0 ||
+		    (ActiveStreams == 2 && stream_map >= 4) ||
+		    (ActiveStreams == 3 && stream_map >= 5) ||
+		    (ActiveStreams == 4 && stream_map >= 6) ||
+		    stream_map > 5) {
+			/* Invalid input - use default */
+			enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1;
+			training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+			xil_printf("Error: Invalid stream_map=%llu for %d active streams. Using default (Stream 1)\r\n",
+			           stream_map, ActiveStreams);
+		}
+		/* For 2 streams: options are 1, 2, or 3(all) */
+		else if (ActiveStreams == 2) {
+			switch(stream_map) {
+				case 1:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 1\r\n");
+					break;
+				case 2:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_2;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 2\r\n");
+					break;
+				case 3:
+					/* Encrypt all 2 streams */
+					enhanced_frame_en_val = XDPTXSS_REG_ALL_STREAMS_ENCRYPT;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting All 2 Streams\r\n");
+					break;
+			}
+		}
+		/* For 3 streams: options are 1, 2, 3, or 4(all) */
+		else if (ActiveStreams == 3) {
+			switch(stream_map) {
+				case 1:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 1\r\n");
+					break;
+				case 2:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_2;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 2\r\n");
+					break;
+				case 3:
+					enhanced_frame_en_val = XDPTXSS_REG_STREAM_ZERO;
+					training_pattern_set_val = XDPTXSS_REG_TRAINING_PATTERN_STREAM_3;
+					xil_printf("Encrypting Stream 3\r\n");
+					break;
+				case 4:
+					/* Encrypt all 3 streams */
+					enhanced_frame_en_val = XDPTXSS_REG_ALL_STREAMS_ENCRYPT;
+					training_pattern_set_val = XDPTXSS_REG_TRAINING_PATTERN_STREAM_3;
+					xil_printf("Encrypting All 3 Streams\r\n");
+					break;
+			}
+		}
+		/* For 4 streams: options are 1, 2, 3, 4, or 5(all) */
+		else if (ActiveStreams == 4) {
+			switch(stream_map) {
+				case 1:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 1\r\n");
+					break;
+				case 2:
+					enhanced_frame_en_val = XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_2;
+					training_pattern_set_val = XDPTXSS_REG_STREAM_ZERO;
+					xil_printf("Encrypting Stream 2\r\n");
+					break;
+				case 3:
+					enhanced_frame_en_val = XDPTXSS_REG_STREAM_ZERO;
+					training_pattern_set_val = XDPTXSS_REG_TRAINING_PATTERN_STREAM_3;
+					xil_printf("Encrypting Stream 3\r\n");
+					break;
+				case 4:
+					enhanced_frame_en_val = XDPTXSS_REG_STREAM_ZERO;
+					training_pattern_set_val = XDPTXSS_REG_TRAINING_PATTERN_STREAM_4;
+					xil_printf("Encrypting Stream 4\r\n");
+					break;
+				case 5:
+					/* Encrypt all 4 streams */
+					enhanced_frame_en_val = XDPTXSS_REG_ALL_STREAMS_ENCRYPT;
+					training_pattern_set_val = XDPTXSS_REG_ALL_STREAMS_ENCRYPT;
+					xil_printf("Encrypting All 4 Streams\r\n");
+					break;
+			}
+		}
+
+		/* Write stream encryption register values */
+		XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+				XDP_TX_HDCP_REG_ENCRYPT_ENABLE_L, enhanced_frame_en_val);
+		XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+				XDP_TX_HDCP_REG_ENCRYPT_ENABLE_H, training_pattern_set_val);
+
+	}
+	else if (InstancePtr->Config.MstSupport &&
+	         InstancePtr->DpPtr->TxInstance.MstEnable && ActiveStreams <= 1 ) {
+		/* MST enabled but only 1 stream */
+		xil_printf("\r\n**** MST Mode - Single Stream ****\r\n");
+		/* Write default stream 1 configuration */
+		XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+					XDP_TX_HDCP_REG_ENCRYPT_ENABLE_L, XDPTXSS_REG_ENHANCED_FRAME_EN_STREAM_1);
+		XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr,
+					XDP_TX_HDCP_REG_ENCRYPT_ENABLE_H, XDPTXSS_REG_STREAM_ZERO);
+	}
+	else {
+		/* SST Mode (Not MST capable or MST not enabled) */
+		xil_printf("\r\n**** SST Mode - Single Stream ****\r\n");
+		/* No register configuration needed for SST */
+	}
+}
+
 #endif
 
 #endif

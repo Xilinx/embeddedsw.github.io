@@ -1,11 +1,12 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#xaudioformatter_example":[3,0],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,2],
 "globals_func.html":[1,1],
@@ -26,7 +27,7 @@ var NAVTREEINDEX0 =
 "xaudioformatter_8c.html#gaef1d64562a996ebb195cf2d6ef2f6ea7":[2,0,0],
 "xaudioformatter_8h.html":[2,1],
 "xaudioformatter_8h.html#ga0d2e42ac1ba8d83eca142032ad59320b":[2,1,11],
-"xaudioformatter_8h.html#ga306c87bbfa3dfceed94dec4591465bf5":[2,1,5],
+"xaudioformatter_8h.html#ga3cf85f93b1d4ae0d2127af36ce761a96":[2,1,5],
 "xaudioformatter_8h.html#ga53384ac363365da9f8e31ed55cbf1d0b":[2,1,6],
 "xaudioformatter_8h.html#ga5779760c06dac849bd2e52ceded0ad65":[2,1,4],
 "xaudioformatter_8h.html#ga65ddaecacb3d843dade3da4a44862963":[2,1,7],
@@ -53,8 +54,8 @@ var NAVTREEINDEX0 =
 "xaudioformatter__hw_8h.html#ga6a7006c2fa2d0a88c457d36f7ff17cf7":[2,2,0],
 "xaudioformatter__intr_8c.html":[2,3],
 "xaudioformatter__selftest__example_8c.html":[2,4],
-"xaudioformatter__selftest__example_8c.html#a64fdbf9842b52cd0c47e06996f91f736":[2,4,0],
+"xaudioformatter__selftest__example_8c.html#a4fde0f6d2c6c685ef888f0c1f3cf0f86":[2,4,0],
 "xaudioformatter__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,4,1],
 "xaudioformatter__sinit_8c.html":[2,5],
-"xaudioformatter__sinit_8c.html#ga306c87bbfa3dfceed94dec4591465bf5":[2,5,0]
+"xaudioformatter__sinit_8c.html#ga3cf85f93b1d4ae0d2127af36ce761a96":[2,5,0]
 };

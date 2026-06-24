@@ -60,7 +60,7 @@ var xdp_8h =
     [ "XDp_InterruptHandler", "xdp_8h.html#ga5d95fcd5fa78f5ad7ac1bbfc112ea5f3", null ],
     [ "XDp_IsLaneCountValid", "xdp_8h.html#gaa1d4f025616d218cff6dc47ca3456ff4", null ],
     [ "XDp_IsLinkRateValid", "xdp_8h.html#ga57017c66cf4d3bcf72d257368119e008", null ],
-    [ "XDp_LookupConfig", "xdp_8h.html#ga954fb3ec10b80a366fe9eb361989cb61", null ],
+    [ "XDp_LookupConfig", "xdp_8h.html#ga3b19afc9bd46c30641f6c0b43bba8fe2", null ],
     [ "XDp_SelfTest", "xdp_8h.html#ga506720dc403caa084533c26e52ae464b", null ],
     [ "XDp_SetUserTimerHandler", "xdp_8h.html#ga7e31cad17809d5e67bade4c08a4b6c93", null ],
     [ "XDp_WaitUs", "xdp_8h.html#ga82deff65c3a8f1a090bcda332df3a7ee", null ]

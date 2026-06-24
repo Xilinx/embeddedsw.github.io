@@ -13,13 +13,13 @@ var xcan_8c =
     [ "XCan_GetECCCount", "xcan_8c.html#ga5cf8f7db6b6726cd217e58e6224d56ad", null ],
     [ "XCan_GetMode", "xcan_8c.html#ga6b437133a6a2f40f56cf3c80102f5b0d", null ],
     [ "XCan_GetStatus", "xcan_8c.html#ga502a294405726d96834c2abf574a96e8", null ],
-    [ "XCan_Initialize", "xcan_8c.html#gacbd9f5e256dcbd948afe916d13bc7b35", null ],
-    [ "XCan_LookupConfig", "xcan_8c.html#ga5ea4b468a9ac5d22eb5411cff7a59353", null ],
+    [ "XCan_Initialize", "xcan_8c.html#gaf070d43e1240f9396a9b6f325bcf5fcb", null ],
+    [ "XCan_LookupConfig", "xcan_8c.html#gaf6d18b900bb0896517949dbde898524b", null ],
     [ "XCan_Recv", "xcan_8c.html#ga1d8ac17789423c440872ffd4585b8c3c", null ],
     [ "XCan_Reset", "xcan_8c.html#ga6c52fb4d4b12d62e3e713ad182f00d8b", null ],
     [ "XCan_ResetECC", "xcan_8c.html#ga0b5089d7561e88dec96e54fa618a6da4", null ],
     [ "XCan_Send", "xcan_8c.html#gad4717011f46b8e9d5e15c0bfb04c33c8", null ],
     [ "XCan_SendHighPriority", "xcan_8c.html#ga8ba9b10678fbc6bd6093fdc5e9eb3edd", null ],
-    [ "XCan_VmInitialize", "xcan_8c.html#gae0829418cbc177e93388daebe5fba0c6", null ],
+    [ "XCan_VmInitialize", "xcan_8c.html#ga9ad0e65a90ab46e6b7e56d7aae7910e9", null ],
     [ "XCan_ConfigTable", "xcan_8c.html#gaa7cf63c4b2796eb251614e16d8dc1554", null ]
 ];

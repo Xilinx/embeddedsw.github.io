@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -286,6 +286,12 @@
 *                     examples to recognize it as documentation block
 *                     for doxygen generation.
 * 3.10  gm   07/09/23 Added SDT support.
+* 3.15  vlt  11/05/25 Add 64-bit Addressing support.
+* 3.15  vlt  12/04/25 Add AxiClkFreq and SerialClkDelay to structure for
+*                     clock configuration.And add XIic_SetClk API for
+*                     dynamic clock configuration.
+* 3.15  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -382,16 +388,18 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;	  /**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;        /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;  /**< Device base address */
 	int Has10BitAddr; /**< Does device have 10 bit address decoding */
 	u8 GpOutWidth;	  /**< Number of bits in general purpose output */
 #ifdef SDT
-	u16 IntrId;             /** Bits[11:0] Interrupt-id Bits[15:12]
+	u16 IntrId;             /**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
-	UINTPTR IntrParent;     /** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent;     /**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
+	u32 SerialClkDelay;  /**< SCL inertial delay */
+	u32 AxiClkFreq;     /**< AXI clock frequency in Hz */
 #endif
 } XIic_Config;
 
@@ -480,6 +488,10 @@ typedef struct {
 	void *SendCallBackRef;	  /**< Callback reference for send handler */
 	int IsDynamic;		  /**< TRUE when Dynamic control is used */
 	int IsSlaveSetAckOff;	  /**< TRUE when Slave has set the ACK Off */
+#ifdef SDT
+	u32 SerialClkDelay;     /**< Serial clock delay in clock cycles */
+	u32 AxiClkFreq;         /**< AXI clock frequency in Hz */
+#endif
 
 } XIic;
 
@@ -512,8 +524,8 @@ static inline u32 XIic_IsIicBusy(XIic *InstancePtr)
 int XIic_Initialize(XIic *InstancePtr, u16 DeviceId);
 XIic_Config *XIic_LookupConfig(u16 DeviceId);
 #else
-int XIic_Initialize(XIic *InstancePtr, u32 BaseAddress);
-XIic_Config *XIic_LookupConfig(u32 BaseAddress);
+int XIic_Initialize(XIic *InstancePtr, UINTPTR BaseAddress);
+XIic_Config *XIic_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*
@@ -592,6 +604,10 @@ u32 XIic_IsIicBusy(XIic *InstancePtr);
  */
 void XIic_SetOptions(XIic *InstancePtr, u32 Options);
 u32 XIic_GetOptions(XIic *InstancePtr);
+#ifdef SDT
+u32 XIic_SetClk(XIic *InstancePtr, u32 FsclHz );
+#endif
+
 
 /*
  * Multi-master functions in xiic_multi_master.c

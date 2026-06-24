@@ -31,6 +31,7 @@ var xv__hdmirx_8h =
     [ "XV_HdmiRx_GetTime10Ms", "xv__hdmirx_8h.html#a17849b6428cc8a3c781311f57dafcfc6", null ],
     [ "XV_HdmiRx_GetTime16Ms", "xv__hdmirx_8h.html#a2a1036430ba351ea963563db4535da4b", null ],
     [ "XV_HdmiRx_GetTime200Ms", "xv__hdmirx_8h.html#a8f435060df122213e924791f6c53fbbd", null ],
+    [ "XV_HdmiRx_GetTime500Ms", "xv__hdmirx_8h.html#a51a07e794c8338318dbcc1528d0375ad", null ],
     [ "XV_HdmiRx_GetVersion", "xv__hdmirx_8h.html#a08c3eeefe53e3f62401dfa8f99c2b7b5", null ],
     [ "XV_HDMIRX_H_", "xv__hdmirx_8h.html#a60fbcff2be2495b3027ceef8fec1bd74", null ],
     [ "XV_HdmiRx_IsAudioActive", "xv__hdmirx_8h.html#af584905d3296d895eb136c9e974242a5", null ],
@@ -56,7 +57,8 @@ var xv__hdmirx_8h =
     [ "XV_HdmiRx_VtdIntrDisable", "xv__hdmirx_8h.html#ac5321c5034bf68b7823b23f34a2c1672", null ],
     [ "XV_HdmiRx_VtdIntrEnable", "xv__hdmirx_8h.html#abcdd33420e658bca3b02f3ade81adf7a", null ],
     [ "XV_HdmiRx_VtdSetTimebase", "xv__hdmirx_8h.html#a292964c1e919a19f7e3727c2390e285c", null ],
-    [ "XV_HdmiRx_Callback", "xv__hdmirx_8h.html#ac36f16684e790fe998aa5de17febdd3a", [
+    [ "XV_HdmiRx_Callback", "xv__hdmirx_8h.html#ac36f16684e790fe998aa5de17febdd3a", null ],
+    [ "XV_HdmiRx_AudioFormatType", "xv__hdmirx_8h.html#a7def873fbec656064546ee153f8437be", [
       [ "XV_HDMIRX_AUDFMT_UNKNOWN", "xv__hdmirx_8h.html#a7def873fbec656064546ee153f8437bea9a21769430bd5612ff05015dd828b117", null ],
       [ "XV_HDMIRX_AUDFMT_LPCM", "xv__hdmirx_8h.html#a7def873fbec656064546ee153f8437bea57e8d97ae04398404aa92c9fd5a5f69f", null ],
       [ "XV_HDMIRX_AUDFMT_HBR", "xv__hdmirx_8h.html#a7def873fbec656064546ee153f8437beaa0a0199da4b46259f61dacb297fbbc1b", null ],
@@ -79,7 +81,8 @@ var xv__hdmirx_8h =
       [ "XV_HDMIRX_HANDLER_SYNC_LOSS", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fcafbe340f87937ffaf36f6456bc4385152", null ],
       [ "XV_HDMIRX_HANDLER_MODE", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fcadd79a4e97d3958caf5b10fb4ef5dc7e2", null ],
       [ "XV_HDMIRX_HANDLER_TMDS_CLK_RATIO", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fca4e5cde1d3f281a79cf48fdce32329202", null ],
-      [ "XV_HDMIRX_HANDLER_VIC_ERROR", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fcaea70b1a55b66bbe82b31eff507cb8921", null ]
+      [ "XV_HDMIRX_HANDLER_VIC_ERROR", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fcaea70b1a55b66bbe82b31eff507cb8921", null ],
+      [ "XV_HDMIRX_HANDLER_PHY_ERROR", "xv__hdmirx_8h.html#a93574b274899e5038d38e6524eab66fcaccc125cbe79e12becdf069233908f4cb", null ]
     ] ],
     [ "XV_HdmiRx_State", "xv__hdmirx_8h.html#a1a0a96c3c2d056c688b7444355656695", [
       [ "XV_HDMIRX_STATE_STREAM_DOWN", "xv__hdmirx_8h.html#a1a0a96c3c2d056c688b7444355656695a4998c41076823a110a2794ed12e48485", null ],
@@ -125,7 +128,7 @@ var xv__hdmirx_8h =
     [ "XV_HdmiRx_IsStreamConnected", "xv__hdmirx_8h.html#a9bbc4765c852092e33ff24124b2fc3f8", null ],
     [ "XV_HdmiRx_IsStreamScrambled", "xv__hdmirx_8h.html#a0cc46a138f5d16ad0b85da090e3abb11", null ],
     [ "XV_HdmiRx_IsStreamUp", "xv__hdmirx_8h.html#ac7b5ed80c20dbf62ab2e98569097be2f", null ],
-    [ "XV_HdmiRx_LookupConfig", "xv__hdmirx_8h.html#aa9275414e0f720ec95719eb7bfdabad3", null ],
+    [ "XV_HdmiRx_LookupConfig", "xv__hdmirx_8h.html#abc0fab486095a29edbfd8758338c9882", null ],
     [ "XV_HdmiRx_LookupVmId", "xv__hdmirx_8h.html#ae971dd56fea8451e407ceba3af0612f7", null ],
     [ "XV_HdmiRx_SelfTest", "xv__hdmirx_8h.html#a6b25b29eebf53f7084b6a154ad89a66f", null ],
     [ "XV_HdmiRx_SetCallback", "xv__hdmirx_8h.html#a7e2ed00de2174fd7e00f6829851f24f6", null ],

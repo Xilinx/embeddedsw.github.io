@@ -1,23 +1,34 @@
 /******************************************************************************
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
-
 /*****************************************************************************/
 /**
 * @file xi3cpsx_slave_loopback.c
 *
-* This file consists of a slave mode design example which uses the Xilinx
-* I3C device in slave mode in a loopback setup.
+* This file contains a reference loopback example demonstrating the use of
+* the Xilinx I3C controller operating in slave mode as part of a
+* master-slave loopback configuration.
 *
-* The master recives the data and also sends the data to the slave.
+* In this setup:
+*  - XPAR_XI3CPSX_0_BASEADDR is configured as the I3C slave
+*  - XPAR_XI3CPSX_1_BASEADDR is configured as the I3C master
 *
-* This code assumes that no Operating System is being used.
+* The master transmits data to the slave, and the slave loops the received
+* data back to the master. This validates basic I3C data transfer,
+* reception, and response handling in slave mode.
+*
+* The example has been validated on the VEK385 evaluation board using
+* an EMIO-based loopback connection between the master and slave
+* instances.
+*
+* This application is intended to run in a bare-metal environment
+* and does not rely on any operating system services.
 *
 * @note
 *
-* It's a reference example and the data size should be less than or equal
-* to FIFO size.
+* This is a reference example intended for functional validation.
+* The data payload size must be less than or equal to the I3C FIFO size.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -28,6 +39,8 @@
 * 1.3   sd   11/17/23 Added support for system device-tree flow
 * 1.4   gm   10/06/24 Added return statements, remove resetfifos and remove
 *                     hard coded values.
+* 1.7   vlt  12/18/25 Update Doxygen comments to include SDT flow details.
+*       vlt  01/27/26 Fixed codespell issues
 * </pre>
 *
 ******************************************************************************/
@@ -39,9 +52,9 @@
 #include "xi3cpsx_pr.h"
 
 #ifndef SDT
-#define I3C_DEVICE_ID		XPAR_XI3CPSX_1_DEVICE_ID
+#define I3C_MASTER_ID		XPAR_XI3CPSX_1_DEVICE_ID	/**< I3C Master Device Identifier */
 #else
-#define I3C_DEVICE_ID		XPAR_XI3CPSX_1_BASEADDR
+#define I3C_MASTER_ID		XPAR_XI3CPSX_1_BASEADDR		/**< I3C Master Device Identifier */
 #endif
 
 #ifndef SDT
@@ -87,7 +100,7 @@ int main(void)
 	 * Run the I3c loopback example in slave mode, specify the Device
 	 * ID that is specified in xparameters.h.
 	 */
-	Status = I3cPsxSlaveLoopbackExample(I3C_DEVICE_ID);
+	Status = I3cPsxSlaveLoopbackExample(I3C_MASTER_ID);
 	if (Status != XST_SUCCESS) {
 		xil_printf("I3C Slave Loopback Example Test Failed\r\n");
 		return XST_FAILURE;
@@ -109,12 +122,17 @@ int main(void)
 *
 * This function uses slave driver mode of the I3C.
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	DeviceId is the Device ID of the I3cPsx Device and is the
 *		XPAR_<I3C_instance>_DEVICE_ID value from xparameters.h
+* @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
-* @note
+* @note	        In XSCT/classic flow, DeviceId is used to look up the device
+*               configuration.
 *
 *******************************************************************************/
 #ifndef SDT

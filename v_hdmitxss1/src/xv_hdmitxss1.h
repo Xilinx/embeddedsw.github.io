@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -460,6 +460,7 @@ typedef struct
     XV_HdmiTxSs1_LogCallback LogWriteCallback; /**< Callback for log write */
     u32 *LogWriteRef;  /**< To be passed to the log write callback */
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
     XV_HdmiTxSs1_Callback FrlConfigCallback; /**< Callback for stream up */
     void *FrlConfigRef;  /**< To be passed to the stream up callback */
 
@@ -472,6 +473,7 @@ typedef struct
     XV_HdmiTxSs1_Callback FrlStopCallback; /**< Callback for stream up */
     void *FrlStopRef;  /**< To be passed to the stream up callback */
 
+#endif
     XV_HdmiTxSs1_Callback TmdsConfigCallback; /**< Callback for stream up */
     void *TmdsConfigRef;  /**< To be passed to the stream up callback */
 
@@ -537,7 +539,9 @@ XV_HdmiTxSs1_Config *XV_HdmiTxSs1_LookupConfig(u32 DeviceId);
 XV_HdmiTxSs1_Config *XV_HdmiTxSs1_LookupConfig(UINTPTR BaseAddress);
 u32 XV_HdmiTxSs1_GetDrvIndex(UINTPTR BaseAddress);
 #endif
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 void XV_HdmiTxSS1_SetHdmiFrlMode(XV_HdmiTxSs1 *InstancePtr);
+#endif
 void XV_HdmiTxSS1_SetHdmiTmdsMode(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSS1_SetDviMode(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSS1_HdmiTx1IntrHandler(XV_HdmiTxSs1 *InstancePtr);
@@ -720,19 +724,43 @@ void XV_HdmiTxSS1_SetBackgroundColor(XV_HdmiTxSs1 *InstancePtr,
 					XVMaskColorId  ColorId);
 u8 XV_HdmiTxSS1_IsMasked(XV_HdmiTxSs1 *InstancePtr);
 
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 void XV_HdmiTxSs1_SetFfeLevels(XV_HdmiTxSs1 *InstancePtr, u8 FfeLevel);
 u8 XV_HdmiTxSs1_GetTxFfe(XV_HdmiTxSs1 *InstancePtr, u8 Lane);
+#endif
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 u8 XV_HdmiTxSs1_GetFrlLineRate(XV_HdmiTxSs1 *InstancePtr);
 u8 XV_HdmiTxSs1_GetFrlRate(XV_HdmiTxSs1 *InstancePtr);
 u8 XV_HdmiTxSs1_GetFrlLanes(XV_HdmiTxSs1 *InstancePtr);
+#endif
+u8 XV_HdmiTxSs1_FrlCalcBandwidth(XV_HdmiTxSs1 *InstancePtr,
+		XVidC_VideoMode VmId, XVidC_ColorFormat ColorFormat,
+		XVidC_ColorDepth Bpc);
+/**
+ * Start TMDS mode.
+ *
+ * @param InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+ *
+ * @return XST_SUCCESS on success, error code otherwise.
+ */
 int XV_HdmiTxSs1_StartTmdsMode(XV_HdmiTxSs1 *InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 int XV_HdmiTxSs1_StartFrlTraining(XV_HdmiTxSs1 *InstancePtr,
 				XHdmiC_MaxFrlRate FrlRate);
 void XV_HdmiTxSs1_SetFrlMaxFrlRate(XV_HdmiTxSs1 *InstancePtr,
 				XHdmiC_MaxFrlRate MaxFrlRate);
 int XV_HdmiTxSs1_FrlStreamStart(XV_HdmiTxSs1 *InstancePtr);
 int XV_HdmiTxSs1_FrlStreamStop(XV_HdmiTxSs1 *InstancePtr);
+#endif
+/**
+ * Start legacy HDMI TMDS mode.
+ *
+ * @param InstancePtr is a pointer to the XV_HdmiTxSs1 core instance.
+ *
+ * @return XST_SUCCESS if TMDS mode is successfully started, XST_FAILURE otherwise.
+ */
 int XV_HdmiTxSs1_TmdsStart(XV_HdmiTxSs1 *InstancePtr);
+#ifdef XPAR_XV_HDMI_TX_FRL_ENABLE
 void XV_HdmiTxSs1_SetFrlWrongLtp(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_ClearFrlWrongLtp(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetFrlLtp(XV_HdmiTxSs1 *InstancePtr, u8 Lane,
@@ -741,10 +769,14 @@ void XV_HdmiTxSS1_StopFRLStream(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSS1_StartFRLStream(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetFrlExtVidCke(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSs1_SetFrlIntVidCke(XV_HdmiTxSs1 *InstancePtr);
+#endif
 u8 *XV_HdmiTxSs1_GetScdcEdRegisters(XV_HdmiTxSs1 *InstancePtr);
 void XV_HdmiTxSS1_SetHpdTolerance(XV_HdmiTxSs1 *InstancePtr,
 				 XV_HdmiTxSs1_HpdToleranceType Type,
 				 u16 ToleranceVal);
+
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif

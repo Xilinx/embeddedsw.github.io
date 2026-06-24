@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -32,7 +32,9 @@
 
 
 /************************** Macros Definitions *****************************/
-#define XMIPI_TX_PHY_SOFTRESET_TIMEOUT 	5000UL
+#define XMIPI_TX_PHY_SOFTRESET_TIMEOUT 	5000UL /**< Timeout value in loop iterations
+						* for soft reset completion. Ensures at least 20 core clock
+						* cycles forreset to take effect. */
 
 /************************** Function Prototypes ******************************/
 
@@ -138,6 +140,27 @@ u32 XMipi_Tx_Phy_Configure(XMipi_Tx_Phy *InstancePtr, u8 Handle, u32 Value)
 }
 
 
+/****************************************************************************/
+/**
+ * Program a symbol value into the programmable sequence table.
+ *
+ * This helper masks in the 3-bit symbol value into the correct programmable
+ * sequence register (DATA0 or DATA1) based on the requested symbol index. The
+ * programmable sequence control is temporarily disabled to avoid partial
+ * writes.
+ *
+ * @param	InstancePtr is the XMipi_Tx_Phy instance.
+ * @param	bitpos is the programmable sequence symbol index.
+ * @param	Value is the 3-bit symbol value to program.
+ *
+ * @return
+ *		- XST_SUCCESS if the symbol was programmed.
+ *		- XST_FAILURE if the control register remained enabled and the write
+ *		  was aborted.
+ *
+ * @note	The core must be configured for C-PHY mode (IsDphy == 0) and
+ *		register access must be enabled.
+ ****************************************************************************/
 u32 XMipi_Tx_Phy_Prog_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq bitpos, u32 Value)
 {
 
@@ -177,6 +200,18 @@ u32 XMipi_Tx_Phy_Prog_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq b
 
 }
 
+/*****************************************************************************/
+/**
+ * Read a programmable sequence register.
+ *
+ * @param	InstancePtr is the XMipi_Tx_Phy instance.
+ * @param	bitpos is the programmable sequence symbol index.
+ *
+ * @return	Register contents of DATA0 (symbols 0-9) or DATA1 (symbols 10-13).
+ *
+ * @note	The core must be configured for C-PHY mode (IsDphy == 0) and
+ *		register access must be enabled.
+ ****************************************************************************/
 u32 XMipi_Tx_Phy_Get_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq bitpos)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -195,6 +230,17 @@ u32 XMipi_Tx_Phy_Get_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq bi
 	}
 }
 
+/*****************************************************************************/
+/**
+ * Enable programmable sequence control.
+ *
+ * @param	InstancePtr is the XMipi_Tx_Phy instance.
+ *
+ * @return	XST_SUCCESS always.
+ *
+ * @note	The core must be configured for C-PHY mode (IsDphy == 0) and
+ *		register access must be enabled.
+ ****************************************************************************/
 u32 XMipi_Tx_Phy_En_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -208,6 +254,17 @@ u32 XMipi_Tx_Phy_En_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+ * Disable programmable sequence control.
+ *
+ * @param	InstancePtr is the XMipi_Tx_Phy instance.
+ *
+ * @return	XST_SUCCESS always.
+ *
+ * @note	The core must be configured for C-PHY mode (IsDphy == 0) and
+ *		register access must be enabled.
+ ****************************************************************************/
 u32 XMipi_Tx_Phy_Dis_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -221,6 +278,17 @@ u32 XMipi_Tx_Phy_Dis_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+ * Read the programmable sequence control register.
+ *
+ * @param	InstancePtr is the XMipi_Tx_Phy instance.
+ *
+ * @return	Current contents of the programmable sequence control register.
+ *
+ * @note	The core must be configured for C-PHY mode (IsDphy == 0) and
+ *		register access must be enabled.
+ ****************************************************************************/
 u32 XMipi_Tx_Phy_Get_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr)
 {
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -330,8 +398,6 @@ u32 XMipi_Tx_Phy_GetInfo(XMipi_Tx_Phy *InstancePtr, u8 Handle)
 *
 * @param 	InstancePtr is the XMipi_Tx_Phy instance to operate on.
 *
-* @return 	None
-*
 * @note		None.
 *****************************************************************************/
 void XMipi_Tx_Phy_Reset(XMipi_Tx_Phy *InstancePtr)
@@ -378,8 +444,6 @@ void XMipi_Tx_Phy_Reset(XMipi_Tx_Phy *InstancePtr)
 * @param 	DataLane represents which Data Lane to act upon
 * @param 	Mask contains information about which bits to reset
 *
-* @return 	None
-*
 * @note     	None.
 *****************************************************************************/
 void XMipi_Tx_Phy_ClearDataLane(XMipi_Tx_Phy *InstancePtr, u8 DataLane, u32 Mask)
@@ -405,7 +469,7 @@ void XMipi_Tx_Phy_ClearDataLane(XMipi_Tx_Phy *InstancePtr, u8 DataLane, u32 Mask
 *
 * @param 	InstancePtr is the XMipi_Tx_Phy instance to operate on.
 *
-* @return 	Bitmask containing which of the events have occured along with
+* @return 	Bitmask containing which of the events have occurred along with
 * 		the mode of the Clock Lane in DPhy
 *
 * @note 	None.
@@ -453,7 +517,7 @@ u32 XMipi_Tx_Phy_GetClkLaneMode(XMipi_Tx_Phy *InstancePtr)
 * @param	InstancePtr is the XMipi_Tx_Phy instance to operate on.
 * @param	DataLane for which the status is sought for.
 *
-* @return	Bitmask containing which of the events have occured along with
+* @return	Bitmask containing which of the events have occurred along with
 * 		the mode of the Data Lane in DPhy
 *
 * @note		None.
@@ -511,7 +575,7 @@ u8 XMipi_Tx_Phy_GetDLCalibStatus(XMipi_Tx_Phy *InstancePtr, u8 DataLane)
 
 /****************************************************************************/
 /**
-* This is used to get specfic Lane mode information about a Data Lane.
+* This is used to get specific Lane mode information about a Data Lane.
 *
 * @param	InstancePtr is the XMipi_Tx_Phy instance to operate on.
 * @param	DataLane for which the mode info is requested.
@@ -590,8 +654,6 @@ u32 XMipi_Tx_Phy_GetVersionReg(XMipi_Tx_Phy *InstancePtr)
 *
 * @param	InstancePtr is the XMipi_Tx_Phy instance to operate on.
 * @param	Flag denoting whether to enable or disable the Mipi_Tx_Phy core
-*
-* @return	None.
 *
 * @note 	None.
 *****************************************************************************/

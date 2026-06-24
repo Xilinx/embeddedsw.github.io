@@ -1,5 +1,21 @@
 var xdcsub_8h =
 [
+    [ "XDCSUB_LIVVID_ALPHA_DIS", "xdcsub_8h.html#a6cd078ee51178b2ae54f203929324e5f", null ],
+    [ "XDCSUB_LIVVID_ALPHA_EN", "xdcsub_8h.html#aaae2d2a674f56c1d1c3855ad55e2b895", null ],
+    [ "XDCSUB_LIVVID_SDP_DIS", "xdcsub_8h.html#aef22b3cfc8aa3b8246d0d90ff616cf16", null ],
+    [ "XDCSUB_LIVVID_SDP_EN", "xdcsub_8h.html#a4ebfcb1d9028106998a71860fa1bfedb", null ],
+    [ "XDCSUB_LIVVID_SEL_BOTH", "xdcsub_8h.html#a4368c62ca68781dcae5df5037ccf892b", null ],
+    [ "XDCSUB_LIVVID_SEL_NONE", "xdcsub_8h.html#a7958fb3ab0885091d527b3340cc865bc", null ],
+    [ "XDCSUB_LIVVID_SEL_V01", "xdcsub_8h.html#a3facf4fc83a3470a80020f6c9d4e387f", null ],
+    [ "XDCSUB_LIVVID_SEL_V02", "xdcsub_8h.html#a0985ecaee82df349e4e55cc831764834", null ],
+    [ "XDCSUB_OPMODE_BYPASS", "xdcsub_8h.html#aa9da509a0585433ac086053a1b260058", null ],
+    [ "XDCSUB_OPMODE_FUNCTIONAL", "xdcsub_8h.html#ae597de7272868cb833836a0ac24d526e", null ],
+    [ "XDCSUB_PPTMODE_LIVE", "xdcsub_8h.html#a6cb44f3425f061c17f2dd5337492806d", null ],
+    [ "XDCSUB_PPTMODE_MIXED", "xdcsub_8h.html#a108493c2d797aaed71f2875851b21826", null ],
+    [ "XDCSUB_PPTMODE_NONLIVE", "xdcsub_8h.html#ae409b0550fbe622ad94d01f552d285a3", null ],
+    [ "XDCSUB_VIDMODE_AV", "xdcsub_8h.html#a135c40111d127a090667f8d7fc05ef6a", null ],
+    [ "XDCSUB_VIDMODE_NONE", "xdcsub_8h.html#a686739ddecc3e0d558ddd2cdc7041315", null ],
+    [ "XDCSUB_VIDMODE_VONLY", "xdcsub_8h.html#a2eebae8e2dda476ddbffa09a6823fd0e", null ],
     [ "XDcSub_AudClkSelect", "xdcsub_8h.html#a9e2dfa7a8f193d46a8b98011b3d7519f", null ],
     [ "XDcSub_AudExtraBSControl", "xdcsub_8h.html#a6253f94f43ea4c9b1b0e4f4afe3caef0", null ],
     [ "XDcSub_AudioChannelSelect", "xdcsub_8h.html#a7e28d25b201aed981d011c0786805170", null ],
@@ -21,7 +37,7 @@ var xdcsub_8h =
     [ "XDcSub_GetStcVSyncTs", "xdcsub_8h.html#a145b973c11f501e8cf46816551879037", null ],
     [ "XDcSub_Initialize", "xdcsub_8h.html#a2f68f49cec96f2a3fa4cbd27a348b89a", null ],
     [ "XDcSub_SetAudInterfaceMode", "xdcsub_8h.html#a07fc65a4683cb3628ab9932881012920", null ],
-    [ "XDcSub_SetAudioChCtrl", "xdcsub_8h.html#af8e5b5902657762bb2674aa9d2c67b11", null ],
+    [ "XDcSub_SetAudioChCtrl", "xdcsub_8h.html#a0e50ad340f27139f5ab79eb47a8da4a1", null ],
     [ "XDcSub_SetAudioSegmentedMode", "xdcsub_8h.html#a8c1912d44869a6693d0b3f9ef4afd68e", null ],
     [ "XDcSub_SetAudioVideoClkSrc", "xdcsub_8h.html#a7cb7b43274aa1990e06e1897dce495ad", null ],
     [ "XDcSub_SetBlenderBgColor", "xdcsub_8h.html#a14c4f7a4fa8ddd73f3156b5f0b0a9d92", null ],
@@ -34,7 +50,7 @@ var xdcsub_8h =
     [ "XDcSub_SetInputNonLiveVideoFormat", "xdcsub_8h.html#a450221da65b0fd7b0b7ae0a22319a3ee", null ],
     [ "XDcSub_SetInputStreamCSC", "xdcsub_8h.html#ae6de741725a8f7ad931a5f5321738923", null ],
     [ "XDcSub_SetInputStreamLayerControl", "xdcsub_8h.html#a6567abe65744c4db7db138501539b289", null ],
-    [ "XDcSub_SetNonLiveLatency", "xdcsub_8h.html#afc4bdd296b984d3fd3b83eab492d7945", null ],
+    [ "XDcSub_SetNonLiveLatency", "xdcsub_8h.html#a74d5fd146eb1e00162c811564a2d2910", null ],
     [ "XDcSub_SetOutputStreamCSC", "xdcsub_8h.html#ae35e630467d22d3ff005421fe097184a", null ],
     [ "XDcSub_SetOutputVideoFormat", "xdcsub_8h.html#abbdb2e761cc7fd768c4061fba1d25d94", null ],
     [ "XDcSub_SetSdp", "xdcsub_8h.html#a4ab89f9e27f89ecc8c434af9b9317f58", null ],
@@ -48,5 +64,6 @@ var xdcsub_8h =
     [ "XDcSub_SetVidFrameSwitch", "xdcsub_8h.html#a1be85a1e79a6c5a905c74fecec6e22f7", null ],
     [ "XDcSub_SetVidInterfaceMode", "xdcsub_8h.html#a5f6d102f994ce2ff5ee91522884fac14", null ],
     [ "XDcSub_SetVidStreamSrc", "xdcsub_8h.html#ad6f0a1ab2065cec88c91427ba7a7ce4b", null ],
-    [ "XDcSub_VidClkSelect", "xdcsub_8h.html#af9cfb3a645e195c5555f6ceb918ce616", null ]
+    [ "XDcSub_VidClkSelect", "xdcsub_8h.html#af9cfb3a645e195c5555f6ceb918ce616", null ],
+    [ "XDcSub_ConfigTable", "xdcsub_8h.html#af850bf1b9167e0e232110f53eac9e4bc", null ]
 ];

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright 2023-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -81,7 +81,7 @@
 *                             or HDMI sink based on EDID-HDMI VSDB.
 *                       Fixed system flow to avoid RX Buffer Overflow during
 *                              transition.
-*                       Code Clean-Up on comments and 80 Characted per line.
+*                       Code Clean-Up on comments and 80 Character per line.
 *                       Improve audio configuration during Pass-through mode.
 *                       Disable HDMI RX Video Stream when EnableColorBar API
 *                              is called.
@@ -214,6 +214,7 @@ void RxStreamUpCallback(void *CallbackRef);
 void RxStreamDownCallback(void *CallbackRef);
 void VphyHdmiRxInitCallback(void *CallbackRef);
 void VphyHdmiRxReadyCallback(void *CallbackRef);
+void RxPhyErrorCallback(void *CallbackRef);
 #endif
 void VphyErrorCallback(void *CallbackRef);
 #if (XPAR_VPHY_0_TRANSCEIVER == XVPHY_GTXE2)
@@ -1078,13 +1079,19 @@ void Info(void)
 #ifdef XPAR_XV_HDMITXSS_NUM_INSTANCES
 	xil_printf("TX reference clock frequency: %0d Hz\r\n",
 			   XVphy_ClkDetGetRefClkFreqHz(&Vphy, XVPHY_DIR_TX));
+	xil_printf("TX reference clock frequency (raw): %0d Hz\r\n",
+			   XVphy_ClkDetGetRefClkFreqRawHz(&Vphy, XVPHY_DIR_TX));
 #endif
 #ifdef XPAR_XV_HDMIRXSS_NUM_INSTANCES
 	xil_printf("RX reference clock frequency: %0d Hz\r\n",
 			   XVphy_ClkDetGetRefClkFreqHz(&Vphy, XVPHY_DIR_RX));
+	xil_printf("RX reference clock frequency (raw): %0d Hz\r\n",
+			   XVphy_ClkDetGetRefClkFreqRawHz(&Vphy, XVPHY_DIR_RX));
 	if(Vphy.Config.DruIsPresent == (TRUE)) {
 		xil_printf("DRU reference clock frequency: %0d Hz\r\n",
 				   XVphy_DruGetRefClkFreqHz(&Vphy));
+		xil_printf("DRU reference clock frequency (raw): %0d Hz\r\n",
+				   XVphy_DruGetRefClkFreqRawHz(&Vphy));
 	}
 #endif
 	XVphy_HdmiDebugInfo(&Vphy, 0, XVPHY_CHANNEL_ID_CH1);
@@ -1152,7 +1159,7 @@ void TxConnectCallback(void *CallbackRef) {
 		TxCableConnect = (TRUE);
 
 		/* Set Flag when the cable is connected
-		 * this call back take in to account two scneario
+		 * this call back take in to account two scenario
 		 * cable connect and cable disconnect
 		 * Stable RX stream is available
 		 */
@@ -1318,7 +1325,7 @@ void RxConnectCallback(void *CallbackRef) {
 
 #if(LOOPBACK_MODE_EN != 1)
 		/* Check for Pass-through:
-		 * Doesnt require to restart colorbar
+		 * Does not require to restart colorbar
 		 * if the system is in colorbar mode
 		 */
 		if (IsPassThrough) {
@@ -1734,7 +1741,7 @@ void RxStreamDownCallback(void *CallbackRef) {
 #ifdef XPAR_XV_HDMITXSS_NUM_INSTANCES
 	ResetAuxFifo();
 	/* Check for Pass-through
-	* Doesnt require to restart colorbar
+	* Does not require to restart colorbar
 	* if the system is in colorbar mode
 	*/
 	if (IsPassThrough) {
@@ -1935,6 +1942,26 @@ void RxStreamUpCallback(void *CallbackRef) {
 	/* Reset Video Frame CRC */
 	XVidFrameCrc_Reset();
 #endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function is called when Phy Error occurs.
+*
+* @param  None.
+*
+* @return None.
+*
+* @note   None.
+*
+******************************************************************************/
+void RxPhyErrorCallback(void *CallbackRef) {
+	XVphy_IBufDsEnable(&Vphy, 0, XVPHY_DIR_RX, (FALSE));
+	usleep(10);
+	XVphy_MmcmPowerDown(&Vphy, 0, XVPHY_DIR_RX, (FALSE));
+	XVphy_IBufDsEnable(&Vphy, 0, XVPHY_DIR_RX, (TRUE));
+
 }
 
 /*****************************************************************************/
@@ -3558,6 +3585,10 @@ int main() {
 	XV_HdmiRxSs_SetCallback(&HdmiRxSs,
 				XV_HDMIRXSS_HANDLER_STREAM_UP,
 				(void *)RxStreamUpCallback,
+				(void *)&HdmiRxSs);
+	XV_HdmiRxSs_SetCallback(&HdmiRxSs,
+				XV_HDMIRXSS_HANDLER_PHY_ERROR,
+				(void *)RxPhyErrorCallback,
 				(void *)&HdmiRxSs);
 
 #ifdef USE_HDCP

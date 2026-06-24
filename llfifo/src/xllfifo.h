@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2005 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -164,6 +164,9 @@
  *		       Fix doxygen warnings in the driver.
  * 5.5 sd     09/04/20  Makefile update for parallel execution.
  * 5.6 sd     07/7/23  Add system devicetree support.
+ * 6.1 vlt    12/30/25 Update Doxygen comments to include SDT flow details.
+ * 6.1 vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+ *                     to support 64-bit addressing.
  * </pre>
  *
  *****************************************************************************/
@@ -195,7 +198,7 @@ typedef struct XLlFifo {
 	                        *   has been initialized.
 	                        */
 
-	u32 Axi4BaseAddress;	/**< BaseAddress if the FIFO Data interface is
+	UINTPTR Axi4BaseAddress;	/**< BaseAddress if the FIFO Data interface is
 				 *	AXI4 this address should use for FIFO
 				 *	access
 				 */
@@ -210,7 +213,7 @@ typedef struct XLlFifo {
 	                                  */
 #ifdef SDT
 	u32 IntId; /**< Interrupt ID on GIC **/
-	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XLlFifo;
@@ -219,14 +222,14 @@ typedef struct XLlFifo_Config {
 #ifndef SDT
 	u32 DeviceId;		/**< Deviceid of the AXI FIFO */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;	/**< Base Address of the AXI FIFO */
-	u32 Axi4BaseAddress;    /**< Axi4 interface Base address */
+	UINTPTR Axi4BaseAddress;    /**< Axi4 interface Base address */
 	u32 Datainterface;	/**< Type of Datainterface */
 #ifdef SDT
 	u32 IntId; /**< Interrupt ID on GIC **/
-	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 }XLlFifo_Config;

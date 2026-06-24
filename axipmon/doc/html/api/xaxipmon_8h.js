@@ -124,7 +124,7 @@ var xaxipmon_8h =
     [ "XAxiPmon_GetWriteIdMask", "xaxipmon_8h.html#ga4e79500a048a04d8fda8fcdcb4798d37", null ],
     [ "XAxiPmon_GetWrLatencyEnd", "xaxipmon_8h.html#ga81175e1827d1ae0b95742638f19f0347", null ],
     [ "XAxiPmon_GetWrLatencyStart", "xaxipmon_8h.html#ga5d7d29017bfc83bfe141657c924788cd", null ],
-    [ "XAxiPmon_LookupConfig", "xaxipmon_8h.html#ga93ed0a2b99a2e74dc0da62ed674fd2bb", null ],
+    [ "XAxiPmon_LookupConfig", "xaxipmon_8h.html#ga5e458d0ea6c0a458eb3bdd4b638be748", null ],
     [ "XAxiPmon_ResetFifo", "xaxipmon_8h.html#ga8da3b49d3fc16437858d5a61905981ae", null ],
     [ "XAxiPmon_ResetGlobalClkCounter", "xaxipmon_8h.html#ga25191e9280ab4a1dcffae7afd08ae599", null ],
     [ "XAxiPmon_ResetMetricCounter", "xaxipmon_8h.html#ga34106e1380f932cb94c74e1bea3a34b3", null ],

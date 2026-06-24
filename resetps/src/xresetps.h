@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,6 +36,9 @@
 * 1.5   sk     11/30/21 Fix compilation warnings reported with "-Wundef" flag.
 * 1.6   sd     07/07/23 Added SDT support.
 * 1.7   sd     11/07/23 Remove the unused pss ref frequency
+* 1.8   vlt    12/30/25 Update Doxygen comments to include SDT flow details.
+* 1.8   vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                       to support 64-bit addressing.
 * </pre>
 *
 ******************************************************************************/
@@ -80,8 +83,8 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;                    /**< Unique ID of device */
 #else
-	char *Name;
-	u32 BaseAddress;
+	char *Name;                     /**< Name of the device */
+	UINTPTR BaseAddress;                /**< Base address of the device */
 #endif
 } XResetPs_Config;
 
@@ -358,7 +361,7 @@ typedef enum {
 #ifndef SDT
 XResetPs_Config *XResetPs_LookupConfig(u16 DeviceId);
 #else
-XResetPs_Config *XResetPs_LookupConfig(u32 BaseAddress);
+XResetPs_Config *XResetPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*

@@ -1,4 +1,4 @@
 var xcframe__sinit_8c =
 [
-    [ "XCframe_LookupConfig", "xcframe__sinit_8c.html#ga8251535b86bf918ab9b32b1073ce61a4", null ]
+    [ "XCframe_LookupConfig", "xcframe__sinit_8c.html#gaae4bdd416d334fde1274b80c3a364c85", null ]
 ];

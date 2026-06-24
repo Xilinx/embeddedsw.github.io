@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2008 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -42,6 +42,8 @@
 *                       CR-965028.
 * 6.4   sd     07/08/23 Added SDT support.
 * 6.6   sd     12/16/24 Update the DDR_HIGH_ADDR to support BRAM..
+* 6.8   vlt    12/18/25 Update Doxygen comments to include SDT flow details.
+* 6.8   vlt    01/06/26 fixed GCC warnings.
 *
 * </pre>
 *
@@ -169,13 +171,18 @@ int main()
 * - Scroll the screen once and draw a line
 * - Enable the TFT display
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	TftDeviceId is the unique Id of the device.
+* @endif
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if unsuccessful.
 *
-* @note		None.
+* @note		In XSCT/classic flow, DeviceId is used to look up the device
+*               configuration.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -362,10 +369,10 @@ static int TftDrawLine(XTft *InstancePtr, u32 ColStartPos, u32 RowStartPos,
 	 * Check whether the given position of X,Y dimensions
 	 * are below the limits of the screen.
 	 */
-	if (ColStartPos >= 0 && ColStartPos <= (XTFT_DISPLAY_WIDTH - 1) &&
-		ColEndPos >= 0 && ColEndPos <= (XTFT_DISPLAY_WIDTH - 1) &&
-		RowStartPos >= 0 && RowStartPos <= (XTFT_DISPLAY_HEIGHT - 1) &&
-		RowEndPos >= 0 && RowEndPos <= (XTFT_DISPLAY_HEIGHT - 1)) {
+	if (ColStartPos <= (XTFT_DISPLAY_WIDTH - 1) &&
+		ColEndPos <= (XTFT_DISPLAY_WIDTH - 1) &&
+		RowStartPos <= (XTFT_DISPLAY_HEIGHT - 1) &&
+		RowEndPos <= (XTFT_DISPLAY_HEIGHT - 1)) {
 
 		/*
 		 * Check the exception case where slope can be infinite
@@ -431,7 +438,7 @@ static int TftDrawLine(XTft *InstancePtr, u32 ColStartPos, u32 RowStartPos,
 					 * Divide by zero.
 					 */
 					if((Slope == 0) &&
-							(YIntercept == -1)) {
+							(YIntercept == (u32)-1)) {
 
 						/*
 						 * Vertical line.

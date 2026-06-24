@@ -1,6 +1,6 @@
 /***************************************************************************************************
 * Copyright (C) 2021 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ***************************************************************************************************/
 
@@ -23,6 +23,7 @@
  * 1.00  ssc  09/05/21 First release
  * 1.01  ng   06/30/23 Added support for system device-tree flow
  * 1.02	 ss	  03/12/24 Minor fix to include xparameters header file
+ * 1.8   bha  01/07/26 Fixed Doxygen warnings
  *</pre>
  **************************************************************************************************/
 
@@ -104,7 +105,7 @@ int Trngpsv_Ptrng_DF_Example(u16 DeviceId)
 int Trngpsv_Ptrng_DF_Example(UINTPTR BaseAddr)
 #endif
 {
-	int Status = XST_SUCCESS;
+	int Status = XST_FAILURE;
 	XTrngpsv_Config *Config;
 	XTrngpsv_UsrCfg UsrCfg = {
 			.Mode = XTRNGPSV_PTRNG,
@@ -127,6 +128,7 @@ int Trngpsv_Ptrng_DF_Example(UINTPTR BaseAddr)
 #endif
 	if (NULL == Config) {
 		xil_printf("LookupConfig Failed \n\r");
+		Status = XST_FAILURE;
 		goto END;
 	}
 
@@ -204,11 +206,9 @@ END:
  * @brief
  * This function prints specified number of bytes from an address.
  *
- * @param	src is start address from where to print.
+ * @param	Src is start address from where to print.
  *
- * @param	size is size of buffer pointed by src.
- *
- * @return	None.
+ * @param	Size is size of buffer pointed by Src.
  *
  ************************************************************************************************/
 static void Trngpsv_PrintBytes(u8 *Src, u32 Size)

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  * @addtogroup i2stx Overview
  * @{
  *
- * This file contains defintions of data structures used in debugging and
+ * This file contains definitions of data structures used in debugging and
  * logging the I2S Transmitter transactions.
  *
  * @note	None.
@@ -62,7 +62,7 @@ typedef enum {
 		XI2S_TX_AUD_UNDRFLW_EVT,   /**< Audio Underflow Detected Event*/
 		XI2S_TX_LOG_EVT_INVALID      /**< Invalid Log Event */
 } XI2s_Tx_LogEvt;
-/*@}*/
+/** @} */
 
 /**
  * This structure is used to store log events

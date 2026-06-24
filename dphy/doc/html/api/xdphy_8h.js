@@ -48,7 +48,7 @@ var xdphy_8h =
     [ "XDphy_GetInfo", "xdphy_8h.html#ga08901fa94d34b59883610d1590165919", null ],
     [ "XDphy_GetPacketCount", "xdphy_8h.html#ga0da2a930bce29d8c6a2b74d020aa3561", null ],
     [ "XDphy_GetRegIntfcPresent", "xdphy_8h.html#ga4e15b3ffd6c4cfca5eedda2a7c1e9d4d", null ],
-    [ "XDphy_LookupConfig", "xdphy_8h.html#ga10e60bbb87cfd74ee7aace32f31b5dee", null ],
+    [ "XDphy_LookupConfig", "xdphy_8h.html#gaa6778145c31ce276995fe2b293967cab", null ],
     [ "XDphy_Reset", "xdphy_8h.html#gaef0df18f2a9cdc07df62ba6d63347900", null ],
     [ "XDphy_SelfTest", "xdphy_8h.html#ga0e170cc371483fc64fd515d1cc301ee4", null ]
 ];

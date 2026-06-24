@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -50,7 +50,9 @@
 *                     examples.
 * 4.6   ht   07/07/23 Added support for system device-tree flow.
 * 4.9   ht   04/17/25 Update Canonical definition to be inline with xsct flow.
-*</pre>
+* 4.10  vlt  12/14/25 Update Doxygen comments to include SDT flow details.
+* 4.10  ht   02/17/26 Fix GCC warnings for unused parameter.
+* </pre>
 *******************************************************************************/
 
 /***************************** Include Files **********************************/
@@ -75,23 +77,27 @@
 * 2 processors in the system but there must always be a 0.
 */
 
+/** CPU ID definition for multi-processor systems */
 #if XPAR_CPU_ID != 0
 #define MY_CPU_ID 1
 #else
 #define MY_CPU_ID XPAR_CPU_ID
 #endif /* XPAR_CPU_ID != 0 */
 
-int Timeout;
-
+/** Size of the buffer for received message */
 #define MSGSIZ  1024
 
+/** Size of the Hello Message */
 #define HELLO_SIZE 40
 
-#define TIMEOUT_MAX_COUNT	0x10000000  /* max count to wait for message */
+/** Max count to wait for message */
+#define TIMEOUT_MAX_COUNT	0x10000000
 
 
-#define MAILBOX_RIT	4	/* mailbox receive interrupt threshold */
-#define MAILBOX_SIT	4	/* mailbox send interrupt threshold */
+/** Mailbox receive interrupt threshold */
+#define MAILBOX_RIT	4
+/** Mailbox send interrupt threshold */
+#define MAILBOX_SIT	4
 
 
 /*
@@ -100,8 +106,11 @@ int Timeout;
  * change all the needed parameters in one place.
  */
 #ifndef SDT
+/** Mailbox Device ID */
 #define MBOX_DEVICE_ID		XPAR_MBOX_0_DEVICE_ID
+/** Interrupt Controller Device ID */
 #define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
+/** Mailbox Interrupt ID */
 #define MBOX_INTR_ID		XPAR_INTC_0_MBOX_0_VEC_ID
 #else
 #define XMBOX_BASEADDRESS XPAR_MBOX_0_BASEADDR
@@ -110,7 +119,8 @@ int Timeout;
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-#define printf		xil_printf	/* A smaller footprint printf */
+/** A smaller footprint printf */
+#define printf		xil_printf
 
 /************************** Variable Definitions *****************************/
 static XMbox Mbox;
@@ -126,6 +136,7 @@ static volatile int IntrSTACount = 0;
 static volatile int IntrRTACount = 0;
 static volatile int IntrERRCount = 0;
 
+/* Buffer for storing received message, aligned to 4-byte boundary */
 char RecvMsg[MSGSIZ] __attribute__ ((aligned(4)));
 
 u32 Temp1pad = 0;		/* alignment */
@@ -154,8 +165,6 @@ static int MailboxSetupIntrSystem(XIntc *IntcInstancePtr,
 /*****************************************************************************/
 /**
 * This function is the main function for the mailbox interrupt example.
-*
-* @param	None
 *
 * @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful
 *
@@ -191,16 +200,22 @@ int main(void)
 * processor. It also uses the interrupt to check whether the other processor
 * has started to send or receive.
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	IntcInstancePtr is the device instance of the interrupt
 *		controller that is being worked on.
 * @param	MboxDeviceId is the Mailbox device ID.
 * @param	MboxIntrId is the Mailbox interrupt ID.
+* @endif
 *
 * @return
 *		- XST_SUCCESS if the test passes
 *		- XST_FAILURE  if the test fails
 *
-* @note		None
+* @note  	In XSCT/classic flow, DeviceId is used to look up the
+*               device configuration.
+*
 *
 *****************************************************************************/
 #ifndef SDT
@@ -211,9 +226,6 @@ int MailboxExample(UINTPTR BaseAddress)
 {
 	XMbox_Config *ConfigPtr;
 	int Status;
-	u32 Nbytes;
-	u32 BytesSent;
-	u32 BytesRcvd;
 
 	/*
 	 * Lookup configuration data in the device configuration table.
@@ -317,6 +329,7 @@ int MailboxExample_Wait(volatile int *Count, char *Name, int Threshold)
 	while (*Count <= Threshold) {
 		Timeout++;
 		if (Timeout > TIMEOUT_MAX_COUNT) {
+			printf("MailboxExample_Wait: Timeout waiting for %s\r\n", Name);
 			return XST_FAILURE;
 		}
 	}
@@ -345,7 +358,9 @@ int MailboxExample_Send(XMbox *MboxInstancePtr, int CPU_Id, int Blocking)
 	int Status;
 	u32 Nbytes;
 	u32 BytesSent;
-	u32 BytesRcvd;
+
+	printf("CPU %d: Sending message (%s)\r\n", CPU_Id,
+	       Blocking ? "blocking" : "non-blocking");
 
 	Nbytes = 0;
 	if (Blocking) {
@@ -376,6 +391,8 @@ int MailboxExample_Send(XMbox *MboxInstancePtr, int CPU_Id, int Blocking)
 *
 * @param	MboxInstancePtr is the instance pointer for the XMbox.
 * @param	CPU_Id is the CPU ID for the program that is running on.
+* @param	Blocking is set to 1 for the receive to block till the data is
+*		received.
 *
 * @return
 *		- XST_SUCCESS if the receive succeeds
@@ -388,9 +405,11 @@ int MailboxExample_Receive(XMbox *MboxInstancePtr, int CPU_Id, int Blocking)
 {
 	int Status;
 	u32 Nbytes;
-	u32 BytesSent;
 	u32 BytesRcvd;
 	int Timeout;
+
+	printf("CPU %d: Receiving message (%s)\r\n", CPU_Id,
+	       Blocking ? "blocking" : "non-blocking");
 
 	Nbytes = 0;
 	Timeout = 0;
@@ -433,7 +452,8 @@ int MailboxExample_Receive(XMbox *MboxInstancePtr, int CPU_Id, int Blocking)
 *
 * @param	IntcInstancePtr is a pointer to the instance of the INTC
 *		component.
-* @param	MboxInstInstPtr is a pointer to the instance of the Mailbox.
+* @param	MboxInstPtr is a pointer to the instance of the Mailbox.
+* @param	IntcDevId is the interrupt controller device ID.
 * @param	MboxIntrId is the interrupt Id and is typically
 *		XPAR_<INTC_instance>_<MBOX_instance>_IP2INTC_IRPT_INTR
 *		value from xparameters.h.
@@ -533,7 +553,7 @@ static int MailboxSetupIntrSystem(XIntc *IntcInstancePtr,
 *
 * This is the interrupt handler for this example.
 *
-* @param 	CallBackRef is a callback reference passed in by the upper layer
+* @param 	CallbackRef is a callback reference passed in by the upper layer
 *		when setting the interrupt handler, and is passed back to the
 *		upper layer when the interrupt handler is called.
 *

@@ -7,5 +7,6 @@ var xiicps__slave__monitor__example_8c =
     [ "SlaveResponse", "xiicps__slave__monitor__example_8c.html#a26357f5bac9c7de1ec13adfcd10df0bc", null ],
     [ "SlvAddr", "xiicps__slave__monitor__example_8c.html#a794f7fc4c717cbddb196c85003c6d317", null ],
     [ "TotalErrorCount", "xiicps__slave__monitor__example_8c.html#aa443a47eeb2dc837aa355392c701f05e", null ],
-    [ "TransmitComplete", "xiicps__slave__monitor__example_8c.html#a19d9dd848a431a459bff8db6e3eb2985", null ]
+    [ "TransmitComplete", "xiicps__slave__monitor__example_8c.html#a19d9dd848a431a459bff8db6e3eb2985", null ],
+    [ "XIicPs_ConfigTable", "xiicps__slave__monitor__example_8c.html#ga11a983ef1b7318339618ff352e81bb2e", null ]
 ];

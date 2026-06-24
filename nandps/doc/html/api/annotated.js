@@ -1,6 +1,6 @@
 var annotated =
 [
-    [ "__attribute__", "struct____attribute____.html", "struct____attribute____" ],
+    [ "OnfiNand_Geometry", "struct_onfi_nand___geometry.html", "struct_onfi_nand___geometry" ],
     [ "XNandPs_BadBlockPattern", "struct_x_nand_ps___bad_block_pattern.html", "struct_x_nand_ps___bad_block_pattern" ],
     [ "XNandPs_BbtDesc", "struct_x_nand_ps___bbt_desc.html", "struct_x_nand_ps___bbt_desc" ],
     [ "XNandPs_CommandFormat", "struct_x_nand_ps___command_format.html", "struct_x_nand_ps___command_format" ],

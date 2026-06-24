@@ -6,6 +6,6 @@ var xqspips__flash__intr__example_8c =
     [ "FlashReadID", "xqspips__flash__intr__example_8c.html#aa424c9f6fee5f08746f8f3233b7467ed", null ],
     [ "FlashWrite", "xqspips__flash__intr__example_8c.html#aa4691616d85f33bb068a7e9740249b86", null ],
     [ "main", "xqspips__flash__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
-    [ "QspiFlashIntrExample", "xqspips__flash__intr__example_8c.html#ae19ad8425b4f3fc636a7752ef1919694", null ],
+    [ "QspiFlashIntrExample", "xqspips__flash__intr__example_8c.html#a703f891e7456310dbd11f74005e2d2b4", null ],
     [ "QspiHandler", "xqspips__flash__intr__example_8c.html#aee0597687b52bde42abefc4149b2dc9a", null ]
 ];

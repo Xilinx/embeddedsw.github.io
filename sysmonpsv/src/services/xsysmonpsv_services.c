@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -25,6 +25,11 @@
 * 4.0   se     10/04/22 Update return value definitions
 * 4.0   se     11/10/22 Secure and Non-Secure mode integration
 * 5.2   se     08/24/25 Microblaze support added
+* 5.3   dc     02/18/26 Correct spelling errors
+*       se     03/12/26 Enhancements: NULL checks, range validation,
+*                       standardize return values to XST_FAILURE
+*       se     03/25/26 Fix Coverity/MISRA-C violations: U suffix,
+*                       (void) cast, sign conversion, parentheses
 *
 * </pre>
 *
@@ -46,7 +51,7 @@
  * @param	IntrNum Interrupt Offset.
  *
  * @return
- *          - -XST_FAILURE if error.
+ *          - XST_FAILURE if error.
  *			- XST_SUCCESS if successful.
  *
 *******************************************************************************/
@@ -58,7 +63,12 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
 	u32 SupplyReg, Ier;
 
 	if (InstancePtr == NULL) {
-		return -XST_FAILURE;
+		return XST_FAILURE;
+	}
+	if ((Supply >= XSYSMONPSV_MAX_SUPPLIES) ||
+	    (InstancePtr->Config.Supply_List[Supply] ==
+	     XSYSMONPSV_INVALID_SUPPLY)) {
+		return XST_FAILURE;
 	}
 
 	SupplyReg = InstancePtr->Config.Supply_List[Supply];
@@ -69,7 +79,7 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
 	XSysMonPsv_ReadReg32(InstancePtr, AlarmRegOffset, &Val);
 	Val = Val | (1U << Bit);
 	Ier = GET_BIT(Event);
-	XSysMonPsv_InterruptEnable(InstancePtr, Ier, IntrNum);
+	(void)XSysMonPsv_InterruptEnable(InstancePtr, Ier, IntrNum);
 	XSysMonPsv_WriteReg32(InstancePtr, AlarmRegOffset, Val);
 
 	return XST_SUCCESS;
@@ -83,7 +93,7 @@ int XSysMonPsv_EnableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply,
  * @param	Supply Enum from the XSysMonPsv_Supply.
  *
  * @return
- *          - -XST_FAILURE if error.
+ *          - XST_FAILURE if error.
  *			- XST_SUCCESS if successful.
  *
 *******************************************************************************/
@@ -94,7 +104,12 @@ int XSysMonPsv_DisableVoltageEvents(XSysMonPsv *InstancePtr, u32 Supply)
 	u32 SupplyReg;
 
 	if (InstancePtr == NULL) {
-		return -XST_FAILURE;
+		return XST_FAILURE;
+	}
+	if ((Supply >= XSYSMONPSV_MAX_SUPPLIES) ||
+	    (InstancePtr->Config.Supply_List[Supply] ==
+	     XSYSMONPSV_INVALID_SUPPLY)) {
+		return XST_FAILURE;
 	}
 
 	SupplyReg = InstancePtr->Config.Supply_List[Supply];
@@ -280,8 +295,8 @@ void XSysMonPsv_IntrHandler(XSysMonPsv *InstancePtr)
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	/* Determine what kind of interrupt occured */
-	XSysMonPsv_InterruptGetStatus(InstancePtr, &IntrStatus);
+	/* Determine what kind of interrupt occurred */
+	(void)XSysMonPsv_InterruptGetStatus(InstancePtr, &IntrStatus);
 
 	/* Clear interrupt status register */
 	XSysMonPsv_InterruptClear(InstancePtr, IntrStatus);
@@ -322,9 +337,9 @@ void XSysMonPsv_IntrHandler(XSysMonPsv *InstancePtr)
 					InstancePtr->Config.Supply_List[Supply];
 				EventHandler =
 					&InstancePtr->SupplyEvent[SupplyReg];
-				XSysMonPsv_DisableVoltageEvents(InstancePtr,
+				(void)XSysMonPsv_DisableVoltageEvents(InstancePtr,
 								Supply);
-				XSysMonPsv_ClearAlarm(InstancePtr, Supply);
+				(void)XSysMonPsv_ClearAlarm(InstancePtr, Supply);
 				if (EventHandler->IsCallbackSet == 1U) {
 					EventHandler->Handler(
 						EventHandler->CallbackRef);

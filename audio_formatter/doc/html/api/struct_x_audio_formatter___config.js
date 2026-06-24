@@ -1,9 +1,10 @@
 var struct_x_audio_formatter___config =
 [
     [ "BaseAddress", "struct_x_audio_formatter___config.html#a77b37a46a977ee338a8407547403382e", null ],
-    [ "DeviceId", "struct_x_audio_formatter___config.html#a7818697a8345ab5eae29c993d65cde29", null ],
     [ "IncludeMM2S", "struct_x_audio_formatter___config.html#a00cf28fa827d42385330ca450eeeda65", null ],
     [ "IncludeS2MM", "struct_x_audio_formatter___config.html#ab196adb9a9c8f7064c0c26d2a447313b", null ],
+    [ "IntrId", "struct_x_audio_formatter___config.html#a2c82cd5b42c5bbb85df39f91fd0234ea", null ],
+    [ "IntrParent", "struct_x_audio_formatter___config.html#ade02da2244c6c0ca9276d66dfd2ab035", null ],
     [ "MaxChannelsMM2S", "struct_x_audio_formatter___config.html#a7f7b33004190e99b88823a35bdd1ed87", null ],
     [ "MaxChannelsS2MM", "struct_x_audio_formatter___config.html#a8feec23f4c0e955063ca0d6819ac3de7", null ],
     [ "MM2SAddrWidth", "struct_x_audio_formatter___config.html#a4fbeb49a32add1b7ac84cc8354cba869", null ],

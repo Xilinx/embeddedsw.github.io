@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,7 +23,7 @@
 *
 * It is capable of synchronous transfer at high speed mode at 80-1500 Mbps
 * It has one clock lane and up to 4 data lanes. These lanes are unidirectional.
-* It can do asynchronous transfer at upto 10 Mbps in low power mode. The clock
+* It can do asynchronous transfer at up to 10 Mbps in low power mode. The clock
 * lane can be in low power mode or high speed mode whereas the data lanes
 * can be in Low power, High power or Escape mode.
 *
@@ -119,7 +119,7 @@ extern "C" {
 #define XMIPI_TX_PHY_ESCAPE_MODE	2 /**< Lane in Escape Mode */
 #define XMIPI_TX_PHY_MODE_MAX 		2 /**< Upper Limit for mode */
 #define XMIPI_TX_PHY_MAX_LANES_V10	4 /**< V1.0 supports 4 Lanes */
-/*@}*/
+/** @} */
 
 /** @name mipi_tx_phy Info Handles
  * @{
@@ -134,28 +134,28 @@ extern "C" {
 #define XMIPI_TX_PHY_HANDLE_DLANE2		7 /**< Handle for Data Lane 2 */
 #define XMIPI_TX_PHY_HANDLE_DLANE3		8 /**< Handle for Data Lane 3 */
 #define XMIPI_TX_PHY_HANDLE_MAX 		9 /**< Upper Bound for XMIPI_TX_PHY_HANDLE */
-/*@}*/
+/** @} */
 
 /**************************** Macros Definitions *****************************/
 /** @name mipi_tx_phy HSTIMEOUT range
  * @{
 */
-#define XMIPI_TX_PHY_HS_TIMEOUT_MIN_VALUE	10000UL
-#define XMIPI_TX_PHY_HS_TIMEOUT_MAX_VALUE	65541UL
-/*@}*/
+#define XMIPI_TX_PHY_HS_TIMEOUT_MIN_VALUE	10000UL /**< Minimum HS timeout value */
+#define XMIPI_TX_PHY_HS_TIMEOUT_MAX_VALUE	65541UL /**< Maximum HS timeout value */
+/** @} */
 
 /** @name mipi_tx_phy HSSETTLE range
  * @{
 */
-#define XMIPI_TX_PHY_HS_SETTLE_MAX_VALUE	0x1FF
-/*@}*/
+#define XMIPI_TX_PHY_HS_SETTLE_MAX_VALUE	0x1FF /**< Maximum HS settle value (9-bit) */
+/** @} */
 
 /** @name mipi_tx_phy Flags to Enable or Disable core
  * @{
 */
-#define XMIPI_TX_PHY_ENABLE_FLAG 	1
-#define XMIPI_TX_PHY_DISABLE_FLAG 	0
-/*@}*/
+#define XMIPI_TX_PHY_ENABLE_FLAG 	1 /**< Flag to enable PHY core */
+#define XMIPI_TX_PHY_DISABLE_FLAG 	0 /**< Flag to disable PHY core */
+/** @} */
 
 /************************* Bit field operations ****************************/
 
@@ -250,21 +250,28 @@ static inline void XMipi_Tx_Phy_SetBitField(UINTPTR BaseAddress, u32 RegisterOff
 
 /**************************** Type Definitions *******************************/
 
+/**
+ * @brief Programmable sequence symbol positions for C-PHY mode.
+ *
+ * Enumeration of symbol indices used to program the C-PHY programmable
+ * sequence registers. Symbols 0-9 map to DATA0 register, symbols 10-13
+ * map to DATA1 register.
+ */
 typedef enum {
-	PRG_SEQ_SYM_0 = 0,
-	PRG_SEQ_SYM_1,
-	PRG_SEQ_SYM_2,
-	PRG_SEQ_SYM_3,
-	PRG_SEQ_SYM_4,
-	PRG_SEQ_SYM_5,
-	PRG_SEQ_SYM_6,
-	PRG_SEQ_SYM_7,
-	PRG_SEQ_SYM_8,
-	PRG_SEQ_SYM_9,
-	PRG_SEQ_SYM_10,
-	PRG_SEQ_SYM_11,
-	PRG_SEQ_SYM_12,
-	PRG_SEQ_SYM_13
+	PRG_SEQ_SYM_0 = 0,  /**< Programmable sequence symbol position 0 */
+	PRG_SEQ_SYM_1,      /**< Programmable sequence symbol position 1 */
+	PRG_SEQ_SYM_2,      /**< Programmable sequence symbol position 2 */
+	PRG_SEQ_SYM_3,      /**< Programmable sequence symbol position 3 */
+	PRG_SEQ_SYM_4,      /**< Programmable sequence symbol position 4 */
+	PRG_SEQ_SYM_5,      /**< Programmable sequence symbol position 5 */
+	PRG_SEQ_SYM_6,      /**< Programmable sequence symbol position 6 */
+	PRG_SEQ_SYM_7,      /**< Programmable sequence symbol position 7 */
+	PRG_SEQ_SYM_8,      /**< Programmable sequence symbol position 8 */
+	PRG_SEQ_SYM_9,      /**< Programmable sequence symbol position 9 */
+	PRG_SEQ_SYM_10,     /**< Programmable sequence symbol position 10 */
+	PRG_SEQ_SYM_11,     /**< Programmable sequence symbol position 11 */
+	PRG_SEQ_SYM_12,     /**< Programmable sequence symbol position 12 */
+	PRG_SEQ_SYM_13      /**< Programmable sequence symbol position 13 */
 } XMipi_Tx_Phy_ProgSeq;
 
 /**
@@ -279,12 +286,12 @@ typedef struct {
 	u32 IsDphy; /**< CPHY or DPHY Mode */
 	u32 IsRegisterPresent; /**< Is register access allowed */
 	u32 MaxLanesPresent; /**< Number of Lanes. Range 1 - 4 */
-	u32 EscClkPeriod; /**< Escape Clock Peroid */
+	u32 EscClkPeriod; /**< Escape Clock Period */
 	u32 EscTimeout; /**< Escape Timeout */
 	u32 HSLineRate; /**< High Speed Line Rate */
 	u32 HSTimeOut; /**< Max Frame Length  */
-	u32 LPXPeriod;
-	u32 StableClkPeriod;
+	u32 LPXPeriod; /**< Low Power Transmit (LPX) period in nanoseconds */
+	u32 StableClkPeriod; /**< Stable clock period in nanoseconds */
 } XMipi_Tx_Phy_Config;
 
 /**

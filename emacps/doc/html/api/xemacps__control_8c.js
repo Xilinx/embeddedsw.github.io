@@ -8,6 +8,7 @@ var xemacps__control_8c =
     [ "XEmacPs_GetMacAddress", "xemacps__control_8c.html#gac937dc7f20125b0af5b07de435d83df4", null ],
     [ "XEmacPs_GetOperatingSpeed", "xemacps__control_8c.html#ga0d7ec49a34ff5c1b4592ad6c9830a6b0", null ],
     [ "XEmacPs_GetOptions", "xemacps__control_8c.html#ga5508f6a12614b8df7369a16a60bc238e", null ],
+    [ "XEmacPs_IsCommonMdioPresent", "xemacps__control_8c.html#gaf2ea437d9057a36f91d322b0a4145091", null ],
     [ "XEmacPs_PhyRead", "xemacps__control_8c.html#ga0cd6edb3e572b7a40f9e2891f193c584", null ],
     [ "XEmacPs_PhyWrite", "xemacps__control_8c.html#ga4de9e514b9514799dbd37df83ea77f89", null ],
     [ "XEmacPs_SendPausePacket", "xemacps__control_8c.html#gaceedc7d23c670458153ed3ecd57d2c46", null ],

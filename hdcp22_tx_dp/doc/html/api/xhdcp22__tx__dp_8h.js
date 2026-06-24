@@ -124,7 +124,7 @@ var xhdcp22__tx__dp_8h =
     [ "XHdcp22Tx_Dp_LogRd", "xhdcp22__tx__dp_8h.html#ga2fe9ec028ad46162102ff036ce7433ed", null ],
     [ "XHdcp22Tx_Dp_LogReset", "xhdcp22__tx__dp_8h.html#gaf0082941696f133ee75605e45ddb81c5", null ],
     [ "XHdcp22Tx_Dp_LogWr", "xhdcp22__tx__dp_8h.html#ga20d897b6bb0d9cc52ca625ac6887f766", null ],
-    [ "XHdcp22Tx_Dp_LookupConfig", "xhdcp22__tx__dp_8h.html#gae5092ac401fe65efbe6719a065bef58f", null ],
+    [ "XHdcp22Tx_Dp_LookupConfig", "xhdcp22__tx__dp_8h.html#ga917ec5286c67ea947b71b7002a553eee", null ],
     [ "XHdcp22Tx_Dp_Poll", "xhdcp22__tx__dp_8h.html#ga8eb04d5be9e6ddf62caac09dc7f8d7b1", null ],
     [ "XHdcp22Tx_Dp_Reset", "xhdcp22__tx__dp_8h.html#ga05b419214a699cf46a017dd729166e33", null ],
     [ "XHdcp22Tx_Dp_RevokeReceiverId", "xhdcp22__tx__dp_8h.html#ga2e416839480a258f58ab85309bd687ee", null ],

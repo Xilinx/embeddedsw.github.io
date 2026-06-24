@@ -16,7 +16,7 @@ var xaudioformatter_8h =
     [ "XAudioFormatter_InterruptClear", "xaudioformatter_8h.html#ga6bf13816fa1c5fa913e85ec5734b7dcd", null ],
     [ "XAudioFormatter_InterruptDisable", "xaudioformatter_8h.html#ga9c0f40a1f11f81c15f0bd0e1aea25d0a", null ],
     [ "XAudioFormatter_InterruptEnable", "xaudioformatter_8h.html#ga5779760c06dac849bd2e52ceded0ad65", null ],
-    [ "XAudioFormatter_LookupConfig", "xaudioformatter_8h.html#ga306c87bbfa3dfceed94dec4591465bf5", null ],
+    [ "XAudioFormatter_LookupConfig", "xaudioformatter_8h.html#ga3cf85f93b1d4ae0d2127af36ce761a96", null ],
     [ "XAudioFormatterDMAReset", "xaudioformatter_8h.html#ga53384ac363365da9f8e31ed55cbf1d0b", null ],
     [ "XAudioFormatterDMAStart", "xaudioformatter_8h.html#ga65ddaecacb3d843dade3da4a44862963", null ],
     [ "XAudioFormatterDMAStop", "xaudioformatter_8h.html#ga95f19d9d0e20ad8b8bafcaf277ea1ca3", null ],

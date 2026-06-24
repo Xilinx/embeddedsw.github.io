@@ -1,6 +1,6 @@
 var xdptxss__debug__example_8c =
 [
-    [ "DpTxSs_DebugExample", "xdptxss__debug__example_8c.html#a2f0f6102e3569d780558919b555e169f", null ],
+    [ "DpTxSs_DebugExample", "xdptxss__debug__example_8c.html#a7a706bd787294b833d47754c78c57edb", null ],
     [ "DpTxSs_EdidBaseBasicDisp", "xdptxss__debug__example_8c.html#a07955e33d29267ed4ca7caf0a57d1242", null ],
     [ "DpTxSs_EdidBaseVerRev", "xdptxss__debug__example_8c.html#aa87384769341317d0376e2d5c51f7bcf", null ],
     [ "DpTxSs_EdidBaseVPId", "xdptxss__debug__example_8c.html#a731b2b89f169e8d98e8d4094c9f1c986", null ],

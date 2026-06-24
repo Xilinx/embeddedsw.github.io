@@ -7,5 +7,6 @@ var xi3cpsx__master_8c =
     [ "XI3cPsx_MasterRecvPolled", "xi3cpsx__master_8c.html#ga759bdfcbba7cff4248e1a490f9b2b8c2", null ],
     [ "XI3cPsx_MasterSend", "xi3cpsx__master_8c.html#ga4f245bce33f80afa0f5458bae59b8da9", null ],
     [ "XI3cPsx_MasterSendPolled", "xi3cpsx__master_8c.html#gaaaf31be44492b9baf96f0fc8659af975", null ],
-    [ "XI3cPsx_SetStatusHandler", "xi3cpsx__master_8c.html#ga49588a527df3275f36af02d46caa8dad", null ]
+    [ "XI3cPsx_SetStatusHandler", "xi3cpsx__master_8c.html#ga49588a527df3275f36af02d46caa8dad", null ],
+    [ "XI3C_DynaAddrList", "xi3cpsx__master_8c.html#ga6cc5f7c29e25eeabdeae3232c67b39c7", null ]
 ];

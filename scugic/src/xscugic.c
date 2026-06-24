@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -125,7 +125,7 @@
 *                     the same register. The spinlock mechanism used here
 *                     used exclusive load and store instructions. To ensure
 *                     that legacy behavior is not broken, unless someone
-*                     enables spinlocks explicitely in their applications
+*                     enables spinlocks explicitly in their applications
 *                     the existing flow will remain unchanged. On how to
 *                     enable spinlocks, please refer to the documentations
 *                     at: lib/bsp/standalone/src/arm/common/gcc/xil_spinlock.c
@@ -169,7 +169,7 @@
 *                     PPI interrupts. It was missing for GICv3 based controllers.
 * 5.2   mus  07/27/23 Removed dependency on XPAR_CPU_ID by changic logic to get
 *                     CPU ID, it will be read from affinity register of processor
-*                     who is caling SCUGIC driver API's.
+*                     who is calling SCUGIC driver API's.
 * 5.2   ml   09/07/23 Typecasting with u32 to fix MISRA-C_RULE_10.3 violation.
 * 5.2   ml   09/07/23 Compared with zero to fix MISRA-C_RULE_14.4 violation.
 * 5.2   ml   09/07/23 Added comments to fix HIS COMF violations.
@@ -181,6 +181,15 @@
 *                     Un-mapping of interrupts in case of GICv3.
 * 5.5   ml   12/20/24 Fixed GCC warnings
 * 5.6   ml   08/10/25 Fixed ARMCLANG warning
+* 5.7   bdk  11/29/25 Updated conditional checks to fix 20.9 misra-c violation.
+* 5.7   bdk  12/08/25 Updated comments to support SDT flow for Doxygen
+*                     documentation.
+* 5.7   ml   03/05/26 Updated XScuGic_Disable() to use correct offset for disabling
+*                     SGI/PPI interrupts.
+* 5.7   asa  03/13/26 Updated various APIs to fix CPU ID and Cluster ID handling.
+*                     Added code to ensure that during GIC driver initialization
+*                     there are no stale and pending interrupts present.
+*
 * </pre>
 *
 ******************************************************************************/
@@ -208,6 +217,9 @@ static u32 CpuId; /**< CPU Core identifier */
 /************************** Function Prototypes ******************************/
 
 static void StubHandler(void *CallBackRef);
+#if defined (GICv3)
+static void XScuGic_ClearPendingInterrupts(const XScuGic *InstancePtr);
+#endif
 
 /*****************************************************************************/
 /**
@@ -363,6 +375,62 @@ static void DistributorInit(XScuGic *InstancePtr)
 	}
 }
 
+#if defined (GICv3)
+/*****************************************************************************/
+/**
+*
+* Clears stale interrupt state for the current CPU core in warm-restart scenarios
+* where GIC distributor state is preserved but the CPU is restarted.
+*
+* @param	InstancePtr Pointer to the XScuGic instance.
+*
+* @return	None
+*
+*
+******************************************************************************/
+static void XScuGic_ClearPendingInterrupts(const XScuGic *InstancePtr)
+{
+	u32 Int_Id;
+	u32 LocalCpuID = 0U;
+	u32 Target_Cpu;
+	u32 Mask;
+
+	/* Clear SGI/PPI enable and pending state for the restarted core only. */
+	XScuGic_ReDistSGIPPIWriteReg(InstancePtr, XSCUGIC_DISABLE_OFFSET, 0xFFFFFFFFU);
+	XScuGic_ReDistSGIPPIWriteReg(InstancePtr, XSCUGIC_PENDING_CLR_OFFSET, 0xFFFFFFFFU);
+
+#if defined (VERSAL_NET)
+#if defined (ARMR52)
+	LocalCpuID = (u32)XGetClusterId();
+	LocalCpuID = (LocalCpuID << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+	LocalCpuID |= (u32)XGetCoreId();
+#else
+	LocalCpuID = XGetClusterId();
+	LocalCpuID = (LocalCpuID << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
+	LocalCpuID |= ((u32)XGetCoreId() << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+#endif
+#endif
+
+	for (Int_Id = XSCUGIC_SPI_INT_ID_START;
+		 Int_Id < XSCUGIC_MAX_NUM_INTR_INPUTS;
+		 Int_Id++) {
+		Target_Cpu = XScuGic_DistReadReg(InstancePtr,
+						 XSCUGIC_IROUTER_OFFSET_CALC(Int_Id));
+		if (Target_Cpu == LocalCpuID) {
+			Mask = (u32)0x00000001U << (Int_Id % 32U);
+			XScuGic_DistWriteReg(InstancePtr,
+					     XSCUGIC_EN_DIS_OFFSET_CALC(XSCUGIC_DISABLE_OFFSET,
+								      Int_Id),
+					     Mask);
+			XScuGic_DistWriteReg(InstancePtr,
+					     XSCUGIC_EN_DIS_OFFSET_CALC(XSCUGIC_PENDING_CLR_OFFSET,
+								      Int_Id),
+					     Mask);
+		}
+	}
+}
+#endif
+
 #if !defined (GICv3)
 /*****************************************************************************/
 /**
@@ -513,6 +581,9 @@ s32  XScuGic_CfgInitialize(XScuGic *InstancePtr,
 		isb();
 #endif
 		XScuGic_Stop(InstancePtr);
+#if defined (GICv3)
+		XScuGic_ClearPendingInterrupts(InstancePtr);
+#endif
 		DistributorInit(InstancePtr);
 #if defined (GICv3)
 		XScuGic_Enable_Group1_Interrupts();
@@ -685,12 +756,8 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 	}
 #endif
 #if defined (VERSAL_NET)
-#if defined (ARMR52)
-	Cpu_Identifier = XGetCoreId();
-#else
 	Cpu_Identifier = XGetCoreId();
 	Cpu_Identifier |= (XGetClusterId() << XSCUGIC_CLUSTERID_SHIFT);
-#endif
 #endif
 	XScuGic_InterruptMaptoCpu(InstancePtr, Cpu_Identifier, Int_Id);
 	/*
@@ -739,9 +806,7 @@ void XScuGic_Enable(XScuGic *InstancePtr, u32 Int_Id)
 void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 {
 	u32 Mask;
-#if defined (GICv3)
-	u32 Temp;
-#else
+#if !defined (GICv3)
 	u8 Cpu_Identifier = (u8)CpuId;
 #endif
 
@@ -758,9 +823,8 @@ void XScuGic_Disable(XScuGic *InstancePtr, u32 Int_Id)
 		Int_Id &= 0x1f;
 		Int_Id = 1 << Int_Id;
 
-		Temp = XScuGic_ReDistSGIPPIReadReg(InstancePtr, XSCUGIC_RDIST_ISENABLE_OFFSET);
-		Temp &= ~Int_Id;
-		XScuGic_ReDistSGIPPIWriteReg(InstancePtr, XSCUGIC_RDIST_ISENABLE_OFFSET, Temp);
+		/* ICENABLER is write-1-to-disable; write only the target bit */
+		XScuGic_ReDistSGIPPIWriteReg(InstancePtr, XSCUGIC_RDIST_ICENABLER_OFFSET, Int_Id);
 		return;
 	}
 #endif
@@ -846,9 +910,9 @@ s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier)
 #if defined (GICv3)
 #if defined (VERSAL_NET)
 #if defined (ARMR52)
-	Mask = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
-	Mask =	( Mask << XSCUGIC_SGI1R_AFFINITY1_SHIFT);
-	Mask |= (Cpu_Identifier & XSCUGIC_COREID_MASK);
+	Mask = ((u64)((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >>
+	XSCUGIC_CLUSTERID_SHIFT) << XSCUGIC_SGI1R_AFFINITY1_SHIFT);
+	Mask |= ((u64)1U << ((u32)Cpu_Identifier & XSCUGIC_COREID_MASK));
 #else
 	Mask = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
 	Mask =  ( Mask << XSCUGIC_SGI1R_AFFINITY2_SHIFT);
@@ -861,7 +925,7 @@ s32  XScuGic_SoftwareIntr(XScuGic *InstancePtr, u32 Int_Id, u32 Cpu_Identifier)
 #else
 	Mask = (Cpu_Identifier | (Int_Id << XSCUGIC_SGIR_EL1_INITID_SHIFT));
 #endif
-#if EL3
+#if defined (EL3) && (EL3 == 1)
 	XScuGic_WriteICC_SGI0R_EL1(Mask);
 #else
 	XScuGic_WriteICC_SGI1R_EL1(Mask);
@@ -1116,7 +1180,7 @@ void XScuGic_GetPriorityTriggerType(XScuGic *InstancePtr, u32 Int_Id,
 *
 * @param	InstancePtr Pointer to the instance to be worked on.
 * @param	Cpu_Identifier CPU number for which the interrupt has to be targeted
-*               For VERSAL_NET APU: 0 t0 3 bits sepcifies core id and 4 to 7 bits specifies
+*               For VERSAL_NET APU: 0 t0 3 bits specifies core id and 4 to 7 bits specifies
 *               cluster id of the targeted core.
 * @param	Int_Id IRQ source number to modify.
 *
@@ -1134,7 +1198,9 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_
 
 #if defined (VERSAL_NET)
 #if defined (ARMR52)
-		RegValue = (Cpu_Identifier & XSCUGIC_COREID_MASK);
+		RegValue = ((u32)(Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
+		RegValue = (RegValue << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+		RegValue |= (u32)(Cpu_Identifier & XSCUGIC_COREID_MASK);
 #else
 		RegValue = ((Cpu_Identifier & XSCUGIC_CLUSTERID_MASK) >> XSCUGIC_CLUSTERID_SHIFT);
 		RegValue = (RegValue << XSCUGIC_IROUTER_AFFINITY2_SHIFT);
@@ -1189,7 +1255,7 @@ void XScuGic_InterruptMaptoCpu(XScuGic *InstancePtr, u8 Cpu_Identifier, u32 Int_
 * @param	InstancePtr Pointer to the instance to be worked on.
 * @param	Cpu_Identifier CPU number from which the interrupt has to be
 *			unmapped.
-*               For VERSAL_NET APU: 0 t0 3 bits sepcifies core id and 4 to 7
+*               For VERSAL_NET APU: 0 t0 3 bits specifies core id and 4 to 7
 *               bits specifies cluster id of the targeted core.
 * @param	Int_Id IRQ source number to modify
 *
@@ -1359,7 +1425,9 @@ void XScuGic_Stop(XScuGic *InstancePtr)
 #if defined (GICv3)
 #if defined (VERSAL_NET)
 #if defined (ARMR52)
-	LocalCpuID = XGetCoreId();
+	LocalCpuID = (u32)XGetClusterId();
+	LocalCpuID = (LocalCpuID << XSCUGIC_IROUTER_AFFINITY1_SHIFT);
+	LocalCpuID |= (u32)XGetCoreId();
 #else
 	/* VERSAL_NET CortexA78 case */
 	LocalCpuID = XGetClusterId();
@@ -1501,12 +1569,18 @@ u32 XScuGic_GetCpuID(void)
 
 /****************************************************************************/
 /**
-* Checks whether the XScGic is initialized or not given the device ID.
+* Checks whether the XScGic is initialized or not given the device ID/BaseAddress.
 *
+* @if SDT
+* @param	BaseAddress is the base address of the device
+* @else
 * @param	DeviceId ID of the XScuGic device.
+* @endif
 *
 * @return	Returns 1 if initialized otherwise 0.
 *
+* @note		In XSCT/classic flow, DeviceId is used to look up the device
+*		configuration.
 *
 *****************************************************************************/
 #ifndef SDT

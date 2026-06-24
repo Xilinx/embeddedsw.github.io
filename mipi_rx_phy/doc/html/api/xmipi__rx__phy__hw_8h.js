@@ -41,6 +41,8 @@ var xmipi__rx__phy__hw_8h =
     [ "XMIPI_RX_PHY_DLXSTATUS_REG_STOP_OFFSET", "xmipi__rx__phy__hw_8h.html#ga8014b37b88e35bbf981445e019063b64", null ],
     [ "XMIPI_RX_PHY_DLXSTATUS_REG_ULPS_MASK", "xmipi__rx__phy__hw_8h.html#ga17bd1c2c7ce0df5dbd19c46e6ea3feb4", null ],
     [ "XMIPI_RX_PHY_DLXSTATUS_REG_ULPS_OFFSET", "xmipi__rx__phy__hw_8h.html#gadd52dd222d3e9ddaae7418d3b5206a8e", null ],
+    [ "XMIPI_RX_PHY_DYNAMIC_LINERATE_REG_LINERATE_MASK", "xmipi__rx__phy__hw_8h.html#gac0967b5b4f4952359fef442dbc64cd43", null ],
+    [ "XMIPI_RX_PHY_DYNAMIC_LINERATE_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga7aba1824215f3af27f43d47770adfd8e", null ],
     [ "XMIPI_RX_PHY_ESCTIMEOUT_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga1f2a7ab905af5a63575745e79fa1afef", null ],
     [ "XMIPI_RX_PHY_ESCTIMEOUT_REG_VAL_MASK", "xmipi__rx__phy__hw_8h.html#ga57f8374c40686716eb09f598db90d2d7", null ],
     [ "XMIPI_RX_PHY_ESCTIMEOUT_REG_VAL_OFFSET", "xmipi__rx__phy__hw_8h.html#ga79f52cbaa7e2faa9b99f6c7f1c901d41", null ],
@@ -57,5 +59,9 @@ var xmipi__rx__phy__hw_8h =
     [ "XMIPI_RX_PHY_INIT_REG_VAL_MASK", "xmipi__rx__phy__hw_8h.html#gab750cb7ee4477ebf02dee74a7e912949", null ],
     [ "XMIPI_RX_PHY_INIT_REG_VAL_OFFSET", "xmipi__rx__phy__hw_8h.html#ga02c8e40953545ada2100d4431ffe3061", null ],
     [ "XMIPI_RX_PHY_INIT_TIMER_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga5d73b98adf4b04216bb1742cc3ad92d6", null ],
+    [ "XMIPI_RX_PHY_MMCM_DIV_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga063cefd92789bed1f225b3b2a6c77db0", null ],
+    [ "XMIPI_RX_PHY_MMCM_FRACT_MULT_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga15e9ed79fb8ee3fa950b45e8f757787f", null ],
+    [ "XMIPI_RX_PHY_MMCM_MULT_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#ga078dda328185d393d614daedec2920d2", null ],
+    [ "XMIPI_RX_PHY_MMCM_O_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#gaff17d4b8c0054f42880ab39adbf6e631", null ],
     [ "XMIPI_RX_PHY_VERSION_REG_OFFSET", "xmipi__rx__phy__hw_8h.html#gaf427e80f588294f6bd021db121fc76fd", null ]
 ];

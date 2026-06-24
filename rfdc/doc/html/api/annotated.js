@@ -11,7 +11,7 @@ var annotated =
     [ "XRFdc_Cal_Freeze_Settings", "struct_x_r_fdc___cal___freeze___settings.html", null ],
     [ "XRFdc_Calibration_Coefficients", "struct_x_r_fdc___calibration___coefficients.html", null ],
     [ "XRFdc_CoarseDelay_Settings", "struct_x_r_fdc___coarse_delay___settings.html", null ],
-    [ "XRFdc_Config", "struct_x_r_fdc___config.html", null ],
+    [ "XRFdc_Config", "struct_x_r_fdc___config.html", "struct_x_r_fdc___config" ],
     [ "XRFdc_DAC_Tile", "struct_x_r_fdc___d_a_c___tile.html", null ],
     [ "XRFdc_DACBlock_AnalogDataPath", "struct_x_r_fdc___d_a_c_block___analog_data_path.html", null ],
     [ "XRFdc_DACBlock_AnalogDataPath_Config", "struct_x_r_fdc___d_a_c_block___analog_data_path___config.html", null ],

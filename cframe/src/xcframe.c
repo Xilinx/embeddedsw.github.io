@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -31,10 +31,9 @@
 *                       XCframe_SetReadParam function
 * 1.9   Nava 07/30/2025 Fixed GCC warnings about missing field initializers
 *                       for Xuint128
+* 2.0   ng  03/26/2026  Fixed doxygen warnings
 *
 * </pre>
-*
-* @note
 *
 ******************************************************************************/
 /***************************** Include Files *********************************/
@@ -58,7 +57,7 @@ typedef enum
 #define XCFRAME_LAST_FRAME_BOT_OFFSET         (0x220U) /**< Offset of LAST_FRAME_BOT register */
 #define XCFRAME_MAX_BLKTYPE_IN_FAR_BOT        (4U) /**< Maximum value of block type in FAR_BOT
                                                   register*/
-#define XCFRAME_FAR_TOP_OFFSET_WRT_BOT        (0x10U) /**< Offset of CFRAME_FAR_TOP regiter w.r.t
+#define XCFRAME_FAR_TOP_OFFSET_WRT_BOT        (0x10U) /**< Offset of CFRAME_FAR_TOP register w.r.t
                                                     CFRAME_FAR_BOT*/
 #define XCFRAME_128BIT_IN_WORDS               (4U) /**< Size of 128bit in words */
 #define XCFRAME_BLKTYPE0_MASK                 (0xFFFFFU) /**< Mask to read blocktype 0 values */
@@ -111,8 +110,6 @@ typedef enum
 * @return
 *		- XST_SUCCESS if initialization was successful.
 *
-* @note		None.
-*
 ******************************************************************************/
 s32 XCframe_CfgInitialize(XCframe *InstancePtr,const XCframe_Config *CfgPtr,
 			u32 EffectiveAddr)
@@ -141,8 +138,6 @@ s32 XCframe_CfgInitialize(XCframe *InstancePtr,const XCframe_Config *CfgPtr,
  * @param	FrameNo is the index of frame
  * @param       Val is pointer to the value to be written
  *
- * @return	None
- *
  ******************************************************************************/
 void XCframe_WriteReg(const XCframe *InstancePtr, u32 AddrOffset,
 		XCframe_FrameNo FrameNo,const Xuint128 *Val)
@@ -170,8 +165,6 @@ void XCframe_WriteReg(const XCframe *InstancePtr, u32 AddrOffset,
  * @param	AddrOffset is offset of the Cframe register
  * @param	FrameNo is the index of frame
  * @param       ValPtr    128 bit variable to store the read data
- *
- * @return      None
  *
  ******************************************************************************/
 void XCframe_ReadReg(const XCframe *InstancePtr, u32 AddrOffset,
@@ -223,8 +216,6 @@ s32 XCframe_SafetyWriteReg(const XCframe *InstancePtr, u32 AddrOffset,
  * @param	CframeNo is the index of frame
  * @param	Cmd to be initiated by CFRAME block
  *
- * @return	None
- *
  ******************************************************************************/
 void XCframe_WriteCmd(const XCframe *InstancePtr, XCframe_FrameNo CframeNo, u32 Cmd)
 {
@@ -242,8 +233,6 @@ void XCframe_WriteCmd(const XCframe *InstancePtr, XCframe_FrameNo CframeNo, u32 
  *
  * @param	InstancePtr is a pointer to the XCframe instance.
  * @param	TrimVal is pointer to the TRIM value
- *
- * @return	None
  *
  ******************************************************************************/
 void XCframe_VggTrim(const XCframe *InstancePtr,const Xuint128 *TrimVal)
@@ -267,8 +256,6 @@ void XCframe_VggTrim(const XCframe *InstancePtr,const Xuint128 *TrimVal)
  * @param	InstancePtr is a pointer to the XCframe instance.
  * @param	TrimValue is to hold CRAM TRIM value
  *
- * @return	None
- *
  ******************************************************************************/
 void XCframe_CramTrim(const XCframe *InstancePtr, u32 TrimValue)
 {
@@ -290,8 +277,6 @@ void XCframe_CramTrim(const XCframe *InstancePtr, u32 TrimValue)
  *
  * @param	InstancePtr is a pointer to the XCframe instance.
  * @param	TrimValue is to hold BRAM TRIM value
- *
- * @return	None
  *
  ******************************************************************************/
 void XCframe_BramTrim(const XCframe *InstancePtr, u32 TrimValue)
@@ -317,8 +302,6 @@ void XCframe_BramTrim(const XCframe *InstancePtr, u32 TrimValue)
  *
  * @param	InstancePtr is a pointer to the XCframe instance.
  * @param	TrimValue is to hold URAM TRIM value
- *
- * @return	None
  *
  ******************************************************************************/
 void XCframe_UramTrim(const XCframe *InstancePtr, u32 TrimValue)
@@ -348,8 +331,6 @@ void XCframe_UramTrim(const XCframe *InstancePtr, u32 TrimValue)
  * @param   CframeLen is total length of Cframes
  * @param   FrameAddr is frame address
  *
- * @return	None
- *
  ******************************************************************************/
 void XCframe_SetReadParam(const XCframe *InstancePtr,
 		XCframe_FrameNo CframeNo, u32 CframeLen, u32 FrameAddr)
@@ -373,8 +354,6 @@ void XCframe_SetReadParam(const XCframe *InstancePtr,
  *
  * @param	InstancePtr is a pointer to the XCframe instance
  *
- * @return	None
- *
  ******************************************************************************/
 void XCframe_ClearCframeErr(const XCframe *InstancePtr)
 {
@@ -386,7 +365,7 @@ void XCframe_ClearCframeErr(const XCframe *InstancePtr)
 	while(CframeNo <= XCFRAME_FRAME_BCAST)
 	{
 		XCframe_WriteReg(InstancePtr, XCFRAME_CFRM_ISR_OFFSET, CframeNo++,
-															&Value128);
+				 &Value128);
 	}
 }
 

@@ -1,6 +1,6 @@
 /**************************************************************************************************
 * Copyright (C) 2021 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 **************************************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xtrngpsv_hw.h
- * @addtogroup Overview
+ * @addtogroup trngpsv_api TRNGPSV APIs
  * @{
  *
  * This header file contains identifiers and register-level core functions (or macros) that can be
@@ -24,7 +24,7 @@
  * ---- --- -------- -------------------------------------------------------------------------------
  * 1.00  ssc  09/05/21 First release
  * 1.1   ssc  03/24/22 Minor doxygen related fixes
- *       mb   09/14/23 Fix MISRA-C vioaltion 2.5
+ *       mb   09/14/23 Fix MISRA-C violation 2.5
  * 1.5   kpt  03/06/24 Fix doxygen warnings
  *
  * </pre>
@@ -84,7 +84,7 @@ extern "C" {
  */
 
 /* Register: TRNG_PER_STRNG_0 */
-#define TRNG_PER_STRNG_0    0x00000080U  /**< TRNG personalization string 0 offset */
+#define TRNG_PER_STRNG_0    0x00000080U  /**< - TRNG personalization string 0 offset */
 /**
  * Below registers are not directly referenced in driver but are accessed accessed with offset
  * from TRNG_PER_STRNG_0
@@ -103,7 +103,7 @@ extern "C" {
  */
 
 /* Register: TRNG_CORE_OUTPUT */
-#define TRNG_CORE_OUTPUT    0x000000C0U  /**< TRNG core output offset */
+#define TRNG_CORE_OUTPUT    0x000000C0U  /**< - TRNG core output offset */
 
 /* Register: TRNG_RESET */
 #define TRNG_RESET              0x000000D0U  /**< TRNG reset offset */

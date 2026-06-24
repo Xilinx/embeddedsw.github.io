@@ -15,7 +15,7 @@ var xwdttb_8c =
     [ "XWdtTb_GenAnswer", "xwdttb_8c.html#gaf06401c68588281006be77362aa8dbf4", null ],
     [ "XWdtTb_GetByteCount", "xwdttb_8c.html#ga8e3a836964ef56168668f3d26307dfc7", null ],
     [ "XWdtTb_GetByteSegment", "xwdttb_8c.html#ga2e1e6ee60443c503144572bd00fc8589", null ],
-    [ "XWdtTb_Initialize", "xwdttb_8c.html#ga62df11d6ae0d6652fd3f79b71aebe9c7", null ],
+    [ "XWdtTb_Initialize", "xwdttb_8c.html#gac527fa5e22004cbd388574538d306a4d", null ],
     [ "XWdtTb_IntrClear", "xwdttb_8c.html#gaf2b1b1175aac0974fa1c9c1c7c50550c", null ],
     [ "XWdtTb_IsGenericWdtFWExpired", "xwdttb_8c.html#ga24e80e9f7fb7d427513e7fe03833dc1e", null ],
     [ "XWdtTb_IsWdtExpired", "xwdttb_8c.html#gaa1ec9f43580e5497f47960d47a231cb1", null ],

@@ -54,7 +54,7 @@ var xuartpsv_8h =
     [ "XUartPsv_GetOptions", "xuartpsv_8h.html#ga30dc7c90e0cc1a859ae286f1bb4fb3cf", null ],
     [ "XUartPsv_InterruptHandler", "xuartpsv_8h.html#ga869ac0531d2e16457706d013d7f0a0cc", null ],
     [ "XUartPsv_IsSending", "xuartpsv_8h.html#gaa335aef95c763728b0d179ddc3e8b209", null ],
-    [ "XUartPsv_LookupConfig", "xuartpsv_8h.html#ga7477291ed48190c1ef632c2086e013e9", null ],
+    [ "XUartPsv_LookupConfig", "xuartpsv_8h.html#ga1ae9af89fa7aaab4c02d937d5ce520f7", null ],
     [ "XUartPsv_ProgramCtrlReg", "xuartpsv_8h.html#gaa19ed118438249d9c56cd3afcfa8898c", null ],
     [ "XUartPsv_Recv", "xuartpsv_8h.html#ga4d4d20bbcedb1de2adbe2644b821d12d", null ],
     [ "XUartPsv_SelfTest", "xuartpsv_8h.html#ga5dba5d9d345ab578b8410113968ffaa6", null ],

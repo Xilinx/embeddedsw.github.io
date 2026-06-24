@@ -1,6 +1,6 @@
 /**************************************************************************************************
 * Copyright (c) 2023 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 **************************************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xtrngpsx_tests.c
- * @addtogroup Overview
+ * @addtogroup trngpsx_api TRNGPSX APIs
  * @{
  *
  * Contains Known Answer Tests and Health Tests for the TRNGPSV component.
@@ -21,6 +21,7 @@
  * 1.0   kpt  01/04/23 First release
  * 1.1   kpt  08/29/23 Removed dead code
  * 1.2   kpt  01/09/24 Added option for blocking or non-blocking reseed support
+ * 1.6   hae  01/06/26 Fixed doxygen warnings
  *
  * </pre>
  *
@@ -211,7 +212,7 @@ END:
 int XTrngpsx_PreOperationalSelfTests(XTrngpsx_Instance *InstancePtr) {
 	volatile int Status = XST_FAILURE;
 
-	/* Reset the TRNG state */
+	/** - Reset the TRNG state */
 	Status = XTrngpsx_Uninstantiate(InstancePtr);
 	if (Status != XST_SUCCESS) {
 		goto END;
@@ -227,3 +228,4 @@ int XTrngpsx_PreOperationalSelfTests(XTrngpsx_Instance *InstancePtr) {
 END:
 	return Status;
 }
+/** @} */

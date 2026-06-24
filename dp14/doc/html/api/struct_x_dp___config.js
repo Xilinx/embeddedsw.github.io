@@ -1,7 +1,6 @@
 var struct_x_dp___config =
 [
     [ "BaseAddr", "struct_x_dp___config.html#a26db9b137de6560d3b2690f0d4acaed0", null ],
-    [ "DeviceId", "struct_x_dp___config.html#a1a2be6837a807d11e38d7e18eb73acc0", null ],
     [ "DpProtocol", "struct_x_dp___config.html#a1632df176c6aa05831f6456bc8c0ea6e", null ],
     [ "DualPixelEn", "struct_x_dp___config.html#a8bd1f6452601ab45a534e5e567cef1e6", null ],
     [ "IsRx", "struct_x_dp___config.html#a69d4f2f8c4557a548f9a0d32fe39ef18", null ],

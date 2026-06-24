@@ -42,7 +42,7 @@ var xdppsu_8h =
     [ "XDpPsu_IicWrite", "xdppsu_8h.html#a22050229650e6ee5ac11242e5387e8e4", null ],
     [ "XDpPsu_InitializeTx", "xdppsu_8h.html#a2602de9c767cd981896326433a3c2570", null ],
     [ "XDpPsu_IsConnected", "xdppsu_8h.html#aee45a79c993e3bcad636dddf3121aeab", null ],
-    [ "XDpPsu_LookupConfig", "xdppsu_8h.html#af6dbe680949ea8a0e857c916d870584b", null ],
+    [ "XDpPsu_LookupConfig", "xdppsu_8h.html#a516998e367c2732f5a99802c776e13f4", null ],
     [ "XDpPsu_ResetPhy", "xdppsu_8h.html#a6eec1f08aa677fac3467a9d34b54589c", null ],
     [ "XDpPsu_SelfTest", "xdppsu_8h.html#a361b97262d5192f5f357fb4fb27b3ec8", null ],
     [ "XDpPsu_SetColorEncode", "xdppsu_8h.html#a93872e0beb0405b47b7d689e8f8749c5", null ],

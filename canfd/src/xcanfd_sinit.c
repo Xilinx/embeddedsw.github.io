@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -26,6 +26,10 @@
 * 1.3   ask    08/08/18 Fixed doxygen warnings
 * 2.0	ask    09/12/18 Added support for canfd 2.0 spec sequential mode
 * 2.8	ht     06/19/23 Added support for system device-tree flow
+* 2.12  vlt    11/05/25 Add 64-bit Addressing Support.
+* 2.12  vlt    12/12/25 Update Doxygen comments to include SDT flow details.
+
+
 * </pre>
 *
 ******************************************************************************/
@@ -49,16 +53,22 @@
 /*****************************************************************************/
 /**
 *
-* This function looks for the device configuration based on the unique device
-* ID. The table XCanFd_ConfigTable[] contains the configuration information for
-* each device in the system.
+* Looks up the device configuration based on the unique device ID/BaseAddress.
+* The XCanFd_ConfigTable[] contains the configuration info for each device
+* in the system.
 *
-* @param	DeviceId is the unique device ID of the device being looked up.
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
+* @param	DeviceId contains the unique ID of the device
+* @endif
 *
-* @return	A pointer to the configuration table entry corresponding to the
-*		given device ID, or NULL if no match is found.
+* @return       A pointer to the configuration found or NULL if the specified
+*               device ID/BaseAddress was not found. See xcanfd.h for the
+*               definition of XCanFd_Config.
 *
-* @note		None.
+* @note        In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -77,7 +87,7 @@ XCanFd_Config *XCanFd_LookupConfig(u16 DeviceId)
 	return (XCanFd_Config *)CfgPtr;
 }
 #else
-XCanFd_Config *XCanFd_LookupConfig(u32 BaseAddress)
+XCanFd_Config *XCanFd_LookupConfig(UINTPTR BaseAddress)
 {
 	XCanFd_Config *CfgPtr = NULL;
 	u32 Index;

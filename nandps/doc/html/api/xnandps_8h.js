@@ -55,7 +55,7 @@ var xnandps_8h =
     ] ],
     [ "XNandPs_CfgInitialize", "xnandps_8h.html#gaddb9f847fae34f6d137f591375a7c962", null ],
     [ "XNandPs_EraseBlock", "xnandps_8h.html#ga22b4e2bc1af7e4bfecd4428c25a77bb8", null ],
-    [ "XNandPs_LookupConfig", "xnandps_8h.html#gad64edb80b795bb18ecceb9428b458903", null ],
+    [ "XNandPs_LookupConfig", "xnandps_8h.html#ga4cc633f2b5e313c11cf56b0b3b42626b", null ],
     [ "XNandPs_Read", "xnandps_8h.html#ga8e72425d265074f1c2f8c66edfd22857", null ],
     [ "XNandPs_ReadCache", "xnandps_8h.html#ga605bd783f065806f1d1f602f88128f9b", null ],
     [ "XNandPs_ReadSpareBytes", "xnandps_8h.html#gaf9857df5e1359875e429f66e46ca5a86", null ],

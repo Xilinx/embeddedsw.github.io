@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -503,10 +503,12 @@ int XV_HdmiRx1_SetCallback(XV_HdmiRx1 *InstancePtr,
 static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 {
 	u32 Status;
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	u32 TotalPixFRLRatio = 0;
 	u32 ActivePixFRLRatio = 0;
 	u64 VidClk = 0;
 	u8 Remainder = 0;
+#endif
 	XVidC_VideoMode DecodedVmId = 0;
 	u8 VrrActive = FALSE;
 	u8 FvaFactor = 1;
@@ -636,8 +638,8 @@ static void HdmiRx1_VtdIntrHandler(XV_HdmiRx1 *InstancePtr)
 
 				/* If the colorspace is YUV420, then the
 				 * frame rate must be doubled */
-				if (InstancePtr->Stream.Video.ColorFormatId ==
-						XVIDC_CSF_YCRCB_420) {
+				if ( (InstancePtr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420)  &&
+					(!InstancePtr->Stream.Video.IsDSCompressed) ) {
 					/* Calculate and set the frame rate field */
 					InstancePtr->Stream.Video.FrameRate =
 					   (XVidC_FrameRate) (XV_HdmiRx1_Divide((InstancePtr->Stream.PixelClk << 1),

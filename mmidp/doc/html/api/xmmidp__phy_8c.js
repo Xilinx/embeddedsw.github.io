@@ -1,9 +1,11 @@
 var xmmidp__phy_8c =
 [
     [ "XMmiDp_AuxRead", "xmmidp__phy_8c.html#gac6ab04ec398a03237bc3fc128528e708", null ],
+    [ "XMmiDp_AuxSoftReset", "xmmidp__phy_8c.html#gaffa1e3278dc104d51598c908d72c25b7", null ],
     [ "XMmiDp_AuxWrite", "xmmidp__phy_8c.html#ga801d0c3bbe8822dbb0b75af631c1c828", null ],
     [ "XMmiDp_CfgInitialize", "xmmidp__phy_8c.html#gac208ef2307d56ac04e68c5402b5b278e", null ],
-    [ "XMmiDp_DpcdReadModifyWrite", "xmmidp__phy_8c.html#ga72ca39b12a1ec4c495f4b5f405950baf", null ],
+    [ "XMmiDp_CoreSoftResetAll", "xmmidp__phy_8c.html#gaf96484fca7e609f5fbf0c19e6f3f0eb0", null ],
+    [ "XMmiDp_DpcdReadModifyWrite", "xmmidp__phy_8c.html#gab8f322b3076a720765501db8a5d4ae3b", null ],
     [ "XMmiDp_GetEdidBlock", "xmmidp__phy_8c.html#ga3dd878b5a2170ada3e8b5135a0899fbd", null ],
     [ "XMmiDp_I2cRead", "xmmidp__phy_8c.html#ga74d3745c9b78752579ab0457d266d6a9", null ],
     [ "XMmiDp_I2cWrite", "xmmidp__phy_8c.html#ga090261e373ee6881e30c22f3e6081eed", null ],
@@ -19,6 +21,7 @@ var xmmidp__phy_8c =
     [ "XMmiDp_SetAux_100000Us_Cnt_Limit", "xmmidp__phy_8c.html#ga47ed0b4f27fb0badafec87dddca81df3", null ],
     [ "XMmiDp_SetAux_2000Us_Cnt_Limit", "xmmidp__phy_8c.html#gac08c9347c5b9c108aa9f34221256a225", null ],
     [ "XMmiDp_SetAux_250Us_Cnt_Limit", "xmmidp__phy_8c.html#gaa5dc71e26942b66fa2b182eb7401f7e1", null ],
+    [ "XMmiDp_SetAuxDebug", "xmmidp__phy_8c.html#ga68ba870d850bb4db93b222ace4145d0e", null ],
     [ "XMmiDp_SetDpcdLaneCount", "xmmidp__phy_8c.html#ga1c9569c6c5ebf64a307e313ccd804198", null ],
     [ "XMmiDp_SetDpcdLinkQualPattern", "xmmidp__phy_8c.html#ga14948f99793fbcff34c501b4fa68ae60", null ],
     [ "XMmiDp_SetDpcdLinkRate", "xmmidp__phy_8c.html#gaad32ead102701bc9f6b7f6844f4b4619", null ],

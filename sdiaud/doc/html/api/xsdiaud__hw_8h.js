@@ -111,6 +111,7 @@ var xsdiaud__hw_8h =
     [ "XSDIAUD_INT_STS_REG_OFFSET", "xsdiaud__hw_8h.html#gab2b1473b41e24f4514ca318acca41225", null ],
     [ "XSDIAUD_MUTE_CH_REG_OFFSET", "xsdiaud__hw_8h.html#ga2e495d663d19b1fd4cfd26d108e27e54", null ],
     [ "XSdiAud_Out32", "xsdiaud__hw_8h.html#ga2b549347e29f15ad99b4e6b8c55987c4", null ],
+    [ "XSdiAud_ReadReg", "xsdiaud__hw_8h.html#gacf68b32152d4eec1b20a9bf1aa607429", null ],
     [ "XSDIAUD_SOFT_RST_ACLK_MASK", "xsdiaud__hw_8h.html#ga9e767926697356a0bc196ba474322523", null ],
     [ "XSDIAUD_SOFT_RST_ACLK_SHIFT", "xsdiaud__hw_8h.html#ga337eb5623f1feade91083420c26df23f", null ],
     [ "XSDIAUD_SOFT_RST_REG_OFFSET", "xsdiaud__hw_8h.html#gaa264a0eb161bcfd0d6226fd6e654e75f", null ],
@@ -119,5 +120,6 @@ var xsdiaud__hw_8h =
     [ "XSDIAUD_SR_STAT_REG_OFFSET", "xsdiaud__hw_8h.html#ga65453fe22a0cb6e794871f54bf919d8a", null ],
     [ "XSDIAUD_VALID_CH_REG_OFFSET", "xsdiaud__hw_8h.html#ga11bab2fbb639aa280156a6c989fdc272", null ],
     [ "XSDIAUD_VER_MASK", "xsdiaud__hw_8h.html#gac089dfff4301a1030a3d38b6c5350677", null ],
-    [ "XSDIAUD_VER_SHIFT", "xsdiaud__hw_8h.html#ga60cd75516a51c546551ea7d98f02fff0", null ]
+    [ "XSDIAUD_VER_SHIFT", "xsdiaud__hw_8h.html#ga60cd75516a51c546551ea7d98f02fff0", null ],
+    [ "XSdiAud_WriteReg", "xsdiaud__hw_8h.html#ga93179727b5f81cfa14da795ef19f2ce2", null ]
 ];

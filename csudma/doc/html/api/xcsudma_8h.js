@@ -37,7 +37,7 @@ var xcsudma_8h =
     [ "XCsuDma_IntrClear", "xcsudma_8h.html#ga1db5eabd96920efb06fb03c919420601", null ],
     [ "XCsuDma_IntrGetStatus", "xcsudma_8h.html#ga6169fa380a4d55e41d7ab96589372e8f", null ],
     [ "XCsuDma_IsPaused", "xcsudma_8h.html#gaa3450f812658f927f289b997b12a4174", null ],
-    [ "XCsuDma_LookupConfig", "xcsudma_8h.html#ga9b921be4bb07b632d2dfd8ac34c30fb8", null ],
+    [ "XCsuDma_LookupConfig", "xcsudma_8h.html#ga2420bd1fdfb8f4fb151aef5b4b6ee8ba", null ],
     [ "XCsuDma_Pause", "xcsudma_8h.html#ga00b5080126710866186d0bfafd26e9b6", null ],
     [ "XCsuDma_Resume", "xcsudma_8h.html#gaeee3f2d5bcf265b57c9f214f2bc15a28", null ],
     [ "XCsuDma_SelfTest", "xcsudma_8h.html#ga774ab551d0ef59fd880ff834f2d83804", null ],

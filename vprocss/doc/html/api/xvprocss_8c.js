@@ -1,5 +1,6 @@
 var xvprocss_8c =
 [
+    [ "XVPROCSS_RSTMASK_ALL_BLOCKS", "xvprocss_8c.html#af6931edd85195bf9662d1c2cd5c8a349", null ],
     [ "XVPROCSS_RSTMASK_IP_AXIMM", "xvprocss_8c.html#a4fb66632e7266e1abf4292b8ec819b50", null ],
     [ "XVPROCSS_RSTMASK_IP_AXIS", "xvprocss_8c.html#af87c7ccc12aec9201a98d39d7e186a2d", null ],
     [ "XVPROCSS_RSTMASK_VIDEO_IN", "xvprocss_8c.html#a222fde5e6896742abd771d50c488118b", null ],
@@ -38,5 +39,7 @@ var xvprocss_8c =
     [ "XVprocSs_SetZoomPipWindow", "xvprocss_8c.html#a8293d3dc637bc8c481b205d2272b4fc2", null ],
     [ "XVprocSs_Start", "xvprocss_8c.html#a0f673d448bb7702661b702519de94fd9", null ],
     [ "XVprocSs_Stop", "xvprocss_8c.html#a1f28821282af5defa07408d1c00c2bfe", null ],
-    [ "XVprocSs_UpdateZoomPipWindow", "xvprocss_8c.html#a4bdc6a00278cb1c847429d7498f8505e", null ]
+    [ "XVprocSs_UpdateZoomPipWindow", "xvprocss_8c.html#a4bdc6a00278cb1c847429d7498f8505e", null ],
+    [ "subcoreRepo", "xvprocss_8c.html#ab71e8b96960be2cb7ede5838a1e9cdbf", null ],
+    [ "XVprocSs_PixelHStep", "xvprocss_8c.html#ad8037f2e08fc24847ac88a924d16a9f8", null ]
 ];

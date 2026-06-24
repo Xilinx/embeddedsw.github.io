@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -27,7 +27,7 @@
 * 1.11	sk     03/03/22 Add cond INTERNAL to avoid internal macros.
 * 1.12	sk     03/03/22 Added support for VERSAL NET.
 * 1.16  ng     08/20/24 Added spartanup device support
-* 2.0   sd     10/13/25 Added support for VERSAL_2VP_P devices.
+* 2.0   sd     11/10/25 Added support for VERSAL_2VP_P devices.
 * </pre>
 *
 ******************************************************************************/
@@ -269,9 +269,9 @@ extern "C" {
 							  *  AXI R/W CACHE */
 #define XCSUDMA_CTRL2_ROUTE_SHIFT	23U		/**< Shift for route */
 #define XCSUDMA_CTRL2_TIMEOUT_EN_SHIFT	22U		/**< Shift for Timeout
-							  *  enable feild */
+							  *  enable field */
 #define XCSUDMA_CTRL2_TIMEOUT_PRE_SHIFT	4U		/**< Shift for Timeout
-							  *  pre feild */
+							  *  pre field */
 /*@}*/
 
 /** @name MSB Address register bit masks and shifts

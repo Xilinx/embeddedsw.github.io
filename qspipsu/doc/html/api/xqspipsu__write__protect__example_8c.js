@@ -11,5 +11,5 @@ var xqspipsu__write__protect__example_8c =
     [ "GetRealAddr", "xqspipsu__write__protect__example_8c.html#af45c38b76bbabbaf848a33cdc889ebfb", null ],
     [ "main", "xqspipsu__write__protect__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "QspiPsuHandler", "xqspipsu__write__protect__example_8c.html#a48231ad0042a647ddbcf702df748d1a4", null ],
-    [ "QspiPsuWriteProtectFlashExample", "xqspipsu__write__protect__example_8c.html#a191ca904211eda1c8b5dddc5e6a16331", null ]
+    [ "QspiPsuWriteProtectFlashExample", "xqspipsu__write__protect__example_8c.html#aadb60261ff1b3a4ec0b972eb47e90356", null ]
 ];

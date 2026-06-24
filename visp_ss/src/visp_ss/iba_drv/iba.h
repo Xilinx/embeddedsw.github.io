@@ -1,4 +1,4 @@
-// Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+// Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 
 #ifndef __IBA_H__
 #define __IBA_H__
@@ -56,6 +56,8 @@ typedef enum iba_fifo_write_mode {
 
 typedef enum tile_id {
 	TILE_0 = 0,
+	TILE_1,
+	TILE_2,
 	MAX_TILE,
 	DUMMY_TILE_ID = 0XDEADFEED
 } tile_id_t;
@@ -130,8 +132,8 @@ typedef struct vvbench_vdev_iba {
 	Xil_In32( (UINTPTR) (((u8 *)BaseAddress) + (RegOffset)))
 
 #define XPAR_IBA_INSTANCES 4
-#define XPAR_ISP_INSTANCE  2
-#define XPAR_TILE_INSTANCES 1
+#define XPAR_IBA_ISP_INSTANCE  6
+#define XPAR_IBA_TILE_INSTANCES 1
 
 /*
 * The configuration table for devices

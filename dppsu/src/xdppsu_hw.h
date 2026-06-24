@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -109,14 +109,14 @@ extern "C" {
 #define XDPPSU_TX_USER_FIFO_OVERFLOW	0x0110	/**< Indicates an overflow in
 							user FIFO. */
 #define XDPPSU_INTERRUPT_SIG_STATE	0x0130	/**< The raw signal values for
-							interupt events. */
+							interrupt events. */
 #define XDPPSU_AUX_REPLY_DATA		0x0134	/**< Reply data received during
 							the AUX reply. */
 #define XDPPSU_AUX_REPLY_CODE		0x0138	/**< Reply code received from
 							the most recent AUX
 							command. */
 #define XDPPSU_AUX_REPLY_COUNT		0x013C	/**< Number of reply
-							transactions receieved
+							transactions received
 							over AUX. */
 #define XDPPSU_REPLY_DATA_COUNT		0x0148	/**< Total number of data bytes
 							actually received during
@@ -1144,10 +1144,22 @@ extern "C" {
 #define XDPPSU_DISPID_TDT_TOP2_VLOC_H_MASK	0x3
 /* @} */
 
+/**
+ * @def XDPPSU_0_LANE_COUNT
+ * @brief Number of lanes for DP.
+ */
 #ifndef SDT
+#ifdef XPAR_PSU_DP_LANE_COUNT
 #define XDPPSU_0_LANE_COUNT			XPAR_PSU_DP_LANE_COUNT
 #else
-#define XDPPSU_0_LANE_COUNT			2
+#define XDPPSU_0_LANE_COUNT			0
+#endif
+#else
+#ifdef XPAR_ZYNQMP_DPSUB_MAX_LANES
+#define XDPPSU_0_LANE_COUNT			XPAR_ZYNQMP_DPSUB_MAX_LANES
+#else
+#define XDPPSU_0_LANE_COUNT			0
+#endif
 #endif
 #define XDPPSU_0_LINK_RATE			20
 #define XDPPSU_0_MAX_BITS_PER_COLOR		12

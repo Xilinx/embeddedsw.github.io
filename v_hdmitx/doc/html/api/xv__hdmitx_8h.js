@@ -1,7 +1,7 @@
 var xv__hdmitx_8h =
 [
     [ "XV_HdmiTx_Config", "struct_x_v___hdmi_tx___config.html", "struct_x_v___hdmi_tx___config" ],
-    [ "XV_HdmiTx_AudioStream", "struct_x_v___hdmi_tx___audio_stream.html", null ],
+    [ "XV_HdmiTx_AudioStream", "struct_x_v___hdmi_tx___audio_stream.html", "struct_x_v___hdmi_tx___audio_stream" ],
     [ "XV_HdmiTx_Stream", "struct_x_v___hdmi_tx___stream.html", "struct_x_v___hdmi_tx___stream" ],
     [ "XV_HdmiTx", "struct_x_v___hdmi_tx.html", "struct_x_v___hdmi_tx" ],
     [ "XV_HdmiTx_AudioDisable", "xv__hdmitx_8h.html#ab0d38d78bc8117d38c039d743892eeab", null ],
@@ -42,7 +42,8 @@ var xv__hdmitx_8h =
     [ "XV_HdmiTx_Reset", "xv__hdmitx_8h.html#ac8a836b7f27942b9a1cfbbcda79eb0ef", null ],
     [ "XV_HdmiTx_SetMode", "xv__hdmitx_8h.html#ab80fe1804de9125b96892b3fb9e41776", null ],
     [ "XV_HdmiTx_SetScrambler", "xv__hdmitx_8h.html#a6da173e33b955815176fd5640f7a1fbf", null ],
-    [ "XV_HdmiTx_Callback", "xv__hdmitx_8h.html#ae8a70df98d7f9509bf1f21f1107fa49d", [
+    [ "XV_HdmiTx_Callback", "xv__hdmitx_8h.html#ae8a70df98d7f9509bf1f21f1107fa49d", null ],
+    [ "XV_HdmiTx_AudioFormatType", "xv__hdmitx_8h.html#ae5879c686b0d530b43164d505cebeb7e", [
       [ "XV_HDMITX_AUDFMT_LPCM", "xv__hdmitx_8h.html#ae5879c686b0d530b43164d505cebeb7eaae37ebc0175d8adc167b9f2dc6148b9f", null ],
       [ "XV_HDMITX_AUDFMT_HBR", "xv__hdmitx_8h.html#ae5879c686b0d530b43164d505cebeb7ea813b7b8a92558dffb69d7a3dbc5db601", null ],
       [ "XV_HDMITX_AUDFMT_3D", "xv__hdmitx_8h.html#ae5879c686b0d530b43164d505cebeb7ead70b75132a15ef1f723d0e1848bfe043", null ]
@@ -55,7 +56,9 @@ var xv__hdmitx_8h =
       [ "XV_HDMITX_HANDLER_BRDGUNDERFLOW", "xv__hdmitx_8h.html#a13f3db95069a268ab390dd4102604fb2a5a3a3dd7ae714e99d35f99ed0ff0d17f", null ],
       [ "XV_HDMITX_HANDLER_VS", "xv__hdmitx_8h.html#a13f3db95069a268ab390dd4102604fb2a9fe19d114d8d963da2a5a657b0b0d15c", null ],
       [ "XV_HDMITX_HANDLER_STREAM_DOWN", "xv__hdmitx_8h.html#a13f3db95069a268ab390dd4102604fb2a91341cb6ecd07cca59765e876860ef7e", null ],
-      [ "XV_HDMITX_HANDLER_STREAM_UP", "xv__hdmitx_8h.html#a13f3db95069a268ab390dd4102604fb2ae4cf5abd3ed61bf72915479ec1e44938", null ],
+      [ "XV_HDMITX_HANDLER_STREAM_UP", "xv__hdmitx_8h.html#a13f3db95069a268ab390dd4102604fb2ae4cf5abd3ed61bf72915479ec1e44938", null ]
+    ] ],
+    [ "XV_HdmiTx_State", "xv__hdmitx_8h.html#a73ae987f90760fc28e1d19b81d875a26", [
       [ "XV_HDMITX_STATE_STREAM_DOWN", "xv__hdmitx_8h.html#a73ae987f90760fc28e1d19b81d875a26aa8e9496175cdf2ae48d860fedfe41dba", null ],
       [ "XV_HDMITX_STATE_STREAM_UP", "xv__hdmitx_8h.html#a73ae987f90760fc28e1d19b81d875a26af01863138cb3cf0ebfc4233ba852b8d1", null ]
     ] ],
@@ -79,7 +82,7 @@ var xv__hdmitx_8h =
     [ "XV_HdmiTx_IntrHandler", "xv__hdmitx_8h.html#a25e91176ce93f223449dcb56c375ac51", null ],
     [ "XV_HdmiTx_IsStreamConnected", "xv__hdmitx_8h.html#a7380f59f3609455c91e7090b7fde1504", null ],
     [ "XV_HdmiTx_IsStreamScrambled", "xv__hdmitx_8h.html#aa1b9824b19f5af7b841f52d797a3b0fc", null ],
-    [ "XV_HdmiTx_LookupConfig", "xv__hdmitx_8h.html#aaa4b514df450488c91f36c2a266fd213", null ],
+    [ "XV_HdmiTx_LookupConfig", "xv__hdmitx_8h.html#aa071194fa7a490e62c26c63af15511d3", null ],
     [ "XV_HdmiTx_Scrambler", "xv__hdmitx_8h.html#a588fe097262642349aa193a0665ff81f", null ],
     [ "XV_HdmiTx_SelfTest", "xv__hdmitx_8h.html#a0934e75073446925a9698485b52e2c00", null ],
     [ "XV_HdmiTx_SetAudioChannels", "xv__hdmitx_8h.html#a32872739c2a5ea02cf92aadc79aa385f", null ],

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 /*****************************************************************************/
@@ -86,7 +86,7 @@
 * 1.14	ab	03/13/22 Add byte-wise transfer API for Versal-Net
 * 1.14  ng      07/13/23 Added macro to detect if dma type is invalid.
 * 1.16  ng      08/20/24 Added spartanup device support
-* 2.0   sd      10/13/25 Added support for VERSAL_2VP_P devices.
+* 2.0   sd      11/10/25 Added support for VERSAL_2VP_P devices.
 *
 * </pre>
 *
@@ -933,7 +933,7 @@ static INLINE void XPmcDma_DisableIntr(XPmcDma *InstancePtr, XPmcDma_Channel Cha
 /**
 *
 * Returns the interrupt mask to know which interrupts are
-* enabled and which of them were disaled.
+* enabled and which of them were disabled.
 *
 * @param	InstancePtr Pointer to XPmcDma instance to be worked on.
 * @param	Channel Represents the type of channel.

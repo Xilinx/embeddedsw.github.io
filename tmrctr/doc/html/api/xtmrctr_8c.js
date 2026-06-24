@@ -4,7 +4,7 @@ var xtmrctr_8c =
     [ "XTmrCtr_GetCaptureValue", "xtmrctr_8c.html#gad8f339bdf71ed11fa92f08720c9ce663", null ],
     [ "XTmrCtr_GetValue", "xtmrctr_8c.html#ga325269055bb6f9f7a0c7f703bd2f2174", null ],
     [ "XTmrCtr_InitHw", "xtmrctr_8c.html#gac3ffcfef4ba4507d5f2b9e17a08c7bf0", null ],
-    [ "XTmrCtr_Initialize", "xtmrctr_8c.html#gad5f9b6172f448d2dd13d1c200ca37928", null ],
+    [ "XTmrCtr_Initialize", "xtmrctr_8c.html#ga8fbe1a132a6c742c79cb73dee233e779", null ],
     [ "XTmrCtr_IsExpired", "xtmrctr_8c.html#ga44d19561a31682753e4996c7b57d6982", null ],
     [ "XTmrCtr_PwmConfigure", "xtmrctr_8c.html#ga295c8b4acc8b8fd71cb1085d3fa2c53c", null ],
     [ "XTmrCtr_PwmDisable", "xtmrctr_8c.html#ga7442dd2a194e46db961019a29c9e755d", null ],

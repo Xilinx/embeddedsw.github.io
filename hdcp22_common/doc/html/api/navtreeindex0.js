@@ -62,6 +62,7 @@ var NAVTREEINDEX0 =
 "bigdigits_8h.html#af6837bac786e6c592602feb8a37c52d5":[1,1,41],
 "bigdigits_8h.html#afe97063d506389797a9647a8803edc65":[1,1,38],
 "bigdigits_8h.html#afee0546db3e24c672b9bc35fbe3d24ca":[1,1,17],
+"deprecated.html":[2],
 "files.html":[1],
 "globals.html":[0,0],
 "globals_defs.html":[0,3],

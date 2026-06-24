@@ -65,7 +65,7 @@ var xnandpsu_8h =
     [ "XNandPsu_Erase", "xnandpsu_8h.html#ga7fb413a5f75317e698fe97ba12fc7d44", null ],
     [ "XNandPsu_EraseBlock", "xnandpsu_8h.html#ga59942044a415eacf3399b77b70fe3a20", null ],
     [ "XNandPsu_GetFeature", "xnandpsu_8h.html#gaa6725c5aa761078a438094bad802045e", null ],
-    [ "XNandPsu_LookupConfig", "xnandpsu_8h.html#ga4d6df6679bb2c84faa7bbec9f4e776ee", null ],
+    [ "XNandPsu_LookupConfig", "xnandpsu_8h.html#gab80327280ff56f9211b02cfb9fd62975", null ],
     [ "XNandPsu_MarkBlockBad", "xnandpsu_8h.html#ga8d3500cacdc26941b76db6a74f8e2b0f", null ],
     [ "XNandPsu_Prepare_Cmd", "xnandpsu_8h.html#gabfb036fc0238a5c54de831574c371450", null ],
     [ "XNandPsu_Read", "xnandpsu_8h.html#gad7e291db556ad9d33fbd06aa6ab79cb6", null ],

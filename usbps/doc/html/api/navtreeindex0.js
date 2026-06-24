@@ -1,6 +1,7 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex10":[3,9],
@@ -16,8 +17,8 @@ var NAVTREEINDEX0 =
 "example.html#ex8":[3,7],
 "example.html#ex9":[3,8],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals.html":[1,0,0],
 "globals_0x6d.html":[1,0,1],
@@ -40,7 +41,8 @@ var NAVTREEINDEX0 =
 "struct_x_usb_ps.html#ae36b186a12bd7240705d7095a578819a":[0,0,0,6],
 "struct_x_usb_ps___config.html":[0,0,1],
 "struct_x_usb_ps___config.html#a0fc8018ea01456a111464cf7d9f7ed04":[0,0,1,0],
-"struct_x_usb_ps___config.html#a654dc5b571f4138d42f0c0e738facba7":[0,0,1,1],
+"struct_x_usb_ps___config.html#a921451bc39dd190d4f756f7e90b962be":[0,0,1,1],
+"struct_x_usb_ps___config.html#a9cf19fcb77e08bd244e06ca2de9d70a1":[0,0,1,2],
 "struct_x_usb_ps___device_config.html":[0,0,2],
 "struct_x_usb_ps___device_config.html#a0a5c8ac8a91e6d08ee7c74e6b1d7ad0e":[0,0,2,0],
 "struct_x_usb_ps___device_config.html#a6098d846df00c20ac64592a1794400dc":[0,0,2,4],
@@ -153,15 +155,14 @@ var NAVTREEINDEX0 =
 "xusbps_8h.html#gaba0ae2eac9c6b402e32e401333a5b105":[2,1,59],
 "xusbps_8h.html#gac1d65456d504832a5a1426085545ff2d":[2,1,24],
 "xusbps_8h.html#gac27a9d64ddf33a2400d7493e301a7192":[2,1,52],
+"xusbps_8h.html#gac79e39dc62c743463e360c400f33d194":[2,1,64],
 "xusbps_8h.html#gad86f6c8b6ff536870e40a018308ee9d7":[2,1,12],
 "xusbps_8h.html#gad8b727ed129801690a987d1e475bc1d5":[2,1,21],
 "xusbps_8h.html#gadbe72ae98e3bc73150a650f5f8e5c34f":[2,1,56],
 "xusbps_8h.html#gae012590baed99e88cd4a92ff3f65faa0":[2,1,23],
-"xusbps_8h.html#gafcaf2c53431ef206d3435d677867f818":[2,1,64],
 "xusbps__audio__example_8c.html":[2,2],
 "xusbps__audio__example_8c.html#a151422305b638ea9418bbd8d0639f93d":[2,2,1],
 "xusbps__audio__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,2,0],
-"xusbps__audio__example_8c.html#a938cd4fd3524f466825dbd96299426e5":[2,2,2],
 "xusbps__audiodata_8h.html":[2,3],
 "xusbps__ch9_8c.html":[2,4],
 "xusbps__ch9_8c.html#a135fc516ea82eb4231418c28d36a0b4f":[2,4,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "xusbps__endpoint_8h.html#ga4bdef8ae36dd906e45f9f8cd0db05386":[2,15,11],
 "xusbps__endpoint_8h.html#ga536734fa778d3c92acee8f924ed14368":[2,15,6],
 "xusbps__endpoint_8h.html#ga53e16e680fe49e56c3267e4d9d81078a":[2,15,33],
-"xusbps__endpoint_8h.html#ga578231f86cf92fd3a737403139877114":[2,15,12],
-"xusbps__endpoint_8h.html#ga5e3ba25e78a33f9f7676109281cbad59":[2,15,35]
+"xusbps__endpoint_8h.html#ga578231f86cf92fd3a737403139877114":[2,15,12]
 };

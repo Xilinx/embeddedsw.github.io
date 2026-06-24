@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -70,6 +70,9 @@
 * 3.2	sne    08/05/19 Fixed coverity warnings.
 * 3.4	sne    08/28/20 Modify Makefile to support parallel make execution.
 * 3.6	sb     06/27/23 Added support for system device-tree flow.
+* 3.9   vlt    12/30/25 Update Doxygen comments to include SDT flow details.
+* 3.9   vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                       to support 64-bit addressing.
 *
 * </pre>
 *
@@ -112,7 +115,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Unique ID of device */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;	/**< Base address of the device */
 #ifdef SDT
@@ -187,7 +190,7 @@ extern XWdtPs_Config XWdtPs_ConfigTable[];      /**< Configuration table */
 #ifndef SDT
 XWdtPs_Config *XWdtPs_LookupConfig(u16 DeviceId);
 #else
-XWdtPs_Config *XWdtPs_LookupConfig(u32 BaseAddress);
+XWdtPs_Config *XWdtPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -45,7 +45,7 @@
 * 3.0	pkp  12/09/14 changed XSCUGIC_MAX_NUM_INTR_INPUTS for
 *		      Zynq Ultrascale Mp
 * 3.0   kvn  02/13/14 Modified code for MISRA-C:2012 compliance.
-* 3.2	pkp  11/09/15 Corrected the interrupt processsor target mask value
+* 3.2	pkp  11/09/15 Corrected the interrupt processor target mask value
 *					  for CPU interface 2 i.e. XSCUGIC_SPI_CPU2_MASK
 * 3.9   mus  02/21/18 Added new API's XScuGic_InterruptUnmapFromCpuByDistAddr
 *					  and XScuGic_UnmapAllInterruptsFromCpuByDistAddr, These
@@ -75,6 +75,10 @@
 * 5.5   ml   01/08/25 Update datatype of function arguments from u32 to UINTPTR to
 *                     support both 32bit and 64bit platforms.
 * 5.6   ml   07/21/25 Fixed GCC warnings.
+* 5.7   bdk  11/29/25 Updated XScuGic_DeviceInitialize() declaratoin to fix 8.3 misra-c violation.
+* 5.7   ml   03/05/26 Added Redistributor ICENABLER offset (0x180) definition.
+* 5.7   vmt  03/27/26 Fix GICv3 redistributor address range for EL1_NONSECURE without HYP_GUEST
+* 		      and correct default security configuration based on EL3 state.
 * </pre>
 *
 ******************************************************************************/
@@ -156,7 +160,7 @@ extern "C" {
 							Register */
 #define XSCUGIC_IC_TYPE_OFFSET		0x00000004U /**< Interrupt Controller
 							Type Register */
-#define XSCUGIC_DIST_IDENT_OFFSET	0x00000008U /**< Implementor ID
+#define XSCUGIC_DIST_IDENT_OFFSET	0x00000008U /**< Implementer ID
 							Register */
 #define XSCUGIC_SECURITY_OFFSET		0x00000080U /**< Interrupt Security
 							Register */
@@ -210,12 +214,12 @@ extern "C" {
 #define XSCUGIC_NUM_INT_MASK	0x0000001FU /**< Number of Interrupt IDs */
 /* @} */
 
-/** @name  Implementor ID Register
- * Implementor and revision information.
+/** @name  Implementer ID Register
+ * Implementer and revision information.
  * @{
  */
 #define XSCUGIC_REV_MASK	0x00FFF000U /**< Revision Number */
-#define XSCUGIC_IMPL_MASK	0x00000FFFU /**< Implementor */
+#define XSCUGIC_IMPL_MASK	0x00000FFFU /**< Implementer */
 /* @} */
 
 /** @name  Interrupt Security Registers
@@ -528,7 +532,7 @@ extern "C" {
 #define XSCUGIC_RDIST_START_ADDR        0xE2100000U
 #define XSCUGIC_RDIST_END_ADDR          0xE2130000U
 #else
-#if EL1_NONSECURE
+#if EL1_NONSECURE && HYP_GUEST
 #define XSCUGIC_RDIST_START_ADDR        0x03020000U
 #define XSCUGIC_RDIST_END_ADDR          0x03040000U
 #else
@@ -542,6 +546,7 @@ extern "C" {
 #define XSCUGIC_GICR_TYPER_AFFINITY_MASK 0xFFFFFFFF00000000UL
 
 #define XSCUGIC_RDIST_ISENABLE_OFFSET     0x100U
+#define XSCUGIC_RDIST_ICENABLER_OFFSET    0x180U
 #define XSCUGIC_RDIST_IPRIORITYR_OFFSET   0x400U
 #define XSCUGIC_RDIST_IGROUPR_OFFSET      0x80U
 
@@ -557,7 +562,7 @@ extern "C" {
 /*
  * GICR_IGROUPR  register definitions
  */
-#if defined EL3
+#if defined (EL3) && (EL3 == 1)
 #define XSCUGIC_DEFAULT_SECURITY    0x0U
 #else
 #define XSCUGIC_DEFAULT_SECURITY    0xFFFFFFFFU
@@ -737,7 +742,11 @@ extern "C" {
 /************************** Function Prototypes ******************************/
 
 void XScuGic_DeviceInterruptHandler(void *DeviceId);
+#ifndef SDT
 s32  XScuGic_DeviceInitialize(u32 DeviceId);
+#else
+s32 XScuGic_DeviceInitialize(u32 DistBaseAddr);
+#endif
 void XScuGic_RegisterHandler(UINTPTR BaseAddress, s32 InterruptID,
 			     Xil_InterruptHandler IntrHandler, void *CallBackRef);
 void XScuGic_SetPriTrigTypeByDistAddr(UINTPTR DistBaseAddress, u32 Int_Id,

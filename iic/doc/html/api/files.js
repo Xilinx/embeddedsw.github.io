@@ -17,6 +17,8 @@ var files =
     [ "xiic_multi_master.c", "xiic__multi__master_8c.html", "xiic__multi__master_8c" ],
     [ "xiic_multi_master_example.c", "xiic__multi__master__example_8c.html", "xiic__multi__master__example_8c" ],
     [ "xiic_options.c", "xiic__options_8c.html", "xiic__options_8c" ],
+    [ "xiic_pmbus_intr_example.c", "xiic__pmbus__intr__example_8c.html", "xiic__pmbus__intr__example_8c" ],
+    [ "xiic_pmbus_polled_example.c", "xiic__pmbus__polled__example_8c.html", "xiic__pmbus__polled__example_8c" ],
     [ "xiic_repeated_start_example.c", "xiic__repeated__start__example_8c.html", "xiic__repeated__start__example_8c" ],
     [ "xiic_selftest.c", "xiic__selftest_8c.html", "xiic__selftest_8c" ],
     [ "xiic_selftest_example.c", "xiic__selftest__example_8c.html", "xiic__selftest__example_8c" ],

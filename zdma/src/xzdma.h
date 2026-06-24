@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -116,6 +116,7 @@
 *                        in applications directly.
 * 1.14	adk	03/15/22 Fixed syntax errors in zdma_tapp.tcl file, when stdout
 * 			 is configured as none.
+* 1.20	gn	16/06/25 Add the declaration for the stop API.
 * </pre>
 *
 ******************************************************************************/
@@ -306,9 +307,9 @@ typedef struct {
 	u8 IsCacheCoherent; /**< Describes whether Cache Coherent or not;
                               * Applicable only to A53 in EL1 NS mode */
 #ifdef SDT
-	u16 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
+	u16 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
-	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XZDma_Config;
@@ -702,6 +703,7 @@ void XZDma_Reset(XZDma *InstancePtr);
 XZDmaState XZDma_ChannelState(XZDma *InstancePtr);
 
 s32 XZDma_SelfTest(XZDma *InstancePtr);
+s32 XZDma_Stop(XZDma *InstancePtr);
 
 void XZDma_IntrHandler(void *Instance);
 s32 XZDma_SetCallBack(XZDma *InstancePtr, XZDma_Handler HandlerType,

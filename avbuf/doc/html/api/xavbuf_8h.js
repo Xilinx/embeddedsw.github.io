@@ -4,7 +4,7 @@ var xavbuf_8h =
     [ "XAVBuf_AudioAttribute", "struct_x_a_v_buf___audio_attribute.html", null ],
     [ "XAVBuf_AVModes", "struct_x_a_v_buf___a_v_modes.html", null ],
     [ "XAVBuf_BlenderBgClr", "struct_x_a_v_buf___blender_bg_clr.html", null ],
-    [ "XAVBuf_Config", "struct_x_a_v_buf___config.html", null ],
+    [ "XAVBuf_Config", "struct_x_a_v_buf___config.html", "struct_x_a_v_buf___config" ],
     [ "XAVBuf_Blender", "struct_x_a_v_buf___blender.html", null ],
     [ "XAVBuf", "struct_x_a_v_buf.html", null ],
     [ "XAVBuf_AudioStream1", "xavbuf_8h.html#a4f8416931907a94349455e4c334683d1", [
@@ -92,7 +92,7 @@ var xavbuf_8h =
     [ "XAVBuf_AudioMixerVolumeControl", "xavbuf_8h.html#abff93765afd4cd6e693f116335e123d9", null ],
     [ "XAVBuf_AudioSoftReset", "xavbuf_8h.html#aa319befa1c0951846a814c6d48a6db82", null ],
     [ "XAVBuf_BlendSetBgColor", "xavbuf_8h.html#aa10d2d81056ad9fb8121b349592fe394", null ],
-    [ "XAVBuf_CfgInitialize", "xavbuf_8h.html#a34a4a1b8108602ca4fe237958530b367", null ],
+    [ "XAVBuf_CfgInitialize", "xavbuf_8h.html#a7fee983431a0ca99aee37ed6014d360a", null ],
     [ "XAVBuf_ConfigureGraphicsPipeline", "xavbuf_8h.html#af8e87bfbe013d580f97fa1f0ed8d053c", null ],
     [ "XAVBuf_ConfigureOutputVideo", "xavbuf_8h.html#aeb5fef36526fe911b5c640d70e9bb598", null ],
     [ "XAVBuf_ConfigureVideoPipeline", "xavbuf_8h.html#a15d07fa625f1a4c7f2993e800f655a0e", null ],

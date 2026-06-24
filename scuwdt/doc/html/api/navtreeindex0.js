@@ -1,12 +1,13 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,3],
 "globals_func.html":[1,1],
@@ -20,6 +21,7 @@ var NAVTREEINDEX0 =
 "xscuwdt_8h.html":[2,1],
 "xscuwdt_8h.html#ga0bc0278a14721ac3733d4080e7a03ee3":[2,1,2],
 "xscuwdt_8h.html#ga1fee56fc3ec3c8b003e6ae0528703b1c":[2,1,10],
+"xscuwdt_8h.html#ga24bed0bb643b657bbd3f26ab2921246e":[2,1,11],
 "xscuwdt_8h.html#ga2d6d32ff992704d9b78f93ab00ebdf78":[2,1,12],
 "xscuwdt_8h.html#ga34698453a13b46c1e87f3a8ff3510f37":[2,1,0],
 "xscuwdt_8h.html#ga551b705d1ebbb530ac7a2a9752c8f5cb":[2,1,3],
@@ -28,7 +30,6 @@ var NAVTREEINDEX0 =
 "xscuwdt_8h.html#ga816969d609034dc12371ca7bc8444bf3":[2,1,8],
 "xscuwdt_8h.html#ga87a7a8230fc5fa80f64cb66210e596b8":[2,1,13],
 "xscuwdt_8h.html#ga8813e9f9df643de43359defc1a7a48bc":[2,1,9],
-"xscuwdt_8h.html#ga899e316b67b7eab6cec1f5b99df25e4d":[2,1,11],
 "xscuwdt_8h.html#ga9481fbc75254dd60304af3fd0254e3f6":[2,1,4],
 "xscuwdt_8h.html#ga9487e2c385d8dc9cf5f1f27539ca079f":[2,1,6],
 "xscuwdt_8h.html#gaac6e3f570a91434e6e4066a7a6c5d333":[2,1,7],
@@ -56,13 +57,13 @@ var NAVTREEINDEX0 =
 "xscuwdt__hw_8h.html#gae0774dc548157f183fa5c365fcc8f251":[2,3,3],
 "xscuwdt__hw_8h.html#gafd4c1f9ff31d9c47028759d68d945a8c":[2,3,4],
 "xscuwdt__intr__example_8c.html":[2,4],
-"xscuwdt__intr__example_8c.html#a3878b169befa50061eb50faa79407eaf":[2,4,1],
+"xscuwdt__intr__example_8c.html#a0054ab1cdccc0040a5d9633b4c386d9a":[2,4,1],
 "xscuwdt__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,4,0],
 "xscuwdt__polled__example_8c.html":[2,5],
-"xscuwdt__polled__example_8c.html#a2d362fc03da8ab7412d546d32ed9a4e3":[2,5,1],
+"xscuwdt__polled__example_8c.html#a33e89f9e41ed0c166b878661da7f07f6":[2,5,1],
 "xscuwdt__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,5,0],
 "xscuwdt__selftest_8c.html":[2,6],
 "xscuwdt__selftest_8c.html#ga2d6d32ff992704d9b78f93ab00ebdf78":[2,6,0],
 "xscuwdt__sinit_8c.html":[2,7],
-"xscuwdt__sinit_8c.html#ga899e316b67b7eab6cec1f5b99df25e4d":[2,7,0]
+"xscuwdt__sinit_8c.html#ga24bed0bb643b657bbd3f26ab2921246e":[2,7,0]
 };

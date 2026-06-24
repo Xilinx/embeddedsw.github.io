@@ -1,7 +1,6 @@
 var structxvisp__ss___config =
 [
     [ "BaseAddress", "structxvisp__ss___config.html#a60f84fcaaf259b545f07b64a1479fec8", null ],
-    [ "DeviceId", "structxvisp__ss___config.html#a9fecdb68aeead5bd9a41885cba5814a8", null ],
     [ "Iba0DataFormat", "structxvisp__ss___config.html#aee1fbd0b10d2537a1004be7f0f55a11f", null ],
     [ "Iba0FrameRate", "structxvisp__ss___config.html#a7b1c41e01a1761696779c9c483197c50", null ],
     [ "Iba0MaxHeight", "structxvisp__ss___config.html#a8c02242fe02117b92e5ac720b9637278", null ],
@@ -36,6 +35,7 @@ var structxvisp__ss___config =
     [ "Interrupts", "structxvisp__ss___config.html#abd06defb3913867ec8200fdd3acfdc6c", null ],
     [ "IoMode", "structxvisp__ss___config.html#a15cc6b9fe147f30029a5d545c83fe6ea", null ],
     [ "IspId", "structxvisp__ss___config.html#a959ef4ffe608d4020c3db7f26ab63a48", null ],
+    [ "Name", "structxvisp__ss___config.html#a7318d177e5ac1f2a947fa78740988460", null ],
     [ "NumStreams", "structxvisp__ss___config.html#a9e89061a48f1e1ccfcca9a8a6c670ae1", null ],
     [ "Oba0MpBpp", "structxvisp__ss___config.html#ae5c526369c69ed384a366b4ca879bfa4", null ],
     [ "Oba0MpDataFormat", "structxvisp__ss___config.html#ab3081fd162878275606b0d9f7e36c97c", null ],

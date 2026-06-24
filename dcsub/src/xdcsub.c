@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (c) 2025 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -30,9 +30,31 @@
 #include "xdc.h"
 #include "xdcsub.h"
 
+#define XDCSUB_AUD_CH_SELECT_MASK	0x00FFU
+#define XDCSUB_AUD_CH_STATUS_SHIFT	8U
+
+
+#ifdef SDT
+XDcSub_Config *XDcSub_LookupConfig(UINTPTR BaseAddress)
+{
+	XDcSub_Config *CfgPtr = NULL;
+	u32 Index;
+
+	for (Index = 0; XDcSub_ConfigTable[Index].DcConfig.Name != NULL; Index++) {
+		if (XDcSub_ConfigTable[Index].DcConfig.BaseAddr == BaseAddress ||
+		    !BaseAddress) {
+			CfgPtr = &XDcSub_ConfigTable[Index];
+			break;
+		}
+	}
+
+	return (XDcSub_Config *)CfgPtr;
+}
+#endif
+
 /******************************************************************************/
 /**
- * This function intializes the configuration of all instances part of DC
+ * This function initializes the configuration of all instances part of DC
  * subsystem i.e DC, DCDMA, Interrupts.
  *
  * @param       InstancePtr is a pointer to the XDcSub instance.
@@ -45,7 +67,6 @@
 *******************************************************************************/
 u32 XDcSub_CfgInitialize(XDcSub *InstancePtr)
 {
-	u32 Status;
 	XDc *DcPtr;
 	XDcSub_Config DcSubCfg;
 
@@ -74,7 +95,6 @@ u32 XDcSub_CfgInitialize(XDcSub *InstancePtr)
 *******************************************************************************/
 u32 XDcSub_Initialize(XDcSub *InstancePtr)
 {
-	u32 Status;
 	XDc *DcPtr;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -109,7 +129,7 @@ u32 XDcSub_Initialize(XDcSub *InstancePtr)
  * DC can be either in bypass mode or functional mode.
  *
  * @param       InstancePtr is a pointer to the XDc instance.
- * @param       Mode is the enum val to enable or diasable bypass mode.
+ * @param       Mode is the enum val to enable or disable bypass mode.
  *
  * @return      XST_SUCCESS or XST_FAILURE.
  *
@@ -375,8 +395,8 @@ u32 XDcSub_SetStreamPixelScaling(XDcSub *InstancePtr, u32 *Stream1_ScaleFactors,
 				 u32 *Stream2_ScaleFactors)
 {
 	XDc *DcConfigPtr;
-	XDc_VideoAttribute *Video1;
-	XDc_VideoAttribute *Video2;
+	const XDc_VideoAttribute *Video1;
+	const XDc_VideoAttribute *Video2;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -561,27 +581,29 @@ u32 XDcSub_SetChromaKey(XDcSub *InstancePtr, u8 ChromaEnable, u8 ChromaMasterSel
  *
  ******************************************************************************/
 u32 XDcSub_SetCursorBlend(XDcSub *InstancePtr, XDc_CursorBlend Enable,
-			  XDc_Cursor *Cursor)
+		  XDc_Cursor *Cursor)
 {
 	XDc_Blender *DcBlender;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
-	Xil_AssertNonvoid(Enable != CB_ENABLE);
-	Xil_AssertNonvoid(Cursor != NULL);
-	Xil_AssertNonvoid(Cursor->CursorAttribute->VideoFormat
-			  != RGBA4444);
 
 	DcBlender = &InstancePtr->DcPtr->Blender;
 
+	/* Set cursor enable state */
 	DcBlender->CursorEnable = Enable;
 
-	DcBlender->Cursor.CursorAttribute =
-		Cursor->CursorAttribute;
+	/* Only validate and assign cursor parameters when enabling */
+	if (Enable == CB_ENABLE) {
+		Xil_AssertNonvoid(Cursor != NULL);
+		Xil_AssertNonvoid(Cursor->CursorAttribute != NULL);
+		Xil_AssertNonvoid(Cursor->CursorAttribute->VideoFormat == RGBA4444);
 
-	DcBlender->Cursor.CoordY = Cursor->CoordY;
-	DcBlender->Cursor.CoordX = Cursor->CoordX;
-	DcBlender->Cursor.SizeY = Cursor->SizeY;
-	DcBlender->Cursor.SizeX = Cursor->SizeX;
+		DcBlender->Cursor.CursorAttribute = Cursor->CursorAttribute;
+		DcBlender->Cursor.CoordY = Cursor->CoordY;
+		DcBlender->Cursor.CoordX = Cursor->CoordX;
+		DcBlender->Cursor.SizeY = Cursor->SizeY;
+		DcBlender->Cursor.SizeX = Cursor->SizeX;
+	}
 
 	return XST_SUCCESS;
 }
@@ -900,7 +922,7 @@ u32 XDcSub_SetVidFrameSwitch(XDcSub *InstancePtr, u32 Control)
  *
  *
 *******************************************************************************/
-u32 XDcSub_SetNonLiveLatency(XDcSub *InstancePtr, u32 Latency)
+u32 XDcSub_SetNonLiveLatency(XDcSub *InstancePtr, u16 Nl_Latency, u8 V_Line_Latency)
 {
 	XDc *DcConfigPtr;
 
@@ -908,7 +930,7 @@ u32 XDcSub_SetNonLiveLatency(XDcSub *InstancePtr, u32 Latency)
 
 	DcConfigPtr = InstancePtr->DcPtr;
 
-	DcConfigPtr->NonLiveLatency = Latency;
+	DcConfigPtr->NonLiveLatency = Nl_Latency | (V_Line_Latency << 16);
 
 	return XST_SUCCESS;
 
@@ -1190,7 +1212,7 @@ u32 XDcSub_AudClkSelect(XDcSub *InstancePtr, u32 Select)
  * DC can be either in bypass mode or functional mode.
  *
  * @param       InstancePtr is a pointer to the XDc instance.
- * @param       Mode is the enum val to enable or diasable bypass mode.
+ * @param       Mode is the enum val to enable or disable bypass mode.
  *
  * @return      XST_SUCCESS or XST_FAILURE.
  *
@@ -1265,26 +1287,36 @@ u32 XDcSub_DisableAudio(XDcSub *InstancePtr)
 
 /******************************************************************************/
 /**
- * This function allows user to disable channelX preamble and status.
- * Set 1 to disable, 0 to enable at bits 0-7 for corresponding channel.
- * Set bit 8 to load user_bit adn channel status.
+ * This function sets audio channel-control bits from active channel count.
  *
  * @param       InstancePtr is a pointer to the XDc instance.
+ * @param       AudioChannels is active channel count (1 to 8).
  *
  * @return      XST_SUCCESS or XST_FAILURE.
  *
  *
 *******************************************************************************/
-u32 XDcSub_SetAudioChCtrl(XDcSub *InstancePtr, u16 AudChCtrl)
+u32 XDcSub_SetAudioChCtrl(XDcSub *InstancePtr, u8 AudioChannels)
 {
 	XDc *DcConfigPtr;
+	u16 AudioChannelsControl;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->DcPtr != NULL);
+	Xil_AssertNonvoid((AudioChannels >= XDCSUB_AUDIO_CHANNELS_MIN) &&
+			  (AudioChannels <= XDCSUB_AUDIO_CHANNELS_MAX));
 
 	DcConfigPtr = InstancePtr->DcPtr;
 
-	DcConfigPtr->AudChCtrl = AudChCtrl;
+	if (AudioChannels < XDCSUB_AUDIO_CHANNELS_MIN ||
+	    AudioChannels > XDCSUB_AUDIO_CHANNELS_MAX)
+		return XST_INVALID_PARAM;
+
+	AudioChannelsControl = ((~((1U << AudioChannels) - 1U)) &
+				XDCSUB_AUD_CH_SELECT_MASK) |
+			       (1U << XDCSUB_AUD_CH_STATUS_SHIFT);
+	DcConfigPtr->AudChCtrl = AudioChannelsControl;
+	XDc_SetAudioChCtrl(DcConfigPtr);
 
 	return XST_SUCCESS;
 
@@ -1328,7 +1360,7 @@ u32 XDcSub_SetCursorSdpRdyInterval(XDcSub *InstancePtr, u16 RdyInterval)
 {
 	XDc *DcConfigPtr;
 
-	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->DcPtr != NULL);
 
 	DcConfigPtr = InstancePtr->DcPtr;
@@ -1353,15 +1385,15 @@ void XDcSub_SetSdpAckSel(XDcSub *InstancePtr, u8 AckSel)
 	XDc *DcConfigPtr;
 
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertNonvoid(InstancePtr->DcPtr != NULL);
-	Xil_AssertNonvoid((AckSel == XDC_SDP_DP_ACK) ||
+	Xil_AssertVoid(InstancePtr->DcPtr != NULL);
+	Xil_AssertVoid((AckSel == XDC_SDP_DP_ACK) ||
 			  (AckSel == XDC_SDP_PL_ACK));
 
 	DcConfigPtr = InstancePtr->DcPtr;
 
 	DcConfigPtr->SdpAckSel = AckSel;
 
-	return XST_SUCCESS;
+
 
 }
 
@@ -1379,13 +1411,13 @@ void XDcSub_EnableSdp(XDcSub *InstancePtr)
 	XDc *DcConfigPtr;
 
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertNonvoid(InstancePtr->DcPtr != NULL);
+	Xil_AssertVoid(InstancePtr->DcPtr != NULL);
 
 	DcConfigPtr = InstancePtr->DcPtr;
 
 	DcConfigPtr->SdpEnable = 0x1;
 
-	return XST_SUCCESS;
+
 
 }
 /******************************************************************************/

@@ -1,6 +1,7 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "files.html":[2],
 "globals.html":[1,0],
 "globals_defs.html":[1,4],

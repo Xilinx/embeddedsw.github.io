@@ -64,7 +64,7 @@ var xusbps_8h =
     [ "XUsbPs_EpSetIsoHandler", "xusbps_8h.html#ga5eb603906d381d4a426a3d24fc2082a0", null ],
     [ "XUsbPs_IntrHandler", "xusbps_8h.html#ga60e2b0f6fabc24cdf785d704ab2585d1", null ],
     [ "XUsbPs_IntrSetHandler", "xusbps_8h.html#ga521c050d3b146bb58862f5fadf7f6ba6", null ],
-    [ "XUsbPs_LookupConfig", "xusbps_8h.html#gafcaf2c53431ef206d3435d677867f818", null ],
+    [ "XUsbPs_LookupConfig", "xusbps_8h.html#gac79e39dc62c743463e360c400f33d194", null ],
     [ "XUsbPs_ReconfigureEp", "xusbps_8h.html#ga90aab040f015299b2064124bed882896", null ],
     [ "XUsbPs_RequestHostResume", "xusbps_8h.html#ga5dc88831ee2823e24d7024e585704772", null ],
     [ "XUsbPs_Reset", "xusbps_8h.html#ga2c583a4c515653fd70c111fe0d2ddb37", null ],

@@ -4,7 +4,7 @@ var xavbuf_8c =
     [ "XAVBuf_AudioMixerVolumeControl", "xavbuf_8c.html#abff93765afd4cd6e693f116335e123d9", null ],
     [ "XAVBuf_AudioSoftReset", "xavbuf_8c.html#aa319befa1c0951846a814c6d48a6db82", null ],
     [ "XAVBuf_BlendSetBgColor", "xavbuf_8c.html#aa10d2d81056ad9fb8121b349592fe394", null ],
-    [ "XAVBuf_CfgInitialize", "xavbuf_8c.html#a34a4a1b8108602ca4fe237958530b367", null ],
+    [ "XAVBuf_CfgInitialize", "xavbuf_8c.html#a7fee983431a0ca99aee37ed6014d360a", null ],
     [ "XAVBuf_ConfigureGraphicsPipeline", "xavbuf_8c.html#af8e87bfbe013d580f97fa1f0ed8d053c", null ],
     [ "XAVBuf_ConfigureOutputVideo", "xavbuf_8c.html#aeb5fef36526fe911b5c640d70e9bb598", null ],
     [ "XAVBuf_ConfigureVideoPipeline", "xavbuf_8c.html#a15d07fa625f1a4c7f2993e800f655a0e", null ],

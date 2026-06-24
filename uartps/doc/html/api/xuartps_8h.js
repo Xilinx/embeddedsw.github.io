@@ -49,7 +49,7 @@ var xuartps_8h =
     [ "XUartPs_GetRecvTimeout", "xuartps_8h.html#gaaa7ea0aca85be0c1eb67ab05de67bc3f", null ],
     [ "XUartPs_InterruptHandler", "xuartps_8h.html#gabf86fb20a58e4a7fbd73afa49f8eb604", null ],
     [ "XUartPs_IsSending", "xuartps_8h.html#ga4279fd824eea23f74ad66f165cb0265e", null ],
-    [ "XUartPs_LookupConfig", "xuartps_8h.html#gaaefce314c7582681d7144d3b4f41e72b", null ],
+    [ "XUartPs_LookupConfig", "xuartps_8h.html#ga35a351ea7a51809810dc9da08e2d68ef", null ],
     [ "XUartPs_Recv", "xuartps_8h.html#gadc16932076b99cd747e702dcbecd102b", null ],
     [ "XUartPs_SelfTest", "xuartps_8h.html#ga64e7142d1c69e2e29c9e323c4497baaf", null ],
     [ "XUartPs_Send", "xuartps_8h.html#ga17b3e12a296eecf17be4a4b8583576e7", null ],

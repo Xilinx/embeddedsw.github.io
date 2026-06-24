@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -14,7 +14,8 @@ MEMORY
 {
 	load_calib : ORIGIN =0xF800000 , LENGTH = 0x28000
 	  mailbox : ORIGIN = 0x1E0A8000, LENGTH = 0x400000	 /*Reserve this memory for APU<->RPU communication*/
-	NoC_C0_C1_ddr_memory_DDR_LOW_0 : ORIGIN = 0x12000000, LENGTH = 0x10000000
+	/* NoC_C0_C1_ddr_memory_DDR_LOW_0 : ORIGIN = 0x12000000, LENGTH = 0x10000000*/
+   NoC_C0_C1_ddr_memory_DDR_LOW_0 : ORIGIN = 0x31000000, LENGTH = 0x10000000
 	NoC_C0_C1_ddr_memory_DDR_LOW_1 : ORIGIN = 0x800000000, LENGTH = 0x80000000
 	NoC_C2_ddr_memory_DDR_CH_1 : ORIGIN = 0x50000000000, LENGTH = 0x80000000
 	NoC_C3_ddr_memory_DDR_CH_1A : ORIGIN = 0x60000000000, LENGTH = 0x80000000
@@ -291,6 +292,13 @@ SECTIONS
    . = ALIGN(64);
    __bss_end__ = .;
 } > NoC_C0_C1_ddr_memory_DDR_LOW_0
+
+.large_pool_mem (NOLOAD) : {
+   . = ALIGN(64);
+   __large_pool_mem_start = .;
+   . += (72 * 28 * 1024 * 1024);  /* MM_LARGE_POOL_BLOCKS * MM_LARGE_BLOCK_SIZE */
+   __large_pool_mem_end = .;
+} > NoC_C0_C1_ddr_memory_DDR_LOW_1
 
 _SDA_BASE_ = __sdata_start + ((__sbss_end - __sdata_start) / 2 );
 

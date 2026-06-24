@@ -1,5 +1,6 @@
 var xsdiaud_8h =
 [
+    [ "XSdiAud_Callback", "xsdiaud_8h.html#ga98351d0854e56580eec10501c1c14e57", null ],
     [ "XSdiAud_AesChPair", "xsdiaud_8h.html#gae4509da21438dc640c6e8ff7a33b9a51", [
       [ "XSDIAUD_AES_CHANNEL_PAIR_1", "xsdiaud_8h.html#ggae4509da21438dc640c6e8ff7a33b9a51aca42064585d0c16438f54e5deb61d5f1", null ],
       [ "XSDIAUD_AES_CHANNEL_PAIR_2", "xsdiaud_8h.html#ggae4509da21438dc640c6e8ff7a33b9a51a024acbe2388cc68de477f41f03d0c3d3", null ],
@@ -151,9 +152,9 @@ var xsdiaud_8h =
     [ "XSdiAud_GetChStat", "xsdiaud_8h.html#gaf8025951709cb94880cf3a5daf08af2d", null ],
     [ "XSdiAud_GetCoreVersion", "xsdiaud_8h.html#gaa95d3e8ae24010498edb963aefe1944b", null ],
     [ "XSdiAud_GetIntStat", "xsdiaud_8h.html#ga3d3823e317c0d235d0a455bf60e47525", null ],
-    [ "XSdiAud_Initialize", "xsdiaud_8h.html#gaade25969df8e4fb5ba48b83ff0d84748", null ],
+    [ "XSdiAud_Initialize", "xsdiaud_8h.html#ga4d88f80aaac70751a7a303b8d3e6ded5", null ],
     [ "XSdiAud_IntrHandler", "xsdiaud_8h.html#ga6f81c22001df336d7ada4ade71ba41a4", null ],
-    [ "XSdiAud_LookupConfig", "xsdiaud_8h.html#ga9b5a375abdc55d180f204559ed88c5a0", null ],
+    [ "XSdiAud_LookupConfig", "xsdiaud_8h.html#gad20d343484acf7f2c8e21c3b45e78b93", null ],
     [ "XSdiAud_MuteCh", "xsdiaud_8h.html#gad3bc0d473b0bb0a4277d9c8f27069e19", null ],
     [ "XSdiAud_SelfTest", "xsdiaud_8h.html#ga3c03ed1e987b52e378a370ca98b3295b", null ],
     [ "XSdiAud_SetAesChPair", "xsdiaud_8h.html#ga8c138d7bae2ff7770ac0f407e7e8d44c", null ],

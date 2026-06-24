@@ -30,6 +30,7 @@ var xdfeccf_8h =
     [ "XDfeCcf_GetEmptyCCCfg", "xdfeccf_8h.html#ga699c8f140720fcbf22543c7758ace5d5", null ],
     [ "XDfeCcf_GetEventStatus", "xdfeccf_8h.html#ga5a08588a90ca50aca0e8667e8692618b", null ],
     [ "XDfeCcf_GetInterruptMask", "xdfeccf_8h.html#gab4d92a6803379d258e013f46b5be16a0", null ],
+    [ "XDfeCcf_GetIsCcfOperational", "xdfeccf_8h.html#gacfa67489ec2094636315d1c987e2a324", null ],
     [ "XDfeCcf_GetOverflowStatus", "xdfeccf_8h.html#ga4e155714de12813abe240aad00f33f46", null ],
     [ "XDfeCcf_GetStateID", "xdfeccf_8h.html#gac83eb8c8d423a12cc23f3a699e87ff4f", null ],
     [ "XDfeCcf_GetTDataDelay", "xdfeccf_8h.html#ga52137ddc16812fff73bf4ad1c1a2e35b", null ],

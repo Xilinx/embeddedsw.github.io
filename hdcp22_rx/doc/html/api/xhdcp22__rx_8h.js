@@ -104,7 +104,7 @@ var xhdcp22__rx_8h =
     [ "XHdcp22Rx_LogRd", "xhdcp22__rx_8h.html#ga743ad88922a6b15e5aea5e1cb9f04aa0", null ],
     [ "XHdcp22Rx_LogReset", "xhdcp22__rx_8h.html#ga315e3715814bcf73e5ceca9e8bb2a9fc", null ],
     [ "XHdcp22Rx_LogWr", "xhdcp22__rx_8h.html#ga75e2458da2561aa5143698657aa5e604", null ],
-    [ "XHdcp22Rx_LookupConfig", "xhdcp22__rx_8h.html#gade5d1de62b138bef831518eb1f9b87a4", null ],
+    [ "XHdcp22Rx_LookupConfig", "xhdcp22__rx_8h.html#ga419216fe5a07c13b40909a00116d1296", null ],
     [ "XHdcp22Rx_Poll", "xhdcp22__rx_8h.html#ga47b59a5f9c314a6accc90e836f198730", null ],
     [ "XHdcp22Rx_Reset", "xhdcp22__rx_8h.html#gab0e1f5a3406d126f288a721c2b866955", null ],
     [ "XHdcp22Rx_SetCallback", "xhdcp22__rx_8h.html#ga59d922ad6c0dcdabc012fd4fbe4e84e0", null ],

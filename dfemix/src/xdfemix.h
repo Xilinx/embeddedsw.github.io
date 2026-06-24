@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2021-2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -86,6 +86,8 @@
 * 1.6   dc     06/15/23 Correct comment about gain
 *       cog    07/04/23 Add support for SDT
 * 1.7   cog    02/21/24 Fixed SDT runtime issue
+* 1.8   dc     12/08/25 Update doxygen comments
+*       dc     02/18/26 Correct spelling errors
 *
 * </pre>
 * @endcond
@@ -263,7 +265,7 @@ typedef struct {
 		and "Operational" state. */
 	XDfeMix_Trigger CCUpdate; /**< Transition to next CC
 		configuration. Will initiate flush based on CC configuration. */
-	XDfeMix_Trigger Switch; /**< Switch between Downlink and Uplink datapth
+	XDfeMix_Trigger Switch; /**< Switch between Downlink and Uplink
 		configuration. Will initiate flush based on CC configuration. */
 } XDfeMix_TriggerCfg;
 
@@ -308,6 +310,7 @@ typedef struct {
 
 /**
  * Initialization, "one-time" configuration parameters.
+ * Note: Only Sequence.Length needs to be initialized when calling XDfeMix_Initialize
  */
 typedef struct {
 	XDfeMix_CCSequence Sequence; /**< CCID Sequence. */
@@ -334,7 +337,11 @@ typedef struct {
 		- 0 = NO_UPDATE: Do not update
 		- 1 = IMMEDIATE_UPDATE: Apply an immediate update
 		- 2 = TRIGGER_UPDATE: Apply an update on the next CC_UPDATE
-		      trigger */
+			trigger.
+		Note: This flag acts as a command and is self-clearing. Once
+		      the update condition is met, the value automatically
+		      reverts to 0 (NO_UPDATE), which will be reflected in
+		      subsequent XDfeMix_GetCurrentCCCfg calls. */
 } XDfeMix_Frequency;
 
 /**
@@ -349,7 +356,11 @@ typedef struct {
 		- 0 = NO_UPDATE: Do not update
 		- 1 = IMMEDIATE_UPDATE: Apply an immediate update
 		- 2 = TRIGGER_UPDATE: Apply an update on the next CC_UPDATE
-		      trigger */
+			trigger.
+		Note: This flag acts as a command and is self-clearing. Once
+		      the update condition is met, the value automatically
+		      reverts to 0 (NO_UPDATE), which will be reflected in
+		      subsequent XDfeMix_GetCurrentCCCfg calls. */
 } XDfeMix_Phase;
 
 /**
@@ -413,9 +424,7 @@ typedef struct {
 } XDfeMix_AuxiliaryCfg;
 
 /**
- * Configuration for a single CC (implementation note: notice that there are
- * two parts, one part (DUCDDCCfg) mapping to the CCCfg state, and another that
- * is written directly to NCO registers (XDfeMix_NCO).
+ * Configuration for a single CC.
  */
 typedef struct {
 	XDfeMix_DUCDDCCfg DUCDDCCfg; /**< Defines settings for single CC's
@@ -439,7 +448,7 @@ typedef struct {
 	XDfeMix_NCO NCO[XDFEMIX_NCO_MAX]; /**< Defines settings for all
 		CC's and Auxiliary's NCO */
 	XDfeMix_AuxiliaryCfg AuxiliaryCfg[XDFEMIX_AUX_NCO_MAX]; /**< Auxiliary
-		configuration */
+		NCO configuration */
 	XDfeMix_AntennaCfg AntennaCfg; /**< Antenna configuration */
 } XDfeMix_CCCfg;
 
@@ -448,14 +457,14 @@ typedef struct {
  */
 typedef struct {
 	u32 Stage; /**< [0-3] Earliest stage in which overflow occurred. */
-	u32 Antenna; /**< [0-7] Antenna on which overflow occured, with lowest
+	u32 Antenna; /**< [0-7] Antenna on which overflow occurred, with lowest
 		antenna taking priority. */
 	u32 NcoId; /**< [0-15] Number of NCO associated with overflowing channel,
 		with lowest taking priority. */
 	u32 Mode; /** [0-1] In Switchable the mode of core when the overflow
-		occured.
-		- 0 = DOWNLINK: Overflow occured while core is in downlink.
-		- 1 = UPLINK: Overflow occured while core is in uplink. */
+		occurred.
+		- 0 = DOWNLINK: Overflow occurred while core is in downlink.
+		- 1 = UPLINK: Overflow occurred while core is in uplink. */
 } XDfeMix_DUCDDCStatus;
 
 /**
@@ -473,13 +482,13 @@ typedef struct {
 			and has been saturated. Downlink MAX_CCIDs > 8 Only. */
 	u32 Antenna; /**< [0-7] Lowest numbered antenna in which overflow
 		occurred. */
-	u32 NcoId; /**< [0-15] NCO on which overflow occured, with lowest
+	u32 NcoId; /**< [0-15] NCO on which overflow occurred, with lowest
 		antenna taking priority (only relevant to overflow in
 		COMPLEX_MULT stage). */
-	u32 Mode; /** [0-1] In Switchable the mode of core when the overflow
-		occured.
-		- 0 = DOWNLINK: Overflow occured while core is in downlink.
-		- 1 = UPLINK: Overflow occured while core is in uplink. */
+	u32 Mode; /**< [0-1] In Switchable the mode of core when the overflow
+		occurred.
+		- 0 = DOWNLINK: Overflow occurred while core is in downlink.
+		- 1 = UPLINK: Overflow occurred while core is in uplink. */
 } XDfeMix_MixerStatus;
 
 /**

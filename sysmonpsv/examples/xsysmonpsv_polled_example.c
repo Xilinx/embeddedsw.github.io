@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -33,6 +33,8 @@
 *                       voltage supplies and temperature satellites.
 * 5.2   se     08/24/25 Microblaze support added and processed values are
 *                       printed on milli scale.
+* 5.3   se     03/13/26 Fix secure mode and PCSR re-lock in SDT flow
+*       se     03/20/26 Use static for driver instance structs
 *
 * </pre>
 *
@@ -44,6 +46,15 @@
 #include "xparameters.h"
 #include "xstatus.h"
 #include "xil_printf.h"
+
+/************************** Constant Definitions ****************************/
+#if defined(XSYSMONPSV_SECURE_MODE)
+#ifndef SDT
+	#define XSYSMONPSV_IPI_BASE_ADDR XPAR_XIPIPSU_0_BASEADDR
+#else
+	#define XSYSMONPSV_IPI_BASE_ADDR XPAR_XIPIPSU_0_BASEADDR
+#endif
+#endif
 
 /************************** Function Prototypes *****************************/
 
@@ -92,18 +103,31 @@ int main(void)
 ****************************************************************************/
 int SysMonPsvPolledExample()
 {
-	XSysMonPsv InstancePtr;
-	;
+	static XSysMonPsv Instance;
+	XSysMonPsv *InstancePtr = &Instance;
 	float Voltage;
 	float TempMin, TempMax;
 	int Supply = 0;
+	int Status;
 
-	XSysMonPsv_Init(&InstancePtr, NULL);
+#if defined(XSYSMONPSV_SECURE_MODE)
+#ifndef SDT
+	InstancePtr->IpiDeviceId = XPAR_XIPIPSU_0_DEVICE_ID;
+#else
+	InstancePtr->IpiBaseAddress = XSYSMONPSV_IPI_BASE_ADDR;
+#endif
+#endif
+
+	Status = XSysMonPsv_Init(InstancePtr, NULL);
+	if (Status != XST_SUCCESS) {
+		xil_printf("XSysMonPsv_Init failed: %d\r\n", Status);
+		return XST_FAILURE;
+	}
 	xil_printf("Entering the SysMon Polled Example\r\n");
 
 	if (Supply != (int)EndList) {
 		do {
-			XSysMonPsv_ReadSupplyProcessed(&InstancePtr, Supply,
+			XSysMonPsv_ReadSupplyProcessed(InstancePtr, Supply,
 						       &Voltage);
 			xil_printf("\tVoltage for %s\t= %d mV \r\n",
 				   XSysMonPsv_Supply_Arr[Supply],
@@ -115,12 +139,12 @@ int SysMonPsvPolledExample()
 	}
 
 	/* There is no polling mechanism to read the new temperature data */
-	XSysMonPsv_ReadTempProcessed(&InstancePtr, XSYSMONPSV_TEMP_MIN,
+	XSysMonPsv_ReadTempProcessed(InstancePtr, XSYSMONPSV_TEMP_MIN,
 				     &TempMin);
 	xil_printf("\tCurrent Minimum Temperature on the chip = %d mDeg C \r\n",
 		   (int)(TempMin * XSYSMONPSV_MILLI_SCALE));
 
-	XSysMonPsv_ReadTempProcessed(&InstancePtr, XSYSMONPSV_TEMP_MAX,
+	XSysMonPsv_ReadTempProcessed(InstancePtr, XSYSMONPSV_TEMP_MAX,
 				     &TempMax);
 	xil_printf("\tCurrent Maximum Temperature on the chip = %d mDeg C \r\n",
 		   (int)(TempMax * XSYSMONPSV_MILLI_SCALE));

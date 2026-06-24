@@ -16,20 +16,28 @@
  * @note This example is designed for non-MCM (Multi-Channel Mode) operation
  * @note Frame buffer writers support multiple output formats including RGB888
  *
- * Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
  * Copyright (C) 2025 Xilinx Inc. All rights reserved.
  ******************************************************************************/
 
+#include "memory_manager.h"     /* Must come before xvisp_ss_example.h for struct aligned_buf */
 #include <xvisp_ss_example.h>
 #include <xil_types.h>
 #include "xparameters.h"        /* Contains hardware platform parameters */
 #include "xscugic.h"           /* Generic Interrupt Controller driver */
 #include "xvisp_ss.h"          /* VISP SS driver header */
 #include "xil_exception.h"     /* Exception handling utilities */
+#ifdef SDT
+extern xvisp_ss_Config xvisp_ss_ConfigTable[];
+#endif
 #include "limo.h"
 #include "lilo.h"
 #include "mimo.h"
 #include "image.h"
+#include "vmix_hdmi_bridge.h"
+#include "ext_auto.h"
+#include "ext_manual.h"
+#include "finetune.h"
 
 #define LOGTAG "MAIN"
 
@@ -40,13 +48,19 @@
  * custom_json = 1 external json will be configured
  * */
 int custom_json = 0;
+int tuning_json = 0;
 int image_len = image_raw_len;
+
+/**
+ * FMC selection: 0 = old FMC, 1 = new FMC
+ */
+int fmc_selection = 0;
 
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
 int init_lilo = 1;
 extern int dequeue_call_count;
 #include "xv_frmbufwr_l2.h"    /* Frame Buffer Writer Level 2 driver */
-#include "xintc.h"             /* Interrupt Controller driver */
+#include "xintc.h"             /* AXI Interrupt Controller driver */
 #include "xvidc.h"             /* Video Common driver for format definitions */
 
 /**
@@ -74,17 +88,6 @@ enum outputformat outputformat_selection;  /* Currently selected output format *
 XVidC_ColorFormat FBWR_Cfmt[NUM_FBWR];    /* Color format for each frame buffer writer */
 #define Buffer_Count 3                      /* Triple buffering for smooth video processing */
 
-/* Aligned buffer structure for hardware buffers */
-struct aligned_buf {
-	void *original_addr;    /* Original malloc address for freeing */
-	void *aligned_addr;     /* Aligned address for hardware */
-	uint32_t size;
-	uint32_t alignment;
-};
-
-/* Updated aligned buffer structure to use new memory manager */
-struct aligned_buf Frame_Array_p[4][Buffer_Count];  /* Frame buffer arrays */
-
 u32 Frame_Count[NUM_FBWR];                  /* Frame counter for each FBWR */
 u32 chroma_offset[NUM_FBWR];               /* Chroma buffer offset for semi-planar formats */
 u32 Wr_Ptr[NUM_FBWR], Rd_Ptr[NUM_FBWR];    /* Write and read pointers for buffer management */
@@ -94,6 +97,25 @@ int fbwr_layerID[NUM_FBWR];                                   /* Layer ID mappin
 static int fbcb_cnt[NUM_FBWR] = {0};                         /* Callback counter for each FBWR */
 XVidC_VideoStream StreamOut;                                /* Video stream configuration */
 XIntc InterruptController;                                   /* AXI Interrupt Controller instance */
+
+/* Frame buffer arrays using aligned_buf structure defined in header */
+struct aligned_buf Frame_Array_p[NUM_FBWR][Buffer_Count];
+#endif
+
+#ifdef XPAR_XMIPICSISS_NUM_INSTANCES
+#include "xcsiss.h"            /* MIPI CSI2 RX Subsystem driver */
+#include "xintc.h"             /* AXI Interrupt Controller driver */
+#ifdef SDT
+extern XCsiSs_Config XCsiSs_ConfigTable[];
+#endif
+static void MipiCsiSs_FrameRcvdCallback(void *CallbackRef, u32 Mask);
+static void MipiCsiSs_DphyCallback(void *CallbackRef, u32 Mask);
+static void MipiCsiSs_ProtLvlCallback(void *CallbackRef, u32 Mask);
+static void MipiCsiSs_PktLvlCallback(void *CallbackRef, u32 Mask);
+static void MipiCsiSs_ShortPktCallback(void *CallbackRef, u32 Mask);
+static void MipiCsiSs_ErrorCallback(void *CallbackRef, u32 Mask);
+int setup_mipi_csi_interrupts(void);
+static int MipiCsiSs_GetId(void *CallbackRef);
 #endif
 
 /* Global VISP SS instance - main video processing subsystem handle */
@@ -102,6 +124,15 @@ XVisp_Ss VispSsInst[VISP_INST];
 
 /* Global interrupt controller instance - manages all system interrupts */
 XScuGic Intc;
+
+/* MIPI CSI2 RX Subsystem instances and AXI Interrupt Controller for MIPI */
+#ifdef XPAR_XMIPICSISS_NUM_INSTANCES
+#define NUM_MIPI_CSI XPAR_XMIPICSISS_NUM_INSTANCES
+XCsiSs MipiCsiSsInst[NUM_MIPI_CSI];
+XIntc MipiIntcController;
+static u32 MipiFrameCount[NUM_MIPI_CSI] = {0};
+static u32 MipiErrCount[NUM_MIPI_CSI] = {0};
+#endif
 
 /**
  * @brief Main application entry point
@@ -141,10 +172,9 @@ int main()
 		xil_printf("\r\n\r\n IRQ Configuration failed.\r\n\r\n");
 
 	/* Configure VISP SS - main video processing subsystem */
-	Status = config_visp_ss(XPAR_XVISP_SS_0_BASEADDR);
-	if (Status == XST_INVALID_VERSION) {
-			return Status;
-	}
+	Status = config_visp_ss();
+	if (Status == XST_INVALID_VERSION)
+		return Status;
 	else if (Status != XST_SUCCESS) {
 		xil_printf("ERROR: VISP SS configuration failed.\r\n");
 		return Status;
@@ -152,13 +182,25 @@ int main()
 
 	/* Initialize ISP to RPU mapping - connects ISP outputs to processing units */
 	reset_isp2rpu_mapping();
-	for(int i=0;i<VISP_INST;i++)
-	{
+	for (int i = 0; i < VISP_INST; i++)
 		init_isp2rpu_mapping(VispSsInst[0].Config.Rpu, VispSsInst[i].Config.IspId);
-	}
 	/* Setup frame buffer writers if available - handles video output buffering */
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
 	setup_frmbuf_wr();
+#endif
+
+	/* Setup MIPI CSI2 RX interrupt handling */
+#ifdef XPAR_XMIPICSISS_NUM_INSTANCES
+	Status = setup_mipi_csi_interrupts();
+	if (Status != XST_SUCCESS)
+		xil_printf("WARNING: MIPI CSI interrupt setup failed (%d)\r\n", Status);
+#endif
+
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	/* Initialize VMix + HDMI TX bridge for display output */
+	Status = VmixHdmiBridge_Init();
+	if (Status != 0)
+		xil_printf("WARNING: VMix+HDMI bridge init failed (%d)\r\n", Status);
 #endif
 
 	/* Initialize mailbox communication - enables inter-processor communication */
@@ -212,8 +254,8 @@ int setup_axi_with_device(UINTPTR BaseAddr)
 	}
 
 	/* Connect interrupt handlers for all frame buffer writer instances */
-	for (int i = 0; i < 4; i++) {
-		// Connect interrupt handlers for all 4 frame buffer writers
+	for (int i = 0; i < NUM_FBWR; i++) {
+		// Connect interrupt handlers for all frame buffer writers
 		Status = XIntc_Connect(&InterruptController, frmbufwr[i].FrmbufWr.Config.IntrId,
 				       (XInterruptHandler) XVFrmbufWr_InterruptHandler,
 				       (void *) &frmbufwr[i]);
@@ -268,19 +310,18 @@ int setup_axi_with_device(UINTPTR BaseAddr)
  * @note This example only supports non-MCM (Multi-Channel Mode) operation
  * @note The function uses either device ID (non-SDT) or base address (SDT) lookup
  */
-int config_visp_ss(u32 baseaddress)
+int config_visp_ss()
 {
 	xvisp_ss_Config *CfgPtr;
 	int Status;
 
 	/* Lookup the device configuration */
-	for(int i=0;i<VISP_INST;i++)
-	{
-		MEMSET(CfgPtr,0,sizeof(xvisp_ss_Config));
+	for (int i = 0; i < VISP_INST; i++) {
+		MEMSET(CfgPtr, 0, sizeof(xvisp_ss_Config));
 #ifndef SDT
-		CfgPtr = XVisp_Ss_LookupConfig(XPAR_VISP_SS_0_DEVICE_ID);
+		CfgPtr = XVisp_Ss_LookupConfig(i);
 #else
-		CfgPtr = XVisp_Ss_LookupConfig(baseaddress + (i * 0x800));
+		CfgPtr = XVisp_Ss_LookupConfig(xvisp_ss_ConfigTable[i].BaseAddress);
 #endif
 		if (!CfgPtr) {
 			xil_printf("ERROR: Lookup of VISP SS configuration failed.\r\n");
@@ -293,11 +334,12 @@ int config_visp_ss(u32 baseaddress)
 			xil_printf("ERROR: Could not initialize VISP SS driver.\r\n");
 			return XST_FAILURE;
 		}
-		xil_printf("base address 0x%x %d\n",baseaddress,__LINE__);
+		xil_printf("base address 0x%x %d\n", CfgPtr->BaseAddress, __LINE__);
 	}
 	/* Verify single-stream operation - this example doesn't support MCM mode */
-	if (VispSsInst[ISP_ID].Config.NumStreams > 1) {
+	if (VispSsInst[ISP_ID].Config.NumStreams > 1 && custom_json != 1) {
 		xil_printf("This ISP example only works for NON-MCM mode.\r\n");
+		xil_printf("Use the MCM JSON configuration to enable MCM mode\r\n");
 		return XST_INVALID_VERSION;
 	}
 
@@ -540,7 +582,7 @@ void setup_frmbuf_wr()
 #endif
 
 	/* Initialize Frame Buffer Write instances */
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < XPAR_XV_FRMBUF_WR_NUM_INSTANCES; i++) {
 		/* Reset each frame buffer writer IP block */
 		Reset_IP(i);
 
@@ -562,44 +604,26 @@ void setup_frmbuf_wr()
 	/* Setup AXI Interrupt Controller for frame buffer writer interrupts */
 	setup_axi_with_device(XPAR_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR);
 
-	/* Register completion callback for Frame Buffer Writer 0 */
-	Status = XVFrmbufWr_SetCallback(&frmbufwr[0],
-					XVFRMBUFWR_HANDLER_DONE,
-					(void *)FrmbufwrDoneCallback_0,
-					(void *) &frmbufwr[0]);
-	if (Status != XST_SUCCESS)	{
-		xil_printf("Frame Buffer Write Call back  failed status = %x.\r\n" TXT_RST, Status);
-		return XST_FAILURE;
-	}
+	/* Callback function pointer table for all frame buffer writers */
+	void (*fbwr_callbacks[12])(void *) = {
+		FrmbufwrDoneCallback_0, FrmbufwrDoneCallback_1,
+		FrmbufwrDoneCallback_2, FrmbufwrDoneCallback_3,
+		FrmbufwrDoneCallback_4, FrmbufwrDoneCallback_5,
+		FrmbufwrDoneCallback_6, FrmbufwrDoneCallback_7,
+		FrmbufwrDoneCallback_8, FrmbufwrDoneCallback_9,
+		FrmbufwrDoneCallback_10, FrmbufwrDoneCallback_11
+	};
 
-	/* Register completion callback for Frame Buffer Writer 1 */
-	Status = XVFrmbufWr_SetCallback(&frmbufwr[1],
-					XVFRMBUFWR_HANDLER_DONE,
-					(void *)FrmbufwrDoneCallback_1,
-					(void *) &frmbufwr[1]);
-	if (Status != XST_SUCCESS)	{
-		xil_printf("Frame Buffer Write Call back  failed status = %x.\r\n" TXT_RST, Status);
-		return XST_FAILURE;
-	}
-
-	/* Register completion callback for Frame Buffer Writer 2 */
-	Status = XVFrmbufWr_SetCallback(&frmbufwr[2],
-					XVFRMBUFWR_HANDLER_DONE,
-					(void *)FrmbufwrDoneCallback_2,
-					(void *) &frmbufwr[2]);
-	if (Status != XST_SUCCESS)	{
-		xil_printf("Frame Buffer Write Call back  failed status = %x.\r\n" TXT_RST, Status);
-		return XST_FAILURE;
-	}
-
-	/* Register completion callback for Frame Buffer Writer 3 */
-	Status = XVFrmbufWr_SetCallback(&frmbufwr[3],
-					XVFRMBUFWR_HANDLER_DONE,
-					(void *)FrmbufwrDoneCallback_3,
-					(void *) &frmbufwr[3]);
-	if (Status != XST_SUCCESS)	{
-		xil_printf("Frame Buffer Write Call back  failed status = %x.\r\n" TXT_RST, Status);
-		return XST_FAILURE;
+	/* Register completion callbacks for all frame buffer writers */
+	for (int i = 0; i < XPAR_XV_FRMBUF_WR_NUM_INSTANCES; i++) {
+		Status = XVFrmbufWr_SetCallback(&frmbufwr[i],
+						XVFRMBUFWR_HANDLER_DONE,
+						(void *)fbwr_callbacks[i],
+						(void *) &frmbufwr[i]);
+		if (Status != XST_SUCCESS) {
+			xil_printf("Frame Buffer Write[%d] Call back failed status = %x.\r\n" TXT_RST, i, Status);
+			return XST_FAILURE;
+		}
 	}
 
 }
@@ -675,6 +699,12 @@ void FrmbufwrDoneCallback_0(void *CallbackRef)
 			xil_printf("ERROR:: Unable to configure Frame Buffer \ Write chroma buffer address\r\n");
 	}
 
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	/* Update VMix layer with latest completed frame */
+	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
+				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
+
 	/* Increment frame counter for statistics tracking */
 	Frame_Count[fbwr_id]++;
 }
@@ -730,6 +760,11 @@ void FrmbufwrDoneCallback_1(void *CallbackRef)
 			xil_printf("ERROR:: Unable to configure Frame Buffer \ Write chroma buffer address\r\n");
 	}
 	/*************************************************************************/
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	/* Update VMix layer with latest completed frame */
+	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
+				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
 	Frame_Count[fbwr_id]++;
 }
 
@@ -784,6 +819,11 @@ void FrmbufwrDoneCallback_2(void *CallbackRef)
 			xil_printf("ERROR:: Unable to configure Frame Buffer \ Write chroma buffer address\r\n");
 	}
 	/*************************************************************************/
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	/* Update VMix layer with latest completed frame */
+	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
+				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
 	Frame_Count[fbwr_id]++;
 }
 
@@ -838,9 +878,73 @@ void FrmbufwrDoneCallback_3(void *CallbackRef)
 	/*************************************************************************/
 
 	/***Find Vmix Layer assigned for this FBWR & update latest buffer with the layer********/
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
+				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
 	/************************************************************************************/
 	Frame_Count[fbwr_id]++;
 }
+
+/**
+ * @brief Generic Frame Buffer Writer Done Callback Handler
+ *
+ * Common callback logic for all frame buffer writer instances.
+ * Implements triple-buffering scheme for smooth video processing.
+ *
+ * @param fbwr_id - Frame buffer writer instance ID
+ */
+static void FrmbufwrDoneCallback_Generic(int fbwr_id)
+{
+	XVidC_ColorFormat Cfmt = FBWR_Cfmt[fbwr_id];
+
+	fbcb_cnt[fbwr_id]++;
+	dequeue_call_count++;
+
+	int Status;
+	u64 XvFrmBufFWr_Buffer_Baseaddr = 0, XvFrmBufRd_Buffer_Baseaddr = 0;
+
+	Rd_Ptr[fbwr_id] = Wr_Ptr[fbwr_id];
+	if (Wr_Ptr[fbwr_id] == 0)
+		Rd_Ptr[fbwr_id] = (Buffer_Count - 1);
+	else
+		Rd_Ptr[fbwr_id] = Wr_Ptr[fbwr_id] - 1;
+
+	if (Wr_Ptr[fbwr_id] == (Buffer_Count - 1))
+		Wr_Ptr[fbwr_id] = 0;
+	else
+		Wr_Ptr[fbwr_id] = Wr_Ptr[fbwr_id] + 1;
+
+	XvFrmBufRd_Buffer_Baseaddr = Frame_Array_p[fbwr_id][Rd_Ptr[fbwr_id]].aligned_addr;
+	XvFrmBufFWr_Buffer_Baseaddr = Frame_Array_p[fbwr_id][Wr_Ptr[fbwr_id]].aligned_addr;
+
+	Status = XVFrmbufWr_SetBufferAddr(&frmbufwr[fbwr_id], XvFrmBufFWr_Buffer_Baseaddr);
+	if (Status != XST_SUCCESS)
+		xil_printf("ERROR:: Unable to configure Frame Buffer Write buffer address\r\n");
+
+	if ((Cfmt == XVIDC_CSF_MEM_Y_UV8) || (Cfmt == XVIDC_CSF_MEM_Y_UV8_420)
+	    || (Cfmt == XVIDC_CSF_MEM_Y_UV10) || (Cfmt == XVIDC_CSF_MEM_Y_UV10_420)) {
+		Status = XVFrmbufWr_SetChromaBufferAddr(&frmbufwr[fbwr_id],
+							XvFrmBufFWr_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+		if (Status != XST_SUCCESS)
+			xil_printf("ERROR:: Unable to configure Frame Buffer Write chroma buffer address\r\n");
+	}
+
+#ifdef XPAR_XV_MIX_NUM_INSTANCES
+	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
+				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
+	Frame_Count[fbwr_id]++;
+}
+
+void FrmbufwrDoneCallback_4(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(4); }
+void FrmbufwrDoneCallback_5(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(5); }
+void FrmbufwrDoneCallback_6(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(6); }
+void FrmbufwrDoneCallback_7(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(7); }
+void FrmbufwrDoneCallback_8(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(8); }
+void FrmbufwrDoneCallback_9(void *CallbackRef)  { FrmbufwrDoneCallback_Generic(9); }
+void FrmbufwrDoneCallback_10(void *CallbackRef) { FrmbufwrDoneCallback_Generic(10); }
+void FrmbufwrDoneCallback_11(void *CallbackRef) { FrmbufwrDoneCallback_Generic(11); }
 
 
 /**
@@ -894,7 +998,7 @@ int init_fbwr(u8 hpId, CamDeviceBufChainId_t bufIo, CamDevicePipeOutFmt_t outFor
 		}
 
 		xil_printf("FBWR[%d] Buffer[%d]: allocated %llu bytes, aligned_addr=%p\n",
-		     fbwr_id, i, bufsize, aligned_ptr);
+			   fbwr_id, i, bufsize, aligned_ptr);
 	}
 
 	/* Determine output format based on input format specification */
@@ -966,7 +1070,8 @@ int init_fbwr(u8 hpId, CamDeviceBufChainId_t bufIo, CamDevicePipeOutFmt_t outFor
 	StreamOut.FrameRate = XVIDC_FR_30HZ ;
 	StreamOut.IsInterlaced = 0;
 
-	xil_printf("Display Format width: %d height: %d\n", StreamOut.Timing.HActive, StreamOut.Timing.VActive);
+	xil_printf("Display Format width: %d height: %d\n", StreamOut.Timing.HActive,
+		   StreamOut.Timing.VActive);
 
 	/* Setup stream parameters based on frame buffer writer capabilities */
 	StreamOut.ColorDepth =
@@ -1025,7 +1130,7 @@ void enable_fbwr()
 			/* Enable and start the frame buffer writer */
 			Xil_Out32(frmbufwr[i].FrmbufWr.Config.BaseAddress, 0x81);
 			xil_printf("Starting FBWR -%x %x \n", frmbufwr[i].FrmbufWr.Config.BaseAddress,
-			     Xil_In32(frmbufwr[i].FrmbufWr.Config.BaseAddress));
+				   Xil_In32(frmbufwr[i].FrmbufWr.Config.BaseAddress));
 		}
 	}
 }
@@ -1080,5 +1185,290 @@ void Reset_IP(u8 Ip_ResetBit)
 	Gpio_data |= (1 << (Ip_ResetBit));
 	Xil_Out32(LPD_GPI0_data, Gpio_data);
 	usleep(4000);
+}
+#endif
+
+#ifdef XPAR_XMIPICSISS_NUM_INSTANCES
+/**
+ * @brief Setup MIPI CSI2 RX Subsystem interrupts
+ *
+ * This function initializes the MIPI CSI2 RX subsystem instances and
+ * configures their interrupts through the AXI Interrupt Controller.
+ *
+ * Interrupt topology:
+ *   MIPI CSI SS 0 (intr 0) --> AXI IntC 0 @ 0xb1400000 (fabric intr 143) --> GIC
+ *   MIPI CSI SS 1 (intr 1) --> AXI IntC 0 @ 0xb1400000 (fabric intr 143) --> GIC
+ *
+ * Steps:
+ * 1. Initialize each MIPI CSI2 RX subsystem driver
+ * 2. Initialize the AXI Interrupt Controller for MIPI
+ * 3. Connect MIPI CSI interrupt handlers to AXI IntC
+ * 4. Register callbacks for different MIPI event types
+ * 5. Connect AXI IntC cascade to GIC
+ * 6. Enable all MIPI CSI interrupts
+ *
+ * @return XST_SUCCESS on success, XST_FAILURE on error
+ */
+int setup_mipi_csi_interrupts(void)
+{
+	int Status;
+	XCsiSs_Config *CsiCfgPtr;
+	extern XScuGic Intc;
+
+	/* Step 1: Initialize MIPI CSI2 RX Subsystem instances */
+	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+#ifndef SDT
+		CsiCfgPtr = XCsiSs_LookupConfig(i);
+#else
+		CsiCfgPtr = XCsiSs_LookupConfig(XCsiSs_ConfigTable[i].BaseAddr);
+#endif
+		if (!CsiCfgPtr) {
+			xil_printf("ERROR: MIPI CSI SS[%d] config lookup failed\r\n", i);
+			return XST_FAILURE;
+		}
+
+		Status = XCsiSs_CfgInitialize(&MipiCsiSsInst[i], CsiCfgPtr,
+					       CsiCfgPtr->BaseAddr);
+		if (Status != XST_SUCCESS) {
+			xil_printf("ERROR: MIPI CSI SS[%d] init failed (0x%x)\r\n", i, Status);
+			return XST_FAILURE;
+		}
+		xil_printf("MIPI CSI SS[%d] initialized at 0x%x\r\n", i,
+			   (u32)CsiCfgPtr->BaseAddr);
+	}
+
+	/* Step 2: Initialize AXI Interrupt Controller for MIPI */
+	Status = XIntc_Initialize(&MipiIntcController, XPAR_AXI_INTC_0_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERROR: MIPI AXI IntC init failed\r\n");
+		return XST_FAILURE;
+	}
+
+	Status = XIntc_SelfTest(&MipiIntcController);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERROR: MIPI AXI IntC self-test failed\r\n");
+		return XST_FAILURE;
+	}
+
+	/* Step 3: Connect MIPI CSI interrupt handlers to AXI IntC */
+	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		Status = XIntc_Connect(&MipiIntcController,
+				       XPAR_FABRIC_XMIPICSISS_0_INTR + i,
+				       (XInterruptHandler)XCsiSs_IntrHandler,
+				       (void *)&MipiCsiSsInst[i]);
+		if (Status != XST_SUCCESS) {
+			xil_printf("ERROR: MIPI CSI SS[%d] IntC connect failed\r\n", i);
+			return XST_FAILURE;
+		}
+
+		/* Enable interrupt for this MIPI CSI instance in AXI IntC */
+		XIntc_Enable(&MipiIntcController,
+			     XPAR_FABRIC_XMIPICSISS_0_INTR + i);
+	}
+
+	/* Start the AXI Interrupt Controller in real mode */
+	Status = XIntc_Start(&MipiIntcController, XIN_REAL_MODE);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERROR: MIPI AXI IntC start failed\r\n");
+		return XST_FAILURE;
+	}
+
+	/* Step 4: Connect AXI IntC cascade to GIC */
+	Status = XSetupInterruptSystem(&MipiIntcController,
+				       (Xil_ExceptionHandler)XIntc_InterruptHandler,
+				       MipiIntcController.CfgPtr->IntrId,
+				       MipiIntcController.CfgPtr->IntrParent,
+				       0xA);
+	if (Status != XST_SUCCESS) {
+		xil_printf("ERROR: MIPI AXI IntC -> GIC connect failed\r\n");
+		return XST_FAILURE;
+	}
+
+	/* Step 5: Register callbacks for each MIPI CSI instance */
+	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		/* Frame received callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_FRAMERECVD,
+				    (void *)MipiCsiSs_FrameRcvdCallback,
+				    (void *)&MipiCsiSsInst[i]);
+
+		/* D-PHY error callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_DPHY,
+				    (void *)MipiCsiSs_DphyCallback,
+				    (void *)&MipiCsiSsInst[i]);
+
+		/* Protocol level error callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_PROTLVL,
+				    (void *)MipiCsiSs_ProtLvlCallback,
+				    (void *)&MipiCsiSsInst[i]);
+
+		/* Packet level error callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_PKTLVL,
+				    (void *)MipiCsiSs_PktLvlCallback,
+				    (void *)&MipiCsiSsInst[i]);
+
+		/* Short packet callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_SHORTPACKET,
+				    (void *)MipiCsiSs_ShortPktCallback,
+				    (void *)&MipiCsiSsInst[i]);
+
+		/* Other error callback */
+		XCsiSs_SetCallBack(&MipiCsiSsInst[i], XCSISS_HANDLER_OTHERERROR,
+				    (void *)MipiCsiSs_ErrorCallback,
+				    (void *)&MipiCsiSsInst[i]);
+	}
+
+	/* Step 6: Enable MIPI CSI interrupts without resetting/reconfiguring the core.
+	 * We must NOT call XCsiSs_Configure() or XCsiSs_Activate() here because
+	 * they perform a soft reset of the CSI core and reactivate the DPHY,
+	 * which disrupts the already-running MIPI pipeline set up by VISP SS.
+	 * Instead, directly enable the interrupt mask and global interrupt
+	 * on each CSI core instance.
+	 */
+	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		XCsi_IntrEnable(MipiCsiSsInst[i].CsiPtr,
+				XCSI_ISR_ALLINTR_MASK & ~XCSI_ISR_STOP_MASK);
+		XCsi_SetGlobalInterrupt(MipiCsiSsInst[i].CsiPtr);
+	}
+
+	xil_printf("MIPI CSI interrupt setup complete\r\n");
+	return XST_SUCCESS;
+}
+
+/**
+ * @brief MIPI CSI Frame Received Callback
+ *
+ * Called when a complete MIPI CSI frame has been received.
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - Interrupt status mask
+ */
+/**
+ * @brief Get MIPI CSI instance ID from callback reference
+ *
+ * @param CallbackRef - Pointer passed as callback reference
+ * @return Instance index (0 to NUM_MIPI_CSI-1), or -1 if not found
+ */
+static int MipiCsiSs_GetId(void *CallbackRef)
+{
+	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		if ((XCsiSs *)CallbackRef == &MipiCsiSsInst[i])
+			return i;
+	}
+	return -1;
+}
+
+static void MipiCsiSs_FrameRcvdCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	MipiFrameCount[id]++;
+	if ((MipiFrameCount[id] % 100) == 0)
+		xil_printf("MIPI CSI[%d]: Frame received (count=%lu)\r\n",
+			   id, MipiFrameCount[id]);
+}
+
+/**
+ * @brief MIPI CSI D-PHY Error Callback
+ *
+ * Called on D-PHY level errors (SoT errors, SoT sync errors).
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - D-PHY error mask bits
+ */
+static void MipiCsiSs_DphyCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	MipiErrCount[id]++;
+	xil_printf(TXT_RED "MIPI CSI[%d]: D-PHY error (mask=0x%08x, err_count=%lu)\r\n" TXT_RST,
+		   id, Mask, MipiErrCount[id]);
+
+	if (Mask & XCSISS_ISR_SOTERR_MASK)
+		xil_printf("  -> SoT Error\r\n");
+	if (Mask & XCSISS_ISR_SOTSYNCERR_MASK)
+		xil_printf("  -> SoT Sync Error\r\n");
+}
+
+/**
+ * @brief MIPI CSI Protocol Level Error Callback
+ *
+ * Called on protocol level errors (ECC errors, CRC errors, etc).
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - Protocol error mask bits
+ */
+static void MipiCsiSs_ProtLvlCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	MipiErrCount[id]++;
+	xil_printf(TXT_RED "MIPI CSI[%d]: Protocol error (mask=0x%08x)\r\n" TXT_RST, id, Mask);
+
+	if (Mask & XCSISS_ISR_ECC2BERR_MASK)
+		xil_printf("  -> ECC 2-bit Error\r\n");
+	if (Mask & XCSISS_ISR_ECC1BERR_MASK)
+		xil_printf("  -> ECC 1-bit Error\r\n");
+	if (Mask & XCSISS_ISR_CRCERR_MASK)
+		xil_printf("  -> CRC Error\r\n");
+	if (Mask & XCSISS_ISR_DATAIDERR_MASK)
+		xil_printf("  -> Data ID Error\r\n");
+}
+
+/**
+ * @brief MIPI CSI Packet Level Error Callback
+ *
+ * Called on packet level errors (VC frame sync/level errors).
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - Packet error mask bits
+ */
+static void MipiCsiSs_PktLvlCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	MipiErrCount[id]++;
+	xil_printf(TXT_YELLOW "MIPI CSI[%d]: Packet level error (mask=0x%08x)\r\n" TXT_RST, id, Mask);
+}
+
+/**
+ * @brief MIPI CSI Short Packet Callback
+ *
+ * Called when a short packet is received or short packet FIFO is full.
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - Short packet mask bits
+ */
+static void MipiCsiSs_ShortPktCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	xil_printf("MIPI CSI[%d]: Short packet event (mask=0x%08x)\r\n", id, Mask);
+
+	if (Mask & XCSISS_ISR_SPFIFOF_MASK)
+		xil_printf(TXT_RED "  -> Short Packet FIFO Full\r\n" TXT_RST);
+}
+
+/**
+ * @brief MIPI CSI Other Error Callback
+ *
+ * Called on miscellaneous errors (stream line buffer full, incorrect lanes,
+ * stop state, etc).
+ *
+ * @param CallbackRef - Reference to the MIPI CSI SS instance
+ * @param Mask - Error mask bits
+ */
+static void MipiCsiSs_ErrorCallback(void *CallbackRef, u32 Mask)
+{
+	int id = MipiCsiSs_GetId(CallbackRef);
+
+	MipiErrCount[id]++;
+	xil_printf(TXT_RED "MIPI CSI[%d]: Error (mask=0x%08x)\r\n" TXT_RST, id, Mask);
+
+	if (Mask & XCSISS_ISR_SLBF_MASK)
+		xil_printf("  -> Stream Line Buffer Full\r\n");
+	if (Mask & XCSISS_ISR_ILC_MASK)
+		xil_printf("  -> Incorrect Lane Configuration\r\n");
+	if (Mask & XCSISS_ISR_STOP_MASK)
+		xil_printf("  -> Stop State Detected\r\n");
 }
 #endif

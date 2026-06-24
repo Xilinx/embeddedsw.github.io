@@ -1,4 +1,5 @@
 var xv__sditxss__sinit_8c =
 [
-    [ "XV_SdiTxSs_LookupConfig", "xv__sditxss__sinit_8c.html#a5fe4829ee3a2e6d471f77b4cf69c8c0f", null ]
+    [ "XV_SdiTxSs_GetDrvIndex", "xv__sditxss__sinit_8c.html#a590057625a29101a636986b8ca8781cf", null ],
+    [ "XV_SdiTxSs_LookupConfig", "xv__sditxss__sinit_8c.html#a51b66535e1c943e82eb0e5e888927eac", null ]
 ];

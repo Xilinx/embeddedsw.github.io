@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (c) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -49,7 +49,7 @@
 * 1.14	ab	01/16/23 Added Xil_PlmStubHandler() to XCsuDma_WaitForDone.
 * 1.14	ab	01/18/23 Added byte-aligned transfer API for VERSAL_NET devices.
 * 1.14  adk     04/14/23 Added support for system device-tree flow.
-* 2.0   sd      10/13/25 Added support for VERSAL_2VP_P devices.
+* 2.0   sd      11/10/25 Added support for VERSAL_2VP_P devices.
 * </pre>
 *
 ******************************************************************************/
@@ -318,9 +318,9 @@ typedef struct {
 				 * 1 -- PMC DMA 0
 				 * 2 -- PMC DMA 1 */
 #ifdef SDT
-	u32 IntrId;		/** Bits[11:0] Interrupt-id Bits[15:12]
+	u32 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
-	UINTPTR IntrParent; 	/** Bit[0] Interrupt parent type Bit[64/32:1]
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
 #endif
 } XCsuDma_Config;

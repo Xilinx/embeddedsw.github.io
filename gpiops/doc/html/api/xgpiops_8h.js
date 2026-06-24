@@ -38,7 +38,7 @@ var xgpiops_8h =
     [ "XGpioPs_IntrGetStatus", "xgpiops_8h.html#ga47fc6f53355030ef41927f38fe37753f", null ],
     [ "XGpioPs_IntrGetStatusPin", "xgpiops_8h.html#ga405556c1d1bc856dd35f8a4a92f50345", null ],
     [ "XGpioPs_IntrHandler", "xgpiops_8h.html#gafd0478d095fee0db04a29b43436306ef", null ],
-    [ "XGpioPs_LookupConfig", "xgpiops_8h.html#ga9c49687af4625a0ed49f376d3ff1b045", null ],
+    [ "XGpioPs_LookupConfig", "xgpiops_8h.html#gaa868b1653edcba528a6f4d5d70334a29", null ],
     [ "XGpioPs_Read", "xgpiops_8h.html#gaac891da3a0b1ed5697644d621483ed62", null ],
     [ "XGpioPs_ReadPin", "xgpiops_8h.html#ga5af7399d35110ae5f71be57316a2b9ee", null ],
     [ "XGpioPs_SelfTest", "xgpiops_8h.html#ga173133193aeba362fa0a5c6e7cdd8dfa", null ],

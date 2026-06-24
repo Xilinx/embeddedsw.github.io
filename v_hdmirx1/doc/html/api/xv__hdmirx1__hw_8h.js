@@ -216,6 +216,7 @@ var xv__hdmirx1__hw_8h =
     [ "XV_HDMIRX1_PIO_OUT_INT_LRST_MASK", "xv__hdmirx1__hw_8h.html#a40d80538fcb5bc6ae4dd18590766b12c", null ],
     [ "XV_HDMIRX1_PIO_OUT_INT_VRST_MASK", "xv__hdmirx1__hw_8h.html#a12d07ceb2b0cf661463eace18d19b370", null ],
     [ "XV_HDMIRX1_PIO_OUT_LNK_EN_MASK", "xv__hdmirx1__hw_8h.html#a9664bc1a8eba4759abae05a526070145", null ],
+    [ "XV_HDMIRX1_PIO_OUT_MANUAL_MASK", "xv__hdmirx1__hw_8h.html#afb52640c6240721836ce5dcc985fbc58", null ],
     [ "XV_HDMIRX1_PIO_OUT_MSK_OFFSET", "xv__hdmirx1__hw_8h.html#acdedab9c5aa955316fd71fcf8597ba83", null ],
     [ "XV_HDMIRX1_PIO_OUT_OFFSET", "xv__hdmirx1__hw_8h.html#a2762aba9d45253971668c25e35400e3f", null ],
     [ "XV_HDMIRX1_PIO_OUT_PIXEL_RATE_MASK", "xv__hdmirx1__hw_8h.html#a478987cdc818e2083db0f500ef6b66ab", null ],

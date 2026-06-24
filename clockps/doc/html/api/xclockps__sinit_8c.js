@@ -1,5 +1,5 @@
 var xclockps__sinit_8c =
 [
-    [ "XClock_LookupConfig", "xclockps__sinit_8c.html#ga0bdb892df1c4e48be4ce1a4d2140468e", null ],
-    [ "XClockPs_ConfigTable", "xclockps__sinit_8c.html#ga143d2ae8c8728081cbf24ad5fe089111", null ]
+    [ "XClock_LookupConfig", "xclockps__sinit_8c.html#ga07d8407d52c6b095f5830f9883565fd7", null ],
+    [ "XClockPs_ConfigTable", "xclockps__sinit_8c.html#ga461bde3b9f716720c74f99f6170bb895", null ]
 ];

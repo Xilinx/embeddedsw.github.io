@@ -6,5 +6,5 @@ var xhdcp22__rng_8h =
     [ "XHdcp22Rng_IsEnabled", "xhdcp22__rng_8h.html#gaec0fb65709ad82ac57e967b377d0b76d", null ],
     [ "XHdcp22Rng_CfgInitialize", "xhdcp22__rng_8h.html#ga978c7ec1b9ddbfd02084306d0aa1e21a", null ],
     [ "XHdcp22Rng_GetRandom", "xhdcp22__rng_8h.html#ga7e005af26bda452f9939a06d306bfafe", null ],
-    [ "XHdcp22Rng_LookupConfig", "xhdcp22__rng_8h.html#gae17d5c8cd598282a6dce822a016ce7ad", null ]
+    [ "XHdcp22Rng_LookupConfig", "xhdcp22__rng_8h.html#gae102de1299566f662b0fde3fd94aad47", null ]
 ];

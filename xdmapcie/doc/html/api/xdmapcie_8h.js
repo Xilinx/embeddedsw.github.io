@@ -31,7 +31,7 @@ var xdmapcie_8h =
     [ "XDmaPcie_GetVsecCapability", "xdmapcie_8h.html#ac61d1050938321b594087912a2272efb", null ],
     [ "XDmaPcie_GetVsecHeader", "xdmapcie_8h.html#acf9acbd19090d9147cdad13913354fa6", null ],
     [ "XDmaPcie_HasCapability", "xdmapcie_8h.html#ae856a9480f2bbf119a71810e12ac5ff7", null ],
-    [ "XDmaPcie_LookupConfig", "xdmapcie_8h.html#a5554a1ee852247fccc227fb9e3aff8ac", null ],
+    [ "XDmaPcie_LookupConfig", "xdmapcie_8h.html#a079b40bdb760e2ade38405dde9011ff5", null ],
     [ "XDmaPcie_PrintAllCapabilites", "xdmapcie_8h.html#a7106f923ba6532a0533e39afdf6728c2", null ],
     [ "XDmaPcie_ReadLocalConfigSpace", "xdmapcie_8h.html#a0b168437da7bb05a2cdcbc2267df272d", null ],
     [ "XDmaPcie_ReadRemoteConfigSpace", "xdmapcie_8h.html#adac6261cddb63084c8ee87518e99edef", null ],

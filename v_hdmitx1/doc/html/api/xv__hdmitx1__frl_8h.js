@@ -2,14 +2,6 @@ var xv__hdmitx1__frl_8h =
 [
     [ "XV_HdmiTx1_Frl", "struct_x_v___hdmi_tx1___frl.html", "struct_x_v___hdmi_tx1___frl" ],
     [ "XV_HDMITX1_FRL_H_", "xv__hdmitx1__frl_8h.html#a278ba63cb581ced213ae23aabafe201b", null ],
-    [ "XV_HdmiTx1_FrlIntrDisable", "xv__hdmitx1__frl_8h.html#a58012592af0eafb0b1bdbce08aa70169", null ],
-    [ "XV_HdmiTx1_FrlIntrEnable", "xv__hdmitx1__frl_8h.html#aaa2b17ec29b80b19f9fa18abadeef78b", null ],
-    [ "XV_HdmiTx1_FrlRateLockDisable", "xv__hdmitx1__frl_8h.html#adeff1a67ca25514ca8095cefbdb2a937", null ],
-    [ "XV_HdmiTx1_FrlRateLockEnable", "xv__hdmitx1__frl_8h.html#ada7516a3ce97e28980629b26677ec4b4", null ],
-    [ "XV_HdmiTx1_FrlRcDisable", "xv__hdmitx1__frl_8h.html#a2502d7c8116ff5b4586bf81e0001296b", null ],
-    [ "XV_HdmiTx1_FrlRcEnable", "xv__hdmitx1__frl_8h.html#a22ee7036ae97717d94a76b551a6ade52", null ],
-    [ "XV_HdmiTx1_SetFrlLinkClock", "xv__hdmitx1__frl_8h.html#a2190d9b351c0d93b52da5ecdf7d0ccc8", null ],
-    [ "XV_HdmiTx1_SetFrlVidClock", "xv__hdmitx1__frl_8h.html#a0d9362b70a136651d8c779620a25af58", null ],
     [ "XV_HdmiTx1_FrlActiveMode", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6", [
       [ "XV_HDMITX1_FRL_ACTIVE_MODE_GAP_ONLY", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a63b192ec1136617d40f54f343862e930", null ],
       [ "XV_HDMITX1_FRL_ACTIVE_MODE_FULL_STREAM", "xv__hdmitx1__frl_8h.html#a5b99df30b0bf9c96608c0167750bbfb6a50d833ccc4376d8f1cc8ffbb8efb6ec1", null ]

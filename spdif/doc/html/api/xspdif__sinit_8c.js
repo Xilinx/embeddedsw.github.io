@@ -1,5 +1,5 @@
 var xspdif__sinit_8c =
 [
-    [ "XSpdif_Initialize", "xspdif__sinit_8c.html#ga230c28eb5e576f848368c41213997d0a", null ],
-    [ "XSpdif_LookupConfig", "xspdif__sinit_8c.html#gadd37f55413da6f509988297561746c98", null ]
+    [ "XSpdif_Initialize", "xspdif__sinit_8c.html#ga7812aeb4de2b5ab5ca456f865ec70279", null ],
+    [ "XSpdif_LookupConfig", "xspdif__sinit_8c.html#ga6f0df9a2d5959e4bdde94bb54faa13a2", null ]
 ];

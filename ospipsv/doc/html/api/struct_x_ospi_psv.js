@@ -1,6 +1,5 @@
 var struct_x_ospi_psv =
 [
-    [ "__attribute__", "struct_x_ospi_psv.html#adafe98b02fe4f5cc071a2fca5cb726f2", null ],
     [ "ChipSelect", "struct_x_ospi_psv.html#ab2b697261a3df6ef3dd35b87192de190", null ],
     [ "Config", "struct_x_ospi_psv.html#a587249b499cdfc3e3da286143039006c", null ],
     [ "DeviceIdData", "struct_x_ospi_psv.html#aa25599d1a6288004b3462766f05051d4", null ],
@@ -18,5 +17,6 @@ var struct_x_ospi_psv =
     [ "SendBufferPtr", "struct_x_ospi_psv.html#afbb922b012156fcef71c375702c2d37b", null ],
     [ "StatusHandler", "struct_x_ospi_psv.html#a9bb551c6d2885989ab98be25e8794c5d", null ],
     [ "StatusRef", "struct_x_ospi_psv.html#a16659fb6fc5bf47ca3441471f1191c14", null ],
-    [ "TxBytes", "struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e", null ]
+    [ "TxBytes", "struct_x_ospi_psv.html#a307cc221c5d9dde996530c5edc151e8e", null ],
+    [ "UnalignReadBuffer", "struct_x_ospi_psv.html#aa024b5869c092081094478379cc51bc4", null ]
 ];

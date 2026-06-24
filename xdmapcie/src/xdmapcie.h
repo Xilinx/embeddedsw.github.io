@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2019 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -121,14 +121,20 @@ typedef  struct {
 	u64 Ecam;
 	u32     NpMemBaseAddr;          /**< non prefetchable memory base address */
 	u32     NpMemMaxAddr;   /**< non prefetchable memory max base address*/
+#if !defined(ARMR5)
 	u64     PMemBaseAddr;           /**< prefetchable memory base address */
 	u64     PMemMaxAddr;    /**< prefetchable memory max base address */
+#endif
 #else
 	u64 Ecam;
 	u32	NpMemBaseAddr;		/**< non prefetchable memory base address */
+#if !defined(ARMR5)
 	u64	PMemBaseAddr;		/**< prefetchable memory base address */
+#endif
 	u32	NpMemMaxAddr;	/**< non prefetchable memory max base address*/
+#if !defined(ARMR5)
 	u64	PMemMaxAddr;	/**< prefetchable memory max base address */
+#endif
 #endif
 
 } XDmaPcie_Config;
@@ -150,7 +156,7 @@ typedef struct {
 
 
 /**
- * The user is required to use this strucuture when reading or writing
+ * The user is required to use this structure when reading or writing
  * translation vector between local bus BARs and XDMA PCIe BARs. It is used
  * when calling "XDmaPcie_GetLocalBusBar2PcieBar" and
  * "XDmaPcie_SetLocalBusBar2PcieBar" functions. The translation vectors are
@@ -193,7 +199,7 @@ typedef struct {
 *
 * @return
 *		- TRUE if ECAM is busy
-*		- FALSE if ECAM is idel
+*		- FALSE if ECAM is idle
 *
 * @note		This function is valid only when IP is configured as a
 *		root complex

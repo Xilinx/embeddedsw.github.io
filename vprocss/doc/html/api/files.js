@@ -9,7 +9,7 @@ var files =
     [ "xvprocss.h", "xvprocss_8h.html", "xvprocss_8h" ],
     [ "xvprocss_coreinit.c", "xvprocss__coreinit_8c.html", "xvprocss__coreinit_8c" ],
     [ "xvprocss_coreinit.h", "xvprocss__coreinit_8h.html", "xvprocss__coreinit_8h" ],
-    [ "xvprocss_g.c", "xvprocss__g_8c.html", "xvprocss__g_8c" ],
+    [ "xvprocss_g.c", "xvprocss__g_8c.html", null ],
     [ "xvprocss_log.c", "xvprocss__log_8c.html", "xvprocss__log_8c" ],
     [ "xvprocss_log.h", "xvprocss__log_8h.html", "xvprocss__log_8h" ],
     [ "xvprocss_router.c", "xvprocss__router_8c.html", "xvprocss__router_8c" ],

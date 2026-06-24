@@ -1,8 +1,9 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"classes.html":[0,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "index.html":[],
 "pages.html":[],
 "struct_x_hdmi_c__3_d___additional_info.html":[0,0,0],

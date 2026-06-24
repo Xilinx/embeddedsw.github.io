@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -55,8 +55,6 @@
 * @param	InstancePtr is the XDsi instance to operate on
 * @param	Mask is the interrupt mask which need to be enabled in core
 *
-* @return	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -79,8 +77,6 @@ void XDsi_InterruptEnable(XDsi *InstancePtr, u32 Mask)
 *
 * @param	InstancePtr is the XDsi instance to operate on
 * @param	Mask is the interrupt mask which need to be enabled in core
-*
-* @return	None
 *
 * @note		None
 *
@@ -154,8 +150,6 @@ u32 XDsi_InterruptGetStatus(XDsi *InstancePtr)
 * @param	Mask is Interrupt Mask with bits set for corresponding interrupt
 * 		to be cleared in the Interrupt Status register
 *
-* @return 	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -184,7 +178,7 @@ void XDsi_InterruptClear(XDsi *InstancePtr, u32 Mask)
 * XDSI_HANDLER_UNSUPPORT_DATATYPE Un support data type detected
 * XDSI_HANDLER_PIXELDATA_UNDERRUN Byte stream FIFO starves for Pixel during
 * 				  HACT transmission
-* XDSI_HANDLER_OTHERERROR  Any other type of interrupt has occured like
+* XDSI_HANDLER_OTHERERROR  Any other type of interrupt has occurred like
 * 			   Stream Line Buffer Full, Incorrect Lanes, etc
 * XDSI_HANDLER_CMDQ_FIFOFULL Command queue FIFO full
 *
@@ -192,7 +186,7 @@ void XDsi_InterruptClear(XDsi *InstancePtr, u32 Mask)
 *
 * @param	InstancePtr is the XDsi instance to operate on
 * @param 	HandleType is the type of call back to be registered.
-* @param	CallbackFunc is the pointer to a call back funtion which
+* @param	CallbackFunc is the pointer to a call back function which
 * 		is called when a particular event occurs.
 * @param 	CallbackRef is a void pointer to data to be referenced to
 * 		by the CallbackFunc
@@ -258,8 +252,6 @@ s32 XDsi_SetCallback(XDsi *InstancePtr, u32 HandleType,
 * XDsi_SetCallback() during initialization phase.
 *
 * @param	InstancePtr is a pointer to the XDsi core instance.
-*
-* @return	None.
 *
 * @note		Interrupt should be enabled to execute interrupt handler.
 *

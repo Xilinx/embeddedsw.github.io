@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -112,29 +112,11 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 	if (TransportMode) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"\n\rSS INFO:Starting "
 			"MST config.\n\r");
-		/* Enable MST mode in both the RX and TX. */
-		Status = XDp_TxMstEnable(InstancePtr);
+		Status = XDp_TxMstDisable(InstancePtr);
 		if (Status != XST_SUCCESS) {
-			/* If the immediate downstream RX device is an MST
-			 * monitor and the DisplayPort Configuration Data
-			 * (DPCD) does not indicate MST capability, it is
-			 * likely that the MST or DisplayPort v1.2 option must
-			 * be selected from the monitor's option menu.
-			 * Likewise, the DisplayPort TX core must be configured
-			 * to support MST mode. */
-			if (Status == XST_DEVICE_NOT_FOUND) {
-				xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:"
-					"No connection exists. Verify cable "
-						"and/or monitor.\n\r");
-			}
-			else {
-				xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:"
-					"Verify DisplayPort MST capabilities "
-					"in the TX and/or RX device MST "
-					"status is %ld\n\r", Status);
-			}
-
-			return XST_FAILURE;
+			xdbg_printf(XDBG_DEBUG_GENERAL,
+					"SS WARN:MST:MstDisable before training "
+					"returned %ld (continuing).\n\r", Status);
 		}
 
 		/* Set AUX and sideband delays in microseconds */
@@ -164,25 +146,16 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 				return Status;
 			}
 		}
-		XDp_TxEnableMainLink(InstancePtr);
-		Status = XDp_TxCheckLinkStatus(InstancePtr,
-				InstancePtr->TxInstance.LinkConfig.LaneCount);
-		if (Status == XST_SUCCESS)
-			xdbg_printf(XDBG_DEBUG_GENERAL, "SS INFO:MST:Link "
-				    "is up !\n\r\n\r");
-		else
-			return Status;
-		/* Enable MST mode in both the RX and TX. */
+		Status = XDp_TxMstCapable(InstancePtr);
+		if (Status != XST_SUCCESS) {
+			xdbg_printf(XDBG_DEBUG_GENERAL,
+					"SS ERR:MST: not capable\r\n");
+		}
+
+		/* Enable MST mode in both the RX and TX (post-train, per DP spec). */
 		Status = XDp_TxMstEnable(InstancePtr);
 		if (Status != XST_SUCCESS)
 			return XST_FAILURE;
-
-		Status = XDp_TxCheckLinkStatus(InstancePtr,
-					       InstancePtr->TxInstance.LinkConfig.LaneCount);
-		if (Status == XST_SUCCESS)
-			xdbg_printf(XDBG_DEBUG_GENERAL, "SS INFO:MST:Link is up !\n\r\n\r");
-		else
-			return Status;
 
 		xdbg_printf(XDBG_DEBUG_GENERAL, "SS INFO:MST:Discovering topology.\n\r");
 		 /* Wait the requested amount of time to start mst topology
@@ -215,6 +188,12 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 				return Status;
 			}
 		}
+
+		XDp_TxClearMsaValues(InstancePtr, XDP_TX_STREAM_ID1);
+		XDp_TxClearMsaValues(InstancePtr, XDP_TX_STREAM_ID2);
+		XDp_TxClearMsaValues(InstancePtr, XDP_TX_STREAM_ID3);
+		XDp_TxClearMsaValues(InstancePtr, XDP_TX_STREAM_ID4);
+
 		/* Enable each stream(s) */
 		for (StreamIndex = 0; StreamIndex < NumOfStreams;
 							StreamIndex++) {
@@ -1174,7 +1153,7 @@ static XVidC_VideoMode Dp_GetPreferredVm(u8 *EdidPtr)
 /*****************************************************************************/
 /**
  *
- * This function configures DisplayPort video packaing clock control bit (
+ * This function configures DisplayPort video packaging clock control bit (
  * VIDEO_PACKING_CLOCK_CONTROL) if bpc is 12/16.
  *
  * @param	InstancePtr is a pointer to the XDp instance.

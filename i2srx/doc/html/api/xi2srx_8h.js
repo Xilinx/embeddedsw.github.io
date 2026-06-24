@@ -39,7 +39,7 @@ var xi2srx_8h =
     [ "XI2s_Rx_LogRead", "xi2srx_8h.html#gace02e57eaf489fffb38e0f3d4f69c8d3", null ],
     [ "XI2s_Rx_LogReset", "xi2srx_8h.html#ga8525e3230b25c045bd85afa33346e624", null ],
     [ "XI2s_Rx_LogWrite", "xi2srx_8h.html#gad797c77106bcc4da0a72e65e5620fa02", null ],
-    [ "XI2s_Rx_LookupConfig", "xi2srx_8h.html#ga86fad2b52bbb42c12f21c72463a614b5", null ],
+    [ "XI2s_Rx_LookupConfig", "xi2srx_8h.html#ga4f02fd72ba309f414bffa4b0a5ce6e72", null ],
     [ "XI2s_Rx_SelfTest", "xi2srx_8h.html#ga8be6ac54842b054fb0f5b047669a794c", null ],
     [ "XI2s_Rx_SetAesChStatus", "xi2srx_8h.html#ga0732ac9b13399678fe408cf55eeab264", null ],
     [ "XI2s_Rx_SetChMux", "xi2srx_8h.html#ga522d6260d91826f18572844fb0fbf39d", null ],

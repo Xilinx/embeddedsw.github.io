@@ -1,9 +1,10 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,2],
 "globals_func.html":[1,1],
@@ -17,7 +18,7 @@ var NAVTREEINDEX0 =
 "xhdcp22__rng_8h.html#ga7e005af26bda452f9939a06d306bfafe":[2,1,5],
 "xhdcp22__rng_8h.html#ga978c7ec1b9ddbfd02084306d0aa1e21a":[2,1,4],
 "xhdcp22__rng_8h.html#gad006a0ad38fbd6e0fef9221d012deaba":[2,1,2],
-"xhdcp22__rng_8h.html#gae17d5c8cd598282a6dce822a016ce7ad":[2,1,6],
+"xhdcp22__rng_8h.html#gae102de1299566f662b0fde3fd94aad47":[2,1,6],
 "xhdcp22__rng_8h.html#gaea4569b3f216fa850fb5ea7682f8e59c":[2,1,0],
 "xhdcp22__rng_8h.html#gaec0fb65709ad82ac57e967b377d0b76d":[2,1,3],
 "xhdcp22__rng__hw_8h.html":[2,2],
@@ -48,5 +49,5 @@ var NAVTREEINDEX0 =
 "xhdcp22__rng__selftest_8c.html":[2,3],
 "xhdcp22__rng__selftest_8c.html#gac23d7fedd7eb00b9478c4b87a4884e55":[2,3,0],
 "xhdcp22__rng__sinit_8c.html":[2,4],
-"xhdcp22__rng__sinit_8c.html#gae17d5c8cd598282a6dce822a016ce7ad":[2,4,0]
+"xhdcp22__rng__sinit_8c.html#gae102de1299566f662b0fde3fd94aad47":[2,4,0]
 };

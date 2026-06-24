@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -29,14 +29,17 @@
 
 /************************** Constant Definitions *****************************/
 #if defined(__MICROBLAZE__)
-#ifndef SDT
-#define DDR_BASEADDR XPAR_MIG7SERIES_0_BASEADDR
+  #ifndef  SDT
+  #define DDR_BASEADDR XPAR_MIG7SERIES_0_BASEADDR
+  #else
+  #define DDR_BASEADDR XPAR_MIG_0_BASEADDRESS
+  #endif
+#elif defined(__riscv)
+  #define DDR_BASEADDR XPAR_LPDDRMC_0_BASEADDR
 #else
-#define DDR_BASEADDR XPAR_MIG_0_BASEADDRESS
+  #define DDR_BASEADDR XPAR_DDR_MEM_BASEADDR
 #endif
-#else
-#define DDR_BASEADDR XPAR_DDR_MEM_BASEADDR
-#endif
+
 #define USR_FRAME_BUF_BASEADDR     (DDR_BASEADDR + (0x20000000))
 
 /**************************** Type Definitions *******************************/
@@ -178,8 +181,6 @@ int XSys_SetStreamParam(XVprocSs *pVprocss, u16 Direction, u16 Width,
 *
 * @param	pPeriph is a pointer to the peripherals instance
 * @param	pVprocss is a pointer to the video proc subsystem instance
-*
-* @return   None
 *
 * @note		None.
 *

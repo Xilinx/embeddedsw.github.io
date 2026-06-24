@@ -1,17 +1,17 @@
-var cookie_namespace = 'doxygen'; 
+var cookie_namespace = 'doxygen';
 var sidenav,navtree,content,header;
 
-function readCookie(cookie) 
+function readCookie(cookie)
 {
   var myCookie = cookie_namespace+"_"+cookie+"=";
-  if (document.cookie) 
+  if (document.cookie)
   {
     var index = document.cookie.indexOf(myCookie);
-    if (index != -1) 
+    if (index != -1)
     {
       var valStart = index + myCookie.length;
       var valEnd = document.cookie.indexOf(";", valStart);
-      if (valEnd == -1) 
+      if (valEnd == -1)
       {
         valEnd = document.cookie.length;
       }
@@ -22,10 +22,10 @@ function readCookie(cookie)
   return 0;
 }
 
-function writeCookie(cookie, val, expiration) 
+function writeCookie(cookie, val, expiration)
 {
   if (val==undefined) return;
-  if (expiration == null) 
+  if (expiration == null)
   {
     var date = new Date();
     date.setTime(date.getTime()+(10*365*24*60*60*1000)); // default expiration is one week
@@ -33,12 +33,12 @@ function writeCookie(cookie, val, expiration)
   }
   document.cookie = cookie_namespace + "_" + cookie + "=" + val + "; expires=" + expiration+"; path=/";
 }
- 
-function resizeWidth() 
+
+function resizeWidth()
 {
   var windowWidth = $(window).width() + "px";
   var sidenavWidth = $(sidenav).outerWidth();
-  content.css({marginLeft:parseInt(sidenavWidth)+"px"}); 
+  content.css({marginLeft:parseInt(sidenavWidth)+"px"});
   writeCookie('width',sidenavWidth, null);
 }
 
@@ -49,7 +49,7 @@ function restoreWidth(navWidth)
   sidenav.css({width:navWidth + "px"});
 }
 
-function resizeHeight() 
+function resizeHeight()
 {
   var headerHeight = header.outerHeight();
   var footerHeight = footer.outerHeight();
@@ -89,5 +89,3 @@ function initResizable()
     }
   });
 }
-
-

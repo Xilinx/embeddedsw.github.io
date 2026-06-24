@@ -34,7 +34,7 @@ var xqspips_8h =
     [ "XQspiPs_GetDelays", "xqspips_8h.html#ga5f21bb46591dc0c4915f5f65cdf3a412", null ],
     [ "XQspiPs_GetOptions", "xqspips_8h.html#ga589925a6983f4075992c431a0077cf48", null ],
     [ "XQspiPs_InterruptHandler", "xqspips_8h.html#ga44c9e0841d774e9c4958e2cdd8c23220", null ],
-    [ "XQspiPs_LookupConfig", "xqspips_8h.html#ga3f4fa51f1ba6d49a6ec9e9b079fc4fd7", null ],
+    [ "XQspiPs_LookupConfig", "xqspips_8h.html#gae1d4740600c52a11e0044f7a853292e4", null ],
     [ "XQspiPs_LqspiRead", "xqspips_8h.html#gacbdefc29998bb7b4a61e62f8ef3ed127", null ],
     [ "XQspiPs_PolledTransfer", "xqspips_8h.html#ga92bcb2ff87e82a4f27e9a49db023d08d", null ],
     [ "XQspiPs_Reset", "xqspips_8h.html#ga5e488f0da6981f817242eee92e238d69", null ],

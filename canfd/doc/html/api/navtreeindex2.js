@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"xcanfd__hw_8h.html#gae0743b8dd3db9ddf9cae093b4788fd8c":[2,3,170],
 "xcanfd__hw_8h.html#gae26bdc34d1efa63f1c83fbf91f512a69":[2,3,317],
 "xcanfd__hw_8h.html#gae2bf066a1d9517b3e56c1b74a9c57fb4":[2,3,259],
 "xcanfd__hw_8h.html#gae320058dc31534a2ee51b56e8df27442":[2,3,217],
@@ -54,8 +53,8 @@ var NAVTREEINDEX2 =
 "xcanfd__intr__example_8c.html":[2,5],
 "xcanfd__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,5,0],
 "xcanfd__polled__example_8c.html":[2,6],
+"xcanfd__polled__example_8c.html#a4e9e09ef664aee1dcef0dfb56e5fc93b":[2,6,1],
 "xcanfd__polled__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,6,0],
-"xcanfd__polled__example_8c.html#ac8323e4578603639b3344cf7d3eef17a":[2,6,1],
 "xcanfd__selftest_8c.html":[2,7],
 "xcanfd__selftest_8c.html#ga40b93f102dc8a0ae0f87092bc96087f1":[2,7,0],
 "xcanfd__selftest_8c.html#ga413d190032b595cee3eaad35f5ff0f95":[2,7,1],
@@ -71,5 +70,5 @@ var NAVTREEINDEX2 =
 "xcanfd__selftest_8c.html#gadb1bcd1838bd92a866794184116a4bbf":[2,7,4],
 "xcanfd__selftest_8c.html#gadcd8382bc86aa05dd490d5ccdd3878c8":[2,7,7],
 "xcanfd__sinit_8c.html":[2,8],
-"xcanfd__sinit_8c.html#ga37d6483b019e09713b2d8c7e412dbbdf":[2,8,0]
+"xcanfd__sinit_8c.html#gaf25c50ab9ef473c52c127d3ef586ced8":[2,8,0]
 };

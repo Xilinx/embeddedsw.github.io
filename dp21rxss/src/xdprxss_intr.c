@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2023 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -68,8 +68,6 @@
 * @param	InstancePtr is a pointer to the XDpRxSs core instance that
 *		just interrupted.
 *
-* @return	None.
-*
 * @note		None.
 *
 ******************************************************************************/
@@ -96,8 +94,6 @@ void XDpRxSs_DpIntrHandler(void *InstancePtr)
 *
 * @param	InstancePtr is a pointer to the XDpRxSs core instance that
 *		just interrupted.
-*
-* @return	None.
 *
 * @note		None.
 *
@@ -184,8 +180,6 @@ void XDpRxSs_TmrCtrIntrHandler(void *InstancePtr)
  * @param       InstancePtr is a pointer to the XDpRxSs core instance that
  *              just interrupted.
  *
- * @return      None.
- *
  * @note        None.
  *
  ******************************************************************************/
@@ -202,6 +196,9 @@ void XDpRxSs_DrvNoVideoHandler(void *InstancePtr)
 	XDp_WriteReg(XDpRxSsPtr->DpPtr->Config.BaseAddr,
 			XDP_RX_AUDIO_UNSUPPORTED, 0x1);
 
+	/* Enable interrupts for video recovery */
+	XDp_RxInterruptEnable(XDpRxSsPtr->DpPtr, XDP_RX_INTERRUPT_MASK_VBLANK_MASK);
+	XDp_RxInterruptEnable(XDpRxSsPtr->DpPtr, XDP_RX_INTERRUPT_MASK_INFO_PKT_MASK);
 }
 
 /*****************************************************************************/
@@ -211,8 +208,6 @@ void XDpRxSs_DrvNoVideoHandler(void *InstancePtr)
  *
  * @param      InstancePtr is a pointer to the XDpRxSs core instance that
  *             just interrupted.
- *
- * @return     None.
  *
  * @note       None.
  *
@@ -238,8 +233,6 @@ void XDpRxSs_DrvVideoHandler(void *InstancePtr)
 *
 * @param       InstancePtr is a pointer to the XDpRxSs core instance that
 *              just interrupted.
-*
-* @return      None.
 *
 * @note        None.
 *
@@ -678,99 +671,6 @@ u32 XDpRxSs_SetCallBack(XDpRxSs *InstancePtr, u32 HandlerType,
 			Status = XST_SUCCESS;
 			break;
 
-		/* DP 1.4 callback(s) */
-		case XDPRXSS_HANDLER_ACCESS_LANE_SET_EVENT:
-			if (InstancePtr->DpPtr->Config.DpProtocol ==
-			    XDP_PROTOCOL_DP_1_4) {
-				XDp_RxSetCallback(InstancePtr->DpPtr,
-					XDP_RX_HANDLER_ACCESS_LANE_SET,
-					CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			} else {
-				Status = XST_FAILURE;
-			}
-			break;
-
-		case XDPRXSS_HANDLER_ACCESS_LINK_QUAL_EVENT:
-			if (InstancePtr->DpPtr->Config.DpProtocol ==
-			    XDP_PROTOCOL_DP_1_4) {
-				XDp_RxSetCallback(InstancePtr->DpPtr,
-					XDP_RX_HANDLER_ACCESS_LINK_QUAL,
-					CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			} else {
-				Status = XST_FAILURE;
-			}
-			break;
-
-		case XDPRXSS_HANDLER_ACCESS_ERROR_COUNTER_EVENT:
-			if (InstancePtr->DpPtr->Config.DpProtocol ==
-			    XDP_PROTOCOL_DP_1_4) {
-				XDp_RxSetCallback(InstancePtr->DpPtr,
-					XDP_RX_HANDLER_ACCESS_ERR_COUNTER,
-					CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			} else {
-				Status = XST_FAILURE;
-			}
-			break;
-
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_1_EVENT:
-			if (InstancePtr->DpPtr->Config.DpProtocol ==
-				XDP_PROTOCOL_DP_1_4) {
-				XDp_RxSetCallback(InstancePtr->DpPtr,
-					XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP,
-					CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			} else {
-				Status = XST_FAILURE;
-			}
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_2_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP_STREAM_2,
-				CallbackFunc, CallbackRef);
-			Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_3_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP_STREAM_3,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_SDP_STREAM_4_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_SDP_STREAM_4,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_1_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_VBLANK,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_2_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_VBLANK_STREAM_2,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_3_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_VBLANK_STREAM_3,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-		case XDPRXSS_HANDLER_DP_ADAPTIVESYNC_VBLANK_STREAM_4_EVENT:
-			XDp_RxSetCallback(InstancePtr->DpPtr,
-				XDP_RX_HANDLER_ADAPTIVE_SYNC_VBLANK_STREAM_4,
-				CallbackFunc, CallbackRef);
-				Status = XST_SUCCESS;
-			break;
-
-		/* End of setting DP 1.4 callback(s) */
-
 		default:
 			Status = XST_INVALID_PARAM;
 			break;
@@ -790,8 +690,6 @@ u32 XDpRxSs_SetCallBack(XDpRxSs *InstancePtr, u32 HandlerType,
 * @param	CallbackRef is the user data item (microseconds to delay) that
 *		will be passed to the custom sleep/delay function when it is
 *		invoked.
-*
-* @return	None.
 *
 * @note		None.
 *

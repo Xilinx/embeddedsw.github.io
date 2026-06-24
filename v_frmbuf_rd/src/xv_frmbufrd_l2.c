@@ -1,6 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017-2023 Xilinx, Inc. All Rights Reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2017-2022 Xilinx, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -84,6 +84,9 @@ XVidC_ColorFormat RdMemory2Live(XVidC_ColorFormat MemFmt)
 		case XVIDC_CSF_MEM_YUVA8 :
 			StrmFmt = XVIDC_CSF_YCRCBA_444;
 			break;
+		case XVIDC_CSF_MEM_BGRA8 :
+			StrmFmt = XVIDC_CSF_RGBA;
+			break;
 		case XVIDC_CSF_MEM_RGBX10 :
 			StrmFmt = XVIDC_CSF_RGB;
 			break;
@@ -113,9 +116,6 @@ XVidC_ColorFormat RdMemory2Live(XVidC_ColorFormat MemFmt)
 			break;
 		case XVIDC_CSF_MEM_Y10 :
 			StrmFmt = XVIDC_CSF_YONLY;
-			break;
-		case XVIDC_CSF_MEM_BGRA8 :
-			StrmFmt = XVIDC_CSF_RGBA;
 			break;
 		case XVIDC_CSF_MEM_BGRX8 :
 			StrmFmt = XVIDC_CSF_RGB;
@@ -156,18 +156,66 @@ XVidC_ColorFormat RdMemory2Live(XVidC_ColorFormat MemFmt)
 		case XVIDC_CSF_MEM_Y16 :
 			StrmFmt = XVIDC_CSF_YONLY;
 			break;
-        case XVIDC_CSF_MEM_Y_U_V8 :
-            StrmFmt = XVIDC_CSF_YCRCB_444;
-            break;
+		case XVIDC_CSF_MEM_Y_U_V8 :
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
 		case XVIDC_CSF_MEM_Y_U_V10 :
-            StrmFmt = XVIDC_CSF_YCRCB_444;
-            break;
-        case XVIDC_CSF_MEM_Y_U_V8_420 :
-            StrmFmt = XVIDC_CSF_YCRCB_420;
-            break;
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_U_V8_420 :
+			StrmFmt = XVIDC_CSF_YCRCB_420;
+			break;
 		case XVIDC_CSF_MEM_Y_U_V12 :
-            StrmFmt = XVIDC_CSF_YCRCB_444;
-            break;
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_U_V10_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_UV10_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_422;
+			break;
+		case XVIDC_CSF_MEM_Y_UV10_420_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_420;
+			break;
+		case XVIDC_CSF_MEM_Y10_L16LE :
+			StrmFmt = XVIDC_CSF_YONLY;
+			break;
+		case XVIDC_CSF_MEM_Y_U_V12_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_UV12_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_422;
+			break;
+		case XVIDC_CSF_MEM_Y_UV12_420_L16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_420;
+			break;
+		case XVIDC_CSF_MEM_Y12_L16LE :
+			StrmFmt = XVIDC_CSF_YONLY;
+			break;
+		case XVIDC_CSF_MEM_Y_U_V10_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_UV10_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_422;
+			break;
+		case XVIDC_CSF_MEM_Y_UV10_420_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_420;
+			break;
+		case XVIDC_CSF_MEM_Y10_M16LE :
+			StrmFmt = XVIDC_CSF_YONLY;
+			break;
+		case XVIDC_CSF_MEM_Y_U_V12_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_444;
+			break;
+		case XVIDC_CSF_MEM_Y_UV12_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_422;
+			break;
+		case XVIDC_CSF_MEM_Y_UV12_420_M16LE :
+			StrmFmt = XVIDC_CSF_YCRCB_420;
+			break;
+		case XVIDC_CSF_MEM_Y12_M16LE :
+			StrmFmt = XVIDC_CSF_YONLY;
+			break;
 		default:
 			StrmFmt = (XVidC_ColorFormat)~0;
 			break;
@@ -277,7 +325,6 @@ static void SetPowerOnDefaultState(XV_FrmbufRd_l2 *InstancePtr)
  * @param InstancePtr Pointer to the XV_FrmbufRd_l2 instance.
  * @param IrqMask     is the interrupt mask the driver interrupt handler
  * 	      			  passes to the callback function.
- * @return None.
  *
  * @note The InstancePtr must not be NULL.
  */
@@ -304,7 +351,6 @@ void XVFrmbufRd_InterruptEnable(XV_FrmbufRd_l2 *InstancePtr, u32 IrqMask)
  * @param  InstancePtr Pointer to the XV_FrmbufRd_l2 instance.
  * @param  IrqMask is the interrupt mask the driver interrupt handler
  * 	       passes to the callback function.
- * @return None.
  *
  * @note The InstancePtr must not be NULL.
  */
@@ -328,8 +374,6 @@ void XVFrmbufRd_InterruptDisable(XV_FrmbufRd_l2 *InstancePtr, u32 IrqMask)
  * that the provided instance pointer is not NULL before proceeding.
  *
  * @param InstancePtr Pointer to the XV_FrmbufRd_l2 instance.
- *
- * @return none
  */
 void XVFrmbufRd_Start(XV_FrmbufRd_l2 *InstancePtr)
 {
@@ -503,6 +547,11 @@ int XVFrmbufRd_SetMemFormat(XV_FrmbufRd_l2 *InstancePtr,
 					FmtValid = TRUE;
 				}
 				break;
+			case XVIDC_CSF_MEM_BGRA8 :
+				if (XVFrmbufRd_IsBGRA8Enabled(InstancePtr)) {
+					FmtValid = TRUE;
+				}
+				break;
 			case XVIDC_CSF_MEM_RGBX10 :
 				if (XVFrmbufRd_IsRGBX10Enabled(InstancePtr)) {
 					FmtValid = TRUE;
@@ -550,11 +599,6 @@ int XVFrmbufRd_SetMemFormat(XV_FrmbufRd_l2 *InstancePtr,
 				break;
 			case XVIDC_CSF_MEM_Y10 :
 				if (XVFrmbufRd_IsY10Enabled(InstancePtr)) {
-					FmtValid = TRUE;
-				}
-				break;
-			case XVIDC_CSF_MEM_BGRA8 :
-				if (XVFrmbufRd_IsBGRA8Enabled(InstancePtr)) {
 					FmtValid = TRUE;
 				}
 				break;
@@ -640,6 +684,86 @@ int XVFrmbufRd_SetMemFormat(XV_FrmbufRd_l2 *InstancePtr,
 				break;
 			case XVIDC_CSF_MEM_Y_U_V12 :
                 if (XVFrmbufRd_IsY_U_V12Enabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_U_V10_L16LE :
+                if (XVFrmbufRd_IsY_U_V10_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV10_L16LE :
+                if (XVFrmbufRd_IsY_UV10_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV10_420_L16LE :
+                if (XVFrmbufRd_IsY_UV10_420_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y10_L16LE :
+                if (XVFrmbufRd_IsY10_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_U_V12_L16LE :
+                if (XVFrmbufRd_IsY_U_V12_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV12_L16LE :
+                if (XVFrmbufRd_IsY_UV12_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV12_420_L16LE :
+                if (XVFrmbufRd_IsY_UV12_420_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y12_L16LE :
+                if (XVFrmbufRd_IsY12_L16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_U_V10_M16LE :
+                if (XVFrmbufRd_IsY_U_V10_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV10_M16LE :
+                if (XVFrmbufRd_IsY_UV10_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV10_420_M16LE :
+                if (XVFrmbufRd_IsY_UV10_420_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y10_M16LE :
+                if (XVFrmbufRd_IsY10_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_U_V12_M16LE :
+                if (XVFrmbufRd_IsY_U_V12_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV12_M16LE :
+                if (XVFrmbufRd_IsY_UV12_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y_UV12_420_M16LE :
+                if (XVFrmbufRd_IsY_UV12_420_M16LEEnabled(InstancePtr)) {
+				   FmtValid = TRUE;
+				}
+				break;
+			case XVIDC_CSF_MEM_Y12_M16LE :
+                if (XVFrmbufRd_IsY12_M16LEEnabled(InstancePtr)) {
 				   FmtValid = TRUE;
 				}
 				break;
@@ -1027,8 +1151,6 @@ u32 XVFrmbufRd_Get_FieldOut(XV_FrmbufRd_l2 *InstancePtr)
  *
  * Preconditions:
  * - InstancePtr must not be NULL.
- *
- * @return none
  */
 void XVFrmbufRd_DbgReportStatus(XV_FrmbufRd_l2 *InstancePtr)
 {
@@ -1077,6 +1199,22 @@ void XVFrmbufRd_DbgReportStatus(XV_FrmbufRd_l2 *InstancePtr)
 	xil_printf("Y_U_V10 Enabled:            %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V10En);
 	xil_printf("Y_U_V8_420 Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V8_420En);
 	xil_printf("Y_U_V12 Enabled:            %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V12En);
+	xil_printf("Y_U_V10_L16LE Enabled:      %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V10_L16LEEn);
+	xil_printf("Y_UV10_L16LE Enabled:       %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV10_L16LEEn);
+	xil_printf("Y_UV10_420_L16LE Enabled:   %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV10_420_L16LEEn);
+	xil_printf("YY10_L16LE Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y10_L16LEEn);
+	xil_printf("Y_U_V12_L16LE Enabled:      %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V12_L16LEEn);
+	xil_printf("Y_UV12_L16LE Enabled:       %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV12_L16LEEn);
+	xil_printf("Y_UV12_420_L16LE Enabled:   %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV12_420_L16LEEn);
+	xil_printf("YY12_L16LE Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y12_L16LEEn);
+	xil_printf("Y_U_V10_M16LE Enabled:      %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V10_M16LEEn);
+	xil_printf("Y_UV10_M16LE Enabled:       %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV10_M16LEEn);
+	xil_printf("Y_UV10_420_M16LE Enabled:   %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV10_420_M16LEEn);
+	xil_printf("YY10_M16LE Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y10_M16LEEn);
+	xil_printf("Y_U_V12_M16LE Enabled:      %d\r\n", InstancePtr->FrmbufRd.Config.Y_U_V12_M16LEEn);
+	xil_printf("Y_UV12_M16LE Enabled:       %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV12_M16LEEn);
+	xil_printf("Y_UV12_420_M16LE Enabled:   %d\r\n", InstancePtr->FrmbufRd.Config.Y_UV12_420_M16LEEn);
+	xil_printf("YY12_M16LE Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Y12_M16LEEn);
 	xil_printf("Interlaced Enabled:         %d\r\n", InstancePtr->FrmbufRd.Config.Interlaced);
 	xil_printf("Tile format Enabled:        %d\r\n", InstancePtr->FrmbufRd.Config.IsTileFormat);
 

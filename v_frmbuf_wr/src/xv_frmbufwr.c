@@ -1,6 +1,6 @@
 // ==============================================================
-// Copyright (c) 1986 - 2021 Xilinx Inc. All rights reserved.
-// Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+// Copyright (c) 1986 - 2022 Xilinx Inc. All rights reserved.
+// Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 // SPDX-License-Identifier: MIT
 // ==============================================================
 
@@ -57,8 +57,6 @@ int XV_frmbufwr_CfgInitialize(XV_frmbufwr *InstancePtr,
  * control register. It preserves the auto-restart bit if it is set.
  *
  * @param    InstancePtr is a pointer to the XV_frmbufwr instance.
- *
- * @return   None.
  *
  * @note     The hardware core must be properly initialized and ready before
  *           calling this function.
@@ -149,8 +147,6 @@ u32 XV_frmbufwr_IsReady(XV_frmbufwr *InstancePtr) {
  *
  * @param    InstancePtr is a pointer to the XV_frmbufwr instance.
  *
- * @return   None.
- *
  * @note     The hardware core must be properly initialized and ready before
  *           calling this function.
  */
@@ -170,8 +166,6 @@ void XV_frmbufwr_EnableAutoRestart(XV_frmbufwr *InstancePtr) {
  * AP_CTRL register of the frame buffer write hardware. It asserts that the
  * instance pointer is not NULL and that the core is ready before performing
  * the operation.
- *
- * @return   None.
  */
 void XV_frmbufwr_DisableAutoRestart(XV_frmbufwr *InstancePtr) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -188,8 +182,6 @@ void XV_frmbufwr_DisableAutoRestart(XV_frmbufwr *InstancePtr) {
  * sets the flush bit, and writes the updated value back.
  *
  * @param    InstancePtr is a pointer to the XV_frmbufwr instance.
- *
- * @return   None.
  *
  * @note     The hardware core must be properly initialized and ready before
  *           calling this function.
@@ -238,8 +230,6 @@ u32 XV_frmbufwr_Get_FlushDone(XV_frmbufwr *InstancePtr) {
  *
  * @param InstancePtr Pointer to the XV_frmbufwr instance.
  * @param Data        The width value to be written to the hardware register.
- *
- * @return none.
  */
 void XV_frmbufwr_Set_HwReg_width(XV_frmbufwr *InstancePtr, u32 Data) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -279,8 +269,6 @@ u32 XV_frmbufwr_Get_HwReg_width(XV_frmbufwr *InstancePtr) {
  *
  * @param InstancePtr Pointer to the XV_frmbufwr instance.
  * @param Data        The height value to be written to the hardware register.
- *
- * @return none.
  */
 void XV_frmbufwr_Set_HwReg_height(XV_frmbufwr *InstancePtr, u32 Data) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -362,8 +350,6 @@ u32 XV_frmbufwr_Get_HwReg_stride(XV_frmbufwr *InstancePtr) {
  *
  * @param  InstancePtr Pointer to the XV_frmbufwr instance.
  * @param  Data        The video format data to be written to the hardware register.
- *
- * @return none
  */
 void XV_frmbufwr_Set_HwReg_video_format(XV_frmbufwr *InstancePtr, u32 Data) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -453,8 +439,6 @@ u64 XV_frmbufwr_Get_HwReg_frm_buffer_V(XV_frmbufwr *InstancePtr) {
  * Preconditions:
  *   - InstancePtr must not be NULL.
  *   - InstancePtr->IsReady must be set to XIL_COMPONENT_IS_READY.
- *
- * @return  none.
  */
 void XV_frmbufwr_Set_HwReg_frm_buffer2_V(XV_frmbufwr *InstancePtr, u64 Data) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -498,7 +482,6 @@ u64 XV_frmbufwr_Get_HwReg_frm_buffer2_V(XV_frmbufwr *InstancePtr) {
  * Preconditions:
  *   - InstancePtr must not be NULL.
  *   - InstancePtr->IsReady must be set to XIL_COMPONENT_IS_READY.
- * @return  none.
  */
 void XV_frmbufwr_Set_HwReg_frm_buffer3_V(XV_frmbufwr *InstancePtr, u64 Data) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -552,6 +535,86 @@ u32 XV_frmbufwr_Get_HwReg_field_id(XV_frmbufwr *InstancePtr) {
 }
 
 /**
+ * Sets the hardware register to Force EOF value in the frame buffer write instance.
+ *
+ * This function writes the Force EOF data to the hardware register
+ * associated with the frame buffer writer. It first asserts that the instance pointer
+ * is not NULL and that the instance is ready before performing the register write.
+ *
+ * @param  InstancePtr Pointer to the XV_frmbufwr instance.
+ * @param  Data        The Force EOF data to be written to the hardware register.
+ */
+void XV_frmbufwr_Set_HwReg_force_eof(XV_frmbufwr *InstancePtr, u32 Data) {
+    Xil_AssertVoid(InstancePtr != NULL);
+    Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+    XV_frmbufwr_WriteReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_FORCE_EOF_DATA, Data);
+}
+
+/**
+ * Retrieves the current hardware register value for the force EOF.
+ *
+ * This function reads the value of the HWREG_FORCE_EOF register from the
+ * frame buffer write hardware instance specified by InstancePtr.
+ *
+ * @param    InstancePtr is a pointer to the XV_frmbufwr instance.
+ *
+ * @return   The value of the HWREG_FORCE_EOF register.
+ *
+ * @note     The function asserts that InstancePtr is not NULL and that the
+ *           instance is ready before accessing the hardware register.
+ */
+u32 XV_frmbufwr_Get_HwReg_force_eof(XV_frmbufwr *InstancePtr) {
+    u32 Data;
+
+    Xil_AssertNonvoid(InstancePtr != NULL);
+    Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+    Data = XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_FORCE_EOF_DATA);
+    return Data;
+}
+
+/**
+ * Sets the hardware register for the partial frame count in the frame buffer write instance.
+ *
+ * This function writes the specified partial frame count data to the hardware register
+ * associated with the frame buffer writer. It first asserts that the instance pointer
+ * is not NULL and that the instance is ready before performing the register write.
+ *
+ * @param  InstancePtr Pointer to the XV_frmbufwr instance.
+ * @param  Data        The partial frame count data to be written to the hardware register.
+ */
+void XV_frmbufwr_Set_HwReg_partial_frm_cnt(XV_frmbufwr *InstancePtr, u32 Data) {
+    Xil_AssertVoid(InstancePtr != NULL);
+    Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+    XV_frmbufwr_WriteReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_PARTIAL_FRM_CNT_DATA, Data);
+}
+
+/**
+ * Retrieves the current hardware register value for the partial frame count.
+ *
+ * This function reads the value of the HWREG_PARTIAL_FRM_CNT register from the
+ * frame buffer write hardware instance specified by InstancePtr.
+ *
+ * @param    InstancePtr is a pointer to the XV_frmbufwr instance.
+ *
+ * @return   The value of the PARTIAL_FRM_CNT register.
+ *
+ * @note     The function asserts that InstancePtr is not NULL and that the
+ *           instance is ready before accessing the hardware register.
+ */
+u32 XV_frmbufwr_Get_HwReg_partial_frm_cnt(XV_frmbufwr *InstancePtr) {
+    u32 Data;
+
+    Xil_AssertNonvoid(InstancePtr != NULL);
+    Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+    Data = XV_frmbufwr_ReadReg(InstancePtr->Config.BaseAddress, XV_FRMBUFWR_CTRL_ADDR_PARTIAL_FRM_CNT_DATA);
+    return Data;
+}
+
+/**
  * Enables the global interrupt for the Frame Buffer Write (frmbufwr) core.
  *
  * This function sets the Global Interrupt Enable (GIE) bit in the control register,
@@ -559,7 +622,6 @@ u32 XV_frmbufwr_Get_HwReg_field_id(XV_frmbufwr *InstancePtr) {
  * pointer is not NULL and that the core is ready before enabling the interrupt.
  *
  * @param InstancePtr Pointer to the XV_frmbufwr instance.
- * @return none.
  */
 void XV_frmbufwr_InterruptGlobalEnable(XV_frmbufwr *InstancePtr) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -576,8 +638,6 @@ void XV_frmbufwr_InterruptGlobalEnable(XV_frmbufwr *InstancePtr) {
  * This function disables the global interrupt enable (GIE) bit in the control register
  * of the frame buffer write hardware. It asserts that the provided instance pointer is
  * not NULL and that the instance is ready before performing the operation.
- *
- * @return none.
  */
 void XV_frmbufwr_InterruptGlobalDisable(XV_frmbufwr *InstancePtr) {
     Xil_AssertVoid(InstancePtr != NULL);
@@ -597,7 +657,6 @@ void XV_frmbufwr_InterruptGlobalDisable(XV_frmbufwr *InstancePtr) {
  * @param Mask        Bitmask of interrupts to enable. Each bit corresponds to a specific interrupt.
  *
  * @note The InstancePtr must be initialized and ready before calling this function.
- * @return none.
  */
 void XV_frmbufwr_InterruptEnable(XV_frmbufwr *InstancePtr, u32 Mask) {
     u32 Register;
@@ -621,7 +680,6 @@ void XV_frmbufwr_InterruptEnable(XV_frmbufwr *InstancePtr, u32 Mask) {
  *
  * @note The function asserts that the InstancePtr is not NULL and that the
  *       core is ready before proceeding.
- * @return none.
  */
 void XV_frmbufwr_InterruptDisable(XV_frmbufwr *InstancePtr, u32 Mask) {
     u32 Register;

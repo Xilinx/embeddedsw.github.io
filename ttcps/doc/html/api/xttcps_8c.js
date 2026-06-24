@@ -9,5 +9,5 @@ var xttcps_8c =
     [ "XTtcPs_SetMatchValue", "xttcps_8c.html#gaf400713723ba81109ac83fc1800681b2", null ],
     [ "XTtcPs_SetPrescaler", "xttcps_8c.html#gac08478cc050c41cc435a3f2b49b4c874", null ],
     [ "XTtcPs_SetStatusHandler", "xttcps_8c.html#ga8fb59113e183b65dabff6e2c34bbf7e2", null ],
-    [ "XTtcPs_ConfigTable", "xttcps_8c.html#gac913ca73956d600d4cced1b5cab30459", null ]
+    [ "XTtcPs_ConfigTable", "xttcps_8c.html#ga76b944ae725d8d10dd9b1fc57c2ba049", null ]
 ];

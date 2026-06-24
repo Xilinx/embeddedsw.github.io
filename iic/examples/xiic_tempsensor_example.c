@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2006 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -37,6 +37,8 @@
 *                     CR-965028.
 * 3.10  gm   07/09/23 Added SDT support.
 * 3.14  bkv  07/07/25 Fixed GCC Warnings.
+* 3.15  vlt  12/12/25 Update Doxygen comments to include SDT flow details.
+* 3.15  vlt  02/17/26 Added timeout handling to polled wait loops.
 *
 * </pre>
 *
@@ -61,7 +63,7 @@
 
 /************************** Constant Definitions *****************************/
 
-/*
+/**
  * The following constants map to the XPAR parameters created in the
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
@@ -86,12 +88,17 @@
 #endif
 #endif
 
-/*
+/**
  * The following constant defines the address of the IIC
  * temperature sensor device on the IIC bus. Note that since
  * the address is only 7 bits, this  constant is the address divided by 2.
  */
 #define TEMP_SENSOR_ADDRESS	0x18 /* The actual address is 0x30 */
+
+/**
+ * Maximum delay count used for timeout handling
+ */
+#define  MAX_DELAY_CNT    10000
 
 
 /**************************** Type Definitions *******************************/
@@ -116,12 +123,12 @@ static void StatusHandler(void *CallbackRef, int Status);
 
 /************************** Variable Definitions **************************/
 
-XIic Iic;		  /* The instance of the IIC device */
+XIic Iic;		  /** The instance of the IIC device */
 #ifndef SDT
-INTC Intc; 	/* The instance of the Interrupt Controller Driver */
+INTC Intc; 	/** The instance of the Interrupt Controller Driver */
 #endif
 
-/*
+/**
  * The following structure contains fields that are used with the callbacks
  * (handlers) of the IIC driver. The driver asynchronously calls handlers
  * when abnormal events occur or when data has been sent or received. This
@@ -179,8 +186,12 @@ int main(void)
 * for completion of the IIC processing such that it may not return if
 * interrupts or the hardware are not working.
 *
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
 * @param	IicDeviceId is the XPAR_<IIC_instance>_DEVICE_ID value from
 *		xparameters.h for the IIC Device
+* @endif
 * @param	TempSensorAddress is the address of the Temperature Sensor device
 *		on the IIC bus
 * @param	TemperaturePtr is the data byte read from the temperature sensor
@@ -188,7 +199,8 @@ int main(void)
 * @return	XST_SUCCESS to indicate success, else XST_FAILURE to indicate
 *		a Failure.
 *
-* @note		None.
+* @note	        In XSCT/classic flow, DeviceId is used to look up the device
+*               configuration.
 *
 *******************************************************************************/
 #ifndef SDT
@@ -198,6 +210,7 @@ int TempSensorExample(UINTPTR BaseAddress, u8 TempSensorAddress, u8 *Temperature
 #endif
 {
 	int Status;
+	int Timeout = MAX_DELAY_CNT;
 	static int Initialized = FALSE;
 	XIic_Config *ConfigPtr;	/* Pointer to configuration data */
 
@@ -277,6 +290,9 @@ int TempSensorExample(UINTPTR BaseAddress, u8 TempSensorAddress, u8 *Temperature
 	 * updated asynchronously by interrupt processing
 	 */
 	while (1) {
+		if (Timeout -- == 0) {
+			return XST_FAILURE;   /* timeout exit */
+		}
 		if (HandlerInfo.RecvBytesUpdated == TRUE) {
 			/*
 			 * The device information has been updated for receive

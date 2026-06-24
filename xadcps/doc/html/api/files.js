@@ -6,6 +6,7 @@ var files =
     [ "xadcps_hw.h", "xadcps__hw_8h.html", "xadcps__hw_8h" ],
     [ "xadcps_intr.c", "xadcps__intr_8c.html", "xadcps__intr_8c" ],
     [ "xadcps_intr_example.c", "xadcps__intr__example_8c.html", "xadcps__intr__example_8c" ],
+    [ "xadcps_polled_printf_example.c", "xadcps__polled__printf__example_8c.html", "xadcps__polled__printf__example_8c" ],
     [ "xadcps_selftest.c", "xadcps__selftest_8c.html", "xadcps__selftest_8c" ],
     [ "xadcps_sinit.c", "xadcps__sinit_8c.html", "xadcps__sinit_8c" ]
 ];

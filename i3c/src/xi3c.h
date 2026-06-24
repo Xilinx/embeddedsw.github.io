@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved
+* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -65,6 +65,8 @@
 * 1.1   gm  10/07/24 Added XI3c_GetRevisionNumber() for reading revision
 * 		      number.
 * 1.2   gm  02/18/24 Added slave mode support
+* 1.3   vlt 11/05/25 Add 64-bit Addressing support.
+*       vlt 01/30/26 Fixed code spell errors.
 * </pre>
 *
 ******************************************************************************/
@@ -801,7 +803,7 @@ extern u8 XI3C_DynaAddrList[];
 #ifndef SDT
 XI3c_Config *XI3c_LookupConfig(u16 DeviceId);
 #else
-XI3c_Config *XI3c_LookupConfig(u32 BaseAddress);
+XI3c_Config *XI3c_LookupConfig(UINTPTR BaseAddress);
 #endif
 
 /*
@@ -874,7 +876,7 @@ static inline void XI3c_Enable(XI3c *InstancePtr,u8 Enable)
 *
 * @brief
 * Abort allows controller to kill existing transcation.
-* In response Abort request, Controller issues a stop condtion after existing
+* In response Abort request, Controller issues a stop condition after existing
 * transcation is finished. Abort bit is auto cleared after Abort is completed.
 *
 * @param	InstancePtr is a pointer to the XI3c instance.
@@ -900,9 +902,9 @@ static inline void XI3c_Abort(XI3c *InstancePtr)
 /**
 *
 * @brief
-* Resume allows controller to resume the contoller from Abort/Error State.
+* Resume allows controller to resume the controller from Abort/Error State.
 * Resume bit will be auto cleared once controller resumes the operation.
-* After Controller goes to Abort/Eroor State. User should handle the necesarry
+* After Controller goes to Abort/Eroor State. User should handle the necessary
 * action to Abort/Error state (ex: Clearing FIFOs etc)
 *
 * @param	InstancePtr is a pointer to the XI3c instance.

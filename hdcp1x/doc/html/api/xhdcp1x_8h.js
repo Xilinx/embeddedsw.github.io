@@ -100,7 +100,7 @@ var xhdcp1x_8h =
     [ "XHdcp1x_IsInProgress", "xhdcp1x_8h.html#ga934f616f1b538de0f90a343bc1185380", null ],
     [ "XHdcp1x_IsInWaitforready", "xhdcp1x_8h.html#ga93df0cf3372141a9fd419a02c753196c", null ],
     [ "XHdcp1x_IsRepeater", "xhdcp1x_8h.html#gac0c5947639623f7b97d9ec1cc712e75f", null ],
-    [ "XHdcp1x_LookupConfig", "xhdcp1x_8h.html#ga14060c2be4685a3c8d0285e826a2376c", null ],
+    [ "XHdcp1x_LookupConfig", "xhdcp1x_8h.html#ga6cfbffac2c5c4af1cb8398890ee8b90d", null ],
     [ "XHdcp1x_Poll", "xhdcp1x_8h.html#ga81768260ec0f02284c294051c56e328e", null ],
     [ "XHdcp1x_PortIntrHandler", "xhdcp1x_8h.html#gaac0a3b497e4974beccb2adfba3d5fa19", null ],
     [ "XHdcp1x_ProcessAKsv", "xhdcp1x_8h.html#ga8bf591dc879a170beed8edc091ac018f", null ],

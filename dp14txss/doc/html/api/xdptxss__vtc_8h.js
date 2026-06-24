@@ -1,5 +1,6 @@
 var xdptxss__vtc_8h =
 [
+    [ "DIV_ROUND_CLOSEST", "xdptxss__vtc_8h.html#a57fc13eb777500b3e22d3ff457cfd0d7", null ],
     [ "XDPTXSS_VTC_H_", "xdptxss__vtc_8h.html#aa209c5ff5e9116cda9dc9590c9984174", null ],
     [ "XDpTxSs_VtcAdaptiveSyncSetup", "xdptxss__vtc_8h.html#adaad2030e7ce9acdf2052623a1288e57", null ],
     [ "XDpTxSs_VtcDisableAdaptiveSync", "xdptxss__vtc_8h.html#a4d4a9803bf0a143987eb905e0dd02cd3", null ],

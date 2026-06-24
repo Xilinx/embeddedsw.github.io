@@ -1,5 +1,8 @@
 var struct_x_dp___main_stream_attributes =
 [
+    [ "AudioAFreq", "struct_x_dp___main_stream_attributes.html#a230cf3a07d762cf31c335c359d5b322e", null ],
+    [ "AudioMAud", "struct_x_dp___main_stream_attributes.html#a8d6ac66682904c356a5efc73285aeca1", null ],
+    [ "AudioNAud", "struct_x_dp___main_stream_attributes.html#a7ebb0258202472e85b60b49ca04bef28", null ],
     [ "AvgBytesPerTU", "struct_x_dp___main_stream_attributes.html#a9be28c21cb47bcf04840b40220aeb29c", null ],
     [ "BitsPerColor", "struct_x_dp___main_stream_attributes.html#ac388c5211901a98ece8cafc08e0f32af", null ],
     [ "ComponentFormat", "struct_x_dp___main_stream_attributes.html#a239892926ad6ec5b643c95233662d63c", null ],

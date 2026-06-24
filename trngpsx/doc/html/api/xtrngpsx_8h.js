@@ -3,6 +3,10 @@ var xtrngpsx_8h =
     [ "XTRNGPSX_PERS_STRING_LEN_IN_BYTES", "xtrngpsx_8h.html#ga3257b88a565d4f7b0fa135f5c24f7fde", null ],
     [ "XTRNGPSX_PERS_STRING_LEN_IN_WORDS", "xtrngpsx_8h.html#ga77e0b07d55f767a322cb870bb0521da3", null ],
     [ "XTRNGPSX_SEC_STRENGTH_IN_BYTES", "xtrngpsx_8h.html#ga6633fc0a90497ef7a28b75e708053d77", null ],
+    [ "XTRNGPSX_USER_CFG_ADAPT_TEST_CUTOFF", "xtrngpsx_8h.html#gafbb555572f5c0cad2a73379b1aca4eaf", null ],
+    [ "XTRNGPSX_USER_CFG_DF_LENGTH", "xtrngpsx_8h.html#gafbbe7ca8d2cfa78d527632a011d6e233", null ],
+    [ "XTRNGPSX_USER_CFG_REP_TEST_CUTOFF", "xtrngpsx_8h.html#ga823d53c1fbdbe9fe6446be697c506f0c", null ],
+    [ "XTRNGPSX_USER_CFG_SEED_LIFE", "xtrngpsx_8h.html#ga8a7c9b3542de85ba6563a79f4e3e123c", null ],
     [ "XTrngpsx_ErrorCodes", "xtrngpsx_8h.html#ga2d0ae14b9bbf4f302c87faaa43cb8a79", [
       [ "XTRNGPSX_INVALID_PARAM", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79a3028234bc4951452efec651d280e9a13", null ],
       [ "XTRNGPSX_INVALID_MODE", "xtrngpsx_8h.html#gga2d0ae14b9bbf4f302c87faaa43cb8a79abea04f8cfe70d6dc5a8e7a78d8a9929a", null ],
@@ -31,7 +35,9 @@ var xtrngpsx_8h =
       [ "XTRNGPSX_HEALTHY", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2a519e903ee50abb8ccf5050c6bde24740", null ],
       [ "XTRNGPSX_CATASTROPHIC", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2ac8bf6bfdece57626cb0915eb4d8772b4", null ],
       [ "XTRNGPSX_ERROR", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2aea69652aba529ca2df1550310a5b92cc", null ],
-      [ "XTRNGPSX_STARTUP_TEST", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2a7c767c57bf2693d05df2a4aa7ed49b60", null ],
+      [ "XTRNGPSX_STARTUP_TEST", "xtrngpsx_8h.html#ggabf665f37f1800c3d3859681db4fb46c2a7c767c57bf2693d05df2a4aa7ed49b60", null ]
+    ] ],
+    [ "XTrngpsx_Mode", "xtrngpsx_8h.html#ga1b63c27259b3c8679b9f7a7018375276", [
       [ "XTRNGPSX_DRNG_MODE", "xtrngpsx_8h.html#gga1b63c27259b3c8679b9f7a7018375276a0adbbd4805a7a56d9912f8a9cf57aff4", null ],
       [ "XTRNGPSX_PTRNG_MODE", "xtrngpsx_8h.html#gga1b63c27259b3c8679b9f7a7018375276af30825ebdfd1812d8d59c13ed3736d12", null ],
       [ "XTRNGPSX_HRNG_MODE", "xtrngpsx_8h.html#gga1b63c27259b3c8679b9f7a7018375276ae982b26bd4c7f35518c14f88b7ce5ba7", null ]
@@ -47,7 +53,7 @@ var xtrngpsx_8h =
     [ "XTrngpsx_Generate", "xtrngpsx_8h.html#gaa94d3f0522f2c56e9a4b6abe4193db2e", null ],
     [ "XTrngpsx_HealthTest", "xtrngpsx_8h.html#ga9b57a3574f76fbaf1edac0255b95373e", null ],
     [ "XTrngpsx_Instantiate", "xtrngpsx_8h.html#ga68da9a334ae46bbed63a36ae6a273745", null ],
-    [ "XTrngpsx_LookupConfig", "xtrngpsx_8h.html#ga4b58c114f10a1f421ea6864d1983c5e3", null ],
+    [ "XTrngpsx_LookupConfig", "xtrngpsx_8h.html#ga585c8fe9159bad7d022d6ffe54743149", null ],
     [ "XTrngpsx_PreOperationalSelfTests", "xtrngpsx_8h.html#gaecce7c23f64a684ac613d6c36ae708cb", null ],
     [ "XTrngpsx_Reseed", "xtrngpsx_8h.html#ga27d626b65acc3b1e97573f4c2d2ee8e1", null ],
     [ "XTrngpsx_Uninstantiate", "xtrngpsx_8h.html#ga15ee0bc83b064ce7910792c014c589b1", null ]

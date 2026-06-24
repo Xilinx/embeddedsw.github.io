@@ -1,12 +1,14 @@
 var xdc_8h =
 [
-    [ "XDc_Config", "struct_x_dc___config.html", null ],
+    [ "XDc_StreamConfig", "struct_x_dc___stream_config.html", "struct_x_dc___stream_config" ],
+    [ "XDc_Config", "struct_x_dc___config.html", "struct_x_dc___config" ],
     [ "XDc_ChromaKey", "struct_x_dc___chroma_key.html", null ],
     [ "XDc_AVModes", "struct_x_dc___a_v_modes.html", null ],
     [ "XDc_Cursor", "struct_x_dc___cursor.html", null ],
     [ "XDc_PartialBlend", "struct_x_dc___partial_blend.html", null ],
     [ "XDc_VideoTiming", "struct_x_dc___video_timing.html", null ],
     [ "XDc_Blender", "struct_x_dc___blender.html", null ],
+    [ "XDC_MAX_IN_STREAMS", "xdc_8h.html#ab5147385899d93184aecd55c040823cc", null ],
     [ "XDc_AlphaBlend", "xdc_8h.html#aae2fc17de8e29853ca4a5e187d9f7ded", [
       [ "ALPHA_DISABLE", "xdc_8h.html#aae2fc17de8e29853ca4a5e187d9f7dedae82db7f090d48d0c1d888b096b5713ad", null ],
       [ "ALPHA_ENABLE", "xdc_8h.html#aae2fc17de8e29853ca4a5e187d9f7deda2c9e31e14d0c805e3d0ecf85b9b50b42", null ]
@@ -174,8 +176,8 @@ var xdc_8h =
     [ "XDc_EnablePartialBlend", "xdc_8h.html#ga86bc13311344761023eea31558275e56", null ],
     [ "XDc_EnableStream1Buffers", "xdc_8h.html#gac32e5e19bf0bdcc68261b4ad70420a20", null ],
     [ "XDc_EnableStream2Buffers", "xdc_8h.html#ga8b9f5cee5564075f3d5befb98b37f837", null ],
-    [ "XDc_GetLiveVideoAttribute", "xdc_8h.html#gaaa70b006e600f60f501a67ce9e1fe477", null ],
-    [ "XDc_GetNonLiveVideoAttribute", "xdc_8h.html#gaa40c605abf7eb93982af5273d0db7a7f", null ],
+    [ "XDc_GetLiveVideoAttribute", "xdc_8h.html#ga2a42d13873a46e745181b2ab22a5ca41", null ],
+    [ "XDc_GetNonLiveVideoAttribute", "xdc_8h.html#gae47a85e818e8ee672ba51f4963562ef5", null ],
     [ "XDc_GetOutputVideoAttribute", "xdc_8h.html#gadd71b40326ca912ce605b86771c2c3a4", null ],
     [ "XDc_GetStcCustomEvent2Ts", "xdc_8h.html#gaf1f0de8e6ef2d34e3e4cae29f09e187f", null ],
     [ "XDc_GetStcCustomEventTs", "xdc_8h.html#ga98cfadf0d83ea6247c8f0c5bb617d858", null ],
@@ -191,7 +193,7 @@ var xdc_8h =
     [ "XDc_SetGlobalAlpha", "xdc_8h.html#ga4565c6118eda92a0afe55abd43611eb0", null ],
     [ "XDc_SetInputAudioSelect", "xdc_8h.html#gabf31f3ae8bc0d6a3eee04497a6a227e0", null ],
     [ "XDc_SetInputVideoSelect", "xdc_8h.html#ga022cf49451540826dddd925f9cc8f1ff", null ],
-    [ "XDc_SetNonLiveInputFormat", "xdc_8h.html#gaece41acb04a881a15a9ed57b249041fd", null ],
+    [ "XDc_SetNonLiveInputFormat", "xdc_8h.html#ga4fb73b2d7857c41cb663cc5c44e9e5b6", null ],
     [ "XDc_SetNonLiveLatency", "xdc_8h.html#gab2172ddb59797b6765a6a51636a238e8", null ],
     [ "XDc_SetOutputCSC", "xdc_8h.html#ga6e46b7979dfb3b68318af7edf387026c", null ],
     [ "XDc_SetOutputVideoFormat", "xdc_8h.html#gafa36752c5fad6457774928f2a0856f42", null ],

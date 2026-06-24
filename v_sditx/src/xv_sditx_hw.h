@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -118,7 +118,7 @@ extern "C" {
 #define XV_SDITX_MDL_CTRL_VID_FRMT_SHIFT		21
 #define XV_SDITX_MDL_CTRL_VID_FRMTYUV444_SHIFT		22
 
-/* Global interrupt Enable regiser masks */
+/* Global interrupt Enable register masks */
 #define XV_SDITX_GIER_GIE_MASK				(1<<0)
 #define XV_SDITX_GIER_GIE_SHIFT				0
 #define XV_SDITX_GIER_SET				1
@@ -213,7 +213,13 @@ extern "C" {
 /** @name Register access macro definition
 * @{
 */
+/**
+* This macro reads a 32-bit value from the specified address.
+*/
 #define XV_SdiTx_In32  Xil_In32    /**< Input Operations */
+/**
+* This macro writes a 32-bit value to the specified address.
+*/
 #define XV_SdiTx_Out32 Xil_Out32   /**< Output Operations */
 
 /*****************************************************************************/
@@ -257,7 +263,7 @@ extern "C" {
 ******************************************************************************/
 #define XV_SdiTx_WriteReg(BaseAddress, RegOffset, Data) \
     XV_SdiTx_Out32((BaseAddress) + (RegOffset), (u32)(Data))
-/*@}*/
+
 
 /************************** Function Prototypes ******************************/
 
@@ -270,3 +276,4 @@ extern "C" {
 #endif
 
 #endif /* end of protection macro */
+/** @}*/

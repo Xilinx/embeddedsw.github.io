@@ -7,6 +7,8 @@ var xv__hdmirxss1_8c =
     [ "XV_HdmiRxSs1_DdcRegDump", "xv__hdmirxss1_8c.html#a01bf7140ff16b767639771b8b46a91fe", null ],
     [ "XV_HdmiRxSs1_DebugInfo", "xv__hdmirxss1_8c.html#a34b196de94d11c60b63ab0c1516dc8d9", null ],
     [ "XV_HdmiRxSs1_DSC_IsEnableStream", "xv__hdmirxss1_8c.html#a2391ad693895b50024731a951c6aa990", null ],
+    [ "XV_HdmiRxSs1_DSC_SetDecodeFail", "xv__hdmirxss1_8c.html#afc80b6ffa2792cfc10a82ac6c6c2cdff", null ],
+    [ "XV_HdmiRxSs1_DSC_SetDscFrlMax", "xv__hdmirxss1_8c.html#aa3e07d90ad60ca194b571197ff5b2ef1", null ],
     [ "XV_HdmiRxSs1_DynHDR_DM_Disable", "xv__hdmirxss1_8c.html#aea595ce7b6a72c3ef581593dc634f693", null ],
     [ "XV_HdmiRxSs1_DynHDR_DM_Enable", "xv__hdmirxss1_8c.html#ac7d12d5726eed2735460f2f7ae91ac68", null ],
     [ "XV_HdmiRxSs1_DynHDR_GetInfo", "xv__hdmirxss1_8c.html#a1e744cd6f6c99d942d59054b65656334", null ],

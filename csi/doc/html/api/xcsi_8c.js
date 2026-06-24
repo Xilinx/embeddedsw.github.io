@@ -1,5 +1,6 @@
 var xcsi_8c =
 [
+    [ "XCSI_RESET_TIMEOUT", "xcsi_8c.html#ga97cd274fdfd6dbedab1a892d58cec9af", null ],
     [ "XCsi_Activate", "xcsi_8c.html#ga067001a4c7e39114b27d3926c4ae8e63", null ],
     [ "XCsi_CfgInitialize", "xcsi_8c.html#ga0805b66d6432c2d9cc42b1e2e8a547bc", null ],
     [ "XCsi_Configure", "xcsi_8c.html#ga757f09602140036cdf563da1df275d1a", null ],

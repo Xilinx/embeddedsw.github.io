@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -48,7 +48,7 @@ properties:
   xlnx,slice-enable:
     description: slice enabled status
   xlnx,invsinc-ctrl:
-    description: (DAC only) invers sinc filter enabled status
+    description: (DAC only) inverse sinc filter enabled status
   xlnx,mixer-mode:
     description: mixer mode
   xlnx,decoder-mode:
@@ -120,5 +120,6 @@ examples:
 
 depends_libs:
     libmetal: {}
+    libmetal_xlnx_extension: {}
 
 ...

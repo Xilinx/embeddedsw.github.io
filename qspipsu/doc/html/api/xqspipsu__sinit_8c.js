@@ -1,4 +1,4 @@
 var xqspipsu__sinit_8c =
 [
-    [ "XQspiPsu_LookupConfig", "xqspipsu__sinit_8c.html#gafd84d3f23643ccbcbd4637f786ba48fa", null ]
+    [ "XQspiPsu_LookupConfig", "xqspipsu__sinit_8c.html#ga76f8802ef15bef7f1a788b38fbb00c69", null ]
 ];

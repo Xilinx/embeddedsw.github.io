@@ -8,6 +8,5 @@ var struct_x_dfe_prach___n_c_o =
     [ "Frequency", "struct_x_dfe_prach___n_c_o.html#a910685f45334111d31a24622e5699ce9", null ],
     [ "NcoGain", "struct_x_dfe_prach___n_c_o.html#a801e8496f7c43f2e6931277900899b77", null ],
     [ "PhaseAcc", "struct_x_dfe_prach___n_c_o.html#a1e85da023c1c88ceb56ed748ae727e12", null ],
-    [ "PhaseOffset", "struct_x_dfe_prach___n_c_o.html#a82e8d56b922b7a4d0e8fac2bdf702c42", null ],
     [ "UserFreq", "struct_x_dfe_prach___n_c_o.html#a342fc87278e3f1fa9934f34bac18dd38", null ]
 ];

@@ -2,7 +2,6 @@ var struct_x_axi_vdma___config =
 [
     [ "AddrWidth", "group__axivdma.html#gaefe77aff2f380aac9be64645ca606696", null ],
     [ "BaseAddress", "group__axivdma.html#ga76cf51d7be754a670e697e74966c68cd", null ],
-    [ "DeviceId", "group__axivdma.html#ga8be3f756a21d2360541a40303a525525", null ],
     [ "EnableAllDbgFeatures", "group__axivdma.html#gae3bce37353c26d5b2f077a100cdc7bd4", null ],
     [ "EnableVIDParamRead", "group__axivdma.html#ga1acfdf764643a690110d0d9bf0094f75", null ],
     [ "FlushonFsync", "group__axivdma.html#ga0ff6f00da81986d480ae3baed727e4a9", null ],
@@ -13,6 +12,7 @@ var struct_x_axi_vdma___config =
     [ "HasSG", "group__axivdma.html#gaf28619bcd27f94ceaf47bbeb0cb0400c", null ],
     [ "HasVFlip", "group__axivdma.html#ga759dfd5ee4156f725ec65fe154fa2f89", null ],
     [ "InternalGenLock", "group__axivdma.html#ga990e5208e4320a26ca4cc8f50407489d", null ],
+    [ "IntrId", "group__axivdma.html#ga5fd9ae222f444ce3ce26f27907dcf63b", null ],
     [ "IntrParent", "group__axivdma.html#ga251605353cc3af9cc740d568adc1a217", null ],
     [ "MaxFrameStoreNum", "group__axivdma.html#gabbeae935b306619b3e2d41598ea1727e", null ],
     [ "Mm2SBufDepth", "group__axivdma.html#ga14b3296d09ee88ac27a415ca2452a60e", null ],
@@ -23,6 +23,7 @@ var struct_x_axi_vdma___config =
     [ "Mm2SStreamWidth", "group__axivdma.html#ga569bedc89182bd0542f62580767c98d3", null ],
     [ "Mm2SThresRegEn", "group__axivdma.html#gacda6ef717d6af941e0f0c8dc90185a24", null ],
     [ "Mm2SWordLen", "group__axivdma.html#gaf7a988cf756f60c718d29e2f3273764b", null ],
+    [ "Name", "group__axivdma.html#gaf11767b41d205ad229c0d3b31f8b65ec", null ],
     [ "S2MmBufDepth", "group__axivdma.html#gae165f3cbaa2eb57aa1708743e45aa845", null ],
     [ "S2MmDlyCntrEn", "group__axivdma.html#ga263c9059a1a7220c0d082791d1f99681", null ],
     [ "S2MmFrmCntrEn", "group__axivdma.html#gac0f7d3262d6a8a66cb68516be91f9fa0", null ],

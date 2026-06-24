@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -332,6 +332,13 @@ int main(void)
 * frames.
 *
 *
+* @if SDT
+* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+*		AxiEthernet component.
+* @param	DmaInstancePtr is a pointer to the instance of the AXIDMA
+*		component.
+* @param	AxiEthernetBaseAddress contains the base address of the AxiEthernet device
+* @else
 * @param	IntcInstancePtr is a pointer to the instance of the Intc
 *		component.
 * @param	AxiEthernetInstancePtr is a pointer to the instance of the
@@ -351,6 +358,7 @@ int main(void)
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMARX_INTR
 * @param	DmaTxIntrId is the interrupt id for DMA Tx and is typically
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMATX_INTR
+* @endif
 *
 * @return
 *		- XST_SUCCESS to indicate success.
@@ -360,6 +368,7 @@ int main(void)
 *		AxiEthernet. Since AxiDma reset line is connected to the
 *		AxiEthernet reset line, a reset of AxiDma hardware during its
 *		initialization would reset AxiEthernet.
+*
 *
 ******************************************************************************/
 #ifndef SDT
@@ -624,7 +633,7 @@ int AxiEthernetMcastExample(XAxiEthernet *AxiEthernetInstancePtr,
 * This example sends and receives a single packet in loopback mode with
 * extended multicast address support.
 *
-* The transmit frame will be addressed one of programed multicast addresses.
+* The transmit frame will be addressed one of programmed multicast addresses.
 *
 * On receive, HW should pass the frame to receive interrupt handler for further
 * address checking.
@@ -1653,7 +1662,7 @@ void AxiEthernetErrorFastHandler(void)
 /*****************************************************************************/
 /**
 *
-* Fast Tramsmit Handler which calls TxIntrHandler.
+* Fast Transmit Handler which calls TxIntrHandler.
 *
 * @param	None
 *

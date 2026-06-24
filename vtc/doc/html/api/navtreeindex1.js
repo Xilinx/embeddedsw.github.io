@@ -66,5 +66,5 @@ var NAVTREEINDEX1 =
 "xvtc__selftest_8c.html":[2,5],
 "xvtc__selftest_8c.html#ga34bc19c168a2d7bbfb3252b2c23e53ae":[2,5,0],
 "xvtc__sinit_8c.html":[2,6],
-"xvtc__sinit_8c.html#ga0597fafa4aff37423b85fd5fcada3b7c":[2,6,0]
+"xvtc__sinit_8c.html#gad823b7c4d10fe753487f6419111bb5b6":[2,6,0]
 };

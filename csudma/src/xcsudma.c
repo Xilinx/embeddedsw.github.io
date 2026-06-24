@@ -44,7 +44,7 @@
 * 1.14	ab	01/16/23 Added Xil_WaitForEvent() to XcsuDma_WaitForDoneTimeout.
 * 1.14	ab	01/18/23 Added byte-aligned transfer API for VERSAL_NET devices.
 * 1.14	bm	05/01/23 Fixed Assert condition in XCsuDma_Transfer for VERSAL_NET.
-* 2.0	sd	10/13/25 Added support for VERSAL_2VP_P devices.
+* 2.0	sd	11/10/25 Added support for VERSAL_2VP_P devices.
 * </pre>
 *
 ******************************************************************************/

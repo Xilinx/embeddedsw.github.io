@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -103,6 +103,9 @@
 * 4.3   ap     12/22/23 Add support to read custom HS400 tap delay value from design for eMMC.
 * 4.4   ht     09/30/24 Fix IAR warnings.
 * 4.5   sk     10/28/25 Update IsCacheCoherent logic to include EL1_NS mode.
+* 4.6   vlt    12/30/25 Update Doxygen comments to include SDT flow details.
+* 4.6   vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                       to support 64-bit addressing.
 *
 * </pre>
 *
@@ -188,7 +191,7 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;			/**< Unique ID  of device */
 #else
-	char *Name;
+	char *Name;                    /**< Name of the device */
 #endif
 	UINTPTR BaseAddress;		/**< Base address of the device */
 	u32 InputClockHz;		/**< Input clock frequency */
@@ -317,7 +320,7 @@ extern XSdPs_Config XSdPs_ConfigTable[];
 #ifndef SDT
 XSdPs_Config *XSdPs_LookupConfig(u16 DeviceId);
 #else
-XSdPs_Config *XSdPs_LookupConfig(u32 BaseAddress);
+XSdPs_Config *XSdPs_LookupConfig(UINTPTR BaseAddress);
 #endif
 s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr,
 			UINTPTR EffectiveAddr);

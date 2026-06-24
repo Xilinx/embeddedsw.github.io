@@ -1,6 +1,15 @@
 var xv__multi__scaler__l2_8h =
 [
-    [ "XV_MULTISCALER_TAPS", "xv__multi__scaler__l2_8h.html#ga287ce7aabbab2249b8159862dceee51b", [
+    [ "STEP_PRECISION", "xv__multi__scaler__l2_8h.html#gaac235f0d069019ec0c914325b3165ca6", null ],
+    [ "XV_MAX_BUF_SIZE", "xv__multi__scaler__l2_8h.html#ga9e7c42921bc3cafee3a11e8925ed83d0", null ],
+    [ "XV_MAX_BYTES_PER_PIXEL", "xv__multi__scaler__l2_8h.html#ga056aa48055c09de112709b603d77f0b7", null ],
+    [ "XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_FLTCOEFF_OFFSET", "xv__multi__scaler__l2_8h.html#ga97b15841abc14a7530c5914bc6786e6f", null ],
+    [ "XV_MULTISCALER_MAX_V_PHASES", "xv__multi__scaler__l2_8h.html#ga15d813b620867a730e6e66d1558b90c1", null ],
+    [ "XV_MULTISCALER_MAX_V_TAPS", "xv__multi__scaler__l2_8h.html#gace71752192132b2b251c4563a1dd3747", null ],
+    [ "XV_MULTISCALER_OUTPUT_MASK", "xv__multi__scaler__l2_8h.html#ga8cc37ad6f7bea69f9473116ca2255984", null ],
+    [ "XVSC_MASK_HIGH_16BITS", "xv__multi__scaler__l2_8h.html#ga91a63bca1494822a85cc80411382884e", null ],
+    [ "XVSC_MASK_LOW_16BITS", "xv__multi__scaler__l2_8h.html#ga54159a1b4063f709b966089dccd507d6", null ],
+    [ "XV_MULTISCALER_MEMORY_FORMATS", "xv__multi__scaler__l2_8h.html#gaf85fcd2b60ace85961e0abdb589ad61f", [
       [ "XV_MULTI_SCALER_RGBX8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fa744c7b137c5530e02830cee272c05b24", null ],
       [ "XV_MULTI_SCALER_YUVX8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61faf77f65828d81654ed75045b66cf80674", null ],
       [ "XV_MULTI_SCALER_YUYV8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61faea6013b4c7d631c93d2e2b7f898a14c6", null ],
@@ -16,7 +25,9 @@ var xv__multi__scaler__l2_8h =
       [ "XV_MULTI_SCALER_Y10", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fa5139191690a36c85da65c4d9c2b47180", null ],
       [ "XV_MULTI_SCALER_BGRX8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fa202daf2b5f5135c8c2ee85659bfb5b6d", null ],
       [ "XV_MULTI_SCALER_UYVY8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fa15098ce5516a5f26c5a6a925fd0bcd45", null ],
-      [ "XV_MULTI_SCALER_BGR8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fabcd0a8432d9def50a7a7614b9417f8c3", null ],
+      [ "XV_MULTI_SCALER_BGR8", "xv__multi__scaler__l2_8h.html#ggaf85fcd2b60ace85961e0abdb589ad61fabcd0a8432d9def50a7a7614b9417f8c3", null ]
+    ] ],
+    [ "XV_MULTISCALER_TAPS", "xv__multi__scaler__l2_8h.html#ga287ce7aabbab2249b8159862dceee51b", [
       [ "XV_MULTISCALER_TAPS_6", "xv__multi__scaler__l2_8h.html#gga287ce7aabbab2249b8159862dceee51baec9b4df9ca632e243f88ac5c8958110f", null ],
       [ "XV_MULTISCALER_TAPS_8", "xv__multi__scaler__l2_8h.html#gga287ce7aabbab2249b8159862dceee51ba752375d8b9eb02c863327808df53ae49", null ],
       [ "XV_MULTISCALER_TAPS_10", "xv__multi__scaler__l2_8h.html#gga287ce7aabbab2249b8159862dceee51bad808b32d7fdf8c339fbbc44b151eafc5", null ],
@@ -32,5 +43,12 @@ var xv__multi__scaler__l2_8h =
     [ "XV_MultiScalerSetChannelConfig", "xv__multi__scaler__l2_8h.html#gadac93267b546f514b3311c1825fd832c", null ],
     [ "XV_MultiScalerSetNumOutputs", "xv__multi__scaler__l2_8h.html#ga954a2264fa23e2726a43a40433a1216d", null ],
     [ "XV_MultiScalerStart", "xv__multi__scaler__l2_8h.html#ga72ecb43c374027b51fc780f208aea156", null ],
-    [ "XV_MultiScalerStop", "xv__multi__scaler__l2_8h.html#gac76f0404a4543e4b45ae1ee8e633946c", null ]
+    [ "XV_MultiScalerStop", "xv__multi__scaler__l2_8h.html#gac76f0404a4543e4b45ae1ee8e633946c", null ],
+    [ "XV_multiscaler_fixedcoeff_taps10_10C", "xv__multi__scaler__l2_8h.html#gacf0060240911fc8017fc400e0bfd5a93", null ],
+    [ "XV_multiscaler_fixedcoeff_taps10_12C", "xv__multi__scaler__l2_8h.html#ga1134264b7c3ed1d23336900f8b6968e4", null ],
+    [ "XV_multiscaler_fixedcoeff_taps12_12C", "xv__multi__scaler__l2_8h.html#ga88f54282785f5ae17e172c3b0291e433", null ],
+    [ "XV_multiscaler_fixedcoeff_taps6_12C", "xv__multi__scaler__l2_8h.html#ga1df60dab912fc9a16f28c6e8485dd40a", null ],
+    [ "XV_multiscaler_fixedcoeff_taps6_6C", "xv__multi__scaler__l2_8h.html#ga230a9dd799b90aab04c506d5687ebea4", null ],
+    [ "XV_multiscaler_fixedcoeff_taps8_12C", "xv__multi__scaler__l2_8h.html#ga4b0577641ab1ead12caf3a93c8def312", null ],
+    [ "XV_multiscaler_fixedcoeff_taps8_8C", "xv__multi__scaler__l2_8h.html#ga2a274bddc96223d1a907f59e8d30b296", null ]
 ];

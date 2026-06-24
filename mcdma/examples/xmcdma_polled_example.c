@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -154,7 +154,7 @@ static int TxSetup(XMcdma *McDmaInstPtr);
 static int SendPacket(XMcdma *McDmaInstPtr);
 static int CheckData(u8 *RxPacket, int ByteCount, u32 ChanId);
 static int CheckDmaResult(XMcdma *McDmaInstPtr, u32 Chan_id);
-static void Mcdma_Poll(XMcdma *McDmaInstPtr);
+static int Mcdma_Poll(XMcdma *McDmaInstPtr);
 
 /************************** Variable Definitions *****************************/
 /*
@@ -166,10 +166,37 @@ volatile int TxDone;
 volatile int RxDone;
 int num_channels;
 
+
+ /* Global buffer allocations */
+
+
+/* Calculate buffer and BD space sizes - using maximum possible channels (16)*/
+#define MAX_CHANNELS		16
+
+#define TX_BUFFER_SIZE		(NUMBER_OF_BDS_TO_TRANSFER * MAX_PKT_LEN * MAX_CHANNELS )
+#define RX_BUFFER_SIZE		(NUMBER_OF_BDS_TO_TRANSFER * MAX_PKT_LEN * MAX_CHANNELS )
+#define TX_BD_SPACE_SIZE	(NUMBER_OF_BDS_TO_TRANSFER * sizeof(XMcdma_Bd) * MAX_CHANNELS )
+#define RX_BD_SPACE_SIZE	(NUMBER_OF_BDS_TO_TRANSFER * sizeof(XMcdma_Bd) * MAX_CHANNELS )
+
+static u8 TxBuffer[TX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+static u8 RxBuffer[RX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+#ifdef __aarch64__
+static u8 TxBdSpace[TX_BD_SPACE_SIZE] __attribute__ ((aligned(BLOCK_SIZE_2MB)));
+static u8 RxBdSpace[RX_BD_SPACE_SIZE] __attribute__ ((aligned(BLOCK_SIZE_2MB)));
+#else
+static u8 TxBdSpace[TX_BD_SPACE_SIZE] __attribute__ ((aligned(64)));
+static u8 RxBdSpace[RX_BD_SPACE_SIZE] __attribute__ ((aligned(64)));
+#endif
+
+static UINTPTR TxBufferPtr;
+static UINTPTR RxBufferPtr;
+static UINTPTR TxBdSpacePtr;
+static UINTPTR RxBdSpacePtr;
+
 /*
  * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
  */
-UINTPTR *Packet = (UINTPTR *) TX_BUFFER_BASE;
+UINTPTR *Packet;
 
 /*****************************************************************************/
 /**
@@ -201,15 +228,26 @@ int main(void)
 
 	xil_printf("\r\n--- Entering main() --- \r\n");
 
+	/* Initialize global buffer pointers */
+	TxBufferPtr = (UINTPTR)TxBuffer;
+	RxBufferPtr = (UINTPTR)RxBuffer;
+	TxBdSpacePtr = (UINTPTR)TxBdSpace;
+	RxBdSpacePtr = (UINTPTR)RxBdSpace;
+
+	/* Initialize Packet pointer */
+	Packet = (UINTPTR *)TxBufferPtr;
+
+	/* Set memory attributes for buffer descriptors to be non-cached */
 #ifdef __aarch64__
-#if (TX_BD_SPACE_BASE < 0x100000000UL)
-	for (i = 0; i < (RX_BD_SPACE_BASE - TX_BD_SPACE_BASE) / BLOCK_SIZE_2MB; i++) {
-		Xil_SetTlbAttributes(TX_BD_SPACE_BASE + (i * BLOCK_SIZE_2MB), NORM_NONCACHE);
-		Xil_SetTlbAttributes(RX_BD_SPACE_BASE + (i * BLOCK_SIZE_2MB), NORM_NONCACHE);
-	}
-#else
-	Xil_SetTlbAttributes(TX_BD_SPACE_BASE, NORM_NONCACHE);
-#endif
+	/* For ARM64, set BD spaces as non-cacheable */
+	Xil_SetTlbAttributes((UINTPTR)TxBdSpace & ~(BLOCK_SIZE_2MB - 1), NORM_NONCACHE);
+	Xil_SetTlbAttributes((UINTPTR)RxBdSpace & ~(BLOCK_SIZE_2MB - 1), NORM_NONCACHE);
+#elif defined(ARMR5)
+        Xil_SetTlbAttributes((UINTPTR)TxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+        Xil_SetTlbAttributes((UINTPTR)RxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+#elif !defined(__MICROBLAZE__)
+        Xil_SetTlbAttributes((UINTPTR)TxBdSpace, DEVICE_MEMORY);
+        Xil_SetTlbAttributes((UINTPTR)RxBdSpace, DEVICE_MEMORY);
 #endif
 
 
@@ -257,7 +295,11 @@ int main(void)
 
 	/* Wait for transfer to complete or 1usec * 10^6 iterations of timeout occurs */
 	while (TimeOut) {
-		Mcdma_Poll(&AxiMcdma);
+		if (Mcdma_Poll(&AxiMcdma) != XST_SUCCESS) {
+			Status = XST_FAILURE;
+			break;
+		}
+
 		if (RxDone >= NUMBER_OF_BDS_TO_TRANSFER * num_channels) {
 			break;
 		}
@@ -295,14 +337,12 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 	XMcdma_ChanCtrl *Rx_Chan;
 	int ChanId;
 	int BdCount = NUMBER_OF_BDS_TO_TRANSFER;
-	UINTPTR RxBufferPtr;
-	UINTPTR RxBdSpacePtr;
 	int Status;
 	u32 i, j;
 	u32 buf_align;
 
-	RxBufferPtr = RX_BUFFER_BASE;
-	RxBdSpacePtr = RX_BD_SPACE_BASE;
+	RxBufferPtr = (UINTPTR)RxBuffer;
+	RxBdSpacePtr = (UINTPTR)RxBdSpace;
 
 	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Rx_Chan = XMcdma_GetMcdmaRxChan(McDmaInstPtr, ChanId);
@@ -356,14 +396,6 @@ static int RxSetup(XMcdma *McDmaInstPtr)
 			return XST_FAILURE;
 		}
 
-		RxBufferPtr += MAX_PKT_LEN;
-		if (!Rx_Chan->Has_Rxdre) {
-			buf_align = RxBufferPtr % 64;
-			if (buf_align > 0) {
-				buf_align = 64 - buf_align;
-			}
-			RxBufferPtr += buf_align;
-		}
 		RxBdSpacePtr += BdCount * Rx_Chan->Separation;
 		XMcdma_IntrEnable(Rx_Chan, XMCDMA_IRQ_ALL_MASK);
 	}
@@ -389,14 +421,12 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 	XMcdma_ChanCtrl *Tx_Chan;
 	int ChanId;
 	int BdCount = NUMBER_OF_BDS_TO_TRANSFER;
-	UINTPTR TxBufferPtr;
-	UINTPTR TxBdSpacePtr;
 	int Status;
 	u32 i, j;
 	u32 buf_align;
 
-	TxBufferPtr = TX_BUFFER_BASE;
-	TxBdSpacePtr = TX_BD_SPACE_BASE;
+	TxBufferPtr = (UINTPTR)TxBuffer;
+	TxBdSpacePtr = (UINTPTR)TxBdSpace;
 
 	for (ChanId = 1; ChanId <= num_channels; ChanId++) {
 		Tx_Chan = XMcdma_GetMcdmaTxChan(McDmaInstPtr, ChanId);
@@ -432,15 +462,6 @@ static int TxSetup(XMcdma *McDmaInstPtr)
 				memset((void *)TxBufferPtr, 0, MAX_PKT_LEN);
 
 			}
-		}
-
-		TxBufferPtr += MAX_PKT_LEN;
-		if (!Tx_Chan->Has_Txdre) {
-			buf_align = TxBufferPtr % 64;
-			if (buf_align > 0) {
-				buf_align = 64 - buf_align;
-			}
-			TxBufferPtr += buf_align;
 		}
 
 		TxBdSpacePtr += BdCount * Tx_Chan->Separation;
@@ -555,19 +576,24 @@ static int CheckDmaResult(XMcdma *McDmaInstPtr, u32 Chan_id)
 }
 
 
-static void Mcdma_Poll(XMcdma *McDmaInstPtr)
+static int Mcdma_Poll(XMcdma *McDmaInstPtr)
 {
 	u16 Chan_id = 1;
 	u32 i;
 	u32 Chan_SerMask;
+	int status = XST_SUCCESS;
 
 	Chan_SerMask = XMcdma_ReadReg(McDmaInstPtr->Config.BaseAddress,
 				      XMCDMA_RX_OFFSET + XMCDMA_RXCH_SER_OFFSET);
 
 	for (i = 1, Chan_id = 1; i != 0 && i <= Chan_SerMask; i <<= 1, Chan_id++)
 		if (Chan_SerMask & i) {
-			CheckDmaResult(&AxiMcdma, Chan_id);
+			if (CheckDmaResult(&AxiMcdma, Chan_id) != XST_SUCCESS) {
+				status = XST_FAILURE;
+			}
 		}
+
+	return status;
 }
 
 

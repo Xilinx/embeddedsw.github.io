@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+ * Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
  * Copyright (C) 2021 VeriSilicon Holdings Co., Ltd.
  *
  * @file mbox.h
@@ -51,6 +51,27 @@ enum ipi_target_code_id {
 
 extern uint32_t dest_cpu_id, src_cpu_id;
 
+static inline void dsb_sync_barrier(void) { __asm__ volatile("dsb sy" : : : "memory"); }
+static inline void dmb_memory_barrier(void) { __asm__ volatile("dmb sy" : : : "memory"); }
+
+/**
+ * @brief Mailbox pair for allocation order
+ */
+typedef struct {
+	MboxCoreId sender;
+	MboxCoreId receiver;
+} MboxPair;
+
+extern const MboxPair default_pairs[];
+
+/**
+ * @brief Macros for Mbox get direction
+ */
+typedef enum {
+	MBOX_SEND = 0,
+	MBOX_RECEIVE = 1
+} MboxDirection;
+
 
 /**
  * @brief Structure of Mbox Control
@@ -59,8 +80,8 @@ typedef struct MboxFifoCtrl {
 	MboxCoreId core_id;
 	MboxCoreId sender_id;
 	MboxCoreId receiver_id;
-	uint32_t buffer_address;
 	FifoControl *fifo;
+	uint8_t *buffer_addresses[MAX_MSGS_PER_BOX];
 } __attribute((aligned(8))) MboxFifoCtrl;
 
 /**
@@ -101,7 +122,7 @@ int32_t vpi_mbox_post(MboxFifoCtrl *mbox_fifo, MboxPostMsg *msg, MboxCoreId rece
 		      MboxDriverCb mbox_driver_cb);
 
 /**
- * @brief Boardcast meg to all other known cores
+ * @brief Broadcast msg to all other known cores
  * @param mbox_fifo the MboxFifoCtrl pointer
  * @param msg message to post
  * @param mbox_driver_cb callback function of mbox driver
@@ -122,7 +143,7 @@ int32_t vpi_mbox_broadcast(MboxFifoCtrl *mbox_fifo, MboxPostMsg *msg, /*,int fd*
 int32_t vpi_mbox_read(MboxFifoCtrl *mbox_fifo, MboxPostMsg *msg, MboxCoreId sender_id/*,int fd*/);
 
 /**
- * @brief Reset the designated FIFO with id to spectify
+ * @brief Reset the designated FIFO with id to specify
  * @param mbox_fifo the MboxFifoCtrl pointer
  * @param sender_id core_id of the sender
  * @param receiver_id core_id of the receiver
@@ -160,7 +181,7 @@ bool vpi_mbox_is_full(MboxFifoCtrl *mbox_fifo, MboxCoreId sender_id,
  * @param sender_id core_id of the sender
  * @param receiver_id core_id of the receiver
  * @return Return result
- * @retval ture for empty, false for failure
+ * @retval true for empty, false for failure
  */
 bool vpi_mbox_is_empty(MboxFifoCtrl *mbox_fifo, MboxCoreId sender_id,
 		       MboxCoreId receiver_id/*,int fd*/);

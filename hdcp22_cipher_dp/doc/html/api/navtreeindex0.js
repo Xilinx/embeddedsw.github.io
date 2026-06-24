@@ -1,9 +1,10 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,2],
 "globals_func.html":[1,1],
@@ -32,11 +33,11 @@ var NAVTREEINDEX0 =
 "xhdcp22__cipher__dp_8h.html#gaa07345c91899f49ed8d4aef114d3e66e":[2,1,9],
 "xhdcp22__cipher__dp_8h.html#gaa87d414595a99bba4fa75c3612ccc204":[2,1,1],
 "xhdcp22__cipher__dp_8h.html#gac61af41b903a10e19b1d02bd137b85df":[2,1,7],
-"xhdcp22__cipher__dp_8h.html#gac67a66be23b685e3e37db4b445622eac":[2,1,14],
 "xhdcp22__cipher__dp_8h.html#gacf6cd83c68a52ccf15e3eb1dae4c2cc2":[2,1,12],
 "xhdcp22__cipher__dp_8h.html#gad3b96d930adc7d8a73282ab68a5b9056":[2,1,15],
 "xhdcp22__cipher__dp_8h.html#gad5fe4f1aec6b0470d48734f61b9e8d46":[2,1,11],
 "xhdcp22__cipher__dp_8h.html#gad657988ea023d41a0a6d08d37da396ba":[2,1,6],
+"xhdcp22__cipher__dp_8h.html#gafd7c31976fb325046c792f98d61b1995":[2,1,14],
 "xhdcp22__cipher__dp__hw_8h.html":[2,2],
 "xhdcp22__cipher__dp__hw_8h.html#ga0a501beb4e8fbcbc7fdeb56aeba263b4":[2,2,15],
 "xhdcp22__cipher__dp__hw_8h.html#ga13ba319db7ea5f068f70ff60e80e1906":[2,2,4],
@@ -81,5 +82,5 @@ var NAVTREEINDEX0 =
 "xhdcp22__cipher__dp__selftest_8c.html":[2,3],
 "xhdcp22__cipher__dp__selftest_8c.html#ga3a6a707c9733bbbe5c27d2a13af4266f":[2,3,0],
 "xhdcp22__cipher__dp__sinit_8c.html":[2,4],
-"xhdcp22__cipher__dp__sinit_8c.html#gac67a66be23b685e3e37db4b445622eac":[2,4,0]
+"xhdcp22__cipher__dp__sinit_8c.html#gafd7c31976fb325046c792f98d61b1995":[2,4,0]
 };

@@ -1,7 +1,6 @@
 var struct_x_dp_tx_ss___config =
 [
     [ "BaseAddress", "struct_x_dp_tx_ss___config.html#aee6c9866e032c7e70e399bc0dac84aa6", null ],
-    [ "DeviceId", "struct_x_dp_tx_ss___config.html#a726aa4b7853dd91b47e06cc0b341cea2", null ],
     [ "DpSubCore", "struct_x_dp_tx_ss___config.html#abe63ec9d971507c261ee11161217c311", null ],
     [ "DsSubCore", "struct_x_dp_tx_ss___config.html#a2ae00e68896349205660398ddeef71da", null ],
     [ "Hdcp1xSubCore", "struct_x_dp_tx_ss___config.html#a4b0c7545062e1f7beae64e42aed1b2b1", null ],

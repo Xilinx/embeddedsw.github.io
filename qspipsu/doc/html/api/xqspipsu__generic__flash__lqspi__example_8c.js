@@ -11,6 +11,6 @@ var xqspipsu__generic__flash__lqspi__example_8c =
     [ "GetRealAddr", "xqspipsu__generic__flash__lqspi__example_8c.html#af45c38b76bbabbaf848a33cdc889ebfb", null ],
     [ "main", "xqspipsu__generic__flash__lqspi__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "QspiPsuHandler", "xqspipsu__generic__flash__lqspi__example_8c.html#a48231ad0042a647ddbcf702df748d1a4", null ],
-    [ "QspiPsuInterruptFlashExample", "xqspipsu__generic__flash__lqspi__example_8c.html#a1d5699f770ac9e1ceaf76398b568b9ee", null ],
+    [ "QspiPsuInterruptFlashExample", "xqspipsu__generic__flash__lqspi__example_8c.html#a5460b9fed1713fd6fcf6fe88b8eb3331", null ],
     [ "XQspiPsu_LqspiRead", "xqspipsu__generic__flash__lqspi__example_8c.html#aa6bbd1c49467adb12326f1d14b849a97", null ]
 ];

@@ -1,11 +1,12 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,4],
 "globals_func.html":[1,1],
@@ -23,7 +24,7 @@ var NAVTREEINDEX0 =
 "xdualsplitter_8h.html":[2,1],
 "xdualsplitter_8h.html#ga040c43cf8292cad54fad4111a7af19c3":[2,1,18],
 "xdualsplitter_8h.html#ga134facdfb0255d7de8f17cccf404349b":[2,1,23],
-"xdualsplitter_8h.html#ga28b5228f2ce36d82ba84c21da332b32e":[2,1,19],
+"xdualsplitter_8h.html#ga2d3c807cc8cb5d2425b784b9864d35e6":[2,1,19],
 "xdualsplitter_8h.html#ga4d2b6db38eefeb1db343a3137e461b06":[2,1,12],
 "xdualsplitter_8h.html#ga5443342ec7cb733071f68a3011846490":[2,1,6],
 "xdualsplitter_8h.html#ga644e3a71b19d5dce82895bbc1c4302a0":[2,1,5],
@@ -86,5 +87,5 @@ var NAVTREEINDEX0 =
 "xdualsplitter__selftest_8c.html":[2,5],
 "xdualsplitter__selftest_8c.html#gaa58ddb5fa4bc7b31d0b10f49ef9550eb":[2,5,0],
 "xdualsplitter__sinit_8c.html":[2,6],
-"xdualsplitter__sinit_8c.html#ga28b5228f2ce36d82ba84c21da332b32e":[2,6,0]
+"xdualsplitter__sinit_8c.html#ga2d3c807cc8cb5d2425b784b9864d35e6":[2,6,0]
 };

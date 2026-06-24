@@ -23,7 +23,7 @@ var xaxipcie_8h =
     [ "XAxiPcie_GetRootPortStatusCtrl", "xaxipcie_8h.html#ga0899628f4ecfb6d3b05671933c375ae5", null ],
     [ "XAxiPcie_GetVsecCapability", "xaxipcie_8h.html#ga745d2811e366fbe0e5499cfef90adbcc", null ],
     [ "XAxiPcie_GetVsecHeader", "xaxipcie_8h.html#gaa26f5255cb42e55351c7cb802f71d56c", null ],
-    [ "XAxiPcie_LookupConfig", "xaxipcie_8h.html#ga911e4cd0c119271f6c01c9b1ac827df1", null ],
+    [ "XAxiPcie_LookupConfig", "xaxipcie_8h.html#ga485623abf227332437c8b204233e4a83", null ],
     [ "XAxiPcie_ReadLocalConfigSpace", "xaxipcie_8h.html#gad9494095b9350f455af9e7da5375d522", null ],
     [ "XAxiPcie_ReadRemoteConfigSpace", "xaxipcie_8h.html#gae4aafc6b1766352ed5347e40762f0649", null ],
     [ "XAxiPcie_SetLocalBusBar2PcieBar", "xaxipcie_8h.html#ga51ee29d03fbefc82b9208f46a12d5a06", null ],

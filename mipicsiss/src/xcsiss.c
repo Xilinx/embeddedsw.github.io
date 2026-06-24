@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -38,9 +38,6 @@
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 #include "xdphy.h"
 #endif
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-#include "xiic.h"
-#endif
 #include "xcsiss.h"
 
 /************************** Constant Definitions *****************************/
@@ -49,28 +46,33 @@
 /**************************** Type Definitions *******************************/
 
 /**
- * This typedef declares the driver instances of all the cores in the subsystem
+ * @brief Driver instances of all the cores in the subsystem
+ *
+ * This structure contains the driver instances for all sub-cores included
+ * in the MIPI CSI Rx Subsystem.
  */
 typedef struct {
-	XCsi CsiInst;
+	XCsi CsiInst;		/**< CSI instance */
 #if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
-	XMipi_Rx_Phy MipiRxPhyInst;
+	XMipi_Rx_Phy MipiRxPhyInst;	/**< MIPI RX PHY instance */
 #endif
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
-	XDphy DphyInst;
-#endif
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-	XIic IicInst;
+	XDphy DphyInst;		/**< DPHY instance */
 #endif
 } XCsiSs_SubCores;
 
 /**************************** Local Global ***********************************/
 
-/* Define Driver instance of all sub-core included in the design */
+/**
+ * @brief Driver instance array of all sub-cores included in the design
+ *
+ * This array holds the driver instances for all MIPI CSI Rx Subsystem
+ * instances in the system.
+ */
 #ifndef SDT
 XCsiSs_SubCores CsiSsSubCores[XPAR_XCSISS_NUM_INSTANCES];
 #else
-XCsiSs_SubCores CsiSsSubCores[];
+XCsiSs_SubCores CsiSsSubCores[XPAR_XMIPICSISS_NUM_INSTANCES];
 #endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -79,9 +81,7 @@ XCsiSs_SubCores CsiSsSubCores[];
 
 static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr);
 static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr);
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr);
-#endif
+
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr);
 #endif
@@ -89,8 +89,10 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr);
 static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr);
 #endif
 
+#ifndef SDT
 static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 					u32 Offset, UINTPTR *BaseAddr);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -105,7 +107,7 @@ static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 * sub-core therein, and ensuring the hardware is in a known stable state.
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be
-		worked on.
+*		worked on.
 * @param	CfgPtr points to the configuration structure associated
 *		with the subsystem instance.
 * @param	EffectiveAddr is the base address of the device. If address
@@ -114,12 +116,13 @@ static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 *		used.
 *
 * @return
-*		- XST_SUCCESS if initialization is successful
-*		- XST_FAILURE, otherwise
+*		- XST_SUCCESS if initialization is successful.
+*		- XST_FAILURE otherwise.
 *
 * @note		None.
 *
 ******************************************************************************/
+
 u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,
 				UINTPTR EffectiveAddr)
 {
@@ -138,14 +141,6 @@ u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,
 	CsiSs_GetIncludedSubCores(InstancePtr);
 
 	/* Initialize all included sub_cores */
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-	if (InstancePtr->IicPtr) {
-		Status = CsiSs_SubCoreInitIic(InstancePtr);
-		if (Status != XST_SUCCESS) {
-			return XST_FAILURE;
-		}
-	}
-#endif
 	if (InstancePtr->CsiPtr) {
 		Status = CsiSs_SubCoreInitCsi(InstancePtr);
 		if (Status != XST_SUCCESS) {
@@ -161,7 +156,7 @@ u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,
 		}
 	}
 #elif (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
-	if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
+	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
 		Status = CsiSs_SubCoreInitMipiRxPhy(InstancePtr);
 		if (Status != XST_SUCCESS) {
 			return XST_FAILURE;
@@ -172,38 +167,6 @@ u32 XCsiSs_CfgInitialize(XCsiSs *InstancePtr, XCsiSs_Config *CfgPtr,
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 	return XST_SUCCESS;
 }
-
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-/*****************************************************************************/
-/**
-* This function returns the Iic Instance Ptr if Iic is present in the subsystem
-* The application now will need to use Iic functions to access and configure
-* the CSI Transmitter (Camera) via Camera Control Interface(subset protocol of
-* IIC). Please refer to Camera specs for details on how to access and
-* configure.
-*
-*
-* @param	InstancePtr is a pointer to the Subsystem instance to be
-		worked on.
-*
-* @return	Pointer to IIC instance or NULL
-*
-* @note		This function is called after XCsiSs_CfgInitialize()
-*		This function must be called prior to using the IIC functions.
-*
-******************************************************************************/
-XIic* XCsiSs_GetIicInstance(XCsiSs *InstancePtr)
-{
-	/* Verify argument. */
-	Xil_AssertNonvoid(InstancePtr != NULL);
-
-	if (InstancePtr->IicPtr) {
-		return InstancePtr->IicPtr;
-	}
-
-	return NULL;
-}
-#endif
 
 /*****************************************************************************/
 /**
@@ -220,8 +183,8 @@ XIic* XCsiSs_GetIicInstance(XCsiSs *InstancePtr)
 * @param	IntrMask Indicates Mask for enable interrupts.
 *
 * @return
-*		- XST_SUCCESS on successful configuration of parameters
-* 		- XST_FAILURE otherwise
+*		- XST_SUCCESS on successful configuration of parameters.
+*		- XST_FAILURE otherwise.
 *
 * @note		When EnableActiveLanes is 0, then the ActiveLanes parameter
 *		passed should be equal to Max Lanes of design.
@@ -258,15 +221,15 @@ u32 XCsiSs_Configure(XCsiSs *InstancePtr, u8 ActiveLanes, u32 IntrMask)
 * the DPHY and CSI.
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be
-		worked on.
+*		worked on.
 * @param	Flag is used to denote whether to enable or disable the
-*		subsystem
+*		subsystem.
 *
 * @return
-*		- XST_SUCCESS on successful operation
-*		- XST_FAILURE on failed operation
+*		- XST_SUCCESS on successful operation.
+*		- XST_FAILURE on failed operation.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
 u32 XCsiSs_Activate(XCsiSs *InstancePtr, u8 Flag)
@@ -282,7 +245,7 @@ u32 XCsiSs_Activate(XCsiSs *InstancePtr, u8 Flag)
 		return Status;
 
 #if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
-	if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
+	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->MipiRxPhyPtr) {
 		XMipi_Rx_Phy_Activate(InstancePtr->MipiRxPhyPtr, Flag);
 	}
 #endif
@@ -304,10 +267,10 @@ u32 XCsiSs_Activate(XCsiSs *InstancePtr, u8 Flag)
 *		worked on.
 *
 * @return
-*		- XST_SUCCESS if all the sub core IP resets occur correctly
-*		- XST_FAILURE if reset fails for any sub core IP fails
+*		- XST_SUCCESS if all the sub core IP resets occur correctly.
+*		- XST_FAILURE if reset fails for any sub core IP.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
 u32 XCsiSs_Reset(XCsiSs *InstancePtr)
@@ -331,11 +294,11 @@ u32 XCsiSs_Reset(XCsiSs *InstancePtr)
 * This function reports list of cores included.
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be
-* 		worked on.
+*		worked on.
 *
-* @return	None
+* @return	None.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
 void XCsiSs_ReportCoreInfo(XCsiSs *InstancePtr)
@@ -353,7 +316,7 @@ void XCsiSs_ReportCoreInfo(XCsiSs *InstancePtr)
 #if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
 	if (InstancePtr->MipiRxPhyPtr) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"    : XMipi Rx Phy ");
-		if (InstancePtr->Config.IsMipiRxPhyRegIntfcPresent) {
+		if (InstancePtr->Config.IsDphyRegIntfcPresent) {
 			xdbg_printf(XDBG_DEBUG_GENERAL,"with ");
 		}
 		else {
@@ -376,12 +339,6 @@ void XCsiSs_ReportCoreInfo(XCsiSs *InstancePtr)
 		xdbg_printf(XDBG_DEBUG_GENERAL,"register interface \n\r");
 	}
 #endif
-
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-	if (InstancePtr->IicPtr) {
-		xdbg_printf(XDBG_DEBUG_GENERAL,"	: IIC \n\r");
-	}
-#endif
 }
 
 
@@ -389,12 +346,17 @@ void XCsiSs_ReportCoreInfo(XCsiSs *InstancePtr)
 /**
 * This function will control the virtual channels selection dynamically.
 *
-* @param	InstancePtr is the XCsi instance to operate on
+* @param	InstancePtr is a pointer to the Subsystem instance to be
+*		worked on.
 * @param	Value will set the virtual channels corresponding to each bit value.
 *
-* @return 	None
+* @return	None.
 *
-****************************************************************************/
+* @note		In order to use dynamic VC selection, 'Allowed VC to all' must be
+*		selected in IP Configuration.
+*
+******************************************************************************/
+
 void XCsiSs_SetVCSelection(XCsiSs *InstancePtr, u16 Value)
 {
 	/* Verify argument */
@@ -416,11 +378,16 @@ void XCsiSs_SetVCSelection(XCsiSs *InstancePtr, u16 Value)
 /**
 * This function will return the virtual channels selected.
 *
-* @param	InstancePtr is the XCsi instance to operate on
+* @param	InstancePtr is a pointer to the Subsystem instance to be
+*		worked on.
 *
-* @return 	Value of selected VCs.
+* @return	Value of selected VCs.
 *
-****************************************************************************/
+* @note		In order to use dynamic VC selection, 'Allowed VC to all' must be
+*		selected in IP Configuration.
+*
+******************************************************************************/
+
 u32 XCsiSs_GetVCSelection(XCsiSs *InstancePtr)
 {
 	/* Verify argument */
@@ -445,11 +412,12 @@ u32 XCsiSs_GetVCSelection(XCsiSs *InstancePtr)
 * @param	InstancePtr is a pointer to the Subsystem instance to be
 *		worked on.
 *
-* @return	None
+* @return	None.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 void XCsiSs_GetShortPacket(XCsiSs *InstancePtr)
 {
 	/* Verify argument. */
@@ -463,13 +431,14 @@ void XCsiSs_GetShortPacket(XCsiSs *InstancePtr)
 * This function gets the clk and data lane info
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be
-		worked on.
+*		worked on.
 *
-* @return	None
+* @return	None.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 void XCsiSs_GetLaneInfo(XCsiSs *InstancePtr)
 {
 	u8 Index;
@@ -490,13 +459,14 @@ void XCsiSs_GetLaneInfo(XCsiSs *InstancePtr)
 * This function gets the virtual channel information
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be
-		worked on.
+*		worked on.
 *
-* @return	None
+* @return	None.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 void XCsiSs_GetVCInfo(XCsiSs *InstancePtr)
 {
 	u8 Index;
@@ -521,15 +491,16 @@ void XCsiSs_GetVCInfo(XCsiSs *InstancePtr)
 * This function queries the subsystem instance configuration to determine
 * the included sub-cores. For each sub-core that is present in the design
 * the sub-core driver instance is binded with the subsystem sub-core driver
-* handle
+* handle.
 *
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
-* @return	None
+* @return	None.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 {
 #ifndef SDT
@@ -541,10 +512,6 @@ static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 		(&CsiSsSubCores[CsiSsPtr->Config.DeviceId].DphyInst) : NULL);
 #endif
 
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-	CsiSsPtr->IicPtr = ((CsiSsPtr->Config.IicInfo.IsPresent) ?
-		(&CsiSsSubCores[CsiSsPtr->Config.DeviceId].IicInst) : NULL);
-#endif
 #else
 	u32 Index = 0;
 	Index = XCsiSs_GetDrvIndex(CsiSsPtr->Config.BaseAddr);
@@ -561,26 +528,23 @@ static void CsiSs_GetIncludedSubCores(XCsiSs *CsiSsPtr)
 		(&CsiSsSubCores[Index].DphyInst) : NULL);
 #endif
 
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-	CsiSsPtr->IicPtr = ((CsiSsPtr->Config.IicInfo.IsPresent) ?
-		(&CsiSsSubCores[Index].IicInst) : NULL);
-#endif
 #endif
 }
 
 /*****************************************************************************/
 /**
-* This function initializes the included sub-core to it's static configuration
+* This function initializes the included sub-core to it's static configuration.
 *
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If CSI sub core is initialised successfully
-*		- XST_FAILURE If CSI sub core inititlization fails
+*		- XST_SUCCESS If CSI sub core is initialised successfully.
+*		- XST_FAILURE If CSI sub core initialization fails.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 {
 	u32 Status;
@@ -625,81 +589,21 @@ static u32 CsiSs_SubCoreInitCsi(XCsiSs *CsiSsPtr)
 	return XST_SUCCESS;
 }
 
-#if (XPAR_XIIC_NUM_INSTANCES > 0)
-/*****************************************************************************/
-/**
-* This function initializes the included sub-core to it's static configuration
-*
-* @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
-*
-* @return
-*		- XST_SUCCESS If IIC sub core is initialised successfully
-*		- XST_FAILURE Otherwise
-*
-* @note		None
-*
-******************************************************************************/
-static u32 CsiSs_SubCoreInitIic(XCsiSs *CsiSsPtr)
-{
-	u32  Status;
-	UINTPTR AbsAddr;
-	XIic_Config *ConfigPtr;
-
-	/* Get core configuration */
-	xdbg_printf(XDBG_DEBUG_GENERAL,"->Initializing IIC MIPI CSI "
-		"subsystem.\n\r");
-#ifndef SDT
-	ConfigPtr = XIic_LookupConfig(CsiSsPtr->Config.IicInfo.DeviceId);
-#else
-	ConfigPtr = XIic_LookupConfig(CsiSsPtr->Config.IicInfo.AddrOffset);
-#endif
-	if (!ConfigPtr) {
-		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: IIC not found\n\r");
-		return XST_FAILURE;
-	}
-
-	/* Compute absolute base address */
-#ifndef SDT
-	AbsAddr = 0;
-	Status = CsiSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
-					CsiSsPtr->Config.HighAddr,
-					CsiSsPtr->Config.IicInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: Iic core base "
-			"address (0x%x) invalid %d\n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
-	AbsAddr = ConfigPtr->BaseAddress;
-#endif
-
-	/* Initialize core */
-	Status = XIic_CfgInitialize(CsiSsPtr->IicPtr, ConfigPtr, AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS ERR:: Iic core "
-			"Initialization failed\n\r");
-		return XST_FAILURE;
-	}
-
-	return XST_SUCCESS;
-}
-#endif
-
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
-* This function initializes the included sub-core to it's static configuration
+* This function initializes the included sub-core to it's static configuration.
 *
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If DPHY sub core is initialised successfully
-*		- XST_FAILURE If DPHY sub core initialization failed
+*		- XST_SUCCESS If DPHY sub core is initialised successfully.
+*		- XST_FAILURE If DPHY sub core initialization failed.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 {
 	u32 Status;
@@ -749,17 +653,18 @@ static u32 CsiSs_SubCoreInitDphy(XCsiSs *CsiSsPtr)
 #if (XPAR_XMIPI_RX_PHY_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
-* This function initializes the included sub-core to it's static configuration
+* This function initializes the included sub-core to it's static configuration.
 *
 * @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS If DPHY sub core is initialised successfully
-*		- XST_FAILURE If DPHY sub core initialization failed
+*		- XST_SUCCESS If MIPI RX PHY sub core is initialised successfully.
+*		- XST_FAILURE If MIPI RX PHY sub core initialization failed.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
 {
 	u32 Status;
@@ -802,11 +707,50 @@ static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
 
 	return XST_SUCCESS;
 }
-#endif
 
 /*****************************************************************************/
 /**
-* This function computes the subcore absolute address on axi-lite interface
+* This function configures the MIPI RX PHY PLL for a desired line rate at
+* runtime. It delegates to XMipi_Rx_Phy_DynamicLineRateConfig which handles
+* validation of CPHY mode and dynamic line rate hardware enablement.
+*
+* @param	InstancePtr is a pointer to the Subsystem instance to be
+*		worked on.
+* @param	PllBaseAddr is the base address of the PLL to be configured.
+* @param	LineRate is the desired line rate in Mbps (400-4500).
+*
+* @return
+*		- XST_SUCCESS if PLL configuration is successful.
+*		- XST_FAILURE if dynamic line rate configuration fails.
+*
+* @note		None.
+*
+******************************************************************************/
+
+u32 XCsiSs_DynamicLineRateConfig(XCsiSs *InstancePtr, UINTPTR PllBaseAddr,
+				u32 LineRate)
+{
+	u32 Status;
+
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	Status = XMipi_Rx_Phy_DynamicLineRateConfig(InstancePtr->MipiRxPhyPtr,
+						PllBaseAddr, LineRate);
+	if (Status != XST_SUCCESS) {
+		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS ERR:: Mipi  Rx Phy core "
+			"Dynamic Line Rate Configuration failed\n\r");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+#endif
+
+#ifndef SDT
+/*****************************************************************************/
+/**
+* This function computes the subcore absolute address on axi-lite interface.
 * Subsystem is mapped at an absolute address and all included sub-cores are
 * at pre-defined offset from the subsystem base address. To access the subcore
 * register map from host CPU an absolute address is required.
@@ -819,19 +763,20 @@ static u32 CsiSs_SubCoreInitMipiRxPhy(XCsiSs *CsiSsPtr)
 * 0x1_0000. In case DPHY register interface is also absent then the address
 * range shrinks to 64K with only the CSI subcore at offset 0x0_0000.
 *
-* @param	SsBaseAddr is the base address of the the Subsystem instance
-* @param	SsHighAddr is the max address of the Subsystem instance
-* @param	Offset is the offset of the specified core
-* @param	BaseAddr is the computed absolute base address of the subcore
+* @param	SsBaseAddr is the base address of the the Subsystem instance.
+* @param	SsHighAddr is the max address of the Subsystem instance.
+* @param	Offset is the offset of the specified core.
+* @param	BaseAddr is the computed absolute base address of the subcore.
 *
 * @return
 *		- XST_SUCCESS if base address computation is successful and
-*		within subsystem address range
-*		- XST_FAILURE Otherwise
+*		  within subsystem address range.
+*		- XST_FAILURE Otherwise.
 *
-* @note		None
+* @note		None.
 *
 ******************************************************************************/
+
 static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 					u32 Offset, UINTPTR *BaseAddr)
 {
@@ -851,4 +796,5 @@ static u32 CsiSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
 
 	return Status;
 }
+#endif
 /** @} */

@@ -9,5 +9,6 @@ var xcsiss_8c =
     [ "XCsiSs_GetVCSelection", "xcsiss_8c.html#gae291a001aba0f4141b360de5195ee81e", null ],
     [ "XCsiSs_ReportCoreInfo", "xcsiss_8c.html#ga3c63d232d9c7c19a7206fe10d5713509", null ],
     [ "XCsiSs_Reset", "xcsiss_8c.html#ga0436d17627c2acd4ed542efbbb584fab", null ],
-    [ "XCsiSs_SetVCSelection", "xcsiss_8c.html#ga038b595c1a424408b3ee277a8496e8cf", null ]
+    [ "XCsiSs_SetVCSelection", "xcsiss_8c.html#ga038b595c1a424408b3ee277a8496e8cf", null ],
+    [ "CsiSsSubCores", "xcsiss_8c.html#ga5d32b64ac7a5414268e06e8c61dec158", null ]
 ];

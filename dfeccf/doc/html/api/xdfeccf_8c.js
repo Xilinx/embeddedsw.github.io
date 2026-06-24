@@ -16,6 +16,7 @@ var xdfeccf_8c =
     [ "XDfeCcf_GetCurrentCCCfg", "xdfeccf_8c.html#ga31a32e74a6fef543927f191eed1fbbb0", null ],
     [ "XDfeCcf_GetCurrentCCCfgSwitchable", "xdfeccf_8c.html#ga9dabb47e081bcecd0c865126daa6a92a", null ],
     [ "XDfeCcf_GetEmptyCCCfg", "xdfeccf_8c.html#ga699c8f140720fcbf22543c7758ace5d5", null ],
+    [ "XDfeCcf_GetIsCcfOperational", "xdfeccf_8c.html#gacfa67489ec2094636315d1c987e2a324", null ],
     [ "XDfeCcf_GetStateID", "xdfeccf_8c.html#gac83eb8c8d423a12cc23f3a699e87ff4f", null ],
     [ "XDfeCcf_GetTDataDelay", "xdfeccf_8c.html#ga52137ddc16812fff73bf4ad1c1a2e35b", null ],
     [ "XDfeCcf_GetTDataDelayFromCCCfg", "xdfeccf_8c.html#ga3179eaabc10a956de802e38d8e7ff5cd", null ],

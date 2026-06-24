@@ -33,7 +33,7 @@ var xspips_8h =
     [ "XSpiPs_GetOptions", "xspips_8h.html#ga95e9f2a440a68b4e55694bd593d6c810", null ],
     [ "XSpiPs_GetSlaveSelect", "xspips_8h.html#ga1876554128f1d1a8654d72a619fe491d", null ],
     [ "XSpiPs_InterruptHandler", "xspips_8h.html#gac57ccd3fab9a25399bdb8bc234fecc66", null ],
-    [ "XSpiPs_LookupConfig", "xspips_8h.html#ga70c86f3842f5996d9d7fc874466f4136", null ],
+    [ "XSpiPs_LookupConfig", "xspips_8h.html#ga4fa549669d98870a88eba403598ee595", null ],
     [ "XSpiPs_PolledTransfer", "xspips_8h.html#ga94490f99431c92c2a9a54cc41d4abe71", null ],
     [ "XSpiPs_Reset", "xspips_8h.html#gad3abd2456cfa67bc8d24dd255ba7de51", null ],
     [ "XSpiPs_SelfTest", "xspips_8h.html#gaaa797b9b8184e6f39b0c0038553e48d8", null ],

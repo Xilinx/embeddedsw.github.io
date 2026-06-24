@@ -95,7 +95,7 @@ var xadcps_8h =
     [ "XAdcPs_IntrEnable", "xadcps_8h.html#ga321d111c2a771286a7fc4b4bd8f3e744", null ],
     [ "XAdcPs_IntrGetEnabled", "xadcps_8h.html#gafc0371ab003ca92552165bfd3ced33ee", null ],
     [ "XAdcPs_IntrGetStatus", "xadcps_8h.html#ga3b905da7fd36abc6ef2ea11dc6f6ec6d", null ],
-    [ "XAdcPs_LookupConfig", "xadcps_8h.html#gadf27053ce16b799289b609bce586aa21", null ],
+    [ "XAdcPs_LookupConfig", "xadcps_8h.html#ga65ab0058623109a1e13c5c84aca78efe", null ],
     [ "XAdcPs_Reset", "xadcps_8h.html#ga5d96b5dc7c813d1f1aa6238885fbc44b", null ],
     [ "XAdcPs_SelfTest", "xadcps_8h.html#ga56acf22b23c7ff0ea8ba0c763209d0a6", null ],
     [ "XAdcPs_SetAdcClkDivisor", "xadcps_8h.html#ga533b23d4d7b4e0bee4517b0ae0329576", null ],

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (C) 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2025 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -86,7 +86,7 @@ typedef struct {
 	u32 Reserved_2;
 
 	u32 Checksum;
-} XDcDma_Descriptor __attribute__ ((aligned(XDCDMA_DESC_ALIGN))) __attribute__((packed));
+} XDcDma_Descriptor __attribute__ ((aligned(XDCDMA_DESC_ALIGN)));
 
 typedef struct {
 	u32 BaseAddr;
@@ -188,7 +188,7 @@ typedef struct {
  */
 typedef struct {
 	XDcDma_Channel_Dscr Channel[3];
-	XDc_VideoAttribute *VideoInfo;
+	const XDc_VideoAttribute *VideoInfo;
 	XDcDma_FrameBuffer *FrameBuffer[3];
 	u8 Video_TriggerStatus;
 	u8 Graphics_TriggerStatus;
@@ -228,7 +228,7 @@ typedef enum {
 } XDcDma_ChannelType;
 
 /**
- * This typedef defines the DCDMA configration.
+ * This typedef defines the DCDMA configuration.
  */
 typedef struct {
 	XDcDma_Config Config;

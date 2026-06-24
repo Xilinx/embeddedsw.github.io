@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -22,6 +22,9 @@
 * 1.1   Nava   04/20/18 Fixed compilation warnings.
 * 1.2   cjp    04/27/18 Updated for clockps interdependency
 * 1.5   sd     07/07/23 Added SDT support.
+* 1.8   vlt    12/16/25 Update Doxygen comments to include SDT flow details.
+* 1.8   vlt    03/14/26 Updated BaseAddress type from u32 to UINTPTR
+*                       to support 64-bit addressing.
 * </pre>
 *
 ******************************************************************************/
@@ -51,15 +54,23 @@ extern XResetPs_Config XResetPs_ConfigTable[];
 
 /*****************************************************************************/
 /**
-* Lookup the device configuration based on the unique device ID. The table
-* contains the configuration info for each device in the system.
 *
-* @param	DeviceId is the unique device ID of the device being looked up.
+* Looks up the device configuration based on the unique device ID/BaseAddress.
+* The XResetPs_ConfigTable[] contains the configuration info for each device
+* in the system.
 *
-* @return	A pointer to the configuration table entry corresponding to the
-*		given device ID, or NULL if no match is found.
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
+* @param	DeviceId contains the unique ID of the device
+* @endif
 *
-* @note		None.
+* @return       A pointer to the configuration found or NULL if the specified
+*               device ID/BaseAddress was not found. See xresetps.h for the
+*               definition of XResetPs_Config.
+*
+* @note        In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -77,7 +88,7 @@ XResetPs_Config *XResetPs_LookupConfig(u16 DeviceId)
 	return (XResetPs_Config *)CfgPtr;
 }
 #else
-XResetPs_Config *XResetPs_LookupConfig(u32 BaseAddress)
+XResetPs_Config *XResetPs_LookupConfig(UINTPTR BaseAddress)
 {
 	XResetPs_Config *CfgPtr = NULL;
 	u32 Index;

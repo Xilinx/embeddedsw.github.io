@@ -12,7 +12,7 @@ var xospipsv__flash__non__blocking__read__example_8c =
     [ "GetRealAddr", "xospipsv__flash__non__blocking__read__example_8c.html#ae08db22955675661860c9008890b0138", null ],
     [ "main", "xospipsv__flash__non__blocking__read__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe", null ],
     [ "MxConfigDummy", "xospipsv__flash__non__blocking__read__example_8c.html#ab01ca7bff4098e88b315bd230b948658", null ],
-    [ "OspiPsvFlashNonBlockingReadExample", "xospipsv__flash__non__blocking__read__example_8c.html#add3e41c7ec3ce5d1ae9f84b65b180829", null ],
+    [ "OspiPsvFlashNonBlockingReadExample", "xospipsv__flash__non__blocking__read__example_8c.html#aeca8b1ed044f11310838d4e024ca3323", null ],
     [ "SpansionSetEccMode", "xospipsv__flash__non__blocking__read__example_8c.html#af2bad08ca36b22108da68d87e5d29201", null ],
     [ "XOspiPsv_Get_Proto", "xospipsv__flash__non__blocking__read__example_8c.html#a08e2382b1a337e871524e10a23f1b984", null ]
 ];

@@ -1,7 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -26,6 +25,7 @@
 * Ver  Who Date     Changes
 * ---- --- -------- --------------------------------------------------
 * 1.00 sha 01/29/15 Initial release.
+* 1.1  pam 03/18/26 Doxygen warnings removed
 * </pre>
 *
 ******************************************************************************/
@@ -120,6 +120,13 @@ extern "C" {
 		XDP_TX_INTERRUPT_MASK_HPD_EVENT_MASK	/**< Mask HPD event
 							  *  interrupt. */
 
+#define XDPTXSS_INTERRUPT_MASK_ALL_MASK		0xFFFFFFFF /**< Mask all
+							     *  interrupts */
+#define XDPTXSS_INTERRUPT_MASK_NORMAL_MASK	0xFFFFF000 /**< Mask for normal
+							     *  TX operation
+							     *  (HPD + IRQ
+							     *  enabled) */
+
 #define XDPTXSS_NUM_STREAMS		4	/**< Maximum number of
 						  *  streams supported */
 
@@ -176,7 +183,7 @@ extern "C" {
 ******************************************************************************/
 #define XDpTxSs_WriteReg(BaseAddress, RegOffset, Data) \
 	XDpTxSs_Out32((BaseAddress) + ((u32)RegOffset), (u32)(Data))
-/*@}*/
+/** @} */
 
 /************************** Function Prototypes ******************************/
 

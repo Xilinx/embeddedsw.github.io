@@ -1,11 +1,12 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,4],
 "globals_func.html":[1,1],
@@ -52,6 +53,7 @@ var NAVTREEINDEX0 =
 "xdmaps_8h.html#ga65cc22a994eb1ca6a9c56d86d469242e":[2,1,20],
 "xdmaps_8h.html#ga6b98da80d55e109b0cb57a34f9baa5a9":[2,1,6],
 "xdmaps_8h.html#ga711e54b9c033b127fb582bde320f8823":[2,1,21],
+"xdmaps_8h.html#ga71854a1c11448fcf36b1b4f0796fd442":[2,1,17],
 "xdmaps_8h.html#ga766bb579aeee8b0914fcb258a4057259":[2,1,4],
 "xdmaps_8h.html#ga92af9b1850b76f149a716a3f6907e951":[2,1,15],
 "xdmaps_8h.html#ga96c4c2e45ab31a22f05767c24db425ea":[2,1,12],
@@ -61,14 +63,12 @@ var NAVTREEINDEX0 =
 "xdmaps_8h.html#gacda5c5523ed24451a7efacc7b9257fa3":[2,1,23],
 "xdmaps_8h.html#gad59232da2016e1a60744cc6e11a04a98":[2,1,0],
 "xdmaps_8h.html#gada1623174e9c5bbb4bf247a650987dbd":[2,1,5],
-"xdmaps_8h.html#gaded11d6e3cc80b1604cf0af0da063b35":[2,1,17],
 "xdmaps_8h.html#gae1f2b39fb5e2e8d369c3286aeada67be":[2,1,11],
 "xdmaps_8h.html#gafbb8e861538769798d48350dd885dc65":[2,1,8],
 "xdmaps__example__w__intr_8c.html":[2,2],
-"xdmaps__example__w__intr_8c.html#a69309a8745a0da1d5f146f22fd48da9d":[2,2,2],
 "xdmaps__example__w__intr_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,2,1],
-"xdmaps__example__w__intr_8c.html#ad138547e71c03c7c9c30a0620a1569d2":[2,2,3],
 "xdmaps__example__w__intr_8c.html#ae324d787c5677fa5cfea243c6af4b752":[2,2,0],
+"xdmaps__example__w__intr_8c.html#af60b7fc382748cf2c2d6d4b246f47b74":[2,2,2],
 "xdmaps__g_8c.html":[2,3],
 "xdmaps__g_8c.html#ga30041b023ab8bf2433d4b714dda036cb":[2,3,0],
 "xdmaps__hw_8c.html":[2,4],
@@ -80,5 +80,5 @@ var NAVTREEINDEX0 =
 "xdmaps__selftest_8c.html#ga711e54b9c033b127fb582bde320f8823":[2,6,0],
 "xdmaps__sinit_8c.html":[2,7],
 "xdmaps__sinit_8c.html#ga30041b023ab8bf2433d4b714dda036cb":[2,7,1],
-"xdmaps__sinit_8c.html#gaded11d6e3cc80b1604cf0af0da063b35":[2,7,0]
+"xdmaps__sinit_8c.html#ga71854a1c11448fcf36b1b4f0796fd442":[2,7,0]
 };

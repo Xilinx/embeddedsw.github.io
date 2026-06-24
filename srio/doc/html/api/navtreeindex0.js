@@ -1,13 +1,14 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
-"globals.html":[1,0],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0,0],
+"globals.html":[1,0],
 "globals_0x78.html":[1,0,1],
 "globals_defs.html":[1,3],
 "globals_defs.html":[1,3,0],
@@ -57,7 +58,6 @@ var NAVTREEINDEX0 =
 "xsrio_8h.html#ga6fe0e368f18de444791fabf766909ce5":[2,1,64],
 "xsrio_8h.html#ga753aded6db30e1c042e7c7ee43b2a483":[2,1,81],
 "xsrio_8h.html#ga76698c33cdf6c12d510c1e93209f366d":[2,1,11],
-"xsrio_8h.html#ga76df4ab1f25c693e6a16050b31756c3d":[2,1,85],
 "xsrio_8h.html#ga81b9edd3c92a0e2a71bdc6e8204ad87a":[2,1,22],
 "xsrio_8h.html#ga86e8b638b0295f135b4dfea25bcefce4":[2,1,48],
 "xsrio_8h.html#ga8a7ebb9dba61f05473de5c3e80f6037a":[2,1,55],
@@ -104,6 +104,7 @@ var NAVTREEINDEX0 =
 "xsrio_8h.html#gaefe9cfb3e23651f6e0ba04cebf2ea468":[2,1,61],
 "xsrio_8h.html#gaf20e9fbfb23bbe3e1c9c201609a93352":[2,1,50],
 "xsrio_8h.html#gaf495f0414308d1f913450d94149ffa45":[2,1,40],
+"xsrio_8h.html#gaf6549db3fb4b21a7715f57041e71f730":[2,1,85],
 "xsrio_8h.html#gafadc09b23898c51bba7c5167f439000d":[2,1,44],
 "xsrio_8h.html#gafc9e89d83a445e74b1c96d9c05f7e7b6":[2,1,52],
 "xsrio_8h.html#gafce174875d087f4b3cc4713a1df5446d":[2,1,84],
@@ -111,7 +112,7 @@ var NAVTREEINDEX0 =
 "xsrio_8h.html#gafe400870d468d8dcf400b78fa64c812e":[2,1,63],
 "xsrio_8h.html#gaff3d43b0d620e05058151226ec142f8a":[2,1,18],
 "xsrio__dma__loopback__example_8c.html":[2,2],
-"xsrio__dma__loopback__example_8c.html#a5e53ebd8fd8149fde3e98bb3f6d434f2":[2,2,1],
+"xsrio__dma__loopback__example_8c.html#ad5a0716eca6398c19a481d1d58e45bdc":[2,2,1],
 "xsrio__dma__loopback__example_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4":[2,2,0],
 "xsrio__g_8c.html":[2,3],
 "xsrio__hw_8h.html":[2,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "xsrio__hw_8h.html#gabf538c58029dbfecbc051a594c5b6ab8":[2,4,12],
 "xsrio__hw_8h.html#gabf5a63a4034d3c3814841ad90a75bfe4":[2,4,158],
 "xsrio__hw_8h.html#gac1355c4f2e34002d8aeaaf75e98144db":[2,4,103],
-"xsrio__hw_8h.html#gac1727fbcfcc856554646e9a8c037242b":[2,4,132],
-"xsrio__hw_8h.html#gac6664e5a03ee2cd53fd940c7f45f3bbf":[2,4,157]
+"xsrio__hw_8h.html#gac1727fbcfcc856554646e9a8c037242b":[2,4,132]
 };

@@ -1,6 +1,5 @@
 var xv__vscaler__sinit_8c =
 [
-    [ "XV_vscaler_Initialize", "xv__vscaler__sinit_8c.html#a5163a0d50be810e8584a0f1f1604269d", null ],
-    [ "XV_vscaler_LookupConfig", "xv__vscaler__sinit_8c.html#a8ae73a0017336db447ccd0eaeed43bca", null ],
-    [ "XV_vscaler_ConfigTable", "xv__vscaler__sinit_8c.html#aa5e0436d7ea57ebadd67851d519cfe2e", null ]
+    [ "XV_vscaler_Initialize", "xv__vscaler__sinit_8c.html#a33adad267eecf9f4e3439c71d9b88faa", null ],
+    [ "XV_vscaler_LookupConfig", "xv__vscaler__sinit_8c.html#adf1848c82a451508a3a192c5a32792d2", null ]
 ];

@@ -1,12 +1,13 @@
 var NAVTREEINDEX0 =
 {
 "annotated.html":[0,0],
+"classes.html":[0,1],
 "example.html":[3],
 "example.html#ex1":[3,0],
 "example.html#ex2":[3,1],
 "files.html":[2],
-"functions.html":[0,1,0],
-"functions_vars.html":[0,1,1],
+"functions.html":[0,2,0],
+"functions_vars.html":[0,2,1],
 "globals.html":[1,0],
 "globals_defs.html":[1,2],
 "globals_func.html":[1,1],
@@ -64,12 +65,12 @@ var NAVTREEINDEX0 =
 "xprc_8h.html#ga4775c570e83214c75ca9203731b42da0":[2,1,19],
 "xprc_8h.html#ga4ae04635e1799c1fff8a1bf0acd7f10e":[2,1,52],
 "xprc_8h.html#ga50aa5032cdcaeca063861ce9721b7d63":[2,1,27],
+"xprc_8h.html#ga51e9679d6d99b32bfafc1a8543556297":[2,1,59],
 "xprc_8h.html#ga5346393630cac26838b9e6e86bfe9984":[2,1,3],
 "xprc_8h.html#ga56a06e365802436f80d9e0e9bf847d84":[2,1,0],
 "xprc_8h.html#ga5d1f98795d57eed9f8b76ebd54acc13a":[2,1,17],
 "xprc_8h.html#ga5ea4fc7d3365e1ae3a715a8fd211bd0a":[2,1,15],
 "xprc_8h.html#ga5f3f8c49b7a3b3c99bfb50c4efea8cb2":[2,1,8],
-"xprc_8h.html#ga61ee29cca9dae9f18fb9a635f5c0a4b2":[2,1,59],
 "xprc_8h.html#ga66ef8c25b6a68047e74a6d30d215ebf9":[2,1,69],
 "xprc_8h.html#ga68500090fce37412d50582e2f231658c":[2,1,39],
 "xprc_8h.html#ga68b3c078f983cdd88610c062f2eff5fb":[2,1,25],
@@ -233,10 +234,10 @@ var NAVTREEINDEX0 =
 "xprc__selftest_8c.html#gaf15c985cf911548b53252824dc933313":[2,4,1],
 "xprc__selftest_8c.html#gaf1fd82200fe71d1518e59cb6ff84e395":[2,4,0],
 "xprc__selftest__example_8c.html":[2,5],
+"xprc__selftest__example_8c.html#a7c91e2956ed694cc32af7ec60f153f96":[2,5,0],
 "xprc__selftest__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,5,1],
-"xprc__selftest__example_8c.html#a8b9a561e87ed5c954c36c0560a53633d":[2,5,3],
-"xprc__selftest__example_8c.html#abe6791e387b3717786af2eed5ab74b8a":[2,5,0],
+"xprc__selftest__example_8c.html#abeb4848ef5535bada5cd3482fe992e9f":[2,5,3],
 "xprc__selftest__example_8c.html#gaf1fd82200fe71d1518e59cb6ff84e395":[2,5,2],
 "xprc__sinit_8c.html":[2,6],
-"xprc__sinit_8c.html#ga61ee29cca9dae9f18fb9a635f5c0a4b2":[2,6,0]
+"xprc__sinit_8c.html#ga51e9679d6d99b32bfafc1a8543556297":[2,6,0]
 };

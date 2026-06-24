@@ -27,6 +27,8 @@ var files =
     [ "xdprxss_iic.h", "xdprxss__iic_8h.html", "xdprxss__iic_8h" ],
     [ "xdprxss_intr.c", "xdprxss__intr_8c.html", "xdprxss__intr_8c" ],
     [ "xdprxss_intr_example.c", "xdprxss__intr__example_8c.html", "xdprxss__intr__example_8c" ],
+    [ "xdprxss_mcdp6000.c", "xdprxss__mcdp6000_8c.html", "xdprxss__mcdp6000_8c" ],
+    [ "xdprxss_mcdp6000.h", "xdprxss__mcdp6000_8h.html", "xdprxss__mcdp6000_8h" ],
     [ "xdprxss_mst_example.c", "xdprxss__mst__example_8c.html", "xdprxss__mst__example_8c" ],
     [ "xdprxss_selftest.c", "xdprxss__selftest_8c.html", "xdprxss__selftest_8c" ],
     [ "xdprxss_selftest_example.c", "xdprxss__selftest__example_8c.html", "xdprxss__selftest__example_8c" ],

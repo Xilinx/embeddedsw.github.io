@@ -3,7 +3,6 @@ var struct_x_t_m_r___manager___config =
     [ "BrkDelayRstValue", "struct_x_t_m_r___manager___config.html#ab5028443b50f20268cdbaa3505434587", null ],
     [ "BrkDelayWidth", "struct_x_t_m_r___manager___config.html#aea5febd4b3d76611b3ead50ba72cc664", null ],
     [ "ComparatorsMask", "struct_x_t_m_r___manager___config.html#a5638cd043ab056eab8ac0f3b1e86f6cd", null ],
-    [ "DeviceId", "struct_x_t_m_r___manager___config.html#a8aae41d2320558d5af6041bb75c8d1a0", null ],
     [ "Magic1", "struct_x_t_m_r___manager___config.html#a2c2492ecb0c3e378b52e354cb96e4889", null ],
     [ "Magic2", "struct_x_t_m_r___manager___config.html#a30d66a419e6d060f07c78ead0d13fda5", null ],
     [ "MaskRstValue", "struct_x_t_m_r___manager___config.html#a401aee407942cb10d557e9fc482359f0", null ],

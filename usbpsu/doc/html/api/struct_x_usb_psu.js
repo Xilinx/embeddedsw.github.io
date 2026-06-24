@@ -1,6 +1,5 @@
 var struct_x_usb_psu =
 [
-    [ "__attribute__", "struct_x_usb_psu.html#a16185b181b6f7e532c1a54fc5aebda29", null ],
     [ "ALIGNMENT_CACHELINE", "struct_x_usb_psu.html#adfd72916c2cb464e04951ed9151b1173", null ],
     [ "ALIGNMENT_CACHELINE", "struct_x_usb_psu.html#a047ab6cc318e18dfe9e0e875fa7bf02f", null ],
     [ "AppData", "struct_x_usb_psu.html#a7d063081dccb62284227b99de12fd40a", null ],
@@ -17,6 +16,7 @@ var struct_x_usb_psu =
     [ "Ep0State", "struct_x_usb_psu.html#a3feb0ce5e323beddab4bd2ed7f05cb7d", null ],
     [ "EpParams", "struct_x_usb_psu.html#aed5d70302a79377b093aa8a7ab8c1ea4", null ],
     [ "eps", "struct_x_usb_psu.html#a1e77666264bd13605a6ab7e7d82cda33", null ],
+    [ "EventBuffer", "struct_x_usb_psu.html#a745947b0e9ccf61ace8de7e84d77763f", null ],
     [ "Evt", "struct_x_usb_psu.html#abed0f73af5cd1d46f7dd9b632ff952ab", null ],
     [ "HasHibernation", "struct_x_usb_psu.html#a050cc34c0d7cc36465d4bc7b9a51c22e", null ],
     [ "IsConfigDone", "struct_x_usb_psu.html#a08f67def1d92b23c1988c830f4d8b83f", null ],

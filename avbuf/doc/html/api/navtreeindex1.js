@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"xavbuf__hw_8h.html#a9d69880ed1826e14c1b5946cf53ae333":[2,4,131],
+"xavbuf__hw_8h.html#a9ddccc69ea312cb21630ba04ed29a768":[2,4,53],
+"xavbuf__hw_8h.html#a9e7d09a0f428691c7f31d681822510e8":[2,4,94],
+"xavbuf__hw_8h.html#aa01577731c2335ae8d2788c64999c0ad":[2,4,82],
 "xavbuf__hw_8h.html#aa02d20dedcdf7f2e6825bb20b4ce7db4":[2,4,73],
 "xavbuf__hw_8h.html#aa4c925b4bbea76bd48e5a261b9c39ada":[2,4,5],
 "xavbuf__hw_8h.html#aa71fc12e040d5f0f82f78a1332eca538":[2,4,44],

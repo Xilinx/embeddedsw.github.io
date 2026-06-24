@@ -1,5 +1,6 @@
 var xdppsu__hw_8h =
 [
+    [ "XDPPSU_0_LANE_COUNT", "xdppsu__hw_8h.html#a139664695de09c3e8f3f395489903085", null ],
     [ "XDPPSU_AUX_ADDRESS", "xdppsu__hw_8h.html#a2106632c315d3ad5f685330476ca417c", null ],
     [ "XDPPSU_AUX_CLK_DIVIDER", "xdppsu__hw_8h.html#aadb1a6ac37fc2e571c2a0c5ba90ece94", null ],
     [ "XDPPSU_AUX_CLK_DIVIDER_AUX_SIG_WIDTH_FILT_MASK", "xdppsu__hw_8h.html#a8a8f30af26ba6f80237373d534a05e4d", null ],

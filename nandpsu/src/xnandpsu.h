@@ -1,6 +1,6 @@
-/******************************************************************************
+/*****************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -159,6 +159,9 @@
 * 1.13  akm    02/13/24    Ensure buffer cache sync.
 * 1.13  akm    02/13/24    Avoid loop counter reset.
 * 1.13  akm    02/13/24    Always wrap page to device size.
+* 1.16  vlt    12/30/25    Update Doxygen comments to include SDT flow details.
+* 1.16  vlt    03/14/26    Updated BaseAddress type from u32 to UINTPTR
+*                          to support 64-bit addressing.
 *
 * </pre>
 *
@@ -226,9 +229,9 @@ typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< Instance ID of NAND flash controller */
 #else
-	char *Name;
+	char *Name;             /**< Name of the device */
 #endif
-	u32 BaseAddress;	/**< Base address of NAND flash controller */
+	UINTPTR BaseAddress;	/**< Base address of NAND flash controller */
 	u8 IsCacheCoherent;	/**< Describes whether Cache Coherent or not */
 #if defined  (XCLOCKING)
 	u32 RefClk;		/**< Input clocks */

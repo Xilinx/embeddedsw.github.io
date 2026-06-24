@@ -17,7 +17,7 @@ var xdmaps_8h =
     [ "XDmaPs_Instr_DMARMB", "xdmaps_8h.html#gaa69b5ac5fd75de6d5d0b1039d7151573", null ],
     [ "XDmaPs_Instr_DMAWMB", "xdmaps_8h.html#ga92af9b1850b76f149a716a3f6907e951", null ],
     [ "XDmaPs_IsActive", "xdmaps_8h.html#ga05047e523efd0dcc0e1f3ba16a32a796", null ],
-    [ "XDmaPs_LookupConfig", "xdmaps_8h.html#gaded11d6e3cc80b1604cf0af0da063b35", null ],
+    [ "XDmaPs_LookupConfig", "xdmaps_8h.html#ga71854a1c11448fcf36b1b4f0796fd442", null ],
     [ "XDmaPs_Print_DmaProg", "xdmaps_8h.html#ga24d151e510be2f13777cc85a563c6bbd", null ],
     [ "XDmaPs_ResetChannel", "xdmaps_8h.html#ga593458e8f6ac55566fc235e8a93b9890", null ],
     [ "XDmaPs_ResetManager", "xdmaps_8h.html#ga65cc22a994eb1ca6a9c56d86d469242e", null ],

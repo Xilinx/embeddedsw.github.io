@@ -1,6 +1,8 @@
 var struct_x_spi_ps =
 [
     [ "Config", "struct_x_spi_ps.html#a2f23279c800d3c5e2d91622b1fa64aeb", null ],
+    [ "FifoDepth", "struct_x_spi_ps.html#af5e8e57ef21ac901b667eeed03691bf4", null ],
+    [ "FifoWidth", "struct_x_spi_ps.html#aacd3809d776effaef3ef67aefc2fc800", null ],
     [ "IsBusy", "struct_x_spi_ps.html#a27b2c7d9c85bbe889cead27c5c384979", null ],
     [ "IsReady", "struct_x_spi_ps.html#a2b4bc94dfb1fa4b10dd398b6e2632d05", null ],
     [ "RecvBufferPtr", "struct_x_spi_ps.html#a4c8a252eaab49a4fa19fcd688f36fea6", null ],

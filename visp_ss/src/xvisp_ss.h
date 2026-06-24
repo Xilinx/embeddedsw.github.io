@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2025 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -123,18 +123,10 @@ xvisp_ss_Config *XVisp_Ss_LookupConfig(UINTPTR BaseAddress);
  */
 int XVisp_Ss_CfgInitialize(XVisp_Ss *InstancePtr, xvisp_ss_Config *Config,
 			   UINTPTR EffectiveAddr);
-void XVisp_Ss_Enable(XVisp_Ss *InstancePtr);
-void XVisp_Ss_Disable(XVisp_Ss *InstancePtr);
-void XVisp_Ss_Reset(XVisp_Ss *InstancePtr);
-
-/*
- * Configuration printing function
- */
-void XVisp_Ss_PrintConfig(XVisp_Ss *InstancePtr);
 
 void reset_isp2rpu_mapping();
 void init_isp2rpu_mapping(u32 rpu_id, u32 isp_id);
-void selectDestinationCore(u32 ispid);
+int selectDestinationCore(u32 ispid);
 
 #ifdef __cplusplus
 }

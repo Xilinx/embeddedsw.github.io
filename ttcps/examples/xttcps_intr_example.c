@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,7 +36,7 @@
 *                      XTtcPs_CalcIntervalFromFreq
 * 3.10 mus    05/20/19 Update example to make it generic to run on any
 *                      intended TTC device
-*      aru    05/30/19 Updated the exapmle to use XTtcPs_InterruptHandler().
+*      aru    05/30/19 Updated the example to use XTtcPs_InterruptHandler().
 * 3.12 mus    07/13/20 Updated SettingsTable, to hold settings for PWM and tick
 *                       timer device setting at correct indices. It fixes
 *                       CR#1069191.
@@ -46,6 +46,9 @@
 * 3.18 ml     03/06/24 Added support for system device-tree flow.
 * 3.21 ml     02/05/25 Fixed compilation warnings and errors
 * 3.22 ml     07/24/25 Fixed ARMCC compilation error
+* 3.23 bdk    12/08/25 Updated comments to support SDT flow for Doxygen
+*                      documentation.
+* 3.23 ml     02/03/26 Fix codespell warnings
 *</pre>
 ******************************************************************************/
 
@@ -571,11 +574,17 @@ int WaitForDutyCycleFull(void)
 *  . set options
 *  . set interval and prescaler value for given output frequency.
 *
+* @if SDT
+* @param	Index is the index in the SettingsTable.
+* @param	BaseAddr is the base address of the TTC device.
+* @else
 * @param	DeviceID is the unique ID for the device.
+* @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
-* @note		None.
+* @note		In XSCT/classic flow, DeviceID is used to look up the device
+*		configuration.
 *
 *****************************************************************************/
 #ifndef SDT

@@ -1,5 +1,7 @@
-// Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+// Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 #include <hal_ps_i2c.h>
+
+#define I2C_BUS_TIMEOUT_COUNT 1000000U
 
 XIicPs g_Iic[3];
 
@@ -8,6 +10,11 @@ int Xil_IICWritepolled16(XIicPs *Config, u8 *sdata, u32 size, u16 regoffset,
 {
 	int Status;
 	u8 senddata[4];
+
+	if (size > 2) {
+		xil_printf("Xil_IICWritepolled16: size %u exceeds buffer\r\n", size);
+		return XST_FAILURE;
+	}
 
 	senddata[0] = (regoffset >> 8) & 0xFF;
 	senddata[1] = regoffset & 0xFF;
@@ -25,8 +32,14 @@ int Xil_IICWritepolled16(XIicPs *Config, u8 *sdata, u32 size, u16 regoffset,
 	/*
 	 * Wait until bus is idle to start another transfer.
 	 */
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 	return XST_SUCCESS;
 }
@@ -54,8 +67,14 @@ int Xil_IICWritepolled(XIicPs *Config, u8 *sdata, u32 size, u16 regoffset,
 	/*
 	 * Wait until bus is idle to start another transfer.
 	 */
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 	return XST_SUCCESS;
 }
@@ -77,8 +96,14 @@ int Xil_IICReadpolled(XIicPs *Config, u8 *RecvBuffer, u16 offset, s32 readsize,
 	/*
 	 * Wait until bus is idle to start another transfer.
 	 */
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 
 	Status = XIicPs_MasterRecvPolled(Config, RecvBuffer, readsize, i2c_addrs);
@@ -87,8 +112,14 @@ int Xil_IICReadpolled(XIicPs *Config, u8 *RecvBuffer, u16 offset, s32 readsize,
 		return XST_FAILURE;
 	}
 	xil_printf("wait for data\n");
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 
 	for (int Index = 0; Index < readsize; Index++) {
@@ -118,8 +149,14 @@ int Xil_IICReadpolled_16bit(XIicPs *Config, u8 *RecvBuffer, u16 offset,
 	/*
 	 * Wait until bus is idle to start another transfer.
 	 */
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 
 	Status = XIicPs_MasterRecvPolled(Config, RecvBuffer, readsize, i2c_addrs);
@@ -128,8 +165,14 @@ int Xil_IICReadpolled_16bit(XIicPs *Config, u8 *RecvBuffer, u16 offset,
 		return XST_FAILURE;
 	}
 	xil_printf("wait for data\n");
-	while (XIicPs_BusIsBusy(Config)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(Config)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 
 	for (int Index = 0; Index < readsize; Index++) {
@@ -183,11 +226,17 @@ static s32 MuxInitChannel(XIicPs IicInstance, u16 MuxIicAddr, u8 WriteBuffer)
 {
 	u8 Buffer = 0;
 	s32 Status = 0;
+	u32 timeout;
 	/*
 	 * 	 * Wait until bus is idle to start another transfer.
 	 * 	 	 */
-	while (XIicPs_BusIsBusy(&IicInstance))
-		;
+	timeout = I2C_BUS_TIMEOUT_COUNT;
+	while (XIicPs_BusIsBusy(&IicInstance)) {
+		if (--timeout == 0) {
+			xil_printf("I2C bus timeout\r\n");
+			return XST_FAILURE;
+		}
+	}
 
 	/*
 	 * 	 * Send the Data.
@@ -201,8 +250,13 @@ static s32 MuxInitChannel(XIicPs IicInstance, u16 MuxIicAddr, u8 WriteBuffer)
 	/*
 	 * 	 * Wait until bus is idle to start another transfer.
 	 * 	 	 */
-	while (XIicPs_BusIsBusy(&IicInstance))
-		;
+	timeout = I2C_BUS_TIMEOUT_COUNT;
+	while (XIicPs_BusIsBusy(&IicInstance)) {
+		if (--timeout == 0) {
+			xil_printf("I2C bus timeout\r\n");
+			return XST_FAILURE;
+		}
+	}
 
 	/*
 	 * 	 * Receive the Data.
@@ -217,8 +271,13 @@ static s32 MuxInitChannel(XIicPs IicInstance, u16 MuxIicAddr, u8 WriteBuffer)
 	/*
 	 * 	 * Wait until bus is idle to start another transfer.
 	 * 	 	 */
-	while (XIicPs_BusIsBusy(&IicInstance))
-		;
+	timeout = I2C_BUS_TIMEOUT_COUNT;
+	while (XIicPs_BusIsBusy(&IicInstance)) {
+		if (--timeout == 0) {
+			xil_printf("I2C bus timeout\r\n");
+			return XST_FAILURE;
+		}
+	}
 
 	return XST_SUCCESS;
 }
@@ -247,8 +306,14 @@ int i2cPs_write32(XIicPs *iic_instance, u8 chipAddress, u32 addr, u32 data)
 	/*
 	 * Wait until bus is idle to start another transfer.
 	 */
-	while (XIicPs_BusIsBusy(iic_instance)) {
-		/* NOP */
+	{
+		u32 timeout = I2C_BUS_TIMEOUT_COUNT;
+		while (XIicPs_BusIsBusy(iic_instance)) {
+			if (--timeout == 0) {
+				xil_printf("I2C bus timeout\r\n");
+				return XST_FAILURE;
+			}
+		}
 	}
 	return XST_SUCCESS;
 }
@@ -274,7 +339,7 @@ RESULT Xil_psI2c_HalI2cInit(uint8_t bus_num)
 	Status = MuxInitChannel(g_Iic[IIC_DEVICE_ID], i2c_slv_addr_mux,
 				0x6);
 	if (Status == XST_SUCCESS)
-		xil_printf("succesfully Init Mux\r\n");
+		xil_printf("successfully Init Mux\r\n");
 
 	xil_printf("Muxer Data Read is:[0]:0x%x\n", read_data[0]);
 
@@ -289,10 +354,10 @@ RESULT Xil_psI2c_HalI2cReadReg(u8 bus_num, u8 slave_addr, u32 reg_address,
 	xil_printf("Inside hal read i2c register \r\n");
 
 	if (reg_addr_size == 1)
-		status = Xil_IICReadpolled(iic_instance, preg_value, reg_addr_size, reg_address, slave_addr);
+		status = Xil_IICReadpolled(iic_instance, preg_value, (u16)reg_address, datacount, slave_addr);
 	else if (reg_addr_size == 2) {
 		xil_printf("reg addr size is 2:0x%x\r\n", reg_address);
-		status = Xil_IICReadpolled_16bit(iic_instance, preg_value, reg_addr_size, reg_address, slave_addr);
+		status = Xil_IICReadpolled_16bit(iic_instance, preg_value, (u16)reg_address, datacount, slave_addr);
 	} else
 		xil_printf("will support only reg_addr_size = 1 and 2\n");
 	return status;

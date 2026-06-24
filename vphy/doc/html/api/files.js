@@ -1,7 +1,6 @@
 var files =
 [
     [ "xvphy.c", "xvphy_8c.html", "xvphy_8c" ],
-    [ "xvphy.h", "xvphy_8h.html", "xvphy_8h" ],
     [ "xvphy_dp.c", "xvphy__dp_8c.html", null ],
     [ "xvphy_gt.h", "xvphy__gt_8h.html", null ],
     [ "xvphy_gthe2.c", "xvphy__gthe2_8c.html", null ],

@@ -142,6 +142,6 @@ var NAVTREEINDEX1 =
 "xsysmonpsu__single__ch__intr__example_8c.html#a6f2a932c9e346a5009826057a3e7bd69":[2,10,1],
 "xsysmonpsu__single__ch__intr__example_8c.html#a840291bc02cba5474a4cb46a9b9566fe":[2,10,0],
 "xsysmonpsu__sinit_8c.html":[2,11],
-"xsysmonpsu__sinit_8c.html#a65becc393896f94ab4e9ecfea325b805":[2,11,1],
-"xsysmonpsu__sinit_8c.html#a948f08280b6195869015382d92ba8a50":[2,11,0]
+"xsysmonpsu__sinit_8c.html#a5786b89f1402c9448a7f7e5acbbae649":[2,11,1],
+"xsysmonpsu__sinit_8c.html#a58103c6523a6624346c905932a73d71b":[2,11,0]
 };

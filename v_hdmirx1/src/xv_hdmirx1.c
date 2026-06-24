@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 – 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -1251,11 +1251,13 @@ void XV_HdmiRx1_Info(XV_HdmiRx1 *InstancePtr)
 ******************************************************************************/
 void XV_HdmiRx1_DebugInfo(XV_HdmiRx1 *InstancePtr)
 {
+#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 	u32 FrlStatus;
-	u32 Data;
 	u32 Data1;
-	u32 PioIn;
 	u32 DbgSta;
+#endif
+	u32 Data;
+	u32 PioIn;
 
 	/* Verify argument. */
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1961,7 +1963,8 @@ int XV_HdmiRx1_GetVideoTiming(XV_HdmiRx1 *InstancePtr)
 
 	/* If the colorspace is YUV420, then the
 	 * horizontal parameters must be doubled*/
-	if (InstancePtr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420) {
+	if ((InstancePtr->Stream.Video.ColorFormatId == XVIDC_CSF_YCRCB_420) &&
+		(!DscEnabledStream)) {
 		YUV420_Correction = 2;
 	} else {
 		YUV420_Correction = 1;
@@ -2795,7 +2798,6 @@ u32 XV_HdmiRx1_DSC_IsEnableStream(XV_HdmiRx1 *InstancePtr)
 	return ((tmp & XV_HDMIRX1_PIO_IN_DSC_EN_STRM_MASK) ? 1 : 0);
 }
 
-#ifdef XPAR_XV_HDMI_RX_FRL_ENABLE
 /*****************************************************************************/
 /**
 *
@@ -2850,4 +2852,3 @@ int XV_HdmiRx1_DSC_SetDscFrlMax(XV_HdmiRx1 *InstancePtr)
 					   XV_HDMIRX1_SCDCFIELD_DSC_FRL_MAX,
 					   1);
 }
-#endif

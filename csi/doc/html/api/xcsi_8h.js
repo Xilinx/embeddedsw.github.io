@@ -30,7 +30,7 @@ var xcsi_8h =
     [ "XCsi_IntrEnable", "xcsi_8h.html#gacd995a7fb82069ad196da70b4d033f19", null ],
     [ "XCsi_IntrHandler", "xcsi_8h.html#ga965f0a1afd6a596528c1d68642a65911", null ],
     [ "XCsi_IsActiveLaneCountValid", "xcsi_8h.html#ga60136f55dc84f4b4dde66f187b09a78d", null ],
-    [ "XCsi_LookupConfig", "xcsi_8h.html#gab1b26db795947d7a9f130f35649dcd18", null ],
+    [ "XCsi_LookupConfig", "xcsi_8h.html#gac89089fe9b80fea0262fa85526190e7f", null ],
     [ "XCsi_Reset", "xcsi_8h.html#ga0069d82265929da556da847513183dc5", null ],
     [ "XCsi_SelfTest", "xcsi_8h.html#gab06eaea50112054c5a19ea52976d00e9", null ],
     [ "XCsi_SetCallBack", "xcsi_8h.html#gacb1df45621d8075df1f159781ae4936e", null ],

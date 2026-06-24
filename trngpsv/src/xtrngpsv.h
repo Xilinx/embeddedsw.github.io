@@ -1,6 +1,6 @@
 /**************************************************************************************************
 * Copyright (C) 2021 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 **************************************************************************************************/
 
@@ -8,7 +8,7 @@
 /**
  *
  * @file xtrngpsv.h
- * @addtogroup Overview
+ * @addtogroup trngpsv_api TRNGPSV APIs
  * @{
  * @details
  *
@@ -74,6 +74,7 @@
  * 1.1   ssc  03/24/22 New error code XTRNGPSV_ERROR_GLITCH and doxygen fixes
  * 1.4   mmd  07/10/23 Included header file for crypto algorithm information
  *       ng   06/30/23 Added support for system device-tree flow
+ * 1.8   bha  01/07/26 Fixed Doxygen warnings
  * </pre>
  *
  ******************************************************************************/
@@ -126,55 +127,55 @@ extern "C" {
 
 /* Error codes definition */
 typedef enum {
-	XTRNGPSV_ERROR_INVALID_PARAM = 0x10, /**< 0x10 */
-	XTRNGPSV_ERROR_INVALID_STATE, /**< 0x11 */
-	XTRNGPSV_ERROR_UNNECESSARY_PARAM, /**< 0x12 */
-	XTRNGPSV_ERROR_GLITCH,  /**< 0x13 */
+	XTRNGPSV_ERROR_INVALID_PARAM = 0x10, /**< 0x10 - Invalid parameter passed to function */
+	XTRNGPSV_ERROR_INVALID_STATE, /**< 0x11 - Invalid driver state for requested operation */
+	XTRNGPSV_ERROR_UNNECESSARY_PARAM, /**< 0x12 - Unnecessary parameter provided */
+	XTRNGPSV_ERROR_GLITCH,  /**< 0x13 - Glitch detected during operation */
 
 	/* Error codes from Instantiation operation */
-	XTRNGPSV_ERROR_NOT_UNINSTANTIATED = 0x20, /**< 0x20 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_MODE, /**< 0x21 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_SEEDLIFE, /**< 0x22 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_PREDRES, /**< 0x23 */
-	XTRNGPSV_ERROR_NO_SEED_INSTANTIATE, /**< 0x24 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_DFDIS, /**< 0x25 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_DFLENMUL, /**< 0x26 */
-	XTRNGPSV_ERROR_USRCFG_CPY, /**< 0x27 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_PERSPRES, /**< 0x28 */
-	XTRNGPSV_ERROR_INVALID_USRCFG_SEEDPRES, /**< 0x29 */
-	XTRNGPSV_ERROR_UNNECESSARY_PARAM_INSTANTIATE, /**< 0x2A */
+	XTRNGPSV_ERROR_NOT_UNINSTANTIATED = 0x20, /**< 0x20 - Driver not in uninstantiated state */
+	XTRNGPSV_ERROR_INVALID_USRCFG_MODE, /**< 0x21 - Invalid TRNG mode in user configuration */
+	XTRNGPSV_ERROR_INVALID_USRCFG_SEEDLIFE, /**< 0x22 - Invalid seed life value in user configuration */
+	XTRNGPSV_ERROR_INVALID_USRCFG_PREDRES, /**< 0x23 - Invalid prediction resistance setting in user configuration */
+	XTRNGPSV_ERROR_NO_SEED_INSTANTIATE, /**< 0x24 - No seed provided for instantiation in DRNG mode */
+	XTRNGPSV_ERROR_INVALID_USRCFG_DFDIS, /**< 0x25 - Invalid derivative function disable setting */
+	XTRNGPSV_ERROR_INVALID_USRCFG_DFLENMUL, /**< 0x26 - Invalid DF length multiplier in user configuration */
+	XTRNGPSV_ERROR_USRCFG_CPY, /**< 0x27 - Error copying user configuration */
+	XTRNGPSV_ERROR_INVALID_USRCFG_PERSPRES, /**< 0x28 - Invalid personalization string presence flag */
+	XTRNGPSV_ERROR_INVALID_USRCFG_SEEDPRES, /**< 0x29 - Invalid initial seed presence flag */
+	XTRNGPSV_ERROR_UNNECESSARY_PARAM_INSTANTIATE, /**< 0x2A - Unnecessary parameter provided during instantiation */
 
 	/* Error codes from Reseed operation*/
-	XTRNGPSV_ERROR_NO_SEED = 0x30, /**< 0x30 */
-	XTRNGPSV_ERROR_SEED_INVALID_MODE, /**< 0x31 */
-	XTRNGPSV_ERROR_SAME_SEED, /**< 0x32 */
-	XTRNGPSV_ERROR_INVALID_RESEED_DFLENMUL, /**< 0x33 */
-	XTRNGPSV_ERROR_CERTF, /**< 0x34 */
-	XTRNGPSV_ERROR_CERTF_SW_A5_PATTERN, /**< 0x35 */
-	XTRNGPSV_ERROR_RESEED_TIMEOUT, /**< 0x36 */
-	XTRNGPSV_ERROR_CPY_RESEED,  /**< 0x37 */
+	XTRNGPSV_ERROR_NO_SEED = 0x30, /**< 0x30 - No seed provided for reseed operation */
+	XTRNGPSV_ERROR_SEED_INVALID_MODE, /**< 0x31 - Seed operation not valid for current mode */
+	XTRNGPSV_ERROR_SAME_SEED, /**< 0x32 - Same seed used as previous reseed */
+	XTRNGPSV_ERROR_INVALID_RESEED_DFLENMUL, /**< 0x33 - Invalid DF length multiplier for reseed */
+	XTRNGPSV_ERROR_CERTF, /**< 0x34 - Certification test failure detected */
+	XTRNGPSV_ERROR_CERTF_SW_A5_PATTERN, /**< 0x35 - Software A5 pattern check failed during certification test */
+	XTRNGPSV_ERROR_RESEED_TIMEOUT, /**< 0x36 - Timeout occurred during reseed operation */
+	XTRNGPSV_ERROR_CPY_RESEED,  /**< 0x37 - Error copying data during reseed */
 
 	/* Error codes from Generate operation*/
-	XTRNGPSV_ERROR_INSUFFICIENT_RANDBUF = 0x40, /**< 0x40 */
-	XTRNGPSV_ERROR_PREDRES_MISMATCH, /**< 0x41 */
-	XTRNGPSV_ERROR_RESEEDING_REQUIRED, /**< 0x42 */
-	XTRNGPSV_ERROR_RESEED_REQD_PREDRES, /**< 0x43 */
-	XTRNGPSV_ERROR_INVALID_GEN_PREDRES, /**< 0x44 */
-	XTRNGPSV_ERROR_CATASTROPHIC_DTF, /**< 0x45 */
-	XTRNGPSV_ERROR_CATASTROPHIC_DTF_SW, /**< 0x46 */
-	XTRNGPSV_ERROR_GENERATE_TIMEOUT, /**< 0x47 */
-	XTRNGPSV_ERROR_INVALID_RANDBUF_ADDR, /**< 0x48 */
+	XTRNGPSV_ERROR_INSUFFICIENT_RANDBUF = 0x40, /**< 0x40 - Random buffer size insufficient */
+	XTRNGPSV_ERROR_PREDRES_MISMATCH, /**< 0x41 - Prediction resistance setting mismatch */
+	XTRNGPSV_ERROR_RESEEDING_REQUIRED, /**< 0x42 - Reseeding required before generate */
+	XTRNGPSV_ERROR_RESEED_REQD_PREDRES, /**< 0x43 - Reseed required due to prediction resistance */
+	XTRNGPSV_ERROR_INVALID_GEN_PREDRES, /**< 0x44 - Invalid prediction resistance value for generate */
+	XTRNGPSV_ERROR_CATASTROPHIC_DTF, /**< 0x45 - Catastrophic deterministic test failure */
+	XTRNGPSV_ERROR_CATASTROPHIC_DTF_SW, /**< 0x46 - Software detected catastrophic DTF */
+	XTRNGPSV_ERROR_GENERATE_TIMEOUT, /**< 0x47 - Timeout occurred during generate operation */
+	XTRNGPSV_ERROR_INVALID_RANDBUF_ADDR, /**< 0x48 - Invalid random buffer address */
 
 	/* Derivative Function related Error codes */
-	XTRNGPSV_ERROR_DF_CPY = 0x50, /**< 0x50 */
-	XTRNGPSV_ERROR_DF_SETUP_KEY_FAILED, /**< 0x51 */
-	XTRNGPSV_ERROR_DF_MEMSET,/**< 0x52 */
-	XTRNGPSV_ERROR_DF_MEMMOVE,/**< 0x53 */
+	XTRNGPSV_ERROR_DF_CPY = 0x50, /**< 0x50 - Error copying data for derivative function */
+	XTRNGPSV_ERROR_DF_SETUP_KEY_FAILED, /**< 0x51 - Failed to setup key for derivative function */
+	XTRNGPSV_ERROR_DF_MEMSET,/**< 0x52 - Memory set error in derivative function */
+	XTRNGPSV_ERROR_DF_MEMMOVE,/**< 0x53 - Memory move error in derivative function */
 
 	/* Health Test and KAT related Error codes */
-	XTRNGPSV_ERROR_HEALTHTEST_INVALID_MODE = 0x60, /**< 0x60 */
-	XTRNGPSV_ERROR_KAT_MISMATCH, /**< 0x61 */
-	XTRNGPSV_ERROR_USRCFG_CPY_KAT, /**< 0x62 */
+	XTRNGPSV_ERROR_HEALTHTEST_INVALID_MODE = 0x60, /**< 0x60 - Invalid mode for health test */
+	XTRNGPSV_ERROR_KAT_MISMATCH, /**< 0x61 - Known Answer Test output mismatch */
+	XTRNGPSV_ERROR_USRCFG_CPY_KAT, /**< 0x62 - Error copying user configuration during KAT */
 } XTrngpsv_ErrorCodes;
 
 /************************************** Type Definitions *****************************************/
@@ -194,7 +195,9 @@ typedef enum {
 	XTRNGPSV_PTRNG /**< 2 - Physical True RNG */
 } XTrngpsv_Mode;
 
-/* This typedef contains configuration information for the device */
+/**
+ * This structure contains configuration information for the TRNGPSV device.
+ */
 typedef struct {
 #ifndef SDT
 	u16 DeviceId;		/**< DeviceId is the unique ID of the
@@ -206,10 +209,13 @@ typedef struct {
 					*  of the device's registers */
 } XTrngpsv_Config;
 
-/* This typedef contains config information for the device, which is used during Instantiation */
+/**
+ * This structure contains configuration information for the device,
+ * which is used during instantiation.
+ */
 typedef struct {
 	XTrngpsv_Mode Mode; /**< Mode of the TRNG - DRBG/PTRNG/HRNG */
-	u64 SeedLife; /**< #of Generate requests per seed (128 - 2^48)*/
+	u64 SeedLife; /**< Number of Generate requests per seed (128 - 2^48)*/
 	u32 PredResistanceEn; /**< Enables Prediction Resistance capability */
 	u32 PersStrPresent; /**< Used to indicate if Personalization string is
 	 present. FALSE => no personalization string */
@@ -224,15 +230,18 @@ typedef struct {
 	 on the input of the DF construct */
 } XTrngpsv_UsrCfg;
 
-/* This typedef contains statistics of the TRNGPSV driver */
+/**
+ * This structure contains statistics information for the TRNGPSV driver.
+ */
 typedef struct {
 	u64 RandBytes; /**< Number of random bytes provided since instantiate */
 	u64 RandBytesReseed; /**< Random bytes generated after last reseed */
 	u64 ElapsedSeedLife; /**< Generate requests done after last reseed */
 } XTrngpsv_Stats;
 
-/* This typedef contains the format in which the Block Cipher (DF) algorithm
- * expects the information
+/**
+ * This structure contains the format in which the Block Cipher (DF) algorithm
+ * expects the information.
  */
 typedef struct {
 	u32 IvCounter[DF_IP_IV_LEN]; /**< Counter/seq number */
@@ -245,7 +254,9 @@ typedef struct {
 	u8 PadData[DF_PAD_DATA_LEN]; /**< Padding to make structure, multiple of 16Bytes */
 } XTrngpsv_DFInput;
 
-/* This typedef contains main instance of the TRNGPSV driver */
+/**
+ * This structure contains all the data and state information for a TRNGPSV device instance.
+ */
 typedef struct {
 	XTrngpsv_Config Config; /**< Hardware Configuration */
 	XTrngpsv_UsrCfg UsrCfg; /**< Configuration from the user */

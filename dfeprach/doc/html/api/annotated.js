@@ -5,6 +5,7 @@ var annotated =
     [ "XDfePrach_CCCfg", "struct_x_dfe_prach___c_c_cfg.html", "struct_x_dfe_prach___c_c_cfg" ],
     [ "XDfePrach_CCSequence", "struct_x_dfe_prach___c_c_sequence.html", "struct_x_dfe_prach___c_c_sequence" ],
     [ "XDfePrach_Cfg", "struct_x_dfe_prach___cfg.html", "struct_x_dfe_prach___cfg" ],
+    [ "XDfePrach_ChannelCfg", "struct_x_dfe_prach___channel_cfg.html", "struct_x_dfe_prach___channel_cfg" ],
     [ "XDfePrach_Config", "struct_x_dfe_prach___config.html", "struct_x_dfe_prach___config" ],
     [ "XDfePrach_DDCCfg", "struct_x_dfe_prach___d_d_c_cfg.html", "struct_x_dfe_prach___d_d_c_cfg" ],
     [ "XDfePrach_DecimatorStatusOverflow", "struct_x_dfe_prach___decimator_status_overflow.html", "struct_x_dfe_prach___decimator_status_overflow" ],

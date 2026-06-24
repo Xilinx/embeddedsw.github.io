@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -26,11 +26,13 @@
 * 1.7   sne    03/01/19 Added Versal support.
 * 1.7   sne    03/01/19 Fixed violations according to MISRAC-2012 standards
 *                       modified the code such as
-*                       No brackets to loop body,Declared the poiner param
+*                       No brackets to loop body,Declared the pointer param
 *                       as Pointer to const,No brackets to then/else,
 *                       Literal value requires a U suffix,Casting operation to a pointer
 *                       Array has no bounds specified,Logical conjunctions need brackets.
 * 1.13  ht     06/22/23 Added support for system device-tree flow.
+* 1.17  vlt    12/16/25 Update Doxygen comments to include SDT flow details.
+*       vlt    01/30/26 Fixed codespell errors.
 * </pre>
 *
 ******************************************************************************/
@@ -56,16 +58,22 @@
 /*****************************************************************************/
 /**
 *
-* This function looks for the device configuration based on the unique device
-* ID. The table XRtcPsu_ConfigTable[] contains the configuration information for
-* each device in the system.
+* Looks up the device configuration based on the unique device ID/BaseAddress.
+* The XRtcPsu_ConfigTable[] contains the configuration info for each device in
+* the system.
 *
-* @param	DeviceId is the unique device ID of the device being looked up.
+* @if SDT
+* @param	BaseAddress contains the base address of the device
+* @else
+* @param	DeviceId contains the unique ID of the device
+* @endif
 *
-* @return	A pointer to the configuration table entry corresponding to the
-*		given device ID, or NULL if no match is found.
+* @return       A pointer to the configuration found or NULL if the specified
+*               device ID/BaseAddress was not found. See xrtcpsu.h for the
+*               definition of XRtcPsu_Config.
 *
-* @note		None.
+* @note        In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 ******************************************************************************/
 #ifndef SDT

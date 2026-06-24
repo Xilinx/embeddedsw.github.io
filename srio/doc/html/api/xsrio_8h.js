@@ -85,6 +85,6 @@ var xsrio_8h =
     [ "XSrio_GetPortStatus", "xsrio_8h.html#gacbd49fb630e7f2d7c8533d12607ef105", null ],
     [ "XSrio_GetWaterMark", "xsrio_8h.html#ga9eb82f808fa01a1679ed60a026a2a2c7", null ],
     [ "XSrio_IsOperationSupported", "xsrio_8h.html#gafce174875d087f4b3cc4713a1df5446d", null ],
-    [ "XSrio_LookupConfig", "xsrio_8h.html#ga76df4ab1f25c693e6a16050b31756c3d", null ],
+    [ "XSrio_LookupConfig", "xsrio_8h.html#gaf6549db3fb4b21a7715f57041e71f730", null ],
     [ "XSrio_SetWaterMark", "xsrio_8h.html#ga9cb7fbc368f16113382c2a9b4556b601", null ]
 ];

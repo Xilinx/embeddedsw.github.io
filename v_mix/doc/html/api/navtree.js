@@ -3,6 +3,7 @@ var NAVTREE =
   [ "v_mix", "index.html", [
     [ "Data Structures", null, [
       [ "Data Structures", "annotated.html", "annotated" ],
+      [ "Data Structure Index", "classes.html", null ],
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Variables", "functions_vars.html", null ]
@@ -13,7 +14,7 @@ var NAVTREE =
       [ "Functions", "globals_func.html", "globals_func" ],
       [ "Typedefs", "globals_type.html", null ],
       [ "Enumerations", "globals_enum.html", null ],
-      [ "Macros", "globals_defs.html", null ]
+      [ "Macros", "globals_defs.html", "globals_defs" ]
     ] ],
     [ "File List", "files.html", "files" ],
     [ "Examples", "example.html", [
@@ -26,10 +27,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"xv__mix_8c.html#a360d7b31757437fdbbdbfe2e3fbd53af",
-"xv__mix_8c.html#ac250f71b6d51497380a4f6c7869015f1",
-"xv__mix_8h.html#a5eb4444bbab8a01c74913be3e2810d67",
-"xv__mix_8h.html#af8068111690e26da6f88ad03a156ab4f"
+"xv__mix_8c.html#a34ae5fd90dce0ec5e1f467ea82135ae7",
+"xv__mix_8c.html#abff7f6341b8a4f9cfb7704943b93ec16",
+"xv__mix_8h.html#a5dc72eb0cda915d2954cedf8808c1c9c",
+"xv__mix_8h.html#af78a8d327739298106b06ed97f6af0a6",
+"xv__mix__hw_8h.html#a6ab8c3a6d1a3f06668ff9ace8e814a90",
+"xv__mix__hw_8h.html#afb6b092ef064c455a67229fdeaad3afc"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
@@ -80,7 +83,7 @@ function deleteLink()
 {
   if (localStorageSupported()) {
     window.localStorage.setItem('navpath','');
-  } 
+  }
 }
 
 function cachedLink()
@@ -94,21 +97,21 @@ function cachedLink()
 
 function getScript(scriptName,func,show)
 {
-  var head = document.getElementsByTagName("head")[0]; 
+  var head = document.getElementsByTagName("head")[0];
   var script = document.createElement('script');
   script.id = scriptName;
   script.type = 'text/javascript';
-  script.onload = func; 
-  script.src = scriptName+'.js'; 
-  if ($.browser.msie && $.browser.version<=8) { 
+  script.onload = func;
+  script.src = scriptName+'.js';
+  if ($.browser.msie && $.browser.version<=8) {
     // script.onload does not work with older versions of IE
     script.onreadystatechange = function() {
-      if (script.readyState=='complete' || script.readyState=='loaded') { 
-        func(); if (show) showRoot(); 
+      if (script.readyState=='complete' || script.readyState=='loaded') {
+        func(); if (show) showRoot();
       }
     }
   }
-  head.appendChild(script); 
+  head.appendChild(script);
 }
 
 function createIndent(o,domNode,node,level)
@@ -144,7 +147,7 @@ function createIndent(o,domNode,node,level)
     span.style.height  = '22px';
     span.innerHTML = '&nbsp;';
     domNode.appendChild(span);
-  } 
+  }
 }
 
 var animationInProgress = false;
@@ -154,7 +157,7 @@ function gotoAnchor(anchor,aname,updateLocation)
   var pos, docContent = $('#doc-content');
   if (anchor.parent().attr('class')=='memItemLeft' ||
       anchor.parent().attr('class')=='fieldtype' ||
-      anchor.parent().is(':header')) 
+      anchor.parent().is(':header'))
   {
     pos = anchor.parent().position().top;
   } else if (anchor.position()) {
@@ -216,7 +219,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       var aname = '#'+link.split('#')[1];
       var srcPage = stripPath($(location).attr('pathname'));
       var targetPage = stripPath(link.split('#')[0]);
-      a.href = srcPage!=targetPage ? url : "javascript:void(0)"; 
+      a.href = srcPage!=targetPage ? url : "javascript:void(0)";
       a.onclick = function(){
         storeLink(link);
         if (!$(a).parent().parent().hasClass('selected'))
@@ -234,7 +237,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       a.onclick = function() { storeLink(link); }
     }
   } else {
-    if (childrenData != null) 
+    if (childrenData != null)
     {
       a.className = "nolink";
       a.href = "javascript:void(0)";
@@ -283,7 +286,7 @@ function expandNode(o, node, imm, showRoot)
     } else {
       if (!node.childrenVisited) {
         getNode(o, node);
-      } if (imm || ($.browser.msie && $.browser.version>8)) { 
+      } if (imm || ($.browser.msie && $.browser.version>8)) {
         // somehow slideDown jumps to the start of tree for IE9 :-(
         $(node.getChildrenUL()).show();
       } else {
@@ -548,4 +551,3 @@ function initNavTree(toroot,relpath)
      }
   })
 }
-

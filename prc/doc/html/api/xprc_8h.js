@@ -59,7 +59,7 @@ var xprc_8h =
     [ "XPrc_GetVsmState", "xprc_8h.html#ga16cd7447ee658a590b4e84fbcdd655fd", null ],
     [ "XPrc_IsSwTriggerPending", "xprc_8h.html#gabf8e49096fb637345e7d26b56abdea3a", null ],
     [ "XPrc_IsVsmInShutdown", "xprc_8h.html#ga169cd249e2ebac1ec7aaa31c6be22ec0", null ],
-    [ "XPrc_LookupConfig", "xprc_8h.html#ga61ee29cca9dae9f18fb9a635f5c0a4b2", null ],
+    [ "XPrc_LookupConfig", "xprc_8h.html#ga51e9679d6d99b32bfafc1a8543556297", null ],
     [ "XPrc_PrintVsmStatus", "xprc_8h.html#ga284cb34c70c7bcdcd8c94f6843184b33", null ],
     [ "XPrc_ReadStatusReg", "xprc_8h.html#ga1352d5c7fa50ff03c099da95d1f6d368", null ],
     [ "XPrc_SelfTest", "xprc_8h.html#gaf15c985cf911548b53252824dc933313", null ],

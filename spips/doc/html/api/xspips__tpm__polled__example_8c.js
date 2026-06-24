@@ -7,7 +7,7 @@ var xspips__tpm__polled__example_8c =
     [ "SpiPsTpmDataTransfer", "xspips__tpm__polled__example_8c.html#adb7d7d27c1b57f947c6fe9c9f631e98f", null ],
     [ "SpiPsTpmFifoRead", "xspips__tpm__polled__example_8c.html#aae1089233ca34dffe91aee8b4c7756fe", null ],
     [ "SpiPsTpmFifoWrite", "xspips__tpm__polled__example_8c.html#a665e7d79cc5cfe51b6a6bd2c45fe33f6", null ],
-    [ "SpiPsTpmPolledExample", "xspips__tpm__polled__example_8c.html#a9a2394ba0577e0c87e429c0f15cedb9b", null ],
+    [ "SpiPsTpmPolledExample", "xspips__tpm__polled__example_8c.html#ac767f7e806810800729193c6fb892db2", null ],
     [ "SpiPsTpmStatusGet", "xspips__tpm__polled__example_8c.html#abf6b46685d48c16faabf01f702d2cec8", null ],
     [ "SpiPsTpmStatusSet", "xspips__tpm__polled__example_8c.html#ad4fe32c1f6365d4586448ea929b5282d", null ],
     [ "SpiPsTpmTransfer", "xspips__tpm__polled__example_8c.html#ae6c12da3b0c9e3bc49ee620bd6d78e91", null ]

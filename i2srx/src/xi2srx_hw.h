@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -18,7 +18,7 @@
 * Ver   Who    Date     Changes
 * ----- ------ -------- --------------------------------------------------
 * 1.0   kar    01/25/18 Initial release.
-* 2.0   kar    09/28/18 Added justication enable masks and shifts.
+* 2.0   kar    09/28/18 Added justification enable masks and shifts.
 *                       Added left and right justification masks and shifts.
 * </pre>
 *
@@ -59,7 +59,7 @@ extern "C" {
 #define XI2S_RX_AES_CHSTS3_OFFSET 0x5C //!< AES Channel Status 3 Register
 #define XI2S_RX_AES_CHSTS4_OFFSET 0x60 //!< AES Channel Status 4 Register
 #define XI2S_RX_AES_CHSTS5_OFFSET 0x64 //!< AES Channel Status 5 Register
-/* @} */
+/** @} */
 /**
 * @name Core Configuration Register masks and shifts
 * @{
@@ -76,7 +76,7 @@ extern "C" {
 //!< XI2S Data Width bit shift
 #define XI2S_RX_REG_CFG_DWDTH_MASK  (1 << XI2S_RX_REG_CFG_DWDTH_SHIFT)
 //!< XI2S Data Width mask
-/* @} */
+/** @} */
 /**
 * @name Core Control Register masks and shifts
 * @{
@@ -99,7 +99,7 @@ extern "C" {
 #define XI2S_RX_REG_CTRL_LATCH_CHSTS_MASK  \
        	(1 << XI2S_RX_REG_CTRL_LATCH_CHSTS_SHIFT)
 //!< Latch AES Channel Status mask
-/* @} */
+/** @} */
 /**
 * @name Interrupt masks and shifts
 * @{
@@ -118,7 +118,7 @@ extern "C" {
 //!< Global Interrupt Enable bit shift
 #define XI2S_RX_GINTR_EN_MASK          (1 << XI2S_RX_GINTR_EN_SHIFT)
 //!< Global Interrupt Enable mask
-/* @} */
+/** @} */
 /**
 * @name XI2S Timing Control Register masks and shifts
 * @{
@@ -127,7 +127,7 @@ extern "C" {
 //!< SClk Divider bit shift
 #define XI2S_RX_REG_TMR_SCLKDIV_MASK  (0xF << XI2S_RX_REG_TMR_SCLKDIV_SHIFT)
 //!< SClk Divider mask
-/* @} */
+/** @} */
 /**
 * @name Audio Channel Control Register masks and shifts
 * @{
@@ -137,7 +137,7 @@ extern "C" {
 
 #define XI2S_RX_REG_CHCTRL_CHMUX_MASK  (0x7 << XI2S_RX_REG_CHCTRL_CHMUX_SHIFT)
 //!< Channel MUX mask
-/* @} */
+/** @} */
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -190,7 +190,7 @@ XI2s_Rx_In32((BaseAddress) + ((u32)RegOffset))
 *****************************************************************************/
 #define XI2s_Rx_WriteReg(BaseAddress, RegOffset, Data) \
 XI2s_Rx_Out32((BaseAddress) + ((u32)RegOffset), (u32)(Data))
-/*@}*/
+/** @} */
 
 /************************** Function Prototypes ******************************/
 

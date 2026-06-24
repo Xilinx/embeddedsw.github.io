@@ -7,7 +7,7 @@ var xclk__wiz_8h =
     [ "XClk_Wiz_GetInputRate", "xclk__wiz_8h.html#ga7c7165398cf3a2578d5dfd1c3947b43c", null ],
     [ "XClk_Wiz_GetInterruptSettings", "xclk__wiz_8h.html#ga3ad6007a242ec441ccb612d7ff2050c0", null ],
     [ "XClk_Wiz_GetRate", "xclk__wiz_8h.html#ga5da48627691e7e979b7c4fbcb608796a", null ],
-    [ "XClk_Wiz_LookupConfig", "xclk__wiz_8h.html#ga862887391d91e336afb089947d1eea22", null ],
+    [ "XClk_Wiz_LookupConfig", "xclk__wiz_8h.html#gaa010b97df663b779c04308727bce6bdc", null ],
     [ "XClk_Wiz_SetCallBack", "xclk__wiz_8h.html#ga57d65e65942c50b405b79dacf4704339", null ],
     [ "XClk_Wiz_SetInputRate", "xclk__wiz_8h.html#ga0456881555560b358b47fb336542a4d3", null ],
     [ "XClk_Wiz_SetLeafRateHz", "xclk__wiz_8h.html#gad966194a45d93fa34d0eb8ab8c2de08d", null ],

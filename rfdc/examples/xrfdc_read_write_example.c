@@ -1,6 +1,6 @@
 /******************************************************************************
-* Copyright (C) 2017 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -64,7 +64,8 @@
 *                       implemented.
 * 12.1  cog    07/14/23 Modified for SDT flow
 *       cog    07/25/23 Remove dead code
-*
+* 13.1  dc     03/08/26 Correct compiler warnings
+*       dc     04/15/26 Add base address definition to SDT flow
 * </pre>
 *
 *****************************************************************************/
@@ -91,6 +92,7 @@
 #define XRFDC_BASE_ADDR		XPAR_XRFDC_0_BASEADDR
 #define RFDC_DEV_NAME    XPAR_XRFDC_0_DEV_NAME
 #else
+#define XRFDC_BASE_ADDR		XPAR_XRFDC_0_BASEADDR
 #define RFDC_DEVICE_ID 	0
 #define I2CBUS	1
 #endif
@@ -127,13 +129,15 @@ static XRFdc RFdcInst;      /* RFdc driver instance */
 struct metal_device *deviceptr = NULL;
 
 #ifdef __BAREMETAL__
-metal_phys_addr_t metal_phys;
+metal_phys_addr_t metal_phys = XRFDC_BASE_ADDR;
 static struct metal_device CustomDev = {
 	/* RFdc device */
+	.name = NULL,
 	.bus = NULL,
 	.num_regions = 1,
 	.regions = {
 		{
+			.virt = (void *)0,
 			.physmap = &metal_phys,
 			.size = 0x40000,
 			.page_shift = (unsigned)(-1),
@@ -211,8 +215,8 @@ int RFdcReadWriteExample(u16 RFdcDeviceId)
 	XRFdc *RFdcInstPtr = &RFdcInst;
 	u32 SetFabricRate = 8;
 	u32 GetFabricRate;
-	XRFdc_Mixer_Settings SetMixerSettings = {0};
-	XRFdc_Mixer_Settings GetMixerSettings = {0};
+	XRFdc_Mixer_Settings SetMixerSettings = {0,0,0,0,0,0,0};
+	XRFdc_Mixer_Settings GetMixerSettings = {0,0,0,0,0,0,0};
 	XRFdc_QMC_Settings SetQMCSettings;
 	XRFdc_QMC_Settings GetQMCSettings;
 	XRFdc_CoarseDelay_Settings SetCoarseDelaySettings;

@@ -66,7 +66,7 @@ var xvtc_8h =
     [ "XVtc_GetSource", "xvtc_8h.html#ga84f6b9eda3791aee51ec5414a62cbb92", null ],
     [ "XVtc_GetVersion", "xvtc_8h.html#ga970f3fda51300164bf853b5e27469444", null ],
     [ "XVtc_IntrHandler", "xvtc_8h.html#gaf4c9f950bb8be8ec38f650d3752c8007", null ],
-    [ "XVtc_LookupConfig", "xvtc_8h.html#ga0597fafa4aff37423b85fd5fcada3b7c", null ],
+    [ "XVtc_LookupConfig", "xvtc_8h.html#gad823b7c4d10fe753487f6419111bb5b6", null ],
     [ "XVtc_SelfTest", "xvtc_8h.html#ga34bc19c168a2d7bbfb3252b2c23e53ae", null ],
     [ "XVtc_SetAdaptiveSyncMode", "xvtc_8h.html#gaa1bfbc5a9734c912172b3d3e630af06e", null ],
     [ "XVtc_SetCallBack", "xvtc_8h.html#ga2c8331343095cb78377c7887cb62d87b", null ],
