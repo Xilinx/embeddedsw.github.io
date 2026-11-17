@@ -108,6 +108,9 @@ void Dp21RxSs_Pt_HelpMenu(void)
 	print(" 3 = Toggle HPD to ask for Retraining\n\r");
 	print(" 4 = Restart TX path \n\r");
 	print(" c = Check SUM on Rx and Tx\n\r");
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	print(" s = Show received SDP / VSC colorimetry (HDR) packet\r\n");
+#endif
 	print(" n = Clone EDID from Monitor\r\n");
 	print(" z = Display this menu again\r\n");
 	print(" x = Return to Main menu\r\n");
@@ -118,7 +121,7 @@ void Dp21RxSs_Pt_HelpMenu(void)
 char Dp21RxSs_Pt_InByteLocal(void)
 {
 	char c=0;
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	c = XUartLite_RecvByte(STDIN_BASEADDRESS);
 #else
 	c = xil_getc(0);
@@ -162,7 +165,7 @@ u32 xil_gethex(u8 num_chars)
 	return data;
 }
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 /*****************************************************************************/
 /**
 *
@@ -178,8 +181,12 @@ u32 xil_gethex(u8 num_chars)
 char XUartPs_RecvByte_NonBlocking()
 {
         u32 ReceivedByte;
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+        ReceivedByte = XUartPsv_ReadReg(STDIN_BASEADDRESS, XUARTPSV_UARTDR_OFFSET);
+#else /* Added for VCK190/VEK385 support */
         ReceivedByte = XUartPs_ReadReg(STDIN_BASEADDRESS,
                                        XUARTPS_FIFO_OFFSET);
+#endif /* Added for VCK190/VEK385 support */
         /* Return the byte received */
         return (u8)ReceivedByte;
 }
@@ -211,8 +218,12 @@ char xil_getc(u32 timeout_ms)
 		XTmrCtr_Start(&TmrCtr, 0);
 	}
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	while((!XUartPsv_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)) {
+#else /* Added for VCK190/VEK385 support */
 	while((!XUartPs_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)) {
+#endif /* Added for VCK190/VEK385 support */
 #else
 	while(XUartLite_IsReceiveEmpty(STDIN_BASEADDRESS) && (timeout == 0)) {
 #endif
@@ -230,7 +241,7 @@ char xil_getc(u32 timeout_ms)
 	if (timeout == 1) {
 		c = 0;
 	} else {
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 		c = XUartPs_RecvByte_NonBlocking();
 #else
 		c = XUartLite_RecvByte(STDIN_BASEADDRESS);

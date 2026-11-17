@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,8 @@
 * @file xdmaps_selftest.c
 * @addtogroup dmaps Overview
 * @{
+*
+* @brief Implements self-test functions for the XDmaPs driver.
 *
 * This file contains the self-test functions for the XDmaPs driver.
 *
@@ -45,27 +47,9 @@
 
 /****************************************************************************/
 /**
-*
-* This function runs a self-test on the driver and hardware device. This self
-* test performs a local loopback and verifies data can be sent and received.
-*
-* The time for this test is proportional to the baud rate that has been set
-* prior to calling this function.
-*
-* The mode and control registers are restored before return.
-*
-* @param	InstPtr is a pointer to the XDmaPs instance
-*
-* @return
-*
-*		- XST_SUCCESS if the test was successful
-*		- XST_FAILURE if the test failed
-*
-* @note
-*
-* This function can hang if the hardware is not functioning properly.
-*
-******************************************************************************/
+ * @brief Runs a self-test on the driver and hardware device.
+ *
+ *****************************************************************************/
 int XDmaPs_SelfTest(XDmaPs *InstPtr)
 {
 	u32 BaseAddr = InstPtr->Config.BaseAddress;

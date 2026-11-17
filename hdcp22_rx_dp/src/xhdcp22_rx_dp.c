@@ -239,7 +239,7 @@ int XHdcp22Rx_Dp_CfgInitialize(XHdcp22_Rx_Dp *InstancePtr, XHdcp22_Rx_Dp_Config 
 	InstancePtr->Handles.IsRxDpSetClearAuxDeferCallbackSet = FALSE;
 
 	InstancePtr->Handles.Ske_Send_EksCallback =
-		XHdcp22_Rx_StubSetHandler;
+		XHdcp22_Rx_StubRunHandler;
 	InstancePtr->Handles.IsSke_Send_EksCallbackSet = FALSE;
 
 	/* Set RXCAPS repeater mode */
@@ -1228,11 +1228,7 @@ static int XHdcp22Rx_InitializeCipher(XHdcp22_Rx_Dp *InstancePtr)
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_Cipher_Dp_Config *CipherConfigPtr = NULL;
 
-#ifndef SDT
-	CipherConfigPtr = XHdcp22Cipher_Dp_LookupConfig(InstancePtr->Config.CipherDeviceId);
-#else
 	CipherConfigPtr = XHdcp22Cipher_Dp_LookupConfig(InstancePtr->Config.CipherDeviceAddress);
-#endif
 	if(CipherConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1264,11 +1260,7 @@ static int XHdcp22Rx_InitializeMmult(XHdcp22_Rx_Dp *InstancePtr)
 	int Status = XST_SUCCESS;
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_mmult_Config *MmultConfigPtr;
-#ifndef SDT
-	MmultConfigPtr = XHdcp22_mmult_LookupConfig(InstancePtr->Config.MontMultDeviceId);
-#else
 	MmultConfigPtr = XHdcp22_mmult_LookupConfig(InstancePtr->Config.MontMultDeviceAddress);
-#endif
 	if(MmultConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1299,11 +1291,7 @@ static int XHdcp22Rx_InitializeRng(XHdcp22_Rx_Dp *InstancePtr)
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_Rng_Config *RngConfigPtr;
 
-#ifndef SDT
-	RngConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngDeviceId);
-#else
 	RngConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngDeviceAddress);
-#endif
 	if(RngConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -2459,6 +2447,12 @@ static void *XHdcp22Rx_StateC5(XHdcp22_Rx_Dp *InstancePtr)
 			InstancePtr->Info.ReturnState = InstancePtr->Info.CurrentState;
 			InstancePtr->Info.SkipRead = TRUE;
 			return (void *)XHdcp22Rx_StateC7;
+		case XHDCP22_RX_MSG_ID_REPEATERAUTHSENDACK: /* Transition C5->C6 */
+			/* Fast transmitter sent the Ack while still in C5;
+			   hand it to C6 for verification instead of resetting. */
+			InstancePtr->Info.NextState = XHDCP22_RX_STATE_C6_VERIFY_RECEIVERIDLISTACK;
+			InstancePtr->Info.SkipRead = TRUE;
+			return (void *)XHdcp22Rx_StateC6;
 		default:
 			XHdcp22Rx_ResetAfterError(InstancePtr);
 			return (void *)XHdcp22Rx_StateB0;
@@ -3115,7 +3109,8 @@ static int XHdcp22Rx_ProcessMessageAKENoStoredKm(XHdcp22_Rx_Dp *InstancePtr)
 	/* Compute Km, Perform RSA decryption */
 	XHdcp22Rx_Dp_LogWr(InstancePtr, XHDCP22_RX_LOG_EVT_DEBUG, XHDCP22_RX_LOG_DEBUG_COMPUTE_KM);
 	Status = XHdcp22Rx_RsaesOaepDecrypt(InstancePtr, (XHdcp22_Rx_KprivRx *)(InstancePtr->PrivateKeyPtr),
-										MsgPtr->AKENoStoredKm.EKpubKm, InstancePtr->Params.Km, &Size);
+										MsgPtr->AKENoStoredKm.EKpubKm, InstancePtr->Params.Km,
+										XHDCP22_RX_KM_SIZE, &Size);
 	XHdcp22Rx_Dp_LogWr(InstancePtr, XHDCP22_RX_LOG_EVT_DEBUG, XHDCP22_RX_LOG_DEBUG_COMPUTE_KM_DONE);
 
 	return (Status == XST_SUCCESS && Size == XHDCP22_RX_KM_SIZE) ? XST_SUCCESS : XST_FAILURE;

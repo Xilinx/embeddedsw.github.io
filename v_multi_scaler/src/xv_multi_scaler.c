@@ -1,4 +1,4 @@
-/*************************************************************************
+/*****************************************************************************
  * Copyright (c) 1986 - 2022 Xilinx, Inc. All Rights Reserved.
  * Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
  * SPDX-License-Identifier: MIT
@@ -36,7 +36,6 @@
 int XV_multi_scaler_CfgInitialize(XV_multi_scaler *InstancePtr,
 		XV_multi_scaler_Config *ConfigPtr)
 {
-	u16 i;
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(ConfigPtr != NULL);
 
@@ -60,10 +59,9 @@ int XV_multi_scaler_CfgInitialize(XV_multi_scaler *InstancePtr,
 	InstancePtr->Config.ScaleMode = ConfigPtr->ScaleMode;
 	InstancePtr->Config.NumTaps = ConfigPtr->NumTaps;
 	InstancePtr->Config.MaxOuts = ConfigPtr->MaxOuts;
-#ifdef SDT
+	InstancePtr->Config.IsTileFormat = ConfigPtr->IsTileFormat;
 	InstancePtr->Config.IntrId = ConfigPtr->IntrId;
 	InstancePtr->Config.IntrParent = ConfigPtr->IntrParent;
-#endif
 	return XST_SUCCESS;
 }
 #endif
@@ -793,7 +791,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_0_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_0_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_0_V_DATA + 4) << 32;
 	return Data;
 }
@@ -848,7 +846,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_0_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_0_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_0_V_DATA + 4) << 32;
 	return Data;
 }
@@ -903,7 +901,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_0_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_0_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_0_V_DATA + 4) << 32;
 	return Data;
 }
@@ -958,8 +956,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_0_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_0_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_0_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 0
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 0
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_0_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_0_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_0_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 0
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 0
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_0_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_0_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_0_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 0
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 0 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_0_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_0_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_0_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 0
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 0 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_0_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_0_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_0_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -1503,7 +1607,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_1_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_1_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_1_V_DATA + 4) << 32;
 	return Data;
 }
@@ -1558,7 +1662,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_1_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_1_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_1_V_DATA + 4) << 32;
 	return Data;
 }
@@ -1613,7 +1717,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_1_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_1_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_1_V_DATA + 4) << 32;
 	return Data;
 }
@@ -1668,8 +1772,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_1_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_1_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_1_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 1
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 1
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_1_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_1_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_1_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 1
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 1
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_1_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_1_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_1_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 1
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 1 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_1_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_1_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_1_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 1
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 1 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_1_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_1_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_1_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -2213,7 +2423,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_2_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_2_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_2_V_DATA + 4) << 32;
 	return Data;
 }
@@ -2268,7 +2478,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_2_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_2_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_2_V_DATA + 4) << 32;
 	return Data;
 }
@@ -2323,7 +2533,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_2_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_2_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_2_V_DATA + 4) << 32;
 	return Data;
 }
@@ -2377,8 +2587,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_2_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_2_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_2_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 2
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 2
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_2_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_2_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_2_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 2
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 2
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_2_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_2_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_2_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 2
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 2 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_2_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_2_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_2_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 2
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 2 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_2_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_2_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_2_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -2391,8 +2707,6 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_2_V(XV_multi_scaler *InstancePtr)
  *
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the input image width in pixels
- *
- * @return None
  *
  * @note None
  ******************************************************************************/
@@ -2441,8 +2755,6 @@ u32 XV_multi_scaler_Get_HwReg_WidthIn_3(XV_multi_scaler *InstancePtr)
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the output image width in pixels
  *
- * @return None
- *
  * @note None
  ******************************************************************************/
 void XV_multi_scaler_Set_HwReg_WidthOut_3(XV_multi_scaler *InstancePtr,
@@ -2490,8 +2802,6 @@ u32 XV_multi_scaler_Get_HwReg_WidthOut_3(XV_multi_scaler *InstancePtr)
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the input image height in pixels
  *
- * @return None
- *
  * @note None
  ******************************************************************************/
 void XV_multi_scaler_Set_HwReg_HeightIn_3(XV_multi_scaler *InstancePtr,
@@ -2538,8 +2848,6 @@ u32 XV_multi_scaler_Get_HwReg_HeightIn_3(XV_multi_scaler *InstancePtr)
  *
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the output image height in pixels
- *
- * @return None
  *
  * @note None
  ******************************************************************************/
@@ -2922,7 +3230,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_3_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_3_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_3_V_DATA + 4) << 32;
 	return Data;
 }
@@ -2977,7 +3285,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_3_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_3_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_3_V_DATA + 4) << 32;
 	return Data;
 }
@@ -3032,7 +3340,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_3_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_3_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_3_V_DATA + 4) << 32;
 	return Data;
 }
@@ -3087,8 +3395,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_3_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_3_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_3_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 3
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 3
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_3_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_3_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_3_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 3
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 3
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_3_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_3_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_3_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 3
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 3 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_3_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_3_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_3_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 3
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 3 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_3_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_3_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_3_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -3610,7 +4024,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_4_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_4_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_4_V_DATA + 4) << 32;
 	return Data;
 }
@@ -3663,7 +4077,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_4_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_4_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_4_V_DATA + 4) << 32;
 	return Data;
 }
@@ -3716,7 +4130,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_4_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_4_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_4_V_DATA + 4) << 32;
 	return Data;
 }
@@ -3769,8 +4183,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_4_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_4_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_4_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 4
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 4
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_4_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_4_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_4_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 4
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 4
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_4_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_4_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_4_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 4
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 4 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_4_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_4_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_4_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 4
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 4 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_4_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_4_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_4_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -4253,8 +4773,6 @@ u32 XV_multi_scaler_Get_HwReg_OutStride_5(XV_multi_scaler *InstancePtr)
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the source image buffer 0 address value
  *
- * @return None
- *
  * @note None
  ******************************************************************************/
 void XV_multi_scaler_Set_HwReg_srcImgBuf0_5_V(XV_multi_scaler *InstancePtr,
@@ -4292,7 +4810,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_5_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_5_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_5_V_DATA + 4) << 32;
 	return Data;
 }
@@ -4305,8 +4823,6 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_5_V(XV_multi_scaler *InstancePtr)
  *
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the source image buffer 1 address value
- *
- * @return None
  *
  * @note None
  ******************************************************************************/
@@ -4345,7 +4861,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_5_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_5_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_5_V_DATA + 4) << 32;
 	return Data;
 }
@@ -4358,8 +4874,6 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_5_V(XV_multi_scaler *InstancePtr)
  *
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the destination image buffer 0 address value
- *
- * @return None
  *
  * @note None
  ******************************************************************************/
@@ -4398,7 +4912,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_5_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_5_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_5_V_DATA + 4) << 32;
 	return Data;
 }
@@ -4411,8 +4925,6 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_5_V(XV_multi_scaler *InstancePtr)
  *
  * @param InstancePtr is a pointer to the Multi Scaler instance
  * @param Data is the destination image buffer 1 address value
- *
- * @return None
  *
  * @note None
  ******************************************************************************/
@@ -4451,8 +4963,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_5_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_5_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_5_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 5
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 5
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_5_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_5_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_5_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 5
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 5
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_5_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_5_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_5_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 5
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 5 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_5_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_5_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_5_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 5
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 5 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_5_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_5_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_5_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -4974,7 +5592,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_6_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_6_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_6_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5027,7 +5645,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_6_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_6_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_6_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5080,7 +5698,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_6_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_6_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_6_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5133,8 +5751,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_6_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_6_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_6_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 6
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 6
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_6_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_6_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_6_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 6
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 6
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_6_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_6_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_6_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 6
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 6 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_6_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_6_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_6_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 6
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 6 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_6_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_6_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_6_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -5656,7 +6380,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf0_7_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_7_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF0_7_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5709,7 +6433,7 @@ u64 XV_multi_scaler_Get_HwReg_srcImgBuf1_7_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_7_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF1_7_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5762,7 +6486,7 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf0_7_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_7_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF0_7_V_DATA + 4) << 32;
 	return Data;
 }
@@ -5815,8 +6539,114 @@ u64 XV_multi_scaler_Get_HwReg_dstImgBuf1_7_V(XV_multi_scaler *InstancePtr)
 
 	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_7_V_DATA);
-	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+	Data += (u64)XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF1_7_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set source image buffer 2 address for channel 7
+ *
+ * This function writes the 64-bit address of source image buffer 2 for channel 7
+ * to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_srcImgBuf2_7_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_7_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_7_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get source image buffer 2 address for channel 7
+ *
+ * This function reads the 64-bit address of source image buffer 2 for channel 7
+ * from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_srcImgBuf2_7_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_7_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_SRCIMGBUF2_7_V_DATA + 4) << 32;
+	return Data;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Set destination image buffer 2 address for channel 7
+ *
+ * This function writes the 64-bit address of destination image buffer 2 for
+ * channel 7 to the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ * @param Data is the 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+void XV_multi_scaler_Set_HwReg_dstImgBuf2_7_V(XV_multi_scaler *InstancePtr,
+	u64 Data)
+{
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_7_V_DATA,
+		(u32) Data);
+	XV_multi_scaler_WriteReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_7_V_DATA + 4,
+		(u32) (Data >> 32));
+}
+
+/*****************************************************************************/
+/**
+ * @brief Get destination image buffer 2 address for channel 7
+ *
+ * This function reads the 64-bit address of destination image buffer 2 for
+ * channel 7 from the hardware registers.
+ *
+ * @param InstancePtr is a pointer to the Multi Scaler instance
+ *
+ * @return The 64-bit buffer address
+ *
+ * @note None
+ ******************************************************************************/
+u64 XV_multi_scaler_Get_HwReg_dstImgBuf2_7_V(XV_multi_scaler *InstancePtr)
+{
+	u64 Data;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+
+	Data = XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_7_V_DATA);
+	Data += XV_multi_scaler_ReadReg(InstancePtr->Ctrl_BaseAddress,
+		XV_MULTI_SCALER_CTRL_ADDR_HWREG_DSTIMGBUF2_7_V_DATA + 4) << 32;
 	return Data;
 }
 
@@ -5964,7 +6794,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_0_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_0_BASE +
 		(offset + i)*4)	= *(data + i);
 	}
@@ -6001,7 +6831,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_0_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_0_BASE +
 		(offset + i)*4);
 	}
@@ -6038,7 +6868,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_0_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_0_BASE + offset +
 		i) = *(data + i);
 	}
@@ -6075,7 +6905,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_0_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_0_BASE + offset +
 		i);
 	}
@@ -6226,7 +7056,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_0_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_0_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -6263,7 +7093,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_0_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_0_BASE +
 		(offset + i)*4);
 	}
@@ -6300,7 +7130,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_0_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_0_BASE + offset +
 		i) = *(data + i);
 	}
@@ -6337,7 +7167,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_0_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_0_BASE + offset +
 		i);
 	}
@@ -6488,7 +7318,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_1_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_1_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -6525,7 +7355,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_1_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_1_BASE +
 		(offset + i)*4);
 	}
@@ -6562,7 +7392,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_1_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_1_BASE + offset +
 		i) = *(data + i);
 	}
@@ -6599,7 +7429,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_1_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_1_BASE +
 		offset + i);
 	}
@@ -6750,7 +7580,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_1_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_1_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -6787,7 +7617,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_1_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_1_BASE +
 		(offset + i)*4);
 	}
@@ -6824,7 +7654,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_1_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_1_BASE + offset +
 		i) = *(data + i);
 	}
@@ -6861,7 +7691,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_1_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_1_BASE + offset +
 		i);
 	}
@@ -7012,7 +7842,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_2_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_2_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -7049,7 +7879,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_2_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_2_BASE +
 		(offset + i)*4);
 	}
@@ -7086,7 +7916,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_2_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_2_BASE + offset +
 		i) = *(data + i);
 	}
@@ -7123,7 +7953,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_2_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_2_BASE + offset
 		+ i);
 	}
@@ -7274,7 +8104,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_2_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_2_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -7311,7 +8141,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_2_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_2_BASE +
 		(offset + i)*4);
 	}
@@ -7348,7 +8178,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_2_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_2_BASE +
 		offset + i) = *(data + i);
 	}
@@ -7385,7 +8215,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_2_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_2_BASE +
 		offset + i);
 	}
@@ -7536,7 +8366,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_3_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_3_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -7573,7 +8403,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_3_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_3_BASE +
 		(offset + i)*4);
 	}
@@ -7610,7 +8440,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_3_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_3_BASE + offset
 		+ i) = *(data + i);
 	}
@@ -7647,7 +8477,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_3_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_3_BASE + offset
 		+ i);
 	}
@@ -7798,7 +8628,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_3_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_3_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -7835,7 +8665,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_3_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_3_BASE +
 		(offset + i)*4);
 	}
@@ -7872,7 +8702,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_3_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_3_BASE + offset +
 		i) = *(data + i);
 	}
@@ -7909,7 +8739,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_3_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_3_BASE + offset +
 		i);
 	}
@@ -8060,7 +8890,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_4_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_4_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -8097,7 +8927,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_4_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_4_BASE +
 		(offset + i)*4);
 	}
@@ -8134,7 +8964,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_4_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_4_BASE + offset +
 		i) = *(data + i);
 	}
@@ -8171,7 +9001,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_4_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_4_BASE + offset +
 		i);
 	}
@@ -8322,7 +9152,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_4_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_4_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -8359,7 +9189,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_4_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_4_BASE +
 		(offset + i)*4);
 	}
@@ -8396,7 +9226,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_4_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_4_BASE + offset +
 		i) = *(data + i);
 	}
@@ -8433,7 +9263,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_4_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_4_BASE + offset +
 		i);
 	}
@@ -8584,7 +9414,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_5_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_5_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -8621,7 +9451,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_5_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_5_BASE +
 		(offset + i)*4);
 	}
@@ -8658,7 +9488,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_5_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_5_BASE + offset +
 		i) = *(data + i);
 	}
@@ -8695,7 +9525,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_5_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_5_BASE + offset +
 		i);
 	}
@@ -8846,7 +9676,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_5_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_5_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -8883,7 +9713,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_5_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_5_BASE +
 		(offset + i)*4);
 	}
@@ -8920,7 +9750,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_5_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_5_BASE + offset +
 		i) = *(data + i);
 	}
@@ -8957,7 +9787,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_5_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_5_BASE + offset +
 		i);
 	}
@@ -9108,7 +9938,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_6_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_6_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -9145,7 +9975,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_6_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_6_BASE +
 		(offset + i)*4);
 	}
@@ -9182,7 +10012,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_6_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_6_BASE + offset +
 		i) = *(data + i);
 	}
@@ -9219,7 +10049,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_6_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_6_BASE + offset +
 		i);
 	}
@@ -9370,7 +10200,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_6_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_6_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -9407,7 +10237,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_6_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_6_BASE +
 		(offset + i)*4);
 	}
@@ -9444,7 +10274,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_6_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_6_BASE + offset +
 		i) = *(data + i);
 	}
@@ -9481,7 +10311,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_6_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_6_BASE + offset +
 		i);
 	}
@@ -9632,7 +10462,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_7_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_7_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -9669,7 +10499,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_7_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_7_BASE +
 		(offset + i)*4);
 	}
@@ -9706,7 +10536,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_vfltCoeff_7_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_7_BASE + offset +
 		i) = *(data + i);
 	}
@@ -9743,7 +10573,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_vfltCoeff_7_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_VFLTCOEFF_7_BASE + offset +
 		i);
 	}
@@ -9894,7 +10724,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_7_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_7_BASE +
 		(offset + i)*4) = *(data + i);
 	}
@@ -9931,7 +10761,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_7_Words(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(int *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(int *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_7_BASE +
 		(offset + i)*4);
 	}
@@ -9968,7 +10798,7 @@ u32 XV_multi_scaler_Write_HwReg_mm_hfltCoeff_7_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_7_BASE + offset +
 		i) = *(data + i);
 	}
@@ -10005,7 +10835,7 @@ u32 XV_multi_scaler_Read_HwReg_mm_hfltCoeff_7_Bytes(XV_multi_scaler
 		return 0;
 
 	for (i = 0; i < length; i++) {
-		*(data + i) = *(char *)(InstancePtr->Ctrl_BaseAddress +
+		*(data + i) = *(char *)(UINTPTR)(InstancePtr->Ctrl_BaseAddress +
 		XV_MULTI_SCALER_CTRL_ADDR_HWREG_MM_HFLTCOEFF_7_BASE + offset +
 		i);
 	}

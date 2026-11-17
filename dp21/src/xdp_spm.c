@@ -45,6 +45,9 @@
 
 #include "xparameters.h"
 #include "xdp.h"
+#ifdef XDP_USE_DSC
+#include "xdp21_dsc_tu.h"
+#endif
 
 /**************************** Function Prototypes *****************************/
 
@@ -143,16 +146,13 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	if (MsaConfig->OverrideUserPixelWidth == 0) {
 		/* Check for Dp2.1or DP1.4/Dp1.2/1.1 */
 		if (MsaConfig->PixelClockHz > 1188000000 &&
-		    LinkConfig->LaneCount == XDP_TX_LANE_COUNT_SET_4 &&
 			XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1) {
 			MsaConfig->UserPixelWidth = 8;
 		} else if (((MsaConfig->PixelClockHz > 540000000) &&
-		    (LinkConfig->LaneCount == XDP_TX_LANE_COUNT_SET_4) &&
 		    (XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1  ||
 			XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1))) {
 			MsaConfig->UserPixelWidth = 4;
 		} else if ((MsaConfig->PixelClockHz > 270000000) &&
-			   (LinkConfig->LaneCount != XDP_TX_LANE_COUNT_SET_1) &&
 			   ((XPAR_XDP_0_DUAL_PIXEL_ENABLE == 1) ||
 			    (XPAR_XDP_0_QUAD_PIXEL_ENABLE == 1) ||
 				(XPAR_XDP_0_OCTA_PIXEL_ENABLE == 1))) {
@@ -216,16 +216,33 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 	}
 
 	/* Calculate the data per lane. */
-	WordsPerLine = (MsaConfig->Vtm.Timing.HActive * BitsPerPixel);
-	if ((WordsPerLine % 16) != 0) {
-		WordsPerLine += 16;
-	}
-	WordsPerLine /= 16;
+#ifdef XDP_USE_DSC
+	/*
+	 * A compressed stream sizes the transfer unit from the chunk, dummy and
+	 * end of chunk counts carried in the PPS, because its HActive counts
+	 * compressed bytes rather than the pixels the uncompressed arithmetic
+	 * below assumes.
+	 */
+	if (InstancePtr->TxInstance.DscStreamEnable &&
+	    InstancePtr->TxInstance.DscPpsValid &&
+	    (InstancePtr->TxInstance.MstEnable == 0)) {
+		(void)XDp_TxCalcDscMsaTu(MsaConfig,
+					 &InstancePtr->TxInstance.DscPps,
+					 LinkRate, LaneCount);
+	} else
+#endif /* XDP_USE_DSC */
+	{
+		WordsPerLine = (MsaConfig->Vtm.Timing.HActive * BitsPerPixel);
+		if ((WordsPerLine % 16) != 0) {
+			WordsPerLine += 16;
+		}
+		WordsPerLine /= 16;
 
-	MsaConfig->DataPerLane = WordsPerLine - LaneCount;
-	if ((WordsPerLine % LaneCount) != 0) {
-		MsaConfig->DataPerLane +=
-					(WordsPerLine % LaneCount);
+		MsaConfig->DataPerLane = WordsPerLine - LaneCount;
+		if ((WordsPerLine % LaneCount) != 0) {
+			MsaConfig->DataPerLane +=
+						(WordsPerLine % LaneCount);
+		}
 	}
 
 	if (InstancePtr->TxInstance.MstEnable == 1) {
@@ -240,6 +257,19 @@ void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream)
 		 * operation. */
 		MsaConfig->TransferUnitSize = XDP_TX_MAX_NUM_OF_TIMESLOTS;
 		MsaConfig->StartTs = 1;
+
+#ifdef XDP_USE_DSC
+		/*
+		 * A compressed stream already had AvgBytesPerTU and InitWait
+		 * derived from the compressed line length and the FEC
+		 * overhead, so the uncompressed arithmetic must not run and
+		 * overwrite them.
+		 */
+		if (InstancePtr->TxInstance.DscStreamEnable &&
+		    InstancePtr->TxInstance.DscPpsValid) {
+			return;
+		}
+#endif /* XDP_USE_DSC */
 
 		/* Calculate the average number of bytes per transfer unit.
 		 * Note: Both the integer and the fractional part is stored in
@@ -429,6 +459,19 @@ void XDp_TxCfgMsaUseEdidPreferredTiming(XDp *InstancePtr, u8 Stream, u8 *Edid)
 					MsaConfig->Vtm.Timing.VActive +
 					MsaConfig->Vtm.Timing.F0PVBackPorch);
 
+	if ((MsaConfig->Vtm.Timing.HTotal == 0) ||
+			(MsaConfig->Vtm.Timing.F0PVTotal == 0)) {
+		/* Malformed/zeroed EDID PTM would divide by zero; fall back to
+		 * a safe default video mode instead. */
+		memcpy(&MsaConfig->Vtm,
+			XVidC_GetVideoModeData(XVIDC_VM_640x480_60_P),
+			sizeof(XVidC_VideoTimingMode));
+		MsaConfig->PixelClockHz =
+				XVidC_GetPixelClockHzByVmId(MsaConfig->Vtm.VmId);
+		XDp_TxCfgMsaRecalculate(InstancePtr, Stream);
+		return;
+	}
+
 	MsaConfig->Vtm.FrameRate = MsaConfig->PixelClockHz /
 					(MsaConfig->Vtm.Timing.HTotal *
 					MsaConfig->Vtm.Timing.F0PVTotal);
@@ -589,8 +632,8 @@ u32 XDp_TxCfgSetColorEncode(XDp *InstancePtr, u8 Stream,
 	MsaConfig->Misc0	    = 0;
 	MsaConfig->Misc1	    = 0;
 
-	if (InstancePtr->TxInstance.ColorimetryThroughVsc) {
-		Format = InstancePtr->TxInstance.VscPacket.ComponentFormat;
+	if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1]) {
+		Format = InstancePtr->TxInstance.VscPacket[Stream - 1].ComponentFormat;
 	}
 
 	switch (Format) {
@@ -617,9 +660,9 @@ u32 XDp_TxCfgSetColorEncode(XDp *InstancePtr, u8 Stream,
 		Status = XST_FAILURE;
 	}
 
-	if (InstancePtr->TxInstance.ColorimetryThroughVsc) {
+	if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1]) {
 		MsaConfig->YCbCrColorimetry =
-				InstancePtr->TxInstance.VscPacket.YCbCrColorimetry;
+				InstancePtr->TxInstance.VscPacket[Stream - 1].YCbCrColorimetry;
 	}
 	else {
 		if (ColorCoeffs == XVIDC_BT_601) {
@@ -635,8 +678,8 @@ u32 XDp_TxCfgSetColorEncode(XDp *InstancePtr, u8 Stream,
 		}
 	}
 
-	if (InstancePtr->TxInstance.ColorimetryThroughVsc) {
-		Range = InstancePtr->TxInstance.VscPacket.DynamicRange;
+	if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1]) {
+		Range = InstancePtr->TxInstance.VscPacket[Stream - 1].DynamicRange;
 	}
 
 	if (Range == XDP_DR_VESA) {
@@ -682,9 +725,9 @@ void XDp_TxCfgMsaSetBpc(XDp *InstancePtr, u8 Stream, u8 BitsPerColor)
 				(BitsPerColor == 10) || (BitsPerColor == 12) ||
 				(BitsPerColor == 16));
 
-	if (InstancePtr->TxInstance.ColorimetryThroughVsc) {
+	if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1]) {
 		InstancePtr->TxInstance.MsaConfig[Stream - 1].BitsPerColor =
-				InstancePtr->TxInstance.VscPacket.BitsPerColor;
+				InstancePtr->TxInstance.VscPacket[Stream - 1].BitsPerColor;
 	} else {
 		InstancePtr->TxInstance.MsaConfig[Stream - 1].BitsPerColor =
 				BitsPerColor;
@@ -934,9 +977,16 @@ void XDp_TxSetMsaValues(XDp *InstancePtr, u8 Stream)
 			StreamOffset[Stream - 1], MsaConfig->HStart);
 		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_VSTART +
 			StreamOffset[Stream - 1], MsaConfig->VStart);
+
+		if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1] &&
+				(InstancePtr->TxInstance.VscPacket[Stream - 1].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420)) {
+			MsaConfig->Misc0 |= XDP_TX_MAIN_STREAMX_MISC0_EXT_TX_ALIGN_WITH_VSYNC_MASK;
+		}
 		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_MISC0 +
 			StreamOffset[Stream - 1], MsaConfig->Misc0);
-		if (InstancePtr->TxInstance.ColorimetryThroughVsc) {
+
+		if (InstancePtr->TxInstance.ColorimetryThroughVsc[Stream - 1]) {
 			MsaConfig->Misc1|= XDP_DPCD_MSA_TIMING_PAR_IGNORED_MASK;
 		}
 		XDp_WriteReg(ConfigPtr->BaseAddr, XDP_TX_MAIN_STREAM_MISC1 +
@@ -1065,6 +1115,40 @@ void XDp_RxSetUserPixelWidth(XDp *InstancePtr, u8 UserPixelWidth)
 
 /******************************************************************************/
 /**
+ * Read the received VSC SDP payload (DB16..DB18) for a stream. MST streams
+ * 2-4 have dedicated per-stream copies; stream 1 uses the legacy/generic
+ * register. If a per-stream copy reads back 0 (not populated on this core),
+ * fall back to the legacy/generic register, which carries the latest
+ * received VSC payload regardless of stream.
+ *
+ * @param	InstancePtr is a pointer to the XDp instance.
+ * @param	Stream is the stream number (XDP_RX_STREAM_ID1..4).
+ *
+ * @return	The 24-bit VSC SDP payload word.
+ *
+*******************************************************************************/
+static u32 XDp_RxReadVscPayload(XDp *InstancePtr, u8 Stream)
+{
+	u32 Val;
+
+	if (Stream == XDP_RX_STREAM_ID1) {
+		return XDp_ReadReg(InstancePtr->Config.BaseAddr,
+				XDP_RX_SDP_PAYLOAD_STREAM1);
+	}
+
+	Val = XDp_ReadReg(InstancePtr->Config.BaseAddr,
+			XDP_RX_VSC_COLOR_FORMAT_STREAM1 +
+			4 * (Stream - XDP_RX_STREAM_ID1));
+	if (Val == 0) {
+		Val = XDp_ReadReg(InstancePtr->Config.BaseAddr,
+				XDP_RX_SDP_PAYLOAD_STREAM1);
+	}
+
+	return Val;
+}
+
+/******************************************************************************/
+/**
  * This function extracts the colorimetry from MISC0 or VSC SDP packet
  * based on whether reception of colorimetry information through VSC SDP packets or
  * through MISC registers of the stream.
@@ -1090,10 +1174,10 @@ XDp_DynamicRange XDp_RxGetDynamicRange(XDp *InstancePtr, u8 Stream)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
-	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
-						(Stream == XDP_TX_STREAM_ID2) ||
-						(Stream == XDP_TX_STREAM_ID3) ||
-						(Stream == XDP_TX_STREAM_ID4));
+	Xil_AssertNonvoid((Stream == XDP_RX_STREAM_ID1) ||
+						(Stream == XDP_RX_STREAM_ID2) ||
+						(Stream == XDP_RX_STREAM_ID3) ||
+						(Stream == XDP_RX_STREAM_ID4));
 
 	/* Extract color depth from VSC packet */
 	ReadVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1);
@@ -1102,7 +1186,7 @@ XDp_DynamicRange XDp_RxGetDynamicRange(XDp *InstancePtr, u8 Stream)
 
 	/* Extract YCbCrColorimetry from MISC0. */
 	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC0 +
-			StreamOffset[Stream - XDP_TX_STREAM_ID1]);
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 
 	/* Determine number of bits per color component. */
 	RegVal  &= XDP_RX_MAIN_STREAMX_MISC0_DYNAMIC_RANGE_MASK;
@@ -1148,28 +1232,28 @@ XVidC_ColorStd XDp_RxGetColorimetry(XDp *InstancePtr, u8 Stream)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
-	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
-						(Stream == XDP_TX_STREAM_ID2) ||
-						(Stream == XDP_TX_STREAM_ID3) ||
-						(Stream == XDP_TX_STREAM_ID4));
+	Xil_AssertNonvoid((Stream == XDP_RX_STREAM_ID1) ||
+						(Stream == XDP_RX_STREAM_ID2) ||
+						(Stream == XDP_RX_STREAM_ID3) ||
+						(Stream == XDP_RX_STREAM_ID4));
 
 	/* Extract color depth from VSC packet */
-	ReadVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1);
+	ReadVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1 +
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 	ColorimetryThroughVsc = (ReadVal & XDP_DPCD_MSA_TIMING_PAR_IGNORED_MASK) >>
 					XDP_RX_XDP_MSA_TIMING_PAR_IGNORED_SHIFT;
 
 
 	/* Extract YCbCrColorimetry from MISC0. */
 	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC0 +
-			StreamOffset[Stream - XDP_TX_STREAM_ID1]);
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 
 	/* Determine number of  component. */
 	RegVal  &= XDP_RX_MAIN_STREAMX_MISC0_YCBCR_COLORIMETRY_MASK;
 	RegVal >>= XDP_RX_MAIN_STREAMX_MISC0_YCBCR_COLORIMETRY_SHIFT;
 
 	if (ColorimetryThroughVsc) {
-		RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr,
-				XDP_RX_SDP_PAYLOAD_STREAM1);
+		RegVal = XDp_RxReadVscPayload(InstancePtr, Stream);
 		RegVal = ((RegVal & XDP_RX_AUDIO_EXT_DATA_DB16) &
 				XDP_RX_MAIN_VSC_SDP_YCBCR_COLORIMETRY_MASK);
 	}
@@ -1211,27 +1295,27 @@ XVidC_ColorDepth XDp_RxGetBpc(XDp *InstancePtr, u8 Stream)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
-	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
-						(Stream == XDP_TX_STREAM_ID2) ||
-						(Stream == XDP_TX_STREAM_ID3) ||
-						(Stream == XDP_TX_STREAM_ID4));
+	Xil_AssertNonvoid((Stream == XDP_RX_STREAM_ID1) ||
+						(Stream == XDP_RX_STREAM_ID2) ||
+						(Stream == XDP_RX_STREAM_ID3) ||
+						(Stream == XDP_RX_STREAM_ID4));
 
 	/* Extract color depth from VSC packet */
-	ReadVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1);
+	ReadVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1 +
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 	ColorimetryThroughVsc = (ReadVal & XDP_DPCD_MSA_TIMING_PAR_IGNORED_MASK) >>
 							XDP_RX_XDP_MSA_TIMING_PAR_IGNORED_SHIFT;
 
 	/* Extract color depth from MISC0. */
 	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC0 +
-			StreamOffset[Stream - XDP_TX_STREAM_ID1]);
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 
 	/* Determine number of bits per color component. */
 	RegVal  &= XDP_MAIN_STREAMX_MISC0_BDC_MASK;
 	RegVal >>= XDP_MAIN_STREAMX_MISC0_BDC_SHIFT;
 
 	if (ColorimetryThroughVsc) {
-		RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr,
-				XDP_RX_SDP_PAYLOAD_STREAM1);
+		RegVal = XDp_RxReadVscPayload(InstancePtr, Stream);
 		/* Decoding Data byte 17 */
 		RegVal = ((RegVal & XDP_RX_AUDIO_EXT_DATA_DB17) >> 8) &
 					XDP_RX_MAIN_VSC_SDP_BDC_MASK;
@@ -1279,19 +1363,19 @@ XVidC_ColorFormat XDp_RxGetColorComponent(XDp *InstancePtr, u8 Stream)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
-	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
-						(Stream == XDP_TX_STREAM_ID2) ||
-						(Stream == XDP_TX_STREAM_ID3) ||
-						(Stream == XDP_TX_STREAM_ID4));
+	Xil_AssertNonvoid((Stream == XDP_RX_STREAM_ID1) ||
+						(Stream == XDP_RX_STREAM_ID2) ||
+						(Stream == XDP_RX_STREAM_ID3) ||
+						(Stream == XDP_RX_STREAM_ID4));
 
-	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1);
+	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC1 +
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 	ColorimetryThroughVsc = (RegVal & XDP_DPCD_MSA_TIMING_PAR_IGNORED_MASK) >>
 							XDP_RX_XDP_MSA_TIMING_PAR_IGNORED_SHIFT;
 	if (ColorimetryThroughVsc)
 	{
 		/* Extract color component from VSC  packet */
-		RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr,
-						XDP_RX_SDP_PAYLOAD_STREAM1);
+		RegVal = XDp_RxReadVscPayload(InstancePtr, Stream);
 		/* Decoding Data byte 16 */
 		RegVal = ((RegVal & XDP_RX_AUDIO_EXT_DATA_DB16) >>
 				XDP_RX_MAIN_VSC_SDP_COMPONENT_FORMAT_SHIFT);
@@ -1307,7 +1391,7 @@ XVidC_ColorFormat XDp_RxGetColorComponent(XDp *InstancePtr, u8 Stream)
 
 	/* Extract color component from MISC0. */
 	RegVal = XDp_ReadReg(InstancePtr->Config.BaseAddr, XDP_RX_MSA_MISC0 +
-			StreamOffset[Stream - XDP_TX_STREAM_ID1]);
+			StreamOffset[Stream - XDP_RX_STREAM_ID1]);
 
 	/* Determine the color component format for the stream. */
 	RegVal  &= XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_MASK;
@@ -1340,17 +1424,12 @@ XVidC_ColorFormat XDp_RxGetColorComponent(XDp *InstancePtr, u8 Stream)
 void XDp_RxSetLineReset(XDp *InstancePtr, u8 Stream)
 {
 	UINTPTR BaseAddr;
-	u8  LaneCount;
-	u8  BitsPerPixel, BitsPerColor, ColorComponent;
 	u32 RegVal;
 	u32 HBlank;
 	u32 HTotal, HActive;
 	u32 StreamOffset[4] = {0, XDP_RX_STREAM2_MSA_START_OFFSET,
 					XDP_RX_STREAM3_MSA_START_OFFSET,
 					XDP_RX_STREAM4_MSA_START_OFFSET};
-	u32 Mvid, Nvid;
-	u32 StreamLoad;
-	u32 HReducedBlank;
 	u32 HStart, HSyncWidth, HBackPorch, HFrontPorch;
 
 	/* Verify arguments. */
@@ -1363,25 +1442,6 @@ void XDp_RxSetLineReset(XDp *InstancePtr, u8 Stream)
 			(Stream == XDP_TX_STREAM_ID4));
 
 	BaseAddr  = InstancePtr->Config.BaseAddr;
-	LaneCount = XDp_ReadReg(BaseAddr, XDP_RX_DPCD_LANE_COUNT_SET);
-	BitsPerColor   = XDp_RxGetBpc(InstancePtr, Stream);
-	ColorComponent = XDp_RxGetColorComponent(InstancePtr, Stream);
-
-	/* Determine the number of bits per pixel for the specified color
-	 * component format. */
-	if (ColorComponent == XVIDC_CSF_YCRCB_422) {
-		/* YCbCr422 color component format. */
-		BitsPerPixel = BitsPerColor * 2;
-	}
-	else if (ColorComponent ==
-			XDP_RX_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
-		/* YCbCr 4:2:0 color component format. */
-		BitsPerPixel = (BitsPerColor * 15) / 10;
-	}
-	else {
-		/* RGB or YCbCr 4:4:4 color component format. */
-		BitsPerPixel = BitsPerColor * 3;
-	}
 
 	HTotal      = XDp_ReadReg(BaseAddr, XDP_RX_MSA_HTOTAL +
 				StreamOffset[Stream - XDP_TX_STREAM_ID1]);
@@ -1395,17 +1455,10 @@ void XDp_RxSetLineReset(XDp *InstancePtr, u8 Stream)
 	HFrontPorch = HTotal - HSyncWidth - HActive - HBackPorch;
 	HBlank      = HBackPorch + HFrontPorch + HSyncWidth;
 
-	/* Reduced blanking starts at ceil(0.2 * HTotal). */
-	HReducedBlank = 2 * HTotal;
-	if (HReducedBlank % 10)
-		HReducedBlank += 10;
-
-	HReducedBlank /= 10;
-
 	/*Disable Line Reset only in case of fully loaded
 	 * RB2 Video bandwidth : Set Line Reset Disable for Load >95%*/
 	RegVal = XDp_ReadReg(BaseAddr, XDP_RX_LINE_RESET_DISABLE);
-	if (StreamLoad > 80 || HBlank == 80 || HBlank == 60)
+	if (HBlank == 80 || HBlank == 60)
 		RegVal |= XDP_RX_LINE_RESET_DISABLE_MASK(Stream);
 	else
 		RegVal &= ~XDP_RX_LINE_RESET_DISABLE_MASK(Stream);

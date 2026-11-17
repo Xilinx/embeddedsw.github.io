@@ -32,7 +32,7 @@ extern volatile int tx_is_reconnected;	/**< This variable to keep track of the s
 extern XV_tpg TpgInst;
 extern XVphy VPhyInst;	/**< The DPRX Subsystem instance.*/
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 extern XIntc IntcInst;
 #endif
 
@@ -87,6 +87,38 @@ u8 LineRate_init_tx;
 u8 LaneCount_init_tx;
 XDp_MainStreamAttributes* Msa_Pt;
 u8 rx_all_detect = 0;
+
+/*
+ * VSC SDP colorimetry / static-HDR pass-through globals.
+ * ExtFrame_tx_vsc holds the VSC extended (colorimetry) SDP captured on the RX
+ * so that it can be replayed on the TX. use_vsc reflects whether the incoming
+ * stream signals colorimetry through the VSC SDP (MSA MISC1 bit-6). type_vsc is
+ * set to 0x13 once a colorimetry VSC extended packet has been captured.
+ */
+XDp_TxVscExtPacket ExtFrame_tx_vsc;
+u8 use_vsc = 0;
+u8 type_vsc = 0;
+
+volatile u8  rx_last_sdp_type = 0;
+volatile u32 rx_vsc_ext_cta_count = 0;
+
+/*
+ * Static-HDR (DRM) InfoFrame pass-through.
+ * The DRM/HDR metadata (EOTF, mastering luminance, color primaries) arrives as
+ * an INFOFRAME SDP (HB1 = 0x87) on the RX *info-packet* path
+ * (XDP_RX_AUDIO_INFO_DATA / XDPRXSS_HANDLER_DP_INFO_PKT_EVENT) - a different
+ * callback and register bank than the VSC colorimetry SDP (0x07), which uses
+ * the ext-packet path. Because the HDR metadata is carried as an InfoFrame and
+ * NOT as a VSC SDP, the source does not set MSA MISC1 bit-6 for it; therefore
+ * its capture/replay must be independent of use_vsc.
+ * hdr_if_frame[] holds the 8 captured 32-bit words (SDP header + payload) so the
+ * TX can replay the DRM InfoFrame downstream once per frame whenever one has
+ * been received (hdr_if_valid), mirroring the automatic replay of the VSC SDP.
+ */
+u32          hdr_if_frame[8];
+volatile u8  hdr_if_valid = 0;
+volatile u32 rx_drm_if_count = 0;
+
 user_config_struct user_config;
 XVidC_VideoMode VmId;
 
@@ -414,6 +446,7 @@ void Dp21RxSs_Pt_Setup(void)
 					xil_printf ("Tx Frame count %d\r\n",vsync_counter);
 #endif
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 					u8 pll = XVphy_GetPllType(&VPhyInst, 0, XVPHY_DIR_TX, VPHY_TX_CHANNEL_TYPE);
 					if (pll == 0x3) {
 						xil_printf ("TX is using QPLL0\r\n");
@@ -427,6 +460,7 @@ void Dp21RxSs_Pt_Setup(void)
 					} else if (pll == 0x4) {
 						xil_printf ("RX is using QPLL1\r\n");
 					}
+#endif /* Added for VCK190/VEK385 support */
 					break;
 
 				case '3':
@@ -489,6 +523,49 @@ void Dp21RxSs_Pt_Setup(void)
 #endif
 					break;
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+				case 's':
+#ifdef Rxo
+				{
+					/*
+					 * Dump the last received SDP / colorimetry
+					 * (VSC) extended packet and the VSC packet
+					 * being replayed on the TX.
+					 */
+					int idx;
+					Dp21RxSs_Pt_RxPrint_ExtPkt();
+					xil_printf("Last SDP type (HB1)      : 0x%x\r\n",
+						   rx_last_sdp_type);
+					xil_printf("VSC/HDR frames count  : %d %s\r\n",
+						   rx_vsc_ext_cta_count,
+						   rx_vsc_ext_cta_count ? "(static-HDR SDP received)" : "");
+					xil_printf("VSC colorimetry pass-through: %s\r\n",
+						   use_vsc ? "ON" : "OFF");
+					if (use_vsc) {
+						xil_printf("TX VSC ExtPkt Header: 0x%x\r\n",
+							   ExtFrame_tx_vsc.Header);
+						for (idx = 0; idx < 8; idx++) {
+							xil_printf("TX VSC ExtPkt Data[%d]: 0x%x\r\n",
+								   idx, ExtFrame_tx_vsc.Payload[idx]);
+						}
+					}
+
+					/*
+					 * Static-HDR (DRM) InfoFrame (SDP type
+					 * 0x87) received on the info-packet path.
+					 * Independent of use_vsc / MISC1 bit-6.
+					 */
+					xil_printf("HDR (DRM 0x87) InfoFrames rx : %d %s\r\n",
+						   rx_drm_if_count,
+						   rx_drm_if_count ? "(static-HDR InfoFrame received)" : "");
+					if (hdr_if_valid) {
+						Dp21RxSs_Pt_RxPrint_HdrInfoPkt();
+					}
+				}
+#endif
+					break;
+#endif
+
 				case 'n':
 					/*
 					 * This can be used to clone the edid when monitor is changed
@@ -530,9 +607,11 @@ void Dp21RxSs_Pt_Setup(void)
 #ifdef XPAR_DP_TX_HIER_0_AV_PAT_GEN_0_BASEADDR
 					Vpg_Audio_stop();
 #endif
+#ifdef Txo
 					Dp21RxSs_Pt_TxStart(&DpTxSsInst, 0);
 					XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr,0x140);
 					XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,0x144,0xFFF);
+#endif
 #if ENABLE_HDCP22_IN_RX
 					XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 									XDP_RX_SOFT_RESET,
@@ -915,6 +994,13 @@ void Dp21RxSs_Pt_StartTxAfterRx (void)
 	}
 
 #ifdef Txo
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	(void)supports_10g;
+	(void)supports_135g;
+	(void)supports_20g;
+
+	LineRate_init_tx = DpRxSsInst.UsrOpt.LinkRate;
+#else /* Added for VCK190/VEK385 support */
 	/*
 	 * Determine what should be the TX rate
 	 * Assuming 20G will support 20, 13.5, 10
@@ -988,6 +1074,7 @@ void Dp21RxSs_Pt_StartTxAfterRx (void)
 	} else {
 		LineRate_init_tx = DpRxSsInst.UsrOpt.LinkRate;
 	}
+#endif /* Added for VCK190/VEK385 support */
 	LaneCount_init_tx = DpRxSsInst.UsrOpt.LaneCount;
 #endif
 	user_config.user_bpc = Msa_Pt[0].BitsPerColor;
@@ -1002,6 +1089,10 @@ void Dp21RxSs_Pt_StartTxAfterRx (void)
 	} else if(Msa_Pt[0].ComponentFormat ==
 			XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444){
 		user_config.user_format = XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444 + 1;
+	} else if(Msa_Pt[0].ComponentFormat ==
+			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420){
+		/* YCbCr 4:2:0 is conveyed via the VSC SDP (ComponentFormat 0x3) */
+		user_config.user_format = XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420 + 1;
 	} else {
 		user_config.user_format = XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_RGB + 1;
 	}
@@ -1027,6 +1118,8 @@ void Dp21RxSs_Pt_StartTxAfterRx (void)
 		XV_tpg_Set_colorFormat(&TpgInst, 0x2);
 	}else if(Msa_Pt[0].ComponentFormat == XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444){
 		XV_tpg_Set_colorFormat(&TpgInst, 0x1);
+	}else if(Msa_Pt[0].ComponentFormat == XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420){
+		XV_tpg_Set_colorFormat(&TpgInst, 0x3);
 	}else{
 		XV_tpg_Set_colorFormat(&TpgInst, 0x0);
 	}
@@ -1087,6 +1180,7 @@ void Dp21RxSs_Pt_UnplugProc (void)
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x1C, 0x0);
 	XDpTxSs_Stop(&DpTxSsInst);
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	/*
 	 * Setting vswing to 0
 	 */
@@ -1110,6 +1204,7 @@ void Dp21RxSs_Pt_UnplugProc (void)
 		XVPHY_GTHE4_PREEMP_DP_L0);
 	XVphy_SetTxPostCursor(&VPhyInst, 0, XVPHY_CHANNEL_ID_CH4,
 		XVPHY_GTHE4_PREEMP_DP_L0);
+#endif /* Added for VCK190/VEK385 support */
 
 	Dp21RxSs_Pt_TxAudio (&DpTxSsInst, 0);
 

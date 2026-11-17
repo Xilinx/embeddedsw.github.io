@@ -47,10 +47,6 @@
 #define XVPROCSS_AXIS_SWITCH_VIDOUT_M0    (0)
 
 /************************** Function Prototypes ******************************/
-static int validateWindowSize(const XVidC_VideoWindow *win,
-		                      const u32 HActive,
-		                      const u32 VActive);
-
 static XVprocSs_ScaleMode GetScalingMode(XVprocSs *XVprocSsPtr);
 
 
@@ -65,7 +61,7 @@ static XVprocSs_ScaleMode GetScalingMode(XVprocSs *XVprocSsPtr);
 * @return XST_SUCCESS if window is valid else XST_FAILURE
 *
 ******************************************************************************/
-static int validateWindowSize(const XVidC_VideoWindow *win,
+int validateWindowSize(const XVidC_VideoWindow *win,
                               const u32 HActive,
                               const u32 VActive)
 {
@@ -78,10 +74,10 @@ static int validateWindowSize(const XVidC_VideoWindow *win,
   }
 
   //Check if window is within the Resolution being programmed
-  if(((win->StartX > HActive)) ||
-	 ((win->StartY > VActive)) ||
-     ((win->StartX + win->Width) > HActive)   ||
-     ((win->StartY + win->Height) > VActive))
+  if((win->StartX > HActive) ||
+	 (win->StartY > VActive) ||
+     (win->Width > (HActive - win->StartX)) ||
+     (win->Height > (VActive - win->StartY)))
   {
     return(XST_FAILURE);
   }

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,7 @@
 * @addtogroup axicdma Overview
 * @{
  *
+* @brief Implements BD ring management for AXI CDMA scatter-gather mode.
  * Implementation for support on Scatter Gather (SG) transfers.
  * It includes the implementation of the BD ring API. There is only one BD ring
  * per DMA engine.
@@ -33,21 +34,19 @@
 /* The following macros are helper functions inside this file.
  */
 
-/******************************************************************************
- * Move the BdPtr argument ahead an arbitrary number of BDs. Wrapping around
- * to the beginning of the ring if needed.
+/**
+ * @brief Moves the BD pointer ahead by an arbitrary number of BDs.
  *
- * We know a wraparound should occur if the new BdPtr is greater than
- * the high address in the ring.
+ * Wraps around to the beginning of the ring when needed. A wraparound occurs
+ * when the new BD pointer is greater than the high address in the ring.
  *
- * @param	InstancePtr is the ring BdPtr appears in
- * @param	BdPtr on input is the starting BD position and on output is the
- *			final BD position
- * @param	NumBd is the number of BD spaces to increment
+ * @param[in] InstancePtr is the driver instance that owns the ring.
+ * @param[in,out] BdPtr is the starting BD pointer on input and the final BD
+ *        pointer on output.
+ * @param[in] NumBd is the number of BD spaces to advance.
  *
- * @note	The BdPtr will be changed if NumBd not zero.
- *
- *****************************************************************************/
+ * @note Updates BdPtr when NumBd is not zero.
+ */
 #define XAXICDMA_RING_SEEKAHEAD(InstancePtr, BdPtr, NumBd)         \
 	{                                                                  \
 		UINTPTR Addr = (UINTPTR)(void *)(BdPtr);                       \
@@ -60,21 +59,19 @@
 		(BdPtr) = (XAxiCdma_Bd *)(void *)Addr;                                  \
 	}
 
-/******************************************************************************
- * Move the BdPtr argument backwards an arbitrary number of BDs. Wrapping
- * around to the end of the ring if needed.
+/**
+ * @brief Moves the BD pointer backwards by an arbitrary number of BDs.
  *
- * We know a wraparound should occur if the new BdPtr is less than
- * the base address in the ring.
+ * Wraps around to the end of the ring when needed. A wraparound occurs when
+ * the new BD pointer is less than the base address in the ring.
  *
- * @param	InstancePtr is the ring BdPtr appears in
- * @param	BdPtr on input is the starting BD position and on output is the
- *			final BD position
- * @param	NumBd is the number of BD spaces to increment
+ * @param[in] InstancePtr is the driver instance that owns the ring.
+ * @param[in,out] BdPtr is the starting BD pointer on input and the final BD
+ *        pointer on output.
+ * @param[in] NumBd is the number of BD spaces to move backward.
  *
- * @note	The BdPtr will be changed if NumBd not zero.
- *
- *****************************************************************************/
+ * @note Updates BdPtr when NumBd is not zero.
+ */
 #define XAXICDMA_RING_SEEKBACK(InstancePtr, BdPtr, NumBd)        \
 	{                                                                \
 		UINTPTR Addr = (UINTPTR)(void *)(BdPtr);                                     \
@@ -89,13 +86,12 @@
 
 /*****************************************************************************/
 /**
- * This function calculates how many BDs can be built using given number of
- * bytes of memory, according to alignment provided.
+ * @brief Calculates how many BDs fit in the given memory size and alignment.
  *
- * @param	Alignment is the preferred alignment for the BDs
- * @param	Bytes is the number of bytes of memory to build BDs with
- * @param	BdBuffAddr is the buffer address allocated for the BDs. This
- *			is to check the alignment of the buffer to make sure the the
+ * @param[in] Alignment is the preferred alignment for the BDs
+ * @param[in] Bytes is the number of bytes of memory to build BDs with
+ * @param[in] BdBuffAddr is the buffer address allocated for the BDs. This
+ *			is to check the alignment of the buffer to make sure the
  *			buffer is aligned to the BD alignment. An invalid buffer
  *			address results in 0.
  *
@@ -124,15 +120,12 @@ u32 XAxiCdma_BdRingCntCalc(u32 Alignment, u32 Bytes, UINTPTR BdBuffAddr)
 
 /*****************************************************************************/
 /**
- * This function calculates how much memory is needed to build requested number
- * of BDs.
+ * @brief Calculates memory required for the requested number of BDs.
  *
- * @param	Alignment is the preferred alignment for the BDs
- * @param	NumBd is the number of BDs to be built
+ * @param[in] Alignment is the preferred alignment for the BDs
+ * @param[in] NumBd is the number of BDs to be built
  *
  * @return	The number of bytes of memory needed to build the BDs
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdRingMemCalc(u32 Alignment, int NumBd)
@@ -143,14 +136,10 @@ u32 XAxiCdma_BdRingMemCalc(u32 Alignment, int NumBd)
 
 /*****************************************************************************/
 /**
- * This function set the Current BD ptr of a BD
+ * @brief Sets the current BD pointer in the hardware.
  *
- * @param       BdPtr is the pointer to the BD to set the Next BD ptr
- * @param       CurBdPtr is the valud of Current BD ptr
- *
- * @return      None
- *
- * @note        None.
+ * @param[in] InstancePtr is a pointer to the driver instance.
+ * @param[in] CurBdPtr is the current BD pointer value.
  *
  *****************************************************************************/
 void XAxiCdma_BdSetCurBdPtr(XAxiCdma *InstancePtr, UINTPTR CurBdPtr)
@@ -165,35 +154,57 @@ void XAxiCdma_BdSetCurBdPtr(XAxiCdma *InstancePtr, UINTPTR CurBdPtr)
 
 /*****************************************************************************/
 /**
- * This function grabs a copy of the current BD pointer from the hardware.
+ * @brief Converts a physical BD address to its virtual address in the ring.
  *
- * @param	InstancePtr is the driver instance we are working on
+ * @param[in] InstancePtr is the driver instance for the BD ring
+ * @param[in] BdPhysAddr is the physical address of the BD
  *
- * @return	The BD pointer in CDESC register
- *
- * @note	None.
+ * @return	The virtual address of the BD in the ring
  *
  *****************************************************************************/
-XAxiCdma_Bd *XAxiCdma_BdRingGetCurrBd(XAxiCdma *InstancePtr)
+static XAxiCdma_Bd *XAxiCdma_BdRingGetVirtAddr(XAxiCdma *InstancePtr,
+					       UINTPTR BdPhysAddr)
 {
-
-	if (InstancePtr->AddrWidth > 32) {
-		return (XAxiCdma_Bd *)(UINTPTR)((XAxiCdma_BdRead(InstancePtr->BaseAddr, XAXICDMA_CDESC_OFFSET)) |
-						((uint64_t)(XAxiCdma_BdRead(InstancePtr->BaseAddr, XAXICDMA_CDESC_MSB_OFFSET)) << 32U));
-	} else {
-		return (XAxiCdma_Bd *)(UINTPTR)(XAxiCdma_BdRead(InstancePtr->BaseAddr, XAXICDMA_CDESC_OFFSET));
-	}
+	return (XAxiCdma_Bd *)(void *)(InstancePtr->FirstBdAddr +
+			(BdPhysAddr - InstancePtr->FirstBdPhysAddr));
 }
 
 /*****************************************************************************/
 /**
- * This function gets the total number of BDs in the BD ring.
+ * @brief Reads the current BD pointer from the hardware.
  *
- * @param	InstancePtr is the driver instance we are working on
+ * The hardware CDESC register contains a physical address. This routine
+ * translates that address to the virtual address used by BD ring APIs.
+ *
+ * @param[in] InstancePtr is the driver instance we are working on
+ *
+ * @return	The virtual address of the BD pointed to by CDESC
+ *
+ *****************************************************************************/
+XAxiCdma_Bd *XAxiCdma_BdRingGetCurrBd(XAxiCdma *InstancePtr)
+{
+	UINTPTR CurrBdPhysAddr;
+
+	if (InstancePtr->AddrWidth > 32) {
+		CurrBdPhysAddr = (UINTPTR)((XAxiCdma_BdRead(InstancePtr->BaseAddr,
+							       XAXICDMA_CDESC_OFFSET)) |
+				((uint64_t)(XAxiCdma_BdRead(InstancePtr->BaseAddr,
+							       XAXICDMA_CDESC_MSB_OFFSET)) << 32U));
+	} else {
+		CurrBdPhysAddr = (UINTPTR)XAxiCdma_BdRead(InstancePtr->BaseAddr,
+							     XAXICDMA_CDESC_OFFSET);
+	}
+
+	return XAxiCdma_BdRingGetVirtAddr(InstancePtr, CurrBdPhysAddr);
+}
+
+/*****************************************************************************/
+/**
+ * @brief Reads the total number of BDs in the BD ring.
+ *
+ * @param[in] InstancePtr is the driver instance we are working on
  *
  * @return	The total number of BDs for this instance
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdRingGetCnt(XAxiCdma *InstancePtr)
@@ -203,13 +214,11 @@ u32 XAxiCdma_BdRingGetCnt(XAxiCdma *InstancePtr)
 
 /*****************************************************************************/
 /**
- * This function gets the number of free BDs.
+ * @brief Reads the number of free BDs.
  *
- * @param	InstancePtr is the driver instance we are working on
+ * @param[in] InstancePtr is the driver instance we are working on
  *
  * @return	The total number of free BDs for this instance
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdRingGetFreeCnt(XAxiCdma *InstancePtr)
@@ -219,38 +228,35 @@ u32 XAxiCdma_BdRingGetFreeCnt(XAxiCdma *InstancePtr)
 
 /*****************************************************************************/
 /**
- * This function grabs a copy of the current BD pointer from the hardware.
+ * @brief Reads and saves the current BD pointer from the hardware.
  * It is normally used to prepare for the hardware reset. The snapshot of the
  * current BD pointer should be reloaded once the reset is done.
+ * The restart pointer is saved as a physical address for programming CDESC.
  *
- * @param	InstancePtr is the driver instance we are working on
- *
- * @return	None
- *
- * @note	None.
+ * @param[in] InstancePtr is the driver instance we are working on
  *
  *****************************************************************************/
 void XAxiCdma_BdRingSnapShotCurrBd(XAxiCdma *InstancePtr)
 {
 	XAxiCdma_Bd *BdPtr;
 
-	BdPtr =	XAxiCdma_BdRingGetCurrBd(InstancePtr);
+	BdPtr = XAxiCdma_BdRingGetCurrBd(InstancePtr);
 
-	InstancePtr->BdaRestart = XAxiCdma_BdRingNext(InstancePtr, BdPtr);
+	BdPtr = XAxiCdma_BdRingNext(InstancePtr, BdPtr);
+	if (BdPtr != NULL) {
+		InstancePtr->BdaRestart = (XAxiCdma_Bd *)(void *)
+			XAxiCdma_BdGetPhysAddr(BdPtr);
+	}
 
 	return;
 }
 
 /*****************************************************************************/
 /**
- * This function set the Tail BD ptr of a BD
+ * @brief Sets the tail BD pointer in the hardware.
  *
- * @param       BdPtr is the pointer to the BD to set the Next BD ptr
- * @param       Tail Bd is the value of Tail BD ptr
- *
- * @return      None
- *
- * @note        None.
+ * @param[in] InstancePtr is a pointer to the driver instance.
+ * @param[in] TailBdPtr is the tail BD pointer value.
  *
  *****************************************************************************/
 void XAxiCdma_BdSetTailBdPtr(XAxiCdma *InstancePtr, UINTPTR TailBdPtr)
@@ -266,15 +272,13 @@ void XAxiCdma_BdSetTailBdPtr(XAxiCdma *InstancePtr, UINTPTR TailBdPtr)
 
 /*****************************************************************************/
 /**
- * This function gets the next BD of the current BD on the BD ring.
+ * @brief Reads the next BD on the BD ring.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	BdPtr is the current BD
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] BdPtr is the current BD
  *
  * @return	The next BD on the ring from the current BD, NULL if passed
  *			in BdPtr not valid.
- *
- * @note	None.
  *
  *****************************************************************************/
 XAxiCdma_Bd *XAxiCdma_BdRingNext(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr)
@@ -310,14 +314,12 @@ XAxiCdma_Bd *XAxiCdma_BdRingNext(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function gets the previous BD of the current BD on the BD ring.
+ * @brief Reads the previous BD on the BD ring.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	BdPtr is the current BD
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] BdPtr is the current BD
  *
  * @return	The previous BD on the ring from the current BD
- *
- * @note	None.
  *
  *****************************************************************************/
 XAxiCdma_Bd *XAxiCdma_BdRingPrev(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr)
@@ -353,14 +355,14 @@ XAxiCdma_Bd *XAxiCdma_BdRingPrev(XAxiCdma *InstancePtr, XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function creates the BD ring for the driver instance. If a BD ring
+ * @brief Creates the BD ring for the driver instance.
  * pre-exist of this ring, the previous ring is lost.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	PhysAddr is the physical address of the memory for the BD ring
- * @param	VirtAddr is the virtual address of the memory for the BD ring
- * @param	Alignment is the alignment for the BDs
- * @param	BdCount is the number of BDs to create in the ring
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] PhysAddr is the physical address of the memory for the BD ring
+ * @param[in] VirtAddr is the virtual address of the memory for the BD ring
+ * @param[in] Alignment is the alignment for the BDs
+ * @param[in] BdCount is the number of BDs to create in the ring
  *
  * @return
  *		- XST_SUCCESS for success
@@ -516,19 +518,17 @@ LONG XAxiCdma_BdRingCreate(XAxiCdma *InstancePtr, UINTPTR PhysAddr,
 
 /*****************************************************************************/
 /**
- * This function clones all BDs in the BD ring to be the same as the given
+ * @brief Clones all BDs in the ring from a template BD.
  * BD.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	TemplateBdPtr is the BD to be copied from
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] TemplateBdPtr is the BD to be copied from
  *
  * @return
  *			- XST_SUCCESS for success
  *			- XST_DMA_SG_NO_LIST if there is no BD ring
  *			- XST_DEVICE_IS_STARTED if the hardware is running
  *			- XST_DMA_SG_LIST_ERROR is the BD ring is still in use
- *
- * @note	None.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdRingClone(XAxiCdma *InstancePtr, XAxiCdma_Bd *TemplateBdPtr)
@@ -586,18 +586,16 @@ LONG XAxiCdma_BdRingClone(XAxiCdma *InstancePtr, XAxiCdma_Bd *TemplateBdPtr)
 
 /*****************************************************************************/
 /**
- * This function requests number of BDs from the BD ring.
+ * @brief Allocates BDs from the BD ring.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	NumBd is the number of BDs to request
- * @param	BdSetPtr is the pointer to the set of BDs returned
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] NumBd is the number of BDs to request
+ * @param[out] BdSetPtr is the pointer to the set of BDs returned
  *
  * @return
  *			- XST_SUCCESS for success
  *			- XST_INVALID_PARAM if requests non-positive number of BDs
  *			- XST_FAILURE if not enough free BDs available
- *
- * @note	None.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdRingAlloc(XAxiCdma *InstancePtr, int NumBd,
@@ -627,18 +625,16 @@ LONG XAxiCdma_BdRingAlloc(XAxiCdma *InstancePtr, int NumBd,
 
 /*****************************************************************************/
 /**
- * This function tries to free the number of BDs back to the ring.
+ * @brief Returns BDs to the free pool in the ring.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	NumBd is the number of BDs to return
- * @param	BdSetPtr is the set of BDs to be returned
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] NumBd is the number of BDs to return
+ * @param[out] BdSetPtr is the set of BDs to be returned
  *
  * @return
  *			- XST_SUCCESS for success
  *			- XST_INVALID_PARAM if to free non-positive number of BDs
  *			- XST_FAILURE if BD ring management shows an error
- *
- * @note	None.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdRingUnAlloc(XAxiCdma *InstancePtr, int NumBd,
@@ -678,21 +674,14 @@ LONG XAxiCdma_BdRingUnAlloc(XAxiCdma *InstancePtr, int NumBd,
 }
 
 /*****************************************************************************/
-/*
- * Stub call back function.
+/**
+ * @brief Stub callback function when the user provides no callback.
  *
- * This is used in case the user does not provide a callback function.
- * This function only releases the resources.
- *
- * @param	CallBackRef is the call back reference passed in by
+ * @param[in] CallBackRef is the call back reference passed in by
  *			application,A NULL pointer is acceptable.
- * @param	IrqMask is the interrupt mask regarding this completion
- * @param	NumBdPtr is the pointer to number of BDs this handler should
+ * @param[in] IrqMask is the interrupt mask regarding this completion
+ * @param[out] NumBdPtr is the pointer to number of BDs this handler should
  *			handle
- *
- * @return	None
- *
- * @note	None.
  *
  *****************************************************************************/
 static void StubCallBackFn(void *CallBackRef, u32 IrqMask, int *NumBdPtr)
@@ -724,13 +713,13 @@ static void StubCallBackFn(void *CallBackRef, u32 IrqMask, int *NumBdPtr)
 
 /*****************************************************************************/
 /**
- * This function tries to enqueue the number of BDs to the hardware.
+ * @brief Enqueues prepared BDs to the hardware.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	NumBd is the number of BDs to enqueue
- * @param	BdSetPtr is the set of BDs to be enqueued
- * @param	CallBackFn is the callback function for this transfer, NULL is fine
- * @param	CallBackRef is the callback reference pointer
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] NumBd is the number of BDs to enqueue
+ * @param[out] BdSetPtr is the set of BDs to be enqueued
+ * @param[in] CallBackFn is the callback function for this transfer, NULL is fine
+ * @param[in] CallBackRef is the callback reference pointer
  *
  * @return
  *			- XST_SUCCESS for success
@@ -741,8 +730,6 @@ static void StubCallBackFn(void *CallBackRef, u32 IrqMask, int *NumBdPtr)
  *			- XST_FAILURE for:
  *			Hardware is in invalid state, for example, reset failed
  *			Or, the hardware build is simple mode only
- *
- * @note	None.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdRingToHw(XAxiCdma *InstancePtr, int NumBd,
@@ -887,15 +874,13 @@ LONG XAxiCdma_BdRingToHw(XAxiCdma *InstancePtr, int NumBd,
 
 /*****************************************************************************/
 /**
- * This function tries to retrieve completed BDs from the hardware.
+ * @brief Retrieves completed BDs from the hardware.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	BdLimit is the maximum number of completed BDs to retrieve
- * @param	BdSetPtr is the set of completed BDs
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[out] BdLimit is the maximum number of completed BDs to retrieve
+ * @param[out] BdSetPtr is the set of completed BDs
  *
  * @return	The number of completed BDs.
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdRingFromHw(XAxiCdma *InstancePtr, int BdLimit,
@@ -972,18 +957,16 @@ u32 XAxiCdma_BdRingFromHw(XAxiCdma *InstancePtr, int BdLimit,
 
 /*****************************************************************************/
 /**
- * This function returns the BDs back to the free pool of the BD ring.
+ * @brief Returns the BDs back to the free pool of the BD ring.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	NumBd is the number of BDs to free
- * @param	BdSetPtr is the set of BDs to be freed
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] NumBd is the number of BDs to free
+ * @param[out] BdSetPtr is the set of BDs to be freed
  *
  * @return
  *			- XST_SUCCESS for success
  *			- XST_INVALID_PARAM if number of BDs is negative
  *			- XST_DMA_SG_LIST_ERROR if the BD ring management has a problem
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdRingFree(XAxiCdma *InstancePtr, int NumBd,
@@ -1025,22 +1008,16 @@ u32 XAxiCdma_BdRingFree(XAxiCdma *InstancePtr, int NumBd,
 }
 
 /*****************************************************************************/
-/*
- * This function tries to start the SG transfer that has been submitted to
- * the driver, however, not to the hardware yet, because the hardware was
- * doing a simple transfer at the time of submit.
+/**
+ * @brief Starts a queued SG transfer after a simple transfer completes.
  *
- * This function should be called when the simple transfer is done.
- *
- * @param	InstancePtr is the driver instance we are working on
+ * @param[in] InstancePtr is the driver instance we are working on
  *
  * @return
  *		- XST_SUCCESS if BD ring has been successfully started,
  *		SGWaiting will be 0
  *		- XST_FAILURE if BD ring cannot be be started, either because
  *		the hardware is simple only build or cannot switch to SG mode.
- *
- * @note	None.
  *
  *****************************************************************************/
 int XAxiCdma_BdRingStartTransfer(XAxiCdma *InstancePtr)

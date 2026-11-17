@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,10 +8,9 @@
 /**
 *
 * @file xspips_hw.c
-* @addtogroup spips Overview
-* @{
 *
-* Contains the reset and post boot rom state initialization.
+* @brief Implements the reset and post boot rom state initialization.
+*
 * Function prototypes in xspips_hw.h
 *
 * <pre>
@@ -24,9 +24,17 @@
 * 			entries. This change is to tackle CR#910231.
 * 3.1   tjs    11/23/18 Added a check for A72 and R5 processor to
 *                       avoid changes made for the workaround DT#842463.
+* 3.15  vn     08/26/26 Fix Doxygen warnings.
+* 3.15  tb     09/30/26 Align Doxygen comments with AMD documentation standards
+* 3.15  tb     10/12/26 Bound the RX FIFO drain loop in XSpiPs_ResetHw().
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup spips_api SPIPS APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -47,21 +55,15 @@
 /*****************************************************************************/
 /**
 *
-* Resets the spi module
+* @brief Resets the SPI module.
 *
-* @param    BaseAddress is the base address of the device.
-*
-* @return	None
-*
-* @note		None.
+* @param[in]    BaseAddress The base address of the device.
 *
 ******************************************************************************/
 void XSpiPs_ResetHw(u32 BaseAddress)
 {
 	u32 Check;
-#if !defined(versal)
 	u32 Count;
-#endif
 
 	/*
 	 * Disable Interrupts
@@ -85,12 +87,16 @@ void XSpiPs_ResetHw(u32 BaseAddress)
 			(XSPIPS_RXWR_RESET_VALUE & XSPIPS_RXWR_MASK));
 
 	/*
-	 * Clear RXFIFO
+	 * Clear RXFIFO. The device is disabled, so no new entries can
+	 * arrive; stop after XSPIPS_MAX_FIFO_DEPTH reads if RXNEMPTY stays
+	 * set.
 	 */
+	Count = 0U;
 	Check = (XSpiPs_ReadReg(BaseAddress,XSPIPS_SR_OFFSET) &
 		XSPIPS_IXR_RXNEMPTY_MASK);
-	while (Check != 0U) {
+	while ((Check != 0U) && (Count < XSPIPS_MAX_FIFO_DEPTH)) {
 		(void)XSpiPs_ReadReg(BaseAddress, XSPIPS_RXD_OFFSET);
+		Count++;
 		Check = (XSpiPs_ReadReg(BaseAddress,XSPIPS_SR_OFFSET) &
 			XSPIPS_IXR_RXNEMPTY_MASK);
 	}

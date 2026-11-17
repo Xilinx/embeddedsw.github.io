@@ -22,10 +22,12 @@
 
 #include "memory_manager.h"     /* Must come before xvisp_ss_example.h for struct aligned_buf */
 #include <xvisp_ss_example.h>
+#include "vvdevice.h"
 #include <xil_types.h>
 #include "xparameters.h"        /* Contains hardware platform parameters */
 #include "xscugic.h"           /* Generic Interrupt Controller driver */
 #include "xvisp_ss.h"          /* VISP SS driver header */
+#include "wdt_notifier.h"
 #include "xil_exception.h"     /* Exception handling utilities */
 #ifdef SDT
 extern xvisp_ss_Config xvisp_ss_ConfigTable[];
@@ -35,9 +37,19 @@ extern xvisp_ss_Config xvisp_ss_ConfigTable[];
 #include "mimo.h"
 #include "image.h"
 #include "vmix_hdmi_bridge.h"
+#ifndef ARMR52
 #include "ext_auto.h"
 #include "ext_manual.h"
 #include "finetune.h"
+#endif
+#ifdef DP_DISPLAY_AVAILABLE
+#include "dp_display_bridge.h"
+/* Enable DisplayPort live output: ISP -> frmbuf_wr -> DDR -> frmbuf_rd -> DC -> DP */
+#define DP_DISPLAY_ENABLE 1
+#endif
+#if ARMR52
+#include "mpu_config.h"
+#endif
 
 #define LOGTAG "MAIN"
 
@@ -55,6 +67,10 @@ int image_len = image_raw_len;
  * FMC selection: 0 = old FMC, 1 = new FMC
  */
 int fmc_selection = 0;
+
+#if ARMR52
+CREATE_TRACER(EXAMPLE_ALWAYS, "EXAMPLE_ALWAYS: ", ALWAYS, 1);
+#endif
 
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
 int init_lilo = 1;
@@ -100,11 +116,36 @@ XIntc InterruptController;                                   /* AXI Interrupt Co
 
 /* Frame buffer arrays using aligned_buf structure defined in header */
 struct aligned_buf Frame_Array_p[NUM_FBWR][Buffer_Count];
+/* Requested bytes per buffer, used only by the LILO mrd diagnostic prints. */
+u64 fbwr_bufsize[NUM_FBWR] = {0};
+
+/*
+ * Frame-buffer-writer base address and its AXI interrupt-controller base,
+ * resolved in a design-/IP-name-independent way. Prefer the canonical
+ * driver-based name (XPAR_XV_FRMBUF_WR_0_*) so a block-design rename (e.g. an
+ * added "DP_SS_" prefix) does not break the build; fall back to known instance
+ * names for older/other designs.
+ */
+#if defined(XPAR_XV_FRMBUF_WR_0_BASEADDR)
+#define FBWR_WR_BASEADDR      XPAR_XV_FRMBUF_WR_0_BASEADDR
+#elif defined(XPAR_DP_SS_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR)
+#define FBWR_WR_BASEADDR      XPAR_DP_SS_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR
+#elif defined(XPAR_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR)
+#define FBWR_WR_BASEADDR      XPAR_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR
+#endif
+
+#if defined(XPAR_DP_SS_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR)
+#define FBWR_INTC_BASEADDR    XPAR_DP_SS_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR
+#elif defined(XPAR_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR)
+#define FBWR_INTC_BASEADDR    XPAR_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR
+#endif
 #endif
 
 #ifdef XPAR_XMIPICSISS_NUM_INSTANCES
 #include "xcsiss.h"            /* MIPI CSI2 RX Subsystem driver */
 #include "xintc.h"             /* AXI Interrupt Controller driver */
+#include "xinterrupt_wrap.h"   /* SDT interrupt ID/parent decoding */
+
 #ifdef SDT
 extern XCsiSs_Config XCsiSs_ConfigTable[];
 #endif
@@ -122,8 +163,39 @@ static int MipiCsiSs_GetId(void *CallbackRef);
 #define VISP_INST XPAR_XVISP_SS_NUM_INSTANCES
 XVisp_Ss VispSsInst[VISP_INST];
 
+/* Image splitter/stitcher is a design-wide PL feature (all visp_ss instances share
+ * the same value), so gate it at compile time from the canonical XPAR macro -
+ * consistent with the other XPAR-based build switches used in this example. */
+#if defined(XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_ENABLE) && \
+    (XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_ENABLE == 1)
+#define SPLITTER_ENABLED  1
+#else
+#define SPLITTER_ENABLED  0
+#endif
+
 /* Global interrupt controller instance - manages all system interrupts */
 XScuGic Intc;
+
+#if ARMR52
+void reset_pmu_counter(void)
+{
+   uint32_t value;
+
+   // Enable user mode access to PMU
+   value = 1;
+    __asm__ __volatile__("mcr p15, 0, %0, c9, c14, 0" :: "r" (value));
+
+   // Reset and enable all counters of PMCR with DIV1 (not DIV64)
+   value = 0x00000047;  // Reset all counters and enable PMU, DIV1, LC
+   __asm__ __volatile__("mcr p15, 0, %0, c9, c12, 0" :: "r" (value));
+
+   // Enable cycle counter specifically
+   value = 0x80000000;  // Enable cycle counter
+   __asm__ __volatile__("mcr p15, 0, %0, c9, c12, 1" :: "r" (value));
+
+}
+
+#endif
 
 /* MIPI CSI2 RX Subsystem instances and AXI Interrupt Controller for MIPI */
 #ifdef XPAR_XMIPICSISS_NUM_INSTANCES
@@ -157,8 +229,16 @@ int main()
 {
 
 	RESULT ret = RET_SUCCESS;
+	u32 Status;
 
+#if defined(__aarch64__)
+	VsiVvdeviceStartFirstFrameTimer();
+#endif
 
+#if ARMR52
+	reset_pmu_counter();
+	TRACE(EXAMPLE_ALWAYS, "==========STARTED %s==========\n", __func__);
+#endif
 	/* Initialize the memory manager early - required for all buffer allocations */
 	if (mm_init() != 0) {
 		xil_printf("ERROR: Memory manager initialization failed.\r\n");
@@ -167,9 +247,19 @@ int main()
 	xil_printf("Memory manager initialized successfully.\r\n");
 
 	/* Initialize IRQ - setup interrupt handling infrastructure */
-	u32 Status = SetupInterruptSystem();
+	Status = SetupInterruptSystem();
 	if (Status == XST_FAILURE)
 		xil_printf("\r\n\r\n IRQ Configuration failed.\r\n\r\n");
+
+	#ifdef WDT_NOTIFIER
+	Status = WdtNotifier_Init();
+	if (Status == XST_DEVICE_NOT_FOUND) {
+		xil_printf("[APU WDT] WDT disabled -- use the design with IPI-0 enabled\r\n");
+	} else if (Status != XST_SUCCESS) {
+		xil_printf("[APU WDT] Init FAILED (status=%d) -- halting\r\n",
+			   (int)Status);
+	}
+	#endif
 
 	/* Configure VISP SS - main video processing subsystem */
 	Status = config_visp_ss();
@@ -317,7 +407,6 @@ int config_visp_ss()
 
 	/* Lookup the device configuration */
 	for (int i = 0; i < VISP_INST; i++) {
-		MEMSET(CfgPtr, 0, sizeof(xvisp_ss_Config));
 #ifndef SDT
 		CfgPtr = XVisp_Ss_LookupConfig(i);
 #else
@@ -390,7 +479,12 @@ int SetupInterruptSystem(void)
 		IntcCfgPtr = XScuGic_LookupConfig(XPAR_SCUGIC_0_DEVICE_ID);
 #else
 		/* Lookup configuration by base address (SDT method) */
+#ifndef ARMR52
 		IntcCfgPtr = XScuGic_LookupConfig(XPAR_GIC_BASEADDR);
+#else
+		IntcCfgPtr = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
+#endif
+
 #endif
 		if (IntcCfgPtr == NULL) {
 			xil_printf("ERR:: Interrupt Controller not found");
@@ -578,7 +672,7 @@ void setup_frmbuf_wr()
 {
 	int Status;
 #ifdef SDT
-	UINTPTR Baseaddress = XPAR_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR;
+	UINTPTR Baseaddress = FBWR_WR_BASEADDR;
 #endif
 
 	/* Initialize Frame Buffer Write instances */
@@ -588,7 +682,7 @@ void setup_frmbuf_wr()
 
 #ifndef SDT
 		/* Traditional initialization using base address offset */
-		Status = XVFrmbufWr_Initialize(&frmbufwr[i], XPAR_FRMBUF_WR_SS_V_FRMBUF_WR_0_BASEADDR + i);
+		Status = XVFrmbufWr_Initialize(&frmbufwr[i], FBWR_WR_BASEADDR + i);
 #else
 		/* SDT-based initialization using incremental base addresses */
 		Status = XVFrmbufWr_Initialize(&frmbufwr[i], Baseaddress);
@@ -596,13 +690,13 @@ void setup_frmbuf_wr()
 #endif
 		if (Status != XST_SUCCESS) {
 			xil_printf(TXT_RED "Frame Buffer Write Init failed status = %x.\r\n" TXT_RST, Status);
-			return XST_FAILURE;
+			return;
 		} else
 			xil_printf("Framebuffer write[%d] initilaized\n", i);
 	}
 
 	/* Setup AXI Interrupt Controller for frame buffer writer interrupts */
-	setup_axi_with_device(XPAR_FRMBUF_WR_SS_AXI_INTC_FRMBUF_BASEADDR);
+	setup_axi_with_device(FBWR_INTC_BASEADDR);
 
 	/* Callback function pointer table for all frame buffer writers */
 	void (*fbwr_callbacks[12])(void *) = {
@@ -622,7 +716,7 @@ void setup_frmbuf_wr()
 						(void *) &frmbufwr[i]);
 		if (Status != XST_SUCCESS) {
 			xil_printf("Frame Buffer Write[%d] Call back failed status = %x.\r\n" TXT_RST, i, Status);
-			return XST_FAILURE;
+			return;
 		}
 	}
 
@@ -703,6 +797,12 @@ void FrmbufwrDoneCallback_0(void *CallbackRef)
 	/* Update VMix layer with latest completed frame */
 	VmixHdmiBridge_UpdateFbwrLayer(fbwr_id, XvFrmBufRd_Buffer_Baseaddr,
 				       XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
+#endif
+
+#ifdef DP_DISPLAY_ENABLE
+	/* Push the just-completed frame to the DisplayPort live datapath. */
+	DpDisplayBridge_UpdateFrame(XvFrmBufRd_Buffer_Baseaddr,
+				   XvFrmBufRd_Buffer_Baseaddr + chroma_offset[fbwr_id]);
 #endif
 
 	/* Increment frame counter for statistics tracking */
@@ -977,10 +1077,30 @@ int init_fbwr(u8 hpId, CamDeviceBufChainId_t bufIo, CamDevicePipeOutFmt_t outFor
 	/* Calculate frame buffer writer ID based on hardware pipeline and buffer chain */
 	XVidC_VideoMode resIdOut;
 	u32 stride;
-	u32 fbwr_id = bufIo + hpId * 2; /* Max 2 FBWR per ISP (MP & SP1) */
 	u32 alignment = 32; /* Frame buffer alignment requirement for DMA */
+	u32 fbwr_id;
 
+#if SPLITTER_ENABLED
+	/* Splitter/stitcher design: the PL stitches the per-ISP tiles into a single
+	 * stream feeding the one physical frame-buffer writer. Configure that writer
+	 * exactly once, for the full stitched resolution, and skip the remaining
+	 * per-pipeline calls (hpId 0..3). */
+	static int single_fbwr_configured = 0;
+	if (single_fbwr_configured) {
+		xil_printf("init FBWR: single stitched frmbuf already configured, skipping hpId=%d\n", hpId);
+		return 0;
+	}
+	fbwr_id = 0; /* single physical frame-buffer writer */
+	outFormat.outWidth = XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_HRES;
+	outFormat.outHeight = XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_VRES;
+	bufsize *= 4; /* stitched frame is 4x the area of one 2x2 tile */
+	single_fbwr_configured = 1;
+	xil_printf("init FBWR[%d] (single stitched %ux%u)\n", fbwr_id,
+		   (unsigned)outFormat.outWidth, (unsigned)outFormat.outHeight);
+#else
+	fbwr_id = bufIo + hpId * 2; /* Max 2 FBWR per ISP (MP & SP1) */
 	xil_printf("init FBWR[%d]\n", fbwr_id);
+#endif
 
 	/* Mark this FBWR as enabled for later processing */
 	fbwr_enable[fbwr_id] = 1;
@@ -1000,6 +1120,8 @@ int init_fbwr(u8 hpId, CamDeviceBufChainId_t bufIo, CamDevicePipeOutFmt_t outFor
 		xil_printf("FBWR[%d] Buffer[%d]: allocated %llu bytes, aligned_addr=%p\n",
 			   fbwr_id, i, bufsize, aligned_ptr);
 	}
+	/* Capture after any splitter adjustment; do not include allocator overhead. */
+	fbwr_bufsize[fbwr_id] = bufsize;
 
 	/* Determine output format based on input format specification */
 	if (outFormat.outFormat == CAMDEV_PIX_FMT_YUV422SP) {
@@ -1096,6 +1218,22 @@ int init_fbwr(u8 hpId, CamDeviceBufChainId_t bufIo, CamDevicePipeOutFmt_t outFor
 		xil_printf("FBWR Config Failed\n\n\n\n");
 		return -1;
 	}
+
+#ifdef DP_DISPLAY_ENABLE
+	/*
+	 * Bring up the DisplayPort live output once, using the exact format and
+	 * stride the frmbuf_wr produces so frmbuf_rd can consume the same DDR
+	 * frames (ISP -> frmbuf_wr -> DDR -> frmbuf_rd -> VTC -> DC -> DP).
+	 */
+	if (fbwr_id == 0 && !DpDisplayBridge_IsReady()) {
+		int dpst = DpDisplayBridge_Init(StreamOut.Timing.HActive,
+						StreamOut.Timing.VActive,
+						FBWR_Cfmt[fbwr_id], stride,
+						chroma_offset[fbwr_id]);
+		if (dpst != XST_SUCCESS)
+			xil_printf("WARNING: DP live bridge init failed (%d)\r\n", dpst);
+	}
+#endif
 
 	usleep(20000);  /* Allow configuration to settle */
 
@@ -1238,7 +1376,7 @@ int setup_mipi_csi_interrupts(void)
 	}
 
 	/* Step 2: Initialize AXI Interrupt Controller for MIPI */
-	Status = XIntc_Initialize(&MipiIntcController, XPAR_AXI_INTC_0_BASEADDR);
+	Status = XIntc_Initialize(&MipiIntcController, XPAR_XINTC_0_BASEADDR);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR: MIPI AXI IntC init failed\r\n");
 		return XST_FAILURE;
@@ -1250,10 +1388,15 @@ int setup_mipi_csi_interrupts(void)
 		return XST_FAILURE;
 	}
 
-	/* Step 3: Connect MIPI CSI interrupt handlers to AXI IntC */
+	/* Step 3: Connect only MIPI CSI instances wired to the AXI IntC. */
 	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		if (MipiCsiSsInst[i].Config.IntrParent == XINTC_NO_PARENT) {
+			xil_printf("MIPI CSI SS[%d] interrupt is not connected; skipping\r\n", i);
+			continue;
+		}
+
 		Status = XIntc_Connect(&MipiIntcController,
-				       XPAR_FABRIC_XMIPICSISS_0_INTR + i,
+				       (u8)XGet_IntrId(MipiCsiSsInst[i].Config.IntrId),
 				       (XInterruptHandler)XCsiSs_IntrHandler,
 				       (void *)&MipiCsiSsInst[i]);
 		if (Status != XST_SUCCESS) {
@@ -1263,7 +1406,7 @@ int setup_mipi_csi_interrupts(void)
 
 		/* Enable interrupt for this MIPI CSI instance in AXI IntC */
 		XIntc_Enable(&MipiIntcController,
-			     XPAR_FABRIC_XMIPICSISS_0_INTR + i);
+			     (u8)XGet_IntrId(MipiCsiSsInst[i].Config.IntrId));
 	}
 
 	/* Start the AXI Interrupt Controller in real mode */
@@ -1325,6 +1468,8 @@ int setup_mipi_csi_interrupts(void)
 	 * on each CSI core instance.
 	 */
 	for (int i = 0; i < NUM_MIPI_CSI; i++) {
+		if (MipiCsiSsInst[i].Config.IntrParent == XINTC_NO_PARENT)
+			continue;
 		XCsi_IntrEnable(MipiCsiSsInst[i].CsiPtr,
 				XCSI_ISR_ALLINTR_MASK & ~XCSI_ISR_STOP_MASK);
 		XCsi_SetGlobalInterrupt(MipiCsiSsInst[i].CsiPtr);

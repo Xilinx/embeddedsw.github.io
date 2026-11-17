@@ -276,32 +276,6 @@ void XVprocSs_SetUserTimerHandler(XVprocSs *InstancePtr,
 *\n*\n******************************************************************************/
 static void GetIncludedSubcores(XVprocSs *XVprocSsPtr)
 {
-#ifndef SDT
-  XVprocSsPtr->HcrsmplrPtr    = ((XVprocSsPtr->Config.HCrsmplr.IsPresent)   \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Hcrsmplr)    : NULL);
-  XVprocSsPtr->VcrsmplrInPtr  = ((XVprocSsPtr->Config.VCrsmplrIn.IsPresent)  \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].VcrsmplrIn)  : NULL);
-  XVprocSsPtr->VcrsmplrOutPtr = ((XVprocSsPtr->Config.VCrsmplrOut.IsPresent) \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].VcrsmplrOut) : NULL);
-  XVprocSsPtr->VscalerPtr     = ((XVprocSsPtr->Config.Vscale.IsPresent)      \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Vscaler)     : NULL);
-  XVprocSsPtr->HscalerPtr     = ((XVprocSsPtr->Config.Hscale.IsPresent)      \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Hscaler)     : NULL);
-  XVprocSsPtr->VdmaPtr        = ((XVprocSsPtr->Config.Vdma.IsPresent)        \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Vdma)        : NULL);
-  XVprocSsPtr->LboxPtr        = ((XVprocSsPtr->Config.Lbox.IsPresent)        \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Lbox)        : NULL);
-  XVprocSsPtr->CscPtr         = ((XVprocSsPtr->Config.Csc.IsPresent)         \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Csc)         : NULL);
-  XVprocSsPtr->DeintPtr       = ((XVprocSsPtr->Config.Deint.IsPresent)       \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Deint)       : NULL);
-  XVprocSsPtr->RouterPtr      = ((XVprocSsPtr->Config.Router.IsPresent)      \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].Router)      : NULL);
-  XVprocSsPtr->RstAxisPtr     = ((XVprocSsPtr->Config.RstAxis.IsPresent)     \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].RstAxis)     : NULL);
-  XVprocSsPtr->RstAximmPtr    = ((XVprocSsPtr->Config.RstAximm.IsPresent)    \
-                              ? (&subcoreRepo[XVprocSsPtr->Config.DeviceId].RstAximm)    : NULL);
-#else
   u32 Index = 0;
 
   Index = XVprocSs_GetDrvIndex(XVprocSsPtr->Config.BaseAddress);
@@ -330,7 +304,6 @@ static void GetIncludedSubcores(XVprocSs *XVprocSsPtr)
                               ? (&subcoreRepo[Index].RstAxis)     : NULL);
   XVprocSsPtr->RstAximmPtr    = ((XVprocSsPtr->Config.RstAximm.IsPresent)    \
                               ? (&subcoreRepo[Index].RstAximm)    : NULL);
-#endif
 }
 
 /*****************************************************************************/
@@ -873,16 +846,31 @@ int XVprocSs_SetStreamResolution(XVidC_VideoStream *StreamPtr,
 ******************************************************************************/
 void XVprocSs_UpdateZoomPipWindow(XVprocSs *InstancePtr)
 {
+  int Status;
+
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
 
   if(XVprocSs_IsConfigModeMax(InstancePtr))
   {
-    /* send Vdma update window to IP */
     if(XVprocSs_IsPipModeOn(InstancePtr)) {
+      Status = validateWindowSize(&InstancePtr->CtxtData.WrWindow,
+                          InstancePtr->VidOut.Timing.HActive,
+                          InstancePtr->VidOut.Timing.VActive);
+      if(Status != XST_SUCCESS) {
+        XVprocSs_LogWrite(InstancePtr, XVPROCSS_EVT_UPDATE_ZPWIN, XVPROCSS_EDAT_FAILURE);
+        return;
+      }
       XVprocSs_VdmaSetWinToDnScaleMode(InstancePtr, XVPROCSS_VDMA_UPDATE_WR_CH);
     }
     else {
+      Status = validateWindowSize(&InstancePtr->CtxtData.RdWindow,
+                          InstancePtr->VidIn.Timing.HActive,
+                          InstancePtr->VidIn.Timing.VActive);
+      if(Status != XST_SUCCESS) {
+        XVprocSs_LogWrite(InstancePtr, XVPROCSS_EVT_UPDATE_ZPWIN, XVPROCSS_EDAT_FAILURE);
+        return;
+      }
       XVprocSs_VdmaSetWinToUpScaleMode(InstancePtr, XVPROCSS_VDMA_UPDATE_RD_CH);
     }
 
@@ -924,6 +912,8 @@ void XVprocSs_SetZoomPipWindow(XVprocSs *InstancePtr,
                                XVprocSs_Win   mode,
                                XVidC_VideoWindow *win)
 {
+  int Status;
+
   /* Verify arguments */
   Xil_AssertVoid(InstancePtr != NULL);
   Xil_AssertVoid(win != NULL);
@@ -943,6 +933,13 @@ void XVprocSs_SetZoomPipWindow(XVprocSs *InstancePtr,
 
         win->StartX = ((win->StartX + AlignStartX - 1)/AlignStartX)*AlignStartX;
         win->Width  = ((win->Width  + AlignWidth  - 1)/AlignWidth)*AlignWidth;
+      }
+      Status = validateWindowSize(win,
+                          InstancePtr->VidIn.Timing.HActive,
+                          InstancePtr->VidIn.Timing.VActive);
+      if(Status != XST_SUCCESS) {
+        XVprocSs_LogWrite(InstancePtr, XVPROCSS_EVT_SET_ZOOMWIN, XVPROCSS_EDAT_FAILURE);
+        return;
       }
       //VDMA RD Client
       InstancePtr->CtxtData.RdWindow.StartX = win->StartX;
@@ -965,6 +962,13 @@ void XVprocSs_SetZoomPipWindow(XVprocSs *InstancePtr,
 
         win->StartX = ((win->StartX + AlignStartX - 1)/AlignStartX)*AlignStartX;
         win->Width  = ((win->Width  + AlignWidth  - 1)/AlignWidth)*AlignWidth;
+      }
+      Status = validateWindowSize(win,
+                          InstancePtr->VidOut.Timing.HActive,
+                          InstancePtr->VidOut.Timing.VActive);
+      if(Status != XST_SUCCESS) {
+        XVprocSs_LogWrite(InstancePtr, XVPROCSS_EVT_SET_PIPWIN, XVPROCSS_EDAT_FAILURE);
+        return;
       }
       //VDMA WR Client
       InstancePtr->CtxtData.WrWindow.StartX = win->StartX;

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,8 +8,9 @@
 /**
  *
  * @file xaxidma_example_sg_poll.c
- *
- * This file demonstrates how to use the xaxidma driver on the Xilinx AXI
+* @addtogroup AXIDMA Overview
+* @{
+* @brief Demonstrates AXI DMA scatter-gather mode in polling mode.
  * DMA core (AXIDMA) to transfer packets in polling mode when the AXIDMA
  * core is configured in Scatter Gather Mode.
  *
@@ -19,7 +20,6 @@
  * To see the debug print, you need a Uart16550 or uartlite in your system,
  * and please set "-DDEBUG" in your compiler options. You need to rebuild your
  * software executable.
- *
  *
  * <pre>
  * MODIFICATION HISTORY:
@@ -46,7 +46,7 @@
  * 9.3   ms   01/23/17 Modified xil_printf statement in main function to
  *                     ensure that "Successfully ran" and "Failed" strings are
  *                     available in all examples. This is a fix for CR-965028.
- * 9.9   rsp  01/21/19 Fix use of #elif check in deriving DDR_BASE_ADDR.
+ * 9.9   rsp  01/21/19 Fix use of else-if preprocessor check in deriving DDR_BASE_ADDR.
  * 9.10  rsp  09/17/19 Fix cache maintenance ops for source and dest buffer.
  * 9.14  sk   03/08/22 Delete DDR memory limits comments as they are not
  * 		       relevant to this driver version.
@@ -62,8 +62,9 @@
 #include "xparameters.h"
 #include "xdebug.h"
 #include "sleep.h"
+#include "xil_cache.h"
 
-#ifdef __aarch64__
+#ifndef __MICROBLAZE__
 #include "xil_mmu.h"
 #endif
 
@@ -72,6 +73,11 @@
 #endif
 
 #if (!defined(DEBUG))
+/**
+ * @brief Prints a formatted message when DEBUG is not defined.
+ *
+ * @param[in] format is the printf-style format string.
+ */
 extern void xil_printf(const char *format, ...);
 #endif
 
@@ -80,49 +86,28 @@ extern void xil_printf(const char *format, ...);
 /*
  * Device hardware build related constants.
  */
+
 #ifndef SDT
-
-#define DMA_DEV_ID		XPAR_AXIDMA_0_DEVICE_ID
-
-#ifdef XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR		XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#elif defined (XPAR_MIG7SERIES_0_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_MIG7SERIES_0_BASEADDR
-#elif defined (XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#elif defined (XPAR_PSU_DDR_0_S_AXI_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_PSU_DDR_0_S_AXI_BASEADDR
+#define DMA_DEV_ID		XPAR_AXIDMA_0_DEVICE_ID	/**< Device ID of the AXI DMA under test. */
 #endif
 
-#else
+/*
+ * Buffer and Buffer Descriptor related constant definition
+ */
+/** @cond */
+#define MAX_PKT_LEN		0x20	/**< Maximum packet length in bytes for each transfer. */
+#define BLOCK_SIZE_2MB		0x200000U
 
-#ifdef XPAR_MEM0_BASEADDRESS
-#define DDR_BASE_ADDR		XPAR_MEM0_BASEADDRESS
-#endif
-#endif
+#define NUMBER_OF_BDS_IN_RING		64
 
-#ifndef DDR_BASE_ADDR
-#warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-DEFAULT SET TO 0x01000000
-#define MEM_BASE_ADDR		0x01000000
-#else
-#define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x1000000)
-#endif
+#define TX_BD_SPACE_SIZE	(NUMBER_OF_BDS_IN_RING * XAXIDMA_BD_MINIMUM_ALIGNMENT)
+#define RX_BD_SPACE_SIZE	(NUMBER_OF_BDS_IN_RING * XAXIDMA_BD_MINIMUM_ALIGNMENT)
+#define TX_BUFFER_SIZE		(MAX_PKT_LEN)
+#define RX_BUFFER_SIZE		(NUMBER_OF_BDS_IN_RING * MAX_PKT_LEN)
+/** @endcond */
 
-#define TX_BD_SPACE_BASE	(MEM_BASE_ADDR)
-#define TX_BD_SPACE_HIGH	(MEM_BASE_ADDR + 0x00000FFF)
-#define RX_BD_SPACE_BASE	(MEM_BASE_ADDR + 0x00001000)
-#define RX_BD_SPACE_HIGH	(MEM_BASE_ADDR + 0x00001FFF)
-#define TX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00100000)
-#define RX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00300000)
-#define RX_BUFFER_HIGH		(MEM_BASE_ADDR + 0x004FFFFF)
-
-
-#define MAX_PKT_LEN		0x20
-#define MARK_UNCACHEABLE        0x701
-
-#define TEST_START_VALUE	0xC
-#define POLL_TIMEOUT_COUNTER	1000000U
+#define TEST_START_VALUE	0xC	/**< Starting value used to fill and verify test packet data. */
+#define POLL_TIMEOUT_COUNTER	1000000U	/**< Maximum poll iterations before a transfer times out. */
 
 /**************************** Type Definitions *******************************/
 
@@ -132,43 +117,55 @@ DEFAULT SET TO 0x01000000
 
 /************************** Function Prototypes ******************************/
 #if defined(XPAR_UARTNS550_0_BASEADDR)
+/** @cond INTERNAL */
 static void Uart550_Setup(void);
+/** @endcond */
 #endif
 
+/** @cond INTERNAL */
 static int RxSetup(XAxiDma *AxiDmaInstPtr);
 static int TxSetup(XAxiDma *AxiDmaInstPtr);
 static int SendPacket(XAxiDma *AxiDmaInstPtr);
 static int CheckData(void);
 static int CheckDmaResult(XAxiDma *AxiDmaInstPtr);
+/** @endcond */
+
 
 /************************** Variable Definitions *****************************/
 /*
  * Device instance definitions
  */
-XAxiDma AxiDma;
+XAxiDma AxiDma;	/**< Driver instance for the AXI DMA under test. */
 
-/*
- * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
- */
-u32 *Packet = (u32 *) TX_BUFFER_BASE;
+/** @cond INTERNAL */
+static u8 TxBuffer[TX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+static u8 RxBuffer[RX_BUFFER_SIZE] __attribute__ ((aligned(64)));
+
+#ifdef __aarch64__
+#define BD_SPACE_ALIGN BLOCK_SIZE_2MB
+#elif defined(ARMR5)
+#define BD_SPACE_ALIGN 0x100000U
+#else
+#define BD_SPACE_ALIGN XAXIDMA_BD_MINIMUM_ALIGNMENT
+#endif
+
+static u8 TxBdSpace[TX_BD_SPACE_SIZE] __attribute__ ((aligned(BD_SPACE_ALIGN)));
+static u8 RxBdSpace[RX_BD_SPACE_SIZE] __attribute__ ((aligned(BD_SPACE_ALIGN)));
+
+u32 *Packet;
+/** @endcond */
 
 /*****************************************************************************/
 /**
 *
-* Main function
+* @brief Runs the example entry point.
 *
-* This function is the main entry of the tests on DMA core. It sets up
+* Runs the DMA core test. It sets up
 * DMA engine to be ready to receive and send packets, then a packet is
 * transmitted and will be verified after it is received via the DMA loopback
 * widget.
 *
-* @param	None
-*
-* @return
-*		- XST_SUCCESS if test passes
-*		- XST_FAILURE if test fails.
-*
-* @note		None.
+* @return XST_SUCCESS if Test passed, or XST_FAILURE if Test failed.
 *
 ******************************************************************************/
 int main(void)
@@ -184,9 +181,19 @@ int main(void)
 
 	xil_printf("\r\n--- Entering main() --- \r\n");
 
+	Packet = (u32 *)TxBuffer;
+
 #ifdef __aarch64__
-	Xil_SetTlbAttributes(TX_BD_SPACE_BASE, MARK_UNCACHEABLE);
-	Xil_SetTlbAttributes(RX_BD_SPACE_BASE, MARK_UNCACHEABLE);
+	Xil_SetTlbAttributes((UINTPTR)TxBdSpace & ~(BLOCK_SIZE_2MB - 1),
+			     NORM_NONCACHE);
+	Xil_SetTlbAttributes((UINTPTR)RxBdSpace & ~(BLOCK_SIZE_2MB - 1),
+			     NORM_NONCACHE);
+#elif defined(ARMR5)
+	Xil_SetTlbAttributes((UINTPTR)TxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+	Xil_SetTlbAttributes((UINTPTR)RxBdSpace, STRONG_ORDERD_SHARED | PRIV_RW_USER_RW);
+#elif !defined(__MICROBLAZE__)
+	Xil_SetTlbAttributes((UINTPTR)TxBdSpace, DEVICE_MEMORY);
+	Xil_SetTlbAttributes((UINTPTR)RxBdSpace, DEVICE_MEMORY);
 #endif
 
 #ifndef SDT
@@ -256,13 +263,7 @@ int main(void)
 /*****************************************************************************/
 /*
 *
-* Uart16550 setup routine, need to set baudrate to 9600, and data bits to 8
-*
-* @param	None
-*
-* @return	None
-*
-* @note		None.
+* @brief Sets up UART16550 with a baud rate of 9600 and 8 data bits.
 *
 ******************************************************************************/
 static void Uart550_Setup(void)
@@ -282,14 +283,11 @@ static void Uart550_Setup(void)
 /*****************************************************************************/
 /**
 *
-* This function sets up RX channel of the DMA engine to be ready for packet
-* reception
+* @brief Sets up the RX channel of the DMA engine to be ready for packet reception.
 *
-* @param	AxiDmaInstPtr is the pointer to the instance of the DMA engine.
+* @param[in] AxiDmaInstPtr is the pointer to the instance of the DMA engine.
 *
 * @return	XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int RxSetup(XAxiDma *AxiDmaInstPtr)
@@ -317,10 +315,10 @@ static int RxSetup(XAxiDma *AxiDmaInstPtr)
 
 	/* Setup Rx BD space */
 	BdCount = XAxiDma_BdRingCntCalc(XAXIDMA_BD_MINIMUM_ALIGNMENT,
-					RX_BD_SPACE_HIGH - RX_BD_SPACE_BASE + 1);
+					RX_BD_SPACE_SIZE);
 
-	Status = XAxiDma_BdRingCreate(RxRingPtr, RX_BD_SPACE_BASE,
-				      RX_BD_SPACE_BASE,
+	Status = XAxiDma_BdRingCreate(RxRingPtr, (UINTPTR)RxBdSpace,
+				      (UINTPTR)RxBdSpace,
 				      XAXIDMA_BD_MINIMUM_ALIGNMENT, BdCount);
 
 	if (Status != XST_SUCCESS) {
@@ -353,7 +351,7 @@ static int RxSetup(XAxiDma *AxiDmaInstPtr)
 	}
 
 	BdCurPtr = BdPtr;
-	RxBufferPtr = RX_BUFFER_BASE;
+	RxBufferPtr = (UINTPTR)RxBuffer;
 	for (Index = 0; Index < FreeBdCount; Index++) {
 		Status = XAxiDma_BdSetBufAddr(BdCurPtr, RxBufferPtr);
 
@@ -386,7 +384,7 @@ static int RxSetup(XAxiDma *AxiDmaInstPtr)
 
 	/* Clear the receive buffer, so we can verify data
 	 */
-	memset((void *)RX_BUFFER_BASE, 0, MAX_PKT_LEN);
+	memset((void *)RxBuffer, 0, MAX_PKT_LEN);
 
 	Status = XAxiDma_BdRingToHw(RxRingPtr, FreeBdCount,
 				    BdPtr);
@@ -410,14 +408,11 @@ static int RxSetup(XAxiDma *AxiDmaInstPtr)
 /*****************************************************************************/
 /**
 *
-* This function sets up the TX channel of a DMA engine to be ready for packet
-* transmission
+* @brief Sets up the TX channel of the DMA engine to be ready for packet transmission.
 *
-* @param	AxiDmaInstPtr is the instance pointer to the DMA engine.
+* @param[in] AxiDmaInstPtr is the instance pointer to the DMA engine.
 *
 * @return	XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int TxSetup(XAxiDma *AxiDmaInstPtr)
@@ -440,10 +435,10 @@ static int TxSetup(XAxiDma *AxiDmaInstPtr)
 
 	/* Setup TxBD space  */
 	BdCount = XAxiDma_BdRingCntCalc(XAXIDMA_BD_MINIMUM_ALIGNMENT,
-					TX_BD_SPACE_HIGH - TX_BD_SPACE_BASE + 1);
+					TX_BD_SPACE_SIZE);
 
-	Status = XAxiDma_BdRingCreate(TxRingPtr, TX_BD_SPACE_BASE,
-				      TX_BD_SPACE_BASE,
+	Status = XAxiDma_BdRingCreate(TxRingPtr, (UINTPTR)TxBdSpace,
+				      (UINTPTR)TxBdSpace,
 				      XAXIDMA_BD_MINIMUM_ALIGNMENT, BdCount);
 	if (Status != XST_SUCCESS) {
 		xil_printf("failed create BD ring in txsetup\r\n");
@@ -477,14 +472,12 @@ static int TxSetup(XAxiDma *AxiDmaInstPtr)
 /*****************************************************************************/
 /**
 *
-* This function transmits one packet non-blockingly through the DMA engine.
+* @brief Performs a non-blocking transmission of one packet through the DMA engine.
 *
-* @param	AxiDmaInstPtr points to the DMA engine instance
+* @param[in] AxiDmaInstPtr is a pointer to the DMA engine instance.
 *
 * @return	- XST_SUCCESS if the DMA accepts the packet successfully,
 *		- XST_FAILURE otherwise.
-*
-* @note     None.
 *
 ******************************************************************************/
 static int SendPacket(XAxiDma *AxiDmaInstPtr)
@@ -513,7 +506,7 @@ static int SendPacket(XAxiDma *AxiDmaInstPtr)
 	 * is enabled
 	 */
 	Xil_DCacheFlushRange((UINTPTR)TxPacket, MAX_PKT_LEN);
-	Xil_DCacheFlushRange((UINTPTR)RX_BUFFER_BASE, MAX_PKT_LEN);
+	Xil_DCacheFlushRange((UINTPTR)RxBuffer, MAX_PKT_LEN);
 
 	/* Allocate a BD */
 	Status = XAxiDma_BdRingAlloc(TxRingPtr, 1, &BdPtr);
@@ -583,16 +576,11 @@ static int SendPacket(XAxiDma *AxiDmaInstPtr)
 }
 
 /*****************************************************************************/
-/*
+/**
 *
-* This function checks data buffer after the DMA transfer is finished.
+* @brief Checks the data buffer after the DMA transfer completes.
 *
-* @param	None
-*
-* @return	- XST_SUCCESS if validation is successful
-*		- XST_FAILURE if validation is failure.
-*
-* @note		None.
+* @return XST_SUCCESS if validation is successful, or XST_FAILURE if validation is failure.
 *
 ******************************************************************************/
 static int CheckData(void)
@@ -602,7 +590,7 @@ static int CheckData(void)
 	u8 Value;
 
 
-	RxPacket = (u8 *) RX_BUFFER_BASE;
+	RxPacket = (u8 *) RxBuffer;
 	Value = TEST_START_VALUE;
 
 	/* Invalidate the DestBuffer before receiving the data, in case the
@@ -627,15 +615,11 @@ static int CheckData(void)
 /*****************************************************************************/
 /**
 *
-* This function waits until the DMA transaction is finished, checks data,
-* and cleans up.
+* @brief Waits until the DMA transaction completes, checks data, and cleans up.
 *
-* @param	None
+* @param[in] AxiDmaInstPtr is a pointer to the DMA engine instance.
 *
-* @return	- XST_SUCCESS if DMA transfer is successful and data is correct,
-*		- XST_FAILURE if fails.
-*
-* @note		None.
+* @return XST_SUCCESS if DMA transfer is successful and data is correct, or XST_FAILURE if DMA transfer failed.
 *
 ******************************************************************************/
 static int CheckDmaResult(XAxiDma *AxiDmaInstPtr)
@@ -723,3 +707,5 @@ static int CheckDmaResult(XAxiDma *AxiDmaInstPtr)
 
 	return XST_SUCCESS;
 }
+
+/** @} */

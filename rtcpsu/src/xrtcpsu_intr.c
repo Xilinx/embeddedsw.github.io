@@ -8,8 +8,7 @@
 /**
 *
 * @file xrtcpsu_intr.c
-* @addtogroup rtcpsu Overview
-* @{
+* @brief Implements the interrupt handling functions of the XRtcPsu driver.
 *
 * This file contains functions related to RTC interrupt handling.
 *
@@ -30,9 +29,15 @@
 *                       Literal value requires a U suffix,Casting operation to a pointer
 *                       Array has no bounds specified,Logical conjunctions need brackets.
 * 1.17  vlt    01/30/26 Fixed codespell errors.
+* 1.18  vn     07/30/26 Fix Doxygen warnings
+* 1.18  vn     09/30/26 Align Doxygen comments with AMD standards
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup rtcpsu Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -53,15 +58,11 @@
 /****************************************************************************/
 /**
 *
-* This function sets the interrupt mask.
+* @brief Sets the interrupt mask.
 *
-* @param	InstancePtr is a pointer to the XRtcPsu instance
-* @param	Mask contains the interrupts to be enabled.
+* @param[in]	InstancePtr Pointer to the XRtcPsu instance.
+* @param[in]	Mask Interrupts to be enabled.
 *		A '1' enables an interrupt, and a '0' disables.
-*
-* @return	None.
-*
-* @note		None.
 *
 *****************************************************************************/
 void XRtcPsu_SetInterruptMask(XRtcPsu *InstancePtr, u32 Mask)
@@ -88,15 +89,11 @@ void XRtcPsu_SetInterruptMask(XRtcPsu *InstancePtr, u32 Mask)
 /****************************************************************************/
 /**
 *
-* This function clears the interrupt mask.
+* @brief Clears the interrupt mask.
 *
-* @param	InstancePtr is a pointer to the XRtcPsu instance
-* @param	Mask contains the interrupts to be disabled.
+* @param[in]	InstancePtr Pointer to the XRtcPsu instance.
+* @param[in]	Mask Interrupts to be disabled.
 *		A '1' enables an interrupt, and a '0' disables.
-*
-* @return	None.
-*
-* @note		None.
 *
 *****************************************************************************/
 void XRtcPsu_ClearInterruptMask(XRtcPsu *InstancePtr, u32 Mask)
@@ -115,20 +112,19 @@ void XRtcPsu_ClearInterruptMask(XRtcPsu *InstancePtr, u32 Mask)
 /****************************************************************************/
 /**
 *
-* This function sets the handler that will be called when an event (interrupt)
-* occurs that needs application's attention.
+* @brief Sets the handler that the driver calls when an event occurs.
 *
-* @param	InstancePtr is a pointer to the XRtcPsu instance
-* @param	FunctionPtr is the pointer to the callback function.
-* @param	CallBackRef is the upper layer callback reference passed back
-*		when the callback function is invoked.
+* The driver calls the handler when an event (interrupt) occurs that needs
+* the application's attention.
 *
-* @return	None.
+* @param[in,out] InstancePtr Pointer to the XRtcPsu instance.
+* @param[in]	 FunctionPtr Pointer to the callback function.
+* @param[in]	 CallBackRef Upper layer callback reference passed back when
+*		 the callback function is invoked.
 *
 * @note
-*
-* There is no assert on the CallBackRef since the driver doesn't know what it
-* is (nor should it)
+* There is no assert on the CallBackRef since the driver does not know what it
+* is (nor should it).
 *
 *****************************************************************************/
 void XRtcPsu_SetHandler(XRtcPsu *InstancePtr, XRtcPsu_Handler FunctionPtr,
@@ -149,15 +145,12 @@ void XRtcPsu_SetHandler(XRtcPsu *InstancePtr, XRtcPsu_Handler FunctionPtr,
 /****************************************************************************/
 /**
 *
-* This function is the interrupt handler for the driver.
-* It must be connected to an interrupt system by the application such that it
+* @brief Handles interrupts for the driver.
+*
+* The application must connect it to an interrupt system so that it
 * can be called when an interrupt occurs.
 *
-* @param	InstancePtr contains a pointer to the driver instance
-*
-* @return	None.
-*
-* @note		None.
+* @param[in,out] InstancePtr Pointer to the driver instance.
 *
 ******************************************************************************/
 void XRtcPsu_InterruptHandler(XRtcPsu *InstancePtr)

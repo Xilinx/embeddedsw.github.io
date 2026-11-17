@@ -22,7 +22,7 @@
 #uses "xillib.tcl"
 
 proc generate {drv_handle} {
-    xdefine_mutex_config_files $drv_handle "xparameters.h" "xmutex_g.c" "XMutex"  
+    xdefine_mutex_config_files $drv_handle "xparameters.h" "xmutex_g.c" "XMutex"
     xdefine_canonical_xpars $drv_handle "xparameters.h" "Mutex" "C_NUM_MUTEX" "C_ENABLE_USER"
 }
 
@@ -45,8 +45,8 @@ proc xdefine_mutex_config_if {periph hfile_handle cfile_handle num_ifs dev_id ha
 	for {set x 0} {$x < $num_ifs} {incr x} {
 	    set if_connected [check_if_connected $periph $x]
 
-	    if {$if_connected} {		
-		
+	    if {$if_connected} {
+
 		set mutex_baseaddr [common::get_property CONFIG.[format "C_S%d_AXI_BASEADDR" $x] $periph]
 		set mutex_enableuser [common::get_property CONFIG.C_ENABLE_USER $periph]
 		set mutex_num [common::get_property CONFIG.C_NUM_MUTEX $periph]
@@ -83,7 +83,7 @@ proc xdefine_mutex_config_files {drv_handle hfile_name cfile_name drv_string} {
 
     # Open include file
     set hfile_handle [::hsi::utils::open_include_file $hfile_name]
-    set cfile_name [file join "src" $cfile_name] 
+    set cfile_name [file join "src" $cfile_name]
     set cfile_handle [open $cfile_name w]
     set uSuffix "U"
 
@@ -120,7 +120,7 @@ proc xdefine_mutex_config_files {drv_handle hfile_name cfile_name drv_string} {
 proc check_if_connected {periph if_num} {
 	set sw_proc_handle [hsi::get_sw_processor]
 	set hw_proc_handle [hsi::get_cells -hier $sw_proc_handle]
-    	set if_isaxi 0
+	set if_isaxi 0
 
 	set baseaddr [common::get_property CONFIG.[format "C_S%d_AXI_BASEADDR" $if_num] $periph]
 	set mem [hsi::get_mem_ranges -of_objects $hw_proc_handle -filter "INSTANCE==$periph"]
@@ -129,15 +129,15 @@ proc check_if_connected {periph if_num} {
 		foreach addr $addrs {
 			if {$addr == $baseaddr} {
 				set if_isaxi 1
-			}	
+			}
 		}
-	}	
-	
+	}
+
 	if {$if_isaxi == 1} {
-        	return 1
-    	} else {
-        	return 0
-    	}
+		return 1
+	} else {
+		return 0
+	}
 }
 
 #
@@ -159,15 +159,15 @@ proc gen_canonical_param_def {file_handle canonical_name periph param_prefix par
 	    set actual_arg "${param_prefix}_${arg}"
 	}
 	set lvalue [::hsi::utils::get_driver_param_name $canonical_name $arg]
-	
-	
+
+
 	# The rvalue set below is the actual value of the parameter
 	set rvalue [::hsi::utils::get_param_value $periph $actual_arg]
 	if {[llength $rvalue] == 0} {
 	    set rvalue 0
 	}
 	set rvalue [::hsi::utils::format_addr_string $rvalue $actual_arg]
-	
+
 	puts $file_handle "#define $lvalue $rvalue$uSuffix"
     }
 }
@@ -176,10 +176,10 @@ proc gen_canonical_if_def {file_handle periph num_ifs drv_string dev_id common_p
     upvar $dev_id device_id
 
     set periph_name [string toupper [common::get_property NAME $periph]]
-    
+
     for {set x 0} {$x < $num_ifs} {incr x} {
 	set if_connected [check_if_connected $periph $x]
-	
+
 	if {$if_connected} {
 	    puts $file_handle ""
 	    puts $file_handle "/* Canonical definitions for peripheral $periph_name IF ${x} */"
@@ -188,7 +188,7 @@ proc gen_canonical_if_def {file_handle periph num_ifs drv_string dev_id common_p
 	    gen_canonical_device_id $file_handle $canonical_name $periph_name $x
 
 	    set addr_args [list "BASEADDR" "HIGHADDR"]
-	 
+
 	    gen_canonical_param_def $file_handle $canonical_name $periph "C_S${x}_AXI" $addr_args
 	    gen_canonical_param_def $file_handle $canonical_name $periph "" $common_params
 

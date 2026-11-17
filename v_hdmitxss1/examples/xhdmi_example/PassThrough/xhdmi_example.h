@@ -45,6 +45,10 @@ extern "C" {
 #define XPS_BOARD_VEK385
 #endif
 
+#if defined (XPS_BOARD_SCU200_P)
+#define XPS_BOARD_SCU200
+#endif
+
 #if defined (XPS_BOARD_ZCU102) || \
 	defined (XPS_BOARD_ZCU106) || \
     defined (XPS_BOARD_VCK190)
@@ -54,7 +58,9 @@ extern "C" {
 #include "xiic.h"
 #else
 #include "xiic.h"
-#ifdef XPS_BOARD_VEK280
+#if defined (XPS_BOARD_VEK280) || \
+	defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200)
 #else
 #define XPS_BOARD_VCU118
 #endif
@@ -229,6 +235,8 @@ typedef enum {
 /* TCA9528 (U34) Definitions */
 #define VCK190_U135_MUX_I2C_ADDR	0x75
 #define VCK190_U135_MUX_SEL_HPC0	0x02
+#elif defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200)
 #else
 /* TCA9528 (U28) Definitions */
 #define KCU105_U28_MUX_I2C_ADDR		0x74
@@ -385,6 +393,14 @@ extern XTpg_PatternId Pattern;
 /* HDMI RX SS structure */
 extern XV_HdmiRxSs1 HdmiRxSs;
 #endif /* XPAR_XV_HDMIRXSS1_NUM_INSTANCES */
+
+#if defined(USE_HDCP_HDMI_RX) || defined(USE_HDCP_HDMI_TX)
+int Exdes_HdcpSetRepeaterMode(u8 Enable);
+void Exdes_HdcpClearRepeaterTopology(void);
+int Exdes_HdcpHandleAuthenticationRequest(void);
+void Exdes_HdcpPrintRepeaterStatus(void);
+int Exdes_HdcpUpdateRepeaterTopology(void);
+#endif
 
 extern u8 AuxFifoStartFlag;
 

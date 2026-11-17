@@ -41,6 +41,9 @@ extern volatile u8 rx_trained;
 extern u8 tx_after_rx;
 extern u8 Video_valid;
 extern u8 tx_done;
+extern volatile u8 Vblank_stream[4];	/**< Per-stream VBlank counters */
+extern volatile u32 Rx_Vsc_Payload[4];	/**< Per-stream VSC SDP DB16..18 word */
+extern volatile u8  Rx_Vsc_Valid[4];	/**< Per-stream VSC SDP captured flag */
 extern void mask_intr (void);
 extern Video_CRC_Config VidFrameCRC_rx;		/**< Video Frame CRC instance */
 extern Video_CRC_Config VidFrameCRC_rx_1;	/**< Video Frame CRC instance */
@@ -53,6 +56,23 @@ extern XVphy VPhyInst;		/**< The DPRX Subsystem instance. */
 
 u32 hdrframe[9];
 u16 fifoOverflow = 0;
+
+/*
+ * Last received SDP / colorimetry (VSC) extended packet, captured by
+ * DpRxSs_ExtPacketHandler and displayed via the 's' menu option.
+ */
+XilAudioExtFrame SdpExtFrame;
+
+/* VSC SDP colorimetry / static-HDR capture (defined in passthrough.c). */
+extern XDp_TxVscExtPacket ExtFrame_tx_vsc;
+extern u8 type_vsc;
+extern volatile u8  rx_last_sdp_type;
+extern volatile u32 rx_vsc_ext_cta_count;
+
+/* Static-HDR (DRM) InfoFrame capture (defined in passthrough.c). */
+extern u32          hdr_if_frame[8];
+extern volatile u8  hdr_if_valid;
+extern volatile u32 rx_drm_if_count;
 
 extern XVphy_PllType VPHY_RX_PLL_TYPE;
 extern XVphy_ChannelId VPHY_RX_CHANNEL_TYPE;
@@ -80,7 +100,7 @@ u32 DpRxSs_Setup(void)
 	 */
 	ReadVal = Dp21RxSs_PtMst_Read(DpRxSsInst.DpPtr->Config.BaseAddr, 0xD0);
 
-	xil_printf("0XD0=%x\r\n", ReadVal);
+	//xil_printf("0XD0=%x\r\n", ReadVal);
 
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr, 0xD0, ReadVal);
 
@@ -200,6 +220,17 @@ u32 DpRxSs_Setup(void)
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_OVER_CTRL_DPCD, 0x0);
 
 	/*
+	 * Enable colorimetry information over the VSC SDP in the RX. This is
+	 * required to receive extended colorimetry (e.g. BT.2020 for HDR) and to
+	 * advertise VSC SDP colorimetry capability in the RX DPCD, so the VSC SDP
+	 * can be received and displayed via the 's' menu option.
+	 */
+	XDp_RxVSCEn(DpRxSsInst.DpPtr);
+	xil_printf(ANSI_COLOR_GREEN
+		   "DP RX enabled for VSC Colorimetry support"
+		   ANSI_COLOR_RESET " \r\n");
+
+	/*
 	 * Enable Rx
 	 */
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_LINK_ENABLE, 0x1);
@@ -288,6 +319,18 @@ u32 DpRxSs_SetupIntrSystem(void)
 			    &DpRxSs_InfoPacketHandler, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_EXT_PKT_EVENT,
 			    &DpRxSs_ExtPacketHandler, &DpRxSsInst);
+	/*
+	 * Per-stream EXT_PKT (SDP) callbacks for streams 2-4 so each stream's
+	 * VSC colorimetry (YUV420/BPC) is captured at packet-arrival time. Only
+	 * stream 1's EXT_PKT is exposed by the RXSS wrapper; streams 2-4 are
+	 * registered directly on the DP driver.
+	 */
+	XDp_RxSetCallback(DpRxSsInst.DpPtr, XDP_RX_HANDLER_AUD_EXTPKTRECV_STREAM_2,
+			  &DpRxSs_ExtPacketHandlerStream2, &DpRxSsInst);
+	XDp_RxSetCallback(DpRxSsInst.DpPtr, XDP_RX_HANDLER_AUD_EXTPKTRECV_STREAM_3,
+			  &DpRxSs_ExtPacketHandlerStream3, &DpRxSsInst);
+	XDp_RxSetCallback(DpRxSsInst.DpPtr, XDP_RX_HANDLER_AUD_EXTPKTRECV_STREAM_4,
+			  &DpRxSs_ExtPacketHandlerStream4, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_DWN_REQ_EVENT,
 			    &Dprx_InterruptHandlerDownReq, &DpRxSsInst);
 	XDpRxSs_SetCallBack(&DpRxSsInst, XDPRXSS_HANDLER_DP_DWN_REP_EVENT,
@@ -432,6 +475,8 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 #endif
 	Video_valid = 0;
 	DpRxSsInst.VBlankCount = 0;
+	/* Re-arm per-stream detection gating for the next video cycle. */
+	Vblank_stream[0] = Vblank_stream[1] = Vblank_stream[2] = Vblank_stream[3] = 0;
 	XDp_RxInterruptEnable(DpRxSsInst.DpPtr,
 			      XDP_RX_INTERRUPT_MASK_VBLANK_MASK);
 	XDp_RxInterruptDisable(DpRxSsInst.DpPtr,
@@ -443,6 +488,11 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 	 * Reset CRC Test Counter in DP DPCD Space
 	 */
 	XVidFrameCrc_Reset(&VidFrameCRC_rx);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx, VidFrameCRC_rx.Mode_422);
 	VidFrameCRC_rx.TEST_CRC_CNT = 0;
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr,
 		      XDP_RX_CRC_CONFIG,
@@ -450,6 +500,11 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 		       VidFrameCRC_rx.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_1);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_1, VidFrameCRC_rx_1.Mode_422);
 	VidFrameCRC_rx_1.TEST_CRC_CNT = 0;
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr,
 		      XDP_RX_CRC_CONFIG,
@@ -457,6 +512,11 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 		       VidFrameCRC_rx_1.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_2);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_2, VidFrameCRC_rx_2.Mode_422);
 
 	VidFrameCRC_rx_2.TEST_CRC_CNT = 0;
 
@@ -466,6 +526,11 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 		       VidFrameCRC_rx_2.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_3);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_3, VidFrameCRC_rx_3.Mode_422);
 	VidFrameCRC_rx_3.TEST_CRC_CNT = 0;
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr,
 		      XDP_RX_CRC_CONFIG,
@@ -503,24 +568,32 @@ void DpRxSs_VerticalBlankHandler(void *InstancePtr)
 {
 	(void)InstancePtr;
 	DpRxSsInst.VBlankCount++;
+	if (Vblank_stream[0] < 0xFF)
+		Vblank_stream[0]++;
 }
 
 void DpRxSs_VerticalBlank1Handler(void *InstancePtr)
 {
 	(void)InstancePtr;
 	DpRxSsInst.VBlankCount++;
+	if (Vblank_stream[1] < 0xFF)
+		Vblank_stream[1]++;
 }
 
 void DpRxSs_VerticalBlank2Handler(void *InstancePtr)
 {
 	(void)InstancePtr;
 	DpRxSsInst.VBlankCount++;
+	if (Vblank_stream[2] < 0xFF)
+		Vblank_stream[2]++;
 }
 
 void DpRxSs_VerticalBlank3Handler(void *InstancePtr)
 {
 	(void)InstancePtr;
 	DpRxSsInst.VBlankCount++;
+	if (Vblank_stream[3] < 0xFF)
+		Vblank_stream[3]++;
 }
 
 /*****************************************************************************/
@@ -542,10 +615,19 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 	(void)InstancePtr;
 	Video_valid = 0;
 
+	/* New link coming: drop any per-stream VSC colorimetry captured before. */
+	Rx_Vsc_Valid[0] = Rx_Vsc_Valid[1] =
+	Rx_Vsc_Valid[2] = Rx_Vsc_Valid[3] = 0;
+
 	/*
 	 * Reset CRC Test Counter in DP DPCD Space
 	 */
 	XVidFrameCrc_Reset(&VidFrameCRC_rx);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx, VidFrameCRC_rx.Mode_422);
 
 	VidFrameCRC_rx.TEST_CRC_CNT = 0;
 
@@ -555,6 +637,11 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 		       VidFrameCRC_rx.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_1);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_1, VidFrameCRC_rx_1.Mode_422);
 
 	VidFrameCRC_rx_1.TEST_CRC_CNT = 0;
 
@@ -564,6 +651,11 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 		       VidFrameCRC_rx_1.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_2);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_2, VidFrameCRC_rx_2.Mode_422);
 
 	VidFrameCRC_rx_2.TEST_CRC_CNT = 0;
 
@@ -573,6 +665,11 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 		       VidFrameCRC_rx_2.TEST_CRC_CNT));
 
 	XVidFrameCrc_Reset(&VidFrameCRC_rx_3);
+	/*
+	 * XVidFrameCrc_Reset() clears the CRC format/mode (bit 31). Re-apply the
+	 * video format so the 4:2:2/4:2:0 CRC mode is preserved.
+	 */
+	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx_3, VidFrameCRC_rx_3.Mode_422);
 
 	VidFrameCRC_rx_3.TEST_CRC_CNT = 0;
 
@@ -593,6 +690,7 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 #endif
 	DpRxSsInst.link_up_trigger = 0;
 	DpRxSsInst.VBlankCount = 0;
+	Vblank_stream[0] = Vblank_stream[1] = Vblank_stream[2] = Vblank_stream[3] = 0;
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr, 0x1C, 0x80);
 	Dp21RxSs_PtMst_Write(DpRxSsInst.DpPtr->Config.BaseAddr, 0x1C, 0x0);
 	tx_done = 0;
@@ -655,6 +753,8 @@ void DpRxSs_TrainingDoneHandler(void *InstancePtr)
 
 	DpRxSsInst.link_up_trigger = 1;
 	DpRxSsInst.VBlankCount = 0;
+	/* Fresh link: wait for all streams before declaring detection ready. */
+	Vblank_stream[0] = Vblank_stream[1] = Vblank_stream[2] = Vblank_stream[3] = 0;
 	rx_unplugged = 0;
 
 	XDp_RxInterruptEnable(DpRxSsInst.DpPtr, XDP_RX_INTERRUPT_MASK_VIDEO_MASK);
@@ -676,6 +776,9 @@ void DpRxSs_UnplugHandler(void *InstancePtr)
 {
 	(void)InstancePtr;
 	Video_valid = 0;
+
+	/* Invalidate captured VSC colorimetry on unplug. */
+	type_vsc = 0;
 
 	xil_printf("Rx cable unplugged\r\n");
 
@@ -1194,7 +1297,99 @@ void ReportVideoCRC(u8 select)
 void DpRxSs_InfoPacketHandler(void *InstancePtr)
 {
 	(void)InstancePtr;
+	int i;
+	u32 w[8];
+	u8  iftype;
 
+	/*
+	 * Drain the 8 words (32 bytes) of the received InfoFrame SDP. Word 0 is
+	 * the SDP header; HB1 (InfoFrame type) is in bits [15:8].
+	 */
+	for (i = 0; i < 8; i++) {
+		w[i] = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				   XDP_RX_AUDIO_INFO_DATA(1));
+	}
+
+	/*
+	 * Capture the DRM / static-HDR InfoFrame (SDP type 0x87) so it can be
+	 * decoded and displayed via the 's' menu option.
+	 */
+	iftype = (w[0] >> 8) & 0xFF;
+	if (iftype == 0x87) {
+		for (i = 0; i < 8; i++) {
+			hdr_if_frame[i] = w[i];
+		}
+		if (!hdr_if_valid) {
+			//xil_printf("0x87 (DRM/static-HDR) InfoFrame received\r\n");
+		}
+		hdr_if_valid = 1;
+		rx_drm_if_count++;
+	}
+}
+
+/*****************************************************************************/
+/**
+*
+* Capture one stream's VSC SDP colorimetry word (DB16..DB18) at packet-arrival
+* time. YUV420/BPC/colorimetry are carried only in the VSC SDP; reading the
+* per-stream colour-format register here (right when that stream's EXT_PKT
+* fires) avoids the one-shot latch race in GetMsa that made streams 3/4 miss
+* YUV420. The value is stored sticky and consumed by DetectResolution and the
+* TX forwarder. Each stream reads its own register, so there is no shared-FIFO
+* aliasing between streams.
+*
+* @param	Stream is the 1-based RX stream id (XDP_RX_STREAM_ID1..4).
+*
+* @return	None.
+*
+******************************************************************************/
+static void Dprx_CaptureStreamVsc(u8 Stream)
+{
+	u32 Val;
+
+	if (Stream < XDP_RX_STREAM_ID1 || Stream > XDP_RX_STREAM_ID4)
+		return;
+
+	if (Stream == XDP_RX_STREAM_ID1) {
+		Val = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				  XDP_RX_SDP_PAYLOAD_STREAM1);
+	} else {
+		Val = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				  XDP_RX_VSC_COLOR_FORMAT_STREAM1 +
+				  4 * (Stream - XDP_RX_STREAM_ID1));
+		if (Val == 0)
+			Val = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+					  XDP_RX_SDP_PAYLOAD_STREAM1);
+	}
+
+	Rx_Vsc_Payload[Stream - XDP_RX_STREAM_ID1] = Val;
+	Rx_Vsc_Valid[Stream - XDP_RX_STREAM_ID1] = 1;
+}
+
+/*****************************************************************************/
+/**
+*
+* Per-stream EXT_PKT (SDP) callbacks for streams 2, 3 and 4. The driver
+* dispatches the per-stream EXT_PKT interrupts (INTERRUPT_CAUSE_1) to these
+* slots, so each one knows exactly which stream's VSC SDP just arrived.
+*
+******************************************************************************/
+void DpRxSs_ExtPacketHandlerStream2(void *InstancePtr)
+{
+	(void)InstancePtr;
+	Dprx_CaptureStreamVsc(XDP_RX_STREAM_ID2);
+}
+
+void DpRxSs_ExtPacketHandlerStream3(void *InstancePtr)
+{
+	(void)InstancePtr;
+	Dprx_CaptureStreamVsc(XDP_RX_STREAM_ID3);
+}
+
+void DpRxSs_ExtPacketHandlerStream4(void *InstancePtr)
+{
+	(void)InstancePtr;
+	Dprx_CaptureStreamVsc(XDP_RX_STREAM_ID4);
 }
 
 /*****************************************************************************/
@@ -1213,6 +1408,151 @@ void DpRxSs_InfoPacketHandler(void *InstancePtr)
 void DpRxSs_ExtPacketHandler(void *InstancePtr)
 {
 	(void)InstancePtr;
+	int i = 1;
+	u32 ExtFrame[9];
 
+	SdpExtFrame.frame_count++;
+
+	/* Header Information */
+	ExtFrame[0] = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+				  XDP_RX_AUDIO_EXT_DATA(1));
+	SdpExtFrame.Header[0] =  ExtFrame[0] & 0xFF;
+	SdpExtFrame.Header[1] = (ExtFrame[0] & 0xFF00) >> 8;
+	SdpExtFrame.Header[2] = (ExtFrame[0] & 0xFF0000) >> 16;
+	SdpExtFrame.Header[3] = (ExtFrame[0] & 0xFF000000) >> 24;
+
+	/* HB1 (Header[1]) is the Secondary-data Packet type. */
+	rx_last_sdp_type = SdpExtFrame.Header[1];
+
+	/*
+	 * Capture VSC SDP (0x07) and VSC extended VESA/CTA colorimetry packets
+	 * (0x20 / 0x21) carrying extended colorimetry / static-HDR metadata.
+	 */
+	if ((SdpExtFrame.Header[1] == 0x7) || (SdpExtFrame.Header[1] == 0x20)
+			|| (SdpExtFrame.Header[1] == 0x21)) {
+		ExtFrame_tx_vsc.Header = ExtFrame[0];
+		type_vsc = 0x13;
+		rx_vsc_ext_cta_count++;
+	}
+
+	/* Payload Information */
+	for (i = 0; i < 8; i++) {
+		ExtFrame[i+1] = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
+					    XDP_RX_AUDIO_EXT_DATA(i+2));
+		SdpExtFrame.Payload[(i*4)]   =  ExtFrame[i+1] & 0xFF;
+		SdpExtFrame.Payload[(i*4)+1] = (ExtFrame[i+1] & 0xFF00) >> 8;
+		SdpExtFrame.Payload[(i*4)+2] = (ExtFrame[i+1] & 0xFF0000) >> 16;
+		SdpExtFrame.Payload[(i*4)+3] = (ExtFrame[i+1] & 0xFF000000) >> 24;
+		if (type_vsc == 0x13) {
+			ExtFrame_tx_vsc.Payload[i] = ExtFrame[i+1];
+		}
+	}
+
+	/* Capture stream 1's VSC colorimetry per-stream (same as streams 2-4). */
+	if (SdpExtFrame.Header[1] == 0x7)
+		Dprx_CaptureStreamVsc(XDP_RX_STREAM_ID1);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function prints the last received SDP / VSC colorimetry extended
+* packet that was captured by DpRxSs_ExtPacketHandler into SdpExtFrame.
+*
+* @param	None.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void Dp21RxSs_PtMst_RxPrint_ExtPkt(void)
+{
+	int i;
+
+	xil_printf("\r\n==== Received SDP / VSC Extended Packet ====\r\n");
+
+	switch (SdpExtFrame.Header[1]) {
+	case 0x04:
+		xil_printf("Packet Type   : 0x04 (Extension)\r\n");
+		break;
+	case 0x05:
+		xil_printf("Packet Type   : 0x05 (Audio_CopyManagement)\r\n");
+		break;
+	case 0x06:
+		xil_printf("Packet Type   : 0x06 (ISRC)\r\n");
+		break;
+	case 0x07:
+		xil_printf("Packet Type   : 0x07 (VSC)\r\n");
+		break;
+	case 0x20:
+		xil_printf("Packet Type   : 0x20 (VSC_EXT_VESA - HDR Metadata)\r\n");
+		break;
+	case 0x21:
+		xil_printf("Packet Type   : 0x21 (VSC_EXT_CTA)\r\n");
+		break;
+	default:
+		xil_printf("Packet Type   : 0x%02x (Reserved)\r\n",
+			   SdpExtFrame.Header[1]);
+		break;
+	}
+
+	xil_printf("Header Bytes  : HB0=0x%02x HB1=0x%02x HB2=0x%02x HB3=0x%02x\r\n",
+		   SdpExtFrame.Header[0], SdpExtFrame.Header[1],
+		   SdpExtFrame.Header[2], SdpExtFrame.Header[3]);
+
+	xil_printf("Payload (32 bytes):\r\n");
+	for (i = 0; i < 8; i++) {
+		xil_printf("  DB%02d-%02d : 0x%02x 0x%02x 0x%02x 0x%02x\r\n",
+			   (i*4), (i*4)+3,
+			   SdpExtFrame.Payload[(i*4)],
+			   SdpExtFrame.Payload[(i*4)+1],
+			   SdpExtFrame.Payload[(i*4)+2],
+			   SdpExtFrame.Payload[(i*4)+3]);
+	}
+
+	xil_printf("Frame Count   : %d\r\n", SdpExtFrame.frame_count);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function decodes and prints the last received DRM / static-HDR
+* InfoFrame (SDP type 0x87) that was captured by DpRxSs_InfoPacketHandler
+* into hdr_if_frame[].
+*
+* @param	None.
+*
+* @return	None.
+*
+* @note		None.
+*
+******************************************************************************/
+void Dp21RxSs_PtMst_RxPrint_HdrInfoPkt(void)
+{
+	u8 b[32];
+	int i;
+
+	/* Unpack the 8 captured words into 32 bytes (little-endian per word). */
+	for (i = 0; i < 8; i++) {
+		b[(i*4)]   =  hdr_if_frame[i] & 0xFF;
+		b[(i*4)+1] = (hdr_if_frame[i] & 0xFF00) >> 8;
+		b[(i*4)+2] = (hdr_if_frame[i] & 0xFF0000) >> 16;
+		b[(i*4)+3] = (hdr_if_frame[i] & 0xFF000000) >> 24;
+	}
+
+	xil_printf("\r\n==== DRM / Static-HDR InfoFrame (0x87) ====\r\n");
+	xil_printf("Header            : 0x%02x 0x%02x 0x%02x 0x%02x\r\n",
+		   b[0], b[1], b[2], b[3]);
+	xil_printf("InfoFrame Version : 0x%02x\r\n", b[5]);
+	xil_printf("InfoFrame Length  : %d\r\n", b[6]);
+	xil_printf("EOTF              : 0x%02x\r\n", b[8]);
+	xil_printf("Static Metadata ID: 0x%02x\r\n", b[9]);
+	for (i = 0; i < 6; i++) {
+		xil_printf("  Data[%02d-%02d]    : 0x%02x 0x%02x 0x%02x 0x%02x\r\n",
+			   (i*4), (i*4)+3,
+			   b[(i*4)], b[(i*4)+1], b[(i*4)+2], b[(i*4)+3]);
+	}
+	xil_printf("DRM InfoFrame Cnt : %d\r\n", rx_drm_if_count);
 }
 #endif

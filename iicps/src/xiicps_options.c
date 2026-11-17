@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,10 @@
 /**
 *
 * @file xiicps_options.c
-* @addtogroup iicps_api IICPS APIs
-* @{
+* @brief Implements the options and clock functions of the XIicPs driver.
 *
-* The xiicps_options.c file contains functions for the configuration of the XIccPs driver.
+* The xiicps_options.c file contains functions for the configuration of the
+* XIicPs driver.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -34,9 +34,15 @@
 * 3.11  rna 12/23/19 Add 10 bit address support for Master/Slave
 *	    02/02/20 Correct return value of XIicPs_GetOptions function
 *	    02/04/20 Modified latest code for MISRA-C:2012 Compliance
+* 3.24  tb  09/30/26 Align Doxygen comments with AMD standards
+* 3.24  vlt 10/02/26 Refactor XIicPs_SetSClk() to reduce CCM.
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup iicps_api IICPS APIs
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -53,18 +59,25 @@
 
 /************************** Function Prototypes ******************************/
 
+static u32 XIicPs_FindBestDivisors(const XIicPs *InstancePtr, u32 FsclHz,
+				  u32 Temp, u32 *CalcDivA,
+				  u32 *CalcDivB);
+
 
 /************************** Variable Definitions *****************************/
 /**
- * Create the table of options which are processed to get/set the device
- * options. These options are table driven to allow easy maintenance and
- * expansion of the options.
+ * @brief Maps a driver option to its control register mask.
+ *
+ * The table of options is processed to get or set the device options. These
+ * options are table driven to allow easy maintenance and expansion of the
+ * options.
  */
 typedef struct {
-		u32 Option;	/**< Option to select */
-		u32 Mask;	/**< Mask to select */
+		u32 Option;	/**< Option to select. */
+		u32 Mask;	/**< Mask to select. */
 } OptionsMap;
 
+/** Table of the supported options and their control register masks. */
 static OptionsMap OptionsTable[] = {
 		{XIICPS_7_BIT_ADDR_OPTION, XIICPS_CR_NEA_MASK},
 		{XIICPS_10_BIT_ADDR_OPTION, XIICPS_CR_NEA_MASK},
@@ -72,29 +85,29 @@ static OptionsMap OptionsTable[] = {
 		{XIICPS_REP_START_OPTION, XIICPS_CR_HOLD_MASK},
 };
 
-#define XIICPS_NUM_OPTIONS      (sizeof(OptionsTable) / sizeof(OptionsMap)) /**< Calculated no. of options */
+/** Calculated number of options. */
+#define XIICPS_NUM_OPTIONS      (sizeof(OptionsTable) / sizeof(OptionsMap))
 
 /*****************************************************************************/
 /**
 *
-* @brief
-* Sets the options for the IIC device driver. The options control
-* how the device behaves relative to the IIC bus. The device must be idle
-* rather than busy transferring data before setting these device options.
+* @brief Sets the options for the IIC device driver.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	Options Contains the specified options to be set. This is a bit
-*		mask where a 1 means to turn the option on. One or more bit
-*		values may be contained in the mask. See the bit definitions
-*		named XIICPS_*_OPTION in xiicps.h.
+* The options control how the device behaves relative to the IIC bus. The
+* device must be idle rather than busy transferring data before setting these
+* device options.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     Options Contains the specified options to be set. This is a
+*                bit mask where a 1 means to turn the option on. One or more
+*                bit values may be contained in the mask. See the bit
+*                definitions named XIICPS_*_OPTION in xiicps.h.
 *
 * @return
-*		- XST_SUCCESS if options are successfully set.
-*		- XST_DEVICE_IS_STARTED if the device is currently transferring
-*		data. The transfer must complete or be aborted before setting
-*		options.
-*
-* @note		None.
+*                - XST_SUCCESS if options are successfully set.
+*                - XST_DEVICE_IS_STARTED if the device is currently
+*                  transferring data. The transfer must complete or be
+*                  aborted before setting options.
 *
 ******************************************************************************/
 s32 XIicPs_SetOptions(XIicPs *InstancePtr, u32 Options)
@@ -160,24 +173,23 @@ s32 XIicPs_SetOptions(XIicPs *InstancePtr, u32 Options)
 /*****************************************************************************/
 /**
 *
-* @brief
-* Clears the options for the IIC device driver. The options
-* control how the device behaves relative to the IIC bus. The device must be
-* idle rather than busy transferring data before setting these device options.
+* @brief Clears the options for the IIC device driver.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	Options Contains the specified options to be cleared. This is a
-*		bit mask where a 1 means to turn the option off. One or more bit
-*		values may be contained in the mask. See the bit definitions
-*		named XIICPS_*_OPTION in xiicps.h.
+* The options control how the device behaves relative to the IIC bus. The
+* device must be idle rather than busy transferring data before setting these
+* device options.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     Options Contains the specified options to be cleared. This is
+*                a bit mask where a 1 means to turn the option off. One or
+*                more bit values may be contained in the mask. See the bit
+*                definitions named XIICPS_*_OPTION in xiicps.h.
 *
 * @return
-*		- XST_SUCCESS if options are successfully set.
-*		- XST_DEVICE_IS_STARTED if the device is currently transferring
-*		data. The transfer must complete or be aborted before setting
-*		options.
-*
-* @note		None
+*                - XST_SUCCESS if options are successfully set.
+*                - XST_DEVICE_IS_STARTED if the device is currently
+*                  transferring data. The transfer must complete or be
+*                  aborted before setting options.
 *
 ******************************************************************************/
 s32 XIicPs_ClearOptions(XIicPs *InstancePtr, u32 Options)
@@ -245,18 +257,16 @@ s32 XIicPs_ClearOptions(XIicPs *InstancePtr, u32 Options)
 
 /*****************************************************************************/
 /**
-* @brief
-* Gets the options for the IIC device. The options control how
-* the device behaves relative to the IIC bus.
+* @brief Gets the options for the IIC device.
 *
-* @param        InstancePtr Pointer to the XIicPs instance.
+* The options control how the device behaves relative to the IIC bus.
+*
+* @param[in]    InstancePtr Pointer to the XIicPs instance.
 *
 * @return       32 bit mask of the options, where a 1 means the option is on,
-*               and a 0 means to the option is off. One or more bit values may
+*               and a 0 means the option is off. One or more bit values may
 *               be contained in the mask. See the bit definitions named
 *               XIICPS_*_OPTION in the file xiicps.h.
-*
-* @note         None.
 *
 ******************************************************************************/
 u32 XIicPs_GetOptions(XIicPs *InstancePtr)
@@ -304,11 +314,66 @@ u32 XIicPs_GetOptions(XIicPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Finds the best clock divisors for the specified Temp value.
 *
-* @brief
-* Sets the serial clock rate for the IIC device. The device
-* must be idle rather than busy transferring data before setting these device
-* options.
+* @param[in]     InstancePtr Pointer to the XIicPs instance.
+* @param[in]     FsclHz Target serial clock frequency.
+* @param[in]     Temp Combined divisor value.
+* @param[out]    CalcDivA Selected DivA value.
+* @param[out]    CalcDivB Selected DivB value.
+*
+* @return	The minimum frequency error for the specified Temp value.
+*
+******************************************************************************/
+static u32 XIicPs_FindBestDivisors(const XIicPs *InstancePtr, u32 FsclHz,
+				  u32 Temp, u32 *CalcDivA,
+				  u32 *CalcDivB)
+{
+	u32 Div_a;
+	u32 Div_b;
+	u32 ActualFscl;
+	u32 CurrentError;
+	u32 LastError = FsclHz;
+
+	*CalcDivA = 0U;
+	*CalcDivB = 0U;
+
+	for (Div_b = 0U; Div_b < 64U; Div_b++) {
+		Div_a = Temp / (Div_b + 1U);
+
+		if (Div_a != 0U) {
+			Div_a = Div_a - 1U;
+		}
+
+		if (Div_a > 3U) {
+			continue;
+		}
+
+		ActualFscl = InstancePtr->Config.InputClockHz /
+			    (22U * (Div_a + 1U) * (Div_b + 1U));
+
+		if (ActualFscl > FsclHz) {
+			CurrentError = ActualFscl - FsclHz;
+		} else {
+			CurrentError = FsclHz - ActualFscl;
+		}
+
+		if (LastError > CurrentError) {
+			*CalcDivA = Div_a;
+			*CalcDivB = Div_b;
+			LastError = CurrentError;
+		}
+	}
+
+	return LastError;
+}
+
+/*****************************************************************************/
+/**
+* @brief Sets the serial clock rate for the IIC device.
+*
+* The device must be idle rather than busy transferring data before setting
+* these device options.
 *
 * The data rate is set by values in the control register. The formula for
 * determining the correct register values is:
@@ -316,8 +381,8 @@ u32 XIicPs_GetOptions(XIicPs *InstancePtr)
 * See the hardware data sheet for a full explanation of setting the serial
 * clock rate.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	FsclHz Clock frequency in Hz. The two most common clock
+* @param[in]    InstancePtr Pointer to the XIicPs instance.
+* @param[in]    FsclHz Clock frequency in Hz. The two most common clock
 *		rates are 100KHz and 400KHz.
 *
 * @return
@@ -327,19 +392,15 @@ u32 XIicPs_GetOptions(XIicPs *InstancePtr)
 *		options.
 *		- XST_FAILURE if the Fscl frequency can not be set.
 *
-* @note		The clock can not be faster than the input clock divide by 22.
+* @note         The clock cannot be faster than the input clock divided by 22.
 *
 ******************************************************************************/
 s32 XIicPs_SetSClk(XIicPs *InstancePtr, u32 FsclHz)
 {
-	u32 Div_a;
-	u32 Div_b;
-	u32 ActualFscl;
 	u32 Temp;
 	u32 TempLimit;
 	u32 LastError;
 	u32 BestError;
-	u32 CurrentError;
 	u32 ControlReg;
 	u32 CalcDivA;
 	u32 CalcDivB;
@@ -359,12 +420,12 @@ s32 XIicPs_SetSClk(XIicPs *InstancePtr, u32 FsclHz)
 	/*
 	 * Assume Div_a is 0 and calculate (divisor_a+1) x (divisor_b+1).
 	 */
-	Temp = (InstancePtr->Config.InputClockHz) / ((u32)22U * FsclHzVar);
+	Temp = InstancePtr->Config.InputClockHz / ((u32)22U * FsclHzVar);
 
 	/*
-	 * If the answer is negative or 0, the Fscl input is out of range.
+	 * If Temp is 0, the requested SCL frequency is out of range.
 	 */
-	if ((u32)(0U) == Temp) {
+	if (Temp == 0U) {
 		return (s32)XST_FAILURE;
 	}
 
@@ -395,34 +456,9 @@ s32 XIicPs_SetSClk(XIicPs *InstancePtr, u32 FsclHz)
 	BestDivB = 0U;
 	for ( ; Temp <= TempLimit ; Temp++)
 	{
-		LastError = FsclHzVar;
-		CalcDivA = 0U;
-		CalcDivB = 0U;
-
-		for (Div_b = 0U; Div_b < 64U; Div_b++) {
-
-			Div_a = Temp / (Div_b + 1U);
-
-			if (Div_a != 0U){
-				Div_a = Div_a - (u32)1U;
-			}
-			if (Div_a > 3U){
-				continue;
-			}
-			ActualFscl = (InstancePtr->Config.InputClockHz) /
-						(22U * (Div_a + 1U) * (Div_b + 1U));
-
-			if (ActualFscl > FsclHzVar){
-				CurrentError = (ActualFscl - FsclHzVar);}
-			else{
-				CurrentError = (FsclHzVar - ActualFscl);}
-
-			if (LastError > CurrentError) {
-				CalcDivA = Div_a;
-				CalcDivB = Div_b;
-				LastError = CurrentError;
-			}
-		}
+		LastError = XIicPs_FindBestDivisors(InstancePtr, FsclHzVar,
+						   Temp, &CalcDivA,
+						   &CalcDivB);
 
 		/*
 		 * Used to capture the best divisors.
@@ -453,18 +489,16 @@ s32 XIicPs_SetSClk(XIicPs *InstancePtr, u32 FsclHz)
 /*****************************************************************************/
 /**
 *
-* @brief
-* Sets the serial clock rate for the IIC device. The device
-* must be idle rather than busy transferring data before setting these device
-* options.
+* @brief Sets the serial clock rate for the IIC device.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
+* The device must be idle rather than busy transferring data before setting
+* these device options.
+*
+* @param[in]    InstancePtr Pointer to the XIicPs instance.
 *
 * @return	The value of the IIC clock to the nearest Hz based on the
-*		control register settings. The actual value may not be exact to
+*		control register settings. The actual value may not be exact due
 *		to integer math rounding errors.
-*
-* @note		None.
 *
 ******************************************************************************/
 u32 XIicPs_GetSClk(XIicPs *InstancePtr)

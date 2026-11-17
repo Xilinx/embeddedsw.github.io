@@ -23,6 +23,7 @@
 * 1.1 sss 08/17/16 Added 64 bit support
 *     sss 08/26/16 Add "Command Queue Vacancy" API
 *                  API for getting pixel format
+* 1.2  ai 08/12/26 Added escape mode(LPDT/ULPS) support
 * </pre>
 *
 ******************************************************************************/
@@ -68,17 +69,13 @@ typedef struct {
  * contains the driver instances for all sub-cores (DSI, MIPI TX PHY, DPHY)
  * associated with an instance of the DSI TX Subsystem.
  */
-#ifndef SDT
 XDsiTxSs_SubCores DsiTxSsSubCores[XPAR_XDSITXSS_NUM_INSTANCES];
-#else
-XDsiTxSs_SubCores DsiTxSsSubCores[XPAR_XDSITXSS_NUM_INSTANCES];
-#endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
 /************************** Function Prototypes ******************************/
 
-static void XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr);
+static s32 XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr);
 static s32 XDsiTxSs_SubCoreInitDsi(XDsiTxSs *DsiTxSsPtr);
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr);
@@ -87,10 +84,6 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr);
 static u32 DsiTxSs_SubCoreInitMipiTxPhy(XDsiTxSs *DsiTxSsPtr);
 #endif
 
-#ifndef SDT
-static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
-					u32 Offset, UINTPTR *BaseAddr);
-#endif
 
 /************************** Function Definitions ******************************/
 
@@ -133,7 +126,9 @@ s32 XDsiTxSs_CfgInitialize(XDsiTxSs *InstancePtr, XDsiTxSs_Config *CfgPtr,
 	/* Determine sub-cores included in the
 	 * provided instance of subsystem
 	 */
-	XDsiTxSs_GetIncludedSubCores(InstancePtr);
+	if (XDsiTxSs_GetIncludedSubCores(InstancePtr) != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
 	if (InstancePtr->DsiPtr) {
 		Status = XDsiTxSs_SubCoreInitDsi(InstancePtr);
@@ -351,6 +346,127 @@ int XDsiTxSs_SendCmdModePacket(XDsiTxSs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* Reports whether escape mode (LPDT/ULPS) is available.
+*
+* @param[in]	InstancePtr  Pointer to the XDsiTxSs instance.
+*
+* @return	Non-zero if escape mode is available, 0 otherwise.
+*
+****************************************************************************/
+u32 XDsiTxSs_IsEscModeEnabled(XDsiTxSs *InstancePtr)
+{
+	/* Verify argument */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	return InstancePtr->Config.EnEscMode;
+}
+
+/*****************************************************************************/
+/**
+* Selects the DCS command mode or LPDT transport.
+*
+* @brief Chooses LPDT or DCS command mode for command packets. Returns
+* XST_NO_FEATURE on designs without escape mode.
+*
+* @param[in]	InstancePtr  Pointer to the XDsiTxSs instance.
+* @param[in]	Mode         XDSI_DCS_CMD_MODE or XDSI_LPDT_MODE.
+*
+* @return
+*		- XST_SUCCESS if the transport was selected.
+*		- XST_NO_FEATURE if escape-mode logic is not present in hardware.
+*		- XST_FAILURE if the controller is not in command mode, or a
+*		  previous command never completed.
+*
+****************************************************************************/
+int XDsiTxSs_SetLpdtMode(XDsiTxSs *InstancePtr, XDsi_CmdLpdtType Mode)
+{
+	/* Verify argument */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (!XDsiTxSs_IsEscModeEnabled(InstancePtr))
+		return XST_NO_FEATURE;
+
+	return XDsi_SetLpdtMode(InstancePtr->DsiPtr, Mode);
+}
+
+/*****************************************************************************/
+/**
+* Sends a command packet over LPDT.
+*
+* @brief Sends the command packet held in the subsystem structure over LPDT.
+* Returns XST_NO_FEATURE on designs without escape mode.
+*
+* @param[in]	InstancePtr  Pointer to the XDsiTxSs instance.
+*
+* @return
+*		- XST_SUCCESS if the packet was accepted for transmission.
+*		- XST_NO_FEATURE if escape-mode logic is not present in hardware.
+*		- XST_INVALID_PARAM if a long-packet payload exceeds 251 bytes.
+*		- XST_FAILURE on failure in packet transmission.
+*
+* @note	The transport must already be selected via XDsiTxSs_SetLpdtMode.
+*
+****************************************************************************/
+int XDsiTxSs_SendLpdtPacket(XDsiTxSs *InstancePtr)
+{
+	/* Verify argument */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (!XDsiTxSs_IsEscModeEnabled(InstancePtr))
+		return XST_NO_FEATURE;
+
+	return XDsi_SendLpdtPacket(InstancePtr->DsiPtr, &InstancePtr->CmdPkt);
+}
+
+/*****************************************************************************/
+/**
+* Enters or exits the Ultra-Low Power State (ULPS).
+*
+* @brief Puts the DSI link into ULPS, or brings it back out. Returns
+* XST_NO_FEATURE on designs without escape mode.
+*
+* @param[in]	InstancePtr  Pointer to the XDsiTxSs instance.
+* @param[in]	Enable       1 to enter ULPS, 0 to exit ULPS.
+*
+* @return
+*		- XST_SUCCESS if the requested ULPS transition completed.
+*		- XST_NO_FEATURE if escape-mode logic is not present in hardware.
+*		- XST_FAILURE if ULPS entry or exit was not observed in time.
+*
+* @note	ULPS entry resets the controller image FIFOs; the caller must
+*		re-arm the video output from a fresh frame after exit.
+*
+****************************************************************************/
+int XDsiTxSs_SetUlpsMode(XDsiTxSs *InstancePtr, u32 Enable)
+{
+	/* Verify argument */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (!XDsiTxSs_IsEscModeEnabled(InstancePtr))
+		return XST_NO_FEATURE;
+
+	return XDsi_SetUlpsMode(InstancePtr->DsiPtr, Enable);
+}
+
+/*****************************************************************************/
+/**
+* Reports whether the DSI lanes are in ULPS.
+*
+* @param[in]	InstancePtr  Pointer to the XDsiTxSs instance.
+*
+* @return	Non-zero if the lanes are in ULPS, 0 otherwise.
+*
+****************************************************************************/
+u32 XDsiTxSs_IsUlps(XDsiTxSs *InstancePtr)
+{
+	/* Verify argument */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	return XDsi_IsUlps(InstancePtr->DsiPtr);
+}
+
+/*****************************************************************************/
+/**
 * This function will send the short packet to controller
 * Generic Short Packet Register and fill up the structure passed from caller.
 * like to turn on/off peripheral, change color mode
@@ -533,25 +649,40 @@ s32 XDsiTxSs_SetCustomVideoInterfaceTiming(XDsiTxSs *InstancePtr,
 *
 * @param	DsiTxSsPtr is a pointer to the Subsystem instance
 *
-* @return	None
+* @return
+*		- XST_SUCCESS if the sub-cores were resolved successfully
+*		- XST_FAILURE if the base address was not found in the config
+*		  table (out-of-range index)
 *
 * @note		None
 *
 ******************************************************************************/
-static void XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr)
+static s32 XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr)
 {
+	u32 Index;
+
 	/* Verify argument */
-	Xil_AssertVoid(DsiTxSsPtr != NULL);
-#ifndef SDT
-	DsiTxSsPtr->DsiPtr = ((DsiTxSsPtr->Config.DsiInfo.IsPresent) ?
-				(&DsiTxSsSubCores[DsiTxSsPtr->Config.DeviceId].DsiInst) : NULL);
-#if (XPAR_XDPHY_NUM_INSTANCES > 0)
-	DsiTxSsPtr->DphyPtr = ((DsiTxSsPtr->Config.DphyInfo.IsPresent) ?
-				(&DsiTxSsSubCores[DsiTxSsPtr->Config.DeviceId].DphyInst) : NULL);
+	Xil_AssertNonvoid(DsiTxSsPtr != NULL);
+
+	Index = XDsiTxSs_GetDrvIndex(DsiTxSsPtr->Config.BaseAddr);
+	/*
+	 * XDsiTxSs_GetDrvIndex() returns the sentinel (past-the-end) index
+	 * when the base address is not present in the config table, e.g. when
+	 * a translated/virtual EffectiveAddr is passed to CfgInitialize().
+	 * Reject such an out-of-range index instead of using it to index
+	 * DsiTxSsSubCores[], which would be an out-of-bounds access.
+	 */
+	if (Index >= XPAR_XDSITXSS_NUM_INSTANCES) {
+		DsiTxSsPtr->DsiPtr = NULL;
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+		DsiTxSsPtr->MipiTxPhyPtr = NULL;
 #endif
-#else
-	u32 Index = 0;
-	Index = XDsiTxSs_GetDrvIndex(DsiTxSsPtr, DsiTxSsPtr->Config.BaseAddr);
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
+		DsiTxSsPtr->DphyPtr = NULL;
+#endif
+		return XST_FAILURE;
+	}
+
 	DsiTxSsPtr->DsiPtr = ((DsiTxSsPtr->Config.DsiInfo.IsPresent) ?
 				(&DsiTxSsSubCores[Index].DsiInst) : NULL);
 #if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
@@ -562,7 +693,8 @@ static void XDsiTxSs_GetIncludedSubCores(XDsiTxSs *DsiTxSsPtr)
 	DsiTxSsPtr->DphyPtr = ((DsiTxSsPtr->Config.DphyInfo.IsPresent) ?
 				(&DsiTxSsSubCores[Index].DphyInst) : NULL);
 #endif
-#endif
+
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -590,31 +722,14 @@ static s32 XDsiTxSs_SubCoreInitDsi(XDsiTxSs *DsiTxSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, ">Initializing DSI Tx Controller...\n\r");
-#ifndef SDT
-	ConfigPtr = XDsi_LookupConfig(DsiTxSsPtr->Config.DsiInfo.DeviceId);
-#else
 	ConfigPtr = XDsi_LookupConfig(DsiTxSsPtr->Config.DsiInfo.AddrOffset);
-#endif
 	if (ConfigPtr == NULL) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DSI not found\n\r");
 		return XST_FAILURE;
 	}
 
 	/* Compute absolute base address */
-#ifndef SDT
-	AbsAddr = 0;
-	Status = ComputeSubCoreAbsAddr(DsiTxSsPtr->Config.BaseAddr,
-					DsiTxSsPtr->Config.HighAddr,
-					DsiTxSsPtr->Config.DsiInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DSI core base"
-			"address (0x%x) invalid \n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
     AbsAddr = ConfigPtr->BaseAddr;
-#endif
 
 	/* Initialize core */
 	Status = XDsi_CfgInitialize(DsiTxSsPtr->DsiPtr, ConfigPtr, AbsAddr);
@@ -654,11 +769,7 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing DPHY ...\n\r");
-#ifndef SDT
-	ConfigPtr = XDphy_LookupConfig(DsiTxSsPtr->Config.DphyInfo.DeviceId);
-#else
 	ConfigPtr = XDphy_LookupConfig(DsiTxSsPtr->Config.DphyInfo.AddrOffset);
-#endif
 
 	if (!ConfigPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DPHY not found \n\r");
@@ -666,20 +777,7 @@ static s32 XDsiTxSs_SubCoreInitDphy(XDsiTxSs *DsiTxSsPtr)
 	}
 
 	/* Compute absolute base address */
-#ifndef SDT
-	AbsAddr = 0;
-	Status = ComputeSubCoreAbsAddr(DsiTxSsPtr->Config.BaseAddr,
-					DsiTxSsPtr->Config.HighAddr,
-					DsiTxSsPtr->Config.DphyInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "DSITXSS ERR:: DPHY core base address "
-				"(0x%x) invalid \n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
     AbsAddr = ConfigPtr->BaseAddr;
-#endif
 
 	/* Initialize core */
 	Status = XDphy_CfgInitialize(DsiTxSsPtr->DphyPtr, ConfigPtr, AbsAddr);
@@ -724,20 +822,7 @@ static u32 DsiTxSs_SubCoreInitMipiTxPhy(XDsiTxSs *DsiTxSsPtr)
 	}
 
 	/* Compute absolute base address */
-#ifndef SDT
-	AbsAddr = 0;
-	Status = ComputeSubCoreAbsAddr(DsiTxSsPtr->Config.BaseAddr,
-					DsiTxSsPtr->Config.HighAddr,
-					DsiTxSsPtr->Config.MipiTxPhyInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS ERR:: MIPI RX PHY core base "
-			"address (0x%x) invalid %d\n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
     AbsAddr = ConfigPtr->BaseAddr;
-#endif
 
 	/* Initialize core */
 	Status = XMipi_Tx_Phy_CfgInitialize(DsiTxSsPtr->MipiTxPhyPtr, ConfigPtr, AbsAddr);
@@ -751,51 +836,3 @@ static u32 DsiTxSs_SubCoreInitMipiTxPhy(XDsiTxSs *DsiTxSsPtr)
 }
 #endif
 
-#ifndef SDT
-/*****************************************************************************/
-/**
-* This function computes the subcore absolute address on axi-lite interface
-* Subsystem is mapped at an absolute address and all included sub-cores are
-* at pre-defined offset from the subsystem base address. To access the subcore
-* register map from host CPU an absolute address is required.
-* The subsystem is aligned to 128K address and has address range of max 192K
-* By default, DSI is at offset 0x0_0000 and DPHY is at offset 0x1_0000.
-* In case DPHY register interface is also absent then the address
-* range shrinks to 64K with only the DSI subcore at offset 0x0_0000.
-*
-* @param	SsBaseAddr is the base address of the the Subsystem instance
-* @param	SsHighAddr is the max address of the Subsystem instance
-* @param	Offset is the offset of the specified core
-* @param	BaseAddr is the computed absolute base address of the subcore
-*
-* @return
-*		- XST_SUCCESS if base address computation is successful
-*		  and within subsystem address range
-*		- XST_FAILURE on address out of range
-*
-* @note		None
-*
-******************************************************************************/
-static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
-				UINTPTR SsHighAddr,
-				u32 Offset,
-				UINTPTR *BaseAddr)
-{
-	s32 Status;
-	UINTPTR AbsAddr;
-
-	AbsAddr = SsBaseAddr + Offset;
-
-	if ((AbsAddr >= SsBaseAddr) && (AbsAddr < SsHighAddr)) {
-		*BaseAddr = AbsAddr;
-		Status = XST_SUCCESS;
-	}
-	else {
-		*BaseAddr = 0;
-		Status = XST_FAILURE;
-	}
-
-	return Status;
-}
-/** @} */
-#endif

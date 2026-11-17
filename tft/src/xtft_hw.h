@@ -1,16 +1,17 @@
 /******************************************************************************
 * Copyright (C) 2008 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XTFT_HW_H  /* prevent circular inclusions */
+#define XTFT_HW_H
 
 /***************************************************************************/
 /**
 *
 * @file xtft_hw.h
-* @addtogroup tft Overview
-* @{
-* @details
+* @brief Defines XTft register offsets and masks.
 *
 * This file defines the macros and definitions for the Xilinx TFT Controller
 * device.
@@ -29,11 +30,16 @@
 *			 definitions to the xtft_hw.h file, these offsets
 *			 are valid only when the Address Width is greater
 *			 than 32 bits.
+* 6.9    vn   07/30/26  Fix Doxygen warnings
+* 6.9   tb   09/16/26 Align Doxygen comments with AMD standards.
 * </pre>
 *
 ****************************************************************************/
-#ifndef XTFT_HW_H  /* prevent circular inclusions */
-#define XTFT_HW_H  /* by using protection macros  */
+
+/**
+* @addtogroup tft_api TFT APIs
+* @{
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,47 +59,51 @@ extern "C" {
  * TFT device.
  * @{
  */
-#define XTFT_AR_OFFSET		0 /**< Address Reg (Video memory) Offset */
-#define XTFT_CR_OFFSET		4 /**< Control Register Offset */
-#define XTFT_IESR_OFFSET	8 /**< Interrupt Enable and Status Reg Offset */
+/** Address Reg (Video memory) Offset. */
+#define XTFT_AR_OFFSET		0
+#define XTFT_CR_OFFSET		4 /**< Control Register Offset. */
+/** Interrupt Enable and Status Reg Offset. */
+#define XTFT_IESR_OFFSET	8
 
-#define XTFT_AR_LSB_OFFSET	0x10 /**< Address Reg LSB (Video memory) Offset */
-#define XTFT_AR_MSB_OFFSET	0x14 /**< Address Reg MSB (Video memory) Offset */
+/** Address Reg LSB (Video memory) Offset. */
+#define XTFT_AR_LSB_OFFSET	0x10
+/** Address Reg MSB (Video memory) Offset. */
+#define XTFT_AR_MSB_OFFSET	0x14
 
-/*@}*/
+/** @} */
 
 /**
  * @name TFT Control Register (CR) mask(s)
  * @{
  */
-#define XTFT_CR_TDE_MASK	0x01 /**< TFT Display Enable Bit Mask */
-#define XTFT_CR_DPS_MASK	0x02 /**< TFT Display Scan Control Bit Mask */
+#define XTFT_CR_TDE_MASK	0x01 /**< TFT Display Enable Bit Mask. */
+#define XTFT_CR_DPS_MASK	0x02 /**< TFT Display Scan Control Bit Mask. */
 
-/*@}*/
+/** @} */
 
 /**
  * @name TFT Interrupt Enable and Status Register (IESR) mask(s)
  * @{
  */
-#define XTFT_IESR_VADDRLATCH_STATUS_MASK 0x01 /**< TFT Video Address Latch
-							Status Bit Mask */
-#define XTFT_IESR_IE_MASK		0x08 /**< TFT Interrupt Enable Mask */
+/** TFT video address-latch status bit mask. */
+#define XTFT_IESR_VADDRLATCH_STATUS_MASK 0x01
+#define XTFT_IESR_IE_MASK		0x08 /**< TFT Interrupt Enable Mask. */
 
-/*@}*/
+/** @} */
 
 /**
  * Dimension Definitions
  */
-#define XTFT_CHAR_WIDTH			8    /**< Character width */
-#define XTFT_CHAR_HEIGHT		12   /**< Character height */
-#define XTFT_DISPLAY_WIDTH		640  /**< Width of the screen */
-#define XTFT_DISPLAY_HEIGHT		480  /**< Height of the screen */
-#define XTFT_DISPLAY_BUFFER_WIDTH	1024 /**< Buffer width of a line */
+#define XTFT_CHAR_WIDTH			8    /**< Character width. */
+#define XTFT_CHAR_HEIGHT		12   /**< Character height. */
+#define XTFT_DISPLAY_WIDTH		640  /**< Width of the screen. */
+#define XTFT_DISPLAY_HEIGHT		480  /**< Height of the screen. */
+#define XTFT_DISPLAY_BUFFER_WIDTH	1024 /**< Buffer width of a line. */
 
 /*
  * This shift is used for accessing the TFT registers through DCR bus.
  */
-#define XTFT_DCR_REG_SHIFT		2    /**< Reg Shift for DCR Access */
+#define XTFT_DCR_REG_SHIFT		2    /**< Reg Shift for DCR Access. */
 
 /**************************** Type Definitions *****************************/
 

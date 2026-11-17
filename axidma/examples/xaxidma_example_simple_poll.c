@@ -8,8 +8,9 @@
 /**
  *
  * @file xaxidma_example_simple_poll.c
- *
- * This file demonstrates how to use the xaxidma driver on the Xilinx AXI
+* @addtogroup AXIDMA Overview
+* @{
+* @brief Demonstrates AXI DMA simple mode transfers in polling mode.
  * DMA core (AXIDMA) to transfer packets in polling mode when the AXI DMA core
  * is configured in simple mode.
  *
@@ -19,7 +20,6 @@
  * To see the debug print, you need a Uart16550 or uartlite in your system,
  * and please set "-DDEBUG" in your compiler options. You need to rebuild your
  * software executable.
- *
  *
  * <pre>
  * MODIFICATION HISTORY:
@@ -44,7 +44,7 @@
  *       ms   04/05/17 Modified Comment lines in functions to
  *                     recognize it as documentation block for doxygen
  *                     generation of examples.
- * 9.9   rsp  01/21/19 Fix use of #elif check in deriving DDR_BASE_ADDR.
+ * 9.9   rsp  01/21/19 Fix use of else-if preprocessor check in deriving DDR_BASE_ADDR.
  * 9.10  rsp  09/17/19 Fix cache maintenance ops for source and dest buffer.
  * 9.14  sk   03/08/22 Delete DDR memory limits comments as they are not
  * 		       relevant to this driver version.
@@ -73,43 +73,15 @@
  */
 
 #ifndef SDT
-#define DMA_DEV_ID		XPAR_AXIDMA_0_DEVICE_ID
-
-#ifdef XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR		XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#elif defined (XPAR_MIG7SERIES_0_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_MIG7SERIES_0_BASEADDR
-#elif defined (XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#elif defined (XPAR_PSU_DDR_0_S_AXI_BASEADDR)
-#define DDR_BASE_ADDR	XPAR_PSU_DDR_0_S_AXI_BASEADDR
+#define DMA_DEV_ID		XPAR_AXIDMA_0_DEVICE_ID	/**< Device ID of the AXI DMA under test. */
 #endif
 
-#else
+#define MAX_PKT_LEN		0x20	/**< Maximum packet length in bytes for each transfer. */
 
-#ifdef XPAR_MEM0_BASEADDRESS
-#define DDR_BASE_ADDR		XPAR_MEM0_BASEADDRESS
-#endif
-#endif
+#define TEST_START_VALUE	0xC	/**< Starting value used to fill and verify test packet data. */
 
-#ifndef DDR_BASE_ADDR
-#warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-DEFAULT SET TO 0x01000000
-#define MEM_BASE_ADDR		0x01000000
-#else
-#define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x1000000)
-#endif
-
-#define TX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00100000)
-#define RX_BUFFER_BASE		(MEM_BASE_ADDR + 0x00300000)
-#define RX_BUFFER_HIGH		(MEM_BASE_ADDR + 0x004FFFFF)
-
-#define MAX_PKT_LEN		0x20
-
-#define TEST_START_VALUE	0xC
-
-#define NUMBER_OF_TRANSFERS	10
-#define POLL_TIMEOUT_COUNTER    1000000U
+#define NUMBER_OF_TRANSFERS	10	/**< Number of simple transfers to run in this test. */
+#define POLL_TIMEOUT_COUNTER    1000000U	/**< Maximum poll iterations before a transfer times out. */
 
 /**************************** Type Definitions *******************************/
 
@@ -120,6 +92,11 @@ DEFAULT SET TO 0x01000000
 /************************** Function Prototypes ******************************/
 
 #if (!defined(DEBUG))
+/**
+ * @brief Prints a formatted message when DEBUG is not defined.
+ *
+ * @param[in] format is the printf-style format string.
+ */
 extern void xil_printf(const char *format, ...);
 #endif
 
@@ -128,27 +105,28 @@ int XAxiDma_SimplePollExample(u16 DeviceId);
 #else
 int XAxiDma_SimplePollExample(UINTPTR BaseAddress);
 #endif
+/** @cond INTERNAL */
 static int CheckData(void);
+/** @endcond */
+
 
 /************************** Variable Definitions *****************************/
 /*
  * Device instance definitions
  */
-XAxiDma AxiDma;
+XAxiDma AxiDma;	/**< Driver instance for the AXI DMA under test. */
+
+/** @cond INTERNAL */
+static u8 TxBuffer[MAX_PKT_LEN] __attribute__ ((aligned(64)));
+static u8 RxBuffer[MAX_PKT_LEN] __attribute__ ((aligned(64)));
+/** @endcond */
 
 
 /*****************************************************************************/
 /**
-* The entry point for this example. It invokes the example function,
-* and reports the execution status.
+* @brief Invokes the example function and reports the execution status.
 *
-* @param	None.
-*
-* @return
-*		- XST_SUCCESS if example finishes successfully
-*		- XST_FAILURE if example fails.
-*
-* @note		None.
+* @return XST_SUCCESS if Example finished successfully, or XST_FAILURE if Example failed.
 *
 ******************************************************************************/
 int main()
@@ -181,13 +159,7 @@ int main()
 /*****************************************************************************/
 /*
 *
-* Uart16550 setup routine, need to set baudrate to 9600, and data bits to 8
-*
-* @param	None.
-*
-* @return	None
-*
-* @note		None.
+* @brief Sets up UART16550 with a baud rate of 9600 and 8 data bits.
 *
 ******************************************************************************/
 static void Uart550_Setup(void)
@@ -204,28 +176,31 @@ static void Uart550_Setup(void)
 }
 #endif
 
+#ifndef SDT
 /*****************************************************************************/
 /**
-* The example to do the simple transfer through polling. The constant
-* NUMBER_OF_TRANSFERS defines how many times a simple transfer is repeated.
+* @brief Runs a simple polled transfer example.
 *
-* @if SDT
-* @param	BaseAddress contains the base address of the device
-* @else
-* @param	DeviceId is the Device Id of the XAxiDma instance
-* @endif
+* NUMBER_OF_TRANSFERS defines how many times the transfer repeats.
 *
-* @return
-*		- XST_SUCCESS if example finishes successfully
-*		- XST_FAILURE if error occurs
+* @param[in] DeviceId is the device ID of the XAxiDma instance.
 *
-* @note		None
-*
+* @return XST_SUCCESS if the example finishes successfully, XST_FAILURE otherwise.
 *
 ******************************************************************************/
-#ifndef SDT
 int XAxiDma_SimplePollExample(u16 DeviceId)
 #else
+/*****************************************************************************/
+/**
+* @brief Runs a simple polled transfer example.
+*
+* NUMBER_OF_TRANSFERS defines how many times the transfer repeats.
+*
+* @param[in] BaseAddress contains the base address of the device.
+*
+* @return XST_SUCCESS if the example finishes successfully, XST_FAILURE otherwise.
+*
+******************************************************************************/
 int XAxiDma_SimplePollExample(UINTPTR BaseAddress)
 #endif
 {
@@ -238,8 +213,8 @@ int XAxiDma_SimplePollExample(UINTPTR BaseAddress)
 	u8 Value;
 	int TimeOut = POLL_TIMEOUT_COUNTER;
 
-	TxBufferPtr = (u8 *)TX_BUFFER_BASE ;
-	RxBufferPtr = (u8 *)RX_BUFFER_BASE;
+	TxBufferPtr = (u8 *)TxBuffer;
+	RxBufferPtr = (u8 *)RxBuffer;
 
 	/* Initialize the XAxiDma device.
 	 */
@@ -330,17 +305,11 @@ int XAxiDma_SimplePollExample(UINTPTR BaseAddress)
 
 
 /*****************************************************************************/
-/*
+/**
 *
-* This function checks data buffer after the DMA transfer is finished.
+* @brief Checks the data buffer after the DMA transfer completes.
 *
-* @param	None
-*
-* @return
-*		- XST_SUCCESS if validation is successful.
-*		- XST_FAILURE otherwise.
-*
-* @note		None.
+* @return XST_SUCCESS if Validation is successful, or XST_FAILURE if Validation failed.
 *
 ******************************************************************************/
 static int CheckData(void)
@@ -349,7 +318,7 @@ static int CheckData(void)
 	int Index = 0;
 	u8 Value;
 
-	RxPacket = (u8 *) RX_BUFFER_BASE;
+	RxPacket = (u8 *) RxBuffer;
 	Value = TEST_START_VALUE;
 
 	/* Invalidate the DestBuffer before receiving the data, in case the
@@ -370,3 +339,5 @@ static int CheckData(void)
 
 	return XST_SUCCESS;
 }
+
+/** @} */

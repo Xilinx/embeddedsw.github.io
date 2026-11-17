@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,7 @@
 /**
 *
 * @file xqspips_hw.c
-* @addtogroup qspips Overview
-* @{
-*
-* Contains low level functions, primarily reset related.
+* @brief Contains low level functions, primarily reset related.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -21,10 +18,17 @@
 * 2.03a hk  09/17/13 First release
 * 3.1   hk  06/19/14 When writing to the configuration register, set/reset
 *                    required bits leaving reserved bits untouched. CR# 796813.
+* 3.16  vn  08/26/26 Fix Doxygen warnings
+* 3.16  tb  09/30/26 Align Doxygen comments with AMD documentation standards
 *
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup qspips_api QSPIPS APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -39,8 +43,9 @@
  *
  * @{
  */
+/** Pre-scaler value for divided by 4. */
 #define XQSPIPS_CR_PRESC_DIV_BY_4	0x01
-/* @} */
+/** @} */
 
 /**************************** Type Definitions *******************************/
 
@@ -54,14 +59,10 @@
 /*****************************************************************************/
 /**
 *
-* Resets QSPI by disabling the device and bringing it to reset state through
-* register writes.
+* @brief Resets QSPI by disabling the device and bringing it to reset state
+* through register writes.
 *
-* @param	BaseAddress
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]	BaseAddress Base address of the QSPI device.
 *
 ******************************************************************************/
 void XQspiPs_ResetHw(u32 BaseAddress)
@@ -132,13 +133,9 @@ void XQspiPs_ResetHw(u32 BaseAddress)
 /*****************************************************************************/
 /**
 *
-* Initializes QSPI to Linear mode with default QSPI boot settings.
+* @brief Initializes QSPI to Linear mode with default QSPI boot settings.
 *
-* @param	BaseAddress
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]	BaseAddress Base address of the QSPI device.
 *
 ******************************************************************************/
 void XQspiPs_LinearInit(u32 BaseAddress)

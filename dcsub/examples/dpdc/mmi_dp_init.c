@@ -15,17 +15,27 @@
 #include <xil_exception.h>
 #include <xil_cache.h>
 #include <xil_printf.h>
+#include <xil_assert.h>
 #include <sleep.h>
 
 #include "mmi_dpdc_platform.h"
 #include "xmmidp.h"
 #include "mmi_dp_init.h"
 #include "mmi_dp_intr.h"
+#include "mmi_dc_bypass_test.h"
 
 /* AUX timer limits (counts at core clock rate) */
 #define XMMIDP_AUX_250US_LIMIT		0xF5
 #define XMMIDP_AUX_2000US_LIMIT		0x7A8
 #define XMMIDP_AUX_100000US_LIMIT	0x17ED0
+
+#if XDPDC_MST_DEBUG
+/** Print an MST debug message. */
+#define XDPDC_MST_DBG(...)	xil_printf(__VA_ARGS__)
+#else
+/** MST debug messages are compiled out. */
+#define XDPDC_MST_DBG(...)	do { } while (0)
+#endif
 
 /* Power Management configuration defaults */
 #define XMMIDP_PM_CONFIG1_DEFAULT	0x00400008
@@ -52,8 +62,292 @@
 
 /* Default video stream parameters */
 #define XMMIDP_DEFAULT_BPC		8
-#define XMMIDP_PIX_MODE_SINGLE		0x0
 #define XMMIDP_VID_STREAM_ENABLE	0x1
+
+/** MTP time slots for payload; slot 0 carries the MTP header. */
+#define XDPDC_MST_PAYLOAD_SLOTS		63U
+
+/*****************************************************************************/
+/**
+ * Map pixels-per-clock (from xparameters.h) to DP PixModeSel register value.
+ *
+ * @param	PPC is 1, 2, or 4 pixels per clock.
+ *
+ * @return	XMMIDP_SINGLE/DUAL/QUAD_PIX_MODE.
+ *
+ *****************************************************************************/
+static u8 XDpDc_PpcToPixModeSel(u8 Ppc)
+{
+	if ((Ppc != 1U) && (Ppc != 2U) && (Ppc != 4U)) {
+		xil_printf("[VID] WARNING: PPC unset or invalid (%u), expected 1, 2, or 4\r\n",
+			   Ppc);
+	}
+	Xil_AssertNonvoid((Ppc == 1U) || (Ppc == 2U) || (Ppc == 4U));
+
+	switch (Ppc) {
+	case 4:
+		return XMMIDP_QUAD_PIX_MODE;
+	case 2:
+		return XMMIDP_DUAL_PIX_MODE;
+	default:
+		return XMMIDP_SINGLE_PIX_MODE;
+	}
+}
+
+/*****************************************************************************/
+/**
+ * Map the AVPG pixel format and bpc to the DC video format.
+ *
+ * @param	Avpg is the AVPG configuration of the stream.
+ *
+ * @return	DC video format for the stream.
+ *
+ *****************************************************************************/
+static XDc_VideoFormat XDpDc_AvpgToVideoFormat(const AvpgRunConfig *Avpg)
+{
+	if (Avpg->pix_fmt == 0U) {
+		switch (Avpg->bpc) {
+		case 10:
+			return RGB_10BPC;
+		case 12:
+			return RGB_12BPC;
+		case 8:
+			return RGB_8BPC;
+		default:
+			xil_printf("[VID] WARNING: Unsupported AVPG bpc %u "
+				   "(pix_fmt=RGB), using 8\r\n", Avpg->bpc);
+			return RGB_8BPC;
+		}
+	}
+
+	if (Avpg->pix_fmt != 1U)
+		xil_printf("[VID] WARNING: Unsupported AVPG pix_fmt %u, "
+			   "treating as YCbCr422\r\n", Avpg->pix_fmt);
+
+	switch (Avpg->bpc) {
+	case 10:
+		return YCbCr422_10BPC;
+	case 12:
+		return YCbCr422_12BPC;
+	case 8:
+		return YCbCr422_8BPC;
+	default:
+		xil_printf("[VID] WARNING: Unsupported AVPG bpc %u "
+			   "(pix_fmt=YCbCr422), using 8\r\n", Avpg->bpc);
+		return YCbCr422_8BPC;
+	}
+}
+
+/*****************************************************************************/
+/**
+ * Select the video format that DP MSA should describe on the wire for a
+ * given DP stream.
+ *
+ * SST-only (DesignMstEn=0): stream 0 only — bypass keeps Stream1Format
+ * (set from avpg[0] by BypassSetStream0Format), else OutStreamFormat.
+ * MST (DesignMstEn=1): bypass uses avpg[StreamIdx], else OutStreamFormat.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ * @param	StreamId is the DP stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	XDc_VideoFormat for DP stream setup.
+ *
+ *****************************************************************************/
+static XDc_VideoFormat XDpDc_GetDpVideoFormat(const RunConfig *RunCfgPtr,
+					      u8 StreamId)
+{
+	if (!RunCfgPtr->DesignMstEn) {
+		if (RunCfgPtr->operatingmode == XDCSUB_OPMODE_BYPASS)
+			return RunCfgPtr->Stream1Format;
+
+		return RunCfgPtr->OutStreamFormat;
+	}
+
+	if (RunCfgPtr->operatingmode == XDCSUB_OPMODE_BYPASS) {
+		u8 StreamIdx = StreamId - XMMIDP_STREAM_ID1;
+
+		return XDpDc_AvpgToVideoFormat(&RunCfgPtr->avpg[StreamIdx]);
+	}
+
+	return RunCfgPtr->OutStreamFormat;
+}
+
+/*****************************************************************************/
+/**
+ * Map XDc_VideoFormat to MSA bits-per-color.
+ *
+ * @param	Fmt is the DC/AVPG video format.
+ *
+ * @return	BPC value for XMmiDp_SetMsaBpc().
+ *
+ *****************************************************************************/
+static u8 XDpDc_VideoFormatToBpc(XDc_VideoFormat Fmt)
+{
+	switch (Fmt) {
+	case RGB_6BPC:
+	case YCbCr444_6BPC:
+		return 6;
+	case RGB_10BPC:
+	case YCbCr444_10BPC:
+	case YCbCr422_10BPC:
+		return 10;
+	case RGB_12BPC:
+	case YCbCr444_12BPC:
+	case YCbCr422_12BPC:
+		return 12;
+	default:
+		return 8;
+	}
+}
+
+/*****************************************************************************/
+/**
+ * Map XDc_VideoFormat to DP video input mapping.
+ *
+ * @param	Fmt is the DC/AVPG video format.
+ *
+ * @return	XMmiDp_VidMap value for XMmiDp_SetVideoMapping().
+ *
+ *****************************************************************************/
+static XMmiDp_VidMap XDpDc_VideoFormatToVidMap(XDc_VideoFormat Fmt)
+{
+	switch (Fmt) {
+	case RGB_6BPC:
+		return XMMIDP_RGB_6BPC;
+	case RGB_10BPC:
+		return XMMIDP_RGB_10BPC;
+	case RGB_12BPC:
+		return XMMIDP_RGB_12BPC;
+	case YCbCr444_8BPC:
+		return XMMIDP_YCbCr444_8BPC;
+	case YCbCr444_10BPC:
+		return XMMIDP_YCbCr444_10BPC;
+	case YCbCr444_12BPC:
+		return XMMIDP_YCbCr444_12BPC;
+	case YCbCr422_8BPC:
+		return XMMIDP_YCbCr422_8BPC;
+	case YCbCr422_10BPC:
+		return XMMIDP_YCbCr422_10BPC;
+	case YCbCr422_12BPC:
+		return XMMIDP_YCbCr422_12BPC;
+	default:
+		return XMMIDP_RGB_8BPC;
+	}
+}
+
+/*****************************************************************************/
+/**
+ * Map XDc_VideoFormat to XVidC color space for MSA misc/timing computation.
+ *
+ * @param	Fmt is the DC/AVPG video format.
+ *
+ * @return	XVidC_ColorFormat for XMmiDp_SetVidControllerUseStdVidMode().
+ *
+ *****************************************************************************/
+static XVidC_ColorFormat XDpDc_VideoFormatToColorFormat(XDc_VideoFormat Fmt)
+{
+	switch (Fmt) {
+	case YCbCr422_8BPC:
+	case YCbCr422_10BPC:
+	case YCbCr422_12BPC:
+		return XVIDC_CSF_YCRCB_422;
+	case YCbCr444_6BPC:
+	case YCbCr444_8BPC:
+	case YCbCr444_10BPC:
+	case YCbCr444_12BPC:
+		return XVIDC_CSF_YCRCB_444;
+	default:
+		return XVIDC_CSF_RGB;
+	}
+}
+
+/*****************************************************************************/
+/**
+ * Returns the PBN a stream needs, using the math of XMmiDp_ComputeTimeSlot():
+ * ceil(PeakMBps * 64/54 * 1.006).
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ * @param	StreamId is the DP stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	The payload bandwidth number for the stream.
+ *
+ *****************************************************************************/
+static u32 XDpDc_StreamPbn(const RunConfig *RunCfgPtr, u8 StreamId)
+{
+	XDc_VideoFormat Fmt;
+	u64 PbnNum;
+	u64 PbnDen;
+	u32 Bpp;
+
+	Fmt = XDpDc_GetDpVideoFormat(RunCfgPtr, StreamId);
+	Bpp = XDpDc_VideoFormatToBpc(Fmt) *
+	      ((XDpDc_VideoFormatToColorFormat(Fmt) ==
+		XVIDC_CSF_YCRCB_422) ? 2U : 3U);
+
+	PbnDen = 1000000ULL * 8U * 54U * 1000U;
+	PbnNum = RunCfgPtr->PixelClkHz * Bpp * 64U * 1006U;
+
+	return (u32)((PbnNum + PbnDen - 1U) / PbnDen);
+}
+
+/*****************************************************************************/
+/**
+ * Checks that the MST streams fit the link time slots before any hardware
+ * is programmed, using the PBN and slot math of XMmiDp_ComputeTimeSlot().
+ * The link is the user cap, or HBR3 x4 when auto, so a mode that fails here
+ * cannot fit after link training either.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ * @param	NumStreams is the number of active streams (1..4).
+ *
+ * @return	XST_SUCCESS if the streams fit, XST_FAILURE otherwise.
+ *
+ *****************************************************************************/
+u32 XDpDc_CheckMstBandwidth(const RunConfig *RunCfgPtr, u8 NumStreams)
+{
+	u32 Slots[XMMIDP_STREAM_ID4];
+	u32 Pbn[XMMIDP_STREAM_ID4];
+	u32 TotalSlots = 0U;
+	u32 SlotPbn;
+	u32 RateX100;
+	u8 Lanes;
+	u8 Rate;
+	u8 Idx;
+
+	Xil_AssertNonvoid(RunCfgPtr != NULL);
+	Xil_AssertNonvoid((NumStreams >= XMMIDP_STREAM_ID1) &&
+			  (NumStreams <= XMMIDP_STREAM_ID4));
+
+	Lanes = (RunCfgPtr->MaxLaneCount != 0U) ? RunCfgPtr->MaxLaneCount :
+		XMMIDP_MAX_LANES;
+	Rate = (RunCfgPtr->MaxLinkRate != 0U) ? RunCfgPtr->MaxLinkRate :
+	       XMMIDP_DPCD_LINK_BW_SET_810GBPS;
+	/* PBN per time slot (DP 1.4 Table 2-138) is lanes * LINK_BW_SET / 2. */
+	SlotPbn = ((u32)Lanes * Rate) / 2U;
+	if (SlotPbn == 0U)
+		return XST_FAILURE;
+
+	for (Idx = 0U; Idx < NumStreams; Idx++) {
+		Pbn[Idx] = XDpDc_StreamPbn(RunCfgPtr, Idx + XMMIDP_STREAM_ID1);
+		Slots[Idx] = (Pbn[Idx] + SlotPbn - 1U) / SlotPbn;
+		TotalSlots += Slots[Idx];
+	}
+
+	if (TotalSlots <= XDPDC_MST_PAYLOAD_SLOTS)
+		return XST_SUCCESS;
+
+	RateX100 = (u32)Rate * 27U;
+	xil_printf("  ERROR: %u MST streams need %u time slots; %u lane(s) at "
+		   "%u.%02u Gbps carry %u\r\n", NumStreams, TotalSlots, Lanes,
+		   RateX100 / 100U, RateX100 % 100U, XDPDC_MST_PAYLOAD_SLOTS);
+	for (Idx = 0U; Idx < NumStreams; Idx++)
+		xil_printf("    Stream %u: PBN %u, %u slots\r\n", Idx, Pbn[Idx],
+			   Slots[Idx]);
+	xil_printf("  Lower the resolution or refresh rate, use YCbCr422, or "
+		   "use fewer streams\r\n");
+
+	return XST_FAILURE;
+}
 
 /* Default audio stream parameters */
 #define XMMIDP_AUD_CH_PER_DATA_INPUT	2U
@@ -62,19 +356,20 @@
 #define XMMIDP_AUD_HBR_MODE_DISABLE	0x0
 #define XMMIDP_AUD_TIMESTAMP_VER	0x12
 #define XMMIDP_SDP_STREAM_ENABLE	0x1
+#define XMMIDP_SDP_FIXED_PRIORITY_EN	0x1
 
 /******************************************************************************/
 /**
- * This function power cycles the sink by powering it down and then back up
- * with appropriate delays to allow the monitor to transition states.
+ * Power-cycle the sink: SET_POWER down, then up.
+ *
+ * On some panels the down/up transition re-asserts HPD and can re-enter the
+ * hot-plug handler. Wake delay is unchanged from SinkPowerUp alone
+ * (XMMIDP_SINK_POWERUP_DELAY after power-up); only the power-down phase is
+ * added relative to a bare SinkPowerUp path.
  *
  * @param	DpPsuPtr is a pointer to the XMmiDp instance.
  *
- * @return	None.
- *
- * @note	None.
- *
-*******************************************************************************/
+ ******************************************************************************/
 void XMmiDp_SinkPowerCycle(XMmiDp *DpPsuPtr)
 {
 	XMmiDp_SinkPowerDown(DpPsuPtr);
@@ -131,15 +426,136 @@ void XMmiDp_SinkPowerUp(XMmiDp *DpPsuPtr)
 			XMMIDP_DPCD_SET_POWER_DP_PWR_VOLTAGE, 1, Data);
 }
 
-static void XDpDc_PrintVideoConfigRegs(XMmiDp *InstancePtr, u8 Stream)
+#if XDPDC_MST_DEBUG
+/******************************************************************************/
+/**
+ * This function returns the link mode name for debug output.
+ *
+ * @param	MstMode is 1 for MST link mode, 0 for SST.
+ *
+ * @return	"MST" or "SST".
+ *
+*******************************************************************************/
+static const char *XDpDc_LinkModeStr(u8 MstMode)
+{
+	return MstMode ? "MST" : "SST";
+}
+
+/******************************************************************************/
+/**
+ * This function prints the banner of a debug register dump.
+ *
+ * @param	Title is the section title.
+ * @param	MstMode is 1 for MST link mode, 0 for SST.
+ * @param	Stream is the stream ID, or 0 to omit it.
+ * @param	Phase is the programming phase, or NULL to omit it.
+ *
+ * @return	None.
+ *
+*******************************************************************************/
+static void XDpDc_PrintSectionBanner(const char *Title, u8 MstMode, u8 Stream,
+				     const char *Phase)
+{
+	xil_printf("\r\n");
+	xil_printf("==================================================\r\n");
+	xil_printf("  %s\r\n", Title);
+	xil_printf("  Link Mode : %s\r\n", XDpDc_LinkModeStr(MstMode));
+	if (Stream != 0U)
+		xil_printf("  Stream    : %u\r\n", Stream);
+	if (Phase != NULL)
+		xil_printf("  Phase     : %s\r\n", Phase);
+	xil_printf("==================================================\r\n");
+}
+
+/******************************************************************************/
+/**
+ * This function prints the MST payload allocation of a stream.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	None.
+ *
+*******************************************************************************/
+static void XDpDc_PrintMstStreamAlloc(XMmiDp *InstancePtr, u8 Stream)
+{
+	XMmiDp_MstStream *Mst = &InstancePtr->MstStreamConfig[Stream - 1];
+
+	xil_printf("\r\n  MST Payload Allocation (Stream %u):\r\n", Stream);
+	xil_printf("    VcId (stream)     : %u\r\n", Stream);
+	xil_printf("    PBN               : %u\r\n", Mst->MstPbn);
+	xil_printf("    TimeSlots         : %u\r\n", Mst->TimeSlots);
+	xil_printf("    StartSlot         : %u\r\n", Mst->StartSlot);
+	xil_printf("    Link PBN          : %u\r\n",
+		   XMmiDp_GetLinkPbn(InstancePtr));
+	if (Mst->LinkCountTotal >= XMMIDP_MST_SINK_MIN_LCT)
+		xil_printf("    Sink port         : %u (LCT %u)\r\n",
+			   Mst->RelativeAddress[Mst->LinkCountTotal - 2U],
+			   Mst->LinkCountTotal);
+}
+
+/******************************************************************************/
+/**
+ * This function prints the MST mode bits of CCTL0 and the VCP
+ * table registers.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ *
+ * @return	None.
+ *
+*******************************************************************************/
+static void XDpDc_PrintMstGlobalRegs(XMmiDp *InstancePtr)
+{
+	UINTPTR Base = InstancePtr->Config.BaseAddr;
+	u32 Reg;
+	u32 RegIdx;
+
+	XDpDc_PrintSectionBanner("DP MST Global Registers", 1U, 0U,
+				 "post-payload-allocate");
+
+	Reg = XMmiDp_ReadReg(Base, XMMIDP_CCTL0);
+	xil_printf("  CCTL0               [0x%03X] = 0x%08X\r\n",
+		   XMMIDP_CCTL0, Reg);
+	xil_printf("    MST Mode En       : %u\r\n",
+		   (Reg & XMMIDP_CCTL0_ENABLE_MST_MODE_MASK) >>
+		   XMMIDP_CCTL0_ENABLE_MST_MODE_SHIFT);
+	xil_printf("    ACT Seq Pending   : %u\r\n",
+		   (Reg & XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_MASK) >>
+		   XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_SHIFT);
+
+	xil_printf("  MST_VCP_TABLE:\r\n");
+	for (RegIdx = 0U; RegIdx < XMMIDP_MST_VCP_REG_COUNT; RegIdx++) {
+		Reg = XMmiDp_ReadReg(Base,
+				     XMMIDP_MST_VCP_TABLE_REG0 + (RegIdx * 4U));
+		xil_printf("    REG%u  [0x%03X] = 0x%08X\r\n",
+			   RegIdx, XMMIDP_MST_VCP_TABLE_REG0 + (RegIdx * 4U),
+			   Reg);
+	}
+	xil_printf("==================================================\r\n\r\n");
+}
+
+/******************************************************************************/
+/**
+ * This function prints the video sampling, polarity, video
+ * config and MSA registers of a stream.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ * @param	MstMode is 1 for MST link mode, 0 for SST.
+ * @param	Phase is the programming phase shown in the banner.
+ *
+ * @return	None.
+ *
+*******************************************************************************/
+static void XDpDc_PrintVideoConfigRegs(XMmiDp *InstancePtr, u8 Stream,
+				       u8 MstMode, const char *Phase)
 {
 	UINTPTR Base = InstancePtr->Config.BaseAddr;
 	u32 Off = (Stream - 1) * 0x10000;
 	u32 Reg;
 
-	xil_printf("\r\n--------------------------------------------------\r\n");
-	xil_printf("  DP Video Config Registers  (Stream %d)\r\n", Stream);
-	xil_printf("--------------------------------------------------\r\n");
+	XDpDc_PrintSectionBanner("DP Video Config Registers", MstMode, Stream,
+				 Phase);
 
 	Reg = XMmiDp_ReadReg(Base, XMMIDP_VSAMPLE_CTRL + Off);
 	xil_printf("  VSAMPLE_CTRL      [0x%03X] = 0x%08X\r\n",
@@ -248,7 +664,7 @@ static void XDpDc_PrintVideoConfigRegs(XMmiDp *InstancePtr, u8 Stream)
 		   (Reg & XMMIDP_VIDEO_HBLANK_INTERVAL_MASK) >>
 		   XMMIDP_VIDEO_HBLANK_INTERVAL_SHIFT);
 
-	xil_printf("--------------------------------------------------\r\n\r\n");
+	xil_printf("==================================================\r\n\r\n");
 }
 
 /******************************************************************************/
@@ -259,17 +675,21 @@ static void XDpDc_PrintVideoConfigRegs(XMmiDp *InstancePtr, u8 Stream)
  *
  * @param	InstancePtr is a pointer to the XMmiDp instance.
  * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ * @param	MstMode is 1 for MST link mode, 0 for SST.
  *
  * @return	None.
  *
 *******************************************************************************/
-static void XDpDc_PrintVideoStreamConfig(XMmiDp *InstancePtr, u8 Stream)
+static void XDpDc_PrintVideoStreamConfig(XMmiDp *InstancePtr, u8 Stream,
+					 u8 MstMode)
 {
 	XMmiDp_VideoConfig *Vc = &InstancePtr->VideoConfig[Stream - 1];
 	XMmiDp_MainStreamAttributes *Msa = &InstancePtr->MsaConfig[Stream - 1];
 	XMmiDp_LinkConfig *Lc = &InstancePtr->LinkConfig;
+	XMmiDp_MstStream *Mst = &InstancePtr->MstStreamConfig[Stream - 1];
 
-	xil_printf("\r\n  Video Stream Config (Stream %d):\r\n", Stream);
+	XDpDc_PrintSectionBanner("DP Video Stream Config", MstMode, Stream,
+				 "post-timing-compute");
 	xil_printf("    Resolution        : %dx%d\r\n",
 		   Vc->HActive, Vc->VActive);
 	xil_printf("    Pixel Clock       : %llu Hz\r\n", Msa->PixelClockHz);
@@ -289,51 +709,212 @@ static void XDpDc_PrintVideoStreamConfig(XMmiDp *InstancePtr, u8 Stream)
 	xil_printf("    NVid              : 0x%04X\r\n", Msa->NVid);
 	xil_printf("    HBlankInterval    : %d\r\n", Msa->HBlankInterval);
 	xil_printf("    AvgBytesPerTu     : %d\r\n", Vc->AvgBytesPerTu);
-	xil_printf("    AvgBytesPerTuFrac : %d/64\r\n", Vc->AvgBytesPerTuFrac);
+	if (MstMode)
+		xil_printf("    AvgBytesPerTuFrac : %d/64\r\n",
+			   Vc->AvgBytesPerTuFrac);
+	else
+		xil_printf("    AvgBytesPerTuFrac : %d/10\r\n",
+			   Vc->AvgBytesPerTuFrac);
 	xil_printf("    InitThreshold     : lo=%d  hi=%d\r\n",
 		   Vc->InitThreshold, Vc->InitThresholdHi);
+
+	if (MstMode) {
+		xil_printf("    TU Frac Scale     : 1/64 (MST)\r\n");
+		xil_printf("    PBN               : %u\r\n", Mst->MstPbn);
+		xil_printf("    TimeSlots         : %u\r\n", Mst->TimeSlots);
+		xil_printf("    StartSlot         : %u (pre-allocate)\r\n",
+			   Mst->StartSlot);
+	} else {
+		xil_printf("    TU Frac Scale     : 1/10 (SST)\r\n");
+	}
+	xil_printf("==================================================\r\n\r\n");
+}
+#else /* !XDPDC_MST_DEBUG */
+/** MST payload allocation dump; no-op when XDPDC_MST_DEBUG is 0. */
+static void XDpDc_PrintMstStreamAlloc(XMmiDp *InstancePtr, u8 Stream)
+{
+	(void)InstancePtr;
+	(void)Stream;
+}
+
+/** MST CCTL0/VCP register dump; no-op when XDPDC_MST_DEBUG is 0. */
+static void XDpDc_PrintMstGlobalRegs(XMmiDp *InstancePtr)
+{
+	(void)InstancePtr;
+}
+
+/** Video config register dump; no-op when XDPDC_MST_DEBUG is 0. */
+static void XDpDc_PrintVideoConfigRegs(XMmiDp *InstancePtr, u8 Stream,
+				       u8 MstMode, const char *Phase)
+{
+	(void)InstancePtr;
+	(void)Stream;
+	(void)MstMode;
+	(void)Phase;
+}
+
+/** Video stream config dump; no-op when XDPDC_MST_DEBUG is 0. */
+static void XDpDc_PrintVideoStreamConfig(XMmiDp *InstancePtr, u8 Stream,
+					 u8 MstMode)
+{
+	(void)InstancePtr;
+	(void)Stream;
+	(void)MstMode;
+}
+#endif /* XDPDC_MST_DEBUG */
+
+
+/******************************************************************************/
+/**
+ * Read SDT xlnx,mst-mode-en for the DP Tx instance (1=MST design, 0=SST-only).
+ *
+ * @return	1 if the design is MST-capable, 0 if SST-only.
+ *
+ ******************************************************************************/
+u32 XDpDc_GetDesignMstEn(void)
+{
+	u32 DesignMstEn;
+
+#if defined(XPAR_MMI_DPTX_MST_MODE_EN)
+	DesignMstEn = (u32)XPAR_MMI_DPTX_MST_MODE_EN;
+	XDPDC_MST_DBG("[MSTM] DesignMstEn=%u (SDT via XPAR_MMI_DPTX_MST_MODE_EN)\r\n",
+		      DesignMstEn);
+#elif defined(XPAR_XMMIDP_0_MST_MODE_EN)
+	DesignMstEn = (u32)XPAR_XMMIDP_0_MST_MODE_EN;
+	XDPDC_MST_DBG("[MSTM] DesignMstEn=%u (SDT via XPAR_XMMIDP_0_MST_MODE_EN)\r\n",
+		      DesignMstEn);
+#elif defined(XPAR_XMMIDP_NUM_INSTANCES) && (XPAR_XMMIDP_NUM_INSTANCES > 0)
+	extern XMmiDp_Config XMmiDp_ConfigTable[];
+
+	DesignMstEn = (u32)XMmiDp_ConfigTable[0].MstModeEn;
+	XDPDC_MST_DBG("[MSTM] DesignMstEn=%u (SDT via XMmiDp_ConfigTable[0].MstModeEn)\r\n",
+		      DesignMstEn);
+#else
+	DesignMstEn = 0U;
+	XDPDC_MST_DBG("[MSTM] DesignMstEn=0 (default, no SDT MST define)\r\n");
+#endif
+
+	return DesignMstEn;
 }
 
 /******************************************************************************/
 /**
- * This function sets up the video stream by clearing the video controller,
- * configuring MSA bits per color, pixel mode, video mapping, and applying
- * the standard 640x480 video mode timing.
+ * Set RunCfgPtr->MstMode from SDT mst-mode-en and sink MST_CAP.
+ *
+ * SST-only design (mst-mode-en=0): MstMode=0 always.
+ * MST design (mst-mode-en=1): MstMode=1 if MST_CAP=1, else connect fails.
  *
  * @param	RunCfgPtr is a pointer to the application configuration structure.
  *
- * @return	None.
- *
- * @note	None.
+ * @return	XST_SUCCESS if policy is valid, XST_FAILURE otherwise.
  *
 *******************************************************************************/
-void XMmiDp_SetupVideoStream(RunConfig *RunCfgPtr)
+u32 XDpDc_CheckMstSupport(RunConfig *RunCfgPtr)
 {
-
 	XMmiDp *InstancePtr = RunCfgPtr->DpPsuPtr;
 
-	/* Disable video stream before reconfiguring */
-	XMmiDp_DisableVideoStream(InstancePtr, XMMIDP_STREAM_ID1);
+	RunCfgPtr->MstMode = 0U;
 
-	XMmiDp_ClearVideoController(InstancePtr);
+	XDPDC_MST_DBG("[MSTM] CheckMstSupport: DesignMstEn=%u byp_streams=%u\r\n",
+		      RunCfgPtr->DesignMstEn, RunCfgPtr->byp_streams);
 
-	XMmiDp_SetMsaBpc(InstancePtr, XMMIDP_STREAM_ID1, XMMIDP_DEFAULT_BPC);
-	XMmiDp_SetPixModeSel(InstancePtr, XMMIDP_STREAM_ID1, XMMIDP_PIX_MODE_SINGLE);
-	XMmiDp_SetVideoMapping(InstancePtr, XMMIDP_STREAM_ID1, XMMIDP_RGB_8BPC);
+	if (!RunCfgPtr->DesignMstEn) {
+		XDPDC_MST_DBG("[MSTM] Policy: SST-only design -> MstMode=0 (SST link)\r\n");
+		return XST_SUCCESS;
+	}
+
+	XDPDC_MST_DBG("[MSTM] Policy: MST design, reading sink MST_CAP (DPCD 0x21)...\r\n");
+	if (XMmiDp_GetRxMstModeCap(InstancePtr) != XST_SUCCESS) {
+		xil_printf("[MSTM] ERROR: Failed to read MST_CAP. "
+			   "Connect an MST sink.\r\n");
+		return XST_FAILURE;
+	}
+
+	XDPDC_MST_DBG("[MSTM] Policy: sink MST_CAP=%u\r\n",
+		      InstancePtr->RxConfig.MstCap);
+
+	if (InstancePtr->RxConfig.MstCap == 0U) {
+		xil_printf("[MSTM] ERROR: MST design requires an MST-capable sink. "
+			   "Connect an MST sink.\r\n");
+		return XST_FAILURE;
+	}
+
+	RunCfgPtr->MstMode = 1U;
+	XDPDC_MST_DBG("[MSTM] Policy: MST design + MST_CAP=1 -> MstMode=1 "
+		      "(MST link, byp_streams=%u)\r\n", RunCfgPtr->byp_streams);
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * Prepare one DP video stream: MSA bits per color, pixel mode, video mapping,
+ * and standard video mode timing in software state.
+ *
+ * Does not call ConfigureVideoController or EnableVideoStream (those are
+ * batched in RunStreamPolicySetup). Still disables the stream via
+ * XMmiDp_DisableVideoStream() (VSAMPLE_CTRL) before programming.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ * @param	StreamId is the DP stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @note	Caller must clear the video controller before the first stream.
+ *
+*******************************************************************************/
+void XDpDc_PrepareVideoStream(RunConfig *RunCfgPtr, u8 StreamId)
+{
+	XMmiDp *InstancePtr;
+	XDc_VideoFormat DpFormat;
+	u8 Bpc;
+	XMmiDp_VidMap VidMap;
+	XVidC_ColorFormat ColorFormat;
+	u8 StreamIdx;
+	u8 Ppc;
+
+	Xil_AssertVoid(RunCfgPtr != NULL);
+	Xil_AssertVoid((StreamId >= XMMIDP_STREAM_ID1) &&
+		       (StreamId <= XMMIDP_STREAM_ID4));
+
+	StreamIdx = StreamId - XMMIDP_STREAM_ID1;
+	InstancePtr = RunCfgPtr->DpPsuPtr;
+	Ppc = RunCfgPtr->PPC;
+
+	/* Per stream Bpc, Colorformat */
+	DpFormat = XDpDc_GetDpVideoFormat(RunCfgPtr, StreamId);
+	Bpc = XDpDc_VideoFormatToBpc(DpFormat);
+	VidMap = XDpDc_VideoFormatToVidMap(DpFormat);
+	ColorFormat = XDpDc_VideoFormatToColorFormat(DpFormat);
+
+	/* Per-stream PPC from XSA xparameters (not DC StreamConfig.pixel_mode) */
+	if (RunCfgPtr->operatingmode == XDCSUB_OPMODE_BYPASS)
+		Ppc = XDpDc_BypassPpcFromXsa(StreamIdx);
+
+	XMmiDp_DisableVideoStream(InstancePtr, StreamId);
+
+	XDPDC_MST_DBG("[MSTM] SetControllerMstModeEn: stream=%u MstModeEn=%u "
+		      "(TU/PBN path)\r\n", StreamId, RunCfgPtr->MstMode);
+
+	/* Setup VideoConfig Structures */
+	XMmiDp_SetControllerMstModeEn(InstancePtr, StreamId, RunCfgPtr->MstMode);
+
+	XMmiDp_SetMsaBpc(InstancePtr, StreamId, Bpc);
+
+	/*
+	 * The DC drives DP at 1 pixel/clock in every functional mode; PPC
+	 * there is the PL input width. Only bypass feeds the PL stream to DP.
+	 */
+	XMmiDp_SetPixModeSel(InstancePtr, StreamId,
+			     (RunCfgPtr->operatingmode == XDCSUB_OPMODE_BYPASS) ?
+			     XDpDc_PpcToPixModeSel(Ppc) :
+			     XMMIDP_SINGLE_PIX_MODE);
+	XMmiDp_SetVideoMapping(InstancePtr, StreamId, VidMap);
 
 	XMmiDp_SetVidControllerUseStdVidMode(InstancePtr,
 					     RunCfgPtr->VideoMode,
-					     XMMIDP_STREAM_ID1,
-					     XVIDC_CSF_RGB);
+					     StreamId,
+					     ColorFormat);
 
-	XDpDc_PrintVideoStreamConfig(InstancePtr, XMMIDP_STREAM_ID1);
-
-	XMmiDp_ConfigureVideoController(InstancePtr, XMMIDP_STREAM_ID1);
-
-	/* Enable video stream after all config registers are written */
-	XMmiDp_EnableVideoStream(InstancePtr, XMMIDP_STREAM_ID1);
-
-	XDpDc_PrintVideoConfigRegs(InstancePtr, XMMIDP_STREAM_ID1);
+	XDpDc_PrintVideoStreamConfig(InstancePtr, StreamId, RunCfgPtr->MstMode);
 }
 
 /******************************************************************************/
@@ -384,6 +965,14 @@ void XMmiDp_SetupAudioStream(RunConfig *RunCfgPtr)
 	XMmiDp_SetSdpHorAudStreamEn(InstancePtr, XMMIDP_STREAM_ID1, XMMIDP_SDP_STREAM_ENABLE);
 	XMmiDp_SetSdpHorAudTimeStampEn(InstancePtr, XMMIDP_STREAM_ID1, XMMIDP_SDP_STREAM_ENABLE);
 
+	/* Enable fixed-priority arbitration for both vertical and horizontal
+	 * SDP slots so audio + audio-timestamp packets get deterministic
+	 * delivery timing. */
+	XMmiDp_SetSdpVertFixedPriority(InstancePtr, XMMIDP_STREAM_ID1,
+				       XMMIDP_SDP_FIXED_PRIORITY_EN);
+	XMmiDp_SetSdpHorFixedPriority(InstancePtr, XMMIDP_STREAM_ID1,
+				      XMMIDP_SDP_FIXED_PRIORITY_EN);
+
 	XMmiDp_ConfigureAudioController(InstancePtr, XMMIDP_STREAM_ID1);
 }
 
@@ -400,28 +989,6 @@ static const char *XDpDc_LinkBwToStr(u8 LinkBW, u32 *RateMbps)
 		*RateMbps = 810; return "HBR3 (8.10 Gbps)";
 	default:
 		*RateMbps = 0; return "Unknown";
-	}
-}
-
-static void XDpDc_ApplyUserCaps(XMmiDp *InstancePtr,
-				 u8 UserMaxLanes, u8 UserMaxLinkBW)
-{
-	if (UserMaxLanes != 0 &&
-	    UserMaxLanes < InstancePtr->RxConfig.MaxNumLanes) {
-		xil_printf("  User cap: limiting lanes from %d to %d\r\n",
-			   InstancePtr->RxConfig.MaxNumLanes, UserMaxLanes);
-		InstancePtr->RxConfig.MaxNumLanes = UserMaxLanes;
-		InstancePtr->RxConfig.MaxLaneCount =
-			XMmiDp_GetLaneCount(InstancePtr, UserMaxLanes);
-	}
-
-	if (UserMaxLinkBW != 0 &&
-	    UserMaxLinkBW < InstancePtr->RxConfig.MaxLinkBW) {
-		xil_printf("  User cap: limiting link BW from 0x%02X to 0x%02X\r\n",
-			   InstancePtr->RxConfig.MaxLinkBW, UserMaxLinkBW);
-		InstancePtr->RxConfig.MaxLinkBW = UserMaxLinkBW;
-		InstancePtr->RxConfig.MaxLinkRate =
-			XMmiDp_GetLinkRate(InstancePtr, UserMaxLinkBW);
 	}
 }
 
@@ -491,111 +1058,423 @@ static void XDpDc_PrintLinkTrainingResult(XMmiDp *InstancePtr,
 		xil_printf("  --------------------------------------------------\r\n");
 }
 
-/******************************************************************************/
-/**
- * This function prepares for link training. It reads receiver capabilities,
- * applies user-configured lane/bandwidth caps, checks current link status,
- * configures link parameters, and runs the clock recovery and channel
- * equalization training sequence.
- *
- * @param       InstancePtr is a pointer to the XMmiDp instance.
 
- * @param       UserMaxLanes User-configured max lane count (0=auto,
- *              1, 2, or 4).
- * @param       UserMaxLinkBW User-configured max link BW in DPCD format
- *              (0=auto, 0x06=RBR, 0x0A=HBR, 0x14=HBR2, 0x1E=HBR3).
+/*****************************************************************************/
+/**
  *
- * @return
- *              - XST_SUCCESS if the training process succeeded.
- *              - XST_FAILURE otherwise.
+ * Link policy: capped full link training after sink is powered.
  *
- * @note        None.
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
  *
-*******************************************************************************/
-u32 XMmiDp_StartFullLinkTrainingCapped(XMmiDp *InstancePtr,
-				       u8 UserMaxLanes, u8 UserMaxLinkBW)
+ * @return	XST_SUCCESS on success, XST_FAILURE otherwise.
+ *
+ ******************************************************************************/
+u32 XDpDc_RunLinkPolicySetup(RunConfig *RunCfgPtr)
 {
+	XMmiDp *DpPtr = RunCfgPtr->DpPsuPtr;
 	u32 Status;
-	const char *RateStr;
-	u32 RateMbps;
 
 	xil_printf("\r\n==================================================\r\n");
 	xil_printf("  Link Training\r\n");
 	xil_printf("==================================================\r\n");
+	if (RunCfgPtr->MaxLaneCount != 0U) {
+		xil_printf("  User max lanes     : %u\r\n",
+			   RunCfgPtr->MaxLaneCount);
+	}
+	if (RunCfgPtr->MaxLinkRate != 0U) {
+		xil_printf("  User max link BW   : 0x%02X\r\n",
+			   RunCfgPtr->MaxLinkRate);
+	}
 
-	Status = XMmiDp_GetRxCapabilities(InstancePtr);
+	Status = XMmiDp_StartFullLinkTrainingCapped(DpPtr,
+						    RunCfgPtr->MaxLaneCount,
+						    RunCfgPtr->MaxLinkRate);
+	XDpDc_PrintSinkCapabilities(DpPtr);
+	XDpDc_PrintLinkTrainingResult(DpPtr, Status);
+
 	if (Status != XST_SUCCESS) {
-		xil_printf("  ERROR: Failed to read monitor capabilities\r\n");
+		xil_printf("[HPD] ERROR: Link training failed\r\n");
 		return XST_FAILURE;
 	}
 
-	XDpDc_ApplyUserCaps(InstancePtr, UserMaxLanes, UserMaxLinkBW);
+	return XST_SUCCESS;
+}
 
-	RateStr = XDpDc_LinkBwToStr(InstancePtr->RxConfig.MaxLinkBW, &RateMbps);
+/******************************************************************************/
+/**
+ * This function clears the sideband route of all streams, so
+ * payload allocation programs only the directly attached
+ * branch.
+ *
+ * @param	DpPtr is a pointer to the XMmiDp instance.
+ *
+ * @return	None.
+ *
+*******************************************************************************/
+static void XDpDc_ClearMstRoutes(XMmiDp *DpPtr)
+{
+	u8 StreamId;
 
-	XDpDc_PrintSinkCapabilities(InstancePtr);
+	for (StreamId = XMMIDP_STREAM_ID1; StreamId <= XMMIDP_STREAM_ID4;
+	     StreamId++)
+		DpPtr->MstStreamConfig[StreamId - 1].LinkCountTotal = 0U;
+}
 
-	InstancePtr->LinkConfig.LaneCount = InstancePtr->RxConfig.MaxLaneCount;
-	InstancePtr->LinkConfig.NumLanes = InstancePtr->RxConfig.MaxNumLanes;
-	InstancePtr->LinkConfig.LinkRate = InstancePtr->RxConfig.MaxLinkRate;
-	InstancePtr->LinkConfig.LinkBW = InstancePtr->RxConfig.MaxLinkBW;
+/*****************************************************************************/
+/**
+ *
+ * Discovers the MST topology, routes stream N to the N-th sink found, and
+ * clears the payload ID tables of all downstream branches.
+ *
+ * If sideband messaging fails or finds no sink, all streams stay unrouted
+ * and NumStreams is unchanged, so XMmiDp_AllocatePayloadStream() programs
+ * only the directly attached branch.
+ *
+ * A stream whose PBN exceeds the available PBN its path reports is not
+ * routed, and neither is any stream after it, since streams map to sinks by
+ * index.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ * @param	DpPtr is a pointer to the XMmiDp instance.
+ * @param	NumStreams is the requested stream count; lowered in place to
+ *		the number of streams actually routed.
+ *
+ * @return	None.
+ *
+ ******************************************************************************/
+static void XDpDc_SetupMstTopology(const RunConfig *RunCfgPtr, XMmiDp *DpPtr,
+				   u8 *NumStreams)
+{
+	XMmiDp_MstTopology *Topology = &DpPtr->MstTopology;
+	XMmiDp_MstSink *Sink;
+	u32 StreamPbn;
+	u16 AvailPbn;
+	u16 FullPbn;
+	u8 Routed;
+	u8 StreamId;
+	u8 Idx;
+	u32 Status;
 
-	xil_printf("  Training Parameters:\r\n");
-	xil_printf("    Lanes             : %d\r\n",
-		   InstancePtr->LinkConfig.NumLanes);
-	xil_printf("    Link BW           : 0x%02X  %s\r\n",
-		   InstancePtr->LinkConfig.LinkBW, RateStr);
-	xil_printf("    PHY Rate          : %d\r\n",
-		   InstancePtr->LinkConfig.LinkRate);
+	XDpDc_ClearMstRoutes(DpPtr);
 
-	memset(InstancePtr->LinkConfig.VsLevel, 0, 4);
-	memset(InstancePtr->LinkConfig.PeLevel, 0, 4);
-
-	XMmiDp_FastLinkTrainDisable(InstancePtr);
-	xil_printf("    Fast Link Train   : Disabled\r\n");
-
-	Status = XMmiDp_SetSinkDpcdLinkCfgField(InstancePtr);
+	Status = XMmiDp_MstDiscoverTopology(DpPtr);
 	if (Status != XST_SUCCESS) {
-		xil_printf("  ERROR: Failed to set sink DPCD link config: %d\r\n",
-			   Status);
-		return Status;
-	}
-	xil_printf("  Sink DPCD link config set\r\n");
-
-	if (InstancePtr->RxConfig.EnhancedFrameCap) {
-		XDpPSu14_EnableCctlEnhanceFraming(InstancePtr);
-		xil_printf("  Enhanced framing enabled on TX\r\n");
+		xil_printf("[MSTM] WARNING: Topology discovery failed; streams "
+			   "stay on the directly attached branch\r\n");
+		return;
 	}
 
-	Status = XMmiDp_StartLinkXmit(InstancePtr);
+	xil_printf("[MSTM] Topology: %u branch(es), %u sink(s)\r\n",
+		   Topology->BranchTotal, Topology->SinkTotal);
+	for (Idx = 0U; Idx < Topology->SinkTotal; Idx++) {
+		Sink = &Topology->Sinks[Idx];
+		xil_printf("[MSTM]   Sink %u: port %u, LCT %u, peer type %u, "
+			   "DPCD rev 0x%02X\r\n", Idx,
+			   Sink->RelativeAddress[Sink->LinkCountTotal - 2U],
+			   Sink->LinkCountTotal, Sink->PeerDeviceType,
+			   Sink->DpcdRev);
+	}
+
+	if (Topology->SinkTotal == 0U) {
+		xil_printf("[MSTM] WARNING: No DP monitor found behind the MST "
+			   "branch; streams stay on the directly attached "
+			   "branch\r\n");
+		return;
+	}
+
+	Routed = (*NumStreams > Topology->SinkTotal) ? Topology->SinkTotal :
+		 *NumStreams;
+	for (StreamId = XMMIDP_STREAM_ID1;
+	     StreamId < Routed + XMMIDP_STREAM_ID1; StreamId++) {
+		Idx = StreamId - XMMIDP_STREAM_ID1;
+		Sink = &Topology->Sinks[Idx];
+
+		/*
+		 * Query the path budget before routing the stream. Streams map
+		 * to sinks by index, so a stream that does not fit ends the
+		 * routing rather than being skipped, which would misalign every
+		 * stream after it.
+		 */
+		Status = XMmiDp_SendSbMsgEnumPathResources(DpPtr,
+				Sink->LinkCountTotal, Sink->RelativeAddress,
+				&AvailPbn, &FullPbn);
+		if (Status != XST_SUCCESS) {
+			/*
+			 * No number to admit against. Route the stream and let
+			 * the branch reject the allocation, as before.
+			 */
+			xil_printf("[MSTM] WARNING: ENUM_PATH_RESOURCES failed "
+				   "for stream %u; routing without a path "
+				   "budget check\r\n", StreamId);
+			(void)XMmiDp_MstSetStreamSink(DpPtr, StreamId, Idx);
+			continue;
+		}
+
+		StreamPbn = XDpDc_StreamPbn(RunCfgPtr, StreamId);
+		if (StreamPbn > AvailPbn) {
+			xil_printf("[MSTM] ERROR: Stream %u needs PBN %u but "
+				   "sink %u path has %u available (full %u); "
+				   "driving %u stream(s)\r\n", StreamId,
+				   StreamPbn, Idx, AvailPbn, FullPbn, Idx);
+			Routed = Idx;
+			break;
+		}
+
+		(void)XMmiDp_MstSetStreamSink(DpPtr, StreamId, Idx);
+		xil_printf("[MSTM]   Stream %u -> sink %u: full PBN %u, "
+			   "available PBN %u, stream PBN %u\r\n", StreamId, Idx,
+			   FullPbn, AvailPbn, StreamPbn);
+	}
+
+	if (Routed == 0U) {
+		xil_printf("[MSTM] WARNING: No stream fits its path; streams "
+			   "stay on the directly attached branch\r\n");
+		XDpDc_ClearMstRoutes(DpPtr);
+		return;
+	}
+
+	Status = XMmiDp_SendSbMsgClearPayloadIdTable(DpPtr);
 	if (Status != XST_SUCCESS) {
-		xil_printf("  ERROR: Failed to start link transmission: %d\r\n",
-			   Status);
-		return Status;
+		xil_printf("[MSTM] WARNING: CLEAR_PAYLOAD_ID_TABLE failed; "
+			   "streams stay on the directly attached branch\r\n");
+		XDpDc_ClearMstRoutes(DpPtr);
+		return;
 	}
-	sleep(1);
-	xil_printf("  Link transmission started -- running CR + EQ...\r\n");
 
-	Status = XMmiDp_RunTraining(InstancePtr);
+	if (*NumStreams > Routed) {
+		xil_printf("[MSTM] WARNING: %u streams requested but %u "
+			   "routed; driving %u\r\n", *NumStreams, Routed,
+			   Routed);
+		*NumStreams = Routed;
+
+		/*
+		 * The bypass AVPG and VTC generators were enabled for
+		 * byp_streams back in XDpDc_BypassConfigureLiveGenerator().
+		 * Stop the ones that no longer have a stream, otherwise they
+		 * keep driving the PL with no consumer.
+		 *
+		 * The generators only exist on a design that instantiates a
+		 * VTC, which is also the guard the rest of the bypass test
+		 * carries, so match it here.
+		 */
+#if defined(XPAR_XVTC_NUM_INSTANCES)
+		XDpDc_BypassDisableStreamsFrom(Routed);
+#endif
+	}
+}
+
+/*****************************************************************************/
+/**
+ *
+ * Stream policy: configure video and audio streams after link training.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ *
+ * @return	XST_SUCCESS if stream setup completed.
+ *
+ * @note	Requires a trained link (RunLinkPolicySetup must succeed first).
+ *
+ ******************************************************************************/
+u32 XDpDc_RunStreamPolicySetup(RunConfig *RunCfgPtr)
+{
+	XMmiDp *DpPtr = RunCfgPtr->DpPsuPtr;
+	u8 StreamId;
+	u8 NumStreams;
+	u32 Status;
+
+	Status = XDpDc_CheckMstSupport(RunCfgPtr);
 	if (Status != XST_SUCCESS) {
-		XDpDc_PrintLinkTrainingResult(InstancePtr, Status);
-		return Status;
+		xil_printf("[HPD] ERROR: Sink mode policy failed\r\n");
+		return XST_FAILURE;
 	}
 
-	XMmiDp_SetPhyTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
-	XMmiDp_SetDpcdTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
+	/*
+	 * Multi-stream setup is for MST bypass only. Functional mode and SST
+	 * always configure a single DP stream. Clamp to XMMIDP_STREAM_ID4.
+	 */
+	if (RunCfgPtr->MstMode &&
+	    RunCfgPtr->operatingmode == XDCSUB_OPMODE_BYPASS)
+		NumStreams = RunCfgPtr->byp_streams;
+	else
+		NumStreams = 1U;
 
-	XDpDc_PrintLinkTrainingResult(InstancePtr, XST_SUCCESS);
+	if (NumStreams < 1U)
+		NumStreams = 1U;
+	if (NumStreams > XMMIDP_STREAM_ID4)
+		NumStreams = XMMIDP_STREAM_ID4;
 
-	InstancePtr->LinkConfig.LinkTrained = 1;
+	XDPDC_MST_DBG("[MSTM] RunStreamPolicySetup: MstMode=%u (%s) NumStreams=%u\r\n",
+		      RunCfgPtr->MstMode,
+		      RunCfgPtr->MstMode ? "MST" : "SST", NumStreams);
+
+	if (RunCfgPtr->MstMode) {
+		XDPDC_MST_DBG("[MSTM] Enabling MST on sink (DPCD) and TX (CCTL0)...\r\n");
+		Status = XMmiDp_SinkMstModeEnable(DpPtr);
+		if (Status != XST_SUCCESS) {
+			xil_printf("[HPD] ERROR: Failed to enable MST mode\r\n");
+			return XST_FAILURE;
+		}
+
+		Status = XMmiDp_ClearPayloadVcIdTable(DpPtr);
+		if (Status != XST_SUCCESS) {
+			xil_printf("[HPD] ERROR: Failed to clear VC payload table\r\n");
+			return XST_FAILURE;
+		}
+		XDPDC_MST_DBG("[MSTM] VC payload table cleared\r\n");
+
+		XDpDc_SetupMstTopology(RunCfgPtr, DpPtr, &NumStreams);
+
+		/*
+		 * ClearPayloadVcIdTable does not reset MstStreamConfig[]. Drop
+		 * StartSlot on active streams so allocate/distribute cannot
+		 * reuse a prior connect's layout; fully zero unused stream
+		 * cache so a lowered byp_streams count cannot keep stale
+		 * TimeSlots/StartSlot/MstPbn.
+		 */
+		for (StreamId = XMMIDP_STREAM_ID1;
+		     StreamId < NumStreams + XMMIDP_STREAM_ID1; StreamId++)
+			DpPtr->MstStreamConfig[StreamId - 1].StartSlot = 0U;
+
+		for (StreamId = NumStreams + XMMIDP_STREAM_ID1;
+		     StreamId <= XMMIDP_STREAM_ID4; StreamId++) {
+			XMmiDp_MstStream *MstStream =
+				&DpPtr->MstStreamConfig[StreamId - 1];
+
+			MstStream->TimeSlots = 0U;
+			MstStream->StartSlot = 0U;
+			MstStream->MstPbn = 0U;
+			MstStream->LinkCountTotal = 0U;
+		}
+	} else {
+		XDPDC_MST_DBG("[MSTM] SST link: skipping sink/TX MST enable\r\n");
+	}
+
+	XMmiDp_ClearVideoController(DpPtr);
+
+	/*
+	 * Batch prepare → configure → enable using one NumStreams bound so
+	 * stream 1 is not transmitting while later streams are still being
+	 * programmed into the shared MTP. For SST (NumStreams == 1) this is
+	 * the same order as a single prepare/configure/enable sequence.
+	 */
+	for (StreamId = XMMIDP_STREAM_ID1;
+	     StreamId < NumStreams + XMMIDP_STREAM_ID1;
+	     StreamId++)
+		XDpDc_PrepareVideoStream(RunCfgPtr, StreamId);
+
+	for (StreamId = XMMIDP_STREAM_ID1;
+	     StreamId < NumStreams + XMMIDP_STREAM_ID1;
+	     StreamId++) {
+		XMmiDp_ConfigureVideoController(DpPtr, StreamId);
+
+		/* SST: VIDEO_CONFIG5 written in ConfigureVideoController */
+		if (!RunCfgPtr->MstMode)
+			XDpDc_PrintVideoConfigRegs(DpPtr, StreamId,
+						   RunCfgPtr->MstMode,
+						   "post-ConfigureVideoController");
+	}
+
+	if (RunCfgPtr->MstMode) {
+		/*
+		 * Throttle TimeSlots into the 63-slot MTP budget before
+		 * SetVideoConfig5 / AllocatePayloadStream so CONFIG5 and
+		 * VC payload use the redistributed counts. Fails if any
+		 * stream still has TimeSlots == 0 after ComputeTimeSlot.
+		 */
+		Status = XMmiDp_DistributeMstPayloadSlots(DpPtr, NumStreams);
+		if (Status != XST_SUCCESS) {
+			xil_printf("[HPD] ERROR: MST payload slot distribute "
+				   "failed\r\n");
+			return XST_FAILURE;
+		}
+
+		/*
+		 * Program all VIDEO_CONFIG5 first so TU fields settle before
+		 * the first ACT; interleaving CONFIG5 with allocate can
+		 * perturb later streams' TU / payload programming.
+		 */
+		for (StreamId = XMMIDP_STREAM_ID1;
+		     StreamId < NumStreams + XMMIDP_STREAM_ID1;
+		     StreamId++) {
+			XMmiDp_SetVideoConfig5(DpPtr, StreamId);
+			XDpDc_PrintVideoConfigRegs(DpPtr, StreamId,
+						   RunCfgPtr->MstMode,
+						   "post-SetVideoConfig5");
+		}
+
+		for (StreamId = XMMIDP_STREAM_ID1;
+		     StreamId < NumStreams + XMMIDP_STREAM_ID1;
+		     StreamId++) {
+			Status = XMmiDp_AllocatePayloadStream(DpPtr, StreamId);
+			if (Status != XST_SUCCESS) {
+				xil_printf("[HPD] ERROR: Failed to allocate "
+					   "VC payload (stream %u)\r\n",
+					   StreamId);
+				(void)XMmiDp_ClearPayloadVcIdTable(DpPtr);
+				return XST_FAILURE;
+			}
+			/* After allocate: StartSlot / ACT state are final. */
+			XDpDc_PrintMstStreamAlloc(DpPtr, StreamId);
+			XDPDC_MST_DBG("[MSTM] Stream %u: VC payload allocated, "
+				     "ACT complete\r\n", StreamId);
+		}
+		XDpDc_PrintMstGlobalRegs(DpPtr);
+	}
+
+	for (StreamId = XMMIDP_STREAM_ID1;
+	     StreamId < NumStreams + XMMIDP_STREAM_ID1;
+	     StreamId++)
+		XMmiDp_EnableVideoStream(DpPtr, StreamId);
+
+	if (RunCfgPtr->AudioEnable)
+		XMmiDp_SetupAudioStream(RunCfgPtr);
+	else if (RunCfgPtr->SdpEnable == 0U)
+		XDpDc_DisableDpAudioSdpStreams(DpPtr);
 
 	return XST_SUCCESS;
 }
 
 /*****************************************************************************/
 /**
-*
-* This function initializes the DP core by performing a PHY soft reset,
+ * Run the hot-plug connect sequence: sink power cycle, link policy, then
+ * stream policy.
+ *
+ * @param	RunCfgPtr is a pointer to the application configuration structure.
+ *
+ * @return
+ *		- XST_SUCCESS if link and stream policy completed.
+ *		- XST_FAILURE if link or stream policy setup failed.
+ *
+ ******************************************************************************/
+u32 XDpDc_RunConnectSequence(RunConfig *RunCfgPtr)
+{
+	u32 Status;
+
+	XMmiDp_SinkPowerCycle(RunCfgPtr->DpPsuPtr);
+
+	Status = XDpDc_RunLinkPolicySetup(RunCfgPtr);
+	if (Status != XST_SUCCESS)
+		return XST_FAILURE;
+
+	/* DP video stream registers latch only after the DC leaves reset */
+	Status = XDpDc_ReleaseDcReset();
+	if (Status != XST_SUCCESS) {
+		xil_printf("[HPD] ERROR: Failed to release DC block reset\r\n");
+		return XST_FAILURE;
+	}
+
+	Status = XDpDc_RunStreamPolicySetup(RunCfgPtr);
+	if (Status != XST_SUCCESS)
+		return XST_FAILURE;
+
+	xil_printf("[HPD] Connect sequence complete\r\n");
+	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+ *
+ * This function initializes the DP core by performing a PHY soft reset,
 * powering on the PHY, configuring AUX timer limits, PM configuration,
 * disabling SSC, and enabling general/HPD interrupts.
 *
@@ -633,8 +1512,8 @@ u32 XMmiDp_InitDpCore(XMmiDp *InstancePtr)
 /**
 *
 * This function initializes the DisplayPort subsystem. It configures the
-* DP core, polls for HPD, power cycles the sink, runs link training, and
-* sets up the video and audio streams.
+* DP core and prepares for asynchronous HPD-driven link training and
+* video setup.
 *
 * @param        RunCfgPtr is a pointer to the application configuration structure.
 *

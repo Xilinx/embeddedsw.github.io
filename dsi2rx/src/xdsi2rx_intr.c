@@ -53,8 +53,6 @@
 * @param	InstancePtr is the XDsi2Rx instance to operate on
 * @param	Mask is the interrupt mask which need to be enabled in core
 *
-* @return	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -63,8 +61,7 @@ void XDsi2Rx_InterruptEnable(XDsi2Rx *InstancePtr, u32 Mask)
 	/* Verify argument */
 	Xil_AssertVoid(InstancePtr != NULL);
 	/* Checking for invalid mask bits being set */
-	/* Not sure which mask to use here. Using random mask */
-	Xil_AssertVoid((Mask & (~(XDSI2RX_IER_CRC_ERR_MASK))) == 0);
+	Xil_AssertVoid((Mask & (~(XDSI2RX_IER_ALLINTR_MASK))) == 0);
 
 	Mask |= XDsi2Rx_GetIntrEnableStatus(InstancePtr);
 
@@ -79,8 +76,6 @@ void XDsi2Rx_InterruptEnable(XDsi2Rx *InstancePtr, u32 Mask)
 * @param	InstancePtr is the XDsi instance to operate on
 * @param	Mask is the interrupt mask which need to be enabled in core
 *
-* @return	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -89,7 +84,7 @@ void XDsi2Rx_InterruptDisable(XDsi2Rx *InstancePtr, u32 Mask)
 	/* Verify argument */
 	Xil_AssertVoid(InstancePtr != NULL);
 	/* Checking for invalid mask bits being set */
-	Xil_AssertVoid((Mask & (~(XDSI2RX_IER_CRC_ERR_MASK))) == 0);
+	Xil_AssertVoid((Mask & (~(XDSI2RX_IER_ALLINTR_MASK))) == 0);
 
 	XDsi2Rx_IntrDisable(InstancePtr,
 		(Mask & (XDsi2Rx_GetIntrEnableStatus(InstancePtr))));
@@ -153,8 +148,6 @@ u32 XDsi2Rx_InterruptGetStatus(XDsi2Rx *InstancePtr)
 * @param	Mask is Interrupt Mask with bits set for corresponding interrupt
 * 		to be cleared in the Interrupt Status register
 *
-* @return 	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -198,6 +191,8 @@ void XDsi2Rx_InterruptClear(XDsi2Rx *InstancePtr, u32 Mask)
 * XDSI2RX_HANDLER_GSP_FIFO_NE		generic short packet fifo not empty
 * XDSI2RX_HANDLER_GSP_FIFO_FULL		generic short packet fifo full
 * XDSI2RX_HANDLER_FRAME_STARTED		frame started
+* XDSI2RX_HANDLER_INCORRECT_LANE_CONFIG	incorrect lane configuration
+* XDSI2RX_HANDLER_WC_CORRUPTION		word count corruption
 *
 * </pre>
 *
@@ -315,6 +310,16 @@ s32 XDsi2Rx_SetCallback(XDsi2Rx *InstancePtr, u32 HandleType,
 		InstancePtr->FrmStartDetRef = CallbackRef;
 		break;
 
+	case XDSI2RX_HANDLER_INCORRECT_LANE_CONFIG:
+		InstancePtr->IncorrectLaneConfigCallback = CallbackFunc;
+		InstancePtr->IncorrectLaneConfigRef = CallbackRef;
+		break;
+
+	case XDSI2RX_HANDLER_WC_CORRUPTION:
+		InstancePtr->WCCorruptionCallback = CallbackFunc;
+		InstancePtr->WCCorruptionRef = CallbackRef;
+		break;
+
 	default:
 		/* Invalid value of HandleType */
 		return XST_INVALID_PARAM;
@@ -340,8 +345,6 @@ s32 XDsi2Rx_SetCallback(XDsi2Rx *InstancePtr, u32 HandleType,
 *
 * @param	InstancePtr is a pointer to the XDsi2Rx core instance.
 *
-* @return	None.
-*
 * @note		Interrupt should be enabled to execute interrupt handler.
 *
 ******************************************************************************/
@@ -366,14 +369,14 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->UnsupportDataTypeRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_CRC_ERR_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_CRC_ERR_MASK;
 	if (Mask) {
 		/* If CRC Error then call corresponding callback function */
 		XDsi2RxPtr->CRCCallback
 			(XDsi2RxPtr->CRCRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_ECC1_BIT_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_ECC1_BIT_MASK;
 	if (Mask) {
 		/* If ECC1 Intrupts then call corresponding
 		 * callback function */
@@ -381,7 +384,7 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->ECC1Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_ECC2_BIT_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_ECC2_BIT_MASK;
 	if (Mask) {
 		/* If ECC2 Interrupts then call corresponding
 		 * callback function */
@@ -389,14 +392,14 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->ECC2Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE1_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE1_MASK;
 	if (Mask) {
 		/* If SOT sync ERR Lane1 then call corresponding callback function */
 		XDsi2RxPtr->SOTSyncErrLane1Callback
 			(XDsi2RxPtr->SOTSyncErrLane1Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE1_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE1_MASK;
 	if (Mask) {
 		/* If SOT ERR Lane1 Intrupts then call corresponding
 		 * callback function */
@@ -404,7 +407,7 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->SOTErrLane1Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE2_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE2_MASK;
 	if (Mask) {
 		/* If SOT sync ERR Lane2 Interrupts then call corresponding
 		 * callback function */
@@ -412,14 +415,14 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->SOTSyncErrLane2Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE2_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE2_MASK;
 	if (Mask) {
 		/* If  SOT ERR Lane2 then call corresponding callback function */
 		XDsi2RxPtr->SOTErrLane2Callback
 			(XDsi2RxPtr->SOTErrLane2Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE3_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE3_MASK;
 	if (Mask) {
 		/* If SOT sync ERR Lane3 Intrupts then call corresponding
 		 * callback function */
@@ -427,7 +430,7 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->SOTSyncErrLane3Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE3_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE3_MASK;
 	if (Mask) {
 		/* If SOT ERR Lane3 Interrupts then call corresponding
 		 * callback function */
@@ -435,14 +438,14 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->SOTErrLane3Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE4_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_SYNC_ERR_LANE4_MASK;
 	if (Mask) {
 		/* If SOT sync ERR Lane4 then call corresponding callback function */
 		XDsi2RxPtr->SOTSyncErrLane4Callback
 			(XDsi2RxPtr->SOTSyncErrLane4Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE4_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_SOT_ERR_LANE4_MASK;
 	if (Mask) {
 		/* If SOT ERR lane4 Intrupts then call corresponding
 		 * callback function */
@@ -450,7 +453,7 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->SOTErrLane4Ref, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_STOP_STATE_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_STOP_STATE_MASK;
 	if (Mask) {
 		/* If stop state then call corresponding
 		 * callback function */
@@ -458,14 +461,14 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->StopStateRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_LM_ASYNC_FIFO_FULL_ERR_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_LM_ASYNC_FIFO_FULL_ERR_MASK;
 	if (Mask) {
 		/* If LM async fifo full then call corresponding callback function */
 		XDsi2RxPtr->LmAsyncFifoFullCallback
 			(XDsi2RxPtr->LmAsyncFifoFullRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_STREAM_ASYNC_FIFO_FULL_ERR_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_STREAM_ASYNC_FIFO_FULL_ERR_MASK;
 	if (Mask) {
 		/* If Stream Aync fifo full error then call corresponding
 		 * callback function */
@@ -473,7 +476,7 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->StreamAsyncFifoFullRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_GSP_FIFO_NE_ERR_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_GSP_FIFO_NE_ERR_MASK;
 	if (Mask) {
 		/* If GSP FIFO not empty then call corresponding
 		 * callback function */
@@ -481,14 +484,30 @@ void XDsi2Rx_IntrHandler(void *InstancePtr)
 			(XDsi2RxPtr->GSPFFifoNERef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_GSP_FIFO_FULL_ERR_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_GSP_FIFO_FULL_ERR_MASK;
 	if (Mask) {
 		/* If Generic Short packet fifo full then call corresponding callback function */
 		XDsi2RxPtr->GSPFifoFullCallback
 			(XDsi2RxPtr->GSPFifoFullRef, Mask);
 	}
 
-	Mask = ActiveIntr & XDSI2RX_IER_FRAME_START_SHIFT;
+	Mask = ActiveIntr & XDSI2RX_IER_INCORRECT_LANE_CONFIG_MASK;
+	if (Mask) {
+		/* If incorrect lane configuration then call corresponding
+		 * callback function */
+		XDsi2RxPtr->IncorrectLaneConfigCallback
+			(XDsi2RxPtr->IncorrectLaneConfigRef, Mask);
+	}
+
+	Mask = ActiveIntr & XDSI2RX_IER_WC_CORRUPTION_MASK;
+	if (Mask) {
+		/* If word count corruption then call corresponding
+		 * callback function */
+		XDsi2RxPtr->WCCorruptionCallback
+			(XDsi2RxPtr->WCCorruptionRef, Mask);
+	}
+
+	Mask = ActiveIntr & XDSI2RX_IER_FRAME_START_MASK;
 	if (Mask) {
 		/* If Frame start Intrupts then call corresponding
 		 * callback function */

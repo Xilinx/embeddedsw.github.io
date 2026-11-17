@@ -21,20 +21,20 @@
 ##  - Added support for generation of multiple applications.
 ##    All TCL procedures are now required to have a software
 ##    project type as its first argument
-##    
+##
 ## @END_CHANGELOG
 
 ## @BEGIN_CHANGELOG EDK_M
 ##
 ##  - Migrated to HAL phase 1 using new xil_testmem API.
 ##  - Added ECC support
-##    
+##
 ## @END_CHANGELOG
 
 ## @BEGIN_CHANGELOG EDK_P
 ##
 ##  - Updated the logic which checks whether interrupt is connected
-##    
+##
 ## @END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -49,7 +49,7 @@
 # Global variables
 # Each global string defined here is a C test function definition.
 # Each function defined here must have a unique function prototype.
-# Ie. ALL functions defined in this file must be capable of 
+# Ie. ALL functions defined in this file must be capable of
 #     co-existing in the same C file!
 
 # -----------------------------------------------------------------
@@ -168,7 +168,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       int status;
-      
+
       print(\"\\r\\nRunning Bram Example() for ${ipname}...\\r\\n\");
 
       status = BramExample(${deviceid});
@@ -192,7 +192,7 @@ proc gen_testfunc_call {swproj mhsinst} {
                                ${intr_id});
 
       if (Status == 0 ) {
-         print(\"Bram Interrupt Test PASSED. \\r\\n\"); 
+         print(\"Bram Interrupt Test PASSED. \\r\\n\");
       }
       else {
          print(\"Bram Interrupt Test FAILED.\\r\\n\");
@@ -215,8 +215,8 @@ proc gen_testfunc_call {swproj mhsinst} {
     foreach progmem $prog_memranges {
       set baseaddrval [xget_value $mhsinst "PARAMETER" ${progmem}]
       append testfunc_call "
-   /* 
-    * MemoryTest routine will not be run for the memory at 
+   /*
+    * MemoryTest routine will not be run for the memory at
     * ${baseaddrval} (${ipname})
     * because it is being used to hold a part of this application program
     */
@@ -229,8 +229,8 @@ proc gen_testfunc_call {swproj mhsinst} {
     foreach romem $romemranges {
       set baseaddrval [xget_value $mhsinst "PARAMETER" ${romem}]
       append testfunc_call "
-   /* 
-    * MemoryTest routine will not be run for the memory at 
+   /*
+    * MemoryTest routine will not be run for the memory at
     * ${baseaddrval} (${ipname})
     * because it is a read-only memory
     */

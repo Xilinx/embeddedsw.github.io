@@ -42,14 +42,10 @@
 #include "xdptxss_dp14_tx.h"
 #include "xvidframe_crc.h"
 #include "xil_cache.h"
-#ifdef SDT
 #include "xinterrupt_wrap.h"
-#endif
 XTmrCtr TmrCtr; /* Timer instance.*/
 
-#ifdef SDT
 #define INTRNAME_DPTX   0
-#endif
 
 #ifndef versal
 XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
@@ -61,7 +57,7 @@ void* VPhyInst;
 extern volatile u8 hpd_pulse_con_event;
 volatile u8 prev_line_rate; /*This previous line rate to keep previous info to compare
 						with new line rate request*/
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 XScuGic IntcInst;
 #else
 XIntc IntcInst;
@@ -74,7 +70,7 @@ extern XTmrCtr TmrCtr; /* Timer instance.*/
 XDp_TxVscExtPacket VscPkt;	/* VSC Packet to populate the vsc data to be sent by
 								tx */
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 XIic  IicPtr;
 typedef u8 AddressType;
 u8 si570_reg_value[NUM_MODES][NUM_CLOCK_REGS] = {
@@ -101,12 +97,12 @@ XGpio Gpio; /* The Instance of the GPIO Driver */
 #endif
 #define PS_IIC_CLK 100000
 /************************** Function Prototypes ******************************/
-#ifndef SDT
-u32 DpTxSs_Main(u16 DeviceId);
-#else
 u32 DpTxSs_Main(UINTPTR BaseAddress);
-#endif
 u32 DpTxSs_PlatformInit(void);
+
+#if ENABLE_AUDIO
+int write_si570(u8 *UpdateBuffer);
+#endif
 
 /* Interrupt helper functions */
 void DpPt_HpdEventHandler(void *InstancePtr);
@@ -117,11 +113,7 @@ void DpPt_ExtPkt_Handler(void *InstancePtr);
 void DpPt_Vblank_Handler(void *InstancePtr);
 
 u32 DpTxSs_SetupIntrSystem(void);
-#ifndef SDT
-u32 DpTxSs_PhyInit(u16 DeviceId);
-#else
 u32 DpTxSs_PhyInit(UINTPTR BaseAddress);
-#endif
 void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds);
 u32 DpTxSubsystem_Start(XDpTxSs *InstancePtr, int with_msa);
 void DpTxSs_Setup(u8 *LineRate_init, u8 *LaneCount_init,
@@ -207,34 +199,16 @@ void enable_caches()
     Xil_ICacheEnableRegion(CACHEABLE_REGION_MASK);
     Xil_DCacheEnableRegion(CACHEABLE_REGION_MASK);
 #elif __MICROBLAZE__
-#ifndef SDT
-#ifdef XPAR_MICROBLAZE_USE_ICACHE
-    Xil_ICacheEnable();
-#endif
-#ifdef XPAR_MICROBLAZE_USE_DCACHE
-    Xil_DCacheEnable();
-#endif
-#else
 	Xil_ICacheEnable();
 	Xil_DCacheEnable();
-#endif
 #endif
 }
 
 void disable_caches()
 {
 #ifdef __MICROBLAZE__
-#ifndef SDT
-#ifdef XPAR_MICROBLAZE_USE_DCACHE
-    Xil_DCacheDisable();
-#endif
-#ifdef XPAR_MICROBLAZE_USE_ICACHE
-    Xil_ICacheDisable();
-#endif
-#else
 	Xil_DCacheDisable();
 	Xil_ICacheDisable();
-#endif
 #endif
 }
 /************************** Function Definitions *****************************/
@@ -267,11 +241,7 @@ int main()
 	xil_printf("DisplayPort TX Subsystem Example Design\r\n");
 	xil_printf("(c) 2021 by Xilinx\r\n");
 	xil_printf("-------------------------------------------\r\n\r\n");
-#ifndef SDT
-	Status = DpTxSs_Main(XDPTXSS_DEVICE_ID);
-#else
 	Status = DpTxSs_Main(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("DisplayPort TX Subsystem interrupt example failed.");
 		return XST_FAILURE;
@@ -285,7 +255,7 @@ int main()
 	return XST_SUCCESS;
 }
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 int I2cMux_Ps(u8 Data)
 {
         u8 Buffer;
@@ -368,11 +338,7 @@ int i2c_write_dp141(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterAddress,
 *		events.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpTxSs_Main(u16 DeviceId)
-#else
 u32 DpTxSs_Main(UINTPTR BaseAddress)
-#endif
 {
 	u32 Status;
 	XDpTxSs_Config *ConfigPtr;
@@ -382,15 +348,14 @@ u32 DpTxSs_Main(UINTPTR BaseAddress)
 	u8 LaneCount_init_tx = XDP_TX_LANE_COUNT_SET_4;
 	u8 Edid_org[128], Edid1_org[128];
 	u8 connected = 0;
-	char UserInput;
+#if PHY_COMP
 	char CommandKey_m;
 	char CmdKey_m[2];
 	unsigned int Command_m;
-//	u8 UserInput;
+#endif
+#if (VERSAL_FABRIC_8B10B == 1)
 	u32 ReadVal=0;
-	u16 DrpVal;
-	u32 dptx_sts = 0;
-	u32 retval = 0;
+#endif
 
 	user_config_struct user_config;
 	user_config.user_bpc = 8;
@@ -424,7 +389,7 @@ u32 DpTxSs_Main(UINTPTR BaseAddress)
 	xil_printf ("Compliance mode not supported for Versal\r\n");
 	set_phy = 0;
 #endif
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	xil_printf ("Compliance mode not supported for VCU118\r\n");
 	set_phy = 0;
 #endif
@@ -445,7 +410,7 @@ u32 DpTxSs_Main(UINTPTR BaseAddress)
 	// I2C MUX device address : 0x74
 	// Si570 device address : 0x5D
 	//setting Si570 on zcu102 to be 24.576MHz for audio
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #ifdef versal
 	I2cMux_Ps(0x40);
 #endif
@@ -478,11 +443,7 @@ u32 DpTxSs_Main(UINTPTR BaseAddress)
 	 * system specific. It is up to the user to implement this function.
 	 */
 	/* Obtain the device configuration for the DisplayPort TX Subsystem */
-#ifndef SDT
-	ConfigPtr = XDpTxSs_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XDpTxSs_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -527,14 +488,10 @@ u32 DpTxSs_Main(UINTPTR BaseAddress)
 #endif
 
 	/* Setup Video Phy, left to the user for implementation */
-#ifndef SDT
-	DpTxSs_PhyInit(XVPHY_DEVICE_ID);
-#else
 #ifndef versal
 	DpTxSs_PhyInit(XPAR_XVPHY_0_BASEADDR);
 #else
 	DpTxSs_PhyInit(0);
-#endif
 #endif
 	DpTxSs_Setup(&LineRate_init, &LaneCount_init, Edid_org, Edid1_org);
 
@@ -599,17 +556,6 @@ u32 DpTxSs_PlatformInit(void)
 
 	u32 Status;
 
-#ifndef SDT
-	// Initialize timer.
-	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_TMRCTR_0_DEVICE_ID);
-	if (Status != XST_SUCCESS){
-		xil_printf("ERR:Timer failed to initialize. \r\n");
-		return XST_FAILURE;
-	}
-	// Set up timer options.
-	XTmrCtr_SetResetValue(&TmrCtr, XTC_TIMER_0, TIMER_RESET_VALUE);
-	XTmrCtr_Start(&TmrCtr, XTC_TIMER_0);
-#else
 	// Initialize timer.
 	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_XTMRCTR_0_BASEADDR);
 	if (Status != XST_SUCCESS){
@@ -619,17 +565,12 @@ u32 DpTxSs_PlatformInit(void)
 	// Set up timer options.
 	XTmrCtr_SetResetValue(&TmrCtr, XTC_TIMER_0, TIMER_RESET_VALUE);
 	XTmrCtr_Start(&TmrCtr, XTC_TIMER_0);
-#endif
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #ifdef versal
      /*
       * Get the CLK_WIZ Dynamic reconfiguration driver instance
       */
-#ifndef SDT
-     CfgPtr_Dynamic = XClk_Wiz_LookupConfig(XPAR_CLK_WIZ_0_DEVICE_ID);
-#else
      CfgPtr_Dynamic = XClk_Wiz_LookupConfig(XPAR_XCLK_WIZ_0_BASEADDR);
-#endif
      if (!CfgPtr_Dynamic) {
              return XST_FAILURE;
      }
@@ -643,11 +584,7 @@ u32 DpTxSs_PlatformInit(void)
              return XST_FAILURE;
      }
 	/* Initialize the GPIO driver */
-#ifndef SDT
-	Status = XGpio_Initialize(&Gpio, XPAR_GPIO_1_DEVICE_ID);
-#else
 	Status = XGpio_Initialize(&Gpio, XPAR_XGPIO_1_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Gpio Initialization Failed\r\n");
 		return XST_FAILURE;
@@ -655,11 +592,7 @@ u32 DpTxSs_PlatformInit(void)
 	/* Set the direction for gpio channel 1 bit 0 as input */
 	XGpio_SetDataDirection(&Gpio, 1, 0x01);
 #endif
-#ifndef SDT
-	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_DEVICE_ID);
-#else
 	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_BASEADDR);
-#endif
 	if (NULL == XIic0Ps_ConfigPtr) {
 	            return XST_FAILURE;
 	    }
@@ -683,17 +616,10 @@ u32 DpTxSs_PlatformInit(void)
     /*
      * Initialize the IIC driver so that it is ready to use.
      */
-#ifndef SDT
-	ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-	if (ConfigPtr_IIC == NULL) {
-            return XST_FAILURE;
-	}
-#else
 	ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
 	if (ConfigPtr_IIC == NULL) {
             return XST_FAILURE;
 	}
-#endif
     Status = XIic_CfgInitialize(&IicInstance, ConfigPtr_IIC,
 											ConfigPtr_IIC->BaseAddress);
     if (Status != XST_SUCCESS) {
@@ -728,123 +654,6 @@ u32 DpTxSs_PlatformInit(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpTxSs_SetupIntrSystem(void)
-{
-	u32 Status;
-#ifndef PLATFORM_MB
-	XINTC *IntcInstPtr = &IntcInst;
-#else
-	XIntc *IntcInstPtr = &IntcInst;
-#endif
-
-	/* Set custom timer wait */
-	XDpTxSs_SetUserTimerHandler(&DpTxSsInst, &DpPt_CustomWaitUs, &TmrCtr);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_HPD_EVENT),
-						(void *)DpPt_HpdEventHandler, &DpTxSsInst);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_HPD_PULSE),
-			(void *)DpPt_HpdPulseHandler, &DpTxSsInst);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_LINK_RATE_CHG),
-			(void *)DpPt_LinkrateChgHandler, &DpTxSsInst);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_PE_VS_ADJUST),
-			(void *)DpPt_pe_vs_adjustHandler, &DpTxSsInst);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_EXT_PKT_EVENT),
-			(void *)DpPt_ExtPkt_Handler, &DpTxSsInst);
-	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_VSYNC),
-			(void *)DpPt_Vblank_Handler, &DpTxSsInst);
-
-
-	/* Set custom timer wait */
-//	XDpRxSs_SetUserTimerHandler(&DpRxSsInst, &CustomWaitUs, &TmrCtr);
-
-#ifndef PLATFORM_MB
-	/* The configuration parameters of the interrupt controller */
-	XScuGic_Config *IntcConfig;
-
-	/* Initialize the interrupt controller driver so that it is ready to
-	 * use.
-	 */
-	IntcConfig = XScuGic_LookupConfig(XINTC_DEVICE_ID);
-	if (NULL == IntcConfig) {
-		return XST_FAILURE;
-	}
-
-	Status = XScuGic_CfgInitialize(IntcInstPtr, IntcConfig,
-				IntcConfig->CpuBaseAddress);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-	/* Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-	Status = XScuGic_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-			(Xil_InterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-	if (set_phy == 0) {
-		/* Enable the interrupt */
-		XScuGic_Enable(IntcInstPtr,
-				XINTC_DPTXSS_DP_INTERRUPT_ID);
-	} else {
-		XScuGic_Disable(IntcInstPtr,
-				XINTC_DPTXSS_DP_INTERRUPT_ID);
-
-	}
-#else
-
-	/* Initialize the interrupt controller driver so that it is ready to
-	 * use.
-	 */
-
-	Status = XIntc_Initialize(IntcInstPtr, XINTC_DEVICE_ID);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-	/* Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-			(XInterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-
-	/* Enable the interrupt */
-	XIntc_Enable(IntcInstPtr,
-			XINTC_DPTXSS_DP_INTERRUPT_ID);
-
-    Status = XIntc_Start(IntcInstPtr, XIN_REAL_MODE);
-    if (Status != XST_SUCCESS) {
-            return XST_FAILURE;
-    }
-#endif
-
-	/* Initialize the exception table. */
-	Xil_ExceptionInit();
-
-	/* Register the interrupt controller handler with the exception
-	 * table.
-	 */
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XINTC_HANDLER, IntcInstPtr);
-
-	/* Enable exceptions. */
-	Xil_ExceptionEnable();
-
-	return (XST_SUCCESS);
-}
-#else
 u32 DpTxSs_SetupIntrSystem(void)
 {
 	u32 Status;
@@ -875,7 +684,6 @@ u32 DpTxSs_SetupIntrSystem(void)
 
 	return XST_SUCCESS;
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -890,21 +698,13 @@ u32 DpTxSs_SetupIntrSystem(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpTxSs_PhyInit(u16 DeviceId)
-#else
 u32 DpTxSs_PhyInit(UINTPTR BaseAddress)
-#endif
 {
 #ifndef versal
 	XVphy_Config *ConfigPtr;
 
 	/* Obtain the device configuration for the DisplayPort RX Subsystem */
-#ifndef SDT
-	ConfigPtr = XVphy_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XVphy_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -912,8 +712,8 @@ u32 DpTxSs_PhyInit(UINTPTR BaseAddress)
     PLLRefClkSel (&VPhyInst, PHY_User_Config_Table[5].LineRate);
 
 	XVphy_DpInitialize(&VPhyInst, ConfigPtr, 0,
-            PHY_User_Config_Table[5].CPLLRefClkSrc,
-            PHY_User_Config_Table[5].QPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[5].CPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[5].QPLLRefClkSrc,
             PHY_User_Config_Table[5].TxPLL,
             PHY_User_Config_Table[5].RxPLL,
             PHY_User_Config_Table[5].LineRate);
@@ -994,9 +794,9 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 	switch (link_rate) {
 	case XDP_TX_LINK_BW_SET_162GBPS:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-										ONBOARD_REF_CLK, 270000000);
+										(XVphy_PllRefClkSelType)ONBOARD_REF_CLK, 270000000);
 			XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-											DP159_FORWARDED_CLK, 81000000);
+											(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK, 81000000);
 			XVphy_CfgLineRate(InstancePtr, 0,
 						XVPHY_CHANNEL_ID_CHA, XVPHY_DP_LINK_RATE_HZ_162GBPS);
 			XVphy_CfgLineRate(InstancePtr, 0,
@@ -1004,9 +804,9 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 			break;
 	case XDP_TX_LINK_BW_SET_540GBPS:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-										ONBOARD_REF_CLK, 270000000);
+										(XVphy_PllRefClkSelType)ONBOARD_REF_CLK, 270000000);
 			XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-											DP159_FORWARDED_CLK, 270000000);
+											(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK, 270000000);
 			XVphy_CfgLineRate(InstancePtr, 0,
 						XVPHY_CHANNEL_ID_CHA, XVPHY_DP_LINK_RATE_HZ_540GBPS);
 			XVphy_CfgLineRate(InstancePtr, 0,
@@ -1014,9 +814,9 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 			break;
 	case XDP_TX_LINK_BW_SET_810GBPS:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-										ONBOARD_REF_CLK, 270000000);
+										(XVphy_PllRefClkSelType)ONBOARD_REF_CLK, 270000000);
 			XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-											DP159_FORWARDED_CLK, 270000000);
+											(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK, 270000000);
 			XVphy_CfgLineRate(InstancePtr, 0,
 						XVPHY_CHANNEL_ID_CHA, XVPHY_DP_LINK_RATE_HZ_810GBPS);
 			XVphy_CfgLineRate(InstancePtr, 0,
@@ -1024,9 +824,9 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 			break;
 	default:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-										ONBOARD_REF_CLK, 270000000);
+										(XVphy_PllRefClkSelType)ONBOARD_REF_CLK, 270000000);
 			XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-											DP159_FORWARDED_CLK, 135000000);
+											(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK, 135000000);
 			XVphy_CfgLineRate(InstancePtr, 0,
 						XVPHY_CHANNEL_ID_CHA, XVPHY_DP_LINK_RATE_HZ_270GBPS);
 			XVphy_CfgLineRate(InstancePtr, 0,
@@ -1131,9 +931,8 @@ void DpPt_LinkrateChgHandler(void *InstancePtr)
 	// eg. reconfigure GT to new rate etc
 
 	u8 rate;
-	u8 lanes;
 	rate = get_LineRate();
-    lanes = XPAR_TX_SUBSYSTEM_V_DP_TXSS1_0_LANE_COUNT;//get_Lanecounts();
+	(void)InstancePtr;
 
 	// If the requested rate is same, do not re-program.
 	if (rate != prev_line_rate) {
@@ -1143,9 +942,9 @@ void DpPt_LinkrateChgHandler(void *InstancePtr)
 	prev_line_rate = rate;
 }
 
-void DpPt_pe_vs_adjustHandler(void *InstancePtr){
-	u32 vswing;
-	u32 postcursor, value;
+void DpPt_pe_vs_adjustHandler(void *InstancePtr)
+{
+	(void)InstancePtr;
 
 	if(PE_VS_ADJUST == 1){
 		u16 preemp = 0;
@@ -1254,30 +1053,30 @@ void DpPt_pe_vs_adjustHandler(void *InstancePtr){
 	}
 }
 
-void DpPt_ExtPkt_Handler(void *InstancePtr) {
-/* Empty
- *
- */
+void DpPt_ExtPkt_Handler(void *InstancePtr)
+{
+	(void)InstancePtr;
+	/*
+	 * Empty
+	 */
 }
 
-void DpPt_Vblank_Handler(void *InstancePtr) {
-/*Empty
- *
- */
+void DpPt_Vblank_Handler(void *InstancePtr)
+{
+	(void)InstancePtr;
+	/*
+	 * Empty
+	 */
 }
 
 void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds)
 {
-
 	u32 TimerVal = 0, TimerVal_pre;
 	u32 NumTicks = (MicroSeconds * (
-#ifndef SDT
-	XPAR_PROCESSOR_SYSTEM_AXI_TIMER_0_CLOCK_FREQ_HZ / 1000000));
-#else
 	XPAR_PROCESSOR_SYSTEM_AXI_TIMER_0_CLOCK_FREQUENCY / 1000000));
-#endif
 	XTmrCtr_Reset(&TmrCtr, 0);
 	XTmrCtr_Start(&TmrCtr, 0);
+	(void)InstancePtr;
 
 	/* Wait specified number of useconds. */
 	do {
@@ -1302,6 +1101,7 @@ void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds)
 ******************************************************************************/
 void DpPt_HpdEventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 	if (XDpTxSs_IsConnected(&DpTxSsInst)) { // && tx_is_reconnected == 0) {
 		sink_power_down();
 		sink_power_up();
@@ -1338,6 +1138,7 @@ void DpPt_HpdEventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpPt_HpdPulseHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 // Some monitors give HPD pulse repeatedly which causes HPD pulse function to
 //		be executed huge number of time. Hence hpd_pulse interrupt is disabled
@@ -1465,13 +1266,16 @@ void hpd_pulse_con(XDpTxSs *InstancePtr)
 
 
 // introduced to address reduced blanking linereset issue from 16.4 release
-u32 DpTxSubsystem_Start(XDpTxSs *InstancePtr, int with_msa){
+u32 DpTxSubsystem_Start(XDpTxSs *InstancePtr, int with_msa)
+{
 	u32 Status;
-		Status = XDpTxSs_Start(&DpTxSsInst);
+	(void)InstancePtr;
+	(void)with_msa;
+
+	Status = XDpTxSs_Start(&DpTxSsInst);
 
 	return Status;
 }
-
 
 /*****************************************************************************/
 /**
@@ -1611,8 +1415,8 @@ u32 PHY_Configuration_Tx(XVphy *InstancePtr,
 	u32 Status = XST_FAILURE;
 	u32 retries = 0;
 
-	QpllRefClkSel   		= PHY_User_Config_Table.QPLLRefClkSrc;
-	CpllRefClkSel   		= PHY_User_Config_Table.CPLLRefClkSrc;
+	QpllRefClkSel   		= (XVphy_PllRefClkSelType)PHY_User_Config_Table.QPLLRefClkSrc;
+	CpllRefClkSel   		= (XVphy_PllRefClkSelType)PHY_User_Config_Table.CPLLRefClkSrc;
 	TxPllSelect             = PHY_User_Config_Table.TxPLL;
 	// Required for VPHY setting
 	RxPllSelect             = PHY_User_Config_Table.RxPLL;
@@ -1860,20 +1664,6 @@ u32 start_tx(u8 line_rate, u8 lane_count,user_config_struct user_config){
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-void clk_wiz_locked(void) {
-	volatile u32 res = XDp_ReadReg(XPAR_GPIO_0_BASEADDR,0x0);
-	u32 timer=0;
-
-	while ( res == 0 && timer < 1000) {
-		xil_printf ("~/~/");
-		res = XDp_ReadReg(XPAR_GPIO_0_BASEADDR,0x0);
-		timer++; // timer for timeout. No need to be specific time.
-					// As long as long enough to wait lock
-	}
-	xil_printf ("^^");
-}
-#else
 void clk_wiz_locked(void) {
 	volatile u32 res = XDp_ReadReg(XPAR_XGPIO_0_BASEADDR,0x0);
 	u32 timer=0;
@@ -1886,7 +1676,6 @@ void clk_wiz_locked(void) {
 	}
 	xil_printf ("^^");
 }
-#endif
 
 /*****************************************************************************/
 /**
@@ -1919,12 +1708,8 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 	XVidC_VideoMode VmId_test_hpd;
 	XVidC_VideoMode VmId_ptm_hpd;
 	u8 bpc_hpd;
-	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
-												0x15, 0x16, 0x17}; //Duplicate
-
 	user_config_struct user_config;
-
-
+	(void)Edid1_org;
 
 	XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr,XDP_TX_INTERRUPT_STATUS);
 	//Enabling TX interrupts
@@ -2002,14 +1787,9 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 		VmId_ptm_hpd = GetPreferredVm(Edid_org, max_cap_new ,
 														max_cap_lanes_new&0x1F);
 		bpc_hpd = XVidC_EdidGetColorDepth(Edid_org);
-#ifndef SDT
-	if(bpc_hpd > XPAR_TX_SUBSYSTEM_V_DP_TXSS1_0_DP_MAX_BITS_PER_COLOR)
-			bpc_hpd=XPAR_TX_SUBSYSTEM_V_DP_TXSS1_0_DP_MAX_BITS_PER_COLOR;
-#else
 
 		if(bpc_hpd > XPAR_DPTXSS_0_BITS_PER_COLOR)
 			bpc_hpd=XPAR_DPTXSS_0_BITS_PER_COLOR;
-#endif
 //		xil_printf ("BPC from EDID is %d\r\n",bpc_hpd);
 		if (VmId_ptm_hpd == XVIDC_VM_NOT_SUPPORTED) { //Fail Safe mode
 			VmId_ptm_hpd = XVIDC_VM_640x480_60_P;
@@ -2343,8 +2123,10 @@ u8 get_Lanecounts(void){
 ******************************************************************************/
 u32 config_phy(int LineRate_init_tx){
 	u32 Status=XST_SUCCESS;
+#ifdef versal
 	u8 linerate;
 	u32 dptx_sts = 0;
+#endif
 
 #if TX_BUFFER_BYPASS
 
@@ -2484,7 +2266,7 @@ int VideoFMC_Init(void){
     XIic_Reset(&IicInstance);
 
 	/* Set the I2C Mux to select the HPC FMC */
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 	Buffer[0] = 0x01; // Enable HPC0
 #else
 	Buffer[0] = 0x02; // Enable HPC0

@@ -25,6 +25,12 @@
 #define XMMIDP_INTR_ID		0x40b2
 #define XMMIDP_INTR_PARENT	0xe2000000
 
+/** Time allowed for a hot-plug event that is still being debounced. */
+#define XDPDC_HPD_SETTLE_MS	500U
+
+/** Set by the hot-plug handler; checked by XDpDc_CheckInitialHpd(). */
+static volatile u8 XDpDc_HotplugSeen;
+
 /*****************************************************************************/
 /**
 *
@@ -47,41 +53,24 @@ void XDpDc_DisableDpAudioSdpStreams(XMmiDp *DpPtr)
 /*****************************************************************************/
 /**
 *
-
-* This function is the HPD hot plug (connect) callback. It reads sink
-* capabilities, runs link training, and sets up the video stream.
+* This function is the HPD hot plug (connect) callback. It runs the connect
+* sequence.
 *
 * @param	CallbackRef is a pointer to the RunConfig structure.
-*
-* @return	None.
 *
 ******************************************************************************/
 void XDpDc_HpdHotplugHandler(void *CallbackRef)
 {
 	RunConfig *RunCfgPtr = (RunConfig *)CallbackRef;
-	XMmiDp *DpPtr = RunCfgPtr->DpPsuPtr;
-	u32 Status;
 
-	xil_printf("\r\n[HPD] Hot plug detected -- starting connect sequence\r\n");
-
-	XMmiDp_SinkPowerUp(DpPtr);
-	sleep(5);
-
-	Status = XMmiDp_StartFullLinkTrainingCapped(DpPtr,
-						    RunCfgPtr->MaxLaneCount,
-						    RunCfgPtr->MaxLinkRate);
-	if (Status != XST_SUCCESS) {
-		xil_printf("[HPD] ERROR: Link training failed\r\n");
-		return;
-	}
-
-	XMmiDp_SetupVideoStream(RunCfgPtr);
-	if (RunCfgPtr->AudioEnable)
-		XMmiDp_SetupAudioStream(RunCfgPtr);
-	else if (RunCfgPtr->SdpEnable == 0U)
-		XDpDc_DisableDpAudioSdpStreams(DpPtr);
-
-	xil_printf("[HPD] Connect sequence complete\r\n");
+	XDpDc_HotplugSeen = 1U;
+	xil_printf("\r\n[HPD] Hot plug detected\r\n");
+	/*
+	 * Discard status: failure paths already print inside the sequence.
+	 * Continue after failure so the HPD callback returns cleanly; the
+	 * next hot-plug / IRQ can retry.
+	 */
+	(void)XDpDc_RunConnectSequence(RunCfgPtr);
 }
 
 /*****************************************************************************/
@@ -170,19 +159,18 @@ void XDpDc_HpdIrqHandler(void *CallbackRef)
 		DpPtr->LinkConfig.LinkTrained = 0;
 		XMmiDp_DisableVideoStream(DpPtr, XMMIDP_STREAM_ID1);
 
-		Status = XMmiDp_StartFullLinkTrainingCapped(DpPtr,
-							    RunCfgPtr->MaxLaneCount,
-							    RunCfgPtr->MaxLinkRate);
+		Status = XDpDc_RunLinkPolicySetup(RunCfgPtr);
 		if (Status != XST_SUCCESS) {
 			xil_printf("[HPD] ERROR: Retrain failed\r\n");
 			return;
 		}
 
-		XMmiDp_SetupVideoStream(RunCfgPtr);
-		if (RunCfgPtr->AudioEnable)
-			XMmiDp_SetupAudioStream(RunCfgPtr);
-		else if (RunCfgPtr->SdpEnable == 0U)
-			XDpDc_DisableDpAudioSdpStreams(DpPtr);
+		Status = XDpDc_RunStreamPolicySetup(RunCfgPtr);
+		if (Status != XST_SUCCESS) {
+			xil_printf("[HPD] ERROR: Stream restore failed\r\n");
+			return;
+		}
+
 		xil_printf("[HPD] Retrain complete, video restored\r\n");
 	} else {
 		xil_printf("[HPD] Link status OK\r\n");
@@ -192,8 +180,45 @@ void XDpDc_HpdIrqHandler(void *CallbackRef)
 /*****************************************************************************/
 /**
 *
+* This function handles a sink that was already present when the DP
+* interrupt was registered but raised no hot-plug event within
+* XDPDC_HPD_SETTLE_MS. If HPD is high it runs the connect sequence;
+* otherwise it reports that it is waiting.
+*
+* @param	RunCfgPtr is a pointer to the application configuration structure.
+*
+* @return	None.
+*
+******************************************************************************/
+static void XDpDc_CheckInitialHpd(RunConfig *RunCfgPtr)
+{
+	u32 WaitMs;
+
+	for (WaitMs = 0U;
+	     (WaitMs < XDPDC_HPD_SETTLE_MS) && (XDpDc_HotplugSeen == 0U);
+	     WaitMs++)
+		usleep(1000U);
+
+	if (XDpDc_HotplugSeen)
+		return;
+
+	if (!XMmiDp_IsConnected(RunCfgPtr->DpPsuPtr)) {
+		xil_printf("[HPD] No sink detected (HPD low), waiting for hot plug\r\n");
+		return;
+	}
+
+	xil_printf("[HPD] Sink present without a hot-plug event, running connect sequence\r\n");
+	/* HPD IRQs (e.g. sideband replies) must not issue AUX mid-sequence. */
+	XDisableIntrId(XMMIDP_INTR_ID, XMMIDP_INTR_PARENT);
+	(void)XDpDc_RunConnectSequence(RunCfgPtr);
+	XEnableIntrId(XMMIDP_INTR_ID, XMMIDP_INTR_PARENT);
+}
+
+/*****************************************************************************/
+/**
+*
 * This function registers HPD callbacks and connects the DP interrupt to
-* the GIC.
+* the GIC, then runs the connect sequence if a sink is already present.
 *
 * @param	RunCfgPtr is a pointer to the application configuration structure.
 *
@@ -205,6 +230,7 @@ void XDpDc_SetupDpInterrupts(RunConfig *RunCfgPtr)
 	XMmiDp *DpPtr = RunCfgPtr->DpPsuPtr;
 	u32 Status;
 
+	XDpDc_HotplugSeen = 0U;
 	XMmiDp_SetHpdHotPlugHandler(DpPtr, XDpDc_HpdHotplugHandler, RunCfgPtr);
 	XMmiDp_SetHpdHotUnplugHandler(DpPtr, XDpDc_HpdHotunplugHandler, RunCfgPtr);
 	XMmiDp_SetHpdIrqHandler(DpPtr, XDpDc_HpdIrqHandler, RunCfgPtr);
@@ -220,4 +246,6 @@ void XDpDc_SetupDpInterrupts(RunConfig *RunCfgPtr)
 
 	xil_printf("DP interrupt registered (ID=0x%X parent=0x%X)\r\n",
 		   XMMIDP_INTR_ID, XMMIDP_INTR_PARENT);
+
+	XDpDc_CheckInitialHpd(RunCfgPtr);
 }

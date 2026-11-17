@@ -115,7 +115,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 	}
 
   } else {
-  
+
 		append testfunc_call "
    {
 		int Status;
@@ -133,7 +133,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 	}"
 
 		if {$isintr ==1 } {
- 
+
 			set intr_id "XPAR_${ipname}_INTR"
 			set intr_id [string toupper $intr_id]
 

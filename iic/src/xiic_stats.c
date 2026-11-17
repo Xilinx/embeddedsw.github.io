@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,8 +8,7 @@
 /**
 *
 * @file xiic_stats.c
-* @addtogroup Overview
-* @{
+* @brief Implements IIC statistics collection.
 *
 * Contains statistics functions for the XIic component.
 *
@@ -26,10 +25,17 @@
 *		     XIic_ClearStats function is updated as the
 *		     macro XIIC_CLEAR_STATS has been removed.
 * 3.13  bkv 02/20/25 Fixed run time error from invalid memory access.
+* 3.16  vn  07/30/26 Fix Doxygen warnings
+* 3.16  tb  09/22/26 Align Doxygen comments with AMD documentation standards
 *
 * </pre>
 *
 ****************************************************************************/
+
+/**
+* @addtogroup iic_api IIC APIs
+* @{
+*/
 
 /***************************** Include Files *******************************/
 
@@ -49,15 +55,13 @@
 /*****************************************************************************/
 /**
 *
+* @brief Gets a copy of the statistics for an IIC device.
+*
 * Gets a copy of the statistics for an IIC device.
 *
-* @param	InstancePtr is a pointer to the XIic instance to be worked on.
-* @param	StatsPtr is a pointer to a XIicStats structure which will get a
-*		copy of current statistics.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] InstancePtr Pointer to the XIic instance to be worked on.
+* @param[out] StatsPtr Pointer to a XIicStats structure which gets a
+*             copy of current statistics.
 *
 ****************************************************************************/
 void XIic_GetStats(XIic *InstancePtr, XIicStats * StatsPtr)
@@ -87,13 +91,11 @@ void XIic_GetStats(XIic *InstancePtr, XIicStats * StatsPtr)
 /*****************************************************************************/
 /**
 *
+* @brief Clears the statistics for the IIC device by zeroing all counts.
+*
 * Clears the statistics for the IIC device by zeroing all counts.
 *
-* @param	InstancePtr is a pointer to the XIic instance to be worked on.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] InstancePtr Pointer to the XIic instance to be worked on.
 *
 ****************************************************************************/
 void XIic_ClearStats(XIic *InstancePtr)

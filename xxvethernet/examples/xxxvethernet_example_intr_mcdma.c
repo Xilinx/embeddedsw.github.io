@@ -1,13 +1,16 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /**
 *
 * @file xxxvethernet_example_intr_mcdma.c
+* @addtogroup xxvethernet Overview
+* @{
 *
+* @brief Demonstrates XXV Ethernet interrupt-driven MCDMA transfers.
 * Implements examples that utilize the Xxv Ethernet's interrupt driven MCDMA
 * packet transfer mode to send and receive frames.
 *
@@ -62,7 +65,7 @@
  */
 #ifndef TESTAPP_GEN
 #ifdef SDT
-#define XXVETHERNET_BASEADDR	XPAR_XXXVETHERNET_0_BASEADDR
+#define XXVETHERNET_BASEADDR	XPAR_XXXVETHERNET_0_BASEADDR	/**< Base address of the Xxv Ethernet device. */
 #else
 #define XXVETHERNET_DEVICE_ID	XPAR_XXVETHERNET_0_DEVICE_ID
 #define AXIMCDMA_DEVICE_ID	XPAR_MCDMA_0_DEVICE_ID
@@ -83,45 +86,23 @@
 #endif
 #endif
 
-#define RXBD_CNT			1024	/* Number of RxBDs to use */
-#define TXBD_CNT			1024	/* Number of TxBDs to use */
-#define BD_ALIGNMENT			64	/* Byte alignment of BDs */
-#define PAYLOAD_SIZE			8900 	/* Payload size used in examples */
+#define RXBD_CNT			1024	/**< Number of RxBDs to use. */
+#define TXBD_CNT			1024	/**< Number of TxBDs to use. */
+#define BD_ALIGNMENT			64	/**< Byte alignment of buffer descriptors. */
+#define PAYLOAD_SIZE			8900	/**< Payload size used in examples. */
 
-#define IP_VERSION_4			0x800	   /* For IPV4, the Ethernet frame
-						    * type/length field will have a
-						    * value of 0x800
-						    */
-#define IP_HEADER_VERSION		0x04	   /* For IPv4, the version entry in
-						    * IP header is always 4
-						    */
-#define IP_HEADER_LEN_IN_WORDS		0x05	   /* For our case, the header length
-						    * is always 20 bytes (5 words
-						    */
-#define IP_HEADER_LENGTH		20	   /* IP header length in bytes. Used
-						    * as offset to kigure out the start
-						    * of TCP header.
-						    */
-#define IP_HEADER_PROTOCOL_TCP		0x6	   /* IP header protocol entry. For TCP
-						    * packets, it is 6.
-						    */
-#define IP_HEADER_PROTOCOL_UDP		0x17 	   /* IP header protocol entry. For UDP
-						    * packets, it is 17.
-						    */
-#define TCP_HEADER_LEN_IN_WORDS		0x5	   /* For our case, the header length
-						    * is always 20 bytes (5 words)
-						    */
-#define TCP_HEADER_LENGTH		20	   /* IP header length in bytes. Used
-						    * as offset to kigure out the start
-						    * of TCP header.
-						    */
-/*
- * Number of bytes to reserve for BD space for the number of BDs desired
- */
-#define RXBD_SPACE_BYTES (RXBD_CNT * 64 * 16)
-#define TXBD_SPACE_BYTES (TXBD_CNT * 64 * 16)
+#define IP_VERSION_4			0x800	/**< Ethernet type/length value for IPv4 frames. */
+#define IP_HEADER_VERSION		0x04	/**< IPv4 version field value in the IP header. */
+#define IP_HEADER_LEN_IN_WORDS		0x05	/**< IP header length in 32-bit words. */
+#define IP_HEADER_LENGTH		20	/**< IP header length in bytes. */
+#define IP_HEADER_PROTOCOL_TCP		0x6	/**< IP protocol value for TCP packets. */
+#define IP_HEADER_PROTOCOL_UDP		0x17	/**< IP protocol value for UDP packets. */
+#define TCP_HEADER_LEN_IN_WORDS		0x5	/**< TCP header length in 32-bit words. */
+#define TCP_HEADER_LENGTH		20	/**< TCP header length in bytes. */
+#define RXBD_SPACE_BYTES (RXBD_CNT * 64 * 16)	/**< Bytes reserved for receive BD space. */
+#define TXBD_SPACE_BYTES (TXBD_CNT * 64 * 16)	/**< Bytes reserved for transmit BD space. */
 
-#define BLOCK_SIZE_2MB 0x200000U
+#define BLOCK_SIZE_2MB 0x200000U	/**< Two-megabyte block size for TLB attributes. */
 
 /*************************** Variable Definitions ****************************/
 
@@ -134,8 +115,10 @@ XMcdma DmaInstance;
 /*
  * Aligned memory segments to be used for buffer descriptors
  */
+/** @cond INTERNAL */
 char RxBdSpace[RXBD_SPACE_BYTES] __attribute__ ((aligned(BD_ALIGNMENT)));
 char TxBdSpace[TXBD_SPACE_BYTES] __attribute__ ((aligned(BD_ALIGNMENT)));
+/** @endcond */
 char MacAddr[6];
 
 /*
@@ -146,11 +129,11 @@ volatile int FramesTx;	/* Num of frames that have been sent */
 volatile int DeviceErrors;/* Num of errors detected in the device */
 
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC		XIntc
-#define INTC_HANDLER	XIntc_InterruptHandler
+#define INTC		XIntc	/**< Interrupt controller driver type for AXI INTC. */
+#define INTC_HANDLER	XIntc_InterruptHandler	/**< Interrupt handler for AXI INTC. */
 #else
-#define INTC		XScuGic
-#define INTC_HANDLER	XScuGic_InterruptHandler
+#define INTC		XScuGic	/**< Interrupt controller driver type for SCU GIC. */
+#define INTC_HANDLER	XScuGic_InterruptHandler	/**< Interrupt handler for SCU GIC. */
 #endif
 
 #if !defined(TESTAPP_GEN) && !defined(SDT)
@@ -175,6 +158,7 @@ int XxvEthernetSgDmaIntrExample(INTC *IntcInstancePtr,
 #endif
 int XxvEthernetSgDmaIntrSingleFrameExample(XXxvEthernet *XxvEthernetInstancePtr,
 		XMcdma *DmaInstancePtr, u8 ChanId);
+/** @cond INTERNAL */
 static int RxBdSetup(XMcdma *McDmaInstPtr);
 static int TxBdSetup(XMcdma *McDmaInstPtr);
 static void DoneHandler(void *CallBackRef, u32 Chan_id);
@@ -183,31 +167,22 @@ static void TxDoneHandler(void *CallBackRef, u32 Chan_id);
 static void TxErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask);
 static inline int AxiEnetMapper(u8 ChanId);
 #ifndef SDT
-static int ChanIntr_Id(XMcdma_ChanCtrl *Chan, int ChanId);
-#endif
-
-/*
- * Interrupt setup and Callbacks for examples
- */
-#ifndef SDT
 static int XxvEthernetSetupIntrSystem(INTC *IntcInstancePtr,
 				      XMcdma *DmaInstancePtr,
 				      u8 McdmaIntrId,
 				      u8 Direction);
+static int ChanIntr_Id(XMcdma_ChanCtrl *Chan, int ChanId);
 #endif
+/** @endcond */
 
 /*****************************************************************************/
 /**
+* @brief Runs the main entry point of the Xxv Ethernet example.
 *
-* This is the main function for the Xxv Ethernet example. This function is not
-* included if the example is generated from the TestAppGen test  tool.
-*
-* @param	None.
+* Excluded when the example is generated from TestAppGen.
 *
 * @return	- XST_SUCCESS to indicate success.
-*		- XST_FAILURE to indicate failure
-*
-* @note		None.
+*		- XST_FAILURE to indicate failure.
 *
 ****************************************************************************/
 int main(void)
@@ -247,33 +222,35 @@ int main(void)
 
 /*****************************************************************************/
 /**
-*
-* This function demonstrates the usage usage of the Xxv Ethernet by sending
-* and receiving frames in interrupt driven MCDMA mode.
+* @brief Demonstrates Xxv Ethernet send and receive in interrupt-driven MCDMA mode.
 *
 * @if SDT
-* @param	XxvEthernetInstancePtr is a pointer to the instance of the
+* @param[in]	XxvEthernetInstancePtr is a pointer to the instance of the.
+
 *		XxvEthernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXI MCDMA
+* @param[in]	DmaInstancePtr is a pointer to the instance of the AXI MCDMA.
+
 *		component.
-* @param	XxvBaseAddress contains the base address of the XxvEthernet device
+* @param[in]	XxvBaseAddress contains the base address of the XxvEthernet device.
 * @else
-* @param	IntcInstancePtr is a pointer to the instance of the Intc
+* @param[in]	IntcInstancePtr is a pointer to the instance of the Intc.
+
 *		component.
-* @param	XxvEthernetInstancePtr is a pointer to the instance of the
+* @param[in]	XxvEthernetInstancePtr is a pointer to the instance of the.
+
 *		XxvEthernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXI MCDMA
+* @param[in]	DmaInstancePtr is a pointer to the instance of the AXI MCDMA.
+
 *		component.
-* @param	XxvEthernetDeviceId is Device ID of the Xxv Ethernet Device ,
+* @param[in]	XxvEthernetDeviceId is Device ID of the Xxv Ethernet device,
 *		typically XPAR_<XXVETHERNET_instance>_DEVICE_ID value from
 *		xparameters.h.
-* @param	AxiMcDmaDeviceId is Device ID of the Axi MCDMA Device ,
+* @param[in]	AxiMcDmaDeviceId is Device ID of the Axi MCDMA device,
 *		typically XPAR_<AXIMCDMA_instance>_DEVICE_ID value from
 *		xparameters.h.
 * @endif
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
+* @return	XST_SUCCESS on success, or XST_FAILURE on failure.
 *
 * @note		AxiMcdma hardware must be initialized before initializing
 *		XxvEthernet. Since AxiMcdma reset line is connected to the
@@ -393,6 +370,15 @@ int XxvEthernetSgDmaIntrExample(INTC *IntcInstancePtr,
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+* @brief Sets up receive buffer descriptors and RX interrupts for all channels.
+*
+* @param[in]	McDmaInstPtr is a pointer to the AXI MCDMA instance.
+*
+* @return	XST_SUCCESS on success, or XST_FAILURE on failure.
+*
+******************************************************************************/
 static int RxBdSetup(XMcdma *McDmaInstPtr)
 {
 	XMcdma_ChanCtrl *Rx_Chan;
@@ -448,6 +434,15 @@ static int RxBdSetup(XMcdma *McDmaInstPtr)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+* @brief Sets up transmit buffer descriptors and TX interrupts for all channels.
+*
+* @param[in]	McDmaInstPtr is a pointer to the AXI MCDMA instance.
+*
+* @return	XST_SUCCESS on success, or XST_FAILURE on failure.
+*
+******************************************************************************/
 static int TxBdSetup(XMcdma *McDmaInstPtr)
 {
 	XMcdma_ChanCtrl  *Tx_Chan;
@@ -496,6 +491,14 @@ static int TxBdSetup(XMcdma *McDmaInstPtr)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+* @brief Programs a channel-specific destination MAC address.
+*
+* @param[out]	MacAddr is the MAC address buffer to update.
+* @param[in]	ChanTdest is the channel TDEST value placed in MAC byte 1.
+*
+******************************************************************************/
 void AxiEthernetSetMAC(char *MacAddr, u8 ChanTdest)
 {
 	int i;
@@ -508,6 +511,15 @@ void AxiEthernetSetMAC(char *MacAddr, u8 ChanTdest)
 	}
 }
 
+/*****************************************************************************/
+/**
+* @brief Maps an MCDMA channel ID to the matching destination MAC address.
+*
+* @param[in]	ChanId is the MCDMA channel ID to map.
+*
+* @return	XST_SUCCESS on success, or XST_FAILURE on failure.
+*
+******************************************************************************/
 static inline int AxiEnetMapper(u8 ChanId)
 {
 
@@ -565,6 +577,14 @@ static inline int AxiEnetMapper(u8 ChanId)
 	return XST_FAILURE;
 }
 
+/*****************************************************************************/
+/**
+* @brief Handles receive-path completion for an MCDMA channel.
+*
+* @param[in]	CallBackRef is a pointer to the MCDMA driver instance.
+* @param[in]	Chan_id is the MCDMA channel ID that completed.
+*
+******************************************************************************/
 static void DoneHandler(void *CallBackRef, u32 Chan_id)
 {
 	(void)CallBackRef;
@@ -573,12 +593,29 @@ static void DoneHandler(void *CallBackRef, u32 Chan_id)
 }
 
 
+/*****************************************************************************/
+/**
+* @brief Handles receive-path errors for an MCDMA channel.
+*
+* @param[in]	CallBackRef is a pointer to the MCDMA driver instance.
+* @param[in]	Chan_id is the MCDMA channel ID that reported the error.
+* @param[in]	Mask is the interrupt status mask for the error.
+*
+******************************************************************************/
 static void ErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask)
 {
 	(void)CallBackRef;
 	xil_printf("Inside error Handler Chan_id is %d Error word is 0x%x \n\r", Chan_id, Mask);
 }
 
+/*****************************************************************************/
+/**
+* @brief Handles transmit-path completion for an MCDMA channel.
+*
+* @param[in]	CallBackRef is a pointer to the MCDMA driver instance.
+* @param[in]	Chan_id is the MCDMA channel ID that completed.
+*
+******************************************************************************/
 static void TxDoneHandler(void *CallBackRef, u32 Chan_id)
 {
 	(void)CallBackRef;
@@ -586,6 +623,15 @@ static void TxDoneHandler(void *CallBackRef, u32 Chan_id)
 	FramesTx++;
 }
 
+/*****************************************************************************/
+/**
+* @brief Handles transmit-path errors for an MCDMA channel.
+*
+* @param[in]	CallBackRef is a pointer to the MCDMA driver instance.
+* @param[in]	Chan_id is the MCDMA channel ID that reported the error.
+* @param[in]	Mask is the interrupt status mask for the error.
+*
+******************************************************************************/
 static void TxErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask)
 {
 	(void)CallBackRef;
@@ -594,21 +640,19 @@ static void TxErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask)
 
 /*****************************************************************************/
 /**
-*
-* This function demonstrates the usage of the Xxv Ethernet by sending and
-* receiving a single frame in interrupt mode using MCDMA.
+* @brief Sends and receives a single Xxv Ethernet frame in interrupt-driven MCDMA mode.
 * The source packet will be described by two descriptors. It will be received
 * into a buffer described by a single descriptor.
 *
-* @param	XxvEthernetInstancePtr is a pointer to the instance of the
+* @param[in]	XxvEthernetInstancePtr is a pointer to the instance of the.
+
 *		Xxv Ethernet component.
-* @param	DmaInstancePtr   is a pointer to the instance of the Dma
+* @param[in]	DmaInstancePtr   is a pointer to the instance of the Dma.
+
 *		component.
+* @param[in]	ChanId is the MCDMA channel ID to use for the transfer.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return	XST_SUCCESS on success, or XST_FAILURE on failure.
 *
 ******************************************************************************/
 int XxvEthernetSgDmaIntrSingleFrameExample(XXxvEthernet *XxvEthernetInstancePtr,
@@ -819,26 +863,18 @@ int XxvEthernetSgDmaIntrSingleFrameExample(XXxvEthernet *XxvEthernetInstancePtr,
 #ifndef SDT
 /*****************************************************************************/
 /**
+* @brief Sets up the interrupt system for the Xxv Ethernet example.
 *
-* This function setups the interrupt system so interrupts can occur for the
-* Xxv Ethernet.  This function is application-specific since the actual system
-* may or may not have an interrupt controller.  The Xxv Ethernet could be
-* directly connected to a processor without an interrupt controller.  The user
-* should modify this function to fit the application.
+* The system may or may not have an interrupt controller. The Xxv Ethernet
+* could be directly connected to a processor without an interrupt controller.
+* Modify this function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the Intc
-*		component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXIMCDMA
-*		component.
-* @param	DmaRxIntrId is the interrupt id for DMA Rx and is typically
-*		taken from XPAR_<XXVETHERNET_instance>_CONNECTED_DMARX_INTR
-* @param	DmaTxIntrId is the interrupt id for DMA Tx and is typically
-*		taken from XPAR_<XXVETHERNET_instance>_CONNECTED_DMATX_INTR
+* @param[in] IntcInstancePtr is a pointer to the instance of the INTC component.
+* @param[in] DmaInstancePtr is a pointer to the instance of the MCDMA component.
+* @param[in] McdmaIntrId is the MCDMA interrupt ID for the channel.
+* @param[in] Direction is the MCDMA channel direction.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, or XST_FAILURE on failure.
 *
 ******************************************************************************/
 static int XxvEthernetSetupIntrSystem(INTC *IntcInstancePtr,
@@ -945,22 +981,16 @@ static int XxvEthernetSetupIntrSystem(INTC *IntcInstancePtr,
 }
 
 /*****************************************************************************/
-/*
- * This function maps the mcdma channel with the Corresponding interrupt id
- * Generated in the xparameters.h file.
+/**
+ * @brief Maps the MCDMA channel to the corresponding interrupt ID.
  *
- * @param	Chan is the MCDMA Channel instance to be worked on.
- * @param:	ChanId is the MCDMA channel id to be worked on
+ * @param[in] Chan is the MCDMA channel instance to be worked on.
+ * @param[in] ChanId is the MCDMA channel ID to be worked on.
  *
- * @return:
- *		- Corresponding interrupt ID on success.
- *		- XST_FAILURE if unable to find a valid interrupt id
- * 		  For a given MCDMA channel.
+ * @return Corresponding interrupt ID on success, or XST_FAILURE on failure.
  *
- * @note:	Make sure the XPAR_FABRIC_AXI_MCDMA_0_MM2S_CH1_INTROUT_INTR
- *		Checks in the API below are properly mapped for your design.
+ * @note Ensure XPAR_FABRIC MCDMA interrupt checks in this API match your design.
  */
-/*****************************************************************************/
 static int ChanIntr_Id(XMcdma_ChanCtrl *Chan, int ChanId)
 {
 
@@ -1133,3 +1163,4 @@ static int ChanIntr_Id(XMcdma_ChanCtrl *Chan, int ChanId)
 	return XST_FAILURE;
 }
 #endif
+/** @} */

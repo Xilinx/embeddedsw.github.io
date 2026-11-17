@@ -9,10 +9,14 @@
 /**
 *
 * @file xcsudma_polled_example.c
+* @addtogroup csuma_api CSUDMA APIs
+* @{
+*
+* @brief Demonstrates CSU DMA transfers in polled mode.
 *
 * This file contains an example using the XCsuDma driver in polled mode.
 *
-* This function works in loop back mode and tests whether transfer of data is
+* Runs a loopback transfer test and tests whether transfer of data is
 * completed properly or not.
 *
 * <pre>
@@ -40,9 +44,9 @@
  * change all the needed parameters in one place.
  */
 #ifndef SDT
-#define CSUDMA_DEVICE_ID 	XPAR_XCSUDMA_0_DEVICE_ID /* CSU DMA device Id */
+#define CSUDMA_DEVICE_ID 	XPAR_XCSUDMA_0_DEVICE_ID /**< CSU DMA device Id. */
 #else
-#define CSUDMA_BASEADDR		XPAR_XCSUDMA_0_BASEADDR /* CSU DMA Baseaddress */
+#define CSUDMA_BASEADDR		XPAR_XCSUDMA_0_BASEADDR /**< CSU DMA base address. */
 #endif
 #define CSU_SSS_CONFIG_OFFSET	0x008		/**< CSU SSS_CFG Offset */
 #define CSUDMA_LOOPBACK_CFG	0x00000050	/**< LOOP BACK configuration
@@ -86,13 +90,11 @@ XCsuDma CsuDma;		/**<Instance of the Csu_Dma Device */
 /*****************************************************************************/
 /**
 *
-* Main function to call the example.
+* @brief Mains function to call the example.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 int main(void)
@@ -117,22 +119,19 @@ int main(void)
 /*****************************************************************************/
 /**
 *
-* This function performs data transfer in loop back mode in polled mode
+* @brief Performs a data transfer in loop back mode in polled mode.
 * and verify the data.
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the device
+* @param[in] BaseAddress contains the base address of the device
 * @else
-* @param	DeviceId is the XPAR_<CSUDMA Instance>_DEVICE_ID value from
+* @param[in] DeviceId is the XPAR_<CSUDMA Instance>_DEVICE_ID value from
 *		xparameters.h.
 * @endif
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 #ifndef SDT
@@ -251,3 +250,5 @@ int XCsuDma_PolledExample(UINTPTR BaseAddress)
 
 	return XST_SUCCESS;
 }
+
+/** @} */

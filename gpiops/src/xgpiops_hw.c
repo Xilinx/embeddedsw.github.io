@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2013 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,9 @@
 /**
 *
 * @file xgpiops_hw.c
-* @addtogroup gpiops Overview
-* @{
+* @brief Implements low-level GPIO PS functions.
 *
-* This file contains low level GPIO functions.
+* This file contains low-level GPIO functions.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -27,9 +26,16 @@
 *                     as Pointer to const,Casting operation to a pointer,
 *                     Literal value requires a U suffix.
 * 3.5   sne  03/14/19 Added versal support.
+* 3.16  vn   07/30/26 Fix Doxygen warnings
+* 3.16  vn   09/10/26 Align Doxygen comments with AMD standards
+*
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup gpiops Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -50,14 +56,9 @@
 /*****************************************************************************/
 /**
 *
-* This function resets the GPIO module by writing reset values to
-* all registers
+* @brief Resets the GPIO module by writing reset values to all registers.
 *
-* @param	BaseAddress address of GPIO module
-*
-* @return	None
-*
-* @note		None.
+* @param[in]   BaseAddress Base address of the GPIO module.
 *
 ******************************************************************************/
 void XGpioPs_ResetHw(UINTPTR BaseAddress)

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,15 @@
 /**
 *
 * @file xemaclite_example.h
+* @addtogroup emaclite Overview
+* @{
+*
+* @brief Defines common types and prototypes for EmacLite examples.
 *
 * Defines common data types, prototypes, and includes the proper headers
 * for use with the EmacLite example code residing in this directory.
 *
-* This file along with xemaclite_example_util.c are utilized with the specific
+* Works with xemaclite_example_util.c are utilized with the specific
 * example code in the other source code files provided.
 *
 * These examples are designed to be compiled and utilized within the EDK
@@ -47,18 +51,16 @@ extern "C" {
 
 /************************** Constant Definitions ****************************/
 
-#define PHY_REG0_OFFSET		0 /* Register 0 of PHY device */
-#define PHY_REG1_OFFSET 	1 /* Register 1 of PHY device */
+#define PHY_REG0_OFFSET		0 /**< Register 0 offset of the PHY device. */
+#define PHY_REG1_OFFSET 	1 /**< Register 1 offset of the PHY device. */
 
-#define PHY_REG0_RESET_MASK	0x8000  /* Reset Phy device */
-#define PHY_REG0_LOOPBACK_MASK	0x4000  /* Loopback Enable in Phy */
-#define PHY_REG0_SPD_100_MASK	0x2000  /* Speed of 100Mbps for Phy */
+#define PHY_REG0_RESET_MASK	0x8000  /**< Reset bit mask for PHY register 0. */
+#define PHY_REG0_LOOPBACK_MASK	0x4000  /**< Loopback enable bit mask in the PHY. */
+#define PHY_REG0_SPD_100_MASK	0x2000  /**< 100 Mbps speed bit mask for the PHY. */
 
-#define PHY_REG1_DETECT_MASK	0x1808	/* Mask to detect PHY device */
+#define PHY_REG1_DETECT_MASK	0x1808	/**< Bit mask used to detect a PHY device. */
 
-#define EMACLITE_PHY_DELAY_SEC	4	/* Amount of time to delay waiting on
-					 * PHY to reset.
-					 */
+#define EMACLITE_PHY_DELAY_SEC	4	/**< Seconds to wait for the PHY to reset. */
 
 /*
  * The following constants map to the XPAR parameters created in the
@@ -66,9 +68,9 @@ extern "C" {
  * change all the needed parameters in one place.
  */
 #ifdef SDT
-#define EMACLITE_BASEADDR	XPAR_XEMACLITE_0_BASEADDR
+#define EMACLITE_BASEADDR	XPAR_XEMACLITE_0_BASEADDR /**< Base address of the EmacLite device. */
 #else
-#define EMAC_DEVICE_ID		XPAR_EMACLITE_0_DEVICE_ID
+#define EMAC_DEVICE_ID		XPAR_EMACLITE_0_DEVICE_ID /**< Device ID of the EmacLite device. */
 #endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -91,7 +93,7 @@ int EmacLiteDisablePhyLoopBack(XEmacLite *InstancePtr, u32 PhyAddress);
  * both as a source and destination MAC address.
  */
 
-extern XEmacLite EmacLiteInstance;	/* Instance of the EmacLite */
+extern XEmacLite EmacLiteInstance;	/**< Instance of the EmacLite. */
 
 /*
  * Buffers used for Transmission and Reception of Packets. These are declared
@@ -100,14 +102,12 @@ extern XEmacLite EmacLiteInstance;	/* Instance of the EmacLite */
 extern u8 TxFrame[XEL_MAX_FRAME_SIZE];
 extern u8 RxFrame[XEL_MAX_FRAME_SIZE];
 
-extern volatile u32 RecvFrameLength;	/* Indicates the length of the
-					 * Received packet
-					 */
-extern volatile int TransmitComplete;	/* Flag to indicate that the
-					 * Transmission is complete
-					 */
+extern volatile u32 RecvFrameLength;	/**< Length of the received packet. */
+extern volatile int TransmitComplete;	/**< Flag indicating transmission is complete. */
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* XEMACLITE_EXAMPLE_H */
+
+/** @} */

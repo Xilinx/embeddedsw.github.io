@@ -53,6 +53,10 @@
 * 6.4  rg  09/26/20 Added support for YUV420 color format
 * 6.5 pam  03/18/26 XDpTxSs_SendAudioInfoFrame API is updated to handle Audio control
 * 		    registers
+* 6.5 dk   07/21/26 Added XDpTxSs_AuxRead and XDpTxSs_AuxWrite APIs to perform
+* 		    AUX channel transactions at subsystem level.
+*      dnk 09/15/26 Program the link Clocking Wizard from the driver on
+*                   link-rate change using clk_wiz APIs.
 * </pre>
 *
 ******************************************************************************/
@@ -89,14 +93,13 @@ typedef struct {
 } XDpTxSs_SubCores;
 
 /************************** Function Prototypes ******************************/
-#ifndef SDT
-static void DpTxSs_GetIncludedSubCores(XDpTxSs *InstancePtr);
-#else
 static void DpTxSs_GetIncludedSubCores(XDpTxSs *InstancePtr, UINTPTR BaseAddress);
-#endif
 static void DpTxSs_CalculateMsa(XDpTxSs *InstancePtr, u8 Stream);
 static u32 DpTxSs_CheckRxDeviceMode(XDpTxSs *InstancePtr);
 static u32 DpTxSs_SetupSubCores(XDpTxSs *InstancePtr);
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+static u32 DpTxSs_SetLinkClk(XDpTxSs *InstancePtr, u8 LinkRate);
+#endif
 
 #if (XPAR_XHDCP_NUM_INSTANCES > 0)
 static int DpTxSs_HdcpStartTimer(void *InstancePtr, u16 TimeoutInMs);
@@ -167,10 +170,33 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 
 	/* Get included sub cores in the DisplayPort TX Subsystem */
-#ifndef SDT
-	DpTxSs_GetIncludedSubCores(InstancePtr);
-#else
 	DpTxSs_GetIncludedSubCores(InstancePtr, InstancePtr->Config.BaseAddress);
+
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IncludeClkWiz) {
+		XClk_Wiz_Config ClkWizConfig;
+
+		InstancePtr->ClkWizAbsAddr =
+			InstancePtr->Config.BaseAddress +
+			InstancePtr->Config.ClkWizSubCore.ClkWizConfig.BaseAddress;
+
+		/*
+		 * Initialize the Clocking Wizard driver instance so that the
+		 * link clock can be reconfigured through the clk_wiz driver
+		 * APIs instead of direct register writes.
+		 */
+		(void)memset(&ClkWizConfig, 0, sizeof(ClkWizConfig));
+		ClkWizConfig.Name =
+			InstancePtr->Config.ClkWizSubCore.ClkWizConfig.Name;
+		ClkWizConfig.BaseAddr = InstancePtr->ClkWizAbsAddr;
+		ClkWizConfig.NumClocks = 1;
+		Status = XClk_Wiz_CfgInitialize(&InstancePtr->ClkWiz,
+						&ClkWizConfig,
+						InstancePtr->ClkWizAbsAddr);
+		if (Status != XST_SUCCESS) {
+			return XST_FAILURE;
+		}
+	}
 #endif
 
 	/* Check for DisplayPort availability */
@@ -215,15 +241,9 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 	if ((InstancePtr->DsPtr != NULL) && (InstancePtr->Config.MstSupport)) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Initializing Dual "
 				"Splitter IP\n\r");
-#ifndef SDT
-		/* Calculate absolute base address of Dual Splitter sub-core */
-		DualConfig = XDualSplitter_LookupConfig(InstancePtr->Config.
-				DsSubCore.DsConfig.DeviceId);
-#else
 		/* Calculate absolute base address of Dual Splitter sub-core */
 		DualConfig = XDualSplitter_LookupConfig(InstancePtr->Config.
 				DsSubCore.DsConfig.BaseAddress);
-#endif
 		DualConfig->BaseAddress += InstancePtr->Config.BaseAddress;
 
 		/* Dual Splitter config initialize */
@@ -241,16 +261,6 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 	if (InstancePtr->TmrCtrPtr != NULL) {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO: Initializing Timer "
 				"Counter IP \n\r");
-#ifndef SDT
-		/* Calculate absolute base address of Timer Counter sub-core */
-		InstancePtr->Config.TmrCtrSubCore.TmrCtrConfig.AbsAddr +=
-			InstancePtr->Config.BaseAddress;
-
-		/* Timer Counter config initialize */
-		Status = XTmrCtr_Initialize(InstancePtr->TmrCtrPtr,
-				InstancePtr->Config.TmrCtrSubCore.
-				TmrCtrConfig.DeviceId);
-#else
 		/* Timer Counter config initialize */
 		Status = XTmrCtr_Initialize(InstancePtr->TmrCtrPtr,
 				InstancePtr->Config.TmrCtrSubCore.
@@ -258,7 +268,6 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 		/* Calculate absolute base address of Timer Counter sub-core */
 		InstancePtr->Config.TmrCtrSubCore.TmrCtrConfig.BaseAddress +=
 			InstancePtr->Config.BaseAddress;
-#endif
 		if (Status != XST_SUCCESS) {
 			xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:: Timer "
 					"Counter initialization failed\n\r");
@@ -280,13 +289,8 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 				"\n\r");
 
 		/* Calculate absolute base address of HDCP sub-core */
-#ifndef SDT
-		Hdcp1xConfig = XHdcp1x_LookupConfig(InstancePtr->Config.
-				Hdcp1xSubCore.Hdcp1xConfig.DeviceId);
-#else
 		Hdcp1xConfig = XHdcp1x_LookupConfig(InstancePtr->Config.
 				Hdcp1xSubCore.Hdcp1xConfig.BaseAddress);
-#endif
 		Hdcp1xConfig->BaseAddress += InstancePtr->Config.BaseAddress;
 
 		/* HDCP config initialize */
@@ -426,6 +430,10 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 
 	/* Set the flag to indicate the subsystem is ready */
 	InstancePtr->IsReady = (u32)XIL_COMPONENT_IS_READY;
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	InstancePtr->LinkRateChangeCallback = NULL;
+	InstancePtr->LinkRateChangeCallbackRef = NULL;
+#endif
 
 	XDpTxSs_SetCallBack(InstancePtr, XDPTXSS_DRV_HANDLER_DP_HPD_EVENT,
 			    XDpTxSs_HpdEventProcess, InstancePtr);
@@ -433,6 +441,13 @@ u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 			    XDpTxSs_HpdPulseProcess, InstancePtr);
 	XDpTxSs_SetCallBack(InstancePtr, XDPTXSS_DRV_HANDLER_DP_EXT_PKT_EVENT,
 			XDpTxSs_WriteVscExtPktProcess, InstancePtr);
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IncludeClkWiz) {
+		XDpTxSs_SetCallBack(InstancePtr,
+				    XDPTXSS_DRV_HANDLER_DP_LINK_RATE_CHG,
+				    XDpTxSs_LinkRateChangeProcess, InstancePtr);
+	}
+#endif
 
 	return XST_SUCCESS;
 }
@@ -862,9 +877,9 @@ u32 XDpTxSs_SetBpc(XDpTxSs *InstancePtr, u8 Bpc)
 			(Bpc == XVIDC_BPC_16));
 
 	/* Set bits per color */
-	if (InstancePtr->DpPtr->TxInstance.ColorimetryThroughVsc) {
+	if (InstancePtr->DpPtr->TxInstance.ColorimetryThroughVsc[XDP_TX_STREAM_ID1 - 1]) {
 		InstancePtr->UsrOpt.Bpc =
-				InstancePtr->DpPtr->TxInstance.VscPacket.BitsPerColor;
+				InstancePtr->DpPtr->TxInstance.VscPacket[XDP_TX_STREAM_ID1 - 1].BitsPerColor;
 	} else {
 		InstancePtr->UsrOpt.Bpc = Bpc;
 	}
@@ -919,16 +934,11 @@ u32 XDPTxss_GetMsa(XDpTxSs *InstancePtr, XDpTxSs_MainStreamAttributes *msa_tx)
 u32 XDPTxss_SetMsa(XDpTxSs *InstancePtr, XVidC_VideoStream *VidStream, u8 Stream)
 {
 	XDpTxSs_MainStreamAttributes *MsaConfig;
-	u32 WordsPerLine;
-	u8 LinkRate, LaneCount;
 
 	Xil_AssertNonvoid((Stream == XDP_TX_STREAM_ID1) ||
 			(Stream == XDP_TX_STREAM_ID2) ||
 			(Stream == XDP_TX_STREAM_ID3) ||
 			(Stream == XDP_TX_STREAM_ID4));
-
-	LinkRate = InstancePtr->DpPtr->TxInstance.LinkConfig.LinkRate;
-	LaneCount = InstancePtr->DpPtr->TxInstance.LinkConfig.LaneCount;
 
 	MsaConfig = &InstancePtr->DpPtr->TxInstance.MsaConfig[Stream - 1];
 
@@ -980,14 +990,6 @@ u32 XDpTxSs_SetVideoStream(XDpTxSs *InstancePtr, XVidC_VideoStream *VidStream, u
 	XVidC_ColorFormat ColorFormat = VidStream->ColorFormatId;
 	XVidC_ColorDepth Bpc =  VidStream->ColorDepth;
 	XVidC_PixelsPerClock Ppc = VidStream->PixPerClk;
-	XVidC_FrameRate		FrameRate = VidStream->FrameRate;
-	XVidC_AspectRatio	AspectRatio = VidStream->AspectRatio;
-	XVidC_3DInfo		Info_3D = VidStream->Info_3D;
-	XVidC_VideoTiming	Timing = VidStream->Timing;
-	XVidC_Eotf		Eotf = VidStream->Eotf;
-	XVidC_ColorStd		ColorStd = VidStream->ColorStd;
-	XVidC_FrameRate		BaseFrameRate = VidStream->BaseFrameRate;
-	XVidC_VideoTiming	BaseTiming = VidStream->BaseTiming;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -1049,6 +1051,110 @@ u32 XDpTxSs_SetVidMode(XDpTxSs *InstancePtr, XVidC_VideoMode VidMode)
 	return XST_SUCCESS;
 }
 
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+/*****************************************************************************/
+/**
+*
+* This function programs the wizard that generates the link clock.
+*
+* @param	InstancePtr is a pointer to the XDpTxSs instance.
+* @param	LinkRate is the link bandwidth selected by the DP TX core.
+*
+* @return	XST_SUCCESS when configured, XST_NO_FEATURE for an unknown
+*		link rate, otherwise XST_FAILURE.
+*
+******************************************************************************/
+static u32 DpTxSs_SetLinkClk(XDpTxSs *InstancePtr, u8 LinkRate)
+{
+	u64 LinkRateHz;
+	u32 InDiv;
+
+	switch (LinkRate) {
+	case XDPTXSS_LINK_BW_SET_20GBPS:
+		LinkRateHz = 20000000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_135GBPS:
+		LinkRateHz = 13500000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_10GBPS:
+		LinkRateHz = 10000000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_810GBPS:
+		LinkRateHz = 8100000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_540GBPS:
+		LinkRateHz = 5400000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_270GBPS:
+		LinkRateHz = 2700000000ULL;
+		break;
+	case XDPTXSS_LINK_BW_SET_162GBPS:
+		LinkRateHz = 1620000000ULL;
+		break;
+	default:
+		return XST_NO_FEATURE;
+	}
+
+	/*
+	 * The wizard turns the GT clock into the line_rate/40 link clock.
+	 * Octa-pixel (8 PPC) designs are fed line_rate/64, others
+	 * line_rate/32. PayloadDataWidth does not track the GUI PPC and can
+	 * remain 4 on an 8-PPC core, so OctaPixelEn selects the divider.
+	 */
+	InDiv = (InstancePtr->DpPtr->Config.OctaPixelEn != 0U) ? 64U : 32U;
+
+	if (strncmp(InstancePtr->ClkWiz.Config.Name,
+		    "xlnx,clkx5-wiz-", 15U) == 0) {
+		XClk_Wiz_SetInputRate(&InstancePtr->ClkWiz,
+				      (double)(LinkRateHz / InDiv));
+	} else {
+		InstancePtr->ClkWiz.Config.PrimInClkFreq =
+			LinkRateHz / InDiv;
+	}
+
+	return XClk_Wiz_SetRateHz(&InstancePtr->ClkWiz,
+				  LinkRateHz / 40U);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function wraps the application link-rate callback. The application
+* first retunes the GT, then the driver programs and locks the link clock
+* using the new GT output frequency.
+*
+* @param	InstancePtr is a pointer to the XDpTxSs instance.
+*
+******************************************************************************/
+void XDpTxSs_LinkRateChangeProcess(void *InstancePtr)
+{
+	XDpTxSs *DpTxSsPtr = (XDpTxSs *)InstancePtr;
+	u32 ClkStatus;
+
+	Xil_AssertVoid(DpTxSsPtr != NULL);
+	Xil_AssertVoid(DpTxSsPtr->DpPtr != NULL);
+
+	if (DpTxSsPtr->LinkRateChangeCallback != NULL) {
+		DpTxSsPtr->LinkRateChangeCallback(
+			DpTxSsPtr->LinkRateChangeCallbackRef);
+	}
+
+	ClkStatus = DpTxSs_SetLinkClk(
+		DpTxSsPtr,
+		DpTxSsPtr->DpPtr->TxInstance.LinkConfig.LinkRate);
+	if ((ClkStatus == XST_SUCCESS) &&
+	    (XClk_Wiz_WaitForLock(&DpTxSsPtr->ClkWiz) != XST_SUCCESS)) {
+		ClkStatus = XST_FAILURE;
+	}
+
+	if ((ClkStatus != XST_SUCCESS) &&
+	    (ClkStatus != XST_NO_FEATURE)) {
+		xdbg_printf(XDBG_DEBUG_GENERAL,
+			    "SS ERR: TX link clock configuration failed.\n\r");
+	}
+}
+#endif
+
 /******************************************************************************/
 /**
  * This function overrides the Polarity for Horizontal and Vertical Sync signals
@@ -1094,6 +1200,82 @@ u32 XDpTxSs_GetLinkRate(XDpTxSs *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
 	return XDp_TxGetLinkRate(InstancePtr->DpPtr);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function issues a read request over the AUX channel to read from the
+* connected RX device's DisplayPort Configuration Data (DPCD) address space.
+* It is a subsystem-level wrapper that allows AUX transactions to be performed
+* without directly accessing the underlying DisplayPort core instance.
+*
+* @param	InstancePtr is a pointer to the XDpTxSs instance.
+* @param	DpcdAddress is the starting DPCD address to read from the RX
+*		device.
+* @param	BytesToRead is the number of bytes to read.
+* @param	ReadData is a pointer to the buffer that will be filled with the
+*		read data.
+*
+* @return
+*		- XST_SUCCESS if the AUX read request was successfully
+*		  acknowledged.
+*		- XST_DEVICE_NOT_FOUND if no RX device is connected.
+*		- XST_ERROR_COUNT_MAX if the AUX request timed out.
+*		- XST_FAILURE otherwise.
+*
+* @note		The read is split into multiple AUX transactions of at most
+*		16 bytes each by the underlying DisplayPort core.
+*
+******************************************************************************/
+u32 XDpTxSs_AuxRead(XDpTxSs *InstancePtr, u32 DpcdAddress, u32 BytesToRead,
+		    void *ReadData)
+{
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->DpPtr != NULL);
+	Xil_AssertNonvoid(ReadData != NULL);
+
+	return XDp_TxAuxRead(InstancePtr->DpPtr, DpcdAddress, BytesToRead,
+			     ReadData);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function issues a write request over the AUX channel to write to the
+* connected RX device's DisplayPort Configuration Data (DPCD) address space.
+* It is a subsystem-level wrapper that allows AUX transactions to be performed
+* without directly accessing the underlying DisplayPort core instance.
+*
+* @param	InstancePtr is a pointer to the XDpTxSs instance.
+* @param	DpcdAddress is the starting DPCD address to write to the RX
+*		device.
+* @param	BytesToWrite is the number of bytes to write.
+* @param	WriteData is a pointer to the buffer holding the data to be
+*		written.
+*
+* @return
+*		- XST_SUCCESS if the AUX write request was successfully
+*		  acknowledged.
+*		- XST_DEVICE_NOT_FOUND if no RX device is connected.
+*		- XST_ERROR_COUNT_MAX if the AUX request timed out.
+*		- XST_FAILURE otherwise.
+*
+* @note		The write is split into multiple AUX transactions of at most
+*		16 bytes each by the underlying DisplayPort core.
+*
+******************************************************************************/
+u32 XDpTxSs_AuxWrite(XDpTxSs *InstancePtr, u32 DpcdAddress, u32 BytesToWrite,
+		     void *WriteData)
+{
+	/* Verify arguments. */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(InstancePtr->DpPtr != NULL);
+	Xil_AssertNonvoid(WriteData != NULL);
+
+	return XDp_TxAuxWrite(InstancePtr->DpPtr, DpcdAddress, BytesToWrite,
+			      WriteData);
 }
 
 static u8 DpTxSs_EncodeLinkBandwidth(XDpTxSs *InstancePtr, u8 LinkRate)
@@ -1647,6 +1829,8 @@ u32 XDpTxSs_CheckVscColorimetrySupport(XDpTxSs *InstancePtr)
  * header information to the driver structure.
  *
  * @param	InstancePtr is a pointer to the XDp instance.
+ * @param   StreamId is the MST stream number (1..4) that this VSC packet is
+ *          associated with. Use XDP_TX_STREAM_ID1 for single stream mode.
  * @param   VscPkt is a driver extended packet structure
  *
  * @return
@@ -1656,15 +1840,20 @@ u32 XDpTxSs_CheckVscColorimetrySupport(XDpTxSs *InstancePtr)
  * @note	None.
  *
 *******************************************************************************/
-u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt)
+u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, u8 StreamId,
+				XDp_TxVscExtPacket VscPkt)
 {
 	XDp_TxVscExtPacket *VscPacket;
 	u32 DataByte;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((StreamId == XDP_TX_STREAM_ID1) ||
+			  (StreamId == XDP_TX_STREAM_ID2) ||
+			  (StreamId == XDP_TX_STREAM_ID3) ||
+			  (StreamId == XDP_TX_STREAM_ID4));
 
-	VscPacket = &InstancePtr->DpPtr->TxInstance.VscPacket;
+	VscPacket = &InstancePtr->DpPtr->TxInstance.VscPacket[StreamId - 1];
 
 	/* Decoding Data byte 16 */
 	DataByte =  VscPkt.Payload[XDP_TX_AUDIO_EXT_DATA_DB16_TO_DB18] &
@@ -1713,6 +1902,8 @@ u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt
  * through VSC extended packet.
  *
  * @param	InstancePtr is a pointer to the XDp instance.
+ * @param   StreamId is the MST stream number (1..4). Use XDP_TX_STREAM_ID1
+ *          for single stream mode.
  * @param   Enable specifies to enable the flag
  *       - 0 = Disable the sending colorimetry through VSC packet else enable
  *             Enable the sending colorimetry through VSC packet
@@ -1721,12 +1912,16 @@ u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt
  * @note	None.
  *
 *******************************************************************************/
-void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 Enable)
+void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 StreamId, u8 Enable)
 {
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid((StreamId == XDP_TX_STREAM_ID1) ||
+		       (StreamId == XDP_TX_STREAM_ID2) ||
+		       (StreamId == XDP_TX_STREAM_ID3) ||
+		       (StreamId == XDP_TX_STREAM_ID4));
 
-	InstancePtr->DpPtr->TxInstance.ColorimetryThroughVsc = Enable;
+	InstancePtr->DpPtr->TxInstance.ColorimetryThroughVsc[StreamId - 1] = Enable;
 }
 
 /*****************************************************************************/
@@ -2093,7 +2288,7 @@ u32 XDpTxSs_Authenticate(XDpTxSs *InstancePtr)
 ******************************************************************************/
 u32 XDpTxSs_IsAuthenticated(XDpTxSs *InstancePtr)
 {
-	u32 Authenticate;
+	u32 Authenticate = FALSE;
 	/* Verify arguments.*/
 	Xil_AssertNonvoid(InstancePtr);
 #if (XPAR_XHDCP_NUM_INSTANCES)
@@ -2683,61 +2878,6 @@ static u32 DpTxSs_ConvertUsToTicks(u32 TimeoutInUs, u32 ClkFreq)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-static void DpTxSs_GetIncludedSubCores(XDpTxSs *InstancePtr)
-{
-	u32 Index;
-
-#if (XPAR_XDUALSPLITTER_NUM_INSTANCES > 0)
-	/* Assign instance of Dual Splitter core */
-	InstancePtr->DsPtr = ((InstancePtr->Config.DsSubCore.IsPresent) ?
-		(&DpTxSsSubCores[InstancePtr->Config.DeviceId].DsInst) : NULL);
-#endif
-
-#if (XPAR_XHDCP_NUM_INSTANCES > 0)
-	/* Assign instance of HDCP core */
-	InstancePtr->Hdcp1xPtr =
-		((InstancePtr->Config.Hdcp1xSubCore.IsPresent) ?
-	(&DpTxSsSubCores[InstancePtr->Config.DeviceId].Hdcp1xInst) : NULL);
-#endif
-
-#if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
-	/* Assign instance of Timer Counter core */
-	InstancePtr->TmrCtrPtr =
-		((InstancePtr->Config.TmrCtrSubCore.IsPresent) ?
-		 (&DpTxSsSubCores[InstancePtr->Config.DeviceId].TmrCtrInst)
-		 : NULL);
-#endif
-#if (XPAR_XHDCP_NUM_INSTANCES > 0)
-	if (InstancePtr->Hdcp1xPtr)
-		/*
-		 * Set Timer Counter instance in HDCP
-		 * that will be used in callbacks
-		 */
-		InstancePtr->Hdcp1xPtr->Hdcp1xRef =
-			(void *)InstancePtr->TmrCtrPtr;
-#endif
-	/* Assign instance of DisplayPort core */
-	InstancePtr->DpPtr = ((InstancePtr->Config.DpSubCore.IsPresent) ?
-		(&DpTxSsSubCores[InstancePtr->Config.DeviceId].DpInst) : NULL);
-
-	for (Index = 0; Index < InstancePtr->Config.NumMstStreams; Index++) {
-
-		/* Assign instances of VTC core */
-		InstancePtr->VtcPtr[Index] =
-			((InstancePtr->Config.VtcSubCore[Index].IsPresent) ?
-			(&DpTxSsSubCores[
-			InstancePtr->Config.DeviceId].VtcInst[Index]) : NULL);
-	}
-#if (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
-	/*Assign Instance of HDCP22 core*/
-	InstancePtr->Hdcp22Ptr =
-		((InstancePtr->Config.Hdcp22SubCore.IsPresent) ?
-		 (&DpTxSsSubCores[InstancePtr->Config.DeviceId].Hdcp22Inst) :
-		 NULL);
-#endif
-}
-#else
 static void DpTxSs_GetIncludedSubCores(XDpTxSs *InstancePtr, UINTPTR BaseAddress)
 {
 	u32 Index1, Index;
@@ -2794,7 +2934,6 @@ static void DpTxSs_GetIncludedSubCores(XDpTxSs *InstancePtr, UINTPTR BaseAddress
 		 NULL);
 #endif
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -3105,7 +3244,6 @@ void XDpTxSs_SendAudioInfoFrame(XDpTxSs *InstancePtr, XDp_TxAudioInfoFrame *xilI
                         n_aud = 41666;
                         break;
 		default:	/* Default to 1.62 Gbps values */
-			xil_printf("Warning: Unknown link rate 0x%02X, using 1.62Gbps default\r\n", LinkRate);
 			m_aud = 512;
 			n_aud = 3375;
 			break;
@@ -3118,8 +3256,8 @@ void XDpTxSs_SendAudioInfoFrame(XDpTxSs *InstancePtr, XDp_TxAudioInfoFrame *xilI
 	XDp_WriteReg(InstancePtr->DpPtr->Config.BaseAddr, XDP_TX_AUDIO_CONTROL, 0x1);
 
 
-	xil_printf("Audio configured: LinkRate=0x%02X, MAUD=%d, NAUD=%d\r\n",
-			LinkRate, m_aud, n_aud);
+	xdbg_printf(XDBG_DEBUG_GENERAL, "Audio configured: LinkRate=0x%02X, MAUD=%d, NAUD=%d\r\n",
+					LinkRate, m_aud, n_aud);
 }
 
 #if (XPAR_XHDCP_NUM_INSTANCES > 0) || (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
@@ -3323,11 +3461,11 @@ void XDpTxSs_Hdcp22SetKey(XDpTxSs *InstancePtr,
 /*****************************************************************************/
 /**
 *
-* This function configures stream encryption based on MST/SST mode and the
+* @brief This function configures stream encryption based on MST/SST mode and the
 * stream_map parameter provided by the application.
 *
-* @param	InstancePtr is a pointer to the XDpTxSs core instance.
-* @param	stream_map is the stream encryption selection from application:
+* @param[in]	InstancePtr is a pointer to the XDpTxSs core instance.
+* @param[in]	stream_map is the stream encryption selection from application:
 *		- For 2 streams: 1 (Stream 1), 2 (Stream 2), 3 (All)
 *		- For 3 streams: 1 (Stream 1), 2 (Stream 2), 3 (Stream 3), 4 (All)
 *		- For 4 streams: 1 (Stream 1), 2 (Stream 2), 3 (Stream 3), 4 (Stream 4), 5 (All)
@@ -3345,7 +3483,7 @@ void XDpTxSs_ConfigureStreamEncryption(XDpTxSs *InstancePtr, u64 stream_map)
 	u8 ActiveStreams = 0;   // Current active/enumerated streams
 
 	/* Verify arguments */
-	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_Assertvoid(InstancePtr != NULL);
 
 	/* Fetch hardware capability - max streams supported */
 	MaxStreams = InstancePtr->Config.NumMstStreams;

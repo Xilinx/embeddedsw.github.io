@@ -8,7 +8,12 @@
 /**
 *
 * @file xdmaps_example_w_intr.c
+* @addtogroup dmaps Overview
+* @{
 *
+* @brief Demonstrates DMA PS transfers with interrupt support.
+*
+* Example demonstrating DMA PS transfers with interrupt support.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -62,23 +67,23 @@
 #define DMA_DEVICE_ID 			XPAR_XDMAPS_1_DEVICE_ID
 #define INTC_DEVICE_ID			XPAR_SCUGIC_SINGLE_DEVICE_ID
 #else
-#define DMAPS_BASEADDR			XPAR_XDMAPS_0_BASEADDR
+#define DMAPS_BASEADDR			XPAR_XDMAPS_0_BASEADDR /**< Base address of the DMAPS device. */
 #endif
 
-#define DMA_DONE_INTR_0			XPAR_XDMAPS_0_DONE_INTR_0
-#define DMA_DONE_INTR_1			XPAR_XDMAPS_0_DONE_INTR_1
-#define DMA_DONE_INTR_2			XPAR_XDMAPS_0_DONE_INTR_2
-#define DMA_DONE_INTR_3			XPAR_XDMAPS_0_DONE_INTR_3
-#define DMA_DONE_INTR_4			XPAR_XDMAPS_0_DONE_INTR_4
-#define DMA_DONE_INTR_5			XPAR_XDMAPS_0_DONE_INTR_5
-#define DMA_DONE_INTR_6			XPAR_XDMAPS_0_DONE_INTR_6
-#define DMA_DONE_INTR_7			XPAR_XDMAPS_0_DONE_INTR_7
-#define DMA_FAULT_INTR			XPAR_XDMAPS_0_FAULT_INTR
+#define DMA_DONE_INTR_0			XPAR_XDMAPS_0_DONE_INTR_0 /**< DMA channel 0 done interrupt ID. */
+#define DMA_DONE_INTR_1			XPAR_XDMAPS_0_DONE_INTR_1 /**< DMA channel 1 done interrupt ID. */
+#define DMA_DONE_INTR_2			XPAR_XDMAPS_0_DONE_INTR_2 /**< DMA channel 2 done interrupt ID. */
+#define DMA_DONE_INTR_3			XPAR_XDMAPS_0_DONE_INTR_3 /**< DMA channel 3 done interrupt ID. */
+#define DMA_DONE_INTR_4			XPAR_XDMAPS_0_DONE_INTR_4 /**< DMA channel 4 done interrupt ID. */
+#define DMA_DONE_INTR_5			XPAR_XDMAPS_0_DONE_INTR_5 /**< DMA channel 5 done interrupt ID. */
+#define DMA_DONE_INTR_6			XPAR_XDMAPS_0_DONE_INTR_6 /**< DMA channel 6 done interrupt ID. */
+#define DMA_DONE_INTR_7			XPAR_XDMAPS_0_DONE_INTR_7 /**< DMA channel 7 done interrupt ID. */
+#define DMA_FAULT_INTR			XPAR_XDMAPS_0_FAULT_INTR /**< DMA fault interrupt ID. */
 
 
-#define TEST_ROUNDS	1	/* Number of loops that the Dma transfers run.*/
-#define DMA_LENGTH	1024	/* Length of the Dma Transfers */
-#define TIMEOUT_LIMIT 	0x2000	/* Loop count for timeout */
+#define TEST_ROUNDS	1	/**< Number of loops that the DMA transfers run. */
+#define DMA_LENGTH	1024	/**< Length of the DMA transfers. */
+#define TIMEOUT_LIMIT 	0x2000	/**< Loop count used for timeout polling. */
 
 /**************************** Type Definitions *******************************/
 
@@ -90,7 +95,9 @@
 
 #ifndef SDT
 int XDmaPs_Example_W_Intr(XScuGic *GicPtr, u16 DeviceId);
+/** @cond INTERNAL */
 int SetupInterruptSystem(XScuGic *GicPtr, XDmaPs *DmaPtr);
+/** @endcond */
 #else
 int XDmaPs_Example_W_Intr(XDmaPs *DmapsInstPtr, UINTPTR BaseAddress);
 #endif
@@ -121,13 +128,9 @@ XScuGic GicInstance;
 /****************************************************************************/
 /**
 *
-* This is the main function for the DmaPs interrupt example.
-*
-* @param	None.
+* @brief Mains entry point for the DmaPs interrupt example.
 *
 * @return	XST_SUCCESS to indicate success, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 ****************************************************************************/
 #ifndef TESTAPP_GEN
@@ -155,19 +158,17 @@ int main(void)
 /*****************************************************************************/
 /**
  *
- * Interrupt Example to test the DMA.
+ * @brief Interrupts Example to test the DMA.
  *
  * @if SDT
- * @param	DmapsInstPtr is a pointer to the DMA PS instance.
- * @param	BaseAddress contains the base address of the DmaPs device
+ * @param[in] DmapsInstPtr is a pointer to the DMA PS instance.
+ * @param[in] BaseAddress contains the base address of the DmaPs device
  * @else
- * @param	GicPtr is a pointer to the interrupt controller instance.
- * @param	DeviceId is the Device ID of the DMA controller.
+ * @param[in] GicPtr is a pointer to the interrupt controller instance.
+ * @param[in] DeviceId is the Device ID of the DMA controller.
  * @endif
  *
  * @return	XST_SUCCESS to indicate success, otherwise XST_FAILURE.
- *
- * @note	None.
  *
  ****************************************************************************/
 #ifndef SDT
@@ -332,20 +333,19 @@ int XDmaPs_Example_W_Intr(XDmaPs *DmapsInstPtr, UINTPTR BaseAddress)
 }
 
 #ifndef SDT
+/** @cond INTERNAL */
 /******************************************************************************/
 /**
  *
- * This function connects the interrupt handler of the interrupt controller to
- * the processor.  This function is separate to allow it to be customized for
- * each application. Each processor or RTOS may require unique processing to
+ * @brief Connects the interrupt handler of the interrupt controller to.
+ * the processor. Separate from the example to allow per-application
+ * customization. Each processor or RTOS may require unique processing to
  * connect the interrupt handler.
  *
- * @param	GicPtr is the GIC instance pointer.
- * @param	DmaPtr is the DMA instance pointer.
+ * @param[in] GicPtr is the GIC instance pointer.
+ * @param[in] DmaPtr is the DMA instance pointer.
  *
- * @return	None.
- *
- * @note	None.
+ * @return XST_SUCCESS if successful, otherwise XST_FAILURE.
  *
  ****************************************************************************/
 int SetupInterruptSystem(XScuGic *GicPtr, XDmaPs *DmaPtr)
@@ -456,20 +456,17 @@ int SetupInterruptSystem(XScuGic *GicPtr, XDmaPs *DmaPtr)
 	return XST_SUCCESS;
 
 }
+/** @endcond */
 #endif
 
 /*****************************************************************************/
 /**
 *
-* DmaDoneHandler.
+* @brief DMAs done callback for the example.
 *
-* @param	Channel is the Channel number.
-* @param	DmaCmd is the Dma Command.
-* @param	CallbackRef is the callback reference data.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] Channel is the channel number.
+* @param[in] DmaCmd is the DMA command.
+* @param[in] CallbackRef is the callback reference data.
 *
 ******************************************************************************/
 void DmaDoneHandler(unsigned int Channel, XDmaPs_Cmd *DmaCmd, void *CallbackRef)
@@ -497,4 +494,4 @@ void DmaDoneHandler(unsigned int Channel, XDmaPs_Cmd *DmaCmd, void *CallbackRef)
 	Checked[Channel] = Status;
 }
 
-
+/** @} */

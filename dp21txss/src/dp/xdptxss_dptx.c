@@ -248,12 +248,22 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 
 		if (Dp_GetMstSideBandMsgStatus(InstancePtr)) {
 			/* Read EDID of first sink */
+			if (InstancePtr->TxInstance.Topology.SinkTotal == 0) {
+				xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:No sink "
+					"found in topology.\n\r");
+				return XST_FAILURE;
+			}
 			Sink1 = InstancePtr->TxInstance.Topology.SinkList[0];
-			XDp_TxGetRemoteEdid(InstancePtr, Sink1->LinkCountTotal,
+			Status = XDp_TxGetRemoteEdid(InstancePtr, Sink1->LinkCountTotal,
 					Sink1->RelativeAddress, Edid);
 		} else {
 			/* Get EDID */
-			XDp_TxGetEdid(InstancePtr, Edid);
+			Status = XDp_TxGetEdid(InstancePtr, Edid);
+		}
+		if (Status != XST_SUCCESS) {
+			xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:Failed to read "
+				"sink EDID.\n\r");
+			return Status;
 		}
 		/* Check video mode for EDID preferred video mode */
 		if (VidMode == XVIDC_VM_USE_EDID_PREFERRED) {
@@ -641,14 +651,28 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 	}
 	xdbg_printf(XDBG_DEBUG_GENERAL, "SS INFO:Enabled main link!\n\r\n\r");
 
-	/* Program the VSC Extended Packet */
-	if (InstancePtr->TxInstance.ColorimetryThroughVsc)
+	/* Program the VSC Extended Packet for every stream that transmits
+	 * colorimetry through VSC (single stream mode uses stream 1 only,
+	 * multi stream mode per stream). */
 	{
-		XDp_WriteReg(InstancePtr->Config.BaseAddr,
-				XDP_TX_AUDIO_EXT_DATA(1), InstancePtr->TxInstance.VscPacket.Header);
-		for (i = 0; i < XDPTXSS_EXT_DATA_2ND_TO_9TH_WORD; i++) {
-			XDp_WriteReg(InstancePtr->Config.BaseAddr, XDP_TX_AUDIO_EXT_DATA(i+2),
-				InstancePtr->TxInstance.VscPacket.Payload[i]);
+		u8 Stream;
+		u32 ExtDataOffset[4] = {0,
+				       XDP_TX_AUDIO_EXT_DATA_STREAM2_OFFSET,
+				       XDP_TX_AUDIO_EXT_DATA_STREAM3_OFFSET,
+				       XDP_TX_AUDIO_EXT_DATA_STREAM4_OFFSET};
+
+		for (Stream = 0; Stream < 4; Stream++) {
+			if (!InstancePtr->TxInstance.ColorimetryThroughVsc[Stream])
+				continue;
+
+			XDp_WriteReg(InstancePtr->Config.BaseAddr,
+				     XDP_TX_AUDIO_EXT_DATA(1) + ExtDataOffset[Stream],
+				     InstancePtr->TxInstance.VscPacket[Stream].Header);
+			for (i = 0; i < XDPTXSS_EXT_DATA_2ND_TO_9TH_WORD; i++) {
+				XDp_WriteReg(InstancePtr->Config.BaseAddr,
+					     XDP_TX_AUDIO_EXT_DATA(i + 2) + ExtDataOffset[Stream],
+					     InstancePtr->TxInstance.VscPacket[Stream].Payload[i]);
+			}
 		}
 	}
 

@@ -7,9 +7,13 @@
 /*****************************************************************************/
 /**
 * @file xemaclite_intr_example.c
+* @addtogroup emaclite Overview
+* @{
 *
-* This file contains an example for using the EmacLite hardware and driver.
-* This file contains an interrupt example outlining the use of interrupts and
+* @brief Demonstrates EmacLite interrupt-driven transmit and receive.
+*
+* Contains an example for using the EmacLite hardware and driver.
+* Contains an interrupt example outlining the use of interrupts and
 * callbacks in the transmission/reception of an Ethernet frame of 1000 bytes of
 * payload.
 *
@@ -18,10 +22,6 @@
 * If the MDIO interface is configured in the EmacLite core then this example
 * will enable the MAC loopback in the PHY device, then transmit the frame and
 * compare the received frame.
-*
-* @note
-*
-* None
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -74,27 +74,24 @@
  */
 #ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
-#define INTC_EMACLITE_ID	XPAR_INTC_0_EMACLITE_0_VEC_ID
+#define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID /**< Interrupt controller device ID. */
+#define INTC_EMACLITE_ID	XPAR_INTC_0_EMACLITE_0_VEC_ID /**< EmacLite interrupt vector ID. */
 #else
-#define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
-#define INTC_EMACLITE_ID	XPAR_FABRIC_AXI_ETHERNETLITE_0_IP2INTC_IRPT_INTR
+#define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID /**< Interrupt controller device ID. */
+#define INTC_EMACLITE_ID	XPAR_FABRIC_AXI_ETHERNETLITE_0_IP2INTC_IRPT_INTR /**< EmacLite interrupt vector ID. */
 #endif
 #endif
 #endif
 
-/*
- * The Size of the Test Frame.
- */
-#define EMACLITE_TEST_FRAME_SIZE	1000
+#define EMACLITE_TEST_FRAME_SIZE	1000 /**< Size of the test Ethernet frame in bytes. */
 
 #ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC		XIntc
-#define INTC_HANDLER	XIntc_InterruptHandler
+#define INTC		XIntc /**< Interrupt controller driver type. */
+#define INTC_HANDLER	XIntc_InterruptHandler /**< Interrupt controller handler. */
 #else
-#define INTC		XScuGic
-#define INTC_HANDLER	XScuGic_InterruptHandler
+#define INTC		XScuGic /**< Interrupt controller driver type. */
+#define INTC_HANDLER	XScuGic_InterruptHandler /**< Interrupt controller handler. */
 #endif /* XPAR_INTC_0_DEVICE_ID */
 #endif
 /**************************** Type Definitions *******************************/
@@ -112,6 +109,7 @@ int EmacLiteIntrExample(INTC *IntcInstancePtr,
 			u16 EmacLiteDeviceId,
 			u16 EmacLiteIntrId);
 #endif
+/** @cond INTERNAL */
 static int EmacLiteSendFrame(XEmacLite *EmacLiteInstPtr,
 			     u32 PayloadSize);
 static int EmacLiteRecvFrame(u32 PayloadSize);
@@ -123,6 +121,7 @@ static void EmacLiteDisableIntrSystem(INTC *IntcInstancePtr,
 static int EmacLiteSetupIntrSystem(INTC *IntcInstancePtr,
 				   XEmacLite *EmacLiteInstPtr, u16 EmacLiteIntrId);
 #endif
+/** @endcond */
 
 /************************** Variable Definitions *****************************/
 
@@ -144,13 +143,9 @@ static u8 LocalAddress[XEL_MAC_ADDR_SIZE] = {
 /****************************************************************************/
 /**
 *
-* This function is the main function of the EmacLite interrupt example.
-*
-* @param	None.
+* @brief Main entry point of the EmacLite interrupt example.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 *****************************************************************************/
 #ifndef TESTAPP_GEN
@@ -185,32 +180,27 @@ int main()
 /*****************************************************************************/
 /**
 *
-* The main entry point for the EmacLite driver example in interrupt mode.
-
-* This function will transmit/receive the Ethernet frames and verify the
-* data in the received frame (if the MDIO interface is configured in the
-* EmacLite core).
-* This function simply transmits a frame if the MDIO interface is not
-* configured in the EmacLite core.
+* @brief The main entry point for the EmacLite driver example in interrupt mode.
+*
+* Transmits and receives Ethernet frames and verifies the received data
+* when the MDIO interface is configured in the EmacLite core.
+* Transmits a frame only when the MDIO interface is not configured.
 *
 * @if SDT
-* @param	EmacLiteInstPtr is a pointer to the instance of the EmacLite.
-* @param	EmacLiteBaseAddr contains the base address of the EmacLite device
+* @param[in] EmacLiteInstPtr is a pointer to the instance of the EmacLite.
+* @param[in] EmacLiteBaseAddr contains the base address of the EmacLite device.
 * @else
-* @param	IntcInstancePtr is a pointer to the instance of the Intc.
-* @param	EmacLiteInstPtr is a pointer to the instance of the EmacLite.
-* @param	EmacLiteDeviceId is device ID of the XEmacLite Device ,
+* @param[in] IntcInstancePtr is a pointer to the instance of the Intc.
+* @param[in] EmacLiteInstPtr is a pointer to the instance of the EmacLite.
+* @param[in] EmacLiteDeviceId is device ID of the XEmacLite Device.
 *		typically XPAR_<EMACLITE_instance>_DEVICE_ID value from
 *		xparameters.h.
-* @param	EmacLiteIntrId is the interrupt ID and is typically
+* @param[in] EmacLiteIntrId is the interrupt ID and is typically
 *		XPAR_<INTC_instance>_<EMACLITE_instance>_VEC_ID value from
 *		xparameters.h.
 * @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 #ifdef SDT
@@ -411,17 +401,15 @@ int EmacLiteIntrExample(INTC *IntcInstancePtr,
 /******************************************************************************/
 /**
 *
-* This function sends a frame of given size. This function assumes interrupt
+* @brief Sends a frame of given size. Assumes interrupt
 * mode and sends the frame.
 *
-* @param	EmacLiteInstPtr is a pointer to the EmacLite instance.
-* @param	PayloadSize is the size of the frame to create. The size only
+* @param[in] EmacLiteInstPtr is a pointer to the EmacLite instance.
+* @param[in] PayloadSize is the size of the frame to create. The size only
 *		reflects the payload size, it does not include the Ethernet
 *		header size (14 bytes) nor the Ethernet CRC size (4 bytes).
 *
 * @return	XST_SUCCESS if successful, else XST_FAILURE.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int EmacLiteSendFrame(XEmacLite *EmacLiteInstPtr,  u32 PayloadSize)
@@ -505,17 +493,15 @@ static int EmacLiteSendFrame(XEmacLite *EmacLiteInstPtr,  u32 PayloadSize)
 /******************************************************************************/
 /**
 *
-* This function receives a frame of given size. This function assumes interrupt
+* @brief Receives a frame of given size. Assumes interrupt
 * mode, receives the frame and verifies its contents.
 *
-* @param	PayloadSize is the size of the frame to receive.
+* @param[in] PayloadSize is the size of the frame to receive.
 *		The size only reflects the payload size, it does not include the
 *		Ethernet header size (14 bytes) nor the Ethernet CRC size (4
 *		bytes).
 *
 * @return	XST_SUCCESS if successful, a driver-specific return code if not.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int EmacLiteRecvFrame(u32 PayloadSize)
@@ -526,7 +512,7 @@ static int EmacLiteRecvFrame(u32 PayloadSize)
 	 * This assumes MAC does not strip padding or CRC.
 	 */
 	if (RecvFrameLength != 0) {
-		int Index;
+		u32 Index;
 
 		/*
 		 * Verify length, which should be the payload size.
@@ -556,13 +542,9 @@ static int EmacLiteRecvFrame(u32 PayloadSize)
 /******************************************************************************/
 /**
 *
-* This function handles the receive callback from the EmacLite driver.
+* @brief Handles the receive callback from the EmacLite driver.
 *
-* @param	CallBackRef is the call back reference provided to the Handler.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] CallBackRef is the call back reference provided to the Handler.
 *
 ******************************************************************************/
 static void EmacLiteRecvHandler(void *CallBackRef)
@@ -584,13 +566,9 @@ static void EmacLiteRecvHandler(void *CallBackRef)
 /******************************************************************************/
 /**
 *
-* This function handles the transmit callback from the EmacLite driver.
+* @brief Handles the transmit callback from the EmacLite driver.
 *
-* @param	CallBackRef is the call back reference provided to the Handler.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] CallBackRef is the call back reference provided to the Handler.
 *
 ******************************************************************************/
 static void EmacLiteSendHandler(void *CallBackRef)
@@ -607,21 +585,19 @@ static void EmacLiteSendHandler(void *CallBackRef)
 /*****************************************************************************/
 /**
 *
-* This function setups the interrupt system such that interrupts can occur
-* for the EmacLite device. This function is application specific since the
+* @brief Sets up the interrupt system such that interrupts can occur
+* for the EmacLite device. Application-specific; the
 * actual system may or may not have an interrupt controller.  The EmacLite
 * could be directly connected to a processor without an interrupt controller.
 * The user should modify this function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the Intc.
-* @param	EmacLiteInstPtr is a pointer to the instance of the EmacLite.
-* @param	EmacLiteIntrId is the interrupt ID and is typically
+* @param[in] IntcInstancePtr is a pointer to the instance of the Intc.
+* @param[in] EmacLiteInstPtr is a pointer to the instance of the EmacLite.
+* @param[in] EmacLiteIntrId is the interrupt ID and is typically
 *		XPAR_<INTC_instance>_<EMACLITE_instance>_VEC_ID
-*		value from xparameters.h
+*		value from xparameters.h.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int EmacLiteSetupIntrSystem(INTC *IntcInstancePtr,
@@ -738,17 +714,13 @@ static int EmacLiteSetupIntrSystem(INTC *IntcInstancePtr,
 /*****************************************************************************/
 /**
 *
-* This function disables the interrupts that occur for the EmacLite device.
+* @brief Disables the interrupts that occur for the EmacLite device.
 *
-* @param	IntcInstancePtr is the pointer to the instance of the INTC
+* @param[in] IntcInstancePtr is the pointer to the instance of the INTC
 *		component.
-* @param	EmacLiteIntrId is the interrupt ID and is typically
+* @param[in] EmacLiteIntrId is the interrupt ID and is typically
 *		XPAR_<INTC_instance>_<EMACLITE_instance>_VEC_ID
 *		value from xparameters.h.
-*
-* @return	None.
-*
-* @note		None.
 *
 ******************************************************************************/
 static void EmacLiteDisableIntrSystem(INTC *IntcInstancePtr,
@@ -766,3 +738,5 @@ static void EmacLiteDisableIntrSystem(INTC *IntcInstancePtr,
 
 }
 #endif
+
+/** @} */

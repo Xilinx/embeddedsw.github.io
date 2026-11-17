@@ -48,9 +48,7 @@
 /***************************** Include Files *********************************/
 
 #include "main.h"
-#ifdef SDT
 #include "xinterrupt_wrap.h"
-#endif
 
 #include "si5328drv.h"
 #include "sleep.h"
@@ -59,9 +57,7 @@
 //
 XIicPs Ps_Iic0, Ps_Iic1;
 //
-#ifdef SDT
 #define XPAR_IIC_0_BASEADDR XPAR_XIIC_0_BASEADDR
-#endif
 #if (ENABLE_HDCP1x_IN_RX | ENABLE_HDCP1x_IN_TX)
 unsigned int gKeyMGMTBaseAddress[2] = {
 #if ENABLE_HDCP1x_IN_RX
@@ -83,7 +79,6 @@ unsigned int gKeyMGMTBaseAddress[2] = {0, 0};
 
 int gIsKeyWrittenInEeeprom = FALSE;
 
-#ifdef SDT
 #define INTRNAME_DPTX   0
 #define INTRNAME_DPRX   0
 #if (ENABLE_HDCP_IN_DESIGN && ENABLE_HDCP22_IN_RX && ENABLE_HDCP1x_IN_RX)
@@ -98,7 +93,6 @@ int gIsKeyWrittenInEeeprom = FALSE;
 #else
 #define INTRNAME_DPTX_TIMER 2
 #endif
-#endif
 
 #ifdef TxOnly
 #include "tx.h"
@@ -107,10 +101,8 @@ int gIsKeyWrittenInEeeprom = FALSE;
 #include "rx.h"
 #endif
 
-#ifdef SDT
 #define XPAR_XV_FRMBUFRD_NUM_INSTANCES XPAR_XV_FRMBUF_RD_NUM_INSTANCES
 #define XPAR_XV_FRMBUFWR_NUM_INSTANCES XPAR_XV_FRMBUF_WR_NUM_INSTANCES
-#endif
 
 void operationMenu();
 //void resetIp();
@@ -120,11 +112,7 @@ void DpTxSs_Main();
 void DpRxSs_Main();
 void DpPt_Main();
 int I2cMux_Ps(u8 mux);
-#ifndef SDT
-u32 DpSs_VideoPhyInit(u16 DeviceId);
-#else
 u32 DpSs_VideoPhyInit(UINTPTR BaseAddress);
-#endif
 u32 CalcStride(XVidC_ColorFormat Cfmt,
 					  u16 AXIMMDataWidth,
 					  XVidC_VideoStream *StreamPtr);
@@ -196,41 +184,41 @@ typedef enum {
 const XVidC_VideoTimingMode XVidC_MyVideoTimingMode[
 					(XVIDC_CM_NUM_SUPPORTED - (XVIDC_VM_CUSTOM + 1))] =
 {
-	{ XVIDC_VM_1920x1080_60_P_RB, "1920x1080@60Hz (RB)", XVIDC_FR_60HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_1920x1080_60_P_RB, "1920x1080@60Hz (RB)", XVIDC_FR_60HZ,
 		{1920, 48, 32, 80, 2080, 1,
 		1080, 3, 5, 23, 1111, 0, 0, 0, 0, 0}},
-	{ XVIDC_B_TIMING3_60_P_RB, "2560x1440@60Hz (RB)", XVIDC_FR_60HZ,
+	{ (XVidC_VideoMode)XVIDC_B_TIMING3_60_P_RB, "2560x1440@60Hz (RB)", XVIDC_FR_60HZ,
 		 {2560, 48, 32, 80, 2720, 1,
 		1440, 3, 5, 33, 1481, 0, 0, 0, 0, 0}},
-	{ XVIDC_VM_3840x2160_120_P_RB, "3840x2160@120Hz (RB)", XVIDC_FR_120HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_120_P_RB, "3840x2160@120Hz (RB)", XVIDC_FR_120HZ,
 		{3840, 8, 32, 40, 3920, 1,
 		2160, 113, 8, 6, 2287, 0, 0, 0, 0, 1} },
 
-	{ XVIDC_VM_7680x4320_DP_24_P, "7680x4320@24Hz", XVIDC_FR_24HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_DP_24_P, "7680x4320@24Hz", XVIDC_FR_24HZ,
 		{7680, 352, 176, 592, 8800, 1,
 		4320, 16, 20, 144, 4500, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_7680x4320_DP_25_P, "7680x4320@25Hz", XVIDC_FR_25HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_DP_25_P, "7680x4320@25Hz", XVIDC_FR_25HZ,
 		{7680, 352, 176, 592, 8800, 1,
 		4320, 16, 20, 144, 4500, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_7680x4320_DP_30_P, "7680x4320@30Hz", XVIDC_FR_30HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_DP_30_P, "7680x4320@30Hz", XVIDC_FR_30HZ,
 		{7680, 8, 32, 40, 7760, 0,
 		4320, 47, 8, 6, 4381, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_3840x2160_100_P_RB2, "3840x2160@100Hz (RB2)", XVIDC_FR_100HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_100_P_RB2, "3840x2160@100Hz(RB2)", XVIDC_FR_100HZ,
 		{3840, 8, 32, 40, 3920, 0,
 		2160, 91, 8, 6, 2265, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_7680x4320_30_DELL, "7680x4320_DELL@30Hz", XVIDC_FR_30HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_30_DELL, "7680x4320_DELL@30Hz", XVIDC_FR_30HZ,
 		{7680, 48, 32, 80, 7840, 0,
 		4320, 3, 5, 53, 4381, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_5120x2880_60_P_RB2, "5120x2880@60Hz (RB2)", XVIDC_FR_60HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2880_60_P_RB2, "5120x2880@60Hz (RB2)", XVIDC_FR_60HZ,
 		{5120, 8, 32, 40, 5200, 0,
 		2880, 68, 8, 6, 2962, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_7680x4320_30_MSTR, "7680x4320_MSTR@30Hz", XVIDC_FR_30HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_30_MSTR, "7680x4320_MSTR@30Hz", XVIDC_FR_30HZ,
 		{7680, 25, 97, 239, 8041, 0,
 		4320, 48, 9, 5, 4382, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_5120x2880_60_MSTR, "5120x2880@60Hz_MSTR", XVIDC_FR_60HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2880_60_MSTR, "5120x2880@60Hz_MSTR", XVIDC_FR_60HZ,
 		{5120, 25, 97, 239, 5481, 0,
 		2880, 48, 9, 5, 2942, 0, 0, 0, 0, 1}},
-	{ XVIDC_VM_3840x2160_120_MSTR, "3840x2160@120Hz_MSTR", XVIDC_FR_120HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_120_MSTR, "3840x2160@120Hz_MSTR", XVIDC_FR_120HZ,
 		{3840, 48, 34, 79, 4001, 1,
 		2160, 4, 6, 53, 2223, 0, 0, 0, 0, 1}},
 };
@@ -255,17 +243,17 @@ XVidC_VideoMode resolution_table[] =
 	XVIDC_VM_1920x1440_60_P,
 	XVIDC_VM_USE_EDID_PREFERRED,
 
-	XVIDC_VM_1920x1080_60_P_RB,
+	(XVidC_VideoMode)XVIDC_VM_1920x1080_60_P_RB,
 	XVIDC_VM_3840x2160_60_P_RB,
-	XVIDC_VM_3840x2160_120_P_RB,
-	XVIDC_VM_7680x4320_DP_24_P,
-	XVIDC_VM_7680x4320_DP_30_P,
-	XVIDC_VM_3840x2160_100_P_RB2,
-	XVIDC_VM_7680x4320_30_DELL,
-	XVIDC_VM_5120x2880_60_P_RB2,
-	XVIDC_VM_7680x4320_30_MSTR,
-	XVIDC_VM_5120x2880_60_MSTR,
-	XVIDC_VM_3840x2160_120_MSTR
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_120_P_RB,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_DP_24_P,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_DP_30_P,
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_100_P_RB2,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_30_DELL,
+	(XVidC_VideoMode)XVIDC_VM_5120x2880_60_P_RB2,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_30_MSTR,
+	(XVidC_VideoMode)XVIDC_VM_5120x2880_60_MSTR,
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_120_MSTR
 
 };
 
@@ -322,11 +310,7 @@ int VideoFMC_Init(void)
 
 	XIic_Config *ConfigPtr_IIC;     /* Pointer to configuration data */
 	/* Initialize the IIC driver so that it is ready to use. */
-#ifndef SDT
-	ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
 	ConfigPtr_IIC = XIic_LookupConfig(XPAR_IIC_0_BASEADDR);
-#endif
 	if (ConfigPtr_IIC == NULL) {
 	        return XST_FAILURE;
 	}
@@ -567,11 +551,7 @@ u32 DpSs_Main(void)
 	xil_printf("Platform initialization done.\n\r");
 
 	/* Setup Video Phy, left to the user for implementation */
-#ifndef SDT
-	DpSs_VideoPhyInit(XVPHY_DEVICE_ID);
-#else
 	DpSs_VideoPhyInit(XPAR_XVPHY_0_BASEADDR);
-#endif
 	set_vphy(0x14);
 
 	 /*Load HDCP22 Keys*/
@@ -620,7 +600,6 @@ u32 DpSs_Main(void)
 	extern uint8_t Hdcp14KeyA_test[336];
 	extern uint8_t Hdcp14KeyA[];
 	extern uint32_t Hdcp14KeyA_Sz ;
-	uint64_t* ptr_64=Hdcp14KeyA_test;
 	extern uint32_t Hdcp14KeyB_test_Sz ;
 	extern uint8_t Hdcp14KeyB_test[336];
 	extern uint8_t Hdcp14KeyB[];
@@ -629,7 +608,6 @@ u32 DpSs_Main(void)
 
 	memcpy(Hdcp14KeyB_test,Hdcp14KeyB,Hdcp14KeyB_Sz);
 	extern uint8_t Hdcp14Key_test[672];
-	extern uint32_t Hdcp14Key_test_Sz;
 	memcpy(Hdcp14Key_test,Hdcp14KeyA_test,Hdcp14KeyA_test_Sz);
 	memcpy((Hdcp14Key_test + Hdcp14KeyA_test_Sz),Hdcp14KeyB_test,Hdcp14KeyB_test_Sz);
 #endif
@@ -647,11 +625,7 @@ u32 DpSs_Main(void)
 #ifdef RxOnly
 	/* Obtain the device configuration
 	 * for the DisplayPort RX Subsystem */
-#ifndef SDT
-	ConfigPtr_rx = XDpRxSs_LookupConfig(XDPRXSS_DEVICE_ID);
-#else
 	ConfigPtr_rx = XDpRxSs_LookupConfig(XPAR_DPRXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_rx) {
 		return XST_FAILURE;
 	}
@@ -709,12 +683,7 @@ u32 DpSs_Main(void)
 			Hdcp22Srm);
 
 #ifdef TxOnly
-#ifndef SDT
-/* Obtain the device configuration for the DisplayPort TX Subsystem */
-	ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_DEVICE_ID);
-#else
 		ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_tx) {
 		return XST_FAILURE;
 	}
@@ -762,24 +731,15 @@ u32 DpSs_Main(void)
 
 #endif
 
-#ifndef SDT
-	/* FrameBuffer initialization. */
-	Status = XVFrmbufRd_Initialize(&frmbufrd, FRMBUF_RD_DEVICE_ID);
-#else
 	/* FrameBuffer initialization. */
 	Status = XVFrmbufRd_Initialize(&frmbufrd, XPAR_XV_FRMBUF_RD_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Read "
 			   "initialization failed\r\n");
 		return (XST_FAILURE);
 	}
 
-#ifndef SDT
-	Status = XVFrmbufWr_Initialize(&frmbufwr, FRMBUF_WR_DEVICE_ID);
-#else
 	Status = XVFrmbufWr_Initialize(&frmbufwr, XPAR_XV_FRMBUF_WR_0_BASEADDR);
-#endif
 	if(Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Write "
 			   "initialization failed\r\n");
@@ -936,10 +896,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 	switch (link_rate) {
 	case 0x6:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				  XVPHY_DP_LINK_RATE_HZ_162GBPS);
@@ -948,10 +908,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 		break;
 	case 0x14:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				  XVPHY_DP_LINK_RATE_HZ_540GBPS);
@@ -960,10 +920,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 		break;
 	case 0x1E:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-					ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 					XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				  XVPHY_DP_LINK_RATE_HZ_810GBPS);
@@ -972,12 +932,12 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
 		break;
 	default:
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-				    ONBOARD_REF_CLK,
+				    (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 				    XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
 //				    DP159_FORWARDED_CLK,
 //				    XVPHY_DP_REF_CLK_FREQ_HZ_135);
-				    ONBOARD_REF_CLK,
+				    (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 				    XVPHY_DP_REF_CLK_FREQ_HZ_270);
 		XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
 				  XVPHY_DP_LINK_RATE_HZ_270GBPS);
@@ -1303,11 +1263,7 @@ u32 DpSs_PlatformInit(void)
 #endif
 #endif
 	/* Initialize Timer */
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&TmrCtr, XTIMER0_DEVICE_ID);
-#else
 	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_XTMRCTR_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS){
 		xil_printf("ERR:Timer failed to initialize. \r\n");
 		return XST_FAILURE;
@@ -1354,11 +1310,7 @@ u32 DpSs_PlatformInit(void)
 	XV_axi4s_remap_Set_inPixClk(&tx_remap, 4);
 	XV_axi4s_remap_Set_outPixClk(&tx_remap, 4);
 #endif
-#ifndef SDT
-	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_0_DEVICE_ID);
-#else
 	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_0_BASEADDR);
-#endif
 	if (XIic0Ps_ConfigPtr == NULL)
 		return XST_FAILURE;
 
@@ -1374,11 +1326,7 @@ u32 DpSs_PlatformInit(void)
     XIicPs_SetSClk(&Ps_Iic0, PS_IIC_CLK);
 
     /* Initialize PS IIC1 */
-#ifndef SDT
-	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_DEVICE_ID);
-#else
 	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_BASEADDR);
-#endif
     if (NULL == XIic1Ps_ConfigPtr) {
             return XST_FAILURE;
     }
@@ -1397,13 +1345,8 @@ u32 DpSs_PlatformInit(void)
 
 
 #if ENABLE_AUDIO
-#ifndef SDT
-    aud_gpio_ConfigPtr =
-            XGpio_LookupConfig(XPAR_DP_RX_HIER_0_AXI_GPIO_0_DEVICE_ID);
-#else
 	aud_gpio_ConfigPtr =
 		XGpio_LookupConfig(XPAR_DP_RX_HIER_0_AXI_GPIO_0_BASEADDR);
-#endif
     if(aud_gpio_ConfigPtr == NULL) {
 	aud_gpio.IsReady = 0;
             return (XST_DEVICE_NOT_FOUND);
@@ -1444,137 +1387,6 @@ u32 DpSs_PlatformInit(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpSs_SetupIntrSystem(void)
-{
-	u32 Status;
-	extern XScuGic IntcInst;
-	XINTC *IntcInstPtr = &IntcInst;
-
-	// Tx side
-#ifdef TxOnly
-	DpTxSs_SetupIntrSystem();
-#endif
-	// Rx side
-#ifdef RxOnly
-	DpRxSs_SetupIntrSystem();
-#endif
-
-	XVFrmbufWr_SetCallback(&frmbufwr, XVFRMBUFWR_HANDLER_DONE,
-								&bufferWr_callback,&frmbufwr);
-
-	/* The configuration parameters of the interrupt controller */
-	XScuGic_Config *IntcConfig;
-
-	/* Initialize the interrupt controller
-	 * driver so that it is ready to use. */
-	IntcConfig = XScuGic_LookupConfig(XINTC_DEVICE_ID);
-	if (NULL == IntcConfig) {
-		return XST_FAILURE;
-	}
-
-	Status = XScuGic_CfgInitialize(IntcInstPtr, IntcConfig,
-	IntcConfig->CpuBaseAddress);
-	if (Status != XST_SUCCESS) {
-	return XST_FAILURE;
-	}
-
-	/* Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined
-	 * above performs the specific interrupt processing for the device.
-	 * */
-#ifdef RxOnly
-
-	Status = XScuGic_Connect(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID,
-				(Xil_InterruptHandler)XDpRxSs_DpIntrHandler,
-				&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP RX SS DP interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-	/* Enable the interrupt for the DP device */
-	XScuGic_Enable(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID);
-
-	Status = XScuGic_Connect(IntcInstPtr,
-				 XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID,
-				 (Xil_InterruptHandler)XVFrmbufWr_InterruptHandler,
-				 &frmbufwr);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF WR interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-	/* Enable the interrupt vector at the interrupt controller */
-	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID);
-
-#endif
-	/* Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-#ifdef TxOnly
-	Status = XScuGic_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-				(Xil_InterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-	/* Enable the interrupt */
-	XScuGic_Enable(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID);
-
-
-	Status = XScuGic_Connect(IntcInstPtr,
-				 XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID,
-				 (Xil_InterruptHandler)XVFrmbufRd_InterruptHandler,
-				 &frmbufrd);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF WR interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-	/* Disable the interrupt vector at the interrupt controller */
-	XScuGic_Disable(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID);
-
-
-#endif
-#if ENABLE_HDCP_IN_DESIGN
-#if (ENABLE_HDCP1x_IN_TX || ENABLE_HDCP22_IN_TX)
-	XScuGic_Connect(IntcInstPtr, XPAR_FABRIC_DP14TXSS_0_DPTXSS_TIMER_IRQ_VEC_ID,
-			(Xil_InterruptHandler)XTmrCtr_InterruptHandler,
-			DpTxSsInst.TmrCtrPtr);
-	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_DP14TXSS_0_DPTXSS_TIMER_IRQ_VEC_ID);
-#endif
-
-#if (ENABLE_HDCP1x_IN_RX || ENABLE_HDCP22_IN_RX)
-	/* Hook up Rx interrupt service routine */
-	Status = XScuGic_Connect(IntcInstPtr,
-			XPAR_FABRIC_DP14RXSS_0_DPRXSS_TIMER_IRQ_VEC_ID,
-			(Xil_InterruptHandler)XDpRxSs_TmrCtrIntrHandler,&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: Timer interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_DP14RXSS_0_DPRXSS_TIMER_IRQ_VEC_ID);
-#endif
-#endif
-
-	/* Initialize the exception table. */
-	Xil_ExceptionInit();
-
-	/* Register the interrupt controller handler with the exception
-	 * table.*/
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				     (Xil_ExceptionHandler)XINTC_HANDLER,
-				     IntcInstPtr);
-
-	/* Enable exceptions. */
-	Xil_ExceptionEnable();
-
-	return (XST_SUCCESS);
-}
-#else
 u32 DpSs_SetupIntrSystem(void)
 {
 	u32 Status;
@@ -1664,7 +1476,6 @@ u32 DpSs_SetupIntrSystem(void)
 
 	return (XST_SUCCESS);
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -1770,21 +1581,12 @@ int TI_LMK03318_SetRegister(u32 I2CBaseAddress, u8 I2CSlaveAddress,
 * @note        None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpSs_VideoPhyInit(u16 DeviceId)
-{
-#else
 u32 DpSs_VideoPhyInit(UINTPTR BaseAddress)
 {
-#endif
 	XVphy_Config *ConfigPtr;
 
 	/* Obtain the device configuration for the DisplayPort RX Subsystem */
-#ifndef SDT
-	ConfigPtr = XVphy_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XVphy_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -1793,8 +1595,8 @@ u32 DpSs_VideoPhyInit(UINTPTR BaseAddress)
 	PLLRefClkSel (&VPhyInst, 0x14);
 
 	XVphy_DpInitialize(&VPhyInst, ConfigPtr, 0,
-			ONBOARD_REF_CLK,
-			ONBOARD_REF_CLK,
+			(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
+			(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 			XVPHY_PLL_TYPE_QPLL1,
 			XVPHY_PLL_TYPE_CPLL,
 			0x14);
@@ -2027,8 +1829,10 @@ void frameBuffer_start_wr(XVidC_VideoMode VmId,
 		XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K) {
 
 	XVidC_ColorFormat Cfmt;
-	XVidC_VideoTiming const *TimingPtr;
 	XVidC_VideoStream VidStream;
+
+	(void)VmId;
+	(void)downshift4K;
 
 	resetIp_wr(Msa);
 
@@ -2093,6 +1897,8 @@ void frameBuffer_start_rd(XVidC_VideoMode VmId,
 	XVidC_ColorFormat Cfmt;
 	XVidC_VideoTiming const *TimingPtr;
 	XVidC_VideoStream VidStream;
+
+	(void)VmId;
 
 	resetIp_rd(Msa);
 
@@ -2299,6 +2105,8 @@ void remap_start_rd(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K)
 void bufferWr_callback(void *InstancePtr){
 	u32 Status;
 
+	(void)InstancePtr;
+
 	if(XVFRMBUFWR_BUFFER_BASEADDR >= (0 + (0x10000000) + (0x10000000 * 2))){
 
 		XVFRMBUFRD_BUFFER_BASEADDR = (0 + (0x10000000) + (0x10000000 * 1) +
@@ -2333,7 +2141,7 @@ void bufferWr_callback(void *InstancePtr){
 
 
 void bufferRd_callback(void *InstancePtr){
-
+	(void)InstancePtr;
 }
 
 
@@ -2461,6 +2269,7 @@ u8 tx_ppc_set = 0;
 int Dppt_DetectResolution(void *InstancePtr,
 							XDpTxSs_MainStreamAttributes Msa[4]){
 
+	(void)InstancePtr;
 	u32 DpHres = 0;
 	u32 DpVres = 0;
 	int i = 0;
@@ -2673,6 +2482,7 @@ int Dppt_DetectResolution(void *InstancePtr,
 #if defined(PT) || defined(LB)
 void DpPt_TxSetMsaValuesImmediate(void *InstancePtr){
 
+	(void)InstancePtr;
 	/* Set the main stream attributes to the associated DisplayPort TX core
 	 * registers. */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr, XDP_TX_MAIN_STREAM_HTOTAL +

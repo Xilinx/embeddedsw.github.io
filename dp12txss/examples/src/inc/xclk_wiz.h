@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -23,7 +23,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include "xparameters.h"
 #include "xil_types.h"
 #include "../src/xvid_pat_gen.h"
@@ -33,13 +32,8 @@ extern "C" {
 	XPAR_VID_CLK_RST_HIER_CLK_WIZ_0_BASEADDR
 #if (XPAR_XHDCP_NUM_INSTANCES > 0 \
 		&& XPAR_DP_RX_HIER_DP_RX_SUBSYSTEM_0_DP_GT_DATAWIDTH == 2)
-#ifndef SDT
-#define CLK_WIZ_BASE_TX                                 XPAR_CLK_WIZ_1_BASEADDR
-#define CLK_WIZ_BASE_RX                                 XPAR_CLK_WIZ_0_BASEADDR
-#else
 #define CLK_WIZ_BASE_TX                                 XPAR_XCLK_WIZ_1_BASEADDR
 #define CLK_WIZ_BASE_RX                                 XPAR_XCLK_WIZ_0_BASEADDR
-#endif
 #endif
 #define CLK_LOCK                        1
 
@@ -53,6 +47,7 @@ int wait_for_lock();
 void ComputeMandD(XDp *InstancePtr, u32 VidFreq);
 void ComputeMandD_txlnk(u32 VidFreq, u16 Link_rate);
 void ComputeMandD_rxlnk(u32 VidFreq, u16 Link_rate);
+
 #ifdef __cplusplus
 }
 #endif

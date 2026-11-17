@@ -53,7 +53,7 @@ extern Video_CRC_Config VidFrameCRC_rx; /* Video Frame CRC instance */
 extern int tx_started;
 extern volatile int tx_is_reconnected;
 extern volatile u8 hpd_pulse_con_event;
-extern password_valid;
+extern u8 password_valid;
 
 #if ENABLE_AUDIO
 extern XGpio   aud_gpio;
@@ -163,8 +163,8 @@ void DpPt_Main(void){
 
 	u8 edid_monitor[384];
 	u8 exit;
-    u8 *LaneCount_tx = 0x4;
-    u8 *LineRate_tx = 0x14;
+    u8 LaneCount_tx = 0;
+    u8 LineRate_tx = 0;
 
 	char CmdKey[2];
 	unsigned int Command;
@@ -257,9 +257,9 @@ void DpPt_Main(void){
 	}
 
 	Status  = XDp_TxAuxRead(DpTxSsInst.DpPtr,
-							XDP_DPCD_MAX_LINK_RATE,  1, LineRate_tx);
+							XDP_DPCD_MAX_LINK_RATE,  1, &LineRate_tx);
 	Status |= XDp_TxAuxRead(DpTxSsInst.DpPtr,
-							XDP_DPCD_MAX_LANE_COUNT, 1, LaneCount_tx);
+							XDP_DPCD_MAX_LANE_COUNT, 1, &LaneCount_tx);
 
 #if  ENABLE_HDCP_IN_DESIGN
 
@@ -372,10 +372,6 @@ void DpPt_Main(void){
 	XDpTxSs_SetCallBack(&DpTxSsInst, (XDPTXSS_HANDLER_DP_SET_MSA),
 					&DpPt_TxSetMsaValuesImmediate, &DpTxSsInst);
 
-#ifndef SDT
-	XScuGic_Enable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-	XScuGic_Enable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
-#endif
 	/* Initializing the Audio related IPs. The AXIS Switches are programmed
 	 * based on the "I2S_AUDIO" param in main.h
 	 * The Audio Clock Recovery Module is programmed in fixed mode
@@ -684,13 +680,8 @@ void DpPt_Main(void){
 
 
 					xil_printf ("==========MCDP6000 Debug Data===========\r\n");
-#ifndef SDT
-					XDpRxSs_MCDP6000_Read_ErrorCounters(XPAR_IIC_0_BASEADDR,
+					XDpRxSs_MCDP6000_Read_ErrorCounters(&DpRxSsInst,
 							I2C_MCDP6000_ADDR);
-#else
-					XDpRxSs_MCDP6000_Read_ErrorCounters(XPAR_XIIC_0_BASEADDR,
-							I2C_MCDP6000_ADDR);
-#endif
 					xil_printf("0x0754: %08x\n\r",XDpRxSs_MCDP6000_GetRegister(
 							&DpRxSsInst, I2C_MCDP6000_ADDR, 0x0754));
 					xil_printf("0x0B20: %08x\n\r",XDpRxSs_MCDP6000_GetRegister(
@@ -784,7 +775,7 @@ void DpPt_Main(void){
 					xil_printf(" GT DRP Addr (XVPHY_DRP_TXOUT_DIV) = 0x%x, "
 				"Val = 0x%x\r\n",
 							XVPHY_DRP_TXOUT_DIV,DrpVal);
-
+				break;
 
 				case 'd':
 					select_rx_quad();
@@ -815,7 +806,7 @@ void DpPt_Main(void){
 								break;
 							}
 
-							if((Command>=0)&&(Command<4)){
+							if(Command<4){
 								u32 dp_msa_hres = Msa[0].Vtm.Timing.HActive;
 								u32 dp_msa_vres = Msa[0].Vtm.Timing.VActive;
 								u8 BPC = Msa[0].BitsPerColor;
@@ -995,10 +986,6 @@ void DpPt_Main(void){
 
 				// disabling Tx
 				XDpTxSs_Stop(&DpTxSsInst);
-#ifndef SDT
-				XScuGic_Disable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-				XScuGic_Disable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
-#endif
 
 #ifdef XPAR_DP_TX_HIER_0_AV_PAT_GEN_0_BASEADDR
 				Vpg_Audio_stop();
@@ -1371,7 +1358,6 @@ void DpPt_Main(void){
 extern u8 tx_pass;
 void start_tx_after_rx (void) {
 	u32 Status;
-	u8 aux_data[0];
 	tx_pass = 0;
 	rx_all_detect = 1;
 	VmId = XVidC_GetVideoModeId(Msa[0].Vtm.Timing.HActive,

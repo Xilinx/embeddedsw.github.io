@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2016 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -57,7 +57,7 @@ o	RAW8,RAW10,RAW12,RAW14,RGB888,YUV422-8Bit,User defined  Data types
 * The application needs to do following steps in order for preparing the
 * MIPI CSI2 Tx Subsystem core to be ready.
 *
-* - Call XCsi2TxSs_LookupConfig using a device ID to find the core
+* - Call XCsi2TxSs_LookupConfig using a base address to find the core
 *   configuration.
 * - Call XCsi2TxSs_CfgInitialize to initialize the device and the driver
 *   instance associated with it.
@@ -106,6 +106,9 @@ o	RAW8,RAW10,RAW12,RAW14,RGB888,YUV422-8Bit,User defined  Data types
 *                  generation.
 *     vsa 15/12/17 Add support for Clock Mode
 * 1.2 vsa 02/28/18 Add Frame End Generation feature
+* 1.3 ai  09/17/26 Added multi-VC (NUM_VC 4/8/16) support with per-VC line
+*                  count handlers and 8 pixels-per-clock mode reporting for
+*                  the CSI2 TX subsystem v3.0 IP
 * </pre>
 *
 ******************************************************************************/
@@ -125,6 +128,9 @@ extern "C" {
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 #include "xdphy.h"
 #endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+#include "xmipi_tx_phy.h"
+#endif
 #include "xdebug.h"
 #include "xcsi2txss_hw.h"
 
@@ -136,9 +142,9 @@ extern "C" {
  * NCCM - non-continuous clock mode.
  * @{
  */
-#define XCSI2TXSS_CCM	0
-#define XCSI2TXSS_NCCM	1
-/*@}*/
+#define XCSI2TXSS_CCM	0	/**< Continuous clock mode */
+#define XCSI2TXSS_NCCM	1	/**< Non-continuous clock mode */
+/** @} */
 
 /** @name Interrupt Types for setting Callbacks
  *
@@ -148,19 +154,31 @@ extern "C" {
  * are promoted to the subsystem level so that the application can use them.
  * @{
  */
-#define XCSI2TXSS_HANDLER_WRG_LANE		XCSI2TX_HANDLER_WRG_LANE
-#define XCSI2TXSS_HANDLER_GSPFIFO_FULL		XCSI2TX_HANDLER_GSPFIFO_FULL
-#define XCSI2TXSS_HANDLER_ULPS			XCSI2TX_HANDLER_ULPS
-#define XCSI2TXSS_HANDLER_LINEBUF_FULL		XCSI2TX_HANDLER_LINEBUF_FULL
-#define XCSI2TXSS_HANDLER_WRG_DATATYPE		XCSI2TX_HANDLER_WRG_DATATYPE
-#define XCSI2TXSS_HANDLER_UNDERRUN_PIXEL	XCSI2TX_HANDLER_UNDERRUN_PIXEL
-#define XCSI2TXSS_HANDLER_LCERRVC0		XCSI2TX_HANDLER_LCERRVC0
-#define XCSI2TXSS_HANDLER_LCERRVC1		XCSI2TX_HANDLER_LCERRVC1
-#define XCSI2TXSS_HANDLER_LCERRVC2		XCSI2TX_HANDLER_LCERRVC2
-#define XCSI2TXSS_HANDLER_LCERRVC3		XCSI2TX_HANDLER_LCERRVC3
-/*@}*/
+#define XCSI2TXSS_HANDLER_WRG_LANE		XCSI2TX_HANDLER_WRG_LANE	/**< Wrong lane count interrupt handler */
+#define XCSI2TXSS_HANDLER_GSPFIFO_FULL		XCSI2TX_HANDLER_GSPFIFO_FULL	/**< Generic short packet FIFO full interrupt handler */
+#define XCSI2TXSS_HANDLER_ULPS			XCSI2TX_HANDLER_ULPS	/**< ULPS interrupt handler */
+#define XCSI2TXSS_HANDLER_LINEBUF_FULL		XCSI2TX_HANDLER_LINEBUF_FULL	/**< Line buffer full interrupt handler */
+#define XCSI2TXSS_HANDLER_WRG_DATATYPE		XCSI2TX_HANDLER_WRG_DATATYPE	/**< Wrong data type interrupt handler */
+#define XCSI2TXSS_HANDLER_UNDERRUN_PIXEL	XCSI2TX_HANDLER_UNDERRUN_PIXEL	/**< Pixel underrun interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC0		XCSI2TX_HANDLER_LCERRVC0	/**< Line count error VC0 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC1		XCSI2TX_HANDLER_LCERRVC1	/**< Line count error VC1 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC2		XCSI2TX_HANDLER_LCERRVC2	/**< Line count error VC2 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC3		XCSI2TX_HANDLER_LCERRVC3	/**< Line count error VC3 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC4		XCSI2TX_HANDLER_LCERRVC4	/**< Line count error VC4 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC5		XCSI2TX_HANDLER_LCERRVC5	/**< Line count error VC5 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC6		XCSI2TX_HANDLER_LCERRVC6	/**< Line count error VC6 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC7		XCSI2TX_HANDLER_LCERRVC7	/**< Line count error VC7 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC8		XCSI2TX_HANDLER_LCERRVC8	/**< Line count error VC8 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC9		XCSI2TX_HANDLER_LCERRVC9	/**< Line count error VC9 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC10		XCSI2TX_HANDLER_LCERRVC10	/**< Line count error VC10 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC11		XCSI2TX_HANDLER_LCERRVC11	/**< Line count error VC11 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC12		XCSI2TX_HANDLER_LCERRVC12	/**< Line count error VC12 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC13		XCSI2TX_HANDLER_LCERRVC13	/**< Line count error VC13 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC14		XCSI2TX_HANDLER_LCERRVC14	/**< Line count error VC14 interrupt handler */
+#define XCSI2TXSS_HANDLER_LCERRVC15		XCSI2TX_HANDLER_LCERRVC15	/**< Line count error VC15 interrupt handler */
+/** @} */
 
-#define XCSI2TXSS_MAX_VC			XCSI2TX_MAX_VC
+#define XCSI2TXSS_MAX_VC			XCSI2TX_MAX_VC	/**< Maximum number of virtual channels */
 
 /**
  * This typedef defines the different errors codes for Line Count
@@ -195,12 +213,7 @@ typedef void (*XCsi2TxSs_Callback)(void *CallbackRef, u32 Mask);
 typedef struct {
 	u32 IsPresent;	/**< Flag to indicate if sub-core is present in
 			  *  design */
-#ifndef SDT
-	u32 DeviceId;	/**< Device ID of the sub-core */
-	u32 AddrOffset;	/**< sub-core offset from subsystem base address */
-#else
-	UINTPTR AddrOffset;
-#endif
+	UINTPTR AddrOffset;	/**< Address offset of the sub-core */
 } SubCoreCsi2Tx;
 
 /**
@@ -209,21 +222,18 @@ typedef struct {
  * that defines the MAX supported sub-cores within subsystem
  */
 typedef struct {
-#ifndef SDT
-	u32 DeviceId;	/**< DeviceId is the unique ID  of the device */
-#else
-	char *Name;
-#endif
+	char *Name;	/**< Name of the device */
 	UINTPTR BaseAddr; /**< BaseAddress is the physical base address of the
 			  *  subsystem address range */
 	UINTPTR HighAddr; /**< HighAddress is the physical MAX address of the
 			  *  subsystem address range */
 	u32 LanesPresent;	/**< Active Lanes programming optimization
 				  *  enabled */
-	u32 DataType;	/*< RAW8,RAW10,RAW12,RAW14,RGB888,RGB565,YUV422 8-bit */
+	u32 DataType;	/**< RAW8,RAW10,RAW12,RAW14,RGB888,RGB565,YUV422 8-bit */
 	u32 PixelFormat;	/**< 1 - Single pixel per beat
 				2 - Dual pixels per beat
 				4 - Quad pixels per beat */
+	u32 NumVC;	/**< Number of Virtual Channels supported (4, 8 or 16) */
 	u32 CsiBuffDepth;	/**< Line buffer Depth set */
 	u32 DphyLineRate;	/**< DPHY Line Rate ranging from
 					*  80-1500 Mbps */
@@ -232,10 +242,9 @@ typedef struct {
 	u32 FEGenEnabled;	/**< Frame End Generation enabled flag */
 	SubCoreCsi2Tx CsiInfo;	/**< CSI sub-core configuration */
 	SubCoreCsi2Tx DphyInfo;	/**< DPHY sub-core configuration */
-#ifdef SDT
-	u16 IntrId;		/* Interrupt ID */
-	UINTPTR IntrParent; 	/* Bit[0] Interrupt Parent */
-#endif
+	SubCoreCsi2Tx MipiTxPhyInfo;	/**< MIPI TX PHY sub-core configuration */
+	u16 IntrId;		/**< Interrupt ID */
+	UINTPTR IntrParent; 	/**< Bit[0] Interrupt Parent */
 } XCsi2TxSs_Config;
 
 /**
@@ -248,10 +257,13 @@ typedef struct {
 	XCsi2TxSs_Config Config;	/**< Hardware configuration */
 	u32 IsReady;		/**< Device and the driver instance are
 				  *  initialized */
-	XCsi2Tx  *CsiPtr;		/* handle to sub-core driver instance */
+	XCsi2Tx  *CsiPtr;		/**< handle to sub-core driver instance */
 	XCsi2Tx_SPktData SpktData;		/**< Short packet */
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	XDphy *DphyPtr;		/**< handle to sub-core driver instance */
+#endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+	XMipi_Tx_Phy *MipiTxPhyPtr;	/**< Handle to MIPI TX PHY sub-core driver instance */
 #endif
 
 } XCsi2TxSs;
@@ -259,12 +271,26 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Initialization function in xcsi2txss_sinit.c */
-#ifndef SDT
-XCsi2TxSs_Config* XCsi2TxSs_LookupConfig(u32 DeviceId);
-#else
+/**
+ * @brief Look up the device configuration based on the base address.
+ *
+ * @param	BaseAddress is the base address of the device to look up.
+ *
+ * @return	Pointer to the XCsi2TxSs_Config entry, or NULL if not found.
+ *
+ * @note	None.
+ ******************************************************************************/
 XCsi2TxSs_Config* XCsi2TxSs_LookupConfig(UINTPTR BaseAddress);
-u32 XCsi2TxSs_GetDrvIndex(XCsi2TxSs *InstancePtr, UINTPTR BaseAddress);
-#endif
+/**
+ * @brief Get the driver index based on the base address.
+ *
+ * @param	BaseAddress is the base address of the device.
+ *
+ * @return	Driver index in the configuration table.
+ *
+ * @note	None.
+ ******************************************************************************/
+u32 XCsi2TxSs_GetDrvIndex(UINTPTR BaseAddress);
 
 /* Initialization and control functions xcsi2txss.c */
 u32 XCsi2TxSs_CfgInitialize(XCsi2TxSs *InstancePtr, XCsi2TxSs_Config *CfgPtr,
@@ -285,14 +311,49 @@ void XCsi2TxSs_SetUlps(XCsi2TxSs *InstancePtr, u32 Value);
 u32 XCsi2TxSs_SetLineCountForVC(XCsi2TxSs *InstancePtr, u8 VC, u16 LineCount);
 u32 XCsi2TxSs_GetLineCountForVC(XCsi2TxSs *InstancePtr, u8 VC, u16 *LineCount);
 /* Self test function in xcsi2txss_selftest.c */
+/**
+ * @brief Run a self-test on the CSI2 TX subsystem.
+ *
+ * @param	InstancePtr is a pointer to the XCsi2TxSs instance.
+ *
+ * @return	XST_SUCCESS if the self-test passed, XST_FAILURE otherwise.
+ *
+ * @note	None.
+ ******************************************************************************/
 u32 XCsi2TxSs_SelfTest(XCsi2TxSs *InstancePtr);
 
 /* TBD */
 /* Interrupt functions in xcsi2txss_intr.c */
+/** @brief Interrupt handler for the CSI2 TX subsystem. */
 void XCsi2TxSs_IntrHandler(void *InstancePtr);
+/** @brief Disable the specified CSI2 TX subsystem interrupts. */
 void XCsi2TxSs_IntrDisable(XCsi2TxSs *InstancePtr, u32 IntrMask);
+/** @brief Register a user callback for the given handler type. */
 u32 XCsi2TxSs_SetCallBack(XCsi2TxSs *InstancePtr, u32 HandlerType,
 			void *CallbackFunc, void *CallbackRef);
+
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+/**
+ * @brief Configure the MIPI TX PHY PLL for a desired line rate at runtime
+ *
+ * This function configures the MIPI TX PHY PLL for a desired line rate at
+ * runtime. It delegates to XMipi_Tx_Phy_DynamicLineRateConfig which handles
+ * validation of CPHY mode and dynamic line rate hardware enablement.
+ *
+ * @param	InstancePtr is a pointer to the XCsi2TxSs instance.
+ * @param	PllBaseAddr is the base address of the PLL to be configured.
+ * @param	LineRate is the desired line rate in Mbps (400-4500).
+ *
+ * @return
+ *		- XST_SUCCESS if PLL configuration is successful.
+ *		- XST_FAILURE if dynamic line rate configuration fails.
+ *
+ * @note	None.
+ *
+ ******************************************************************************/
+u32 XCsi2TxSs_DynamicLineRateConfig(XCsi2TxSs *InstancePtr, UINTPTR PllBaseAddr,
+				u32 LineRate);
+#endif
 
 /************************** Variable Declarations ****************************/
 

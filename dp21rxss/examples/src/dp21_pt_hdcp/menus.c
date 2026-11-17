@@ -115,7 +115,11 @@ void pt_help_menu()
 	print(" 4 = Restart TX path \n\r");
 	//print(" 6 = Switch TX back to RX video data\n\r");
 	print(" c = Check SUM on Rx and Tx\n\r");
+	print(" s = Show received SDP / VSC colorimetry (HDR) packet\r\n");
 	print(" n = Clone EDID from Monitor\r\n");
+#if ENABLE_HDCP_IN_DESIGN
+	print(" p = RX & TX HDCP debug info\r\n");
+#endif
 	print(" z = Display this menu again\r\n");
 	print(" x = Return to Main menu\r\n");
 	print("\n\r");
@@ -124,7 +128,7 @@ void pt_help_menu()
 
 char inbyte_local(void){
 	char c=0;
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	c = XUartLite_RecvByte(STDIN_BASEADDRESS);
 #else
 	c = xil_getc(0);
@@ -166,7 +170,7 @@ u32 xil_gethex(u8 num_chars){
 	return data;
 }
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 /*****************************************************************************/
 /**
 *
@@ -214,7 +218,7 @@ char xil_getc(u32 timeout_ms){
 	  XTmrCtr_Start(&TmrCtr, 0);
 	}
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 	while((!XUartPs_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)){
 #else
 	while(XUartLite_IsReceiveEmpty(STDIN_BASEADDRESS) && (timeout == 0)){
@@ -234,7 +238,7 @@ char xil_getc(u32 timeout_ms){
 	if(timeout == 1){
 		c = 0;
 	} else {
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 		c = XUartPs_RecvByte_NonBlocking();
 #else
 		c = XUartLite_RecvByte(STDIN_BASEADDRESS);

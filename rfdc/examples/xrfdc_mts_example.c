@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,6 +8,7 @@
 /**
 *
 * @file xrfdc_mts_example.c
+* @brief Demonstrates the RFdc multi-tile synchronization API.
 *
 * RFSoC MultiTile Sync Example test application
 *
@@ -36,6 +38,8 @@
 * 10.0  cog    11/26/20 xrfdc_mts.h is now integrated to xrfdc.h.
 *       cog    03/08/21 MTS now scans reference tile first. This has required a
 *                       change to the prototype of XRFdc_MultiConverter_Init.
+* 13.2  vn     08/11/26 Fix Doxygen warnings.
+* 13.2  vn     09/29/26 Align Doxygen comments with AMD standards
 *
 * </pre>
 *
@@ -55,11 +59,11 @@
  * change all the needed parameters in one place.
  */
 #ifdef __BAREMETAL__
-#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID
-#define I2CBUS	1
+#define RFDC_DEVICE_ID 	XPAR_XRFDC_0_DEVICE_ID /**< Device ID. */
+#define I2CBUS	1 /**< I2C bus ID used to configure the clock devices. */
 #else
-#define RFDC_DEVICE_ID 	0
-#define I2CBUS	12
+#define RFDC_DEVICE_ID 	0 /**< Device ID. */
+#define I2CBUS	12 /**< I2C bus ID used to configure the clock devices. */
 #endif
 
 /**************************** Type Definitions ******************************/
@@ -67,7 +71,7 @@
 
 /***************** Macros (Inline Functions) Definitions ********************/
 #ifdef __BAREMETAL__
-#define printf xil_printf
+#define printf xil_printf /**< Smaller footprint printf. */
 #endif
 /************************** Function Prototypes *****************************/
 
@@ -79,15 +83,11 @@ static XRFdc RFdcInst;      /* RFdc driver instance */
 /****************************************************************************/
 /**
 *
-* Main function that invokes the MTS example in this file.
-*
-* @param	None.
+* @brief Invokes the MTS example in this file.
 *
 * @return
-*		- XRFDC_SUCCESS if the example has completed successfully.
-*		- XRFDC_FAILURE if the example has failed.
-*
-* @note		None.
+*              - XRFDC_SUCCESS if the example has completed successfully.
+*              - XRFDC_FAILURE if the example has failed.
 *
 *****************************************************************************/
 int main(void)
@@ -112,20 +112,18 @@ int main(void)
 /****************************************************************************/
 /**
 *
-* This function runs a MTS test on the RFSoC data converter device using the
-* driver APIs.
+* @brief Runs an MTS test on the RFSoC data converter device using driver APIs.
+*
 * This function does the following tasks:
 *	- Initialize the RFdc device driver instance
 *	- Test MTS feature.
 *
-* @param	RFdcDeviceId is the XPAR_<XRFDC_instance>_DEVICE_ID value
-*		from xparameters.h.
+* @param[in]   RFdcDeviceId XPAR_<XRFDC_instance>_DEVICE_ID value from
+*              xparameters.h.
 *
 * @return
-*		- XRFDC_SUCCESS if the example has completed successfully.
-*		- XRFDC_FAILURE if the example has failed.
-*
-* @note   	None
+*              - XRFDC_SUCCESS if the example has completed successfully.
+*              - XRFDC_FAILURE if the example has failed.
 *
 ****************************************************************************/
 int RFdcMTS_Example(u16 RFdcDeviceId)

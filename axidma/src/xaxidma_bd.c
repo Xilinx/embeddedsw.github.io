@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,9 @@
 /**
  *
  * @file xaxidma_bd.c
- * @addtogroup AXIDMA Overview
- * @{
- *
- * Buffer descriptor (BD) management API implementation.
+* @addtogroup AXIDMA Overview
+* @{
+* @brief Implements buffer descriptor (BD) management functions.
  *
  * <pre>
  * MODIFICATION HISTORY:
@@ -31,7 +30,7 @@
  * 8.0   srt  01/29/14 Added support for Micro DMA Mode:
  *		       - New API
  *			 XAxiDma_BdSetBufAddrMicroMode(XAxiDma_Bd*, u32)
- * 9.8   mus  11/05/18 Support 64 bit DMA addresses for Microblaze-X
+ * 9.8   mus  11/05/18 Support 64-bit DMA addresses for Microblaze-X
  *
  * </pre>
  *
@@ -43,7 +42,7 @@
 
 /*****************************************************************************/
 /**
- * Set the length field for the given BD.
+ * @brief Sets the length field for the given BD.
  *
  * Length has to be non-zero and less than LengthMask.
  *
@@ -58,15 +57,15 @@
  * The actual transfer length will be updated by the hardware in the
  * XAXIDMA_BD_STS_OFFSET word in the BD.
  *
- * @param	BdPtr is the BD to operate on.
- * @param	LenBytes is the requested transfer length
- * @param	LengthMask is the maximum transfer length
+ * @param[in] BdPtr is the BD to operate on.
+ * @param[in] LenBytes is the requested transfer length
+ * @param[in] LengthMask is the maximum transfer length
  *
  * @returns
  *		- XST_SUCCESS for success
  *		- XST_INVALID_PARAM for invalid BD length
  *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 int XAxiDma_BdSetLength(XAxiDma_Bd *BdPtr, u32 LenBytes, u32 LengthMask)
@@ -87,17 +86,17 @@ int XAxiDma_BdSetLength(XAxiDma_Bd *BdPtr, u32 LenBytes, u32 LengthMask)
 }
 /*****************************************************************************/
 /**
- * Set the BD's buffer address.
+ * @brief Sets the BD's buffer address.
  *
- * @param	BdPtr is the BD to operate on
- * @param	Addr is the address to set
+ * @param[in] BdPtr is the BD to operate on
+ * @param[in] Addr is the address to set
  *
  * @return
  *		- XST_SUCCESS if buffer address set successfully
  *		- XST_INVALID_PARAM if hardware has no DRE and address is not
  *		aligned
  *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 u32 XAxiDma_BdSetBufAddr(XAxiDma_Bd *BdPtr, UINTPTR Addr)
@@ -129,18 +128,18 @@ u32 XAxiDma_BdSetBufAddr(XAxiDma_Bd *BdPtr, UINTPTR Addr)
 
 /*****************************************************************************/
 /**
- * Set the BD's buffer address when configured for Micro Mode.  The buffer
+ * @brief Sets the BD's buffer address when configured for Micro Mode. The buffer.
  * address should be 4K aligned.
  *
- * @param	BdPtr is the BD to operate on
- * @param	Addr is the address to set
+ * @param[in] BdPtr is the BD to operate on
+ * @param[in] Addr is the address to set
  *
  * @return
  *		- XST_SUCCESS if buffer address set successfully
  *		- XST_INVALID_PARAM if hardware has no DRE and address is not
  *		aligned
  *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 u32 XAxiDma_BdSetBufAddrMicroMode(XAxiDma_Bd *BdPtr, UINTPTR Addr)
@@ -164,25 +163,23 @@ u32 XAxiDma_BdSetBufAddrMicroMode(XAxiDma_Bd *BdPtr, UINTPTR Addr)
 
 /*****************************************************************************/
 /**
- * Set the APP word at the specified APP word offset for a BD.
+ * @brief Sets the APP word at the specified APP word offset for a BD.
  *
- * @param	BdPtr is the BD to operate on.
- * @param	Offset is the offset inside the APP word, it is valid from
+ * @param[in] BdPtr is the BD to operate on.
+ * @param[in] Offset is the offset inside the APP word, it is valid from
  *		0 to 4
- * @param	Word is the value to set
+ * @param[in] Word is the value to set
  *
- * @returns
- *		- XST_SUCCESS for success
- *		- XST_INVALID_PARAM under following error conditions:
- *		1) StsCntrlStrm is not built in hardware
- *		2) Offset is not in valid range
+ * @retval XST_SUCCESS for success.
+ * @retval XST_INVALID_PARAM if StsCntrlStrm is not built in hardware or Offset
+ * is not in valid range.
  *
  * @note
  *		If the hardware build has C_SG_USE_STSAPP_LENGTH set to 1,
  *		then the last APP word, XAXIDMA_LAST_APPWORD, must have
  *		non-zero value when AND with 0x7FFFFF. Not doing so will cause
  *		the hardware to stall.
- *		This function can be used only when DMA is in SG mode
+ *		Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 int XAxiDma_BdSetAppWord(XAxiDma_Bd *BdPtr, int Offset, u32 Word)
@@ -209,18 +206,17 @@ int XAxiDma_BdSetAppWord(XAxiDma_Bd *BdPtr, int Offset, u32 Word)
 }
 /*****************************************************************************/
 /**
- * Get the APP word at the specified APP word offset for a BD.
+ * @brief Gets the APP word at the specified APP word offset for a BD.
  *
- * @param	BdPtr is the BD to operate on.
- * @param	Offset is the offset inside the APP word, it is valid from
+ * @param[in] BdPtr is the BD to operate on.
+ * @param[in] Offset is the offset inside the APP word, it is valid from
  *		0 to 4
- * @param	Valid is to tell the caller whether parameters are valid
+ * @param[in] Valid is to tell the caller whether parameters are valid
  *
- * @returns
- *		The APP word. Passed in parameter Valid holds 0 for failure,
- *		and 1 for success.
+ * @retval The APP word. The Valid parameter holds 0 for failure and 1 for
+ * success.
  *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 u32 XAxiDma_BdGetAppWord(XAxiDma_Bd *BdPtr, int Offset, int *Valid)
@@ -250,14 +246,12 @@ u32 XAxiDma_BdGetAppWord(XAxiDma_Bd *BdPtr, int Offset, int *Valid)
 
 /*****************************************************************************/
 /**
- * Set the control bits for a BD.
+ * @brief Sets the control bits for a BD.
  *
- * @param	BdPtr is the BD to operate on.
- * @param	Data is the bit value to set
+ * @param[in] BdPtr is the BD to operate on.
+ * @param[in] Data is the bit value to set
  *
- * @return	None
- *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 void XAxiDma_BdSetCtrl(XAxiDma_Bd *BdPtr, u32 Data)
@@ -274,13 +268,11 @@ void XAxiDma_BdSetCtrl(XAxiDma_Bd *BdPtr, u32 Data)
 }
 /*****************************************************************************/
 /**
- * Dump the fields of a BD.
+ * @brief Dumps the fields of a BD.
  *
- * @param	BdPtr is the BD to operate on.
+ * @param[in] BdPtr is the BD to operate on.
  *
- * @return	None
- *
- * @note	This function can be used only when DMA is in SG mode
+ * @note	Usable only when the DMA is in SG mode
  *
  *****************************************************************************/
 void XAxiDma_DumpBd(XAxiDma_Bd *BdPtr)

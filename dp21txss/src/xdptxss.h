@@ -103,6 +103,10 @@
 *                   done interrupt.
 * 6.4  rg  09/26/20 Added support for YUV420 color format.
 * 6.5  pam 03/18/26 Added Function prototype for XDpTxSs_SendAudioInfoFrame API
+* 6.5  dk  07/21/26 Added XDpTxSs_AuxRead and XDpTxSs_AuxWrite APIs to perform
+*                   AUX channel transactions at subsystem level.
+*      dnk 09/15/26 Program the link Clocking Wizard from the driver on
+*                   link-rate change using clk_wiz APIs.
 * </pre>
 *
 ******************************************************************************/
@@ -122,9 +126,7 @@ extern "C" {
 #include "xvidc.h"
 #include "xdebug.h"
 
-#ifdef SDT
 #define XPAR_XHDCP_NUM_INSTANCES XPAR_XHDCP1X_NUM_INSTANCES
-#endif
 /* Subsystem sub-cores header files */
 #include "xdptxss_dptx.h"
 #include "xdptxss_dualsplitter.h"
@@ -135,7 +137,21 @@ extern "C" {
 #if (XPAR_XHDCP22_TX_DP_NUM_INSTANCES > 0)
 #include "xdptxss_hdcp22.h"
 #endif
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+#include "xclk_wiz.h"
+#endif
 /************************** Constant Definitions *****************************/
+
+/*
+ * The value selects the build, because the macro is also generated as zero
+ * whenever the device tree carries xlnx,enable-dsc with that value. The core
+ * feature macro is required as well, since the subsystem compression sources
+ * use the core picture parameter set type and call the core entry points, and
+ * those exist only when the core itself builds its compression support.
+ */
+#if XPAR_DPTXSS_0_ENABLE_DSC && defined(XDP_USE_DSC)
+#define XDPTXSS_USE_DSC
+#endif
 
 
 /**************************** Type Definitions *******************************/
@@ -196,9 +212,14 @@ typedef enum {
 	XDPTXSS_HANDLER_DP_VSYNC,	/**< A Vsync interrupt
 						  *  type for DisplayPort
 						  *  core */
-	XDPTXSS_HANDLER_DP_FFE_PRESET_ADJUST	/**< FFE Preset coefficients change interrupt
+	XDPTXSS_HANDLER_DP_FFE_PRESET_ADJUST,	/**< FFE Preset coefficients change interrupt
 						  * type for DisplayPort core
 						  */
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	XDPTXSS_DRV_HANDLER_DP_LINK_RATE_CHG	/**< Driver's link rate
+						  *  change interrupt type for
+						  *  DisplayPort core */
+#endif
 } XDpTxSs_HandlerType;
 
 /**
@@ -237,13 +258,8 @@ typedef struct {
  * DpTxSs subcore instances.
  */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;	/**< Device ID of the sub-core */
-	UINTPTR AbsAddr;/**< Absolute Base Address of the Sub-cores*/
-#else
 	char *Name;
     UINTPTR BaseAddress;
-#endif
 } XDpTxSs_SubCoreConfig;
 
 /**
@@ -295,6 +311,16 @@ typedef struct {
 } XDpTxSs_TmrCtrSubCore;
 
 /**
+* Clocking Wizard Sub-core structure.
+*/
+typedef struct {
+	u16 IsPresent;		/**< Flag to hold the presence of clocking
+				  *  wizard */
+	XDpTxSs_SubCoreConfig ClkWizConfig;	/**< Clocking Wizard core
+						 *  configuration information */
+} XDpTxSs_ClkWizSubCore;
+
+/**
  * HDCP22 Sub-core structure.
  */
 typedef struct
@@ -310,12 +336,7 @@ typedef struct
 * a configuration structure associated.
 */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;		/**< DeviceId is the unique ID of the
-				  *  DisplayPort TX Subsystem core */
-#else
     char *Name;
-#endif
 	UINTPTR BaseAddress;	/**< BaseAddress is the physical base address
 				  *  of the core's registers */
 	u8 SecondaryChEn;	/**< This Subsystem core supports audio packets
@@ -332,8 +353,12 @@ typedef struct {
 				  *  enabled by this core instance. */
 	u8 NumMstStreams;	/**< The total number of MST streams supported
 				  *  by this core instance. */
+	u8 IncludeClkWiz;	/**< Clocking wizard support for link_clk */
+	u8 DscEn;		/**< This Subsystem core compresses the stream
+				  *  with Display Stream Compression. */
 	XDpTxSs_TmrCtrSubCore TmrCtrSubCore;	/**< Timer Counter
 							  *  Configuration */
+	XDpTxSs_ClkWizSubCore ClkWizSubCore; /**< Clocking Wizard Configuration*/
 	XDpTxSs_DpSubCore DpSubCore;	/**< DisplayPort Configuration */
 	XDpTxSs_Hdcp1xSubCore Hdcp1xSubCore;	/**< HDCP Configuration */
 	XDpTxSs_Hdcp22SubCore Hdcp22SubCore;	/**< HDCP22 Configuration */
@@ -341,10 +366,8 @@ typedef struct {
 	XDpTxSs_VtcSubCore VtcSubCore[XDPTXSS_NUM_STREAMS]; /**< VTC
 							      *  Configura-
 							      *  tion */
-#ifdef SDT
 	u32 IntrId[5];
 	UINTPTR IntrParent;
-#endif
 } XDpTxSs_Config;
 
 /**
@@ -401,6 +424,12 @@ typedef struct {
 	XDp *DpPtr;			/**< DisplayPort sub-core instance */
 	XVtc *VtcPtr[XDPTXSS_NUM_STREAMS];/**< Maximum number of VTC sub-core
 					  *  instances */
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	XDp_IntrHandler LinkRateChangeCallback; /**< Application link-rate
+						 *  callback */
+	void *LinkRateChangeCallbackRef;	/**< Application link-rate callback
+						 *  reference */
+#endif
 
 	XDpTxSs_UsrOpt UsrOpt;		/**< User Options structure */
 	XDpTxSs_UsrHpdPulseData UsrHpdPulseData; /**< User HPD Pulse data*/
@@ -416,6 +445,10 @@ typedef struct {
 	XDpTxSs_HdcpEventQueue HdcpEventQueue; /**< HDCP22 event queue */
 	u8 *Hdcp22Lc128Ptr;			/**< Pointer to HDCP 2.2 LC128*/
 	u8 *Hdcp22SrmPtr;			/**< Pointer to HDCP 2.2 SRM */
+#endif
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	UINTPTR ClkWizAbsAddr;		/**< Clocking Wizard absolute base address */
+	XClk_Wiz ClkWiz;		/**< Link-derived Clocking Wizard instance */
 #endif
 } XDpTxSs;
 
@@ -452,14 +485,8 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Initialization function in xdptxss_sinit.c */
-#ifndef SDT
-XDpTxSs_Config* XDpTxSs_LookupConfig(u16 DeviceId);
-#else
 XDpTxSs_Config* XDpTxSs_LookupConfig(UINTPTR BaseAddress);
-#endif
-#ifdef SDT
 u32 XDpTxSs_GetDrvIndex(UINTPTR BaseAddress);
-#endif
 /* Initialization and control functions in xaxi4s_switch.c */
 u32 XDpTxSs_CfgInitialize(XDpTxSs *InstancePtr, XDpTxSs_Config *CfgPtr,
 				UINTPTR EffectiveAddr);
@@ -475,6 +502,10 @@ u32 XDpTxSs_SetBpc(XDpTxSs *InstancePtr, u8 Bpc);
 u32 XDpTxSs_SetVidMode(XDpTxSs *InstancePtr, XVidC_VideoMode VidMode);
 u32 XDpTxSs_SetLinkRate(XDpTxSs *InstancePtr, u8 LinkRate);
 u32 XDpTxSs_GetLinkRate(XDpTxSs *InstancePtr);
+u32 XDpTxSs_AuxRead(XDpTxSs *InstancePtr, u32 DpcdAddress, u32 BytesToRead,
+		    void *ReadData);
+u32 XDpTxSs_AuxWrite(XDpTxSs *InstancePtr, u32 DpcdAddress, u32 BytesToWrite,
+		     void *WriteData);
 u32 XDpTxSs_SetLaneCount(XDpTxSs *InstancePtr, u8 LaneCount);
 u32 XDpTxSs_SetTransportMode(XDpTxSs *InstancePtr, u8 Mode);
 u32 XDpTxSs_IsConnected(XDpTxSs *InstancePtr);
@@ -549,13 +580,17 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 void XDpTxSs_SetUserTimerHandler(XDpTxSs *InstancePtr,
 		XDpTxSs_TimerHandler CallbackFunc, void *CallbackRef);
 u32 XDpTxSs_CheckVscColorimetrySupport(XDpTxSs *InstancePtr);
-u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, XDp_TxVscExtPacket VscPkt);
-void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 Enable);
+u32 XDpTxSs_SetVscExtendedPacket(XDpTxSs *InstancePtr, u8 StreamId,
+				 XDp_TxVscExtPacket VscPkt);
+void XDpTxss_EnableVscColorimetry(XDpTxSs *InstancePtr, u8 StreamId, u8 Enable);
 
 /* DpTxSs Interrupt Related Internal Functions */
 void XDpTxSs_HpdEventProcess(void *InstancePtr);
 void XDpTxSs_HpdPulseProcess(void *InstancePtr);
 void XDpTxSs_WriteVscExtPktProcess(void * InstancePtr);
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+void XDpTxSs_LinkRateChangeProcess(void *InstancePtr);
+#endif
 
 /******************* Macros (Inline Functions) Definitions *******************/
 

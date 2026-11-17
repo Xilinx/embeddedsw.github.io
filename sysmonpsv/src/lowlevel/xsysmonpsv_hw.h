@@ -4,15 +4,18 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
+#ifndef XSYSMONPSV_HW_H_
+#define XSYSMONPSV_HW_H_
+
 /*****************************************************************************/
 /**
 *
 * @file xsysmonpsv_hw.h
-* @addtogroup sysmonpsv_api SYSMONPSV APIs
-* @{
 *
-* The xsysmonpsv_hw.h header file contains the identifiers and basic driver functions (or
-* macros) that can be used to access the device.
+* @brief Defines the register identifiers and access macros for the device.
+*
+* The xsysmonpsv_hw.h header file defines the identifiers and basic driver
+* macros used to access the device.
 *
 * <pre>
 *
@@ -32,13 +35,17 @@
 * 5.3   dc     02/18/26 Correct spelling errors
 *       se     03/25/26 Fix Coverity/MISRA-C violations: U suffix,
 *                       (void) cast, sign conversion, parentheses
+* 5.4   vn     07/30/26 Fix Doxygen warnings
+* 5.4   vn     09/29/26 Align Doxygen comments with AMD standards
 *
 * </pre>
 *
 ******************************************************************************/
 
-#ifndef XSYSMONPSV_HW_H_
-#define XSYSMONPSV_HW_H_
+/**
+ * @addtogroup sysmonpsv_api SYSMONPSV APIs
+ * @{
+ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,7 +57,7 @@ extern "C" {
  */
 #define XSYSMONPSV_BASEADDR 0XF1270000U /**< Sysmon Base Address */
 
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_PCSR_MASK
@@ -67,7 +74,7 @@ extern "C" {
 #define XSYSMONPSV_PCSR_MASK_GATEREG_SHIFT 1U /**< PCSR Mask Gate Reg Shift */
 #define XSYSMONPSV_PCSR_MASK_GATEREG_MASK 0X00000002U
 /**< PCSR Mask Gate Reg Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_PCSR_CONTROL
@@ -87,7 +94,7 @@ extern "C" {
 #define XSYSMONPSV_PCSR_CONTROL_GATEREG_MASK 0X00000002U
 /**< PCSR Control Gate Reg
                                                      Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_PCSR_LOCK
@@ -98,9 +105,13 @@ extern "C" {
 #define XSYSMONPSV_PCSR_LOCK_STATE_SHIFT 0U /**< PCSR Lock State Shift */
 #define XSYSMONPSV_PCSR_LOCK_STATE_MASK 0X00000001U
 /**< PCSR Lock State Mask */
-/*@}*/
+/** @} */
 
+/** @name Interrupt mask
+ * @{
+ */
 #define XSYSMONPSV_INTR_MASK 0xFFFFFFFFU /**< All interrupt Mask */
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ISR
@@ -152,7 +163,7 @@ extern "C" {
 #define XSYSMONPSV_ISR_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_ISR_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IMR0
@@ -204,7 +215,7 @@ extern "C" {
 #define XSYSMONPSV_IMR0_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IMR0_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IER0
@@ -254,7 +265,7 @@ extern "C" {
 #define XSYSMONPSV_IER0_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IER0_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IDR0
@@ -306,7 +317,7 @@ extern "C" {
 #define XSYSMONPSV_IDR0_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IDR0_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IMR1
@@ -358,7 +369,7 @@ extern "C" {
 #define XSYSMONPSV_IMR1_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IMR1_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IER1
@@ -410,7 +421,7 @@ extern "C" {
 #define XSYSMONPSV_IER1_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IER1_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_IDR1
@@ -462,7 +473,7 @@ extern "C" {
 #define XSYSMONPSV_IDR1_ALARM0_SHIFT 0U /**< Supply[0-31] Alarm Shift */
 #define XSYSMONPSV_IDR1_ALARM0_MASK 0X00000001U
 /**< Supply[0-31] Alarm Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_CONFIG0
@@ -510,7 +521,7 @@ extern "C" {
 #define XSYSMONPSV_CONFIG0_PMBUS_ADDRESS_MASK 0X0000007FU
 /**< PMBus Address
                                                           Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_FLAG0
@@ -519,7 +530,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_FLAG0                                              \
 	0X00001000U /**< New Data Flag
                                                     Supply[0-31] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_FLAG1
@@ -528,7 +539,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_FLAG1                                              \
 	0X00001004U /**< New Data Flag
                                                     Supply[32-63] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_FLAG2
@@ -537,7 +548,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_FLAG2                                              \
 	0X00001008U /**< New Data Flag
                                                     Supply[64-95] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_FLAG3
@@ -546,7 +557,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_FLAG3                                              \
 	0X0000100CU /**< New Data Flag
                                                     Supply[96-127] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_FLAG4
@@ -555,7 +566,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_FLAG4                                              \
 	0X00001010U /**< Alarm Flag
                                                     Supply[128-159] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_FLAG0
@@ -564,7 +575,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_FLAG0                                                 \
 	0X00001018U /**< Alarm Flag
                                                     Supply[0-31] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_FLAG1
@@ -573,7 +584,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_FLAG1                                                 \
 	0X0000101CU /**< Alarm Flag
                                                     Supply[32-63] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_FLAG2
@@ -582,7 +593,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_FLAG2                                                 \
 	0X00001020U /**< Alarm Flag
                                                     Supply[63-95] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_FLAG3
@@ -591,7 +602,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_FLAG3                                                 \
 	0X00001024U /**< Alarm Flag
                                                     Supply[96-127] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_FLAG4
@@ -600,7 +611,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_FLAG4                                                 \
 	0X00001028U /**< Alarm Flag
                                                     Supply[128-159] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_MAX
@@ -610,7 +621,7 @@ extern "C" {
 	0X00001030U /**< Max Device Temperature
                                                     Offset (Only for
                                                     SE1 Silicon) */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP
@@ -619,7 +630,7 @@ extern "C" {
 #define XSYSMONPSV_DEVICE_TEMP                                                 \
 	0X00001030U /**< Device Temperature
                                                   Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_MIN
@@ -629,7 +640,7 @@ extern "C" {
 	0X00001034U /**< Min Device Temperature
                                                     Offset (Only for
                                                     SE1 Silicon) */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_MAX
@@ -637,7 +648,7 @@ extern "C" {
  */
 /** Device Max Temperature Register Offset */
 #define XSYSMONPSV_DEVICE_TEMP_MAX_MAX 0x00001F90U
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_MIN
@@ -645,7 +656,7 @@ extern "C" {
  */
 /** Device Min Temperature Register Offset */
 #define XSYSMONPSV_DEVICE_TEMP_MIN_MIN 0x00001F8CU
-/*@}*/
+/** @} */
 
 /**
  * @name Supply format macros
@@ -667,7 +678,7 @@ extern "C" {
 
 #define XSYSMONPSV_SUPPLY_MANTISSA_SIGN 15U /**< Supply Mantissa Shift*/
 
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_SUPPLY
@@ -675,7 +686,7 @@ extern "C" {
  */
 #define XSYSMONPSV_SUPPLY 0X00001040U /**< Supply Base Register Offset */
 
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_SUPPLY_MIN
@@ -684,7 +695,7 @@ extern "C" {
 #define XSYSMONPSV_SUPPLY_MIN                                                  \
 	0X00001340U /**< Min Supply Base Register
                                                Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_SUPPLY_MAX
@@ -693,7 +704,7 @@ extern "C" {
 #define XSYSMONPSV_SUPPLY_MAX                                                  \
 	0X00001640U /**< Max Supply Base Register
                                                Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_REG0
@@ -702,7 +713,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_REG0                                                  \
 	0X00001940U /**< Alarm Reg
                                                 Supply[0-31] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_REG1
@@ -711,7 +722,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_REG1                                                  \
 	0X00001944U /**< Alarm Reg
                                                 Supply[32-63] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_REG2
@@ -720,7 +731,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_REG2                                                  \
 	0X00001948U /**< Alarm Reg
                                                 Supply[64-95] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_REG3
@@ -729,7 +740,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_REG3                                                  \
 	0X0000194CU /**< Alarm Reg
                                                 Supply[96-127] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_REG4
@@ -738,7 +749,7 @@ extern "C" {
 #define XSYSMONPSV_ALARM_REG4                                                  \
 	0X00001950U /**< Alarm Reg
                                                 Supply[128-159] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG0
@@ -747,7 +758,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG0                                                  \
 	0X00001958U /**< Enable Average for Supply Reg
                                                 Supply[0-31] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG1
@@ -756,7 +767,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG1                                                  \
 	0X0000195CU /**< Enable Average for Supply Reg
                                                 Supply[32-63] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG2
@@ -765,7 +776,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG2                                                  \
 	0X00001960U /**< Enable Average for Supply Reg
                                                 Supply[64-95] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG3
@@ -774,7 +785,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG3                                                  \
 	0X00001964U /**< Enable Average for Supply Reg
                                                 Supply[96-127] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG4
@@ -783,7 +794,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG4                                                  \
 	0X00001968U /**< Enable Average for Supply Reg
                                                 Supply[127-159] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_TH
@@ -792,7 +803,7 @@ extern "C" {
 #define XSYSMONPSV_DEVICE_TEMP_TH                                              \
 	0X00001970U /**< Device Temperature
                                                    Threshold Falling*/
-/*@}*/
+/** @} */
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_TH_FALLING
  * @{
@@ -800,7 +811,7 @@ extern "C" {
 #define XSYSMONPSV_DEVICE_TEMP_TH_FALLING                                      \
 	0X00001970U /**< Device Temperature
 							    Threshold Falling*/
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_DEVICE_TEMP_TH_RISING
@@ -809,7 +820,7 @@ extern "C" {
 #define XSYSMONPSV_DEVICE_TEMP_TH_RISING                                       \
 	0X00001974U /**< Device Temperature
                                                            Threshold Rising*/
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_OT_TEMP_TH
@@ -818,7 +829,7 @@ extern "C" {
 #define XSYSMONPSV_OT_TEMP_TH                                                  \
 	0X00001978U /**< OT Temperature
                                                    Threshold Base Offset*/
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_OT_TEMP_TH_FALLING
@@ -827,7 +838,7 @@ extern "C" {
 #define XSYSMONPSV_OT_TEMP_TH_FALLING                                          \
 	0X00001978U /**< OT Temperature
                                                         Threshold Falling*/
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_OT_TEMP_TH_RISING
@@ -836,7 +847,7 @@ extern "C" {
 #define XSYSMONPSV_OT_TEMP_TH_RISING                                           \
 	0X0000197CU /**< OT Temperature
                                                    Threshold Rising*/
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_SUPPLY_TH_LOWER
@@ -858,7 +869,7 @@ extern "C" {
 #define XSYSMONPSV_SUPPLY_TH_LOWER_VAL_MASK 0X0000FFFFU
 /**< Threshold Value
                                                         Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_SUPPLY_TH_UPPER
@@ -881,7 +892,7 @@ extern "C" {
 /**< Threshold Value
                                                         Mask */
 
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_NEW_DATA_INT_SRC
@@ -922,7 +933,7 @@ extern "C" {
 #define XSYSMONPSV_NEW_DATA_INT_SRC_ADDR_ID0_MASK 0X000000FFU
 /**< New Data Interrupt
                                                            0 Source Mask */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_ALARM_CONFIG
@@ -944,6 +955,8 @@ extern "C" {
                                                             Mode Shift */
 #define XSYSMONPSV_ALARM_CONFIG_OT_ALARM_MODE_MASK 0X00000001U
 /**< OT Temp Alarm */
+/** @} */
+
 /**
  * @name Register: XSYSMONPSV_STATUS_RESET
  * @{
@@ -961,7 +974,7 @@ extern "C" {
 /**< Temperature Reset
 						        Mask */
 
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG8
@@ -970,7 +983,7 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG8                                                  \
 	0X000024B4U /**< Enable Average for Temp Satellite Reg
                                                 Satellite[1-32] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_EN_AVG_REG9
@@ -979,15 +992,19 @@ extern "C" {
 #define XSYSMONPSV_EN_AVG_REG9                                                  \
 	0X000024B8U /**< Enable Average for Temp Satellite Reg
                                                 Satellite[33-64] Offset */
-/*@}*/
+/** @} */
 
 /**
  * @name Register: XSYSMONPSV_TEMP_SAT
+ * @{
  */
 #define XSYSMONPSV_TEMP_SAT 0X00001FACU /**< Internal Temp Reg */
 
-/*@}*/
+/** @} */
 
+/** @name Supply, data format, and alarm mode definitions
+ * @{
+ */
 #define XSYSMONPSV_INVALID_SUPPLY 160U /**< Invalid Supply */
 #define XSYSMONPSV_PMBUS_INTERFACE 0U /**< PMBus interface select */
 #define XSYSMONPSV_I2C_INTERFACE 1U /**< I2C interface select */
@@ -996,7 +1013,7 @@ extern "C" {
 #define XSYSMONPSV_QFMT_SIGN 15U /**< Q format signed bit */
 #define XSYSMONPSV_QFMT_FRACTION 128 /**< Q format fractional val */
 #define XSYSMONPSV_UP_SAT_SIGNED                                               \
-	32767 /**< Upper limit staurated
+	32767 /**< Upper limit saturated
                                                   signed val */
 #define XSYSMONPSV_UP_SAT                                                      \
 	65535 /**< Upper limit saturated
@@ -1023,19 +1040,22 @@ extern "C" {
 #define XSYSMONPSV_DISABLE 0U /**< Disable */
 #define XSYSMONPSV_HYSTERESIS 1U /**< Hysteresis Mode */
 #define XSYSMONPSV_WINDOW 0U /**< Window Mode */
+/** @} */
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /****************************************************************************/
 /**
 *
-* This macro reads the given register.
+* @brief Reads the given register.
 *
-* @param        RegisterAddr Register address in the address
-*               space of the SYSMONPSV device.
+* @param[in]   RegisterAddr Register address in the address
+*              space of the SYSMONPSV device.
 *
-* @return       The 32-bit value of the register
+* @return      The 32-bit value of the register.
 *
+* @note        C-style signature:
+*              u32 XSysMonPsv_ReadReg(u32 RegisterAddr);
 *
 *****************************************************************************/
 #define XSysMonPsv_ReadReg(RegisterAddr) Xil_In32(RegisterAddr)
@@ -1043,14 +1063,14 @@ extern "C" {
 /****************************************************************************/
 /**
 *
-* This macro writes the given register.
+* @brief Writes the given register.
 *
-* @param        RegisterAddr Register address in the address
-*               space of the SYSMONPSV device.
-* @param        Data 32-bit value to write to the register.
+* @param[in]   RegisterAddr Register address in the address
+*              space of the SYSMONPSV device.
+* @param[in]   Data 32-bit value to write to the register.
 *
-* @return       None.
-*
+* @note        C-style signature:
+*              void XSysMonPsv_WriteReg(u32 RegisterAddr, u32 Data);
 *
 *****************************************************************************/
 #define XSysMonPsv_WriteReg(RegisterAddr, Data)                 \

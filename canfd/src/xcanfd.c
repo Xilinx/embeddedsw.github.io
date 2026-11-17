@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,8 +8,7 @@
 /**
 *
 * @file xcanfd.c
-* @addtogroup canfd Overview
-* @{
+* @brief Implements the primary functions for the XCanFd driver.
 *
 * The XCanFd driver. Functions in this file are the minimum required functions
 * for this driver. See xcanfd.h for a detailed description of the driver.
@@ -64,9 +63,18 @@
 * 2.8	ht   06/19/23 Added support for system device-tree flow.
 * 2.8	gm   06/22/23 Add support for request/release node.
 * 2.10	ht   03/28/25 Remove Versal ES1 support as it is fixed in prod.
+* 2.13  vn   07/30/26 Fix Doxygen warnings
+* 2.13  vn   09/08/26 Align Doxygen comments with AMD standards
+* 2.13  vn   09/30/26 Update Doxygen comments to AMD standards
+* 2.13  vn   10/06/26 Fix XPM_SUPPORT build failure on versal_2ve_2vm.
 *
 * </pre>
+*
 ******************************************************************************/
+
+/** @addtogroup canfd Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -76,7 +84,7 @@
 #include "xenv.h"
 #include "xcanfd.h"
 #if defined  (XPM_SUPPORT)
-#include "pm_defs.h"
+#include "xpm_defs.h"
 #include "pm_api_sys.h"
 #include "pm_client.h"
 #include "xstatus.h"
@@ -106,27 +114,24 @@ static u32 XCanFd_SeqRecv_logic(XCanFd *InstancePtr, u32 ReadIndex,
 /*****************************************************************************/
 /**
 *
-* This routine initializes a specific XCanFd instance/driver. This function
-* should only be used when no Virtual Memory support is needed.
+* @brief Initializes a specific XCanFd instance/driver.
+*
+* This function should only be used when no Virtual Memory support is needed.
 *
 * This initialization entails:
 * - Search for device configuration given the device ID.
 * - Initialize Base Address field of the XCanFd structure using the device
-* - address in the found device configuration.
-* - Populate all other data fields in the XCanFd structure
+*   address in the found device configuration.
+* - Populate all other data fields in the XCanFd structure.
 * - Reset the device.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[out]   InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    ConfigPtr Pointer to XCanFd_Config instance.
+* @param[in]    EffectiveAddr Base address of CANFD.
 *
-* @param	ConfigPtr is the pointer to XCanFd_Config instance
-*
-* @param	EffectiveAddr is the base address of CANFD
-*
-* @return	- XST_SUCCESS if initialization was successful
+* @return	- XST_SUCCESS if initialization was successful.
 * 		- XST_DEVICE_NOT_FOUND if device configuration information was
-		not found for a device with the supplied device ID.
-*
-* @note		None.
+*		  not found for a device with the supplied device ID.
 *
 ******************************************************************************/
 int XCanFd_CfgInitialize(XCanFd *InstancePtr, XCanFd_Config *ConfigPtr,
@@ -141,13 +146,15 @@ int XCanFd_CfgInitialize(XCanFd *InstancePtr, XCanFd_Config *ConfigPtr,
 	Xil_AssertNonvoid(ConfigPtr != NULL);
 
 #if defined  (XPM_SUPPORT)
-	Status = XPm_RequestNode(XpmGetNodeId((u64)EffectiveAddr), PM_CAP_ACCESS, MAX_QOS, REQUEST_ACK_BLOCKING);
+	Status = XPm_RequestNode(XpmGetNodeId((u64)EffectiveAddr),
+			PM_CAP_ACCESS, XPM_MAX_QOS, REQUEST_ACK_BLOCKING);
 	if (XST_SUCCESS != Status) {
 		xil_printf("Canfd: XPm_RequestNode failed \r\n");
 		return Status;
 	}
 
-	Status = XPm_ResetAssert(XpmGetResetId((u64)EffectiveAddr), XILPM_RESET_ACTION_RELEASE);
+	Status = XPm_ResetAssert(XpmGetResetId((u64)EffectiveAddr),
+			PM_RESET_ACTION_RELEASE);
 	if (XST_SUCCESS != Status) {
 		xil_printf("Canfd: XPm_ResetAssert() ERROR=0x%x \r\n", Status);
 		return Status;
@@ -198,14 +205,13 @@ int XCanFd_CfgInitialize(XCanFd *InstancePtr, XCanFd_Config *ConfigPtr,
 /*****************************************************************************/
 /**
 *
-* This routine releases resources of XCanFd instance/driver.
+* @brief Releases resources of the XCanFd instance/driver.
 *
-* @param	None
-* @return	- XST_SUCCESS if node release was successful
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+*
+* @return	- XST_SUCCESS if node release was successful.
 *		- XST_FAILURE or an error code or a reason code
-*		  if node release was fail
-*
-* @note		None.
+*		  if node release failed.
 *
 ******************************************************************************/
 int XCanFd_stop(XCanFd *InstancePtr)
@@ -228,18 +234,20 @@ int XCanFd_stop(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function returns enabled acceptance filters. Use XCANFD_AFR_UAF*_MASK
-* defined in xcanfd_hw.h to interpret the returned value. If no acceptance
-* filters are enabled then all received frames are stored in the RX FIFO.
+* @brief Returns enabled acceptance filters.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Use XCANFD_AFR_UAF*_MASK defined in xcanfd_hw.h to interpret the returned
+* value. If no acceptance filters are enabled then all received frames are
+* stored in the RX FIFO.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	The value stored in Acceptance Filter Register.
 *
 * @note		Acceptance Filter Register is an optional register in Xilinx
-*		CAN device If it is NOT existing in the device, this function
-*		should NOT be used.Calling this function in this case will
-*		cause an assertion failure.
+*               CAN device. If it is NOT existing in the device, this function
+*               should NOT be used. Calling this function in this case
+*               causes an assertion failure.
 *
 ******************************************************************************/
 u32 XCanFd_AcceptFilterGetEnabled(XCanFd *InstancePtr)
@@ -257,9 +265,9 @@ u32 XCanFd_AcceptFilterGetEnabled(XCanFd *InstancePtr)
 /****************************************************************************/
 /**
 *
-* This routine returns current operation mode the CAN device is in.
+* @brief Returns the current operation mode of the CAN device.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	- XCANFD_MODE_CONFIG if the device is in Configuration Mode.
 * 		- XCANFD_MODE_SLEEP if the device is in Sleep Mode.
@@ -269,7 +277,6 @@ u32 XCanFd_AcceptFilterGetEnabled(XCanFd *InstancePtr)
 *		- XCANFD_MODE_BR if the device is in Bus-Off recovery Mode.
 *		- XCANFD_MODE_PEE if the device is in Protocol Exception
 *		  Event mode.
-* @note		None.
 *
 *****************************************************************************/
 u8 XCanFd_GetMode(XCanFd *InstancePtr)
@@ -308,14 +315,15 @@ u8 XCanFd_GetMode(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function allows the CAN device to enter one of the following operation
-* modes:
+* @brief Enters the specified CAN operation mode.
+*
+* Allows the CAN device to enter one of the following operation modes:
 *
 * - Configuration Mode: Pass in parameter XCANFD_MODE_CONFIG
 * - Sleep Mode: Pass in parameter XCANFD_MODE_SLEEP
 * - Normal Mode: Pass in parameter XCANFD_MODE_NORMAL
 * - Loop Back Mode: Pass in parameter XCANFD_MODE_LOOPBACK
-* - Snoop Mode:	Pass in Parameter XCANFD_MODE_SNOOP
+* - Snoop Mode: Pass in Parameter XCANFD_MODE_SNOOP
 * - Auto Bus-Off Recovery Mode: Pass in Parameter XCANFD_MODE_ABR
 * - Start Bus-Off Recovery Mode: Pass in Parameter XCANFD_MODE_SBR
 * - Protocol Exception Event Mode: Pass in Parameter XCANFD_MODE_PEE
@@ -324,12 +332,10 @@ u8 XCanFd_GetMode(XCanFd *InstancePtr)
 * Read xcanfd.h and device specification for detailed description of each
 * operation mode.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	OperationMode specify which operation mode to enter.Valid value
-*		is any of XCANFD_MODE_* defined in xcanfd.h. Please note no
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    OperationMode Specifies which operation mode to enter. Valid
+*		value is any of XCANFD_MODE_* defined in xcanfd.h. Note that no
 *		multiple modes could be entered at the same time.
-*
-* @return	None.
 *
 * @note		This function does NOT ensure CAN device enters the specified
 *		operation mode before returns the control to the caller.
@@ -473,17 +479,13 @@ void XCanFd_EnterMode(XCanFd *InstancePtr, u8 OperationMode)
 /*****************************************************************************/
 /**
 *
-* This function reads Receive and Transmit error counters.
+* @brief Reads Receive and Transmit error counters.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	RxErrorCount will contain Receive Error Counter value after
-		this function returns.
-* @param	TxErrorCount will contain Transmit Error Counter value after
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[out]   RxErrorCount Contains Receive Error Counter value after
 *		this function returns.
-*
-* @return	None.
-*
-* @note		None.
+* @param[out]   TxErrorCount Contains Transmit Error Counter value after
+*		this function returns.
 *
 ******************************************************************************/
 void XCanFd_GetBusErrorCounter(XCanFd *InstancePtr, u8 *RxErrorCount,
@@ -504,24 +506,23 @@ void XCanFd_GetBusErrorCounter(XCanFd *InstancePtr, u8 *RxErrorCount,
 /*****************************************************************************/
 /**
 *
-* This function sends a CAN/CANFD Frame. This function first checks whether
-* free buffer is there or not.if free buffer is there the user data will be
-* written into the free buffer.otherwise it returns error code immediately.
-* This function does not wait for the given frame being sent to CAN bus.
+* @brief Sends a CAN/CANFD Frame.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer containing the
-*		CAN frame to be sent.
+* Checks whether a free buffer is available. If a free buffer exists, the
+* supplied data is written into it. Otherwise returns an error code
+* immediately. Does
+* not wait for the given frame to be sent to the CAN bus.
 *
-* @param	TxBufferNumber is the buffer where the user data has been
-*		written and it is updated by driver.
+* @param[in,out] InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]     FramePtr Pointer to a 32-bit aligned buffer containing the
+*                CAN frame to be sent.
+* @param[out]    TxBufferNumber Buffer where the supplied data has been
+*                written and it is updated by driver.
 *
-* @return	- XST_SUCCESS if TX FIFO was not full and the given frame was
-*		written into the FIFO;
-*		- XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
-*		given frame
-*
-* @note		None.
+* @return        - XST_SUCCESS if TX FIFO was not full and the given frame was
+*                  written into the FIFO.
+*                - XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
+*                  given frame.
 *
 *****************************************************************************/
 int XCanFd_Send(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber)
@@ -614,22 +615,21 @@ int XCanFd_Send(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber)
 /*****************************************************************************/
 /**
 *
-* This function writes the Data into specific Buffer.we have 32 TxBuffers
-* we can Add data to each Buffer using this routine.This routine won't
-* transmit the data. it only adds data to Buffers.
+* @brief Writes data into a specific TX buffer.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer containing the
-*		CAN frame to be sent.
-* @param	TxBufferNumber is Buffer Number where the data has written
-*		and is given back to user.
+* There are 32 TX buffers. Data can be added to each buffer using this function.
+* This function does not transmit the data; it only adds data to the buffers.
 *
-* @return	- XST_SUCCESS if TX FIFO was not full and the given frame was
-*		written into the FIFO;
-*		- XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
-*		given frame
+* @param[in,out] InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]     FramePtr Pointer to a 32-bit aligned buffer containing the
+*                CAN frame to be sent.
+* @param[out]    TxBufferNumber Buffer Number where the data has been written
+*                and is given back to user.
 *
-* @note		None.
+* @return        - XST_SUCCESS if TX FIFO was not full and the given frame was
+*                  written into the FIFO.
+*                - XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
+*                  given frame.
 *
 ******************************************************************************/
 int XCanFd_Addto_Queue(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber)
@@ -717,24 +717,27 @@ int XCanFd_Addto_Queue(XCanFd *InstancePtr, u32 *FramePtr, u32 *TxBufferNumber)
 /*****************************************************************************/
 /**
 *
-* This function receives a CAN/CAN FD Frame. This function first checks FSR
-* Register.The FL bits tells the Number of Packets received. if FL is non Zero
-* then Read the Packet and store it to user Buffer.
+* @brief Receives a CAN/CAN FD Frame in sequential mode.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer where the
-*		    CAN/CAN FD frame to be written.
+* Checks the FSR Register. The FL bits indicate the number of packets
+* received. If FL is non-zero, reads the packet and stores it to the supplied
+* buffer.
 *
-* @return - XST_SUCCESS if RX FIFO was not empty and a frame was read from
-*		    RX FIFO successfully and written into the given buffer;
-*		    - XST_NO_DATA if there is no frame to be received from the FIFO
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[out]   FramePtr Pointer to a 32-bit aligned buffer where the
+*		CAN/CAN FD frame is to be written.
 *
-* @note	 The CANFD has two design modes.
-*		 ->Sequential Mode - Core writes data sequentially to RxBuffers.
-*		 ->MailBox Mode	  - Core writes data to RxBuffers when a ID
-*					        Match happened.
+* @return	- XST_SUCCESS if RX FIFO was not empty and a frame was read from
+*		  RX FIFO successfully and written into the given buffer.
+*		- XST_NO_DATA if there is no frame to be received from the FIFO.
+*
+* @note         The CANFD has two design modes.
+*               ->Sequential Mode - Core writes data sequentially to
+*                 RxBuffers.
+*               ->MailBox Mode - Core writes data to RxBuffers when a ID Match
+*                 happened.
 * 		This routine distinguishes receive checking as per the frame
-*       availability from either Fifo 0 or Fifo 1.
+*               availability from either Fifo 0 or Fifo 1.
 *
 ******************************************************************************/
 u32 XCanFd_Recv_Sequential(XCanFd *InstancePtr, u32 *FramePtr)
@@ -779,24 +782,27 @@ u32 XCanFd_Recv_Sequential(XCanFd *InstancePtr, u32 *FramePtr)
 /*****************************************************************************/
 /**
 *
-* This function receives a CAN/CAN FD TX Events. This function first checks FSR
-* Register.The FL bits tells the Number of TX Event packets received. if FL is
-* non Zero then Read the Packet and store it to user Buffer.
+* @brief Receives CAN/CAN FD TX Events in sequential mode.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer where the
-*		CAN/CAN FD frame Event to be written.
+* Checks the FSR Register. The FL bits indicate the number of TX Event packets
+* received. If FL is non-zero, reads the packet and stores it to the supplied
+* buffer.
 *
-* @return	- XST_SUCCESS if TXE FIFO was not empty and a frame was read from
-*		TX FIFO successfully and written into the given buffer;
-*		- XST_NO_DATA if there is no frame to be received from the TXE FIFO
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[out]   FramePtr Pointer to a 32-bit aligned buffer where the
+*		CAN/CAN FD frame Event is to be written.
+*
+* @return       - XST_SUCCESS if TXE FIFO was not empty and a frame was read
+*                 from TX FIFO successfully and written into the given buffer.
+*               - XST_NO_DATA if there is no frame to be received from the TXE
+*                 FIFO.
 *
 * @note		This CANFD has two design modes.
 *		->Sequential Mode - Core writes data sequentially to RxBuffers.
-*		->MailBox Mode	  - Core writes data to RxBuffers when a ID
-*					Match happened.
-* 		This routine is useful for Both the Modes.This API is meant to be used
-*		with IP with CanFD 2.0 spec support only.
+*               ->MailBox Mode - Core writes data to RxBuffers when a ID Match
+*                 happened.
+*               This routine is useful for Both the Modes. This API is meant to
+*                 be used with IP with CanFD 2.0 spec support only.
 *
 ******************************************************************************/
 u32 XCanFd_Recv_TXEvents_Sequential(XCanFd *InstancePtr, u32 *FramePtr)
@@ -844,22 +850,23 @@ u32 XCanFd_Recv_TXEvents_Sequential(XCanFd *InstancePtr, u32 *FramePtr)
 /*****************************************************************************/
 /**
 *
-* This function receives a CAN Frame in MAIL BOX Mode. Read Rx Last Buffer
-* Index from ISR Register. This tells which buffer is having data.then read
-* and update the data to user buffer.
+* @brief Receives a CAN Frame in Mailbox Mode.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer where the CAN
-*		frame to be receive.
+* Reads the Rx Last Buffer Index from the ISR Register. This indicates which
+* buffer contains data. Then reads and updates the data to the supplied buffer.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[out]   FramePtr Pointer to a 32-bit aligned buffer where the CAN
+*		frame is to be received.
 *
 * @return	- XST_SUCCESS if RX FIFO was not empty and a frame was read from
-*		RX FIFO successfully and written into the given buffer;
-*		- XST_NO_DATA if there is no frame to be received from the FIFO
+*		  RX FIFO successfully and written into the given buffer.
+*		- XST_NO_DATA if there is no frame to be received from the FIFO.
 *
 * @note		This CANFD has two design modes.
 *		->Sequential Mode - Core writes data sequentially to RxBuffers.
 *		->MailBox Mode	  - Core writes data to RxBuffers when a ID
-*				    match happened.
+*                 match happened.
 *		This routine is useful for MailBox Mode.
 *
 ******************************************************************************/
@@ -944,18 +951,17 @@ u32 XCanFd_Recv_Mailbox(XCanFd *InstancePtr, u32 *FramePtr)
 /*****************************************************************************/
 /**
 *
-* This function sets an RxBuffer to Active State.In Mailbox Mode configuration
-* we can set each buffer to receive with specific Id and Mask.inorder compare
-* we need to first Activate the Buffer.Maximum number of RxBuffers depends on
-* Design.Range 48,32,16.
+* @brief Sets an RxBuffer to Active State.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	RxBuffer Receive Buffer Number defines which Buffer to configure
-*		Value ranges from  0 - 48
+* In Mailbox Mode configuration each buffer can be set to receive with a
+* specific Id and Mask. The buffer must first be activated before comparison.
+* Maximum number of RxBuffers depends on Design. Range 48, 32, 16.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    RxBuffer Receive Buffer Number that defines which
+*		Buffer to configure. Value ranges from 0 - 48.
 *
 * @return	- XST_SUCCESS if the values were set successfully.
-*
-* @note		none
 *
 ******************************************************************************/
 u32 XCanFd_RxBuff_MailBox_Active(XCanFd *InstancePtr, u32 RxBuffer)
@@ -990,19 +996,19 @@ u32 XCanFd_RxBuff_MailBox_Active(XCanFd *InstancePtr, u32 RxBuffer)
 /*****************************************************************************/
 /**
 *
-* This function sets the Id and Mask for an RxBuffer to participate in
-* Id match.if a packet is received with an id which is equal to id we
-* configured, then it is stored in RxBuffer. otherwise it won't.
+* @brief Sets the Id and Mask for an RxBuffer for Id matching.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	RxBuffer Receive Buffer Number defines which Buffer to configure
-*		Value ranges from  0 - 48(can get from NumofRxMbBuf)
-* @param	MaskValue is the value to write into the RxBuffer Mask Register
-* @param	IdValue is the value to write into the RxBuffer Id register
+* If a packet is received with an id equal to the configured id, it is stored
+* in the RxBuffer. Otherwise it is not stored.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    RxBuffer Receive Buffer Number that defines which
+*		Buffer to configure. Value ranges from 0 - 48
+*		(can get from NumofRxMbBuf).
+* @param[in]    MaskValue Value to write into the RxBuffer Mask Register.
+* @param[in]    IdValue Value to write into the RxBuffer Id register.
 *
 * @return	- XST_SUCCESS if the values were set successfully.
-**
-* @note		none
 *
 ******************************************************************************/
 u32 XCanFd_Set_MailBox_IdMask(XCanFd *InstancePtr, u32 RxBuffer,
@@ -1046,19 +1052,18 @@ u32 XCanFd_Set_MailBox_IdMask(XCanFd *InstancePtr, u32 RxBuffer,
 /*****************************************************************************/
 /**
 *
-* This function sets an RxBuffer to InActive State.if we change a buffer to
-* InActive state, then Rx Packet won't store into that buffer, even the Id
-* is matched.
+* @brief Sets an RxBuffer to Inactive State.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	RxBuffer Receive Buffer Number defines which Buffer to configure
-*		Value ranges from  0 - 48
+* If a buffer is changed to Inactive state, Rx packets are not stored into
+* that buffer, even if the Id is matched.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    RxBuffer Receive Buffer Number that defines which
+*		Buffer to configure. Value ranges from 0 - 48.
 *
 * @return	- XST_SUCCESS if the values were set successfully.
 *		- XST_FAILURE if the given filter was not disabled, or the CAN
-*		device was not ready to accept writes to AFMR and AFIR.
-*
-* @note		none
+*		  device was not ready to accept writes to AFMR and AFIR.
 *
 ******************************************************************************/
 u32 XCanFd_RxBuff_MailBox_DeActive(XCanFd *InstancePtr, u32 RxBuffer)
@@ -1093,23 +1098,24 @@ u32 XCanFd_RxBuff_MailBox_DeActive(XCanFd *InstancePtr, u32 RxBuffer)
 /*****************************************************************************/
 /**
 *
-* This function Cancels a CAN/CAN FD Frame which was already initiated for
-* transmission.This function first checks TRR Bit based on BufferNumber.
-* if TRR Bit is set, then it cancels the Buffers.
+* @brief Cancels a CAN/CAN FD Frame transmission request.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	BufferNumber is which Buffer to cancel out of 32 Buffers.
+* Checks the TRR Bit based on BufferNumber. If the TRR Bit is set, cancels
+* the buffer transmission.
 *
-* @return	- XST_SUCCESS if RX FIFO was not empty and a frame was read from
-*		RX FIFO successfully and written into the given buffer;
-*		- XST_NO_DATA if there is no frame to be received from the FIFO
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    BufferNumber Which Buffer to cancel out of 32 Buffers.
 *
-* @note		This function first checks whether TRR bit is set or not
-*		if Set, it then checks the corresponding TCR bit
-*			->if Set, then wait until cancellation is performed.
-*			->if Not set, then set the corresponding TCR bit and
-*			wait until core clears it.
-*		if Not set, Nothing to do.
+* @return	- XST_SUCCESS if cancellation was successful.
+*		- XST_FAILURE if the buffer has no pending transmission.
+*
+* @note         This function first checks whether the TRR bit is set.
+*               - If it is set, the function checks the corresponding TCR bit.
+*               - If the TCR bit is set, the function waits until cancellation
+*                 is performed.
+*               - If the TCR bit is not set, the function sets it and waits
+*                 until the core clears it.
+*               - If the TRR bit is not set, the function does nothing.
 *
 ******************************************************************************/
 int XCanFd_TxBuffer_Cancel_Request(XCanFd *InstancePtr, u32 BufferNumber)
@@ -1171,21 +1177,17 @@ int XCanFd_TxBuffer_Cancel_Request(XCanFd *InstancePtr, u32 BufferNumber)
 
 /*****************************************************************************/
 /**
-* This routine enables the acceptance filters. Up to 32 filters can
-* be enabled.
+* @brief Enables the acceptance filters. Up to 32 filters can be enabled.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FilterIndexMask specifies which filter(s) to enable. Use
-*		any XCANFD_AFR_UAF*_MASK to enable one filter, and "Or" multiple
-*		XCANFD_AFR_UAF*_MASK values if multiple filters need to be
-*		enabled. Any filter not specified in this parameter will keep
-*		its previous enable/disable setting.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    FilterIndexMask Specifies which filters to enable. Use
+*               any XCANFD_AFR_UAF*_MASK to enable one filter, and combine
+*               multiple XCANFD_AFR_UAF*_MASK values with a bitwise OR to
+*               enable multiple filters. Any filter not specified in this
+*               parameter keeps its previous enable or disable setting.
 *
-* @return	None.
-*
-* @note		In Sequential Mode, in order to receive data, we need to enable
-*		these filters. if we want to make filtration i.e Id match
-*		then we need to set the Id value in AFR Id register.
+* @note         In Sequential Mode, enable these filters to receive data. To
+*               filter by Id match, set the Id value in the AFR Id register.
 *
 ******************************************************************************/
 void XCanFd_AcceptFilterEnable(XCanFd *InstancePtr, u32 FilterIndexMask)
@@ -1209,19 +1211,16 @@ void XCanFd_AcceptFilterEnable(XCanFd *InstancePtr, u32 FilterIndexMask)
 /*****************************************************************************/
 /**
 *
-* This routine disables the acceptance filters. 32 filters can be disabled.
+* @brief Disables the acceptance filters. 32 filters can be disabled.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FilterIndexMask specifies which filter(s) to disable. Use
-*		any XCANFD_AFR_UAF*_MASK to disable one filter, and "Or" multiple
-*		XCANFD_AFR_UAF*_MASK values if multiple filters need to be
-*		disabled. Any filter not specified in this parameter will keep
-*		its previous enable/disable setting. If all acceptance filters
-*		are disabled then all received frames are stored in the RX FIFO.
-*
-* @return	None.
-*
-* @note		None
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    FilterIndexMask Specifies which filters to disable. Use
+*               any XCANFD_AFR_UAF*_MASK to disable one filter, and combine
+*               multiple XCANFD_AFR_UAF*_MASK values with a bitwise OR to
+*               disable multiple filters. Any filter not specified in this
+*               parameter keeps its previous enable or disable setting. If all
+*               acceptance filters are disabled then all received frames are
+*               stored in the RX FIFO.
 *
 ******************************************************************************/
 void XCanFd_AcceptFilterDisable(XCanFd *InstancePtr, u32 FilterIndexMask)
@@ -1245,32 +1244,34 @@ void XCanFd_AcceptFilterDisable(XCanFd *InstancePtr, u32 FilterIndexMask)
 /*****************************************************************************/
 /**
 *
-* This function sets values to the Acceptance Filter Mask Register (AFMR) and
+* @brief Sets values for the Acceptance Filter Mask and ID Registers.
+*
+* Sets values to the Acceptance Filter Mask Register (AFMR) and
 * Acceptance Filter ID Register (AFIR) for the specified Acceptance Filter.
-* Use XCANFD_IDR_* defined in xcanfd_hw.h to create the values to set the filter.
-* Read xcanfd.h and device specification for details.
+* Use XCANFD_IDR_* defined in xcanfd_hw.h to create the values to set the
+* filter. Read xcanfd.h and device specification for details.
 *
 * This function should be called only after:
-*   - The given filter is disabled by calling XCanFd_AcceptFilterDisable();
-*   - And the CAN device is ready to accept writes to AFMR and AFIR, i.e.,
-*	 XCanFd_IsAcceptFilterBusy() returns FALSE.
+*   - The given filter is disabled by calling XCanFd_AcceptFilterDisable().
+*   - And the CAN device is ready to accept writes to AFMR and AFIR, that is,
+*     XCanFd_IsAcceptFilterBusy() returns FALSE.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FilterIndex defines which Acceptance Filter Mask and ID Register
-*		to set. Use any single XCANFD_AFR_UAF*_MASK value.ranges from 1
-*		- 32
-* @param	MaskValue is the value to write to the chosen Acceptance Filter
-*		Mask Register.
-* @param	IdValue is the value to write to the chosen Acceptance Filter
-*		ID Register.
+* @param[in]   InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]   FilterIndex Defines which Acceptance Filter Mask and ID Register
+*              to set. Use any single XCANFD_AFR_UAF*_MASK value. Ranges
+*              from 1 - 32.
+* @param[in]   MaskValue Value to write to the chosen Acceptance Filter
+*              Mask Register.
+* @param[in]   IdValue Value to write to the chosen Acceptance Filter
+*              ID Register.
 *
-* @return	- XST_SUCCESS if the values were set successfully.
-*		- XST_FAILURE if the given filter was not disabled, or the CAN
-*		device was not ready to accept writes to AFMR and AFIR.
+* @return      - XST_SUCCESS if the values were set successfully.
+*              - XST_FAILURE if the given filter was not disabled, or the CAN
+*                device was not ready to accept writes to AFMR and AFIR.
 *
-* @note		Acceptance Filter Mask and ID Registers are optional registers in
-*		Xilinx XCanFd device.if they are not configured then device will
-*		receive data with any ID.
+* @note        Acceptance Filter Mask and ID Registers are optional registers in
+*              Xilinx XCanFd device. If they are not configured then the device
+*              receives data with any ID.
 *
 ******************************************************************************/
 int XCanFd_AcceptFilterSet(XCanFd *InstancePtr, u32 FilterIndex,
@@ -1306,24 +1307,24 @@ int XCanFd_AcceptFilterSet(XCanFd *InstancePtr, u32 FilterIndex,
 /*****************************************************************************/
 /**
 *
-* This function reads the values of the Acceptance Filter Mask and ID Register
-* for the specified Acceptance Filter. Use XCANFD_IDR_* defined in xcanfd_hw.h to
+* @brief Reads the Acceptance Filter Mask and ID Register values.
+*
+* Reads the values of the Acceptance Filter Mask and ID Register for the
+* specified Acceptance Filter. Use XCANFD_IDR_* defined in xcanfd_hw.h to
 * interpret the values. Read xcanfd.h and device specification for details.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	FilterIndex defines which Acceptance Filter Mask Register to get
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    FilterIndex Defines which Acceptance Filter Mask Register to get
 *		Mask and ID from. Use any single XCANFD_FILTER_* value.
-* @param	MaskValue will store the Mask value read from the chosen
+* @param[out]   MaskValue Mask value read from the chosen
 *		Acceptance Filter Mask Register after this function returns.
-* @param	IdValue will store the ID value read from the chosen Acceptance
+* @param[out]   IdValue ID value read from the chosen Acceptance
 *		Filter ID Register after this function returns.
-*
-* @return	None.
 *
 * @note		Acceptance Filter Mask and ID Registers are optional registers
 *		in Xilinx CAN device. If they are NOT existing in the device,
 *		this function should NOT be used. Calling this function in this
-*		case will cause an assertion failure.
+*               case causes an assertion failure.
 *
 ******************************************************************************/
 void XCanFd_AcceptFilterGet(XCanFd *InstancePtr, u32 FilterIndex,
@@ -1342,24 +1343,22 @@ void XCanFd_AcceptFilterGet(XCanFd *InstancePtr, u32 FilterIndex,
 				  XCANFD_AFIDR_OFFSET(FilterIndex));
 
 }
-
+#ifndef SDT
 /*****************************************************************************/
 /**
 *
-* This function looks for the device configuration based on the device index.
-* The table XCanFd_ConfigTable[] contains the configuration information for each
-* device in the system.
+* @brief Looks up the device configuration based on the device index.
 *
-* @param	InstanceIndex is a 0-based integer indexing all CAN devices in
+* The table XCanFd_ConfigTable[] contains the configuration information for
+* each device in the system.
+*
+* @param[in]    InstanceIndex 0-based integer indexing all CAN devices in
 *		the system.
 *
 * @return	A pointer to the configuration table entry corresponding to the
 *		given device ID, or NULL if no match is found.
 *
-* @note		None.
-*
 ******************************************************************************/
-#ifndef SDT
 XCanFd_Config *XCanFd_GetConfig(unsigned int InstanceIndex)
 {
 	XCanFd_Config *CfgPtr;
@@ -1377,15 +1376,7 @@ XCanFd_Config *XCanFd_GetConfig(unsigned int InstanceIndex)
 /******************************************************************************/
 /**
 *
-* This routine is a stub for the asynchronous callbacks. The stub is here in
-* case the upper layer forgot to set the handler(s). On initialization, all
-* handlers are set to this callback. It is considered an error for this handler
-* to be invoked.
-*
-*
-* @return	None.
-*
-* @note		None.
+* @brief Serves as a stub for asynchronous callbacks.
 *
 ******************************************************************************/
 static void StubHandler(void)
@@ -1396,14 +1387,12 @@ static void StubHandler(void)
 /*****************************************************************************/
 /**
 *
-* This function returns Data Length Code(in Bytes),we need to pass
-* DLC Field value in DLC Register.
+* @brief Returns Data Length Code in bytes.
 *
-* @param	Dlc Field in Data Length Code Register.
-* @param	Edl and Fdf Field in DLC register.
+* @param[in]    Dlc DLC field value in Data Length Code Register.
+* @param[in]    Edl EDL and FDF field in DLC register.
 *
-*
-* @return	Total Number of Bytes stored in each Buffer.
+* @return	Total number of bytes stored in each buffer.
 *
 * @note		Refer CAN FD Spec about DLC.
 *
@@ -1488,12 +1477,11 @@ int XCanFd_GetDlc2len(u32 Dlc, u32 Edl)
 /*****************************************************************************/
 /**
 *
-* This function returns Data Length Code of 4bits,we need to pass
-* length in bytes.
+* @brief Returns the 4-bit Data Length Code for a given byte length.
 *
-* @param	len is the length in bytes.
+* @param[in]    len Length in bytes.
 *
-* @return	Total Number of Bytes stored in each Buffer.
+* @return	The DLC value corresponding to the given byte length.
 *
 * @note		Refer CAN FD Spec about DLC.
 *
@@ -1523,14 +1511,11 @@ u8 XCanFd_GetLen2Dlc(int len)
 
 /*****************************************************************************/
 /**
-* This Routine returns the Free Buffers count out of 32 Transmit Buffers.
+* @brief Returns the free buffer count out of 32 Transmit Buffers.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-*
-* @return	Returns number of Free buffers count.
-*
-* @note		None.
+* @return	Number of free buffers.
 *
 ******************************************************************************/
 u32 XCanFd_GetFreeBuffer(XCanFd *InstancePtr)
@@ -1557,15 +1542,14 @@ u32 XCanFd_GetFreeBuffer(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This routine sends queue of buffers,when added to queue using Addto_Queue()
-* Basically this will trigger the TRR Bit(s).This routine can be used
-* when user want to send multiple packets at a time.
+* @brief Sends queued buffers added via XCanFd_Addto_Queue().
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Triggers the TRR bits. Use this function to send multiple
+* packets at a time.
 *
-* @return	- XST_SUCCESS.
+* @param[in,out] InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		None.
+* @return        - XST_SUCCESS.
 *
 ******************************************************************************/
 int XCanFd_Send_Queue(XCanFd *InstancePtr)
@@ -1596,16 +1580,12 @@ int XCanFd_Send_Queue(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function Polls the TxBuffer(s) whether it is transmitted or not.
-* This function can call when user sends multiple Buffers using Addto_Queue()
-* and XCanFd_Send_Queue().
+* @brief Polls the TxBuffers for transmission completion.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Call this function after sending multiple buffers using
+* XCanFd_Addto_Queue() and XCanFd_Send_Queue().
 *
-* @return	None.
-*
-*
-* @note		None.
+* @param[in,out] InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 ******************************************************************************/
 void XCanFd_PollQueue_Buffer(XCanFd *InstancePtr)
@@ -1635,20 +1615,19 @@ void XCanFd_PollQueue_Buffer(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function returns Number of messages Stored.
-* The FSR Register has Field called FL. this gives number of packets
+* @brief Returns the number of messages stored in the Rx FIFO.
+*
+* The FSR Register has a field called FL that gives the number of packets
 * received.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    fifo_no FIFO number.
 *
-* @param	fifo_no is fifo number.
-*
-* @return	Value is the number of messages stored in FSR Register.
+* @return	The number of messages stored in FSR Register.
 *
 * @note		Selects either Rx Fifo 0 or Rx Fifo 1
 *
 ******************************************************************************/
-
 int XCanFd_GetNofMessages_Stored_Rx_Fifo(XCanFd *InstancePtr, u8 fifo_no)
 {
 
@@ -1681,19 +1660,19 @@ int XCanFd_GetNofMessages_Stored_Rx_Fifo(XCanFd *InstancePtr, u8 fifo_no)
 /*****************************************************************************/
 /**
 *
-* This function returns Number of messages Stored in TX Event FIFO
-* The FSR Register has Field called FL. this gives number of packets
+* @brief Returns the number of messages stored in TX Event FIFO.
+*
+* The FSR Register has a field called FL that gives the number of packets
 * received.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @return	Value is the number of messages stored in FSR Register.
+* @return	The number of messages stored in FSR Register.
 *
 * @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+*               with CanFD 2.0 spec support only.
 *
 ******************************************************************************/
-
 int XCanFd_GetNofMessages_Stored_TXE_FIFO(XCanFd *InstancePtr)
 {
 
@@ -1716,14 +1695,9 @@ int XCanFd_GetNofMessages_Stored_TXE_FIFO(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function Enables the Transceiver delay compensation.
+* @brief Enables the Transceiver delay compensation.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-*
-* @return	None.
-*
-*
-* @note		None.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 ******************************************************************************/
 void XCanFd_Enable_Tranceiver_Delay_Compensation(XCanFd *InstancePtr)
@@ -1744,16 +1718,10 @@ void XCanFd_Enable_Tranceiver_Delay_Compensation(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function Sets the Transceiver delay compensation offset.
+* @brief Sets the Transceiver delay compensation offset.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-*
-* @param	TdcOffset is the Delay Compensation Offset.
-*
-* @return	None.
-*
-*
-* @note		None.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    TdcOffset Delay Compensation Offset.
 *
 ******************************************************************************/
 void XCanFd_Set_Tranceiver_Delay_Compensation(XCanFd *InstancePtr,
@@ -1782,13 +1750,9 @@ void XCanFd_Set_Tranceiver_Delay_Compensation(XCanFd *InstancePtr,
 /*****************************************************************************/
 /**
 *
-* This function Disables the Transceiver delay compensation.
+* @brief Disables the Transceiver delay compensation.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]    InstancePtr Pointer to the XCanFd instance.
 *
 ******************************************************************************/
 void XCanFd_Disable_Tranceiver_Delay_Compensation(XCanFd *InstancePtr)
@@ -1808,11 +1772,11 @@ void XCanFd_Disable_Tranceiver_Delay_Compensation(XCanFd *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function calculates the index position of the right most set bit.
+* @brief Calculates the index position of the right most set bit.
 *
-* @param	u is GlobalTrrValue
+* @param[in]    u GlobalTrrValue.
 *
-* @return	Index location of right most set bit
+* @return       Index location of right most set bit.
 *
 * @note		log2 fast Math logic.
 *
@@ -1832,17 +1796,16 @@ static int XCanfd_TrrVal_Get_SetBit_Position(u32 u)
 
 /*****************************************************************************/
 /**
-* This function receives a CAN/CAN FD Frame as per the input Can Read Index
-* value.
+* @brief Receives a CAN/CAN FD Frame for the given Read Index.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
-* @param	ReadIndex is Current RI(Read Index) maintained by Can Core.
-* @param    	FsrVal is Fifo Status Registor value.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer where the
-*		    CAN/CAN FD frame is to be written.
-* @param    	fifo_no is target fifo number
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    ReadIndex Current RI (Read Index) maintained by CAN Core.
+* @param[in]    FsrVal FIFO Status Register value.
+* @param[out]   FramePtr Pointer to a 32-bit aligned buffer where the
+*		CAN/CAN FD frame is to be written.
+* @param[in]    fifo_no Target FIFO number.
 *
-* @return	- XST_SUCCESS after all operations
+* @return	- XST_SUCCESS after all operations.
 *
 * @note		This routine has generic logic for sequential receive mode
 *
@@ -1853,7 +1816,7 @@ static u32 XCanFd_SeqRecv_logic(XCanFd *InstancePtr, u32 ReadIndex, u32 FsrVal, 
 	u32 CanEDL;
 	u32 Dlc = 0;
 	u32 Len;
-	/* Read ID from ID Register*/
+	/* Read ID from ID Register */
 	if (fifo_no == (u8)XCANFD_RX_FIFO_0) {
 		FramePtr[0] = XCanFd_ReadReg(
 				      InstancePtr->CanFdConfig.BaseAddress,
@@ -1933,17 +1896,13 @@ static u32 XCanFd_SeqRecv_logic(XCanFd *InstancePtr, u32 ReadIndex, u32 FsrVal, 
 
 	return XST_SUCCESS;
 }
+
 /*****************************************************************************/
 /**
 *
-* This function recovers the CAN device from Protocol Exception Event & Busoff
-* Event States.
+* @brief Recovers the CAN device from Protocol Exception and Bus-Off events.
 *
-* @param        InstancePtr is a pointer to the XCanFd instance to be worked on.
-*
-* @return       None.
-*
-* @note         None.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 ******************************************************************************/
 void XCanFd_Pee_BusOff_Handler(XCanFd *InstancePtr)

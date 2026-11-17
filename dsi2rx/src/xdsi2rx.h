@@ -62,6 +62,12 @@ extern "C" {
 #define XDSI2RX_HANDLER_GSP_FIFO_NE			16
 #define XDSI2RX_HANDLER_GSP_FIFO_FULL			17
 #define XDSI2RX_HANDLER_FRAME_STARTED			18
+#define XDSI2RX_HANDLER_INCORRECT_LANE_CONFIG		19	/**< Incorrect
+							lane configuration
+							handler */
+#define XDSI2RX_HANDLER_WC_CORRUPTION			20	/**< Word count
+							corruption
+							handler */
 
 typedef enum {
 	XDSI2RX_DISABLE, /* DSI Tx controller Disable */
@@ -164,6 +170,18 @@ typedef struct {
 	void *GSPFifoFullRef;
 	XDsi2Rx_Callback FrmStartDetCallback; /* FRAME Start Detect*/
 	void *FrmStartDetRef;
+	XDsi2Rx_Callback IncorrectLaneConfigCallback;	/**< Callback for
+							Incorrect lane
+							configuration */
+	void *IncorrectLaneConfigRef;			/**< To be passed to the
+							Incorrect lane
+							configuration call
+							back */
+	XDsi2Rx_Callback WCCorruptionCallback;		/**< Callback for Word
+							count corruption */
+	void *WCCorruptionRef;				/**< To be passed to the
+							Word count corruption
+							call back */
 
 u32 IsReady; /**< Driver is ready */
 } XDsi2Rx;
@@ -560,6 +578,20 @@ void XDsi2Rx_GetConfigParams(XDsi2Rx *InstancePtr,
 		XDsi2Rx_ConfigParameters *ConfigInfo);
 s32 XDsi2Rx_SetCallback(XDsi2Rx *InstancePtr, u32 HandleType,
 			void *CallbackFunc, void *CallbackRef);
+
+/* Interrupt functions in xdsi2rx_intr.c */
+/** @brief Enable the interrupts in Mask. */
+void XDsi2Rx_InterruptEnable(XDsi2Rx *InstancePtr, u32 Mask);
+/** @brief Disable the interrupts in Mask. */
+void XDsi2Rx_InterruptDisable(XDsi2Rx *InstancePtr, u32 Mask);
+/** @brief Get the interrupts enabled in the core. */
+u32 XDsi2Rx_InterruptGetEnabled(XDsi2Rx *InstancePtr);
+/** @brief Get the active interrupt status. */
+u32 XDsi2Rx_InterruptGetStatus(XDsi2Rx *InstancePtr);
+/** @brief Clear the interrupts in Mask. */
+void XDsi2Rx_InterruptClear(XDsi2Rx *InstancePtr, u32 Mask);
+/** @brief Dispatch a core interrupt to the registered callbacks. */
+void XDsi2Rx_IntrHandler(void *InstancePtr);
 
 #ifdef __cplusplus
 }

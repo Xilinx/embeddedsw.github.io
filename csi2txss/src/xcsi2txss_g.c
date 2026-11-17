@@ -9,6 +9,7 @@ XCsi2TxSs_Config XCsi2TxSs_ConfigTable[] __attribute__ ((section (".drvcfg_sec")
 		0x0, /* xlnx,csi2-tx-lanes */
 		0x0, /* xlnx,csi2-tx-data-type */
 		0x0, /* xlnx,csi2x-tx-pixel-mode */
+		0x4, /* xlnx,csi2-tx-num-vc */
 		0x0, /* xlnx,csi2-tx-line-bufr-depth */
 		0x0, /* xlnx,dphy-linerate */
 		0x0, /* xlnx,dphy-en-reg-if */
@@ -17,6 +18,8 @@ XCsi2TxSs_Config XCsi2TxSs_ConfigTable[] __attribute__ ((section (".drvcfg_sec")
 		0x0, /* csi2-tx-connected */
 		0x0, /* mipi-dphy-present */
 		0x0, /* mipi-dphy-connected */
+		0x0, /* txphy-present */
+		0x0, /* txphy-connected */
 		0xffff, /* interrupts */
 		0xffff /* interrupt-parent */
 	},

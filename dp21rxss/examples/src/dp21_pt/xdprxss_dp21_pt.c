@@ -34,7 +34,6 @@
 
 #define PS_IIC_CLK 100000
 
-#ifdef SDT
 #define INTRNAME_DPTX   0
 #define INTRNAME_DPRX   0
 
@@ -64,9 +63,8 @@
 #define INTRNAME_DPRX_1XCIPHER    1
 #endif
 
-#endif
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 #define 			XINTC XIntc
 XINTC IntcInst; 	/**< The interrupt controller instance. */
 #endif
@@ -78,9 +76,7 @@ XINTC IntcInst; 	/**< The interrupt controller instance. */
 #include "rx.h"
 #endif
 
-#ifdef SDT
 #define XPAR_IIC_0_BASEADDR XPAR_XIIC_0_BASEADDR
-#endif
 
 #if (ENABLE_HDCP1x_IN_TX | ENABLE_HDCP1x_IN_RX)
 unsigned int gKeyMGMTBaseAddress[2] = {KEYMGMT_BASEADDR_RX, KEYMGMT_BASEADDR_TX};
@@ -91,19 +87,16 @@ void Dp21RxSs_Pt_ResetWrFb();
 void Dp21RxSs_Pt_ResetRdFb();
 void Dp21RxSs_Pt_TxMain();
 void Dp21RxSs_Pt_Setup();
-#ifndef SDT
-u32 Dp21RxSs_Pt_PhyInit(u16 DeviceId);
-#else
 u32 Dp21RxSs_Pt_PhyInit(UINTPTR BaseAddress);
-#endif
 u32 Dp21RxSs_Pt_CalcStride(XVidC_ColorFormat Cfmt, u16 AXIMMDataWidth,
 	       XVidC_VideoStream *StreamPtr);
 extern XDp_MainStreamAttributes* Msa_Pt;
+extern u8 use_vsc;	/**< 1 when stream carries colorimetry via VSC SDP */
 
 /*
  * DDR Addresses of Frame Buffer
  */
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #define ADDR1 0x10000000
 #define ADDR2 0x20000000
 #define ADDR3 0x30000000
@@ -156,8 +149,15 @@ u8 password_valid = 0;
 Video_CRC_Config VidFrameCRC_rx; /**< Video Frame CRC instance */
 Video_CRC_Config VidFrameCRC_tx;
 XTmrCtr TmrCtr; 		/**< Timer instance.*/
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 XIic IicInstance;		/**< I2C bus for MC6000 and IDT */
+#endif /* Added for VCK190/VEK385 support */
 XVphy VPhyInst;			/**< The DPRX Subsystem instance.*/
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+XClk_Wiz_Config *CfgPtr_Dynamic;
+XClk_Wiz ClkWiz_Dynamic;
+XGpio Gpio;
+#endif /* Added for VCK190/VEK385 support */
 
 typedef u8 AddressType;
 
@@ -222,6 +222,7 @@ const XVidC_VideoTimingMode XVidC_MyVideoTimingMode[
 	   4320, 3, 5, 53, 4381, 0, 0, 0, 0, 1}},
 };
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 /*
  * Set the TX PLL and Channel based on the VPHY config
  */
@@ -251,22 +252,32 @@ XVphy_ChannelId VPHY_RX_CHANNEL_TYPE = XVPHY_CHANNEL_ID_CMN1;
 /*
  * These are the REFCLK sources for VCU118 and ZCU102
  */
-#ifdef PLATFORM_MB //VCU118 (270Mhz on REFCLK0, 400Mhz on REFCLK1)
+#if defined (PLATFORM_MB) || defined (__riscv) //VCU118 (270Mhz on REFCLK0, 400Mhz on REFCLK1)
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_270 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK0;
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_400 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK1;
-#else /**< ZCU102 (270Mhz on REFCLK0, 400Mhz on NORTHREFCLK0) */
+#else
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_270 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK0;
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_400 = XVPHY_REF_CLK_SEL_XPLL_GTNORTHREFCLK0;
 #endif
+#else /* Added for VCK190/VEK385 support */
+XVphy_PllType VPHY_TX_PLL_TYPE = 0;
+XVphy_ChannelId VPHY_TX_CHANNEL_TYPE = 0;
+XVphy_PllType VPHY_RX_PLL_TYPE = 0;
+XVphy_ChannelId VPHY_RX_CHANNEL_TYPE = 0;
+XVphy_PllRefClkSelType VPHY_REFCLK_SEL_270 = 0;
+XVphy_PllRefClkSelType VPHY_REFCLK_SEL_400 = 0;
+#endif /* Added for VCK190/VEK385 support */
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 XIicPs Ps_Iic1;
 XIicPs_Config *XIic1Ps_ConfigPtr;
 #define PS_IIC_CLK 100000
 int Dp21RxSs_Pt_I2cMuxPs(u8 Data);
 #endif
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 XIic_Config *ConfigPtr_IIC;	/**< Pointer to configuration data */
+#endif /* Added for VCK190/VEK385 support */
 
 XV_tpg TpgInst;
 XDpRxSs DpRxSsInst;		/**< The DPRX Subsystem instance.*/
@@ -326,16 +337,13 @@ int Dp21RxSs_Pt_VideoFMC_Init(void)
 	int Status = XST_SUCCESS;
 	u8 Buffer[2];
 	int ByteCount;
-	XIic_Config *ConfigPtr_IIC;	/**< Pointer to configuration data */
 
 	/*
 	 * Initialize the IIC driver so that it is ready to use.
 	 */
-#ifndef SDT
-	ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	XIic_Config *ConfigPtr_IIC;	/**< Pointer to configuration data */
 	ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
-#endif
 	if (ConfigPtr_IIC == NULL) {
 		return XST_FAILURE;
 	}
@@ -350,7 +358,7 @@ int Dp21RxSs_Pt_VideoFMC_Init(void)
 	/*
 	 * Set the I2C Mux to select the HPC FMC
 	 */
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 	Buffer[0] = 0x01;
 #else
 	Buffer[0] = 0x02;
@@ -361,6 +369,17 @@ int Dp21RxSs_Pt_VideoFMC_Init(void)
 		xil_printf("Failed to set the I2C Mux.\n\r");
 		return XST_FAILURE;
 	}
+#else /* Added for VCK190/VEK385 support */
+#ifndef VERSAL_2VE_2VM
+	Buffer[0] = 0x01; /**< Enable HPC0 */
+	Status = XIicPs_MasterSendPolled(&Ps_Iic1, (u8 *)Buffer, 1, I2C_MUX_ADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Failed to set the I2C Mux.\n\r");
+		return XST_FAILURE;
+	}
+#endif
+	(void)ByteCount;
+#endif /* Added for VCK190/VEK385 support */
 #if 0
 	/*
 	 * Required for previous version of FMC cards.
@@ -394,13 +413,16 @@ int Dp21RxSs_Pt_I2cWriteFreq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u8 Register
 	xil_printf ("%x, %x, %x, %x\r\n",Buffer[1], Buffer[2], Buffer[3], Buffer[4]);
 
 	while (1) {
-#ifndef versal
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1)
 		ByteCount = XIic_Send(I2CBaseAddress, I2CSlaveAddress, (u8*)Buffer, 5, XIIC_STOP);
 		if (ByteCount == 5)
 			Status = XST_SUCCESS;
 		else
 			Status = XST_FAILURE;
 #else
+		(void)ByteCount;
+		(void)I2CBaseAddress;
+
 		Status = XIicPs_MasterSendPolled(&Ps_Iic1, (u8 *)&Buffer, 2, I2CSlaveAddress);
 #endif
 		if (Status != XST_SUCCESS) {
@@ -427,6 +449,7 @@ u8 Dp21RxSs_Pt_I2cReadFreq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterA
 	Exit = FALSE;
 	Data = 0;
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	do {
 		/*
 		 * Set Address
@@ -453,6 +476,29 @@ u8 Dp21RxSs_Pt_I2cReadFreq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterA
 			Exit = TRUE;
 		}
 	} while (!Exit);
+#else /* Added for VCK190/VEK385 support */
+	{
+		u32 Status;
+		(void)ByteCount;
+		(void)I2CBaseAddress;
+
+		do {
+			Buffer[0] = RegisterAddress & 0xff;
+			Status = XIicPs_MasterSendPolled(&Ps_Iic1, (u8 *)Buffer, 1, I2CSlaveAddress);
+
+			if (Status != XST_SUCCESS) {
+				Retry++;
+				if (Retry == 255) {
+					Exit = TRUE;
+				}
+			} else {
+				XIicPs_MasterRecvPolled(&Ps_Iic1, (u8 *)Buffer, 1, I2CSlaveAddress);
+				Data = Buffer[0];
+				Exit = TRUE;
+			}
+		} while (!Exit);
+	}
+#endif /* Added for VCK190/VEK385 support */
 
 	return Data;
 }
@@ -472,13 +518,16 @@ int Dp21RxSs_Pt_I2cWriteTdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress,
 	Buffer[1] = Value;
 
 	while (1) {
-#ifndef versal
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1)
 		ByteCount = XIic_Send(I2CBaseAddress, I2CSlaveAddress, (u8*)Buffer, 2, XIIC_STOP);
 		if (ByteCount == 2)
 			Status = XST_SUCCESS;
 		else
 			Status = XST_FAILURE;
 #else
+		(void)ByteCount;
+		(void)I2CBaseAddress;
+
 		Status = XIicPs_MasterSendPolled(&Ps_Iic1, (u8 *)&Buffer, 2, I2CSlaveAddress);
 #endif
 		if (Status != XST_SUCCESS) {
@@ -506,6 +555,7 @@ u8 Dp21RxSs_Pt_I2cReadTdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 Regist
 	Exit = FALSE;
 	Data = 0;
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	do {
 		/*
 		 * Set Address
@@ -530,6 +580,29 @@ u8 Dp21RxSs_Pt_I2cReadTdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 Regist
 			Exit = TRUE;
 		}
 	} while (!Exit);
+#else /* Added for VCK190/VEK385 support */
+	{
+		u32 Status;
+		(void)ByteCount;
+		(void)I2CBaseAddress;
+
+		do {
+			Buffer[0] = RegisterAddress & 0xff;
+			Status = XIicPs_MasterSendPolled(&Ps_Iic1, (u8 *)Buffer, 1, I2CSlaveAddress);
+
+			if (Status != XST_SUCCESS) {
+				Retry++;
+				if (Retry == 255) {
+					Exit = TRUE;
+				}
+			} else {
+				XIicPs_MasterRecvPolled(&Ps_Iic1, (u8 *)Buffer, 1, I2CSlaveAddress);
+				Data = Buffer[0];
+				Exit = TRUE;
+			}
+		} while (!Exit);
+	}
+#endif /* Added for VCK190/VEK385 support */
 
 	return Data;
 }
@@ -643,11 +716,7 @@ static int Dp21RxSs_Pt_Init(void)
 	 * Obtain the device configuration
 	 * for the DisplayPort RX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr_rx = XDpRxSs_LookupConfig(XDPRXSS_DEVICE_ID);
-#else
 	ConfigPtr_rx = XDpRxSs_LookupConfig(XPAR_DPRXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_rx) {
 		return XST_FAILURE;
 	}
@@ -675,11 +744,7 @@ static int Dp21RxSs_Pt_Init(void)
 #endif
 
 #if XPAR_XV_FRMBUFWR_NUM_INSTANCES		/**< FrameBuffer Wr initialization. */
-#ifndef SDT
-	Status = XVFrmbufWr_Initialize(&frmbufwr, FRMBUF_WR_DEVICE_ID);
-#else
 	Status = XVFrmbufWr_Initialize(&frmbufwr, XPAR_DP_RX_HIER_0_V_FRMBUF_WR_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Write "
 			   "initialization failed\r\n");
@@ -692,11 +757,7 @@ static int Dp21RxSs_Pt_Init(void)
 	/*
 	 * Obtain the device configuration for the DisplayPort TX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_DEVICE_ID);
-#else
 	ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_tx) {
 		return XST_FAILURE;
 	}
@@ -712,11 +773,7 @@ static int Dp21RxSs_Pt_Init(void)
 		return XST_FAILURE;
 	}
 
-#ifndef SDT
-	ConfigPtr_tpg = XV_tpg_LookupConfig(XPAR_DP_TX_HIER_0_V_TPG_0_DEVICE_ID);
-#else
 	ConfigPtr_tpg = XV_tpg_LookupConfig(XPAR_DP_TX_HIER_0_V_TPG_0_BASEADDR);
-#endif
 	if (!ConfigPtr_tpg) {
 		return XST_FAILURE;
 	}
@@ -728,11 +785,7 @@ static int Dp21RxSs_Pt_Init(void)
 	}
 
 #if XPAR_XV_FRMBUFRD_NUM_INSTANCES		/**< FrameBuffer Rd initialization. */
-#ifndef SDT
-	Status = XVFrmbufRd_Initialize(&frmbufrd, FRMBUF_RD_DEVICE_ID);
-#else
 	Status = XVFrmbufRd_Initialize(&frmbufrd, XPAR_DP_TX_HIER_0_V_FRMBUF_RD_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Read "
 			   "initialization failed\r\n");
@@ -742,24 +795,101 @@ static int Dp21RxSs_Pt_Init(void)
 #endif
 
 #ifdef Txo
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	XVphy_BufgGtReset(&VPhyInst, XVPHY_DIR_TX,(FALSE));
+#else /* Added for VCK190/VEK385 support */
+	{
+		u32 dptx_sts = 0;
+		u32 retry = 0;
+
+		/*
+		 * GT power-good gate - shared for both TX and RX GT bring-up,
+		 * polled once here before either direction's GT reset release.
+		 */
+		while (!((XGpio_DiscreteRead(&Gpio, 1)) & 0x1));
+
+		GtCtrl(GT_VSWING_MASK, (0x5 << 8), 1);	/* vswing = 5 */
+
+		GtCtrl(GT_RST_MASK, 0x00000000, 1);	/* release TX GT reset */
+
+		while ((dptx_sts != ALL_LANE) && retry < 10000) {
+			dptx_sts = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x280) & ALL_LANE;
+			retry++;
+		}
+		if (retry == 10000) {
+			/* GT did not come up on first try - pulse reset again */
+			GtCtrl(GT_RST_MASK, 0x00000001, 1);
+			GtCtrl(GT_RST_MASK, 0x00000000, 1);
+		}
+
+		dptx_sts = 0;
+		retry = 0;
+		while ((dptx_sts != ALL_LANE) && retry < 10000) {
+			dptx_sts = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x280) & ALL_LANE;
+			retry++;
+		}
+		if (retry == 10000) {
+			xil_printf("+++++++ TX GT configuration encountered a failure init2 +++++++ \r\n");
+		}
+	}
+#endif /* Added for VCK190/VEK385 support */
 
 	/*
 	 * This configures the vid_phy for line rate to start with
 	 * Even though CPLL can be used in limited case,
 	 * using QPLL is recommended for more coverage.
 	 */
-#ifdef PLATFORM_MB
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	Status = Dp21RxSs_Pt_PhyConfig(&VPhyInst, XDP_TX_LINK_BW_SET_UHBR10, VPHY_TX_PLL_TYPE, VPHY_TX_CHANNEL_TYPE, XVPHY_DIR_TX);
+#else /* Added for VCK190/VEK385 support */
+#if defined (PLATFORM_MB) || defined (__riscv)
 	Status = Dp21RxSs_Pt_PhyConfig(&VPhyInst, XDP_TX_LINK_BW_SET_UHBR20, VPHY_TX_PLL_TYPE, VPHY_TX_CHANNEL_TYPE, XVPHY_DIR_TX);
 #else
 	Status = Dp21RxSs_Pt_PhyConfig(&VPhyInst, XDP_TX_LINK_BW_SET_UHBR10, VPHY_TX_PLL_TYPE, VPHY_TX_CHANNEL_TYPE, XVPHY_DIR_TX);
 #endif
+#endif /* Added for VCK190/VEK385 support */
 	if (Status != XST_SUCCESS) {
 		xil_printf ("Configuration of PHY for TX failed\r\n");
 	}
 #endif
 
 #ifdef Rxo
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	{
+		u32 dprx_sts = 0;
+		u32 retry = 0;
+
+		/*
+		 * GT power-good gate - shared for both TX and RX GT bring-up,
+		 * polled once here before either direction's GT reset release.
+		 */
+		while (!((XGpio_DiscreteRead(&Gpio, 1)) & 0x1));
+
+		GtCtrl(GT_RST_MASK, 0x00000000, 0);	/* release RX GT reset */
+
+		dprx_sts = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x208) & ALL_LANE;
+		while ((dprx_sts != ALL_LANE) && retry < 10000) {
+			dprx_sts = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x208) & ALL_LANE;
+			retry++;
+		}
+		if (retry == 10000) {
+			GtCtrl(GT_RST_MASK, 0x00000001, 0);
+			GtCtrl(GT_RST_MASK, 0x00000000, 0);
+		}
+
+		dprx_sts = 0;
+		retry = 0;
+		dprx_sts = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x208) & ALL_LANE;
+		while ((dprx_sts != ALL_LANE) && retry < 10000) {
+			dprx_sts = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x208) & ALL_LANE;
+			Dp21RxSs_Pt_CustomWaitUs(DpRxSsInst.DpPtr, 100);
+			retry++;
+		}
+		if (retry == 10000) {
+			xil_printf("+++++++ RX GT configuration encountered a failure init2 +++++++ \r\n");
+		}
+	}
+#endif /* Added for VCK190/VEK385 support */
 	Status = Dp21RxSs_Pt_PhyConfig(&VPhyInst, XDP_TX_LINK_BW_SET_UHBR10, VPHY_RX_PLL_TYPE, VPHY_RX_CHANNEL_TYPE, XVPHY_DIR_RX);
 	if (Status != XST_SUCCESS) {
 		xil_printf ("Configuration of PHY for RX failed\r\n");
@@ -773,7 +903,7 @@ static int Dp21RxSs_Pt_ConfigTxAudioClock(u32 AudioClkHz)
 {
 #if ENABLE_AUDIO
 	u32 ReadVal;
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	u8 ByteCount;
 	u8 Buffer[2];
 
@@ -806,12 +936,14 @@ static int Dp21RxSs_Pt_ConfigTxAudioClock(u32 AudioClkHz)
 	 *
 	 * opening the mux for on board Si570 programming
 	 */
+#ifndef VERSAL_2VE_2VM
 	Dp21RxSs_Pt_I2cMuxPs(0x04);
 	Dp21RxSs_Pt_Si570_SetFreq (&Ps_Iic1, IIC_SI570_ADDRESS, AudioClkHz);
 	/*
 	 * Closing the Mux 0x74
 	 */
 	Dp21RxSs_Pt_I2cMuxPs(0x0);
+#endif
 #endif
 	/*
 	 * Issue reset after Aud clock is programmed
@@ -913,11 +1045,11 @@ u32 Dp21RxSs_Pt_Main(void)
 	/*
 	 * Setup Video Phy, left to the user for implementation
 	 */
-#ifndef SDT
-	Dp21RxSs_Pt_PhyInit(XVPHY_DEVICE_ID);
-#else
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	Dp21RxSs_Pt_PhyInit(0);	/* unused on VCK190; no XVphy instance exists */
+#else /* Added for VCK190/VEK385 support */
 	Dp21RxSs_Pt_PhyInit(XPAR_VID_PHY_CONTROLLER_0_BASEADDR);
-#endif
+#endif /* Added for VCK190/VEK385 support */
 
 	Status = Dp21RxSs_Pt_Init();
 	if (Status != XST_SUCCESS) {
@@ -988,8 +1120,38 @@ u32 Dp21RxSs_Pt_Main(void)
 	return XST_SUCCESS;
 }
 
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+/*****************************************************************************/
+/**
+ *
+ * This function reads-modifies-writes the DP core's raw GT-control register
+ * (offset 0x4C) - VCK190 has no XVphy IP, so PHY/GT control on both the RX
+ * and TX cores is done via direct register pokes instead of the XVphy driver.
+ * `is_tx` selects which core's register gets touched.
+ *
+ ******************************************************************************/
+void GtCtrl(u32 mask, u32 data, u8 is_tx)
+{
+	u32 readval = 0;
+
+	if (is_tx) {
+		readval = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x04C);
+	} else {
+		readval = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x04C);
+	}
+	readval &= (~mask);
+	readval |= data;
+	if (is_tx) {
+		XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x04C, readval);
+	} else {
+		XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x04C, readval);
+	}
+}
+#endif /* Added for VCK190/VEK385 support */
+
 void Dp21RxSs_Pt_PLLRefClkSel (XVphy *InstancePtr, u8 link_rate, XVphy_ChannelId Channel)
 {
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	XVphy_CfgQuadRefClkFreq(InstancePtr, 0, VPHY_REFCLK_SEL_270, 270000000);
 	XVphy_CfgQuadRefClkFreq(InstancePtr, 0, VPHY_REFCLK_SEL_400, 400000000);
 
@@ -1037,6 +1199,11 @@ void Dp21RxSs_Pt_PLLRefClkSel (XVphy *InstancePtr, u8 link_rate, XVphy_ChannelId
 						XVPHY_CHANNEL_ID_CHA, XVPHY_DP_LINK_RATE_HZ_270GBPS);
 			break;
 	}
+#else /* Added for VCK190/VEK385 support */
+	(void)InstancePtr;
+	(void)link_rate;
+	(void)Channel;
+#endif /* Added for VCK190/VEK385 support */
 }
 
 /*****************************************************************************/
@@ -1056,6 +1223,7 @@ u32 Dp21RxSs_Pt_PhyConfig(XVphy *InstancePtr, int LineRate, XVphy_PllType Pll,
 {
 	u32 Status = XST_SUCCESS;
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	XVphy_PllRefClkSelType Refclk;
 
 	/*
@@ -1066,15 +1234,14 @@ u32 Dp21RxSs_Pt_PhyConfig(XVphy *InstancePtr, int LineRate, XVphy_PllType Pll,
 		return Status;
 	}
 
-#ifndef PLATFORM_MB
 	/*
 	 * GTHE4 cannot support 20G
 	 */
-	if(LineRate == XDP_TX_LINK_BW_SET_UHBR20) {
+	if((LineRate == XDP_TX_LINK_BW_SET_UHBR20) && (XPAR_XVPHY_0_TRANSCEIVER_TYPE == XVPHY_GT_TYPE_GTHE4)) {
 		xil_printf ("GTHE4 does not support 20G... skipping\r\n");
 		return Status;
 	}
-#endif
+
 	if ((LineRate == XDP_TX_LINK_BW_SET_810GBPS) ||
 		(LineRate == XDP_TX_LINK_BW_SET_540GBPS) ||
 		(LineRate == XDP_TX_LINK_BW_SET_270GBPS) ||
@@ -1098,6 +1265,67 @@ u32 Dp21RxSs_Pt_PhyConfig(XVphy *InstancePtr, int LineRate, XVphy_PllType Pll,
 	if (Status == XST_FAILURE) {
 		xil_printf ("Issue encountered in PHY config and reset\r\n");
 	}
+#else /* Added for VCK190/VEK385 support */
+
+	u8 linerate;
+	u32 dp_sts = 0;
+	u32 retry = 0;
+	u8 is_tx = (Dir == XVPHY_DIR_TX) ? 1 : 0;
+
+	(void)InstancePtr;
+	(void)Pll;
+	(void)Channel;
+
+
+	switch (LineRate) {
+		case XDP_TX_LINK_BW_SET_162GBPS:
+			linerate = VERSAL_162G;
+			break;
+		case XDP_TX_LINK_BW_SET_270GBPS:
+			linerate = VERSAL_270G;
+			break;
+		case XDP_TX_LINK_BW_SET_540GBPS:
+			linerate = VERSAL_540G;
+			break;
+		case XDP_TX_LINK_BW_SET_810GBPS:
+			linerate = VERSAL_810G;
+			break;
+		case XDP_TX_LINK_BW_SET_UHBR10:
+			linerate = VERSAL_100G;
+			break;
+		case XDP_TX_LINK_BW_SET_UHBR20:
+			linerate = VERSAL_200G;
+			break;
+		case XDP_TX_LINK_BW_SET_UHBR135:
+			linerate = VERSAL_135G;
+			break;
+	}
+
+	GtCtrl(GT_RATE_MASK, (linerate << 1), is_tx);
+
+	dp_sts = 0;
+	retry = 0;
+
+	if (is_tx) {
+		while ((dp_sts != ALL_LANE) && retry < 255) {
+			dp_sts = XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr, 0x280) & ALL_LANE;
+			Dp21RxSs_Pt_CustomWaitUs(DpTxSsInst.DpPtr, 100);
+			retry++;
+		}
+	} else {
+		while ((dp_sts != ALL_LANE) && retry < 255) {
+			dp_sts = XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr, 0x208) & ALL_LANE;
+			Dp21RxSs_Pt_CustomWaitUs(DpRxSsInst.DpPtr, 100);
+			retry++;
+		}
+	}
+	if (retry == 255) {
+		Status = XST_FAILURE;
+		xil_printf ("+++++++ %s GT configuration encountered a failure config+++++++\r\n",
+			is_tx ? "TX" : "RX");
+	}
+
+#endif
 
 	return Status;
 }
@@ -1135,11 +1363,17 @@ void Dp21RxSs_Pt_CalculateCRC(void)
 
 	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID1);
 
-	if (color_mode == 2) {
-		VidFrameCRC_rx.Mode_422 = 0x1;
-	} else {
-		VidFrameCRC_rx.Mode_422 = 0x0;
-	}
+	/*
+	 * Store the actual color-format code (XVidC_ColorSpaceFormat:
+	 * RGB=0, YCbCr444=1, YCbCr422=2, YCbCr420=3) so that
+	 * XVidFrameCrc_SetVideoFormat() sets the CRC engine's 4:2:2/4:2:0
+	 * mode (VIDEO_FRAME_CRC_CONFIG bit 31) for Format 2 and 3.
+	 * Passing the old 0/1 "Mode_422" flag never satisfied the
+	 * (Format == 2 || Format == 3) condition, so bit 31 was never set.
+	 * This value is also re-applied by the RX no-video / training-lost
+	 * handlers after each CRC reset.
+	 */
+	VidFrameCRC_rx.Mode_422 = color_mode;
 
 	XVidFrameCrc_SetVideoFormat(&VidFrameCRC_rx, VidFrameCRC_rx.Mode_422, CRC_CFG_RX);
 }
@@ -1213,11 +1447,7 @@ u32 Dp21RxSs_Pt_PlatformInit(void)
 	/*
 	 * Initialize Timer
 	 */
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&TmrCtr, XTIMER0_DEVICE_ID);
-#else
 	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_XTMRCTR_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS){
 		xil_printf("ERR:Timer failed to initialize. \r\n");
 		return XST_FAILURE;
@@ -1226,12 +1456,23 @@ u32 Dp21RxSs_Pt_PlatformInit(void)
 	XTmrCtr_SetResetValue(&TmrCtr, XTC_TIMER_0, TIMER_RESET_VALUE);
 	XTmrCtr_Start(&TmrCtr, XTC_TIMER_0);
 
-#ifndef PLATFORM_MB
-#ifndef SDT
-	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_DEVICE_ID);
-#else
+#if !defined (PLATFORM_MB) && !defined (__riscv)
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	CfgPtr_Dynamic = XClk_Wiz_LookupConfig(TX_CLK_WIZ_BASEADDR);
+	if (!CfgPtr_Dynamic)
+		return XST_FAILURE;
+	Status = XClk_Wiz_CfgInitialize(&ClkWiz_Dynamic, CfgPtr_Dynamic, CfgPtr_Dynamic->BaseAddr);
+	if (Status != XST_SUCCESS)
+		return XST_FAILURE;
+
+	Status = XGpio_Initialize(&Gpio, GT_POWERGOOD_GPIO_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Gpio Initialization Failed\r\n");
+		return XST_FAILURE;
+	}
+	XGpio_SetDataDirection(&Gpio, 1, 0x01);
+#endif /* Added for VCK190/VEK385 support */
 	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_BASEADDR);
-#endif
 	if (NULL == XIic1Ps_ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -1291,153 +1532,6 @@ u32 Dp21RxSs_Pt_PlatformInit(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Dp21RxSs_Pt_SetupIntrSystem(void)
-{
-	u32 Status;
-	XIntc *IntcInstPtr = &IntcInst;
-
-	/*
-	 * Tx side
-	 */
-#ifdef Txo
-	Dp21RxSs_Pt_TxSetupIntrSystem();
-#endif
-	/*
-	 * Rx side
-	 */
-#ifdef Rxo
-	Dp21RxSs_Pt_RxSetupIntrSystem();
-#endif
-
-	/*
-	 * Initialize the interrupt controller driver so that it's ready to
-	 * use, specify the device ID that was generated in xparameters.h
-	 */
-	Status = XIntc_Initialize(IntcInstPtr, XINTC_DEVICE_ID);
-	if (Status != XST_SUCCESS) {
-		xil_printf("Intc initialization failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	/*
-	 * Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined
-	 * above performs the specific interrupt processing for the device.
-	 */
-#ifdef Rxo
-	/*
-	 * Hook up Rx interrupt service routine
-	 */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID,
-				(XInterruptHandler)XDpRxSs_DpIntrHandler,
-				&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP RX SS DP interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
-	Status = XIntc_Connect(IntcInstPtr,
-			       XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID,
-			       (XInterruptHandler)XVFrmbufWr_InterruptHandler,
-			       &frmbufwr);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF WR interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-#endif
-#endif
-	/*
-	 * Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-#ifdef Txo
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-				(XInterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
-	Status = XIntc_Connect(IntcInstPtr,
-			       XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID,
-			       (XInterruptHandler)XVFrmbufRd_InterruptHandler,
-			       &frmbufrd);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF RD interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-#endif
-#endif
-
-#if ENABLE_HDCP_IN_DESIGN
-#if (ENABLE_HDCP1x_IN_RX || ENABLE_HDCP22_IN_RX)
-	/*
-	 * Hook up Rx interrupt service routine
-	 */
-	Status = XIntc_Connect(IntcInstPtr,
-			       XPAR_INTC_0_DP21RXSS_0_DPRXSS_TIMER_IRQ_VEC_ID,
-			       (XInterruptHandler)XDpRxSs_TmrCtrIntrHandler,&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: Timer interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-#endif
-#endif
-
-	/*
-	 * Start the interrupt controller such that interrupts are recognized
-	 * and handled by the processor
-	 */
-	Status = XIntc_Start(IntcInstPtr, XIN_REAL_MODE);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-#ifdef Rxo
-	/*
-	 * Enable the interrupt for the DP device
-	 */
-	XIntc_Enable(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID);
-	XIntc_Enable(IntcInstPtr, XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID);
-
-#if ENABLE_HDCP_IN_DESIGN
-#if (ENABLE_HDCP1x_IN_RX || ENABLE_HDCP22_IN_RX)
-	XIntc_Enable(IntcInstPtr, XPAR_INTC_0_DP21RXSS_0_DPRXSS_TIMER_IRQ_VEC_ID);
-#endif
-#endif
-
-#endif
-
-#ifdef Txo
-	XIntc_Enable(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID);
-	XIntc_Enable(IntcInstPtr, XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID);
-#endif
-
-	/*
-	 * Initialize the exception table.
-	 */
-	Xil_ExceptionInit();
-
-	/*
-	 * Register the interrupt controller handler with the exception table.
-	 */
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				     (Xil_ExceptionHandler)XINTC_HANDLER,
-				     IntcInstPtr);
-
-	/*
-	 * Enable exceptions.
-	 */
-	Xil_ExceptionEnable();
-
-	return (XST_SUCCESS);
-}
-#else
 u32 Dp21RxSs_Pt_SetupIntrSystem(void)
 {
 	u32 Status = XST_SUCCESS;
@@ -1570,7 +1664,6 @@ u32 Dp21RxSs_Pt_SetupIntrSystem(void)
 
 	return (Status);
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -1585,22 +1678,15 @@ u32 Dp21RxSs_Pt_SetupIntrSystem(void)
 * @note        None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Dp21RxSs_Pt_PhyInit(u16 DeviceId)
-#else
 u32 Dp21RxSs_Pt_PhyInit(UINTPTR BaseAddress)
-#endif
 {
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	XVphy_Config *ConfigPtr;
 
 	/*
 	 * Obtain the device configuration for the DisplayPort RX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr = XVphy_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XVphy_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -1614,6 +1700,9 @@ u32 Dp21RxSs_Pt_PhyInit(UINTPTR BaseAddress)
 			   VPHY_TX_PLL_TYPE,
 			   VPHY_RX_PLL_TYPE,
 			   XDP_TX_LINK_BW_SET_UHBR10);
+#else
+	(void)BaseAddress;
+#endif /* Added for VCK190/VEK385 support */
 
 	return XST_SUCCESS;
 }
@@ -1639,7 +1728,7 @@ int Dp21RxSs_Pt_ConfigWrFb(u32 StrideInBytes, XVidC_ColorFormat Cfmt,
 
 	Status = XVFrmbufWr_SetMemFormat(&frmbufwr, StrideInBytes, Cfmt, StreamPtr);
 	if(Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Unable to configure Frame Buffer Write\r\n");
+		xil_printf("ERROR:: Unable to configure Frame Buffer Write: 0x%x: 0x%x\r\n", Status, Cfmt);
 		return(XST_FAILURE);
 	}
 
@@ -1692,7 +1781,7 @@ int Dp21RxSs_Pt_ConfigRdFb(u32 StrideInBytes, XVidC_ColorFormat Cfmt,
 	 */
 	Status = XVFrmbufRd_SetMemFormat(&frmbufrd, StrideInBytes, Cfmt, StreamPtr);
 	if(Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Unable to configure Frame Buffer Read\r\n");
+		xil_printf("ERROR:: Unable to configure Frame Buffer Read: 0x%x: 0x%x\r\n", Status, Cfmt);
 		return(XST_FAILURE);
 	}
 
@@ -1862,6 +1951,11 @@ void Dp21RxSs_Pt_FbStartWr(XDpTxSs_MainStreamAttributes Msa[4])
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[8].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[8].StreamFormat;
+		} else if (Msa[0].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV8 semi-planar */
+			Cfmt = ColorFormats[6].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[6].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[7].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[7].StreamFormat;
@@ -1878,6 +1972,11 @@ void Dp21RxSs_Pt_FbStartWr(XDpTxSs_MainStreamAttributes Msa[4])
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[4].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[4].StreamFormat;
+		} else if (Msa[0].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV10 semi-planar */
+			Cfmt = ColorFormats[10].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[10].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[3].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[3].StreamFormat;
@@ -1948,6 +2047,11 @@ void Dp21RxSs_Pt_FbStartRd(XDpTxSs_MainStreamAttributes Msa[4])
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[8].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[8].StreamFormat;
+		} else if (Msa[0].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV8 semi-planar */
+			Cfmt = ColorFormats[6].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[6].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[7].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[7].StreamFormat;
@@ -1963,6 +2067,11 @@ void Dp21RxSs_Pt_FbStartRd(XDpTxSs_MainStreamAttributes Msa[4])
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[4].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[4].StreamFormat;
+		} else if (Msa[0].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV10 semi-planar */
+			Cfmt = ColorFormats[10].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[10].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[3].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[3].StreamFormat;
@@ -2029,13 +2138,13 @@ void Dp21RxSs_Pt_FbStartRd(XDpTxSs_MainStreamAttributes Msa[4])
 void Dp21RxSs_Pt_ResetRdFb()
 {
 #if XPAR_XV_FRMBUFWR_NUM_INSTANCES
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x1);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x1);
 	usleep(10000);          /**< hold reset line */
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x3);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x3);
 	usleep(10000);          /**< hold reset line */
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x1);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x1);
 	usleep(10000);          /**< hold reset line */
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x3);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x3);
 	usleep(10000);          /**< hold reset line */
 #endif
 }
@@ -2043,13 +2152,13 @@ void Dp21RxSs_Pt_ResetRdFb()
 void Dp21RxSs_Pt_ResetWrFb()
 {
 #if XPAR_XV_FRMBUFWR_NUM_INSTANCES
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x2);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x2);
 	usleep(10000);          //hold reset line
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x3);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x3);
 	usleep(10000);          //hold reset line
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x2);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x2);
 	usleep(10000);          //hold reset line
-	Xil_Out32(XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR, 0x3);
+	Xil_Out32(PROC_HIER_HLS_RST_BASEADDR, 0x3);
 	usleep(10000);          //hold reset line
 #endif
 }
@@ -2173,9 +2282,63 @@ u8 tx_ppc_set = 0;
 
 int Dp21RxSs_Pt_DetectResolution(XDpRxSs *InstancePtr)
 {
-	char *color;
+	char *color = "RGB";
 
 	Msa_Pt = XDpRxss_GetMsa(InstancePtr);
+
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	/*
+	 * During a DP1.4<->DP2.1 rate-class switch, the RX core's MSA capture
+	 * registers can be read mid-transition (XDpRxss_GetMsa's channel-coding
+	 * branch vs the H/V-active registers settling at slightly different
+	 * times), producing an incoherent read (e.g. tens of thousands of
+	 * active lines, absurd frame rate). Feeding that straight into
+	 * Dp21RxSs_Pt_FbStartWr() below would misconfigure the frame buffer
+	 * write IP's stride/dimensions and can wedge it. Instead of bailing
+	 * immediately, re-read and wait for the values to settle here so the
+	 * link still comes up on this call - only give up (and let the
+	 * VBlank-count-gated caller retry later) if the link drops or a
+	 * generous timeout expires.
+	 */
+	{
+		u32 msa_retry = 0;
+		const u32 msa_max_retry = 500; /**< ~500 * 2ms = up to 1s of settle time */
+
+		while (((Msa_Pt[0].Vtm.Timing.HActive == 0) ||
+			(Msa_Pt[0].Vtm.Timing.HActive > 7680) ||
+			(Msa_Pt[0].Vtm.Timing.VActive == 0) ||
+			(Msa_Pt[0].Vtm.Timing.VActive > 4320) ||
+			(Msa_Pt[0].Vtm.FrameRate == 0) ||
+			(Msa_Pt[0].Vtm.FrameRate > 240) ||
+			(Msa_Pt[0].BitsPerColor > 16)) &&
+		       (msa_retry < msa_max_retry) &&
+		       (InstancePtr->link_up_trigger == 1)) {
+			usleep(2000);
+			Msa_Pt = XDpRxss_GetMsa(InstancePtr);
+			msa_retry++;
+		}
+
+		if ((Msa_Pt[0].Vtm.Timing.HActive == 0) ||
+		    (Msa_Pt[0].Vtm.Timing.HActive > 7680) ||
+		    (Msa_Pt[0].Vtm.Timing.VActive == 0) ||
+		    (Msa_Pt[0].Vtm.Timing.VActive > 4320) ||
+		    (Msa_Pt[0].Vtm.FrameRate == 0) ||
+		    (Msa_Pt[0].Vtm.FrameRate > 240) ||
+		    (Msa_Pt[0].BitsPerColor > 16)) {
+			return 0;
+		}
+	}
+#endif /* Added for VCK190/VEK385 support */
+	/*
+	 * Detect whether the incoming stream carries its colorimetry through the
+	 * VSC SDP. MSA MISC1 bit-6 (VSC_SDP colorimetry indication) is set by the
+	 * upstream source when colorimetry is conveyed via the VSC SDP (used for
+	 * wide-gamut / static-HDR content). This drives the TX to replay the
+	 * colorimetry over the VSC SDP during pass-through.
+	 */
+	use_vsc = (XDp_ReadReg(InstancePtr->DpPtr->Config.BaseAddr,
+			       XDP_RX_MSA_MISC1) >> 6) & 0x1;
+
 	Dp21RxSs_Pt_FbStopWr();
 	XDp_RxSetLineReset(InstancePtr->DpPtr, XDP_TX_STREAM_ID1);
 	XDp_RxDtgDis(InstancePtr->DpPtr);
@@ -2186,14 +2349,18 @@ int Dp21RxSs_Pt_DetectResolution(XDpRxSs *InstancePtr)
 		color="YUV422";
 	} else if (Msa_Pt[0].ComponentFormat == 2) {
 		color="YUV444";
+	} else if (Msa_Pt[0].ComponentFormat ==
+			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+		color="YUV420";
 	}
 	if (InstancePtr->link_up_trigger == 1) {
-		xil_printf("*** Resolution: %lu x %lu @ %luHz, BPC = %lu, Color = %s ***\r\n",
+		xil_printf("*** Resolution: %lu x %lu @ %luHz, BPC = %lu, Color = %s, (VSC %d) ***\r\n",
 				Msa_Pt[0].Vtm.Timing.HActive,
 				Msa_Pt[0].Vtm.Timing.VActive,
 				Msa_Pt[0].Vtm.FrameRate,
 				Msa_Pt[0].BitsPerColor,
-				color);
+				color,
+				use_vsc);
 	}
 
 	if (InstancePtr->link_up_trigger == 1) {
@@ -2210,7 +2377,7 @@ int Dp21RxSs_Pt_DetectResolution(XDpRxSs *InstancePtr)
 extern u8 tx_after_rx;
 #endif
 
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 int Dp21RxSs_Pt_I2cMuxPs(u8 Data)
 {
 	u8 Buffer;

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,7 +11,9 @@
 * @addtogroup emaclite Overview
 * @{
 *
-* This file contains a configuration table that specifies the configuration
+* @brief Provides the EmacLite configuration table generated for the system.
+*
+* Contains a configuration table that specifies the configuration
 * of EmacLite devices in the system.
 *
 * <pre>
@@ -42,7 +44,7 @@
 /************************** Variable Prototypes ******************************/
 
 /**
- * This table contains configuration information for each EmacLite device
+ * @brief This table contains configuration information for each EmacLite device
  * in the system.
  */
 XEmacLite_Config XEmacLite_ConfigTable[XPAR_XEMACLITE_NUM_INSTANCES] = {

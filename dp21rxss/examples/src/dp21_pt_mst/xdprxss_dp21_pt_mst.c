@@ -31,10 +31,8 @@
 #define XTIMER0_DEVICE_ID 	XPAR_TMRCTR_0_DEVICE_ID
 
 #define PS_IIC_CLK 100000
-#ifdef SDT
 #define INTRNAME_DPTX   0
 #define INTRNAME_DPRX   0
-#endif
 #define	XINTC	XIntc
 
 #ifdef Tx
@@ -50,11 +48,7 @@ void Dp21RxSs_PtMst_PtSetup();
 int I2cMux_Ps(u8 mux);
 int I2cClk_Ps(u32 InFreq, u32 OutFreq);
 
-#ifndef SDT
-u32 Dp21RxSs_PtMst_PhyInit(u16 DeviceId);
-#else
 u32 Dp21RxSs_PtMst_PhyInit(UINTPTR BaseAddress);
-#endif
 
 u32 Dp21RxSs_PtMst_CalcStride(XVidC_ColorFormat Cfmt,
 	       u16 AXIMMDataWidth,
@@ -167,10 +161,10 @@ XVphy_ChannelId VPHY_RX_CHANNEL_TYPE = XVPHY_CHANNEL_ID_CMN1;
 /*
  * These are the REFCLK sources for VCU118 and ZCU102
  */
-#ifdef PLATFORM_MB	/**< VCU118 (270Mhz on REFCLK0, 400Mhz on REFCLK1) */
+#if defined (PLATFORM_MB) || defined (__riscv)	/**< VCU118 (270Mhz on REFCLK0, 400Mhz on REFCLK1) */
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_270 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK0;
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_400 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK1;
-#else /**< ZCU102 (270Mhz on REFCLK0, 400Mhz on NORTHREFCLK0) */
+#else
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_270 = XVPHY_REF_CLK_SEL_XPLL_GTREFCLK0;
 XVphy_PllRefClkSelType VPHY_REFCLK_SEL_400 = XVPHY_REF_CLK_SEL_XPLL_GTNORTHREFCLK0;
 #endif
@@ -243,11 +237,7 @@ int Dp21RxSs_PtMst_VideoFMC_Init(void)
 	/*
 	 * Initialize the IIC driver so that it is ready to use.
 	 */
-#ifndef SDT
-	ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
 	ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
-#endif
 	if (ConfigPtr_IIC == NULL) {
 		return XST_FAILURE;
 	}
@@ -262,7 +252,8 @@ int Dp21RxSs_PtMst_VideoFMC_Init(void)
 	/*
 	 * Set the I2C Mux to select the HPC FMC
 	 */
-#ifndef PLATFORM_MB
+
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 	Buffer[0] = 0x01;
 #else
 	Buffer[0] = 0x02;
@@ -535,11 +526,7 @@ u32 Dp21RxSs_PtMst_Main(void)
 	 * Obtain the device configuration
 	 * for the DisplayPort RX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr_rx = XDpRxSs_LookupConfig(XDPRXSS_DEVICE_ID);
-#else
 	ConfigPtr_rx = XDpRxSs_LookupConfig(XPAR_DPRXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_rx) {
 		return XST_FAILURE;
 	}
@@ -570,11 +557,7 @@ u32 Dp21RxSs_PtMst_Main(void)
 	/*
 	 * Obtain the device configuration for the DisplayPort TX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_DEVICE_ID);
-#else
 	ConfigPtr_tx = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_tx) {
 		return XST_FAILURE;
 	}
@@ -604,11 +587,7 @@ u32 Dp21RxSs_PtMst_Main(void)
 
 #ifdef Tx
 #if XPAR_XV_FRMBUFRD_NUM_INSTANCES		/**< FrameBuffer Rd initialization.*/
-#ifndef SDT
-	Status = XVFrmbufRd_Initialize(&frmbufrd, FRMBUF_RD_DEVICE_ID);
-#else
 	Status = XVFrmbufRd_Initialize(&frmbufrd, XPAR_DP_TX_HIER_0_V_FRMBUF_RD_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Read "
 			   "initialization failed\r\n");
@@ -619,11 +598,7 @@ u32 Dp21RxSs_PtMst_Main(void)
 
 #ifdef Rx
 #if XPAR_XV_FRMBUFWR_NUM_INSTANCES		/**< FrameBuffer Wr initialization. */
-#ifndef SDT
-	Status = XVFrmbufWr_Initialize(&frmbufwr, FRMBUF_WR_DEVICE_ID);
-#else
 	Status = XVFrmbufWr_Initialize(&frmbufwr, XPAR_DP_RX_HIER_0_V_FRMBUF_WR_0_BASEADDR);
-#endif
 	if(Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Write "
 			   "initialization failed\r\n");
@@ -637,11 +612,7 @@ u32 Dp21RxSs_PtMst_Main(void)
 	/*
 	 * Setup Video Phy, left to the user for implementation
 	 */
-#ifndef SDT
-	Dp21RxSs_PtMst_PhyInit(XVPHY_DEVICE_ID);
-#else
 	Dp21RxSs_PtMst_PhyInit(XPAR_VID_PHY_CONTROLLER_1_BASEADDR);
-#endif
 
 #ifdef Tx
 	XVphy_BufgGtReset(&VPhyInst, XVPHY_DIR_TX,(FALSE));
@@ -939,33 +910,25 @@ void Dp21RxSs_PtMst_CalculateCRC(u8 Stream)
 		      (VidFrameCRC_rx_3.TEST_CRC_SUPPORTED << 5 |
 		       VidFrameCRC_rx_3.TEST_CRC_CNT));
 
+	/*
+	 * Store the actual color-format code (XVidC_ColorSpaceFormat:
+	 * RGB=0, YCbCr444=1, YCbCr422=2, YCbCr420=3) so that
+	 * XVidFrameCrc_SetVideoFormat() sets the CRC engine's 4:2:2/4:2:0
+	 * mode (VIDEO_FRAME_CRC_CONFIG bit 31) for Format 2 and 3.
+	 * Passing the old 0/1 "Mode_422" flag never satisfied the
+	 * (Format == 2 || Format == 3) condition, so bit 31 was never set.
+	 */
 	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID1);
-	if (color_mode == 2) {
-		VidFrameCRC_rx.Mode_422 = 0x1;
-	} else {
-		VidFrameCRC_rx.Mode_422 = 0x0;
-	}
+	VidFrameCRC_rx.Mode_422 = color_mode;
 
 	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID2);
-	if (color_mode == 2) {
-		VidFrameCRC_rx_1.Mode_422 = 0x1;
-	} else {
-		VidFrameCRC_rx_1.Mode_422 = 0x0;
-	}
+	VidFrameCRC_rx_1.Mode_422 = color_mode;
 
 	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID3);
-	if (color_mode == 2) {
-		VidFrameCRC_rx_2.Mode_422 = 0x1;
-	} else {
-		VidFrameCRC_rx_2.Mode_422 = 0x0;
-	}
+	VidFrameCRC_rx_2.Mode_422 = color_mode;
 
 	color_mode = XDpRxss_GetColorComponent(&DpRxSsInst, XDP_TX_STREAM_ID4);
-	if (color_mode == 2) {
-		VidFrameCRC_rx_3.Mode_422 = 0x1;
-	} else {
-		VidFrameCRC_rx_3.Mode_422 = 0x0;
-	}
+	VidFrameCRC_rx_3.Mode_422 = color_mode;
 
 	if (Stream == 0) {
 		VidFrameCRC_rx_4.Mode_422 = VidFrameCRC_rx.Mode_422;
@@ -1165,11 +1128,7 @@ u32 Dp21RxSs_PtMst_PlatformInit(void)
 	XVidFrameCrc_Initialize(&VidFrameCRC_tx_3);
 
 #endif
-#ifndef SDT
-	XAxis_Switch_Config *ConfigPtr_AXIS_SWITCH = XAxisScr_LookupConfig(XPAR_DP_RX_HIER_0_AXIS_SWITCH_0_DEVICE_ID);
-#else
 	XAxis_Switch_Config *ConfigPtr_AXIS_SWITCH = XAxisScr_LookupConfig(XPAR_XAXIS_SWITCH_0_BASEADDR);
-#endif
 	if (ConfigPtr_AXIS_SWITCH == NULL) {
 		return XST_FAILURE;
 	}
@@ -1182,22 +1141,13 @@ u32 Dp21RxSs_PtMst_PlatformInit(void)
 	/*
 	 * Initialize Timer
 	 */
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&TmrCtr, XTIMER0_DEVICE_ID);
-#else
 	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_XTMRCTR_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS){
 		xil_printf("ERR:Timer failed to initialize. \r\n");
 		return XST_FAILURE;
 	}
-#ifndef SDT
-	XTmrCtr_SetResetValue(&TmrCtr, XTIMER0_DEVICE_ID, TIMER_RESET_VALUE);
-	XTmrCtr_Start(&TmrCtr, XTIMER0_DEVICE_ID);
-#else
 	XTmrCtr_SetResetValue(&TmrCtr, TimerChannel, TIMER_RESET_VALUE);
 	XTmrCtr_Start(&TmrCtr, TimerChannel);
-#endif
 
 	Dp21RxSs_PtMst_VideoFMC_Init();
 	u8 dat;
@@ -1238,136 +1188,6 @@ u32 Dp21RxSs_PtMst_PlatformInit(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Dp21RxSs_PtMst_SetupIntrSystem(void)
-{
-	u32 Status;
-	XIntc *IntcInstPtr = &IntcInst;
-	(void)IntcInstPtr;
-	(void)IntcInstPtr;
-
-	/*
-	 * Tx side
-	 */
-#ifdef Tx
-	DpTxSs_SetupIntrSystem();
-#endif
-	/*
-	 * Rx side
-	 */
-#ifdef Rx
-	DpRxSs_SetupIntrSystem();
-#endif
-
-	/*
-	 * Initialize the interrupt controller driver so that it's ready to
-	 * use, specify the device ID that was generated in xparameters.h
-	 */
-	Status = XIntc_Initialize(IntcInstPtr, XINTC_DEVICE_ID);
-	if (Status != XST_SUCCESS) {
-		xil_printf("Intc initialization failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	/*
-	 * Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined
-	 * above performs the specific interrupt processing for the device.
-	 */
-#ifdef Rx
-	/*
-	 * Hook up Rx interrupt service routine
-	 */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID,
-				(XInterruptHandler)XDpRxSs_DpIntrHandler,
-				&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP RX SS DP interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
-	Status = XIntc_Connect(IntcInstPtr,
-			       XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID,
-			       (XInterruptHandler)XVFrmbufWr_InterruptHandler,
-			       &frmbufwr);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF WR interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-#endif
-
-#endif
-	/*
-	 * Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-#ifdef Tx
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-				(XInterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
-	Status = XIntc_Connect(IntcInstPtr,
-			       XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID,
-			       (XInterruptHandler)XVFrmbufRd_InterruptHandler,
-			       &frmbufrd);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF RD interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-#endif
-#endif
-
-	/*
-	 * Start the interrupt controller such that interrupts are recognized
-	 * and handled by the processor
-	 */
-	Status = XIntc_Start(IntcInstPtr, XIN_REAL_MODE);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-#ifdef Rx
-	/*
-	 * Enable the interrupt for the DP device
-	 */
-	XIntc_Enable(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID);
-	XIntc_Enable(IntcInstPtr, XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID);
-#endif
-
-#ifdef Tx
-	XIntc_Enable(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID);
-	XIntc_Enable(IntcInstPtr, XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID);
-#endif
-
-	/*
-	 * Initialize the exception table.
-	 */
-	Xil_ExceptionInit();
-
-	/*
-	 * Register the interrupt controller handler with the exception
-	 * table.
-	 */
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				     (Xil_ExceptionHandler)XINTC_HANDLER,
-				     IntcInstPtr);
-
-	/*
-	 * Enable exceptions.
-	 */
-	Xil_ExceptionEnable();
-
-	return (XST_SUCCESS);
-}
-#else
 u32 Dp21RxSs_PtMst_SetupIntrSystem(void)
 {
 	u32 Status;
@@ -1443,7 +1263,6 @@ u32 Dp21RxSs_PtMst_SetupIntrSystem(void)
 #endif
 	return (XST_SUCCESS);
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -1458,22 +1277,14 @@ u32 Dp21RxSs_PtMst_SetupIntrSystem(void)
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Dp21RxSs_PtMst_PhyInit(u16 DeviceId)
-#else
 u32 Dp21RxSs_PtMst_PhyInit(UINTPTR BaseAddress)
-#endif
 {
 	XVphy_Config *ConfigPtr;
 
 	/*
 	 * Obtain the device configuration for the DisplayPort RX Subsystem
 	 */
-#ifndef SDT
-	ConfigPtr = XVphy_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XVphy_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -1517,7 +1328,7 @@ int Dp21RxSs_PtMst_ConfigWrFb(u32 StrideInBytes,
 
 	Status = XVFrmbufWr_SetMemFormat(&frmbufwr, StrideInBytes, Cfmt, StreamPtr);
 	if(Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Unable to configure Frame Buffer Write\r\n");
+		xil_printf("ERROR:: Unable to configure Frame Buffer Write: 0x%x: 0x%x\r\n", Status, Cfmt);
 		return(XST_FAILURE);
 	}
 
@@ -1573,7 +1384,7 @@ int Dp21RxSs_PtMst_ConfigRdFb(u32 StrideInBytes,
 	 */
 	Status = XVFrmbufRd_SetMemFormat(&frmbufrd, StrideInBytes, Cfmt, StreamPtr);
 	if(Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Unable to configure Frame Buffer Read\r\n");
+		xil_printf("ERROR:: Unable to configure Frame Buffer Read: 0x%x: 0x%x\r\n", Status, Cfmt);
 		return(XST_FAILURE);
 	}
 
@@ -1742,13 +1553,18 @@ void Dp21RxSs_PtMst_WrFbStart(XDpTxSs_MainStreamAttributes Msa[4], u8 Stream)
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[8].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[8].StreamFormat;
+		} else if (Msa[Stream].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV8 semi-planar */
+			Cfmt = ColorFormats[6].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[6].StreamFormat;
 		}else {
 			Cfmt = ColorFormats[7].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[7].StreamFormat;
 		}
 	} else if(Msa[Stream].BitsPerColor == 10) {
 		VidStream.ColorDepth = XVIDC_BPC_10;
-		if (Msa[0].ComponentFormat ==
+		if (Msa[Stream].ComponentFormat ==
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422) {
 			Cfmt = ColorFormats[9].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[9].StreamFormat;
@@ -1757,6 +1573,11 @@ void Dp21RxSs_PtMst_WrFbStart(XDpTxSs_MainStreamAttributes Msa[4], u8 Stream)
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[4].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[4].StreamFormat;
+		} else if (Msa[Stream].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV10 semi-planar */
+			Cfmt = ColorFormats[10].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[10].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[3].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[3].StreamFormat;
@@ -1825,6 +1646,11 @@ void Dp21RxSs_PtMst_RdFbStart(XDpTxSs_MainStreamAttributes Msa[4], u8 Stream)
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[8].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[8].StreamFormat;
+		} else if (Msa[Stream].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV8 semi-planar */
+			Cfmt = ColorFormats[6].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[6].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[7].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[7].StreamFormat;
@@ -1840,6 +1666,11 @@ void Dp21RxSs_PtMst_RdFbStart(XDpTxSs_MainStreamAttributes Msa[4], u8 Stream)
 				XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444) {
 			Cfmt = ColorFormats[4].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[4].StreamFormat;
+		} else if (Msa[Stream].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			/* YCbCr 4:2:0 (signalled via VSC SDP) - Y_UV10 semi-planar */
+			Cfmt = ColorFormats[10].MemFormat;
+			VidStream.ColorFormatId = ColorFormats[10].StreamFormat;
 		} else {
 			Cfmt = ColorFormats[3].MemFormat;
 			VidStream.ColorFormatId = ColorFormats[3].StreamFormat;
@@ -2042,14 +1873,116 @@ u32 naud_dup = 0;
  */
 u8 tx_ppc_set = 0;
 
+extern u8 use_vsc[4];	/**< Per-stream VSC SDP colorimetry flag (MISC1 bit6) */
+extern volatile u32 Rx_Vsc_Payload[4];	/**< Per-stream VSC SDP DB16..18 word */
+extern volatile u8  Rx_Vsc_Valid[4];	/**< Per-stream VSC SDP captured flag */
+
+/*
+ * Settling controls for the MSA (re)detection after a train/retrain. A healthy
+ * stream passes on the first couple of reads; the budget only matters while a
+ * stream is still settling after a link-rate or resolution change.
+ *
+ * Keep the retry count small: XDpRxss_GetMsa() already blocks internally (it
+ * polls HRES/VRES up to ~300 ms each per stream), so a large outer budget
+ * multiplies that wait and makes the app look hung when a stream is stuck in a
+ * partial/transition state. A few passes are enough; after the budget we
+ * proceed best-effort with whatever was last read.
+ */
+#define MSA_DETECT_RETRIES	3	/**< Max re-reads of the MSA. */
+#define MSA_DETECT_DELAY_US	5000	/**< Delay between re-reads (us). */
+
+/*****************************************************************************/
+/**
+* Re-read the MSA for ALL configured streams until every stream is settled, or
+* until the retry budget is exhausted / the link drops. This keeps the driver
+* (XDpRxss_GetMsa) unchanged while preventing the application from capturing
+* mid-transition garbage (wrong HRES/VRES/totals, impossible frame rates,
+* 6-BPC/RGB VSC reads) right after a (re)train.
+*
+* A stream is considered "settled" when it is either:
+*  - inactive  : HActive == 0 && VActive == 0 (no video on that stream), or
+*  - valid + stable:
+*      valid  : HActive/VActive/HTotal/VTotal non-zero, HActive<=HTotal,
+*               VActive<=VTotal, FrameRate>0, and BitsPerColor in {8,10,12,16}
+*               (6 BPC is not supported in this design and is treated as
+*               "not settled yet"), and
+*      stable : HActive/VActive/HTotal/VTotal identical across two consecutive
+*               reads.
+*
+* The number of active streams is taken from DpRxSsInst.Config.NumMstStreams
+* (max XDP_MAX_NUM_STREAMS = 4).
+*
+* @param	Stream is unused (kept for call-site compatibility); all
+*		configured streams are validated.
+*
+* @return	Pointer to the driver MSA array (same as XDpRxss_GetMsa()).
+*
+* @note	Must be called before XDp_RxDtgDis(), which zeroes the live MSA.
+*
+******************************************************************************/
+static XDp_MainStreamAttributes *Dp21RxSs_PtMst_GetStableMsa(u8 Stream)
+{
+	XDp_MainStreamAttributes *Msa;
+	u32 pHa[4] = {0}, pVa[4] = {0}, pHt[4] = {0}, pVt[4] = {0};
+	u8  num_streams = DpRxSsInst.Config.NumMstStreams;
+	u8  attempt;
+
+	(void)Stream;
+
+	if (num_streams == 0 || num_streams > 4)
+		num_streams = 4;
+
+	Msa = XDpRxss_GetMsa(&DpRxSsInst);
+
+	for (attempt = 0; attempt < MSA_DETECT_RETRIES &&
+			DpRxSsInst.link_up_trigger == 1; attempt++) {
+		u8 all_settled = 1;
+		u8 s;
+
+		for (s = 0; s < num_streams; s++) {
+			u32 ha  = Msa[s].Vtm.Timing.HActive;
+			u32 va  = Msa[s].Vtm.Timing.VActive;
+			u32 ht  = Msa[s].Vtm.Timing.HTotal;
+			u32 vt  = Msa[s].Vtm.Timing.F0PVTotal;
+			u32 fr  = Msa[s].Vtm.FrameRate;
+			u8  bpc = Msa[s].BitsPerColor;
+
+			u8 inactive = (ha == 0 && va == 0);
+			u8 valid    = (ha && va && ht && vt &&
+					ha <= ht && va <= vt && fr != 0 &&
+					(bpc == 8 || bpc == 10 ||
+					 bpc == 12 || bpc == 16));
+			u8 stable   = (ha == pHa[s] && va == pVa[s] &&
+					ht == pHt[s] && vt == pVt[s]);
+
+			if (!(inactive || (valid && stable)))
+				all_settled = 0;
+
+			pHa[s] = ha;
+			pVa[s] = va;
+			pHt[s] = ht;
+			pVt[s] = vt;
+		}
+
+		if (all_settled)
+			break;
+
+		usleep(MSA_DETECT_DELAY_US);
+		Msa = XDpRxss_GetMsa(&DpRxSsInst);
+	}
+
+	return Msa;
+}
+
 int Dp21RxSs_PtMst_DetectResolution(void *InstancePtr, u8 Stream)
 {
 	(void)InstancePtr;
-	char *color;
+	char *color = "RGB";
 	u8 i;
 	i = 0;
 
-	Msa_test = XDpRxss_GetMsa(&DpRxSsInst);
+	Msa_test = Dp21RxSs_PtMst_GetStableMsa(Stream);
+
 	Dp21RxSs_PtMst_WrFbStop();
 	XDp_RxDtgDis(DpRxSsInst.DpPtr);
 
@@ -2059,7 +1992,69 @@ int Dp21RxSs_PtMst_DetectResolution(void *InstancePtr, u8 Stream)
 	u8 num_streams = DpRxSsInst.Config.NumMstStreams;
 	xil_printf("\r\n========== MSA Information (Configured Streams: %d) ==========\r\n", num_streams);
 
+	/* Clear per-stream VSC state; inactive streams default to no VSC. */
+	for (i = 0; i < 4; i++)
+		use_vsc[i] = 0;
+
 	for (i = 0; i < num_streams; i++) {
+		/*
+		 * MSA MISC1 bit-6 indicates that colorimetry is being carried
+		 * over the VSC SDP (as opposed to the legacy MISC0/MISC1
+		 * fields). Use the per-stream MISC1 captured by XDpRxss_GetMsa()
+		 * above (read while the DTG was still enabled); reading the live
+		 * MISC1 register here would return 0 because XDp_RxDtgDis() has
+		 * already been called.
+		 */
+		use_vsc[i] = (Msa_test[i].Misc1 >> 6) & 0x1;
+
+		/*
+		 * YUV420/BPC/colorimetry are carried only in the VSC SDP. The
+		 * per-stream EXT_PKT handler (rx.c) captured each stream's VSC
+		 * colorimetry word at packet-arrival time (Rx_Vsc_Payload[]),
+		 * which is reliable even when the one-shot register read inside
+		 * GetMsa ran before the SDP was latched (the reason streams 3/4
+		 * could come up as RGB). When a VSC SDP was seen for this stream,
+		 * decode ComponentFormat/BPC from the captured word and override
+		 * the MSA struct used for detection, the frame buffer and the TX.
+		 */
+		if (Rx_Vsc_Valid[i]) {
+			u32 vw  = Rx_Vsc_Payload[i];
+			u8  cf  = (u8)((vw & 0xFF) >> 4);	/* DB16[7:4] comp fmt */
+			u8  bdc = (u8)((vw >> 8) & 0x7);	/* DB17[2:0] BDC	     */
+
+			use_vsc[i] = 1;
+
+			switch (cf) {
+			case 0:	/* RGB */
+				Msa_test[i].ComponentFormat =
+				  XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_RGB;
+				break;
+			case 1:	/* YCbCr 4:4:4 */
+				Msa_test[i].ComponentFormat =
+				  XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR444;
+				break;
+			case 2:	/* YCbCr 4:2:2 */
+				Msa_test[i].ComponentFormat =
+				  XDP_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_YCBCR422;
+				break;
+			case 3:	/* YCbCr 4:2:0 */
+				Msa_test[i].ComponentFormat =
+				  XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420;
+				break;
+			default:
+				break;
+			}
+
+			/* 0 => 6 BPC / not-settled: keep the GetMsa value. */
+			switch (bdc) {
+			case 1: Msa_test[i].BitsPerColor = 8;  break;
+			case 2: Msa_test[i].BitsPerColor = 10; break;
+			case 3: Msa_test[i].BitsPerColor = 12; break;
+			case 4: Msa_test[i].BitsPerColor = 16; break;
+			default: break;
+			}
+		}
+
 		/*
 		 * Only print if stream has valid resolution data
 		 */
@@ -2074,17 +2069,21 @@ int Dp21RxSs_PtMst_DetectResolution(void *InstancePtr, u8 Stream)
 			color="YUV422";
 		} else if (Msa_test[i].ComponentFormat == 2) {
 			color="YUV444";
+		} else if (Msa_test[i].ComponentFormat ==
+				XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+			color="YUV420";
 		}
 
 		xil_printf ("****Stream %d************\r\n",i+1);
 		if (DpRxSsInst.link_up_trigger == 1) {
 			xil_printf("*** Resolution: "
-				   "%d x %d @ %dHz, BPC = %d, Color = %s ***\r\n",
+				   "%d x %d @ %dHz, BPC = %d, Color = %s, (VSC %d) ***\r\n",
 				   (int)Msa_test[i].Vtm.Timing.HActive,
 				   (int)Msa_test[i].Vtm.Timing.VActive,
 				   (int)Msa_test[i].Vtm.FrameRate,
 				   (int)Msa_test[i].BitsPerColor,
-				   color);
+				   color,
+				   use_vsc[i]);
 
 			/*
 			 * Print Audio information based on DP version

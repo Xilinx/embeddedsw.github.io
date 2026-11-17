@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,7 @@
 * @file xmcdma_selftest.c
 * @addtogroup mcdma Overview
 * @{
+* @brief Implements the self-test function for the MCDMA core.
 *
 * This file contains the self-test function for the MCDMA core.
 *
@@ -47,16 +48,14 @@
 /*****************************************************************************/
 /**
 *
-* This file contains a diagnostic self-test function for the MCDMA driver.
-* Refer to the header file xmcdma.h for more detailed information.
+* @brief This file contains a diagnostic self-test function for the MCDMA driver.
 *
-* @param	InstancePtr is a pointer to XMcDma instance.
+*
+* @param[in]	InstancePtr is a pointer to XMcDma instance.
 *
 * @return
 *		- XST_SUCCESS if the test is successful.
 *		- XST_FAILURE if the test is failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 s32 XMcdma_SelfTest(XMcdma *InstancePtr)

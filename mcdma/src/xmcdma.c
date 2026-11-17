@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,9 +10,9 @@
 * @file xmcdma.c
 * @addtogroup mcdma Overview
 * @{
+* @brief Implements the interface functions for the MCDMA driver.
 *
-* This file contains the implementation of the interface functions for MCDMA
-* driver. Refer to the header file xmcdma.h for more detailed information.
+* This file contains the implementation of the interface functions for MCDMA.
 *
 * MODIFICATION HISTORY:
 *
@@ -37,19 +37,16 @@
 /*****************************************************************************/
 /**
 *
-* This function initializes an MCDMA core. This function must be called
-* prior to using an MCDMA core. Initialization of an MCDMA includes setting
-* up the instance data and ensuring the hardware is in a quiescent state and
-* resets all the hardware configurations.
+* @brief Initializes an MCDMA core before any other driver function is called.
+* Initialization includes setting up the instance data and ensuring the hardware
+* is in a quiescent state and resets all the hardware configurations.
 *
-* @param	InstancePtr is a pointer to the XMcdma instance.
-* @param	CfgPtr is a reference to a structure containing information
+* @param[in]	InstancePtr is a pointer to the XMcdma instance.
+* @param[in]	CfgPtr is a reference to a structure containing information
 *		about a specific XMcdma instance.
 *
 * @return
 *		- XST_SUCCESS if initialization was successful.
-*
-* @note		None.
 *
 ******************************************************************************/
 s32 XMcDma_CfgInitialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
@@ -100,12 +97,12 @@ s32 XMcDma_CfgInitialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 /*****************************************************************************/
 /**
 *
-* This function initializes an MCDMA core. This function must be called
-* prior to using an MCDMA core. Initialization of an MCDMA includes setting
-* up the instance data and updating the driver filed with a proper values.
+* @brief Initializes an MCDMA core before any other driver function is called.
+* Initialization includes setting up the instance data and updating driver
+* fields with proper values.
 *
-* @param	InstancePtr is a pointer to the XMcdma instance.
-* @param	CfgPtr is a reference to a structure containing information
+* @param[in]	InstancePtr is a pointer to the XMcdma instance.
+* @param[in]	CfgPtr is a reference to a structure containing information
 *		about a specific XMcdma instance.
 *
 * @return
@@ -200,13 +197,11 @@ s32 XMcDma_Initialize(XMcdma *InstancePtr, XMcdma_Config *CfgPtr)
 /*****************************************************************************/
 /**
 *
-* This function resets the MCDMA core.
+* @brief Resets the MCDMA core.
 *
-* @param	InstancePtr is a pointer to the XMcdma instance.
+* @param[in]	InstancePtr is a pointer to the XMcdma instance.
 *
-* @return	None.
-*
-* @note		This function resets all the configurations made previously.
+* @note		Resets all configurations made previously.
 *
 *****************************************************************************/
 void XMcDma_Reset(XMcdma *InstancePtr)
@@ -245,15 +240,11 @@ void XMcDma_Reset(XMcdma *InstancePtr)
 
 /*****************************************************************************/
 /**
- * This function sets the AWCACHE field of the SG interface
+ * @brief Sets the AWCACHE field of the SG interface
  * With the user specified value
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	Value is the AWCACHE value to be written.
- *
- * @return	None
- *
- * @note	None.
+ * @param[in]	InstancePtr is the driver instance we are working on
+ * @param[in]	Value is the AWCACHE value to be written.
  *
  *****************************************************************************/
 void XMcdma_SetSGAWCache(XMcdma *InstancePtr, u8 Value)
@@ -276,15 +267,11 @@ void XMcdma_SetSGAWCache(XMcdma *InstancePtr, u8 Value)
 
 /*****************************************************************************/
 /**
- * This function sets the ARCACHE field of the SG interface
+ * @brief Sets the ARCACHE field of the SG interface
  * With the user specified value
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	Value is the ARCACHE value to be written.
- *
- * @return	None
- *
- * @note	None.
+ * @param[in]	InstancePtr is the driver instance we are working on
+ * @param[in]	Value is the ARCACHE value to be written.
  *
  *****************************************************************************/
 void XMcdma_SetSGARCache(XMcdma *InstancePtr, u8 Value)
@@ -307,16 +294,14 @@ void XMcdma_SetSGARCache(XMcdma *InstancePtr, u8 Value)
 /*****************************************************************************/
 /**
 *
-* Check whether reset is done
+* @brief Check whether reset is done
 *
-* @param	InstancePtr is a pointer to the DMA engine instance to be
+* @param[in]	InstancePtr is a pointer to the DMA engine instance to be
 *		worked on.
 *
 * @return
 * 		- 1 if reset is done.
 *		- 0 if reset is not done
-*
-* @note		None
 *
 ******************************************************************************/
 u32 XMcdma_ResetIsDone(XMcdma *InstancePtr)
@@ -354,15 +339,13 @@ u32 XMcdma_ResetIsDone(XMcdma *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* Start the DMA engine.
+* @brief Start the DMA engine.
 *
-* @param	Chan is the Channel instance to be worked on
+* @param[in]	Chan is the Channel instance to be worked on.
 *
 * @return
 *		- XST_SUCCESS for success.
 *		- XST_FAILURE if starting the hardware fails.
-*
-* @note		None
 *
 ******************************************************************************/
 u32 XMcdma_Start(XMcdma_ChanCtrl *Chan)
@@ -402,15 +385,13 @@ u32 XMcdma_Start(XMcdma_ChanCtrl *Chan)
 /*****************************************************************************/
 /**
 *
-* Stops the DMA engine.
+* @brief Stops the DMA engine.
 *
-* @param	Chan is the Channel instance to be worked on
+* @param[in]	Chan is the Channel instance to be worked on.
 *
 * @return
 *		- XST_SUCCESS for success.
 *		- XST_FAILURE if hardware fails stop.
-*
-* @note		None
 *
 ******************************************************************************/
 u32 XMcdma_ChanHwStop(XMcdma_ChanCtrl *Chan)
@@ -452,13 +433,9 @@ u32 XMcdma_ChanHwStop(XMcdma_ChanCtrl *Chan)
 /*****************************************************************************/
 /**
 *
-* Enables a particular channel.
+* @brief Enables a particular channel.
 *
-* @param	Chan is the Channel instance to be worked on
-*
-* @return	none
-*
-* @note		None
+* @param[in]	Chan is the Channel instance to be worked on.
 *
 ******************************************************************************/
 void XMcdma_EnableCh(XMcdma_ChanCtrl *Chan)
@@ -473,15 +450,13 @@ void XMcdma_EnableCh(XMcdma_ChanCtrl *Chan)
 /*****************************************************************************/
 /**
 *
-* Gets the last serviced s2mm channel number.
+* @brief Gets the last serviced s2mm channel number.
 *
-* @param	InstancePtr is a pointer to the DMA engine instance to be
+* @param[in]	InstancePtr is a pointer to the DMA engine instance to be
 *		worked on.
 *
 * @return
 * 		- Channel id that last serviced.
-*
-* @note		None
 *
 ******************************************************************************/
 u16 XMcdma_GetChanServiced(XMcdma *InstancePtr)
@@ -503,15 +478,13 @@ u16 XMcdma_GetChanServiced(XMcdma *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* Gets the last serviced mm2s channel number.
+* @brief Gets the last serviced mm2s channel number.
 *
-* @param	InstancePtr is a pointer to the DMA engine instance to be
+* @param[in]	InstancePtr is a pointer to the DMA engine instance to be
 *		worked on.
 *
 * @return
 * 		- Channel id that last serviced.
-*
-* @note		None
 *
 ******************************************************************************/
 u16 XMcdma_GetTxChanServiced(XMcdma *InstancePtr)
@@ -530,6 +503,15 @@ u16 XMcdma_GetTxChanServiced(XMcdma *InstancePtr)
 	return Chan_id;
 }
 
+/*****************************************************************************/
+/**
+ * @brief Gets the weighted round-robin weight for a transmit channel.
+ *
+ * @param[in] Chan is a pointer to the MCDMA channel to query.
+ *
+ * @return The configured channel weight on success, or XST_FAILURE on error.
+ *
+ *****************************************************************************/
 u32 XMCdma_GetChan_Weight(XMcdma_ChanCtrl *Chan)
 {
 	u32 Weight, Chanid;
@@ -553,6 +535,16 @@ u32 XMCdma_GetChan_Weight(XMcdma_ChanCtrl *Chan)
 	return Weight;
 }
 
+/*****************************************************************************/
+/**
+ * @brief Sets the weighted round-robin weight for a transmit channel.
+ *
+ * @param[in] Chan is a pointer to the MCDMA channel to configure.
+ * @param[in] Weight is the WRR weight value in the range 1 to 15.
+ *
+ * @return XST_SUCCESS on success, or XST_FAILURE on error.
+ *
+ *****************************************************************************/
 u32 XMCdma_SetChan_Weight(XMcdma_ChanCtrl *Chan, u8 Weight)
 {
 	u32 Chanid;
@@ -588,6 +580,15 @@ u32 XMCdma_SetChan_Weight(XMcdma_ChanCtrl *Chan, u8 Weight)
 	return XST_SUCCESS;
 }
 
+/*****************************************************************************/
+/**
+ * @brief Gets the packet-done count for an MCDMA channel.
+ *
+ * @param[in] Chan is a pointer to the MCDMA channel to query.
+ *
+ * @return The packet-done count reported by the channel statistics register.
+ *
+ *****************************************************************************/
 u32 XMCdma_GetChan_PktDoneCnt(XMcdma_ChanCtrl *Chan)
 {
 	u32 Offset;
@@ -606,11 +607,9 @@ u32 XMCdma_GetChan_PktDoneCnt(XMcdma_ChanCtrl *Chan)
 
 /*****************************************************************************/
 /**
- * Dump the registers for a channel.
+ * @brief Dump the registers for a channel.
  *
- * @param	Chan is the MCDMA Channel to be worked on.
- *
- * @return	None
+ * @param[in]	Chan is the MCDMA Channel to be worked on.
  *
  *****************************************************************************/
 void XMcdma_DumpChanRegs(XMcdma_ChanCtrl *Chan)
@@ -639,3 +638,5 @@ void XMcdma_DumpChanRegs(XMcdma_ChanCtrl *Chan)
 		   (unsigned int)XMcdma_ReadReg(RegBase, XMCDMA_PKTDROP_OFFSET + Offset));
 	xil_printf("\r\n");
 }
+
+/** @} */

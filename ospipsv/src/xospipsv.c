@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,9 @@
 /**
 *
 * @file xospipsv.c
-* @addtogroup ospipsv_api OSPIPSV APIs
-* @{
+* @brief Implements the functions to perform transfers on the OSPIPSV hardware.
 *
-* The xospipsv.c file implements the functions required to use the OSPIPSV hardware to
-* perform a transfer. These are accessible to the user via XOspiPsv.h.
+* These are accessible to the user via XOspiPsv.h.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -51,10 +49,19 @@
 * 1.13  sb  06/26/25 Set the required configurations for SpartanUp in
 *                    SDR-PHY & DDR-PHY mode.
 * 1.13  sb  10/28/25 Added cache invalidate when EL1_NONSECURE is not defined.
+* 1.15  zm  08/07/26 Reject interrupt transfers the STIG path cannot issue.
+* 1.15  sb  08/11/26 Add support for pattern-based RX PHY tuning.
+* 1.15  vn  09/03/26 Fix doxygen warnings.
+* 1.15  tb  09/30/26 Align Doxygen comments with AMD documentation standards
 *
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup ospipsv_api OSPIPSV APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -66,8 +73,6 @@
 /************************** Constant Definitions *****************************/
 
 #define SILICON_VERSION_1	0x10U	/**< Silicon version */
-
-#define READ_ID		0x9FU	/**< Read Id opcode */
 
 #if defined (SPARTANUP)
 #define MAX_PHASE_SELECTOR_SPARTANUP     7U    /**< Max Phase selector for Spartanup */
@@ -88,13 +93,13 @@ static inline void StubStatusHandler(void *CallBackRef, u32 StatusEvent);
 
 /*****************************************************************************/
 /**
-* @brief
-* Initializes a specific XOspiPsv instance so that the driver is ready to use.
+* @brief Initializes a specific XOspiPsv instance so that the driver is
+* ready to use.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	ConfigPtr Reference to a structure containing information
-*		about a specific OSPIPSV device. This function initializes an
-*		InstancePtr object for a specific device specified by the
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	ConfigPtr Reference to a structure containing information
+*		about a specific OSPIPSV device. The InstancePtr object is
+*		initialized for a specific device specified by the
 *		contents of Config.
 *
 * @return
@@ -128,6 +133,10 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->Config.IsCacheCoherent = ConfigPtr->IsCacheCoherent;
 		InstancePtr->Config.ConnectionMode = ConfigPtr->ConnectionMode;
 		InstancePtr->Config.BusWidth = ConfigPtr->BusWidth;
+#ifdef SDT
+		InstancePtr->Config.IntrId = ConfigPtr->IntrId;
+		InstancePtr->Config.IntrParent = ConfigPtr->IntrParent;
+#endif
 		/* Other instance variable initializations */
 		InstancePtr->SendBufferPtr = NULL;
 		InstancePtr->RecvBufferPtr = NULL;
@@ -141,6 +150,20 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		InstancePtr->Extra_DummyCycle = 0U;
 		InstancePtr->DllMode = XOSPIPSV_DLL_BYPASS_MODE;
 		InstancePtr->DualByteOpcodeEn = 0U;
+		/*
+		 * RX tuning reads back the pattern programmed in the flash.
+		 * The application provides the reference pattern, its location,
+		 * the read instruction used to fetch it and the read buffer
+		 * before moving to a PHY mode.
+		 */
+		InstancePtr->RxTuning.Opcode = 0U;
+		InstancePtr->RxTuning.Dummy = 0U;
+		InstancePtr->RxTuning.Proto = 0U;
+		InstancePtr->RxTuning.Addrsize = 0U;
+		InstancePtr->RxTuning.PatternAddr = 0U;
+		InstancePtr->RxTuning.Pattern = NULL;
+		InstancePtr->RxTuning.PatternSize = 0U;
+		InstancePtr->RxTuning.ReadBfrPtr = NULL;
 #if defined (SPARTANUP)
 		/* Workaround for SpartanUP platform.
 		 * SpartanUP design does not include frequency information
@@ -149,7 +172,9 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 		 * This results in prescaler configuration failure. To avoid
 		 * this issue, initialize InstancePtr->Config.InputClockHz to 160MHz.
 		 */
-		InstancePtr->Config.InputClockHz = 160000000;
+		if (InstancePtr->Config.InputClockHz == 0U) {
+			InstancePtr->Config.InputClockHz = 160000000;
+		}
 
 #endif
 #if defined (versal) && !defined (VERSAL_NET) && !defined (SPARTANUP)
@@ -202,15 +227,12 @@ u32 XOspiPsv_CfgInitialize(XOspiPsv *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* Resets the configuration register.
+* @brief Resets the configuration register.
 *
 * The Upper layer software is responsible for re-configuring (if necessary)
 * and restarting the OSPIPSV device after the reset.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 void XOspiPsv_Reset(XOspiPsv *InstancePtr)
@@ -227,10 +249,9 @@ void XOspiPsv_Reset(XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Reset the OSPI flash device.
+* @brief Resets the OSPI flash device.
 *
-* @param	Type Reset type.
+* @param[in]	Type Reset type.
 *
 * @return
 * 		- XST_SUCCESS if successful.
@@ -289,11 +310,10 @@ RETURN_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Resets the OSPI flash device via OSPI controller.
+* @brief Resets the OSPI flash device via OSPI controller.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Type Resets type.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	Type Reset type.
 *
 * @return
 * 		- XST_SUCCESS if successful.
@@ -336,12 +356,9 @@ RETURN_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Asserts the chip select line.
+* @brief Asserts the chip select line.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_AssertCS(const XOspiPsv *InstancePtr)
@@ -361,12 +378,9 @@ static inline void XOspiPsv_AssertCS(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* De-asserts the chip select line.
+* @brief De-asserts the chip select line.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_DeAssertCS(const XOspiPsv *InstancePtr)
@@ -388,12 +402,13 @@ static inline void XOspiPsv_DeAssertCS(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Performs a transfer on the bus in polled mode. The messages
-* passed are all transferred on the bus between one CS assert and de-assert.
+* @brief Performs a transfer on the bus in polled mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* The messages passed are all transferred on the bus between one CS assert
+* and de-assert.
+*
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -465,11 +480,10 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Starts a DMA transfer.
+* @brief Starts a DMA transfer.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -537,10 +551,9 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Checks for DMA transfer complete.
+* @brief Checks for DMA transfer complete.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if DMA transfer complete.
@@ -599,14 +612,14 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Performs a transfer on the bus in interrupt mode.
+* @brief Performs a transfer on the bus in interrupt mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
+*		- XST_FAILURE if the message cannot be issued in interrupt mode.
 *		- XST_DEVICE_BUSY if a transfer is already in progress.
 *
 ******************************************************************************/
@@ -632,6 +645,18 @@ u32 XOspiPsv_IntrTransfer(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 
 	if ((Msg->Flags != XOSPIPSV_MSG_FLAG_RX) &&
 			(Msg->Flags != XOSPIPSV_MSG_FLAG_TX)) {
+		Status = XST_FAILURE;
+		goto ERROR_PATH;
+	}
+
+	/*
+	 * XOspiPsv_IntrSendData() issues every send through STIG, and
+	 * XOspiPsv_FifoWrite() stages the data in a four-byte stack word, so a
+	 * larger count overruns it.
+	 */
+	if ((Msg->Flags == XOSPIPSV_MSG_FLAG_TX) &&
+			((Msg->ByteCount > XOSPIPSV_STIG_MAX_DATA_BYTES) ||
+			 (XOspiPsv_CheckStigWriteMsg(Msg) != (u32)XST_SUCCESS))) {
 		Status = XST_FAILURE;
 		goto ERROR_PATH;
 	}
@@ -665,14 +690,13 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Handles interrupt based transfers.
+* @brief Handles interrupt based transfers.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if successful.
-*		- XST_DEVICE_BUSY if a transfer is already in progress.
+*		- XST_FAILURE if the controller does not become idle.
 *
 ******************************************************************************/
 u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
@@ -770,16 +794,13 @@ u32 XOspiPsv_IntrHandler(XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
- * @brief
- * Stops the transfer of data to internal DST FIFO from stream interface and
- * also stops the issuing of new write commands to memory.
+ * @brief Stops the transfer of data to internal DST FIFO from stream
+ * interface and also stops the issuing of new write commands to memory.
  *
- * By calling this API, any ongoing Dma transfers will be paused and DMA will
- * not issue AXI write commands to memory
+ * By calling this API, any ongoing Dma transfers are paused and DMA does
+ * not issue AXI write commands to memory.
  *
- * @param	InstancePtr Pointer to the XOspiPsv instance.
- *
- * @return	None.
+ * @param[in]	InstancePtr Pointer to the XOspiPsv instance.
  *
  *****************************************************************************/
 void XOspiPsv_Idle(const XOspiPsv *InstancePtr)
@@ -804,13 +825,12 @@ void XOspiPsv_Idle(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Configures TX and RX DLL Delay. Based on the mode and reference clock
-* this API calculates the RX delay and configure them in PHY configuration
-* register.
+* @brief Configures TX and RX DLL Delay.
 *
+* Based on the mode and reference clock this API calculates the RX delay
+* and configure them in PHY configuration register.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -823,13 +843,7 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 	XOspiPsv_Msg FlashMsg = {0};
 	u32 Status;
 	u32 TXTap;
-	u8 ByteCnt = 4;
-#ifdef __ICCARM__
-#pragma data_alignment = 4
-	u8 ReadBfrPtr[8];
-#else
-	u8 ReadBfrPtr[8]__attribute__ ((aligned(4))) = {0};
-#endif
+	const XOspiPsv_RxTuning *RxTuning;
 #if defined (SPARTANUP)
 	u32 PhaseSel;
 	u32 PhyMstrCntrlReg;
@@ -865,35 +879,46 @@ u32 XOspiPsv_SetDllDelay(XOspiPsv *InstancePtr)
 
 	TXTap = TXTap <<
 			XOSPIPSV_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD_SHIFT;
-	FlashMsg.Opcode = READ_ID;
-	FlashMsg.Addrsize = 0U;
-	FlashMsg.Addrvalid = 0U;
-	FlashMsg.TxBfrPtr = NULL;
-	FlashMsg.RxBfrPtr = ReadBfrPtr;
-	FlashMsg.ByteCount = ByteCnt;
-	FlashMsg.Flags = XOSPIPSV_MSG_FLAG_RX;
-	FlashMsg.Dummy = 0U;
-	FlashMsg.Addr = 0U;
-	FlashMsg.Proto = 0U;
-	FlashMsg.IsDDROpCode = 0U;
-	if (InstancePtr->SdrDdrMode == XOSPIPSV_EDGE_MODE_DDR_PHY) {
-		FlashMsg.Dummy = 8U;
-		FlashMsg.Proto = XOSPIPSV_READ_8_0_8;
+
+	/*
+	 * RX tuning reads back the pattern pre-programmed in the flash. The
+	 * application passes the reference pattern, its location and the read
+	 * instruction used to fetch it through InstancePtr->RxTuning.
+	 *
+	 * The same message is re-issued at every RX tap and XOspiPsv_Dma_Read()
+	 * rewrites ByteCount, Addr and RxBfrPtr when the byte count is not a
+	 * multiple of four, so a word aligned count is required to keep the
+	 * message reusable across the tuning loop. In IDAC mode the pattern is
+	 * fetched using DMA, which needs a word aligned destination as well.
+	 */
+	RxTuning = &InstancePtr->RxTuning;
+	if ((RxTuning->Pattern == NULL) || (RxTuning->ReadBfrPtr == NULL) ||
+			(RxTuning->PatternSize == 0U) ||
+			((RxTuning->PatternSize % 4U) != 0U) ||
+			(((UINTPTR)RxTuning->ReadBfrPtr % 4U) != 0U) ||
+			(RxTuning->Addrsize == 0U)) {
+		Status = (u32)XST_FAILURE;
+		goto RETURN_PATH;
 	}
 
+	FlashMsg.Opcode = RxTuning->Opcode;
+	FlashMsg.Addrsize = RxTuning->Addrsize;
+	FlashMsg.Addrvalid = 1U;
+	FlashMsg.Addr = RxTuning->PatternAddr;
+	FlashMsg.TxBfrPtr = NULL;
+	FlashMsg.RxBfrPtr = RxTuning->ReadBfrPtr;
+	FlashMsg.ByteCount = RxTuning->PatternSize;
+	FlashMsg.Flags = XOSPIPSV_MSG_FLAG_RX;
+	FlashMsg.Dummy = RxTuning->Dummy;
+	FlashMsg.Proto = RxTuning->Proto;
+	FlashMsg.IsDDROpCode = 0U;
+	FlashMsg.Xfer64bit = 0U;
 	if (InstancePtr->DualByteOpcodeEn == XOSPIPSV_DUAL_BYTE_OP_ENABLE) {
-		FlashMsg.ExtendedOpcode = (u8)(~FlashMsg.Opcode);
-		FlashMsg.Addrsize = 4U;
-		FlashMsg.Addrvalid = 1U;
-		FlashMsg.Dummy = 4;
-		FlashMsg.Proto = XOSPIPSV_READ_8_8_8;
-	}
-	else if (InstancePtr->DualByteOpcodeEn == XOSPIPSV_DUAL_BYTE_OP_SAME) {
-		FlashMsg.ExtendedOpcode = (u8)(FlashMsg.Opcode);
-		FlashMsg.Addrsize = 4U;
-		FlashMsg.Addrvalid = 1U;
-		FlashMsg.Dummy = 4;
-		FlashMsg.Proto = XOSPIPSV_READ_8_8_8;
+		FlashMsg.ExtendedOpcode = (u8)(~RxTuning->Opcode);
+	} else if (InstancePtr->DualByteOpcodeEn == XOSPIPSV_DUAL_BYTE_OP_SAME) {
+		FlashMsg.ExtendedOpcode = RxTuning->Opcode;
+	} else {
+		FlashMsg.ExtendedOpcode = 0U;
 	}
 
 	if (InstancePtr->DllMode == XOSPIPSV_DLL_MASTER_MODE) {
@@ -945,13 +970,15 @@ RETURN_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Configures the dual-byte opcode mode.
+* @brief Configures the dual-byte opcode mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Enable 1 to enable dual-byte opcode, 0 to disable.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	Enable 0 to disable dual-byte opcode, 1 to enable it with
+*		inverted opcode, 2 to enable it with same opcode.
 *
-* @return	None.
+* @return
+*		- XST_SUCCESS if successful.
+*		- XST_FAILURE if Enable is not a valid value.
 *
 ******************************************************************************/
 u32 XOspiPsv_ConfigDualByteOpcode(XOspiPsv *InstancePtr, u8 Enable)
@@ -983,10 +1010,11 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
- * @brief
- * Sets the status callback function, the status handler, which the driver
- * calls when it encounters conditions that should be reported to upper
- * layer software. The handler executes in an interrupt context, so it must
+ * @brief Sets the status callback function, the status handler, which the
+ * driver calls when it encounters conditions that should be reported to
+ * upper layer software.
+ *
+ * The handler executes in an interrupt context, so it must
  * minimize the amount of processing performed. One of the following status
  * events is passed to the status handler.
  *
@@ -995,15 +1023,12 @@ ERROR_PATH:
  * XST_SPI_TRANSFER_DONE		The requested data transfer is done
  *
  * </pre>
- * @param	InstancePtr Pointer to the XOspiPsv instance.
- * @param	CallBackRef Upper layer callback reference passed back
+ * @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+ * @param[in]	CallBackRef Upper layer callback reference passed back
  *		when the callback function is invoked.
- * @param	FuncPointer Pointer to the callback function.
- *
- * @return	None.
+ * @param[in]	FuncPointer Pointer to the callback function.
  *
  * @note
- *
  * The handler is called within interrupt context, so it should do its work
  * quickly and queue potentially time-consuming work to a task-level thread.
  *
@@ -1021,14 +1046,12 @@ void XOspiPsv_SetStatusHandler(XOspiPsv *InstancePtr, void *CallBackRef,
 
 /*****************************************************************************/
 /**
- * @brief
- * Stub for the status callback. The stub is here in case the upper
- * layers forget to set the handler.
+ * @brief Implements a stub for the status callback.
  *
- * @param	CallBackRef Pointer to the upper layer callback reference
- * @param	StatusEvent Event that just occurred.
+ * The stub is here in case the upper layers forget to set the handler.
  *
- * @return	None.
+ * @param[in]	CallBackRef Pointer to the upper layer callback reference.
+ * @param[in]	StatusEvent Event that just occurred.
  *
  ******************************************************************************/
 static inline void StubStatusHandler(void *CallBackRef, u32 StatusEvent)

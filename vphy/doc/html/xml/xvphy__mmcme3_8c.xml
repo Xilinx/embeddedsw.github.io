@@ -10,6 +10,19 @@
       <node id="281">
         <label>xil_assert.h</label>
       </node>
+      <node id="280">
+        <label>xvphy.h</label>
+        <childnode refid="281" relation="include">
+        </childnode>
+        <childnode refid="278" relation="include">
+        </childnode>
+        <childnode refid="282" relation="include">
+        </childnode>
+        <childnode refid="285" relation="include">
+        </childnode>
+        <childnode refid="286" relation="include">
+        </childnode>
+      </node>
       <node id="283">
         <label>xil_io.h</label>
       </node>
@@ -25,18 +38,8 @@
         <childnode refid="287" relation="include">
         </childnode>
       </node>
-      <node id="280">
-        <label>xvphy.h</label>
-        <childnode refid="281" relation="include">
-        </childnode>
-        <childnode refid="278" relation="include">
-        </childnode>
-        <childnode refid="282" relation="include">
-        </childnode>
-        <childnode refid="285" relation="include">
-        </childnode>
-        <childnode refid="286" relation="include">
-        </childnode>
+      <node id="279">
+        <label>xstatus.h</label>
       </node>
       <node id="282">
         <label>xvphy_hw.h</label>
@@ -46,14 +49,11 @@
         <childnode refid="284" relation="include">
         </childnode>
       </node>
-      <node id="286">
-        <label>xvphy_dp.h</label>
-      </node>
-      <node id="279">
-        <label>xstatus.h</label>
-      </node>
       <node id="285">
         <label>xvidc.h</label>
+      </node>
+      <node id="286">
+        <label>xvphy_dp.h</label>
       </node>
       <node id="284">
         <label>xil_types.h</label>
@@ -439,6 +439,6 @@ MODIFICATION HISTORY:</preformatted></para><para><preformatted>Ver   Who  Date  
 <codeline lineno="448"><highlight class="normal"></highlight></codeline>
 <codeline lineno="449"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
-    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/vphy/src/xvphy_mmcme3.c"/>
+    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/vphy/src/xvphy_mmcme3.c"/>
   </compounddef>
 </doxygen>

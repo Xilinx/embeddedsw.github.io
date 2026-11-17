@@ -24,11 +24,7 @@
 #include "xil_cache.h"
 #include "xgpio_l.h"
 #include "xiic.h"
-#ifndef SDT
-#include "xscugic.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #include "xuartpsv.h"
 #include "xvidc.h"
 #include "platform.h"
@@ -74,18 +70,9 @@ extern XHdmi_Exdes xhdmi_exdes_ctrlr;
 extern XHdmi_Menu_ExDes_Ctrlr ExDesCtrlr;
 
 #define VPROCSSCSC_BASE	XPAR_XVPROCSS_1_BASEADDR
-#ifndef SDT
-#define DEMOSAIC_BASE	XPAR_XV_DEMOSAIC_0_S_AXI_CTRL_BASEADDR
-#define VGAMMALUT_BASE	XPAR_XV_GAMMA_LUT_0_S_AXI_CTRL_BASEADDR
-#else
 #define DEMOSAIC_BASE_1		XPAR_XV_DEMOSAIC_0_BASEADDR
 #define VGAMMALUT_BASE_1	XPAR_XV_GAMMA_LUT_0_BASEADDR
-#endif
 
-#ifndef SDT
-#define XDSITXSS_DEVICE_ID	XPAR_DSITXSS_0_DEVICE_ID
-#define XDSITXSS_INTR_ID	XPAR_FABRIC_MIPI_DSI_TX_SUBSYSTEM_0_INTERRUPT_INTR
-#endif
 
 #define DSI_BYTES_PER_PIXEL	(3)
 #define DSI_H_RES		(1920)
@@ -106,11 +93,7 @@ extern XHdmi_Menu_ExDes_Ctrlr ExDesCtrlr;
 XCsiSs CsiSs;
 XCsiSs_Config XCsiSs_ConfigPtr;
 
-#ifndef SDT
-#define XGPIO_TREADY_DEVICE_ID	XPAR_GPIO_0_DEVICE_ID
-#else
 #define XGPIO_TREADY_BASE XPAR_XGPIO_0_BASEADDR
-#endif
 XGpio Gpio_Tready;
 
 extern	XV_HdmiTxSs1  HdmiTxSs;
@@ -132,15 +115,9 @@ extern u8   			  IsTxPresent;
  *****************************************************************************/
 void DisableImageProcessingPipe(void)
 {
-#ifndef SDT
-	Xil_Out32((DEMOSAIC_BASE + 0x00), 0x0   );
-	Xil_Out32((VGAMMALUT_BASE + 0x00), 0x0   );
-	Xil_Out32((VPROCSSCSC_BASE + 0x00), 0x0  );
-#else
 	Xil_Out32((DEMOSAIC_BASE_1 + 0x00), 0x0   );
 	Xil_Out32((VGAMMALUT_BASE_1 + 0x00), 0x0   );
 	//Xil_Out32((VPROCSSCSC_BASE + 0x00), 0x0  );
-#endif
 }
 
 
@@ -422,33 +399,55 @@ void Enable_mmcmfabric_control()
 ******************************************************************************/
 void XMipi_DisplayMainMenu(void)
 {
-
 	xil_printf("\r\n");
 	xil_printf("---------------------\r\n");
 	xil_printf("---   MAIN MENU   ---\r\n");
 	xil_printf("---------------------\r\n");
 
 	xil_printf("h - Select Display Device : HDMI\n\r");
+	xil_printf("r - Change the video resolution 2K/4K.\n\r");
+
 	do {
+		u8 Response;
 
-			u8 Response;
+		Response = XUartPsv_RecvByte(XPAR_XUARTPSV_0_BASEADDR);
+		XUartPsv_SendByte(XPAR_XUARTPSV_0_BASEADDR, Response);
 
+		if ((Response == 'r') || (Response == 'R')) {
+
+			xil_printf("\r\n0 - 1920x1080p60");
+			xil_printf(" => Configures Sensor for 1920x1080 60fps.\r\n");
+
+			xil_printf("\r\n1 - 3840x2160p60");
+			xil_printf(" => Configures Sensor for 3840x2160 60fps.\r\n");
+
+			xil_printf("\r\nEnter Selection ->\r\n ");
 
 			Response = XUartPsv_RecvByte(XPAR_XUARTPSV_0_BASEADDR);
-
 			XUartPsv_SendByte(XPAR_XUARTPSV_0_BASEADDR, Response);
 
-			 if ((Response == 'h') ||(Response =='H')){
-					xil_printf("\r\n HDMI Display is Selected.\r\n");
-					New_Cfg.VideoDestn = XVIDDES_HDMI ;
-					break;
-			}else{
-					New_Cfg.VideoDestn = XVIDDES_HDMI ;
-		            xil_printf("\r\n Wrong Input Selection, Default is Selected.\r\n");
-					xil_printf("\r\n HDMI Display is Selected.\r\n");
-          break;
-				}
-			} while (1);
+			if (Response == '0') {
+				xil_printf("\r\n 1920x1080p60 Resolution is Selected.\r\n");
+				New_Cfg.VideoMode = XVIDC_VM_1920x1080_60_P;
+			} else if (Response == '1') {
+				xil_printf("\r\n 3840x2160p60 Resolution is Selected.\r\n");
+				New_Cfg.VideoMode = XVIDC_VM_3840x2160_60_P;
+			} else {
+				xil_printf("\r\nWrong Input. Default 1920x1080 selected\r\n");
+				New_Cfg.VideoMode = XVIDC_VM_1920x1080_60_P;
+			}
+			break;
+		} else if ((Response == 'h') || (Response == 'H')) {
+			xil_printf("\r\n HDMI Display is Selected.\r\n");
+			New_Cfg.VideoDestn = XVIDDES_HDMI;
+			break;
+		} else {
+			xil_printf("\r\n Wrong Input. Default HDMI selected.\r\n");
+			New_Cfg.VideoDestn = XVIDDES_HDMI;
+			break;
+		}
+
+	} while (1);
 }
 
 
@@ -461,7 +460,7 @@ int main() {
 
 	Pipeline_Cfg.ActiveLanes = 4;
 	Pipeline_Cfg.VideoSrc = XVIDSRC_SENSOR;
-	New_Cfg.VideoMode = XVIDC_VM_3840x2160_60_P;  //XVIDC_VM_1920x1080_60_P
+	New_Cfg.VideoMode = XVIDC_VM_1920x1080_60_P;
 
 
 	    Pipeline_Cfg.VideoDestn = XVIDDES_HDMI;
@@ -493,20 +492,8 @@ int main() {
 	/* Initialize platform */
 	init_platform();
 
-	#ifndef SDT
-	XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_DEVICE_ID);
-	#else
 	XGpio_Initialize(&Gpio_Tready,XGPIO_TREADY_BASE);
-	#endif
 
-#ifndef SDT
-	/* Initialize IRQ */
-	Status = SetupInterruptSystem();
-	if (Status == XST_FAILURE) {
-		xil_printf("IRQ Configuration failed.\r\n");
-		return XST_FAILURE;
-	}
-#endif
 
 	Status = config_csi_cap_path();
 	if (Status == XST_FAILURE) {

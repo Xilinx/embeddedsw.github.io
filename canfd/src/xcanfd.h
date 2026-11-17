@@ -4,15 +4,20 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
+#ifndef XCANFD_H
+#define XCANFD_H
+
 /*****************************************************************************/
 /**
 *
 * @file xcanfd.h
 * @addtogroup canfd Overview
 * @{
+* @brief Defines the XCanFd driver API for the Xilinx CANFD controller.
+*
 * @details
 *
-* The Xilinx CANFD driver.  This driver supports the Xilinx CANFD Controller.
+* The Xilinx CANFD driver. This driver supports the Xilinx CANFD Controller.
 *
 * The CANFD Controller supports the following features:
 *   - Confirms to the ISO 11898-1, CAN 2.0A and CAN 2.0B standards.
@@ -36,39 +41,38 @@
 *
 * <b>Driver Description</b>
 *
-* The device driver enables higher layer software (e.g., an application) to
-* communicate to the CANFD. The driver handles transmission and reception of
+* The device driver enables higher layer software (for example, an application)
+* to communicate to the CANFD. The driver handles transmission and reception of
 * CAN frames, as well as configuration of the controller. The driver is simply a
 * pass-through mechanism between a protocol stack and the CANFD. A single device
 * driver can support multiple CANFDs.
 *
-* Since the driver is a simple pass-through mechanism between a protocol stack
-* and the CANFD, no assembly or disassembly of CANFD frames is done at the
-* driver-level. This assumes that the protocol stack passes a correctly
-* formatted CANFD frame to the driver for transmission, and that the driver
-* does not validate the contents of an incoming frame
+* Because the driver is a simple pass-through mechanism between a protocol stack
+* and the CANFD, it does no assembly or disassembly of CANFD frames. The driver
+* assumes that the protocol stack passes a correctly formatted CANFD frame to it
+* for transmission. The driver does not validate the contents of an incoming
+* frame.
 *
 * <b>Operation Modes</b>
 *
 * The CANFD controller supports the following modes of operation:
 *   - <b>Configuration Mode</b>: In this mode the CAN timing parameters and
 *     Baud Rate Pre-scalar parameters can be changed. In this mode the CAN
-*     controller loses synchronization with the CAN bus and drives a
-*     constant recessive bit on the bus line. The Error Counter Register are
-*     reset. The CAN controller does not receive or transmit any messages even
-*     if there are pending transmit requests from the TX FIFO or the TX High
-*     Priority Buffer. the Storage FIFOs and the CAN configuration registers
-*     are still accessible.
+*     controller loses synchronization with the CAN bus and drives a constant
+*     recessive bit on the bus line. The Error Counter Register are reset. The
+*     CAN controller does not receive or transmit messages, even with pending
+*     transmit requests from the TX FIFO or the TX High Priority Buffer. The
+*     Storage FIFOs and the CAN configuration
+*     registers are still accessible.
 *   - <b>Normal Mode</b>:In Normal Mode the CAN controller participates in bus
 *     communication, by transmitting and receiving messages.
 *   - <b>Sleep Mode</b>: In Sleep Mode the CAN Controller does not transmit any
 *     messages. However, if any other node transmits a message, then the CAN
-*     Controller receives the transmitted message and exits from Sleep Mode.
-*     If there are new transmission requests from either the TX FIFO or the
-*     TX High Priority Buffer when the CAN Controller is in Sleep Mode, these
-*     requests are not serviced, and the CAN Controller continues to remain in
-*     Sleep Mode. Interrupts are generated when the CAN controller enters Sleep
-*     mode or Wakes up from Sleep mode.
+*     Controller receives the transmitted message and exits from Sleep Mode. The
+*     CAN Controller does not service new transmission requests from the TX FIFO
+*     or the TX High Priority Buffer while in Sleep Mode. The CAN Controller
+*     remains in Sleep Mode. Interrupts are generated when the CAN controller
+*     enters Sleep mode or Wakes up from Sleep mode.
 *   - <b>Loop Back Mode</b>: In Loop Back mode, the CAN controller transmits a
 *     recessive bit stream on to the CAN Bus. Any message that is transmitted
 *     is loop backed to the rx line and acknowledged. The CAN controller
@@ -76,17 +80,16 @@
 *     normal bus communication and does not receive any messages that are
 *     transmitted by other CAN nodes. This mode is used for diagnostic
 *     purposes.
-*   - <b>Snoop mode</b>:in Snoop Mode,The CAN controller transmits recessive
-*     bit stream on to CAN bus and does not participate in normal bus
-*     communication but receives messages that are transmitted by other
-*     CAN nodes.Received messages are stored based on receive ID match result.
+*   - <b>Snoop mode</b>: In Snoop Mode, the CAN controller transmits recessive
+*     bit stream on to CAN bus. It does not participate in normal bus
+*     communication, but it receives messages that are transmitted by other CAN
+*     nodes. Received messages are stored based on receive ID match result.
 *     Error counters are disabled and cleared to 0. Reads to error counter
-*     register will return zero.
+*     register returns zero.
 *
 * <b>Buffer Alignment</b>
 *
-* It is important to note that frame buffers passed to the driver must be
-* 32-bit aligned.
+* Frame buffers passed to the driver must be 32-bit aligned.
 *
 * <b>Receive Address Filtering</b>
 *
@@ -96,7 +99,7 @@
 * The incoming Identifier is masked with the bits in the Acceptance Filter Mask
 * Register. This value is compared with the result of masking the bits in the
 * Acceptance Filter ID Register with the Acceptance Filter Mask Register. If
-* both these values are equal, the message will be stored in the RX FIFO.
+* both these values are equal, the message is stored in the RX FIFO.
 *
 * Acceptance Filtering is performed by each of the defined acceptance filters.
 * If the incoming identifier passes through any acceptance filter then the
@@ -109,37 +112,37 @@
 * <b>Interrupts</b>
 *
 * The driver has no dependencies on the interrupt controller. The driver
-* provides an interrupt handler. User of this driver needs to provide
-* callback functions. An interrupt handler example is available with
+* provides an interrupt handler. The application must provide callback
+* functions. An interrupt handler example is available with
 * the driver.
 *
 * <b>Virtual Memory</b>
 *
 * This driver supports Virtual Memory. The RTOS is responsible for calculating
-* the correct device base address in Virtual Memory space and invoking function
-* XCanFd_VmInitialize(), instead of XCanFd_Initialize(), to initialize the device
-* at first.
+* the correct device base address in Virtual Memory space. The RTOS then invokes
+* XCanFd_VmInitialize(), instead of XCanFd_Initialize(), to initialize the
+* device at first.
 *
 * <b>Threads</b>
 *
-* This driver is not thread safe.  Any needs for threads or thread mutual
+* This driver is not thread safe. Any needs for threads or thread mutual
 exclusion
 * must be satisfied by the layer above this driver.
 *
 * <b>Device Reset</b>
 *
 * Bus Off interrupt that can occur in the device requires a device reset. The
-* user is responsible for resetting the device and re-configuring it
+* application is responsible for resetting the device and re-configuring it
 * based on its needs (the driver does not save the current configuration). When
-* integrating into an RTOS, these reset and re-configure obligations are
-* taken care of by the OS adapter software if it exists for that RTOS.
+* integrating into an RTOS, these reset and re-configure obligations are taken
+* care of by the OS adapter software if it exists for that RTOS.
 *
 * <b>Device Configuration</b>
 *
 * The device can be configured in various ways during the FPGA implementation
-* process.  Configuration parameters are stored in the xcan_g.c files.
+* process. Configuration parameters are stored in the xcan_g.c files.
 * A table is defined where each entry contains configuration information
-* for a CAN device.  This information includes such things as the base address
+* for a CAN device. This information includes such things as the base address
 * of the memory-mapped device, and the number of acceptance filters.
 *
 * <b>Asserts</b>
@@ -151,8 +154,9 @@ exclusion
 *
 * <b>Building the driver</b>
 *
-* The XCanFd driver is composed of several source files.This allows the user to
-* build and link only those parts of the driver that are necessary.
+* The XCanFd driver is composed of several source files. This allows an
+* application to build and link only those parts of the driver that are
+* necessary.
 * <br><br>
 *
 * <pre>
@@ -264,12 +268,11 @@ exclusion
 * 2.12  vlt  12/30/25 Update Doxygen comments to include SDT flow details.
 *       vlt  01/27/26 Fixed codespell issues
 *       ht   02/26/26 Fix TX buffer transmitted check
+* 2.13  vn   09/08/26 Align Doxygen comments with AMD standards
+* 2.13  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 ******************************************************************************/
-
-#ifndef XCANFD_H			/* prevent circular inclusions */
-#define XCANFD_H			/**< by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -285,152 +288,172 @@ extern "C" {
  *  @{
  */
 #if defined (CANFD_v1_0)
-#define XCANFD_MAX_SJW_VALUE 0x10  /**< Synchronization Jump Width */
-#define XCANFD_MAX_TS1_VALUE 0x40  /**< Time Segment 1 */
-#define XCANFD_MAX_TS2_VALUE 0x20  /**< Time Segment 2 */
+#define XCANFD_MAX_SJW_VALUE 0x10  /**< Synchronization Jump Width. */
+#define XCANFD_MAX_TS1_VALUE 0x40  /**< Time Segment 1. */
+#define XCANFD_MAX_TS2_VALUE 0x20  /**< Time Segment 2. */
 #else
-#define XCANFD_MAX_SJW_VALUE 0x80  /**< Synchronization Jump Width */
-#define XCANFD_MAX_TS1_VALUE 0x100 /**< Time Segment 1 */
-#define XCANFD_MAX_TS2_VALUE 0x80  /**< Time Segment 2 */
+#define XCANFD_MAX_SJW_VALUE 0x80  /**< Synchronization Jump Width. */
+#define XCANFD_MAX_TS1_VALUE 0x100 /**< Time Segment 1. */
+#define XCANFD_MAX_TS2_VALUE 0x80  /**< Time Segment 2. */
 #endif
 /** @} */
 /** @name CAN Fast Bit rate fields
  *  @{
  */
 #if defined (CANFD_v1_0)
-#define XCANFD_MAX_F_SJW_VALUE 0x03 /**< Synchronization Jump Width for Data Phase*/
-#define XCANFD_MAX_F_TS1_VALUE 0x0F /**< Time Segment 1 for Data Phase */
-#define XCANFD_MAX_F_TS2_VALUE 0x07 /**< Time Segment 2 for Data Phase */
+/** Synchronization Jump Width for Data Phase. */
+#define XCANFD_MAX_F_SJW_VALUE 0x03
+#define XCANFD_MAX_F_TS1_VALUE 0x0F /**< Time Segment 1 for Data Phase. */
+#define XCANFD_MAX_F_TS2_VALUE 0x07 /**< Time Segment 2 for Data Phase. */
 #else
-#define XCANFD_MAX_F_SJW_VALUE 0x10 /**< Synchronization Jump Width for Data Phase */
-#define XCANFD_MAX_F_TS1_VALUE 0x20 /**< Time Segment 1 for Data Phase */
-#define XCANFD_MAX_F_TS2_VALUE 0x10 /**< Time Segment 2 for Data Phase */
+/** Synchronization Jump Width for Data Phase. */
+#define XCANFD_MAX_F_SJW_VALUE 0x10
+#define XCANFD_MAX_F_TS1_VALUE 0x20 /**< Time Segment 1 for Data Phase. */
+#define XCANFD_MAX_F_TS2_VALUE 0x10 /**< Time Segment 2 for Data Phase. */
 #endif
 /** @} */
 /** @name CAN operation modes
  *  @{
  */
-#define XCANFD_MODE_CONFIG	0x00000001 /**< Configuration mode */
-#define XCANFD_MODE_NORMAL	0x00000002 /**< Normal mode */
-#define XCANFD_MODE_LOOPBACK	0x00000004 /**< Loop Back mode */
-#define XCANFD_MODE_SLEEP	0x00000008 /**< Sleep mode */
-#define XCANFD_MODE_SNOOP	0x00000010 /**< Snoop mode */
-#define XCANFD_MODE_ABR		0x00000020 /**< Auto Bus-Off Recovery */
-#define XCANFD_MODE_SBR		0x00000040 /**< Starut Bus-Off Recovery */
-#define XCANFD_MODE_PEE		0x00000080 /**< Protocol Exception mode */
-#define XCANFD_MODE_DAR		0x0000000A /**< Disable Auto Retransmission mode */
-#define XCANFD_MODE_BR		0x0000000B /**< Bus-Off Recovery Mode */
-#define XCANFD_RX_FIFO_0	         0 /**< Selection for RX Fifo 0 */
-#define XCANFD_RX_FIFO_1	         1 /**< Selection for RX Fifo 1 */
+#define XCANFD_MODE_CONFIG	0x00000001 /**< Configuration mode. */
+#define XCANFD_MODE_NORMAL	0x00000002 /**< Normal mode. */
+#define XCANFD_MODE_LOOPBACK	0x00000004 /**< Loop Back mode. */
+#define XCANFD_MODE_SLEEP	0x00000008 /**< Sleep mode. */
+#define XCANFD_MODE_SNOOP	0x00000010 /**< Snoop mode. */
+/** Auto Bus-Off Recovery. */
+#define XCANFD_MODE_ABR		0x00000020
+/** Start Bus-Off Recovery. */
+#define XCANFD_MODE_SBR		0x00000040
+/** Protocol Exception mode. */
+#define XCANFD_MODE_PEE		0x00000080
+/** Disable Auto Retransmission mode. */
+#define XCANFD_MODE_DAR		0x0000000A
+#define XCANFD_MODE_BR		0x0000000B /**< Bus-Off Recovery Mode. */
+#define XCANFD_RX_FIFO_0	         0 /**< Selection for RX Fifo 0. */
+#define XCANFD_RX_FIFO_1	         1 /**< Selection for RX Fifo 1. */
 /** @} */
 
 /** @name Callback identifiers used as parameters to XCanFd_SetHandler()
  *  @{
  */
-#define XCANFD_HANDLER_SEND   1 /**< Handler type for frame sending interrupt
-								*/
-#define XCANFD_HANDLER_RECV   2 /**< Handler type for frame reception interrupt
-								 */
-#define XCANFD_HANDLER_ERROR  3 /**< Handler type for error interrupt */
-#define XCANFD_HANDLER_EVENT  4 /**< Handler type for all other interrupts */
+/** Handler type for frame sending interrupt. */
+#define XCANFD_HANDLER_SEND   1
+/** Handler type for frame reception interrupt. */
+#define XCANFD_HANDLER_RECV   2
+#define XCANFD_HANDLER_ERROR  3 /**< Handler type for error interrupt. */
+#define XCANFD_HANDLER_EVENT  4 /**< Handler type for all other interrupts. */
 /** @} */
 
 /**************************** Type Definitions *******************************/
 
 /**
- * This typedef contains configuration information for a device.
+ * @brief Contains configuration information for a device.
  */
 typedef struct {
 #ifndef SDT
-	u16 DeviceId;		/**< Unique ID  of device */
+	u16 DeviceId;		/**< Unique ID of device. */
 #else
-	char *Name;             /**< Name of the device */
+	char *Name;		/**< Name of the device. */
 #endif
-	UINTPTR BaseAddress;	/**< Register base address */
-	u32 Rx_Mode;			/**< 1-Mailbox 0-sequential */
-	u32 NumofRxMbBuf;	/**< Number of RxBuffers */
-	u32 NumofTxBuf;         /**< Number of TxBuffers */
+	UINTPTR BaseAddress;	/**< Register base address. */
+	u32 Rx_Mode;		/**< 1-Mailbox 0-sequential. */
+	u32 NumofRxMbBuf;	/**< Number of RxBuffers. */
+	u32 NumofTxBuf;		/**< Number of TxBuffers. */
 #ifndef SDT
-	u32 IsPl;		/**< IsPl, 1= AXI CANFD instance,0= CANFD instance */
+	u32 IsPl;		/**< IsPl, 1= AXI CANFD instance,0= CANFD
+				 * instance. */
 #else
-	u16 IntrId; /**< Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
-	UINTPTR IntrParent; /**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
+	u16 IntrId;		/**< Bits[11:0] Interrupt-id Bits[15:12] trigger
+				 * type and level flags. */
+	UINTPTR IntrParent;	/**< Bit[0] Interrupt parent type Bit[64/32:1]
+				 * Parent base address. */
 #endif
 } XCanFd_Config;
 
 /************************** Variable Definitions *****************************/
-extern XCanFd_Config XCanFd_ConfigTable[]; /**< Config table */
+/**
+ * @brief Holds the configuration entry for each CAN FD instance.
+ */
+extern XCanFd_Config XCanFd_ConfigTable[];
 
 /*****************************************************************************/
 /**
-* Callback type for frame sending and reception interrupts.
+* @brief Defines the callback type for frame sending and reception interrupts.
 *
-* @param 	CallBackRef is a callback reference passed in by the upper layer
+* @param[in]    CallBackRef Callback reference passed in by the upper layer
 *		when setting the callback functions, and passed back to the
 *		upper layer when the callback is invoked.
-*
 ******************************************************************************/
 typedef void (*XCanFd_SendRecvHandler) (void *CallBackRef);
 
 /******************************************************************************/
 /**
-* Callback type for error interrupt.
+* @brief Defines the callback type for the error interrupt.
 *
-* @param	CallBackRef is a callback reference passed in by the upper layer
+* @param[in]    CallBackRef Callback reference passed in by the upper layer
 *		when setting the callback functions, and passed back to the
 *		upper layer when the callback is invoked.
-* @param	ErrorMask is a bit mask indicating the cause of the error. Its
-*		value equals 'OR'ing one or more XCANFD_ESR_* values defined in
-*		xcan_l.h
+* @param[in]    ErrorMask Bit mask indicating the cause of the error. Its
+*               value equals the bitwise OR of one or more XCANFD_ESR_* values
+*               defined in xcan_l.h.
 ******************************************************************************/
 typedef void (*XCanFd_ErrorHandler) (void *CallBackRef, u32 ErrorMask);
 
 /*****************************************************************************/
 /**
-* Callback type for all kinds of interrupts except sending frame interrupt,
-* receiving frame interrupt, and error interrupt.
+* @brief Defines the callback type for all other interrupts.
 *
-* @param	CallBackRef is a callback reference passed in by the upper layer
+* Other interrupts are all interrupts except the frame send, frame receive, and
+* error interrupts.
+*
+* @param[in]    CallBackRef Callback reference passed in by the upper layer
 *		when setting the callback functions, and passed back to the
 *		upper layer when the callback is invoked.
-* @param	Mask is a bit mask indicating the pending interrupts. Its value
-*		equals 'OR'ing one or more XCANFD_IXR_* defined in xcanfd_hw.h
+* @param[in]    Mask Bit mask indicating the pending interrupts. Its value
+*               equals the bitwise OR of one or more XCANFD_IXR_* defined in
+*               xcanfd_hw.h.
 ******************************************************************************/
 typedef void (*XCanFd_EventHandler) (void *CallBackRef, u32 Mask);
 
 /*****************************************************************************/
 /**
- * The XCanFd driver instance data. The user is required to allocate a
- * variable of this type for every CAN device in the system. A pointer
- * to a variable of this type is then passed to the driver API functions.
+ * @brief Holds the XCanFd driver instance data.
+ *
+ * Allocate a variable of this type for every CAN device in the system. A
+ * pointer to a variable of this type is then passed to the driver API
+ * functions.
  */
 typedef struct {
-	XCanFd_Config CanFdConfig;	/**< Device Configuration */
-	u32 IsReady;		/**< Device is initialized and ready */
-	u32 MultiBuffTrr;	/**< used in multibuffer send case
-							to update TRR Register */
-	u32 GlobalTrrValue; /**< used in multibuffer send case
-							to update TRR Register */
-	u32 GlobalTrrMask;  /**< used in multibuffer send case
-							to update TRR Register */
+	XCanFd_Config CanFdConfig;	/**< Device Configuration. */
+	u32 IsReady;			/**< Device is initialized and ready. */
+	u32 MultiBuffTrr;		/**< Used in multibuffer send case to
+					 * update TRR Register. */
+	u32 GlobalTrrValue;		/**< Used in multibuffer send case to
+					 * update TRR Register. */
+	u32 GlobalTrrMask;		/**< Used in multibuffer send case to
+					 * update TRR Register. */
 
-	/** Callback for TXOK interrupts */
 	XCanFd_SendRecvHandler SendHandler;
-	void *SendRef;	   /**< This will be passed to the TXOK interrupt callback */
+					/**< Callback for TXOK interrupts. */
+	void *SendRef;			/**< Reference passed to the TXOK
+					 * interrupt callback. */
 
-	/** Callback for RXOK interrupt */
 	XCanFd_SendRecvHandler RecvHandler;
-	void *RecvRef;	  /**< This will be passed to the RXOK interrupt callback */
+					/**< Callback for RXOK interrupt. */
+	void *RecvRef;			/**< Reference passed to the RXOK
+					 * interrupt callback. */
 
-	/** Callback for ERROR interrupt */
 	XCanFd_ErrorHandler ErrorHandler;
-	void *ErrorRef;   /**< This will be passed to the ERROR interrupt callback */
+					/**< Callback for ERROR interrupt. */
+	void *ErrorRef;			/**< Reference passed to the ERROR
+					 * interrupt callback. */
 
-	/** Callback for RXOFLW/RXUFLW/TXBFLL/TXFLL/Wakeup/Sleep/Bus off/ARBLST
-	 *  interrupts
-	 */
 	XCanFd_EventHandler EventHandler;
-	void *EventRef;	  /**< This will be passed to the EventHandler callback */
+					/**< Callback for RXOFLW/RXUFLW/TXBFLL/
+					 * TXFLL/Wakeup/Sleep/Bus off/ARBLST
+					 * interrupts. */
+	void *EventRef;			/**< Reference passed to the
+					 * EventHandler callback. */
 
 } XCanFd;
 
@@ -439,16 +462,15 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This macro checks if the transmission is complete.
+* @brief Checks if the transmission is complete.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	- TRUE if the transmission is done (completed).
 *		- FALSE if the transmission is not completed.
 *
 * @note		C-Style signature:
 *		int XCanFd_IsTxDone(XCanFd *InstancePtr);
-*
 *****************************************************************************/
 #define XCanFd_IsTxDone(InstancePtr) \
 	((XCanFd_ReadReg(((InstancePtr)->CanFdConfig.BaseAddress), \
@@ -457,15 +479,15 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This macro calculates CAN message identifier value given identifier field
+* @brief Calculates CAN message identifier value given identifier field
 * values.
 *
-* @param	StandardId contains Standard Message ID value.
-* @param	SubRemoteTransReq contains Substitute Remote Transmission
+* @param[in]    StandardId Contains Standard Message ID value.
+* @param[in]    SubRemoteTransReq Contains Substitute Remote Transmission
 *		Request value.
-* @param	IdExtension contains Identifier Extension value.
-* @param	ExtendedId contains Extended Message ID value.
-* @param	RemoteTransReq contains Remote Transmission Request value.
+* @param[in]    IdExtension Contains Identifier Extension value.
+* @param[in]    ExtendedId Contains Extended Message ID value.
+* @param[in]    RemoteTransReq Contains Remote Transmission Request value.
 *
 * @return	Message Identifier value.
 *
@@ -473,9 +495,8 @@ typedef struct {
 *		u32 XCanFd_CreateIdValue(u32 StandardId, u32 SubRemoteTransReq,
 *			u32 IdExtension, u32 ExtendedId,
 *			u32 RemoteTransReq);
-*
+*               <br><br>
 * 		Read the CAN specification for meaning of each parameter.
-*
 *****************************************************************************/
 #define XCanFd_CreateIdValue(StandardId, SubRemoteTransReq, IdExtension, \
 			     ExtendedId, RemoteTransReq) \
@@ -488,18 +509,19 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This macro calculates value for Data Length Code register given Data
-* Length Code value with EDL set to 1(Only Can FD frames).
+* @brief Calculates the Data Length Code register value for CAN FD frames.
 *
-* @param	DataLengCode indicates Data Length Code value.
+* Calculates the value from the given Data Length Code value, with EDL set to 1
+* (Only Can FD frames).
+*
+* @param[in]    DataLengCode Indicates Data Length Code value.
 *
 * @return	Value that can be assigned to Data Length Code register.
 *
 * @note		C-Style signature:
 *		u32 XCanFd_Create_CanFD_DlcValue(u32 DataLengCode);
-*
+*               <br><br>
 * 		Read the CAN specification for meaning of Data Length Code.
-*
 *****************************************************************************/
 #define XCanFd_Create_CanFD_DlcValue(DataLengCode) \
 	((((DataLengCode) << XCANFD_DLCR_DLC_SHIFT) & XCANFD_DLCR_DLC_MASK) \
@@ -508,18 +530,19 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This macro calculates value for Data Length Code register given Data
-* Length Code value with EDL set to 1(Only Can FD frames) and Setting the BRS.
+* @brief Calculates the Data Length Code register value with BRS set.
 *
-* @param	DataLengCode indicates Data Length Code value.
+* Calculates the value from the given Data Length Code value, with EDL set to 1
+* (Only Can FD frames) and the BRS bit set.
+*
+* @param[in]    DataLengCode Indicates Data Length Code value.
 *
 * @return	Value that can be assigned to Data Length Code register.
 *
 * @note		C-Style signature:
 *		u32 XCanFd_Create_CanFD_Dlc_BrsValue(u32 DataLengCode);
-*
+*               <br><br>
 *	 	Read the CAN specification for meaning of Data Length Code.
-*
 *****************************************************************************/
 #define XCanFd_Create_CanFD_Dlc_BrsValue(DataLengCode) \
 	((((DataLengCode) << (u32)XCANFD_DLCR_DLC_SHIFT) & (u32)XCANFD_DLCR_DLC_MASK) \
@@ -528,18 +551,19 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This macro calculates value for Data Length Code register given Data
-* Length Code value i.e Only Stand.. Can frames.
+* @brief Calculates the Data Length Code register value for standard frames.
 *
-* @param	DataLengCode indicates Data Length Code value.
+* Calculates the value from the given Data Length Code value (Only Standard Can
+* frames).
+*
+* @param[in]    DataLengCode Indicates Data Length Code value.
 *
 * @return	Value that can be assigned to Data Length Code register.
 *
 * @note		C-Style signature:
 *		u32 XCanFd_CreateDlcValue(u32 DataLengCode);
-*
+*               <br><br>
 *	 	Read the CAN specification for meaning of Data Length Code.
-*
 *****************************************************************************/
 #define XCanFd_CreateDlcValue(DataLengCode) \
 	((((DataLengCode) << XCANFD_DLCR_DLC_SHIFT) & XCANFD_DLCR_DLC_MASK))
@@ -547,25 +571,24 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This macro checks whether Particular Buffer is Transmitted or not
+* @brief Checks whether Particular Buffer is Transmitted or not.
 *
-* Transmit Ready Request Register gives which Buffer is transmitted
-* if you trigger the Buffer1 then
+* Transmit Ready Request Register gives which Buffer is transmitted.
+* For example, if you trigger the Buffer1, then:
 * 			TRR Reg : 0x00000001
-* After transmission Core clears the bit
+* After transmission, Core clears the bit:
 * 			TRR Reg : 0x00000000
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    TxBuffer Buffer where driver has written user data.
 *
-* @param	TxBuffer is the buffer where driver has written user data\
+* @return
+*               - TRUE if the TRR bit of the buffer is cleared (buffer
+*                 transmitted).
+*               - FALSE if the TRR bit of the buffer is still set.
 *
-* @return	- TRUE if the device is busy and NOT ready to accept writes to
-*		AFIR and AFMR.
-*		- FALSE if the device is ready to accept writes to AFIR and
-*		AFMR.
-*
-* @note		C-Style signature:
-*		int XCanFd_IsAcceptFilterBusy(XCanFd *InstancePtr);
+* @note         C-style signature: int XCanFd_IsBufferTransmitted(XCanFd
+*               *InstancePtr, u32 TxBuffer)
 *
 *****************************************************************************/
 #define XCanFd_IsBufferTransmitted(InstancePtr,TxBuffer)	\
@@ -576,13 +599,14 @@ typedef struct {
 
 /****************************************************************************/
 /**
-* This macro initializes CurrentBuffer[32] to zeros.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @brief Initializes CurrentBuffer[32] to zeros.
 *
-* @return	none
+* @param[out]   InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		makes bufferstatus to zero.
+* @note         C-style signature:
+*               void MAKE_CURRENTBUFFER_ZERO(XCanFd *InstancePtr)
+*               Makes bufferstatus zero.
 *
 *****************************************************************************/
 #define MAKE_CURRENTBUFFER_ZERO(InstancePtr) \
@@ -591,11 +615,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the TXBUFFER ID Offset
 *
-* @param	FreeBuffer is the Buffer number to locate the FIFO Index
+* @brief Returns the TXBUFFER ID Offset.
 *
-* @note		none
+* @param[in]    FreeBuffer Buffer number to locate the FIFO Index.
+*
+* @return       TXBUFFER ID offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_TXID_OFFSET(u32 FreeBuffer)
 *
 *****************************************************************************/
 #define XCANFD_TXID_OFFSET(FreeBuffer) \
@@ -603,11 +631,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the TXBUFFER DLC Offset
 *
-* @param	FreeBuffer is the Buffer number to locate the FIFO
+* @brief Returns the TXBUFFER DLC Offset.
 *
-* @note		none
+* @param[in]    FreeBuffer Buffer number to locate the FIFO.
+*
+* @return       TXBUFFER DLC offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_TXDLC_OFFSET(u32 FreeBuffer)
 *
  *****************************************************************************/
 #define XCANFD_TXDLC_OFFSET(FreeBuffer) \
@@ -615,11 +647,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the TXBUFFER DW Offset
 *
-* @param	FreeBuffer is the Buffer number to locate the FIFO
+* @brief Returns the TXBUFFER DW Offset.
 *
-* @note		none
+* @param[in]    FreeBuffer Buffer number to locate the FIFO.
+*
+* @return       TXBUFFER DW offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_TXDW_OFFSET(u32 FreeBuffer)
 *
 *****************************************************************************/
 #define XCANFD_TXDW_OFFSET(FreeBuffer) \
@@ -627,12 +663,16 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the TX Event Buffer ID Offset
 *
-* @param	TXEVENTIndex is the Buffer number to locate the TXE FIFO Index
+* @brief Returns the TX Event Buffer ID Offset.
 *
-* @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+* @param[in]    TXEVENTIndex Buffer number to locate the TXE FIFO Index.
+*
+* @return       TX Event Buffer ID offset.
+*
+* @note         C-style signature: u32 XCANFD_TXEID_OFFSET(u32 TXEVENTIndex)
+*               This API is meant to be used with IP with CanFD 2.0 spec
+*               support only.
 *
 *****************************************************************************/
 #define XCANFD_TXEID_OFFSET(TXEVENTIndex) \
@@ -640,23 +680,31 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the TX Event Buffer DLC Offset
 *
-* @param	TXEVENTIndex is the Buffer number to locate the FIFO
+* @brief Returns the TX Event Buffer DLC Offset.
 *
-* @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+* @param[in]    TXEVENTIndex Buffer number to locate the FIFO.
+*
+* @return       TX Event Buffer DLC offset.
+*
+* @note         C-style signature: u32 XCANFD_TXEDLC_OFFSET(u32 TXEVENTIndex)
+*               This API is meant to be used with IP with CanFD 2.0 spec
+*               support only.
 *
  *****************************************************************************/
 #define XCANFD_TXEDLC_OFFSET(TXEVENTIndex) \
 	(XCANFD_TXEFIFO_0_BASE_DLC_OFFSET+((UINTPTR)TXEVENTIndex*XCANFD_TXE_MESSAGE_SIZE))
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER ID Offset
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER ID Offset.
 *
-* @note		none
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER ID offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_RXID_OFFSET(u32 ReadIndex)
 *
 *****************************************************************************/
 #define XCANFD_RXID_OFFSET(ReadIndex) \
@@ -664,11 +712,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER DLC Offset
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER DLC Offset.
 *
-* @note		none
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER DLC offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_RXDLC_OFFSET(u32 ReadIndex)
 *
 *****************************************************************************/
 #define XCANFD_RXDLC_OFFSET(ReadIndex) \
@@ -676,11 +728,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER DW Offset
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER DW Offset.
 *
-* @note		none
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER DW offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_RXDW_OFFSET(u32 ReadIndex)
 *
 *****************************************************************************/
 #define XCANFD_RXDW_OFFSET(ReadIndex) \
@@ -688,12 +744,16 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER ID Offset for FIFO 1
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER ID Offset for FIFO 1.
 *
-* @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER ID offset for FIFO 1.
+*
+* @note         C-style signature: u32 XCANFD_FIFO_1_RXID_OFFSET(u32 ReadIndex)
+*               This API is meant to be used with IP with CanFD 2.0 spec
+*               support only.
 *
 *****************************************************************************/
 #define XCANFD_FIFO_1_RXID_OFFSET(ReadIndex) \
@@ -701,12 +761,16 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER DLC Offset for FIFO 1
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER DLC Offset for FIFO 1.
 *
-* @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER DLC offset for FIFO 1.
+*
+* @note         C-style signature: u32 XCANFD_FIFO_1_RXDLC_OFFSET(u32 ReadIndex)
+*               This API is meant to be used with IP with CanFD 2.0 spec
+*               support only.
 *
 *****************************************************************************/
 #define XCANFD_FIFO_1_RXDLC_OFFSET(ReadIndex) \
@@ -714,25 +778,32 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the RXBUFFER DW Offset for FIFO 1
 *
-* @param	ReadIndex is the Buffer	number to locate the FIFO
+* @brief Returns the RXBUFFER DW Offset for FIFO 1.
 *
-* @note		This API is meant to be used with IP
-*			with CanFD 2.0 spec support only.
+* @param[in]    ReadIndex Buffer number to locate the FIFO.
+*
+* @return       RXBUFFER DW offset for FIFO 1.
+*
+* @note         C-style signature: u32 XCANFD_FIFO_1_RXDW_OFFSET(u32 ReadIndex)
+*               This API is meant to be used with IP with CanFD 2.0 spec
+*               support only.
 *
 *****************************************************************************/
 #define XCANFD_FIFO_1_RXDW_OFFSET(ReadIndex) \
 	(XCANFD_RXFIFO_1_BUFFER_0_BASE_DW0_OFFSET+((UINTPTR)ReadIndex*XCANFD_MAX_FRAME_SIZE))
 /*****************************************************************************/
 /**
-* This macro Returns the RCS Register Offset
 *
-* @param	NoCtrlStatus is to locate RCS Registers
+* @brief Returns the RCS Register Offset.
 *
-* @note		NoCtrlStatus = 0 -> RCS0
-*			       1 -> RCS1
-*			       2 -> RCS2
+* @param[in]    NoCtrlStatus To locate RCS Registers.
+*
+* @return       RCS register offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_RCS_OFFSET(u32 NoCtrlStatus)
+*               NoCtrlStatus = 0 -> RCS0, 1 -> RCS1, 2 -> RCS2.
 *
 *****************************************************************************/
 #define XCANFD_RCS_OFFSET(NoCtrlStatus)	\
@@ -740,11 +811,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the AFMR Register Offset
 *
-* @param	FilterIndex is the Index number of Mask Register
+* @brief Returns the AFMR Register Offset.
 *
-* @note		none
+* @param[in]    FilterIndex Index number of Mask Register.
+*
+* @return       AFMR register offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_AFMR_OFFSET(u32 FilterIndex)
 *
 *****************************************************************************/
 #define XCANFD_AFMR_OFFSET(FilterIndex)	\
@@ -753,11 +828,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the AFIDR Registger Offset
 *
-* @param	FilterIndex is the Index of Id Register
+* @brief Returns the AFIDR Register Offset.
 *
-* @note		none
+* @param[in]    FilterIndex Index of Id Register.
+*
+* @return       AFIDR register offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_AFIDR_OFFSET(u32 FilterIndex)
 *
 *****************************************************************************/
 #define XCANFD_AFIDR_OFFSET(FilterIndex)	\
@@ -766,11 +845,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the MAILBOX MODE RXMASK Offset
 *
-* @param	BufferNr is the Buffer	number to locate the FIFO
+* @brief Returns the MAILBOX MODE RXMASK Offset.
 *
-* @note		none
+* @param[in]    BufferNr Buffer number to locate the FIFO.
+*
+* @return       MAILBOX MODE RXMASK offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_MAILBOX_MASK_OFFSET(u32 BufferNr)
 *
 *****************************************************************************/
 #define XCANFD_MAILBOX_MASK_OFFSET(BufferNr)	\
@@ -778,11 +861,15 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns the MAILBOX MODE ID Offset
 *
-* @param	BufferNr is the Buffer	number to locate the FIFO
+* @brief Returns the MAILBOX MODE ID Offset.
 *
-* @note		none
+* @param[in]    BufferNr Buffer number to locate the FIFO.
+*
+* @return       MAILBOX MODE ID offset.
+*
+* @note         C-style signature:
+*               u32 XCANFD_MAILBOX_ID_OFFSET(u32 BufferNr)
 *
 *****************************************************************************/
 #define XCANFD_MAILBOX_ID_OFFSET(BufferNr)	\
@@ -790,14 +877,18 @@ typedef struct {
 
 /*****************************************************************************/
 /**
-* This macro Returns Design mode
+*
+* @brief Returns Design mode.
+*
 * 1- Mailbox
 * 0- Sequential
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked
-*		on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		none
+* @return       Design mode: 1 for Mailbox, 0 for Sequential.
+*
+* @note         C-style signature:
+*               u32 XCANFD_GET_RX_MODE(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCANFD_GET_RX_MODE(InstancePtr)\
@@ -806,28 +897,28 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This function resets the CAN device. Calling this function resets the device
-* immediately, and any pending transmission or reception is terminated at once.
-* Both Object Layer and Transfer Layer are reset. This function does not reset
-* the Physical Layer. All registers are reset to the default values, and no
-* previous status will be restored. TX FIFO, RX FIFO and TX High Priority
-* Buffer are also reset.
+* @brief Resets the CAN device.
 *
-* When a reset is required due to an internal error, the driver notifies the
-* upper layer software of this need through the error status code or interrupts
-* The upper layer software is responsible for calling this Reset function and
-* then re-configuring the device.
+* Calling this function resets the device immediately, and any pending
+* transmission or reception is terminated at once. Both Object Layer and
+* Transfer Layer are reset. This function does not reset the Physical Layer.
+* All registers are reset to the default values, and no previous status is
+* restored. TX FIFO, RX FIFO and TX High Priority Buffer are also reset.
 *
-* The CAN device will be in Configuration Mode immediately after this function
+* When an internal error requires a reset, the driver notifies the upper layer
+* software through the error status code or interrupts. The upper layer software
+* is responsible for calling this Reset function and then re-configuring the
+* device.
+*
+* The CAN device is in Configuration Mode immediately after this function
 * returns.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @return	None.
+* @note         C-style signature:
+*               void XCanFd_Reset(XCanFd *InstancePtr)
 *
-* @note		None.
-*
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_Reset(InstancePtr)	\
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress, XCANFD_SRR_OFFSET,\
 			XCANFD_SRR_SRST_MASK)
@@ -835,54 +926,60 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This function reads Error Status value from Error Status Register (ESR). Use
-* the XCANFD_ESR_* constants defined in xcanfd_hw.h to interpret the returned value.
+* @brief Reads Error Status value from Error Status Register (ESR).
 *
+* Use the XCANFD_ESR_* constants defined in xcanfd_hw.h to interpret the
+* returned value.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	The 32-bit value read from Error Status Register.
 *
-* @note		None.
+* @note         C-style signature:
+*               u32 XCanFd_GetBusErrorStatus(XCanFd *InstancePtr)
 *
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_GetBusErrorStatus(InstancePtr)	\
 	XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress, XCANFD_ESR_OFFSET)
 
 /*****************************************************************************/
 /**
 *
-* This function returns Status value from Status Register (SR). Use the
-* XCANFD_SR_* constants defined in xcanfd_hw.h to interpret the returned value.
+* @brief Returns Status value from Status Register (SR).
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Use the XCANFD_SR_* constants defined in xcanfd_hw.h to interpret the
+* returned value.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	The 32-bit value read from Status Register.
 *
-* @note		None.
+* @note         C-style signature:
+*               u32 XCanFd_GetStatus(XCanFd *InstancePtr)
 *
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_GetStatus(InstancePtr)	\
 	XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress, XCANFD_SR_OFFSET)
 
 /*****************************************************************************/
 /**
 *
-* This function clears Error Status bit(s) previously set in Error
-* Status Register (ESR). Use the XCANFD_ESR_* constants defined in xcanfd_hw.h to
-* create the value to pass in. If a bit was cleared in Error Status Register
-* before this function is called, it will not be touched.
+* @brief Clears one or more previously set bits in the Error Status
+* Register (ESR).
 *
+* Use the XCANFD_ESR_* constants defined in xcanfd_hw.h to create the value to
+* pass in. If a bit was cleared in Error Status Register before this function is
+* called, it is not touched.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
+* @param[in]    Mask 32-bit mask used to clear bits in Error Status Register.
+*               Combine multiple XCANFD_ESR_* values with a bitwise OR to clear
+*               multiple bits.
 *
-* @param	Mask is he 32-bit mask used to clear bits in Error Status
-*		Register. Multiple XCANFD_ESR_* values could be 'OR'ed to clear
-*		multiple bits
+* @note         C-style signature:
+*               void XCanFd_ClearBusErrorStatus(XCanFd *InstancePtr, u32 Mask)
 *
-* @note		None.
-*
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_ClearBusErrorStatus(InstancePtr,Mask)	\
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress, XCANFD_ESR_OFFSET, \
 			Mask)
@@ -890,18 +987,20 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This function returns  the Tranceive delay comensation Offset.
-* This function can call when user sends multiple Buffers using Addto_Queue()
-* and XCanFd_Send_Queue().
+* @brief Returns the transceiver delay compensation offset.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* This function can be called when user sends multiple Buffers using
+* Addto_Queue() and XCanFd_Send_Queue().
 *
-* @return	None.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
+* @return       Transceiver delay compensation offset.
 *
-* @note		None.
+* @note         C-style signature:
+*               u32 XCanFd_Get_Tranceiver_Delay_CompensationOffset(
+*               XCanFd *InstancePtr)
 *
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_Get_Tranceiver_Delay_CompensationOffset(InstancePtr)	\
 	((XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,\
 			 XCANFD_F_BRPR_OFFSET) & XCANFD_F_BRPR_TDCMASK) >> 8)
@@ -909,16 +1008,14 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This function Clears Time Stamp Counter Value.
+* @brief Clears Time Stamp Counter Value.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @return	none
+* @note         C-style signature:
+*               void XCanFd_ClearTImeStamp_Count(XCanFd *InstancePtr)
 *
-*
-* @note		None.
-*
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_ClearTImeStamp_Count(InstancePtr)	\
 	XCanFd_WriteReg(InstancePtr->CanFdConfig.BaseAddress, \
 			XCANFD_TIMESTAMPR_OFFSET,XCANFD_CTS_MASK)
@@ -926,16 +1023,16 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This function returns Time Stamp Counter Value.
+* @brief Returns Time Stamp Counter Value.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @return	TimeStampCount
+* @return       TimeStampCount.
 *
+* @note         C-style signature:
+*               u32 XCanFd_GetTImeStamp_Count(XCanFd *InstancePtr)
 *
-* @note		None.
-*
-******************************************************************************/
+*****************************************************************************/
 #define XCanFd_GetTImeStamp_Count(InstancePtr)	\
 	(XCanFd_ReadReg(InstancePtr->CanFdConfig.BaseAddress,\
 			XCANFD_TIMESTAMPR_OFFSET) >> 16)
@@ -943,14 +1040,14 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns the Rx water Mark threshold Value.
+* @brief Returns the Rx water Mark threshold Value.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance.
-*
+* @param[in]    InstancePtr Pointer to the XCanFd instance.
 *
 * @return	Threshold Value.
 *
-* @note		none
+* @note         C-style signature:
+*               u32 XCanFd_GetRxIntrWatermark(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCanFd_GetRxIntrWatermark(InstancePtr)	\
@@ -960,14 +1057,17 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns enabled interrupt(s). Use the XCANFD_IXR_* constants
-* defined in xcanfd_hw.h to interpret the returned value.
+* @brief Returns the enabled interrupts.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Use the XCANFD_IXR_* constants defined in xcanfd_hw.h to interpret the
+* returned value.
 *
-* @return	Enabled interrupt(s) in a 32-bit format.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		None.
+* @return       Enabled interrupts in a 32-bit format.
+*
+* @note         C-style signature:
+*               u32 XCanFd_InterruptGetEnabled(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCanFd_InterruptGetEnabled(InstancePtr)	\
@@ -976,15 +1076,17 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns interrupt status read from Interrupt Status Register.
-* Use the XCANFD_IXR_* constants defined in xcanfd_hw.h to interpret the returned
-* value.
+* @brief Returns interrupt status read from Interrupt Status Register.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* Use the XCANFD_IXR_* constants defined in xcanfd_hw.h to interpret the
+* returned value.
+*
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
 * @return	The value stored in Interrupt Status Register.
 *
-* @note		None.
+* @note         C-style signature:
+*               u32 XCanFd_InterruptGetStatus(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCanFd_InterruptGetStatus(InstancePtr)	\
@@ -993,14 +1095,18 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns Number of RCS registers to access
-* because in Mail box mode user can configure 48,32,16 Rx Buffers.
+* @brief Returns the number of RCS registers to access.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* The number varies because in Mail box mode user can configure 48,32,16 Rx
+* Buffers.
 *
-* @return	The value stored in Interrupt Status Register.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		None.
+* @return       Number of RCS registers: 3 for 48, 2 for 32, and 1 for 16 Rx
+*               Buffers.
+*
+* @note         C-style signature:
+*               u32 XCanFd_Get_NofRxBuffers(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCanFd_Get_NofRxBuffers(InstancePtr)	\
@@ -1011,14 +1117,16 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns Number of RxBuffers
-* user can Design RxBuffers as 48,32,16.
+* @brief Returns Number of RxBuffers.
 *
-* @param	InstancePtr is a pointer to the XCanFd instance to be worked on.
+* User can Design RxBuffers as 48,32,16.
 *
-* @return	The value stored in Interrupt Status Register.
+* @param[in]    InstancePtr Pointer to the XCanFd instance to be worked on.
 *
-* @note		None.
+* @return       Number of RxBuffers.
+*
+* @note         C-style signature:
+*               u32 XCanFd_Get_RxBuffers(XCanFd *InstancePtr)
 *
 *****************************************************************************/
 #define XCanFd_Get_RxBuffers(InstancePtr)	\
@@ -1027,14 +1135,14 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* This routine returns Number with right most bit set
-* from the target input value.
+* @brief Returns Number with right most bit set from the target input value.
 *
-* @param	Var is target value.
+* @param[in]    Var Target value.
 *
 * @return	Number with right most bit set from the target value.
 *
-* @note		None.
+* @note         C-style signature:
+*               u32 XCanFD_Check_TrrVal_Set_Bit(u32 Var)
 *
 *****************************************************************************/
 #define XCanFD_Check_TrrVal_Set_Bit(Var)      ((Var)&(~(Var) + (u32)1))
@@ -1062,7 +1170,9 @@ XCanFd_Config *XCanFd_LookupConfig(u16 DeviceId);
 #else
 XCanFd_Config *XCanFd_LookupConfig(UINTPTR BaseAddress);
 #endif
+#ifndef SDT
 XCanFd_Config *XCanFd_GetConfig(unsigned int InstanceIndex);
+#endif
 int XCanFd_GetDlc2len(u32 Dlc, u32 Edl);
 u8 XCanFd_GetLen2Dlc(int len);
 u32 XCanFd_GetFreeBuffer(XCanFd *InstancePtr);
@@ -1128,5 +1238,5 @@ void XCanFd_InterruptDisable_RxBuffFull(XCanFd *InstancePtr, u32 Mask,
 }
 #endif
 
-#endif /* end of protection macro */
 /** @} */
+#endif /* end of protection macro */

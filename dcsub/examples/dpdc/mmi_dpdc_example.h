@@ -43,9 +43,32 @@ extern "C" {
 #define APP_DEFAULT_WIDTH       1920
 #define APP_DEFAULT_HEIGHT      1080
 #define APP_DEFAULT_FPS         60
+#define APP_BYPASS_8K_WIDTH     7680
+#define APP_BYPASS_8K_HEIGHT    4320
+#define APP_BYPASS_8K_FPS       30
+#define APP_FUNCTIONAL_MAX_WIDTH  3840
+#define APP_FUNCTIONAL_MAX_HEIGHT 2160
 #define APP_DEFAULT_NL_PIXFMT   RGBA8888
 #define APP_DEFAULT_LIVE_PIXFMT RGB_8BPC
 #define APP_DEFAULT_DC_OUT_FMT  RGB_8BPC
+
+/* Audio channel count held while audio is disabled */
+#define XDPDC_AUD_CHANNELS_NONE 0U
+
+/* Sample rate reported for an unsupported sample frequency selector */
+#define XDPDC_AUD_RATE_UNSUPPORTED_HZ 0U
+
+/* Divisors used to report a rate in Hz as kHz with one decimal */
+#define XDPDC_HZ_PER_KHZ        1000U
+#define XDPDC_HZ_PER_TENTH_KHZ  100U
+
+/* Audio sample rates in Hz supported by the DC */
+#define XDPDC_AUD_RATE_44_1K_HZ  44100U
+#define XDPDC_AUD_RATE_48K_HZ    48000U
+#define XDPDC_AUD_RATE_88_2K_HZ  88200U
+#define XDPDC_AUD_RATE_96K_HZ    96000U
+#define XDPDC_AUD_RATE_176_4K_HZ 176400U
+#define XDPDC_AUD_RATE_192K_HZ   192000U
 
 /**************************** Type Definitions *******************************/
 
@@ -109,12 +132,15 @@ typedef struct {
 
         u8 PPC;				/**< Pixels per clock */
 
-        XDc_VideoFormat Stream1Format;	/**< Stream 1 video format */
+        XDc_VideoFormat Stream1Format;	/**< Stream 1 video format; in bypass
+					  *  SST mode this describes AVPG
+					  *  stream 0 (DP MSA stream 1) */
         XDc_VideoFormat Stream2Format;	/**< Stream 2 video format */
         XDc_VideoFormat OutStreamFormat;	/**< Output stream format */
         XDc_CursorBlend CursorEnable;	/**< Cursor enable */
         XDc_AudEn AudioEnable;		/**< Audio enable */
         u8 AudioChannels;		/**< Number of audio channels */
+        u8 AudioFrequency;		/**< Audio sample frequency */
         u8 SdpEnable;			/**< SDP enable */
         XDc_PartialBlendEn Stream1PbEnable; /**< Stream 1 partial blend */
         XDc_PartialBlendEn Stream2PbEnable; /**< Stream 2 partial blend */
@@ -139,7 +165,8 @@ typedef struct {
         u8 livevideoalphaen;		/**< 0=Disabled, 1=Enabled */
         u8 livevideosdpen;		/**< 0=Disabled, 1=Enabled */
         u8 byp_streams;			/**< Number of bypass streams */
-        u8 byp_stream_pix_mode[4];	/**< Bypass stream PPC: 1, 2, 4 */
+        u8 DesignMstEn;			/**< SDT mst-mode-en: 1=MST design, 0=SST-only */
+        u8 MstMode;			/**< 1=MST link, 0=SST (set from DesignMstEn+MST_CAP) */
         u8 byp_stream_sdp_en[4];	/**< Bypass stream SDP enable */
         u8 byp_stream_vid_mode[4];	/**< Bypass stream video mode */
 
@@ -173,6 +200,7 @@ extern u32 Out_CSCOffset_YUV[];
 
 /************************** Function Prototypes ******************************/
 
+u32 XDpDc_GetAudSampleRateHz(u8 AudioFrequency);
 
 #ifdef __cplusplus
 }

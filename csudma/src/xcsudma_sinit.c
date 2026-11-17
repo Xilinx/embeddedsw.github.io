@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,6 +11,8 @@
 * @file xcsudma_sinit.c
 * @addtogroup csuma_api CSUDMA APIs
 * @{
+*
+* @brief Implements static initialization and configuration lookup for CSU DMA.
 *
 * The xcsudma_sinit.c file contains static initialization methods for Xilinx CSU_DMA core.
 *
@@ -52,24 +54,9 @@
 
 /*****************************************************************************/
 /**
-*
-* Looks up the device configuration based on the unique device ID/BaseAddress.
-* A table contains the configuration info for each device in the system.
-*
-* @if SDT
-* @param        BaseAddress contains the base address of the device
-* @else
-* @param        DeviceId contains the unique ID of the device
-* @endif
-*
-* @return
-* 		A pointer to the configuration table entry corresponding to the given
-* 		device ID/BaseAddress, or NULL if no match is found.
-*
-* @note        In XSCT/classic flow, DeviceId is used to look up the device
-*              configuration.
-*
-******************************************************************************/
+ * @brief Looks up device configuration by device ID or base address.
+ *
+ *****************************************************************************/
 #ifndef SDT
 XCsuDma_Config *XCsuDma_LookupConfig(u16 DeviceId)
 {

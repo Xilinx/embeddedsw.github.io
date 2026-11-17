@@ -4,16 +4,18 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
+#ifndef XEMACLITE_H		/* prevent circular inclusions */
+/** @brief Include guard for the EmacLite driver header. */
+#define XEMACLITE_H		/* by using protection macros */
+
+
 /*****************************************************************************/
 /**
 *
 * @file xemaclite.h
 * @addtogroup emaclite Overview
 * @{
-* @details
-*
-* The Xilinx Ethernet Lite (EmacLite) driver. This driver supports the Xilinx
-* Ethernet Lite 10/100 MAC (EmacLite).
+* @brief Driver API for the Xilinx Ethernet Lite 10/100 MAC (EmacLite).
 *
 * The Xilinx Ethernet Lite 10/100 MAC supports the following features:
 *   - Media Independent Interface (MII) for connection to external
@@ -41,7 +43,7 @@
 *
 * <b>Driver Description</b>
 *
-* The device driver enables higher layer software (e.g., an application) to
+* The device driver enables higher layer software (for example, an application) to
 * communicate to the EmacLite. The driver handles transmission and reception
 * of Ethernet frames, as well as configuration of the controller. It does not
 * handle protocol stack functionality such as Link Layer Control (LLC) or the
@@ -187,10 +189,7 @@
 *
 * </pre>
 *
-*
 ******************************************************************************/
-#ifndef XEMACLITE_H		/* prevent circular inclusions */
-#define XEMACLITE_H		/* by using protection macros */
 
 #ifdef __cplusplus
 extern "C" {
@@ -213,59 +212,57 @@ extern "C" {
 /*
  * Device information
  */
-#define XEL_DEVICE_NAME	 "xemaclite"
-#define XEL_DEVICE_DESC	 "Xilinx Ethernet Lite 10/100 MAC"
+#define XEL_DEVICE_NAME	 "xemaclite" /**< Device name string. */
+#define XEL_DEVICE_DESC	 "Xilinx Ethernet Lite 10/100 MAC" /**< Device description string. */
 
 /**************************** Type Definitions *******************************/
 
 /**
- * This typedef contains configuration information for a device.
+ * @brief Holds configuration information for a device.
  */
 typedef struct {
 #ifdef SDT
-	char *Name;	/**< Unique name of the device */
+	char *Name;	/**< Unique name of the device. */
 #else
-	u16 DeviceId;	 /**< Unique ID  of device */
+	u16 DeviceId;	 /**< Unique ID of device. */
 #endif
-	UINTPTR BaseAddress; /**< Device base address */
-	u8 TxPingPong;	 /**< 1 if TX Pong buffer configured, 0 otherwise */
-	u8 RxPingPong;	 /**< 1 if RX Pong buffer configured, 0 otherwise */
-	u8 MdioInclude;  /**< 1 if MDIO is enabled, 0 otherwise */
-	u8 Loopback;     /**< 1 if internal loopback is enabled, 0 otherwise */
+	UINTPTR BaseAddress; /**< Device base address. */
+	u8 TxPingPong;	 /**< 1 if TX Pong buffer configured, 0 otherwise. */
+	u8 RxPingPong;	 /**< 1 if RX Pong buffer configured, 0 otherwise. */
+	u8 MdioInclude;  /**< 1 if MDIO is enabled, 0 otherwise. */
+	u8 Loopback;     /**< 1 if internal loopback is enabled, 0 otherwise. */
 #ifdef SDT
-	u16 IntrId;	/**< Interrupt number */
-	UINTPTR IntrParent;	/**< Parent interrupt controller address */
+	u16 IntrId;	/**< Interrupt number. */
+	UINTPTR IntrParent;	/**< Parent interrupt controller address. */
 #endif
 } XEmacLite_Config;
 
 
-/*
- * Callback when data is sent or received .
- * @param 	CallBackRef is a callback reference passed in by the upper layer
+/**
+ * @brief Callback invoked when data is sent or received.
+ *
+ * @param[in] CallBackRef is a callback reference passed in by the upper layer
  *		when setting the callback functions, and passed back to the
  *		upper layer when the callback is invoked.
  */
 typedef void (*XEmacLite_Handler) (void *CallBackRef);
 
 /**
- * The XEmacLite driver instance data. The user is required to allocate a
+ * @brief The XEmacLite driver instance data. The user is required to allocate a
  * variable of this type for every EmacLite device in the system. A pointer
  * to a variable of this type is then passed to the driver API functions.
  */
 typedef struct {
-	XEmacLite_Config EmacLiteConfig; /* Device configuration */
-	u32 IsReady;			 /* Device is initialized and ready */
+	XEmacLite_Config EmacLiteConfig; /**< Device configuration. */
+	u32 IsReady;			 /**< Device is initialized and ready. */
 
-	u32 NextTxBufferToUse;		 /* Next TX buffer to write to */
-	u32 NextRxBufferToUse;		 /* Next RX buffer to read from */
+	u32 NextTxBufferToUse;		 /**< Next TX buffer to write to. */
+	u32 NextRxBufferToUse;		 /**< Next RX buffer to read from. */
 
-	/*
-	 * Callbacks
-	 */
-	XEmacLite_Handler RecvHandler;
-	void *RecvRef;
-	XEmacLite_Handler SendHandler;
-	void *SendRef;
+	XEmacLite_Handler RecvHandler; /**< Callback for frame reception. */
+	void *RecvRef; /**< Callback reference for RecvHandler. */
+	XEmacLite_Handler SendHandler; /**< Callback for frame transmission. */
+	void *SendRef; /**< Callback reference for SendHandler. */
 
 } XEmacLite;
 
@@ -274,9 +271,9 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* Return the next expected Transmit Buffer's address.
+* @brief Return the next expected Transmit Buffer's address.
 *
-* @param	InstancePtr is the pointer to the instance of the driver to
+* @param[in] InstancePtr is the pointer to the instance of the driver to
 *		be worked on
 *
 * @note		C-Style signature:
@@ -293,9 +290,9 @@ typedef struct {
 /****************************************************************************/
 /**
 *
-* Return the next expected Receive Buffer's address.
+* @brief Return the next expected Receive Buffer's address.
 *
-* @param	InstancePtr is the pointer to the instance of the driver to
+* @param[in] InstancePtr is the pointer to the instance of the driver to
 *		be worked on
 *
 * @note		C-Style signature:
@@ -312,9 +309,9 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This macro determines if the device is currently configured for MDIO.
+* @brief This macro determines if the device is currently configured for MDIO.
 *
-* @param	InstancePtr is the pointer to the instance of the
+* @param[in] InstancePtr is the pointer to the instance of the
 *		EmacLite driver.
 *
 * @return
@@ -331,10 +328,10 @@ typedef struct {
 /*****************************************************************************/
 /**
 *
-* This macro determines if the device is currently configured for internal
+* @brief This macro determines if the device is currently configured for internal
 * loopback.
 *
-* @param	InstancePtr is the pointer to the instance of the
+* @param[in] InstancePtr is the pointer to the instance of the
 *		EmacLite driver.
 *
 * @return
@@ -377,9 +374,29 @@ void XEmacLite_DisableLoopBack(XEmacLite *InstancePtr);
  * Initialization functions in xemaclite_sinit.c
  */
 #ifdef SDT
+/*****************************************************************************/
+/**
+ * @brief Looks up device configuration by base address.
+ *
+ * @param[in] BaseAddress contains the base address of the device.
+ *
+ * @return A pointer to the configuration table entry corresponding to the given
+ *         base address, or NULL if no match is found.
+ *
+ *****************************************************************************/
 XEmacLite_Config *XEmacLite_LookupConfig(UINTPTR BaseAddress);
 int XEmacLite_Initialize(XEmacLite *InstancePtr, UINTPTR BaseAddress);
 #else
+/*****************************************************************************/
+/**
+ * @brief Looks up device configuration by device ID.
+ *
+ * @param[in] DeviceId contains the unique ID of the device.
+ *
+ * @return A pointer to the configuration table entry corresponding to the given
+ *         device ID, or NULL if no match is found.
+ *
+ *****************************************************************************/
 XEmacLite_Config *XEmacLite_LookupConfig(u16 DeviceId);
 int XEmacLite_Initialize(XEmacLite *InstancePtr, u16 DeviceId);
 #endif
@@ -400,6 +417,17 @@ void XEmacLite_SetSendHandler(XEmacLite *InstancePtr, void *CallBackRef,
 /*
  * Selftest function in xemaclite_selftest.c
  */
+/*****************************************************************************/
+/**
+ * @brief Performs a self-test on the EmacLite device.
+ *
+ * @param[in] InstancePtr is a pointer to the XEmacLite instance.
+ *
+ * @return
+ *		- XST_SUCCESS if the device passed the self-test.
+ *		- XST_FAILURE if any of the data read backs fail.
+ *
+ *****************************************************************************/
 int XEmacLite_SelfTest(XEmacLite *InstancePtr);
 
 #ifdef __cplusplus

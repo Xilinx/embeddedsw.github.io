@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2009 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,13 +8,10 @@
 /**
 *
 * @file xnandps_onfi.c
-* @addtogroup nandps Overview
-* @{
+* @brief Implements the ONFI specific commands.
 *
 * This module implements the ONFI specific commands.
 * See xnandps_onfi.h for more information.
-*
-* @note		None
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -31,9 +28,16 @@
 *			   and program commands to ONFI command list.
 *			   Reading the cache features during read param page.
 * 2.7   sg     03/18/21    Added validation check for parameter page.
+* 2.12  vn     07/30/26    Fix Doxygen warnings
+* 2.12  vn     09/29/26    Align Doxygen comments with AMD standards
+* 2.12  tb     10/05/26    Fail init when the total block count is too large.
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup nandps Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 #include "xnandps_onfi.h"
@@ -62,7 +66,7 @@ extern void XNandPs_SendCommand(XNandPs *InstancePtr, XNandPs_CommandFormat
 /************************** Variable Definitions *****************************/
 
 /**
- * This structure defines the onfi command format sent to the flash.
+ * @brief Defines the ONFI command format sent to the flash.
  */
 XNandPs_CommandFormat OnfiCommands[] = {
 	{ONFI_CMD_READ1, ONFI_CMD_READ2, 5, XNANDPS_CMD_PHASE},
@@ -124,16 +128,13 @@ XNandPs_CommandFormat OnfiCommands[] = {
 /**************************************************************************/
 /**
 *
-* This function reads the data from flash. It is used for reading the control
-* information from flash like ID and Parameter page.
+* @brief Reads data from the flash.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-* @param	Buf is the buffer pointer to read the data.
-* @param	Length is the length of data to read.
+* Reads control information from the flash, such as the ID and parameter page.
 *
-* @return	None
-*
-* @note		None
+* @param[in]   InstancePtr Pointer to the XNandPs instance.
+* @param[out]  Buf Buffer pointer to read the data into.
+* @param[in]   Length Length of data to read.
 *
 ***************************************************************************/
 static void Onfi_ReadData(XNandPs *InstancePtr, u8 *Buf, u32 Length)
@@ -156,16 +157,13 @@ static void Onfi_ReadData(XNandPs *InstancePtr, u8 *Buf, u32 Length)
 /**************************************************************************/
 /**
 *
-* This function writes command data to flash. It is used for writing the
-* control information like set features.
+* @brief Writes command data to the flash.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-* @param	Buf is the buffer pointer to write the data.
-* @param	Length is the length of data to write.
+* Writes control information such as set features.
 *
-* @return	None
-*
-* @note		None
+* @param[in]   InstancePtr Pointer to the XNandPs instance.
+* @param[in]   Buf Buffer pointer to write the data from.
+* @param[in]   Length Length of data to write.
 *
 ***************************************************************************/
 static void Onfi_WriteData(XNandPs *InstancePtr, u8 *Buf, u32 Length)
@@ -187,13 +185,11 @@ static void Onfi_WriteData(XNandPs *InstancePtr, u8 *Buf, u32 Length)
 /**************************************************************************/
 /**
 *
-* This function sends read status command to the flash device.
+* @brief Sends the read status command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
 *
-* @return	flash status value read
-*
-* @note		None
+* @return        The flash status value read.
 *
 ***************************************************************************/
 u8 Onfi_CmdReadStatus(XNandPs *InstancePtr)
@@ -215,13 +211,9 @@ u8 Onfi_CmdReadStatus(XNandPs *InstancePtr)
 /**************************************************************************/
 /**
 *
-* This function sends reset command to the flash device.
+* @brief Sends the reset command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-*
-* @return	None
-*
-* @note		None
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
 *
 ***************************************************************************/
 static void Onfi_CmdReset(XNandPs *InstancePtr)
@@ -242,13 +234,10 @@ static void Onfi_CmdReset(XNandPs *InstancePtr)
 /**************************************************************************/
 /**
 *
-* This function sends read ID command to the flash device.
+* @brief Sends the read ID command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-*
-* @return	None
-*
-* @note		None
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
+* @param[in]     Address Address to send with the read ID command.
 *
 ***************************************************************************/
 static void Onfi_CmdReadId(XNandPs *InstancePtr, u8 Address)
@@ -260,13 +249,9 @@ static void Onfi_CmdReadId(XNandPs *InstancePtr, u8 Address)
 /**************************************************************************/
 /**
 *
-* This function sends read parameter page command to the flash device.
+* @brief Sends the read parameter page command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-*
-* @return	None
-*
-* @note		None
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
 *
 ***************************************************************************/
 static void Onfi_CmdReadParamPage(XNandPs *InstancePtr)
@@ -302,14 +287,11 @@ static void Onfi_CmdReadParamPage(XNandPs *InstancePtr)
 /**************************************************************************/
 /**
 *
-* This function sends Get Feature command to the flash device.
+* @brief Sends the Get Feature command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-* @param	Feature is the feature value to read.
-*
-* @return	None
-*
-* @note		None
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
+* @param[in]     Feature Feature value to read.
+* @param[out]    Val Buffer to store the feature value.
 *
 ***************************************************************************/
 static void Onfi_GetFeature(XNandPs *InstancePtr, u8 Feature, u8 *Val)
@@ -351,14 +333,11 @@ static void Onfi_GetFeature(XNandPs *InstancePtr, u8 Feature, u8 *Val)
 /**************************************************************************/
 /**
 *
-* This function sends Set Feature command to the flash device.
+* @brief Sends the Set Feature command to the flash device.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-* @param	Feature is the feature value to Set.
-*
-* @return	None
-*
-* @note		None
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
+* @param[in]     Feature Feature value to set.
+* @param[in]     Val Buffer containing the feature value to set.
 *
 ***************************************************************************/
 static void Onfi_SetFeature(XNandPs *InstancePtr, u8 Feature, u8 *Val)
@@ -381,14 +360,13 @@ static void Onfi_SetFeature(XNandPs *InstancePtr, u8 Feature, u8 *Val)
 /**************************************************************************/
 /**
 *
-* This function calculates the CRC on the parameter page buffer. This is taken
-* from the ONFI 1.0 specification.
+* @brief Calculates the CRC on the parameter page buffer.
 *
-* @param	Buf is the parameter page buffer.
+* Uses the algorithm from the ONFI 1.0 specification.
 *
-* @return	CRC value calculated.
+* @param[in]   Buf Parameter page buffer.
 *
-* @note		None
+* @return      The calculated CRC value.
 *
 ***************************************************************************/
 static unsigned long Onfi_Crc16(u8 *Buf)
@@ -431,17 +409,14 @@ static unsigned long Onfi_Crc16(u8 *Buf)
 /**************************************************************************/
 /**
 *
-* This function reads the NAND flash parameter page defined by ONFI 1.0
-* specification.
+* @brief Reads the NAND flash parameter page defined by the ONFI 1.0 spec.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
-* @param	Buf is a buffer pointer to fill the data.
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
+* @param[out]    Buf Buffer pointer to fill with the data.
 *
 * @return
-* 		- XST_SUCCESS if parameter page read successfully.
-* 		- XST_FAILURE if parameter page is not read successfully.
-*
-* @note		None
+*                - XST_SUCCESS if parameter page read successfully.
+*                - XST_FAILURE if parameter page is not read successfully.
 *
 ***************************************************************************/
 static int Onfi_ReadParamPage(XNandPs *InstancePtr, u8 *Buf)
@@ -474,15 +449,13 @@ static int Onfi_ReadParamPage(XNandPs *InstancePtr, u8 *Buf)
 /**************************************************************************/
 /**
 *
-* This function initializes the NAND flash and gets the geometry information.
+* @brief Initializes the NAND flash and gets the geometry information.
 *
-* @param	InstancePtr is a pointer to the XNandPs instance.
+* @param[in,out] InstancePtr Pointer to the XNandPs instance.
 *
 * @return
-*		- XST_SUCCESS if successful.
-*		- XST_FAILURE if failed.
-*
-* @note		None
+*                - XST_SUCCESS if successful.
+*                - XST_FAILURE if failed.
 *
 ***************************************************************************/
 int Onfi_NandInit(XNandPs *InstancePtr)
@@ -522,7 +495,10 @@ int Onfi_NandInit(XNandPs *InstancePtr)
 				    Nand_Geometry.SpareBytesPerPage > XNANDPS_MAX_SPARE_SIZE ||
 				    Nand_Geometry.PagesPerBlock > XNANDPS_MAX_PAGES_PER_BLOCK ||
 				    Nand_Geometry.BlocksPerLun > XNANDPS_MAX_BLOCKS ||
-				    Nand_Geometry.NumLuns > XNANDPS_MAX_LUNS) {
+				    Nand_Geometry.NumLuns > XNANDPS_MAX_LUNS ||
+				    (Nand_Geometry.NumLuns *
+				     Nand_Geometry.BlocksPerLun) >
+				    XNANDPS_MAX_BLOCKS) {
 					return XST_FAILURE;
 				}
 

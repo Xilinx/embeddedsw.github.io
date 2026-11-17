@@ -8,11 +8,13 @@
 /**
 *
 * @file xzdma_writeonlymode_example.c
+* @addtogroup zdma Overview
+* @{
 *
-* This file contains the example using XZDma driver to do simple data transfer
-* in Write only mode on ZDMA device. In this mode data will be predefined
-* and will be repetitively written into the given address and for given size.
-* For ADMA only 2 words are repeated and for GDMA 4 words are repeated.
+* @brief Demonstrates ZDMA write-only mode transfers.
+* Demonstrates write-only data transfer using the XZDma driver on the ZDMA
+* device. Predefined data is written repeatedly to the destination address
+* for the given size. ADMA repeats 2 words and GDMA repeats 4 words.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -61,12 +63,17 @@
 
 #ifndef SDT
 int XZDma_WriteOnlyExample(u16 DeviceId);
-static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
-				XZDma *InstancePtr, u16 IntrId);
 #else
 int XZDma_WriteOnlyExample(UINTPTR BaseAddress);
 #endif
+/** @cond INTERNAL */
+#ifndef SDT
+static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
+				XZDma *InstancePtr, u16 IntrId);
+#endif
 static void DoneHandler(void *CallBackRef);
+/** @endcond */
+
 
 /************************** Constant Definitions ******************************/
 
@@ -82,10 +89,10 @@ static void DoneHandler(void *CallBackRef);
 #define ZDMA_INTR_DEVICE_ID	XPAR_XADMAPS_0_INTR /**< ZDMA Interrupt Id */
 #endif
 
-#define SIZE			1024 /* Size of the data to be written */
+#define SIZE			1024 /**< Size of the data to be written. */
 
-#define POLL_TIMEOUT_COUNTER    1000000U
-#define NUM_OF_EVENTS           1
+#define POLL_TIMEOUT_COUNTER    1000000U /**< Maximum poll iterations while waiting for a DMA event. */
+#define NUM_OF_EVENTS           1 /**< Number of events to wait for in Xil_WaitForEventSet. */
 /**************************** Type Definitions *******************************/
 
 
@@ -107,13 +114,11 @@ static volatile u32 Done = 0;	/**< Done Flag for interrupt generation */
 /*****************************************************************************/
 /**
 *
-* Main function to call the example.
+* @brief Main function to call the example.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 int main(void)
@@ -138,21 +143,19 @@ int main(void)
 /*****************************************************************************/
 /**
 *
-* This function does a test of the data transfer in simple mode of write only
+* @brief This function does a test of the data transfer in simple mode of write only
 * mode on the ZDMA driver.
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the ZDMA device
+* @param[in] BaseAddress contains the base address of the ZDMA device
 * @else
-* @param	DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID value from
+* @param[in] DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID value from
 *		xparameters.h.
 * @endif
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -325,23 +328,20 @@ int XZDma_WriteOnlyExample(UINTPTR BaseAddress)
 #ifndef SDT
 /*****************************************************************************/
 /**
-* This function sets up the interrupt system so interrupts can occur for the
+* @brief This function sets up the interrupt system so interrupts can occur for the
 * ZDMA. This function is application-specific. The user should modify this
 * function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the INTC.
-* @param	InstancePtr contains a pointer to the instance of the ZDMA
+* @param[in] IntcInstancePtr is a pointer to the instance of the INTC.
+* @param[in] InstancePtr contains a pointer to the instance of the ZDMA
 *		driver which is going to be connected to the interrupt
 *		controller.
-* @param	IntrId is the interrupt Id and is typically
+* @param[in] IntrId is the interrupt Id and is typically
 *		XPAR_<ZDMA_instance>_INTR value from xparameters.h.
 *
 * @return
 *		- XST_SUCCESS if successful
 *		- XST_FAILURE if failed
-*
-* @note		None.
-
 *
 ****************************************************************************/
 static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
@@ -404,15 +404,10 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 #endif
 /*****************************************************************************/
 /**
-* This static function handles ZDMA Done interrupts.
+* @brief This static function handles ZDMA Done interrupts.
 *
-* @param	CallBackRef is the callback reference passed from the interrupt
+* @param[in] CallBackRef is the callback reference passed from the interrupt
 *		handler, which in our case is a pointer to the driver instance.
-* @param	Event specifies which interrupts were occurred.
-*
-* @return	None.
-*
-* @note		None.
 *
 ******************************************************************************/
 static void DoneHandler(void *CallBackRef)
@@ -420,3 +415,5 @@ static void DoneHandler(void *CallBackRef)
 	Done = 1;
 
 }
+
+/** @} */

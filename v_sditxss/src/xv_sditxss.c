@@ -183,15 +183,6 @@ static int XV_SdiTxSs_RegisterSubsysCallbacks(XV_SdiTxSs *InstancePtr)
 *
 *
 ******************************************************************************/
-#ifndef SDT
-static void XV_SdiTxSs_GetIncludedSubcores(XV_SdiTxSs *SdiTxSsPtr, u16 DevId)
-{
-	SdiTxSsPtr->SdiTxPtr = ((SdiTxSsPtr->Config.SdiTx.IsPresent) ?
-		(&XV_SdiTxSs_SubCoreRepo[DevId].SdiTx) : NULL);
-	SdiTxSsPtr->VtcPtr = ((SdiTxSsPtr->Config.Vtc.IsPresent) ?
-		(&XV_SdiTxSs_SubCoreRepo[DevId].Vtc) : NULL);
-}
-#else
 static void XV_SdiTxSs_GetIncludedSubcores(XV_SdiTxSs *SdiTxSsPtr, UINTPTR BaseAddress)
 {
 	u32 Index = 0;
@@ -202,7 +193,6 @@ static void XV_SdiTxSs_GetIncludedSubcores(XV_SdiTxSs *SdiTxSsPtr, UINTPTR BaseA
 	SdiTxSsPtr->VtcPtr = ((SdiTxSsPtr->Config.Vtc.IsPresent) ?
 		(&XV_SdiTxSs_SubCoreRepo[Index].Vtc) : NULL);
 }
-#endif
 
 /*****************************************************************************/
 /**
@@ -270,11 +260,7 @@ UINTPTR EffectiveAddr)
 	InstancePtr->Config.BaseAddress = EffectiveAddr;
 
 	/* Determine sub-cores included in the provided instance of subsystem */
-#ifndef SDT
-	XV_SdiTxSs_GetIncludedSubcores(SdiTxSsPtr, CfgPtr->DeviceId);
-#else
 	XV_SdiTxSs_GetIncludedSubcores(SdiTxSsPtr, CfgPtr->BaseAddress);
-#endif
 
 	/* Initialize all included sub_cores */
 	if (SdiTxSsPtr->SdiTxPtr) {
@@ -888,15 +874,16 @@ void XV_SdiTxSs_StreamConfig(XV_SdiTxSs *InstancePtr)
 		if (XV_SdiTxSs_Is3GBDLor3GA1125L(InstancePtr)) {
 			InstancePtr->SdiTxPtr->Stream[0].Video.IsInterlaced =
 			XVidC_IsInterlaced(InstancePtr->SdiTxPtr->Stream[0].Video.VmId);
-			if (InstancePtr->SdiTxPtr->Stream[0].Video.ColorDepth ==
+			if ((InstancePtr->SdiTxPtr->Stream[0].Video.ColorDepth ==
 			    XVIDC_BPC_10 &&
 			    InstancePtr->SdiTxPtr->Stream[0].Video.ColorFormatId ==
-			    XVIDC_CSF_YCRCB_422 ||
+			    XVIDC_CSF_YCRCB_422) ||
 			    InstancePtr->SdiTxPtr->Stream[0].Video.ColorFormatId ==
 			    XVIDC_CSF_YCRCB_420) {
 				InstancePtr->SdiTxPtr->Stream[0].Video.IsInterlaced = 1;
 			}
 		}
+		/* fall through */
 	case XSDIVID_MODE_HD:
 	case XSDIVID_MODE_12G:
 		PayloadLineNum1 = XV_SDITX_PAYLOADLN1_HD_3G_6G_12G;
@@ -1410,10 +1397,10 @@ void XV_SdiTxSs_SetCoreSettings(XV_SdiTxSs *InstancePtr, XV_SdiTxSs_CoreSelId Se
 		XV_SdiTx_SetCoreSettings(SdiTxPtr, XV_SDITX_CORESELID_USEANCIN, Data);
 		break;
 	case XV_SDITXSS_CORESELID_INSERTLN:
-		XV_SdiTx_SetCoreSettings(SdiTxPtr, XV_SDITXSS_CORESELID_INSERTLN, Data);
+		XV_SdiTx_SetCoreSettings(SdiTxPtr, XV_SDITX_CORESELID_INSERTLN, Data);
 		break;
 	case XV_SDITXSS_CORESELID_INSERTEDH:
-		XV_SdiTx_SetCoreSettings(SdiTxPtr, XV_SDITXSS_CORESELID_INSERTEDH, Data);
+		XV_SdiTx_SetCoreSettings(SdiTxPtr, XV_SDITX_CORESELID_INSERTEDH, Data);
 		break;
 	};
 }

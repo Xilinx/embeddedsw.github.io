@@ -34,25 +34,52 @@ extern "C" {
 #include <xdp_hw.h>
 #include <xdprxss.h>
 #include <xdptxss.h>
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 #include <xiic.h>
 #include <xiic_l.h>
+#endif /* Added for VCK190/VEK385 support */
 #include <xil_exception.h>
 #include <xil_printf.h>
 #include <xil_types.h>
 #include <xstatus.h>
 #include <xtmrctr.h>
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 #include <xuartlite_l.h>
 #include "xintc.h"
 #else
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 #include <xuartps.h>
 #include <xuartps_hw.h>
+#else /* Added for VCK190/VEK385 support */
+#include <xuartpsv_hw.h>
+#endif /* Added for VCK190/VEK385 support */
 #endif
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 #include <xvphy.h>
 #include <xvphy_dp.h>
 #include <xvphy_hw.h>
+#else /* Added for VCK190/VEK385 support */
+/* Versal (VCK190) has no XVphy GT-PHY IP/driver. These are minimal
+ * stand-in types so existing XVphy-typed globals/prototypes below still
+ * compile; none of their real fields are read on this board - the VCK190
+ * path drives both DP cores (RX and TX) with raw register writes instead. */
+typedef struct { UINTPTR BaseAddr; } XVphy;
+typedef u8 XVphy_ChannelId;
+typedef u8 XVphy_PllType;
+typedef u8 XVphy_PllRefClkSelType;
+typedef u8 XVphy_DirectionType;
+#define XVPHY_CHANNEL_ID_CH1   0
+#define XVPHY_CHANNEL_ID_CH2   1
+#define XVPHY_CHANNEL_ID_CH3   2
+#define XVPHY_CHANNEL_ID_CH4   3
+#define XVPHY_CHANNEL_ID_CMN0  4	/* unused on VCK190; no VCU118/ZCU102 QPLL sharing concept exists */
+#define XVPHY_CHANNEL_ID_CMN1  5	/* unused on VCK190; no VCU118/ZCU102 QPLL sharing concept exists */
+#define XVPHY_DIR_TX           0
+#define XVPHY_DIR_RX           1
+#include "xclk_wiz.h"
+#endif /* Added for VCK190/VEK385 support */
 
 #include "sleep.h"
 #include <xil_cache.h>
@@ -60,30 +87,19 @@ extern "C" {
 #include "xvidframe_crc.h"
 #include "si570drv.h"
 
-#ifdef SDT
 #define XPAR_XV_FRMBUFRD_NUM_INSTANCES XPAR_XV_FRMBUF_RD_NUM_INSTANCES
 #define XPAR_XV_FRMBUFWR_NUM_INSTANCES XPAR_XV_FRMBUF_WR_NUM_INSTANCES
-#endif
 
 #ifdef XPAR_INTC_0_DEVICE_ID
 /* For MicroBlaze systems. */
-#ifndef SDT
-#include "xintc.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #else
 /* For ARM/Zynq SoC systems. */
-#ifndef SDT
-#include "xscugic.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #endif /* XPAR_INTC_0_DEVICE_ID */
 
 #include "videofmc_defs.h"
 
-#ifndef SDT
 #if XPAR_XV_FRMBUFRD_NUM_INSTANCES
 #include "xv_frmbufrd_l2.h"
 #define FRMBUF_RD_DEVICE_ID  XPAR_XV_FRMBUFRD_0_DEVICE_ID
@@ -92,22 +108,19 @@ extern "C" {
 #if XPAR_XV_FRMBUFWR_NUM_INSTANCES
 #include "xv_frmbufwr_l2.h"
 #define FRMBUF_WR_DEVICE_ID  XPAR_XV_FRMBUFWR_0_DEVICE_ID
-#endif
-#else
-#if XPAR_XV_FRMBUFRD_NUM_INSTANCES
-#include "xv_frmbufrd_l2.h"
-#define FRMBUF_RD_DEVICE_ID  XPAR_XV_FRMBUFRD_0_DEVICE_ID
-#endif
-
-#if XPAR_XV_FRMBUFWR_NUM_INSTANCES
-#include "xv_frmbufwr_l2.h"
-#define FRMBUF_WR_DEVICE_ID  XPAR_XV_FRMBUFWR_0_DEVICE_ID
-#endif
 #endif
 
 #include "xgpio.h"
 #include "xv_tpg.h"
 
+#define XPAR_DPTXSS_0_HDCP_ENABLE	0
+#define XPAR_DPTXSS_0_HDCP22_ENABLE	0
+#ifndef XPAR_DPRXSS_0_HDCP_ENABLE
+#define XPAR_DPRXSS_0_HDCP_ENABLE	0
+#endif
+#ifndef XPAR_DPRXSS_0_HDCP22_ENABLE
+#define XPAR_DPRXSS_0_HDCP22_ENABLE	0
+#endif
 
 #define USE_EEPROM_HDCP_KEYS
 #define ENABLE_HDCP_IN_DESIGN		(XPAR_DPTXSS_0_HDCP_ENABLE | XPAR_DPRXSS_0_HDCP_ENABLE | \
@@ -164,18 +177,15 @@ extern XHdcp22_Repeater     Hdcp22Repeater;
 #define XINTC_DEVICE_ID 	XPAR_INTC_0_DEVICE_ID
 #define XINTC_HANDLER 		XIntc_InterruptHandler
 
-#ifndef SDT
-#define XINTC_DPTXSS_DP_INTERRUPT_ID \
-	XPAR_INTC_0_DP21TXSS_0_VEC_ID
-
-#define XINTC_DPRXSS_DP_INTERRUPT_ID \
-    XPAR_INTC_0_DP21RXSS_0_VEC_ID
-#endif
 /* The unique device ID of the instances used in example
  */
 #define XDPRXSS_DEVICE_ID 	XPAR_DPRXSS_0_DEVICE_ID
 
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+#define XVPHY_DEVICE_ID		0	/* unused on VCK190; no XVphy instance exists */
+#else
 #define XVPHY_DEVICE_ID 	XPAR_VID_PHY_CONTROLLER_1_DEVICE_ID
+#endif /* Added for VCK190/VEK385 support */
 
 
 #define XTIMER0_DEVICE_ID 	XPAR_TMRCTR_0_DEVICE_ID
@@ -187,11 +197,11 @@ extern XHdcp22_Repeater     Hdcp22Repeater;
 
 #define VID_EDID_BASEADDR 	XPAR_DP_RX_HIER_0_VID_EDID_0_BASEADDR
 #define IIC_DEVICE_ID 		XPAR_IIC_0_DEVICE_ID
-#ifndef SDT
-#define IIC_BASE_ADDR 		XPAR_IIC_0_BASEADDR
-#else
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+#define IIC_BASE_ADDR		0	/* unused on VCK190; no PL AXI IIC core exists */
+#else /* Added for VCK190/VEK385 support */
 #define IIC_BASE_ADDR 		XPAR_XIIC_0_BASEADDR
-#endif
+#endif /* Added for VCK190/VEK385 support */
 
 
 #define VIDEO_FRAME_CRC_TX_BASEADDR \
@@ -199,13 +209,19 @@ extern XHdcp22_Repeater     Hdcp22Repeater;
 #define VIDEO_FRAME_CRC_RX_BASEADDR \
 			XPAR_DP_RX_HIER_0_VIDEO_FRAME_CRC_0_BASEADDR
 
-#ifndef SDT
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+#define PROC_HIER_HLS_RST_BASEADDR XPAR_PROCESSOR_HIER_0_HLS_RST_BASEADDR
+#else /* Added for VCK190/VEK385 support */
+#define PROC_HIER_HLS_RST_BASEADDR XPAR_PROC_HIER_0_HLS_RST_0_BASEADDR
+#endif /* Added for VCK190/VEK385 support */
+
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+#define AXI_SYSTEM_CLOCK_FREQ_HZ \
+			XPAR_PROCESSOR_HIER_0_AXI_TIMER_0_CLOCK_FREQUENCY
+#else /* Added for VCK190/VEK385 support */
 #define AXI_SYSTEM_CLOCK_FREQ_HZ \
 			XPAR_PROC_HIER_0_AXI_TIMER_0_CLOCK_FREQUENCY
-#else
-#define AXI_SYSTEM_CLOCK_FREQ_HZ \
-			XPAR_PROC_HIER_0_AXI_TIMER_0_CLOCK_FREQUENCY
-#endif
+#endif /* Added for VCK190/VEK385 support */
 
 /*
  * Timer Specific Defines
@@ -241,6 +257,60 @@ extern XHdcp22_Repeater     Hdcp22Repeater;
 #define XVPHY_GTHE4_DIFF_SWING_DP_V3P0 0x8
 #define XVPHY_GTHE4_DIFF_SWING_DP_DP20 0xF
 
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+/*
+ * GT_QUAD_BASE and the TX pixel-clock wizard (ClkWiz_Dynamic) instance
+ * names differ between the VCK190 PT design (confirmed from the .hwh
+ * inside dpss_vck190_pt_wrapper.xsa: "gt_quad_hier_0/gtwiz_versal_0" and
+ * "dp_tx_hier_0/clk_wizard_2") and the VEK385 PT design (confirmed from
+ * its generated xparameters.h: "gt_quad/gtwiz_versal_0" and
+ * "dp_tx_hier_0/clkx5_wiz_0") - each resolved to the real xparameters.h
+ * macro for its own board rather than a generic guessed name.
+ */
+#if defined(XPS_BOARD_VCK190)
+#define GT_QUAD_BASE                XPAR_GT_QUAD_HIER_0_GTWIZ_VERSAL_0_BASEADDR
+#define TX_CLK_WIZ_DEVICE_ID        XPAR_DP_TX_HIER_0_CLK_WIZARD_2_DEVICE_ID
+#define TX_CLK_WIZ_BASEADDR         XPAR_DP_TX_HIER_0_CLK_WIZARD_2_BASEADDR
+#else /* XPS_BOARD_VEK385_1 */
+#define GT_QUAD_BASE                XPAR_GT_QUAD_GTWIZ_VERSAL_0_BASEADDR
+#define TX_CLK_WIZ_DEVICE_ID        XPAR_DP_TX_HIER_0_CLKX5_WIZ_0_DEVICE_ID
+#define TX_CLK_WIZ_BASEADDR         XPAR_DP_TX_HIER_0_CLKX5_WIZ_0_BASEADDR
+#endif
+#define GT_RST_MASK                 0x00000001
+#define GT_VSWING_MASK              0x00001F00
+#define GT_POSTCUR_MASK             0x007C0000
+#define GT_RATE_MASK                0x0000000E
+#define SINGLE_LANE                 0x00000011
+#define ALL_LANE                    0x0000000F
+#define VERSAL_200G                 6
+#define VERSAL_135G                 5
+#define VERSAL_100G                 4
+#define VERSAL_810G                 3
+#define VERSAL_540G                 2
+#define VERSAL_270G                 1
+#define VERSAL_162G                 0
+#define DP_LINK_RATE_HZ_162GBPS     1620000000LL
+#define DP_LINK_RATE_HZ_270GBPS     2700000000LL
+#define DP_LINK_RATE_HZ_540GBPS     5400000000LL
+#define DP_LINK_RATE_HZ_810GBPS     8100000000LL
+#define DP_LINK_RATE_HZ_10GBPS      10000000000LL
+#define DP_LINK_RATE_HZ_135GBPS     13500000000LL
+#define DP_LINK_RATE_HZ_20GBPS      20000000000LL
+
+/*
+ * GT power-good GPIO: gt_quad/gtpowergood is wired to processor_hier_0/
+ * axi_gpio_0's gpio_io_i (confirmed from the VCK190 PT design's .hwh,
+ * inside dpss_vck190_pt_wrapper.xsa - MODULE FULLNAME="/processor_hier_0/
+ * axi_gpio_0", C_BASEADDR 0xA40D0000), shared by both dp_tx_hier_0 and
+ * dp_rx_hier_0. Use the auto-generated xparameters.h macros for this
+ * instance rather than a hardcoded address, matching this app's existing
+ * convention for other hierarchical instances (e.g. XPAR_DP_TX_HIER_0_
+ * TX_CLK_RST_BASEADDR).
+ */
+#define GT_POWERGOOD_GPIO_DEVICE_ID XPAR_PROCESSOR_HIER_0_AXI_GPIO_0_DEVICE_ID
+#define GT_POWERGOOD_GPIO_BASEADDR  XPAR_PROCESSOR_HIER_0_AXI_GPIO_0_BASEADDR
+#endif /* Added for VCK190/VEK385 support */
+
 /*
  * Max timeout tuned as per tester - AXI Clock=100 MHz
  * Some GPUs may need larger value, So user may tune if needed
@@ -271,7 +341,7 @@ extern XHdcp22_Repeater     Hdcp22Repeater;
 
 #define AUXFIFOSIZE 4
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 #define AXIMMWIDTH 512
 #else
 #define AXIMMWIDTH 256
@@ -331,6 +401,9 @@ u8 Dp21RxSs_Pt_I2cReadFreq(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterA
 u8 Dp21RxSs_Pt_I2cReadTdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u16 RegisterAddress);
 int Dp21RxSs_Pt_I2cWriteTdp2004(u32 I2CBaseAddress, u8 I2CSlaveAddress, u8 RegisterAddress, u8 Value);
 u32 Dp21RxSs_Pt_PhyConfig(XVphy *InstancePtr, int LineRate_init_tx, XVphy_PllType Pll, XVphy_ChannelId Channel, XVphy_DirectionType Dir);
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+void GtCtrl(u32 mask, u32 data, u8 is_tx);
+#endif /* Added for VCK190/VEK385 support */
 
 /************************** Function Definitions *****************************/
 /* Defining constants for colors in printing */

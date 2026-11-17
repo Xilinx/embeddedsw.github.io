@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020-2021 Xilinx, Inc.  All rights reserved.
-* Copyright 2023-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2023-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -36,9 +36,7 @@
 #else
 #define UART_BASE_ADDRESS XPAR_XUARTPS_0_BASEADDR
 #endif
-#ifdef SDT
 #define XPAR_IIC_0_BASEADDR XPAR_XIIC_0_BASEADDR
-#endif
 #define XHDCP_IIC_BASEADDR		  XPAR_IIC_0_BASEADDR
 #define XHDCP_EEPROM_ADDRESS      0x57
 #define XHDCP_EEPROM_PAGE_SIZE    16
@@ -112,7 +110,7 @@ int XHdcp_LoadKeys(u8 *Hdcp22Lc128, u32 Hdcp22Lc128Size, u8 *Hdcp22RxPrivateKey,
 		u8 *Hdcp14KeyA, u32 Hdcp14KeyASize, u8 *Hdcp14KeyB, u32 Hdcp14KeyBSize)
 {
 	u8 i;
-	u8 HdcpSignature[16] = {"xilinx_hdcp_keys"};
+	u8 HdcpSignature[16] __attribute__((nonstring)) = {"xilinx_hdcp_keys"};
 	u8 Buffer[1024];
 	u8 Password[32];
 	u8 Key[32];

@@ -66,6 +66,9 @@ RESULT SendFirmwareCompability()
 		return RET_OUTOFRANGE;
 	ret = Send_Command(APU_2_RPU_MB_LINUX_COMPAT, &packet,
 			   packet.payload_size + payload_extra_size, dest_cpu_id, src_cpu_id);
+
+	packet.resp_field.error_subcode_t = apu_wait_for_ACK(packet.cookie,
+			packet.payload_data);
 	if (0 != ret)
 		return ret;
 
@@ -112,16 +115,8 @@ RESULT VsiCamDeviceCreate
 		return RET_NULL_POINTER;
 	uint32_t hwId = pCamConfig->ispHwId;
 
-	/*
-	 * AMD : Multi-Core Changes
-	 * Verifying Multi-core
-	 */
-
-#ifdef DEBUG_FLAG
-#else
-	if (hwId > CAMDEV_HARDWARE_ID_MAX)
+	if (hwId >= CAMDEV_HARDWARE_ID_MAX)
 		return RET_OUTOFRANGE;
-#endif
 
 	CamDeviceIspcoreInit();
 
@@ -1131,7 +1126,7 @@ RESULT VsiCamDeviceGetHardwareId
 		//TRACE(CAM_DEV_API_ERR, " %s: invalid null pointer!\n", __func__);
 		return RET_NULL_POINTER;
 	}
-	if (pCamDevCtx->ispHwId > CAMDEV_HARDWARE_ID_MAX)
+	if (pCamDevCtx->ispHwId >= CAMDEV_HARDWARE_ID_MAX)
 		return RET_OUTOFRANGE;
 
 	else {
@@ -1340,7 +1335,7 @@ RESULT VsiCamDeviceConfigMetadata
 	memcpy(p_data, &pCamDevCtx->instanceId, sizeof(uint32_t));
 	packet.payload_size += sizeof(uint32_t);
 	p_data += sizeof(uint32_t);
-	memcpy(p_data, &pMetadata, sizeof(CamDeviceMetadataConfig_t));
+	memcpy(p_data, pMetadata, sizeof(CamDeviceMetadataConfig_t));
 	p_data += sizeof(CamDeviceMetadataConfig_t);
 	packet.payload_size += sizeof(CamDeviceMetadataConfig_t);
 

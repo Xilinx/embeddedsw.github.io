@@ -1,4 +1,4 @@
-/******************************************************************************
+/*****************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
 * Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
@@ -7,7 +7,10 @@
 /**
 *
 * @file xaxiethernet_example_intr_mcdma.c
+* @addtogroup axiethernet Overview
+* @{
 *
+* @brief Demonstrates AXI Ethernet with MCDMA in interrupt mode.
 * Implements examples that utilize the Axi Ethernet's interrupt driven MCDMA
 * packet transfer mode to send and receive frames.
 *
@@ -51,7 +54,7 @@
 *
 ******************************************************************************/
 
-/***************************** Include Files *********************************/
+/**************************** Include Files *********************************/
 
 #include "xparameters.h"
 #include "xaxiethernet_example.h"
@@ -77,13 +80,13 @@
 #if defined(XPAR_STDIN_IS_UARTNS550)
 #include "xuartns550_l.h"
 #endif
-#define XAXIETHERNET_BASEADDRESS XPAR_XAXIETHERNET_0_BASEADDR
+#define XAXIETHERNET_BASEADDRESS XPAR_XAXIETHERNET_0_BASEADDR	/**< AXI Ethernet base address. */
 #endif
 
 #if defined __aarch64__
 #include "xil_mmu.h"
 #endif
-/*************************** Constant Definitions ****************************/
+/************************** Constant Definitions ****************************/
 
 /*
  * The following constants map to the XPAR parameters created in the
@@ -92,110 +95,63 @@
  */
 #ifndef SDT
 #ifndef TESTAPP_GEN
-#define AXIETHERNET_DEVICE_ID	XPAR_AXIETHERNET_0_DEVICE_ID
-#define AXIMCDMA_DEVICE_ID	XPAR_MCDMA_0_DEVICE_ID
+#define AXIETHERNET_DEVICE_ID	XPAR_AXIETHERNET_0_DEVICE_ID	/**< AXI Ethernet device ID. */
+#define AXIMCDMA_DEVICE_ID	XPAR_MCDMA_0_DEVICE_ID	/**< AXI MCDMA device ID. */
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID
+#define INTC_DEVICE_ID		XPAR_INTC_0_DEVICE_ID	/**< INTC DEVICE ID. */
 #else
-#define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
-#define AXIETHERNET_IRPT_INTR	XPAR_FABRIC_AXI_ETH_0_INTERRUPT_INTR
+#define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID	/**< INTC DEVICE ID. */
+#define AXIETHERNET_IRPT_INTR	XPAR_FABRIC_AXI_ETH_0_INTERRUPT_INTR	/**< AXIETHERNET IRPT INTR. */
 #endif
 #endif
 
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID	/**< INTC DEVICE ID. */
 #else
-#define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_SCUGIC_SINGLE_DEVICE_ID	/**< INTC DEVICE ID. */
 #endif
 #endif
 
-#define RXBD_CNT			1024	/* Number of RxBDs to use */
-#define TXBD_CNT			1024	/* Number of TxBDs to use */
-#define BD_ALIGNMENT			64	/* Byte alignment of BDs */
-#define PAYLOAD_SIZE			1000 	/* Payload size used in examples */
-#define BD_USR0_OFFSET			0 	/* AXI4-Stream Control Word offset from
-						 * the start of app user words in BD. Offset
-						 * 0 means, Control Word 0, used for enabling
-						 * checksum offloading.
-						 */
-#define BD_USR1_OFFSET			1	/* AXI4-Stream Control Word offset from
-						 * the start of app user words in BD. Offset
-						 * 1 means, Control Word 1, used for
-						 * mentioning checksum begin and checksum
-						 * insert points
-						 */
-#define BD_USR2_OFFSET			2	/* AXI4-Stream Control Word offset from
-						 * the start of app user words in BD. Offset
-						 * 2 means, Control Word 2, used for
-						 * mentioning checksum seed.
-						 */
+#define RXBD_CNT			1024	/**< Number of RxBDs to use. */
+#define TXBD_CNT			1024	/**< Number of TxBDs to use. */
+#define BD_ALIGNMENT			64	/**< Byte alignment of BDs. */
+#define PAYLOAD_SIZE			1000	/**< Payload size used in examples. */
+#define BD_USR0_OFFSET			0	/**< AXI4-Stream Control Word offset from the start of app user words in BD. Offset 0 means, Control Word 0, used for enabling checksum offloading. */
+#define BD_USR1_OFFSET			1	/**< AXI4-Stream Control Word offset from the start of app user words in BD. Offset 1 means, Control Word 1, used for mentioning checksum begin and checksum insert points. */
+#define BD_USR2_OFFSET			2	/**< AXI4-Stream Control Word offset from the start of app user words in BD. Offset 2 means, Control Word 2, used for mentioning checksum seed. */
 
-#define PARTIAL_CSUM_ENABLE		0x00000001 /* Option for partial csum enable */
-#define FULL_CSUM_ENABLE		0x00000002 /* Option for full csum enable */
-#define TX_CS_INIT_OFFSET		16	   /* Offset in the control word where
-						    * byte offset in the ethernet frame
-						    * to start CSUM calculation need to
-						    * be inserted
-						    */
-#define RCV_FRM_NOT_CORRUPTED		0xFFFF	   /* If the received frame is not
-						    * corrupted, for partial csum
-						    * offloading case, the control
-						    * word 3 would return 0xFFFF
-						    */
+#define PARTIAL_CSUM_ENABLE		0x00000001	/**< Option for partial csum enable. */
+#define FULL_CSUM_ENABLE		0x00000002	/**< Option for full csum enable. */
+#define TX_CS_INIT_OFFSET		16	/**< Offset in the control word where byte offset in the ethernet frame to start CSUM calculation need to be inserted. */
+#define RCV_FRM_NOT_CORRUPTED		0xFFFF	/**< If the received frame is not corrupted, for partial csum offloading case, the control word 3 would return 0xFFFF. */
 
-#define IP_VERSION_4			0x800	   /* For IPV4, the Ethernet frame
-						    * type/length field will have a
-						    * value of 0x800
-						    */
-#define IP_HEADER_VERSION		0x04	   /* For IPv4, the version entry in
-						    * IP header is always 4
-						    */
-#define IP_HEADER_LEN_IN_WORDS		0x05	   /* For our case, the header length
-						    * is always 20 bytes (5 words
-						    */
-#define IP_HEADER_LENGTH		20	   /* IP header length in bytes. Used
-						    * as offset to kigure out the start
-						    * of TCP header.
-						    */
-#define IP_HEADER_PROTOCOL_TCP		0x6	   /* IP header protocol entry. For TCP
-						    * packets, it is 6.
-						    */
-#define IP_HEADER_PROTOCOL_UDP		0x17 	   /* IP header protocol entry. For UDP
-						    * packets, it is 17.
-						    */
-#define TCP_HEADER_LEN_IN_WORDS		0x5	   /* For our case, the header length
-						    * is always 20 bytes (5 words)
-						    */
-#define TCP_HEADER_LENGTH		20	   /* IP header length in bytes. Used
-						    * as offset to kigure out the start
-						    * of TCP header.
-						    */
-#define FULL_CSUM_STATUS_MASK		0x00000038 /* Mask to extract full checksum
-						    * status field from AXI4 Stream
-						    * Status Word 2.
-						    */
+#define IP_VERSION_4			0x800	/**< For IPV4, the Ethernet frame type/length field will have a value of 0x800. */
+#define IP_HEADER_VERSION		0x04	/**< For IPv4, the version entry in IP header is always 4. */
+#define IP_HEADER_LEN_IN_WORDS		0x05	/**< For our case, the header length is always 20 bytes (5 words. */
+#define IP_HEADER_LENGTH		20	/**< IP header length in bytes. Used as offset to kigure out the start of TCP header. */
+#define IP_HEADER_PROTOCOL_TCP		0x6	/**< IP header protocol entry. For TCP packets, it is 6. */
+#define IP_HEADER_PROTOCOL_UDP		0x17	/**< IP header protocol entry. For UDP packets, it is 17. */
+#define TCP_HEADER_LEN_IN_WORDS		0x5	/**< For our case, the header length is always 20 bytes (5 words). */
+#define TCP_HEADER_LENGTH		20	/**< IP header length in bytes. Used as offset to kigure out the start of TCP header. */
+#define FULL_CSUM_STATUS_MASK		0x00000038	/**< Mask to extract full checksum status field from AXI4 Stream Status Word 2. */
 
-#define FULL_CSUM_VALIDATED		0x00000002 /* If bits 3-5 in AXI4 Status word
-						    * have a value of 0x010, it means
-						    * both IP and TCP checksums have
-						    * been found to be correct.
-						    */
-#define IP_TCP_CSUMS_NOT_CHECKED	0x00000000
-#define IP_CSUM_OK_TCP_NOT_CHECKED	0x00000001
-#define TCP_CSUM_NOT_CHECKED_IP_NOT_OK	0x00000005
-#define IP_CSUM_OK_TCP_NOT_OK		0x00000006
+#define FULL_CSUM_VALIDATED		0x00000002	/**< If bits 3-5 in AXI4 Status word have a value of 0x010, it means both IP and TCP checksums have been found to be correct. */
+#define IP_TCP_CSUMS_NOT_CHECKED	0x00000000	/**< IP TCP CSUMS NOT CHECKED. */
+#define IP_CSUM_OK_TCP_NOT_CHECKED	0x00000001	/**< IP CSUM OK TCP NOT CHECKED. */
+#define TCP_CSUM_NOT_CHECKED_IP_NOT_OK	0x00000005	/**< TCP CSUM NOT CHECKED IP NOT OK. */
+#define IP_CSUM_OK_TCP_NOT_OK		0x00000006	/**< IP CSUM OK TCP NOT OK. */
 
-#define DUMMY_TCP_PORT_1		0x1111
-#define DUMMY_TCP_PORT_2		0x1112
+#define DUMMY_TCP_PORT_1		0x1111	/**< DUMMY TCP PORT 1. */
+#define DUMMY_TCP_PORT_2		0x1112	/**< DUMMY TCP PORT 2. */
 /*
  * Number of bytes to reserve for BD space for the number of BDs desired
  */
-#define RXBD_SPACE_BYTES RXBD_CNT * 64 * 16
-#define TXBD_SPACE_BYTES TXBD_CNT * 64 * 16
+#define RXBD_SPACE_BYTES RXBD_CNT * 64 * 16	/**< RXBD SPACE BYTES. */
+#define TXBD_SPACE_BYTES TXBD_CNT * 64 * 16	/**< TXBD SPACE BYTES. */
 
-#define BLOCK_SIZE_2MB 0x200000U
+#define BLOCK_SIZE_2MB 0x200000U	/**< BLOCK SIZE 2MB. */
 
-/*************************** Variable Definitions ****************************/
+/************************** Variable Definitions ****************************/
 
 static EthernetFrame TxFrame;	/* Transmit buffer */
 static EthernetFrame RxFrame;	/* Receive buffer */
@@ -204,11 +160,10 @@ XAxiEthernet AxiEthernetInstance;
 XMcdma DmaInstance;
 
 /*
- * Aligned memory segments to be used for buffer descriptors
+ * Aligned memory segments to be used for buffer descriptors.
  */
 char RxBdSpace[RXBD_SPACE_BYTES] __attribute__ ((aligned(BD_ALIGNMENT)));
 char TxBdSpace[TXBD_SPACE_BYTES] __attribute__ ((aligned(BD_ALIGNMENT)));
-
 /*
  * Counters to be incremented by callbacks
  */
@@ -221,21 +176,21 @@ volatile int Hascsum;	/* Tells whether h/w is capable of CSUM or not */
 
 #ifndef SDT
 #ifdef XPAR_INTC_0_DEVICE_ID
-#define INTC		XIntc
-#define INTC_HANDLER	XIntc_InterruptHandler
+#define INTC		XIntc	/**< INTC. */
+#define INTC_HANDLER	XIntc_InterruptHandler	/**< INTC HANDLER. */
 #else
-#define INTC		XScuGic
-#define INTC_HANDLER	XScuGic_InterruptHandler
+#define INTC		XScuGic	/**< INTC. */
+#define INTC_HANDLER	XScuGic_InterruptHandler	/**< INTC HANDLER. */
 #endif
 
 
 static INTC IntcInstance;
 #endif
 
-/*************************** Function Prototypes *****************************/
+/************************** Function Prototypes *****************************/
 
 /*
- * Examples
+ * Examples.
  */
 #ifndef SDT
 int AxiEthernetSgDmaIntrExample(INTC *IntcInstancePtr,
@@ -287,23 +242,34 @@ static int AxiEthernetSetupIntrSystem(INTC *IntcInstancePtr,
 #endif
 static void AxiEthernetErrorHandler(XAxiEthernet *AxiEthernet);
 
+/**
+ * @brief Prints PHY register values for debugging.
+ *
+ * @param[in] AxiEthernetInstancePtr Pointer to the AXI Ethernet driver instance.
+ */
 void AxiEthernetPHYRegistersDump(XAxiEthernet * AxiEthernetInstancePtr);
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This is the main function for the Axi Ethernet example. This function is not
-* included if the example is generated from the TestAppGen test  tool.
+* @brief Main entry point for the Axi Ethernet example.
 *
-* @param	None.
+* This function is not included if the example is generated from the TestAppGen test tool.
 *
-* @return	- XST_SUCCESS to indicate success.
-*		- XST_FAILURE to indicate failure
+***************************************************************************
 *
-* @note		None.
+* @return XST_SUCCESS on success, otherwise XST_FAILURE.
 *
-****************************************************************************/
+*****************************************************************************/
+
 #ifndef TESTAPP_GEN
+/****************************************************************************/
+/**
+* @brief Runs the example application.
+*
+* @return XST_SUCCESS on success, otherwise XST_FAILURE.
+*
+*****************************************************************************/
 int main(void)
 {
 	int Status;
@@ -340,39 +306,37 @@ int main(void)
 
 }
 #endif
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function demonstrates the usage usage of the Axi Ethernet by sending
+* @brief Demonstrates the usage of the Axi Ethernet by sending.
 * and receiving frames in interrupt driven MCDMA mode.
 *
-*
 * @if SDT
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		AxiEthernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXI MCDMA
+* @param[in] DmaInstancePtr is a pointer to the instance of the AXI MCDMA.
 *		component.
-* @param	AxiEthernetBaseAddress contains the base address of the AxiEthernet device
+* @param[in] AxiEthernetBaseAddress contains the base address of the AxiEthernet device.
 * @else
-* @param	IntcInstancePtr is a pointer to the instance of the Intc
+* @param[in] IntcInstancePtr is a pointer to the instance of the Intc.
 *		component.
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		AxiEthernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXI MCDMA
+* @param[in] DmaInstancePtr is a pointer to the instance of the AXI MCDMA.
 *		component.
-* @param	AxiEthernetDeviceId is Device ID of the Axi Ethernet Device ,
+* @param[in] AxiEthernetDeviceId is Device ID of the Axi Ethernet Device ,
 *		typically XPAR_<AXIETHERNET_instance>_DEVICE_ID value from
 *		xparameters.h.
-* @param	AxiMcDmaDeviceId is Device ID of the Axi DMAA Device ,
+* @param[in] AxiMcDmaDeviceId is Device ID of the Axi DMAA Device ,
 *		typically XPAR_<AXIMCDMA_instance>_DEVICE_ID value from
 *		xparameters.h.
-* @param	AxiEthernetIntrId is the Interrupt ID and is typically
+* @param[in] AxiEthernetIntrId is the Interrupt ID and is typically.
 *		XPAR_<INTC_instance>_<AXIETHERNET_instance>_VEC_ID
 *		value from xparameters.h.
 * @endif
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 * @note		AxiMcdma hardware must be initialized before initializing
 *		AxiEthernet. Since AxiMcdma reset line is connected to the
@@ -406,9 +370,9 @@ int AxiEthernetSgDmaIntrExample(XAxiEthernet *AxiEthernetInstancePtr,
 	UINTPTR AxiMCDmaBaseAddress;
 #endif
 
-	/*************************************/
+	/***********************************/
 	/* Setup device for first-time usage */
-	/*************************************/
+	/***********************************/
 
 	/*
 	 *  Get the configuration of AxiEthernet hardware.
@@ -523,16 +487,16 @@ int AxiEthernetSgDmaIntrExample(XAxiEthernet *AxiEthernetInstancePtr,
 	 AxiEthernetUtilPhyDelay(2);
 
 
-	/****************************/
+	/**************************/
 	/* Run through the examples */
-	/****************************/
+	/**************************/
 #ifndef SDT
 	 for (ChanId = 1 ; ChanId <= AxiEthernetInstancePtr->Config.AxiMcDmaChan_Cnt; ChanId++) {
 #else
 	 for (ChanId = 1 ; ChanId <= DmaInstancePtr->Config.RxNumChannels; ChanId++) {
 #endif
 		/*
-		 * Run the AxiEthernet DMA Single Frame Interrupt example
+		 * Run the AxiEthernet DMA Single Frame Interrupt example.
 		 */
 		Status = AxiEthernetSgDmaIntrSingleFrameExample(AxiEthernetInstancePtr,
 							  DmaInstancePtr, ChanId);
@@ -606,21 +570,19 @@ int AxiEthernetSgDmaIntrExample(XAxiEthernet *AxiEthernetInstancePtr,
 	return XST_SUCCESS;
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function setup the buffer descriptor chain for the Ingress mcdma Channels
+* @brief Sets up the buffer descriptor chain for the Ingress mcdma Channels.
 *
-* @param	McDmaInstancePtr is a pointer to the instance of the Dma
-*		component.
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
-*		Axi Ethernet component.
-* @param	MacCfgPtr is a pointer to the config instance of the Axi Ethernet
-*		component.
-* @param	AxiEthernetIntrId is interrupt Id of the MAC instance.
+* @param[in] McDmaInstPtr is a pointer to the MCDMA instance.
+* @param[in] AxiEthernetInstancePtr is a pointer to the AXI Ethernet instance.
+* @param[in] MacCfgPtr is a pointer to the AXI Ethernet configuration.
+* @if !SDT
+* @param[in] AxiEthernetIntrId is the MAC interrupt ID.
+* @endif
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 static int RxBdSetup(XMcdma *McDmaInstPtr, XAxiEthernet *AxiEthernetInstancePtr,
@@ -694,21 +656,19 @@ static int RxBdSetup(XMcdma *McDmaInstPtr, XAxiEthernet *AxiEthernetInstancePtr,
 	return XST_SUCCESS;
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function setup the buffer descriptor chain for the Egress mcdma Channels
+* @brief Sets up the buffer descriptor chain for the Egress mcdma Channels.
 *
-* @param	McDmaInstancePtr is a pointer to the instance of the Dma
-*		component.
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
-*		Axi Ethernet component.
-* @param	MacCfgPtr is a pointer to the config instance of the Axi Ethernet
-*		component.
-* @param	AxiEthernetIntrId is interrupt Id of the MAC instance.
+* @param[in] McDmaInstPtr is a pointer to the MCDMA instance.
+* @param[in] AxiEthernetInstancePtr is a pointer to the AXI Ethernet instance.
+* @param[in] MacCfgPtr is a pointer to the AXI Ethernet configuration.
+* @if !SDT
+* @param[in] AxiEthernetIntrId is the MAC interrupt ID.
+* @endif
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 static int TxBdSetup(XMcdma *McDmaInstPtr, XAxiEthernet *AxiEthernetInstancePtr,
@@ -777,11 +737,28 @@ static int TxBdSetup(XMcdma *McDmaInstPtr, XAxiEthernet *AxiEthernetInstancePtr,
 	return XST_SUCCESS;
 }
 
+/****************************************************************************/
+/**
+* @brief Swaps bytes within an 8-byte value.
+*
+* @param[in] Data Data value.
+*
+* @return XST_SUCCESS on success, otherwise an error code.
+*
+*****************************************************************************/
 u16 Swap8(u8 Data)
 {
 	return (u8) (((Data & 0xF0U) >> 4U) | ((Data & 0x0FU) << 4U));
 }
 
+/****************************************************************************/
+/**
+* @brief Programs the AXI Ethernet MAC address.
+*
+* @param[in] MacAddr MacAddr value.
+* @param[in] ChanId MCDMA channel identifier.
+*
+*****************************************************************************/
 void AxiEnthernetSetMAC(char *MacAddr, u8 ChanId)
 {
 	int i;
@@ -793,6 +770,14 @@ void AxiEnthernetSetMAC(char *MacAddr, u8 ChanId)
 	}
 }
 
+/****************************************************************************/
+/**
+* @brief Handles DMA receive completion callbacks.
+*
+* @param[in] CallBackRef Callback reference provided at registration.
+* @param[in] Chan_id MCDMA channel identifier.
+*
+*****************************************************************************/
 static void DoneHandler(void *CallBackRef, u32 Chan_id)
 {
 	XMcdma *McDmaInstPtr = (XMcdma *)((void *)CallBackRef);
@@ -831,11 +816,28 @@ static void DoneHandler(void *CallBackRef, u32 Chan_id)
 	FramesRx += ProcessedBdCnt;
 }
 
+/****************************************************************************/
+/**
+* @brief Handles DMA receive error callbacks.
+*
+* @param[in] CallBackRef Callback reference provided at registration.
+* @param[in] Chan_id MCDMA channel identifier.
+* @param[in] Mask Mask value.
+*
+*****************************************************************************/
 static void ErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask)
 {
 	xil_printf("Inside error Handler Chan_id is %x and Mask\n\r", Chan_id, Mask);
 }
 
+/****************************************************************************/
+/**
+* @brief Handles DMA transmit completion callbacks.
+*
+* @param[in] CallBackRef Callback reference provided at registration.
+* @param[in] Chan_id MCDMA channel identifier.
+*
+*****************************************************************************/
 static void TxDoneHandler(void *CallBackRef, u32 Chan_id)
 {
 	XMcdma *McDmaInstPtr = (XMcdma *)((void *)CallBackRef);
@@ -852,22 +854,27 @@ static void TxDoneHandler(void *CallBackRef, u32 Chan_id)
 	}
 }
 
+/****************************************************************************/
+/**
+* @brief Handles DMA transmit error callbacks.
+*
+* @param[in] CallBackRef Callback reference provided at registration.
+* @param[in] Chan_id MCDMA channel identifier.
+* @param[in] Mask Mask value.
+*
+*****************************************************************************/
 static void TxErrorHandler(void *CallBackRef, u32 Chan_id, u32 Mask)
 {
 	xil_printf("Inside Tx error Handler Chan_id is %d and Mask %x\n\r", Chan_id, Mask);
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This is the Error handler callback function and this function increments the
+* @brief This is the Error handler callback function and this function increments the.
 * the error counter so that the main thread knows the number of errors.
 *
-* @param	AxiEthernet is a reference to the Axi Ethernet device instance.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] AxiEthernet is a reference to the Axi Ethernet device instance.
 *
 ******************************************************************************/
 static void AxiEthernetErrorHandler(XAxiEthernet *AxiEthernet)
@@ -890,24 +897,21 @@ static void AxiEthernetErrorHandler(XAxiEthernet *AxiEthernet)
 	DeviceErrors++;
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function demonstrates the usage of the Axi Ethernet by sending and
+* @brief Demonstrates the usage of the Axi Ethernet by sending and.
 * receiving a single frame in SGDMA interrupt mode.
 * The source packet will be described by two descriptors. It will be received
 * into a buffer described by a single descriptor.
 *
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		Axi Ethernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the Dma
+* @param[in] DmaInstancePtr is a pointer to the instance of the Dma.
 *		component.
-* @param	ChanId is the MCDMA Channel number to be operate on.
+* @param[in] ChanId is the MCDMA Channel number to be operate on.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 int AxiEthernetSgDmaIntrSingleFrameExample(XAxiEthernet *AxiEthernetInstancePtr,
@@ -1075,24 +1079,21 @@ int AxiEthernetSgDmaIntrSingleFrameExample(XAxiEthernet *AxiEthernetInstancePtr,
 
 	return XST_SUCCESS;
 }
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function demonstrates the usage of the Axi Ethernet by sending and
+* @brief Demonstrates the usage of the Axi Ethernet by sending and.
 * receiving a multiple frames in MCDMA interrupt mode.
 * Each source packet will be described by two descriptors. It will be received
 * into a buffer described by a single descriptor.
 *
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		Axi Ethernet component.
-* @param	DmaInstancePtr   is a pointer to the instance of the Dma
+* @param[in] DmaInstancePtr is a pointer to the instance of the Dma.
 *		component.
-* @param	ChanId is the MCDMA Channel number to be operate on.
+* @param[in] ChanId is the MCDMA Channel number to be operate on.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 int AxiEthernetSgDmaIntrMultiFrameExample(XAxiEthernet *AxiEthernetInstancePtr,
@@ -1277,10 +1278,10 @@ int AxiEthernetSgDmaIntrMultiFrameExample(XAxiEthernet *AxiEthernetInstancePtr,
 	return XST_SUCCESS;
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This example sends and receives a single packet in loopback mode with
+* @brief This example sends and receives a single packet in loopback mode with.
 * checksum offloading support.
 *
 * The transmit frame will be che	cksummed over the entire Ethernet payload
@@ -1289,16 +1290,13 @@ int AxiEthernetSgDmaIntrMultiFrameExample(XAxiEthernet *AxiEthernetInstancePtr,
 * On receive, HW should calculate the Ethernet payload checksum and return a
 * value of 0xFFFF which means the payload data was likely not corrupted.
 *
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		AxiEthernet component.
-* @param	DmaInstancePtr   is a pointer to the instance of the Dma
+* @param[in] DmaInstancePtr is a pointer to the instance of the Dma.
 *		component.
-* @param	ChanId is the MCDMA Channel number to be operate on.
+* @param[in] ChanId is the MCDMA Channel number to be operate on.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 int AxiEthernetSgDmaPartialChecksumOffloadExample(XAxiEthernet *AxiEthernetInstancePtr,
@@ -1572,10 +1570,10 @@ int AxiEthernetSgDmaPartialChecksumOffloadExample(XAxiEthernet *AxiEthernetInsta
 	return XST_SUCCESS;
 }
 
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This example sends and receives a single packet in loopback mode with
+* @brief This example sends and receives a single packet in loopback mode with.
 * full checksum offloading support.
 *
 * An Ethernet frame is formed with IP header, TCP header and payload. The
@@ -1589,16 +1587,13 @@ int AxiEthernetSgDmaPartialChecksumOffloadExample(XAxiEthernet *AxiEthernetInsta
 * The example retrieves the checksum validation information from the AXI4-
 * Stream Appword2.
 *
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 *		AxiEthernet component.
-* @param	DmaInstancePtr   is a pointer to the instance of the Dma
+* @param[in] DmaInstancePtr is a pointer to the instance of the Dma.
 *		component.
-* @param	ChanId is the MCDMA Channel number to be operate on.
+* @param[in] ChanId is the MCDMA Channel number to be operate on.
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 int AxiEthernetSgDmaFullChecksumOffloadExample(XAxiEthernet *AxiEthernetInstancePtr,
@@ -1991,33 +1986,30 @@ int AxiEthernetSgDmaFullChecksumOffloadExample(XAxiEthernet *AxiEthernetInstance
 }
 
 #ifndef SDT
-/*****************************************************************************/
+/****************************************************************************/
 /**
 *
-* This function setups the interrupt system so interrupts can occur for the
-* Axi Ethernet.  This function is application-specific since the actual system
+* @brief Sets up the interrupt system so interrupts can occur for the.
+* Axi Ethernet.  is application-specific since the actual system
 * may or may not have an interrupt controller.  The Axi Ethernet could be
 * directly connected to a processor without an interrupt controller.  The user
 * should modify this function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the Intc
+* @param[in] IntcInstancePtr is a pointer to the instance of the Intc.
 *		component.
-* @param	AxiEthernetInstancePtr is a pointer to the instance of the
+* @param[in] AxiEthernetInstancePtr is a pointer to the instance of the.
 * 		AxiEthernet component.
-* @param	DmaInstancePtr is a pointer to the instance of the AXIMCDMA
+* @param[in] DmaInstancePtr is a pointer to the instance of the AXIMCDMA.
 *		component.
-* @param	AxiEthernetIntrId is the Interrupt ID and is typically
+* @param[in] AxiEthernetIntrId is the Interrupt ID and is typically.
 *		XPAR_<INTC_instance>_<AXIETHERNET_instance>_VEC_ID
 *		value from xparameters.h.
-* @param	DmaRxIntrId is the interrupt id for DMA Rx and is typically
+* @param[in] DmaRxIntrId is the interrupt id for DMA Rx and is typically.
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMARX_INTR
-* @param	DmaTxIntrId is the interrupt id for DMA Tx and is typically
+* @param[in] DmaTxIntrId is the interrupt id for DMA Tx and is typically.
 *		taken from XPAR_<AXIETHERNET_instance>_CONNECTED_DMATX_INTR
 *
-* @return	-XST_SUCCESS to indicate success
-*		-XST_FAILURE to indicate failure
-*
-* @note		None.
+* @return XST_SUCCESS on success, XST_FAILURE otherwise.
 *
 ******************************************************************************/
 static int AxiEthernetSetupIntrSystem(INTC *IntcInstancePtr,
@@ -2134,3 +2126,5 @@ static int AxiEthernetSetupIntrSystem(INTC *IntcInstancePtr,
 	return XST_SUCCESS;
 }
 #endif
+
+/** @} */

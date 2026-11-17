@@ -34,6 +34,14 @@
 
 /************************** Constant Definitions *****************************/
 
+/* Sample-frequency selector held while audio is disabled */
+#define XDPDC_AUD_FREQ_UNSET		0xFFU
+
+/**
+ * Max bypass streams; must match InitRunConfig.avpg[] and byp_stream_*[]
+ * array lengths below.
+ */
+#define XDPDC_BYPASS_STREAM_MAX		4U
 
 /**************************** Type Definitions *******************************/
 
@@ -44,7 +52,7 @@
 /* InitRunConfig structure */
 typedef struct {
 
-    AvpgRunConfig avpg[4];		/**< AV pattern generator configs */
+    AvpgRunConfig avpg[XDPDC_BYPASS_STREAM_MAX]; /**< AV pattern generator configs */
 
     u32 width;				/**< Horizontal resolution */
     u32 height;				/**< Vertical resolution */
@@ -55,6 +63,7 @@ typedef struct {
     u8 cursor_enable;			/**< Cursor enable */
     u8 audio_enable;			/**< Audio enable */
     u8 audio_channels;			/**< Number of audio channels */
+    u8 audio_frequency;			/**< Sample frequency selector */
     u8 sdp_enable;			/**< SDP enable */
     u8 partial_plane_blend_enable;	/**< Partial plane blend enable */
     u8 ppb_stream_select;		/**< PPB stream: 1=Stream1, 2=Stream2 */
@@ -80,28 +89,36 @@ typedef struct {
     u8 livevideo02mode;			/**< 1=Video only 2=None */
     u8 livevideoalphaen;		/**< 0=Disabled, 1=Enabled */
     u8 livevideosdpen;			/**< 0=Disabled, 1=Enabled */
-    u8 byp_streams;			/**< Number of bypass streams */
-    u8 byp_stream_pix_mode[4];		/**< Bypass stream PPC: 1, 2, 4 */
-    u8 byp_stream_sdp_en[4];		/**< Bypass stream SDP enable */
-    u8 byp_stream_vid_mode[4];		/**< Bypass stream video mode */
+    u8 byp_streams;			/**< Active bypass streams (user configured) */
+    u8 byp_streams_max;			/**< Max bypass streams (DC and PL AVPG/VTC) */
+    u8 design_mst_en;			/**< SDT mst-mode-en: 1=MST design, 0=SST-only */
+    u8 byp_stream_sdp_en[XDPDC_BYPASS_STREAM_MAX]; /**< Bypass stream SDP enable */
+    u8 byp_stream_vid_mode[XDPDC_BYPASS_STREAM_MAX]; /**< Bypass stream video mode */
 } InitRunConfig;
 
 /************************** Function Prototypes ******************************/
 
 /* Function prototypes */
-void XDpDc_ResolutionHelpMenu(void);
+void XDpDc_ResolutionHelpMenu(const InitRunConfig *config);
 void XDpDc_FormatHelpMenu(void);
 void XDpDc_MainHelpMenu(InitRunConfig *config);
 void XDpDc_ListNonliveFormats(void);
 void XDpDc_ListLiveFormats(void);
 void XDpDc_DisplayConfig(InitRunConfig *config);
-u32 XDpDc_GetWidth(void);
-u32 XDpDc_GetHeight(void);
+u32 XDpDc_GetWidth(const InitRunConfig *config);
+u32 XDpDc_GetHeight(const InitRunConfig *config);
 u32 XDpDc_ConfigureResolution(InitRunConfig *config);
 u32 XDpDc_ConfigureFormat(u32 *format, const char *format_name);
 u32 XDpDc_ConfigureOutputFormat(u32 *format, const char *format_name);
 u32 XDpDc_ConfigureCursor(InitRunConfig *config);
 u32 XDpDc_ConfigurePartialPlane(InitRunConfig *config);
+void XDpDc_BypassConfigureStream(InitRunConfig *config, u8 stream_idx);
+/**
+ * Prompt for active bypass stream count, then per-stream bus format.
+ */
+void XDpDc_ConfigureBypassStreams(InitRunConfig *config);
+void XDpDc_Apply8kFormatDefaults(InitRunConfig *config);
+void XDpDc_Warn8kRgbIfNeeded(const InitRunConfig *config);
 void XDpDc_MenuLoop(InitRunConfig *config);
 void XDpDc_InitConfigDefaults(InitRunConfig *config);
 void XDpDc_AuxMenu(XMmiDp *DpPtr);

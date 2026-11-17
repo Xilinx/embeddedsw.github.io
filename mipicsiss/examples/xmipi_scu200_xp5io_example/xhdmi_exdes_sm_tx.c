@@ -30,6 +30,15 @@
 #ifdef SDT
 #include "xinterrupt_wrap.h"
 #endif
+#include "sensor_cfgs.h"
+
+/* See the matching comment in xhdmi_example.c -- Pipeline_Cfg.VideoDestn
+ * tells Hdmiphy1HdmiTxReadyCallback() below (an async GT/PHY-ready
+ * interrupt callback, unrelated to the menu) whether HDMI is actually the
+ * active output right now, so its print can be muted while DSI is
+ * selected. */
+extern XPipeline_Cfg Pipeline_Cfg;
+
 /************************** Constant Definitions ****************************/
 
 static const XV_Tx_Hdmi_Events XHdmi_Tx_EventsPriorityQueue[XV_TX_HDMI_NUM_EVENTS] = {
@@ -175,7 +184,9 @@ void Hdmiphy1HdmiTxInitCallback(void *CallbackRef)
 ******************************************************************************/
 void Hdmiphy1HdmiTxReadyCallback(void *CallbackRef)
 {
-	xil_printf("%s,%d,\r\n", __func__, __LINE__);
+	if (Pipeline_Cfg.VideoDestn == XVIDDES_HDMI) {
+		xil_printf("%s,%d,\r\n", __func__, __LINE__);
+	}
 }
 
 void XV_Tx_VPhy_SetCallbacks(XV_Tx *InstancePtr)
@@ -508,6 +519,7 @@ u32 XV_Tx_VideoSetupAndStart(XV_Tx *InstancePtr,
 
 	/* XV_HdmiTxSS1_SetHdmiFrlMode(InstancePtr->HdmiTxSs); */
 	CorePpc =  XV_HdmiTxSS1_GetCorePpc(InstancePtr->HdmiTxSs);
+
 	if (InstancePtr->HdmiTxSs->HdmiTx1Ptr->Stream.IsFrl != TRUE) {
 		xil_printf("VidMode != XHDMIC_VIDMODE_HDMI_FRL!!!\r\n");
 		if ((InstancePtr->ConfigInfo.LineRate / 1000000) > 3400) {
@@ -542,25 +554,22 @@ u32 XV_Tx_VideoSetupAndStart(XV_Tx *InstancePtr,
 		return Status;
 	}
 
-	xdbg_xv_tx_new_stream_setup_print("%s,%d. Tmds clock = %d \r\n"
+		xdbg_xv_tx_new_stream_setup_print("%s,%d. Tmds clock = %d \r\n"
 			"\tNew Hdmi Tx Stream Params : PPC %d, "
 			"ColorDepth %d, ColorFrmtId %d. \r\n",
 			__func__, __LINE__, TmdsClock,
 			CorePpc,
 			HdmiTxSsVidStreamPtr->ColorDepth,
 			HdmiTxSsVidStreamPtr->ColorFormatId);
+
 	if (TmdsClock == 0) {
-			xil_printf("Entered First if\r\n");
 
 		if (InstancePtr->GetTxFrlClkCb != NULL) {
-				xil_printf("Entered Second if\r\n");
 
 			InstancePtr->GetTxFrlClkCb(InstancePtr->GetTxFrlClkCbRef);
 			if (VPhyInst->HdmiTxRefClkHz != 0) {
-					xil_printf("Entered third if\r\n");
 
 				TmdsClock = VPhyInst->HdmiTxRefClkHz;
-					xil_printf("TMDS Clock_2:%x\r\n",TmdsClock);
 
 			} else {
 				return XST_FAILURE;
@@ -619,7 +628,6 @@ u32 XV_Tx_VideoSetupAndStart(XV_Tx *InstancePtr,
 
 		/* Execute FRL register update */
 		XV_HdmiTx1_FrlExecute(InstancePtr->HdmiTxSs->HdmiTx1Ptr);
-
 
 		/* FRL StreamStart */
 		XV_HdmiTxSs1_FrlStreamStart(InstancePtr->HdmiTxSs);

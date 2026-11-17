@@ -11,6 +11,8 @@
 * @addtogroup dmaps Overview
 * @{
 *
+* @brief Implements reset functionality for the XDmaPs driver.
+*
 * This file contains the implementation of the interface reset functionality
 *	for XDmaPs driver.
 *
@@ -33,7 +35,7 @@
 
 /***************** Macros (Inline Functions) Definitions ********************/
 #ifndef XDMAPS_MAX_WAIT
-#define XDMAPS_MAX_WAIT 4000
+#define XDMAPS_MAX_WAIT 4000 /**< Maximum poll iterations while waiting for DMA debug idle. */
 #endif
 /************************** Function Prototypes *****************************/
 
@@ -41,7 +43,7 @@
 
 /*****************************************************************************/
 /**
-* This function perform the reset sequence to the given dmaps interface by
+* @brief Resets the DMA PS interface to the given dmaps interface by.
 * configuring the appropriate control bits in the dmaps specific registers
 * the dmaps reset sequence involves the following steps
 *	Disable all the interuupts
@@ -49,13 +51,9 @@
 *	Kill all the active channel threads
 *	Kill the manager thread
 *
-* @param   BaseAddress of the interface
+* @param[in] BaseAddress of the interface
 *
-* @return N/A
-*
-* @note
-* This function will not modify the slcr registers that are relevant for
-* dmaps controller
+* @note	Does not modify SLCR registers relevant to the DMA PS controller.
 ******************************************************************************/
 void XDmaPs_ResetHw(u32 BaseAddress)
 {

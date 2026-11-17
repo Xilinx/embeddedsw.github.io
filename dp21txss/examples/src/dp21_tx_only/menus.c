@@ -28,7 +28,9 @@ XDpTxSs DpTxSsInst;			/**< The DPTX Subsystem instance. */
 volatile u8 HpdPulseConEvent;	/**< This variable triggers DpTxSs_HpdPulseCon. */
 extern volatile u8 PrevLineRate;
 extern XTmrCtr TmrCtr;			/**< Timer instance. */
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 extern XVphy VPhyInst;			/**< The DPRX Subsystem instance. */
+#endif /* Added for VCK190/VEK385 support */
 u32 Ext_frame[3];
 
 lane_link_rate_struct lane_link_table[] =
@@ -65,6 +67,8 @@ extern XVidC_VideoMode resolution_table[];
  * Adding new resolution definition example
  * XVIDC_VM_3840x2160_30_P_SB, XVIDC_B_TIMING3_60_P_RB
  * and XVIDC_VM_3840x2160_60_P_RB has added.
+ *
+ * New custom video modes needs to be added here.
  */
 typedef enum {
 	XVIDC_VM_1920x1080_60_P_RB = (XVIDC_VM_CUSTOM + 1),
@@ -83,12 +87,32 @@ typedef enum {
 	XVIDC_VM_3840x2160_82_ASUS,
 	XVIDC_VM_3840x2160_98_ASUS,
 	XVIDC_VM_3840x2160_120_ASUS,
+	XVIDC_VM_1920x1080_30_P_CTA,
+	XVIDC_VM_3840x2160_120_P_CVT,
+	XVIDC_VM_3840x2160_60_P_RB2,
+	XVIDC_VM_5120x2160_60_P_RB2,
+	XVIDC_VM_7680x4320_60_P_RB2,
+	XVIDC_VM_5120x2160_60_P_CTA,
+	XVIDC_VM_3840x2160_144_P_RB2,
+	XVIDC_VM_4096x2160_60_P_RB1,
+	XVIDC_VM_5120x2880_60_P_RB1,
+	XVIDC_VM_4096x2160_60_P_RB3,
+	XVIDC_VM_2048x1536_60_P,
+	XVIDC_VM_7680x4320_30_P_RB,
+	XVIDC_VM_7680x4320_24_P_RB2,
+	XVIDC_VM_3840x2160_60_P_RB3,
+	XVIDC_VM_2048x1536_60_P_RB2,
+	XVIDC_VM_2560x1440_60_P_RB2,
+	XVIDC_VM_2728x1536_60_P,
+	XVIDC_VM_2048x1536_60_P_RB1,
+	XVIDC_VM_3840x2160_120_P_RB3,
+	XVIDC_VM_5120x2160_144_P_RB3,
+	XVIDC_VM_7680x4320_60_P_RB1,
 	XVIDC_CM_NUM_SUPPORTED
 } XVIDC_CUSTOM_MODES;
 
 #define XVIDC_FR_82HZ 82
 #define XVIDC_FR_98HZ 98
-
 
 /*
  * CUSTOM_TIMING: Here is the detailed timing for each custom resolutions.
@@ -115,7 +139,7 @@ const XVidC_VideoTimingMode XVidC_MyVideoTimingMode[
 	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_DP_30_P, "7680x4320@30Hz", XVIDC_FR_30HZ,
 		{7680, 8, 32, 40, 7760, 0,
 			4320, 47, 8, 6, 4381, 0, 0, 0, 0, 1}},
-	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_100_P_RB2, "3840x2160@100Hz (RB2)", XVIDC_FR_100HZ,
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_100_P_RB2, "3840x2160@100Hz(RB2)", XVIDC_FR_100HZ,
 		{3840, 8, 32, 40, 3920, 0,
 			2160, 91, 8, 6, 2265, 0, 0, 0, 0, 1}},
 	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_30_DELL, "7680x4320_DELL@30Hz", XVIDC_FR_30HZ,
@@ -154,8 +178,85 @@ const XVidC_VideoTimingMode XVidC_MyVideoTimingMode[
 	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_120_ASUS, "3840x2160@120Hz_ASUS", XVIDC_FR_120HZ,
 		{3840, 8, 32, 40, 3920, 1,
 			2160, 3, 5, 70, 2238, 0, 0, 0, 0, 1}},
+
+	/*
+	 * Compliance expected video modes.
+	 */
+	{ (XVidC_VideoMode)XVIDC_VM_1920x1080_30_P_CTA, "1920x1080@30Hz (CTA)", XVIDC_FR_30HZ,
+                {1920, 88, 44, 148, 2200, 1,
+                1080, 4, 5, 36, 1125, 0, 0, 0, 0, 1} },
+
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_120_P_CVT, "3840x2160@120Hz", XVIDC_FR_120HZ,
+		{3840, 352, 424, 776, 5392, 0,
+			2160, 3, 5, 148, 2316, 0, 0, 0, 0, 1} },
+
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_60_P_RB2, "3840x2160@60Hz (RB2)", XVIDC_FR_60HZ,
+		{3840, 8, 32, 40, 3920, 1,
+			2160, 48, 8, 6, 2222, 0, 0, 0, 0, 0} },
+
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2160_60_P_RB2, "5120x2160@60Hz (RB2)", XVIDC_FR_60HZ,
+		{5120, 8,  32, 40, 5200, 1,
+			2160, 48, 8, 6, 2222, 0, 0, 0, 0, 0} },
+
+	/*
+	 * enum value (XVIDC_VM_7680x4320_60_P_RB2) = 232
+	 */
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_60_P_RB2, "7680x4320@60Hz (RB2)", XVIDC_FR_60HZ,
+		{7680, 8, 32, 40, 7760, 1,
+			4320, 109, 8, 6,  4443, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2160_60_P_CTA, "5120x2160@60Hz (CTA)", XVIDC_FR_60HZ,
+		{5120, 164, 88, 128, 5500, 1,
+		2160, 8, 10, 72, 2250, 0, 0, 0, 0, 1} },
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_144_P_RB2, "3840x2160@144Hz(RB2)", XVIDC_FR_144HZ,
+		{3840, 8, 32, 40, 3920, 1,
+			2160, 140, 8, 6, 2314, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_4096x2160_60_P_RB1, "4096x2160@60Hz (RB1)", XVIDC_FR_60HZ,
+		{4096, 8, 32, 120, 4256, 1,
+		2160, 48, 8, 6, 2222, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2880_60_P_RB1, "5120x2880@60Hz (RB1)", XVIDC_FR_60HZ,
+		{5120, 48,  32, 80, 5280, 1,
+		2880, 3, 5, 74, 2962, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_4096x2160_60_P_RB3, "4096x2160@60Hz (RB3)", XVIDC_FR_60HZ,
+		{4096, 8, 32, 120, 4256, 1,
+		2160, 8, 12, 42, 2222, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_2048x1536_60_P, "2048x1536@60Hz (RB1)", XVIDC_FR_60HZ,
+		{2048, 8, 32, 120, 2208, 1,
+		1536, 3, 6, 31, 1576, 0, 0, 0, 0, 1} },
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_30_P_RB, "7680×4320@30Hz (RB)", XVIDC_FR_30HZ,
+		{7680, 48, 32, 80, 7840, 1,
+		4320, 3, 5, 53, 4381, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_24_P_RB2, "7680×4320@24Hz(RB2)", XVIDC_FR_24HZ,
+		{7680, 8, 32, 40, 7760, 1,
+		4320, 35, 8, 6, 4369, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_60_P_RB3, "3840×2160@60Hz(RB3)", XVIDC_FR_60HZ,
+		{3840, 8, 32, 120, 4000, 1,
+		2160, 48, 8, 6, 2222, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_2048x1536_60_P_RB2, "2048x1536@60Hz (RB2)", XVIDC_FR_60HZ,
+		{2048, 48, 32, 80, 2208, 1,
+		1536, 3, 6, 35, 1580, 0, 0, 0, 0, 0} },
+	{ (XVidC_VideoMode)XVIDC_VM_2560x1440_60_P_RB2, "2560x1440@60Hz (RB2)", XVIDC_FR_60HZ,
+		{2560, 8, 32, 40, 2640, 1,
+			1440, 27, 8, 6, 1481, 0, 0, 0, 0, 0}},
+	{ (XVidC_VideoMode)XVIDC_VM_2728x1536_60_P, "2728x1536@60Hz", XVIDC_FR_60HZ,
+		{2728, 200, 296, 496, 3720, 0,
+			1536, 3, 10, 43, 1592, 0, 0, 0, 0, 1}},
+	{ (XVidC_VideoMode)XVIDC_VM_2048x1536_60_P_RB1, "2048x1536@60Hz", XVIDC_FR_60HZ,
+		{2048, 48, 32, 80, 2208, 1,
+			1536, 3, 4, 37, 1580, 0, 0, 0, 0, 0}},
+	{ (XVidC_VideoMode)XVIDC_VM_3840x2160_120_P_RB3, "3840x2160@120Hz", XVIDC_FR_120HZ,
+		{3840, 8, 32, 40, 3920, 1,
+			2160, 113, 8, 6, 2287, 0, 0, 0, 0, 0}},
+	{ (XVidC_VideoMode)XVIDC_VM_5120x2160_144_P_RB3, "5120x2160@144Hz", XVIDC_FR_144HZ,
+		{5120, 8, 32, 40, 5200, 1,
+			2160, 140, 8, 6, 2314, 0, 0, 0, 0, 0}},
+	{ (XVidC_VideoMode)XVIDC_VM_7680x4320_60_P_RB1, "7680x4320@60Hz", XVIDC_FR_60HZ,
+		{7680, 48, 32, 80, 7840, 1,
+			4320, 3, 5, 115, 4443, 0, 0, 0, 0, 0}},
 };
 
+/*
+ * Add video mode in the below resolution table to show resolution in app menu.
+ */
 XVidC_VideoMode resolution_table[] =
 {
 	XVIDC_VM_640x480_60_P,
@@ -189,14 +290,25 @@ XVidC_VideoMode resolution_table[] =
 	(XVidC_VideoMode)XVIDC_VM_3840x2160_82_ASUS,
 	(XVidC_VideoMode)XVIDC_VM_3840x2160_98_ASUS,
 	(XVidC_VideoMode)XVIDC_VM_3840x2160_120_ASUS,
-	XVIDC_VM_4096x2160_120_P,
-	XVIDC_VM_5120x2160_120_P,
-	XVIDC_VM_7680x4320_60_P,
-	XVIDC_VM_7680x4320_60_P
+	(XVidC_VideoMode)XVIDC_VM_4096x2160_120_P,
+	(XVidC_VideoMode)XVIDC_VM_5120x2160_120_P,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_60_P,
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_60_P,
+	(XVidC_VideoMode)XVIDC_VM_4096x2160_60_P_RB3,
+	(XVidC_VideoMode)XVIDC_VM_2048x1536_60_P,
+	(XVidC_VideoMode)XVIDC_VM_5120x2160_60_P_CTA,
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_60_P_RB3,
+	(XVidC_VideoMode)XVIDC_VM_2048x1536_60_P_RB2,
+	(XVidC_VideoMode)XVIDC_VM_2560x1080_60_P,
+	(XVidC_VideoMode)XVIDC_VM_2560x1440_60_P_RB2,
+	(XVidC_VideoMode)XVIDC_VM_3840x2160_144_P_RB2,
+	(XVidC_VideoMode)XVIDC_VM_5120x2160_144_P_RB3,
+	(XVidC_VideoMode)XVIDC_VM_7680x4320_60_P_RB1
 };
 
 static char inbyte_local(void);
 static u32 xil_gethex(u8 num_chars);
+static int read_decimal_index(void);
 
 #if !defined (PLATFORM_MB) && !defined (__riscv)
 static char RecvByte_NonBlocking(void);
@@ -225,8 +337,6 @@ void DpPt_LaneLinkRateHelpMenu(void)
 
 		  );
 }
-
-
 
 void bpc_help_menu(int DPTXSS_BPC_int)
 {
@@ -263,29 +373,32 @@ void resolution_help_menu(void)
 {
 	xil_printf("- - - - -  -  - - - - - - - - - - - - - - - - - - -  -  - - - - -"
 			" - - - - - - - - - -\r\n"
-			"-                            Select an Option for Resolutio"
-			"n                                      -\r\n"
+			"-                           Select an Option for Resolution"
+			"                                       -\r\n"
 			"- - - - - - - - - - - - - - - - - - - - - - - - - -  -  - - - - - - - - - - "
 			"- - - - - \r\n"
-			"0 640x480_60_P     |   1 720x480_60_P       |   2 800x600_60_P  \r\n"
-			"3 1024x768_60_P    |   4 1280x720_60_P      |   5 1600x1200_60_P        \r\n"
-			"7 1920x1080_60_P   |   8 3840x2160_30_P\r\n"
-			"9 3840x2160_60_P   |   a 2560x1600_60_P     |   b 1280x1024_60_P\r\n"
-			"c 1792x1344_60_P   |   d 848x480_60_P       |   e 1280x960\r\n"
-			"f 1920x1440_60_P   |   i 3840x2160_60_P_RB  |   j 3840x2160_120_P_RB\r\n"
-			"k 7680x4320_24_P   |   l 7680x4320_30_P     |   m 3840x2160_100_P\r\n"
-			"n 7680x4320_30DELL |   o 5120x2880_30       |   p 7680x4320_30_MSTR\r\n"
-			"q 5120x2880_MSTR   |   r 3840x2160_120_MSTR |   s 3840x2160_82_ASUS\r\n"
-			"t 3840x2160_98_ASUS|   u 3840x2160_120_ASUS |   \r\n"
-#if defined (XPS_BOARD_ZCU102)
-			"v 4096x2160_120_P\r\n"
-#else
-			"v 4096x2160_120_P  |   w 5120x2160_120_P    |   y 7680x4320_60_P\r\n"
+			"0 640x480_60_P         | 1 720x480_60_P            |   2 800x600_60_P  \r\n"
+			"3 1024x768_60_P        | 4 1280x720_60_P           |   5 1600x1200_60_P        \r\n"
+			"7 1920x1080_60_P       | 8 3840x2160_30_P\r\n"
+			"9 3840x2160_60_P       | 10 2560x1600_60_P         |  11 1280x1024_60_P\r\n"
+			"12 1792x1344_60_P      | 13 848x480_60_P           |  14 1280x960\r\n"
+			"15 1920x1440_60_P      | 18 3840x2160_60_P_RB      |  19 3840x2160_120_P_RB\r\n"
+			"20 7680x4320_24_P      | 21 7680x4320_30_P         |  22 3840x2160_100_P_RB2\r\n"
+			"23 7680x4320_30DELL    | 24 5120x2880_60_P_RB2     |  25 7680x4320_30_MSTR\r\n"
+			"26 5120x2880_MSTR      | 27 3840x2160_120_MSTR     |  28 3840x2160_82_ASUS\r\n"
+			"29 3840x2160_98_ASUS   | 30 3840x2160_120_ASUS     |  31 4096x2160_120_P \r\n"
+#if !defined (XPS_BOARD_ZCU102)
+			"32 5120x2160_120_P        |  33 7680x4320_60_P\r\n"
+			"34 3840x2160_60_P      | 35 4096x2160_60_P_RB3     | 36 2048x1536_60_P  \r\n"
+			"37 5120x2160_60_P      | 38 3840x2160_60_P_RB3     | 39 2048x1536_60_P_RB1 \r\n"
+		        "40 2560x1080_60_P      | 41 2560x1440_60_P_RB2     | 42 3840x2160_144_P_RB2 \r\n"
+			"43 5120x2160_144_P_RB3 | 44 7680x4320_60_P_RB1 \r\n"
 #endif
 			"- - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 			"\r\n"
 
-			"Press 'x' to return to main menu \r\n"
+			"Enter numeric index and press Enter (supports multi-digit indices)\r\n"
+			"Press 'x' then Enter to return to main menu \r\n"
 			"Press any key to show this menu again\r\n");
 }
 
@@ -335,15 +448,14 @@ void sub_help_menu(void)
 			"d - Power Up/Down sink\r\n"
 			"e - Read EDID from sink\r\n"
 			"m - Read CRC checker value\r\n"
+			"r - Read DPCD register (full address in one prompt)\r\n"
+			"w - Write DPCD register\r\n"
 			"z - Display this Menu again\r\n"
 			"- - - - - - - - - - - - - - - - - - - - - - - - - \r\n");
 }
 
-
-
 void select_link_lane(void)
 {
-
 	xil_printf("-----------------------------------------------------\r\n");
 	xil_printf("--    Select the Link and Line Capabilities        --\r\n");
 	xil_printf("-----------------------------------------------------\r\n");
@@ -383,7 +495,8 @@ u8 aux_data[0];
 u8 term_key = 0;
 u8 tr_lane_set[4];
 
-void main_loop(){
+void main_loop()
+{
 	u32 i;
 	u32 Status;
 	u8 exit = 0;
@@ -401,7 +514,9 @@ void main_loop(){
 	XDp_TxAudioInfoFrame xilInfoFrame;
 	int m_aud, n_aud;
 	u8 in_pwr_save = 0;
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1)
 	u16 DrpVal = 0;
+#endif
 	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
 					  0x15, 0x16, 0x17}; /**< Duplicate */
 
@@ -427,12 +542,10 @@ void main_loop(){
 
 	sub_help_menu ();
 
-
 	while (1) { /**< for menu loop */
 
 		if (TxReconnected != 0) {
-			DpTxSs_HpdCon(&DpTxSsInst, Edid_org,
-					user_config.VideoMode_local);
+			DpTxSs_HpdCon(&DpTxSsInst, Edid_org);
 		}
 
 		if(HpdPulseConEvent == 1){
@@ -445,7 +558,6 @@ void main_loop(){
 
 		CmdKey[0] = 0;
 		CommandKey = 0;
-
 
 		CommandKey = xil_getc(0xff);
 		Command = atoi(&CommandKey);
@@ -515,6 +627,14 @@ void main_loop(){
 					in_pwr_save = 0;
 					xil_printf (
 							"\r\n==========power up===========\r\n");
+					/*
+					 * Re-train the link after waking the sink so the
+					 * source re-writes LINK_BW_SET/LANE_COUNT_SET as
+					 * required on exit from power save.
+					 */
+					LineRate = get_LineRate();
+					LaneCount = get_Lanecounts();
+					DpTxSs_StartTx(LineRate, LaneCount, user_config);
 				}
 				break;
 
@@ -581,59 +701,34 @@ void main_loop(){
 				resolution_help_menu();
 				exit = 0;
 				while (exit == 0) {
-					CmdKey[0] = 0;
-					Command = 0;
-					CmdKey[0] = inbyte_local();
-					if(CmdKey[0]!=0){
-						Command = (int)CmdKey[0];
-
-						switch  (CmdKey[0])
-						{
-							case 'x' :
-								exit = 1;
-								sub_help_menu ();
-								break;
-
-							default :
-								xil_printf("You have selected command '%c'\r\n",
-										CmdKey[0]);
-								if(CmdKey[0] >= 'a' && CmdKey[0] <= 'z'){
-									Command = CmdKey[0] -'a' + 10;
-									done = 1;
-								}
-
-								else if (Command > 47 && Command < 58) {
-									Command = Command - 48;
-									done = 1;
-								}
-								else if (Command >= 58 || Command <= 47) {
-									resolution_help_menu();
-									done = 0;
-									break;
-								}
-								xil_printf ("\r\nSetting resolution...\r\n");
-								audio_on = 0;
-								user_config.VideoMode_local =
-									resolution_table[Command];
-								/*
-								 * Disabling TX interrupts
-								 */
-								XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-										XDP_TX_INTERRUPT_MASK, 0xFFFFFFFF);
-
-								/*
-								 * for DP2.0
-								 */
-								XDpTxSs_Stop(&DpTxSsInst);
-								XDpTxSs_Reset(&DpTxSsInst);
-
-								DpTxSs_StartTx(LineRate, LaneCount, user_config);
-								LineRate = get_LineRate();
-								LaneCount = get_Lanecounts();
-
-								exit = done;
-								break;
+					int idx = read_decimal_index();
+					if (idx == -1) {
+						exit = 1;
+						sub_help_menu ();
+						break;
+					}
+					if (idx >= 0) {
+						u32 num_modes = sizeof(resolution_table)/sizeof(resolution_table[0]);
+						if ((u32)idx >= num_modes) {
+							xil_printf("Invalid index %d. Max is %d\r\n", idx, (int)num_modes - 1);
+							resolution_help_menu();
+							continue;
 						}
+						xil_printf ("\r\nSetting resolution...\r\n");
+						audio_on = 0;
+						user_config.VideoMode_local = resolution_table[idx];
+
+						/*
+						 * for DP2.0
+						 */
+						XDpTxSs_Stop(&DpTxSsInst);
+						XDpTxSs_Reset(&DpTxSsInst);
+
+						DpTxSs_StartTx(LineRate, LaneCount, user_config);
+						LineRate = get_LineRate();
+						LaneCount = get_Lanecounts();
+
+						exit = 1;
 					}
 				}
 
@@ -750,11 +845,15 @@ void main_loop(){
 										done = 0;
 										break;
 									}
-								/*
-								 * Disabling TX interrupts
-								 */
-								XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-										XDP_TX_INTERRUPT_MASK, 0xFFFFFFFF);
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+#if (VERSAL_FABRIC_8B10B == 0)
+								if (user_tx_LineRate == XDP_TX_LINK_BW_SET_810GBPS) {
+									xil_printf ("The device on VCK190/VEK385 does not support 8.1G\r\n");
+									xil_printf ("Setting linerate to 5.4G\r\n");
+									user_tx_LineRate = XDP_TX_LINK_BW_SET_540GBPS;
+								}
+#endif
+#endif /* Added for VCK190/VEK385 support */
 								PrevLineRate = user_tx_LineRate;
 								XDpTxSs_Stop(&DpTxSsInst);
 								audio_on = 0;
@@ -944,7 +1043,7 @@ void main_loop(){
 						aux_reg_address);
 				for(i = 0; i < num_of_aux_registers; i++)
 				{
-					Status = XDp_TxAuxRead(DpTxSsInst.DpPtr,
+					Status = XDpTxSs_AuxRead(&DpTxSsInst,
 							(aux_reg_address+i), 1, &Data);
 					if(Status == XST_SUCCESS)
 					{
@@ -965,6 +1064,7 @@ void main_loop(){
 				 * Display VideoPHY status
 				 */
 			case 'b':
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 				xil_printf("Video PHY Config/Status --->\r\n");
 				xil_printf(" RCS (0x10) = 0x%x\r\n",
 						XVphy_ReadReg(VPhyInst.Config.BaseAddr,
@@ -1015,12 +1115,76 @@ void main_loop(){
 						" = 0x%x, Val = 0x%x\r\n",XVPHY_DRP_TXOUT_DIV,
 						DrpVal
 					  );
+#else /* Added for VCK190/VEK385 support */
+				xil_printf("Video PHY Config/Status not supported on VCK190/VEK385"
+						" (no XVphy IP)\r\n");
+#endif /* Added for VCK190/VEK385 support */
 				break;
 				/*
 				 * CRC read
 				 */
 			case 'm' :
 				XVidFrameCrc_Report();
+				break;
+
+				/* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^*  */
+
+			case 'r' :
+				/*
+				 * r - DPCD read (full address entered in one prompt)
+				 */
+				xil_printf(
+						"\r\n Give 6 digit Hex value of base register 0x");
+				aux_reg_address = xil_gethex(6) & 0xFFFFFF;
+				xil_printf("\r\n Give number of registers that you "
+						"want to read (1 to 9): ");
+				num_of_aux_registers = xil_gethex(1);
+				if((num_of_aux_registers<1)||(num_of_aux_registers>9))
+				{
+					xil_printf("\r\n!!!Warning: Invalid number "
+							"selected, hence reading only one register\r\n");
+					num_of_aux_registers = 1;
+				}
+				xil_printf("\r\nGiven base address offset is 0x%x\r\n",
+						aux_reg_address);
+				for(i = 0; i < num_of_aux_registers; i++)
+				{
+					Status = XDp_TxAuxRead(DpTxSsInst.DpPtr,
+							(aux_reg_address+i), 1, &Data);
+					if(Status == XST_SUCCESS)
+					{
+						xil_printf("Value at address offset "
+								"0x%x, is = 0x%x\r\n",
+								(aux_reg_address+i),
+								((Data[0]) & 0xFF));
+					} else {
+						xil_printf("Aux Read failure\r\n");
+						break;
+					}
+				}
+				break;
+
+				/* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^*  */
+
+			case 'w' :
+				/*
+				 * w - DPCD write
+				 */
+				xil_printf(
+						"\r\n Give 6 digit Hex value of base register 0x");
+				aux_reg_address = xil_gethex(6) & 0xFFFFFF;
+				xil_printf(
+						"\r\n Give 2 digit Hex value to write 0x");
+				Data[0] = xil_gethex(2) & 0xFF;
+				Status = XDp_TxAuxWrite(DpTxSsInst.DpPtr,
+						aux_reg_address, 1, &Data);
+				if(Status == XST_SUCCESS)
+				{
+					xil_printf("\r\nWrote 0x%x at address offset 0x%x\r\n",
+							(Data[0] & 0xFF), aux_reg_address);
+				} else {
+					xil_printf("\r\nAux Write failure\r\n");
+				}
 				break;
 
 				/* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^* *^*  */
@@ -1056,6 +1220,46 @@ static char inbyte_local(void)
 	return XUartLite_RecvByte_local(STDIN_BASEADDRESS);
 #endif
 
+}
+
+/*
+ * Read a decimal index from UART (supports multi-digit), terminated by Enter.
+ * Returns:
+ *  - >= 0 : parsed index
+ *  - -1   : user requested exit (x or X pressed as first char)
+ *  - -2   : empty line (no digits before Enter)
+ */
+static int read_decimal_index(void)
+{
+	char c;
+	int val = 0;
+	int have_digit = 0;
+
+	while (1) {
+		c = inbyte_local();
+		if (c == 0) {
+			continue; /* no data yet */
+		}
+		if (c == '\r' || c == '\n') {
+			/* echo newline and return */
+			xil_printf("\r\n");
+			if (!have_digit) {
+				return -2; /* empty input */
+			}
+			return val;
+		}
+		if ((c == 'x' || c == 'X') && !have_digit) {
+			return -1; /* exit request */
+		}
+		if (c >= '0' && c <= '9') {
+			/* echo digit and accumulate */
+			xil_printf("%c", c);
+			have_digit = 1;
+			val = (val * 10) + (c - '0');
+		} else {
+			/* ignore any other characters */
+		}
+	}
 }
 
 
@@ -1110,7 +1314,11 @@ static u32 xil_gethex(u8 num_chars){
 static char RecvByte_NonBlocking()
 {
 	u32 RecievedByte;
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	RecievedByte = XUartPsv_ReadReg(STDIN_BASEADDRESS, XUARTPSV_UARTDR_OFFSET);
+#else /* Added for VCK190/VEK385 support */
 	RecievedByte = XUartPs_ReadReg(STDIN_BASEADDRESS, XUARTPS_FIFO_OFFSET);
+#endif /* Added for VCK190/VEK385 support */
 
 	/*
 	 * Return the byte received
@@ -1150,7 +1358,11 @@ char xil_getc(u32 timeout_ms){
 	}
 
 #if !defined (PLATFORM_MB) && !defined (__riscv)
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+	while((!XUartPsv_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)){
+#else /* Added for VCK190/VEK385 support */
 	while((!XUartPs_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)){
+#endif /* Added for VCK190/VEK385 support */
 #else
 	while(XUartLite_IsReceiveEmpty(STDIN_BASEADDRESS) && (timeout == 0)){
 #endif

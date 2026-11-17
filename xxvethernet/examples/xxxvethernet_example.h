@@ -1,16 +1,23 @@
 /******************************************************************************
 * Copyright (C) 2018 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+/** @cond INTERNAL */
+#ifndef XXXVETHERNET_EXAMPLE_H
+#define XXXVETHERNET_EXAMPLE_H
+/** @endcond */
 
 /**
 *
 * @file xxxvethernet_example.h
+* @addtogroup xxvethernet Overview
+* @{
 *
-* Defines common data types, prototypes, and includes the proper headers
-* for use with the Xxv Ethernet and USXGMII example code residing in this
-* directory.
+* @brief Defines common types and prototypes for XXV Ethernet examples.
+* Defines common data types, prototypes, and includes for the Xxv Ethernet
+* and USXGMII example code in this directory.
 *
 * This file along with xxxvethernet_example_util.c are utilized with the
 * specific example code in the other source code files provided.
@@ -30,8 +37,6 @@
 * </pre>
 *
 ******************************************************************************/
-#ifndef XXXVETHERNET_EXAMPLE_H
-#define XXXVETHERNET_EXAMPLE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,9 +50,9 @@ extern "C" {
 
 /************************** Constant Definitions ****************************/
 #ifdef SDT
-#define XXV_AXIDEVTYPE_MASK	0xF
-#define XXV_AXIDMA			0x2
-#define XXV_MCDMA			0x3
+#define XXV_AXIDEVTYPE_MASK	0xF /**< Mask for AXI device type bits in the base address. */
+#define XXV_AXIDMA			0x2 /**< AXI DMA device type identifier. */
+#define XXV_MCDMA			0x3 /**< AXI MCDMA device type identifier. */
 #endif
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -59,7 +64,9 @@ extern "C" {
  * Define an aligned data type for an ethernet frame. This declaration is
  * specific to the GNU compiler
  */
+/** @cond INTERNAL */
 typedef unsigned char EthernetFrame[XXE_MAX_JUMBO_FRAME_SIZE] __attribute__ ((aligned(64)));
+/** @endcond */
 
 
 /************************** Function Prototypes *****************************/
@@ -90,4 +97,7 @@ extern char DestAddr[];
 }
 #endif
 
+/** @} */
+/** @cond INTERNAL */
 #endif /* XXXVETHERNET_EXAMPLE_H */
+/** @endcond */

@@ -1,5 +1,5 @@
-# Copyright (C) 2023-2024 Advanced Micro Devices, Inc.  All rights reserved.
-# Copyright (c) 2021 Xilinx, Inc.  All rights reserved.
+# Copyright (c) 2021 - 2022 Xilinx, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
@@ -17,6 +17,7 @@ properties:
         - enum:
           - xlnx,v-dp-rxss2-1.0
           - xlnx,v-dp-rxss2-1.1
+          - xlnx,v-dp-rxss2-2.0
   reg:
     description: Physical base address and DisplayPort Transmitter Subsystem register map
 
@@ -42,13 +43,16 @@ properties:
     description: The total number of MST streams supported by this Subsystem core
 
   xlnx,color-format:
-    description: Type of color format supported by this Subssytem core
+    description: Type of color format supported by this Subsystem core
 
   xlnx,include-axi-iic:
     description: 1 if Subsystem supports Axi i2c support, 0 if not support
 
   xlnx,include-clk-wiz:
-    description: 1 if Subssytem supports clocking wizard support, 0 if not support
+    description: 1 if Subsystem supports clocking wizard support, 0 if not support
+
+  xlnx,enable-dsc:
+    description: 1 if Subsystem decompresses a Display Stream Compression encoded stream, 0 if not
 
   iic-present:
     description: Sub-core instance presence
@@ -92,6 +96,12 @@ properties:
   interrupt-parent:
     description: Interrupt parent
 
+  xlnx,examplemodes:
+    description: Example mode value used to select this example. The
+      generator compares this against the design's xlnx,examplemodes
+      value, so each example entry must specify a single integer.
+    type: integer
+
 required:
     - compatible
     - reg
@@ -106,6 +116,7 @@ required:
     - xlnx,color-format
     - xlnx,include-axi-iic
     - xlnx,include-clk-wiz
+    - xlnx,enable-dsc
     - iic-present
     - iic-connected:
         subnode_phandle:
@@ -146,6 +157,7 @@ required:
           - xlnx,number-of-mst-streams
           - xlnx,protocol-selection
           - xlnx,flow-direction
+          - xlnx,enable-dsc
     - hdcp14-present
     - hdcp14-connected:
         subnode_phandle:
@@ -182,7 +194,7 @@ examples:
             - src/dp21_rx_only/xdprxss_dp21_rx.c
             - src/dp21_rx_only/xvidframe_crc.c
             - src/dp21_rx_only/xvidframe_crc.h
-            - src/platforms/vcu_risc/lscript.ld
+            - src/platforms/vcu_risc/rxo/lscript.ld
 
     src/dp21_pt/xdprxss_dp21_pt.c:
         - dependency_files:
@@ -203,9 +215,32 @@ examples:
             - src/dp21_pt/xvid_clk_gen.c
             - src/dp21_pt/xvidframe_crc.c
             - src/dp21_pt/xvidframe_crc.h
-        - xlnx,examplemodes: 1
         - xlnx,hdcp-enable: 0
         - xlnx,num-streams: 1
+        - xlnx,examplemodes: 1
+
+    dummy/xdprxss_dp21_pt_versal.txt:
+        - dependency_files:
+            - src/dp21_pt/clk_set.c
+            - src/dp21_pt/clk_set.h
+            - src/dp21_pt/main.h
+            - src/dp21_pt/menus.c
+            - src/dp21_pt/passthrough.c
+            - src/dp21_pt/rx.c
+            - src/dp21_pt/rx.h
+            - src/dp21_pt/si570.c
+            - src/dp21_pt/si570drv.c
+            - src/dp21_pt/si570drv.h
+            - src/dp21_pt/tx.c
+            - src/dp21_pt/tx.h
+            - src/dp21_pt/videofmc_defs.h
+            - src/dp21_pt/xdprxss_dp21_pt.c
+            - src/dp21_pt/xvid_clk_gen.c
+            - src/dp21_pt/xvidframe_crc.c
+            - src/dp21_pt/xvidframe_crc.h
+        - xlnx,hdcp-enable: 0
+        - xlnx,num-streams: 1
+        - xlnx,examplemodes: 18
 
     dummy/xdprxss_dp21_pt_vcu.txt:
         - dependency_files:
@@ -226,7 +261,7 @@ examples:
             - src/dp21_pt/xvid_clk_gen.c
             - src/dp21_pt/xvidframe_crc.c
             - src/dp21_pt/xvidframe_crc.h
-            - src/platforms/vcu_mb/lscript.ld
+            - src/platforms/vcu_risc/lscript.ld
         - xlnx,examplemodes: 1
         - xlnx,hdcp-enable: 0
         - xlnx,num-streams: 1
@@ -246,7 +281,7 @@ examples:
             - src/dp21_pt_mst/xvidframe_crc.h
             - src/dp21_pt_mst/xvid_pat_gen.c
             - src/dp21_pt_mst/xvid_pat_gen.h
-            - src/platforms/vcu_mb/lscript.ld
+            - src/platforms/vcu_risc/lscript.ld
         - xlnx,examplemodes: 1
         - xlnx,hdcp-enable: 0
         - xlnx,num-streams: 4
@@ -291,7 +326,7 @@ examples:
             - src/dp21_pt_hdcp/xvid_clk_gen.c
             - src/dp21_pt_hdcp/xvidframe_crc.c
             - src/dp21_pt_hdcp/xvidframe_crc.h
-            - src/platforms/vcu_mb/lscript.ld
+            - src/platforms/vcu_risc/lscript.ld
         - xlnx,examplemodes: 1
         - xlnx,hdcp-enable: 1
         - xlnx,num-streams: 1

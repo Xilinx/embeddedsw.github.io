@@ -9,10 +9,8 @@
 /**
 *
 * @file xi3cpsx.c
-* @addtogroup Overview
-* @{
 *
-* Handles init functions.
+* @brief Implements I3C initialization and FIFO helpers.
 *
 * <pre> MODIFICATION HISTORY:
 *
@@ -23,9 +21,16 @@
 *       	      Copy the input clock
 * 1.3  sd   11/17/23 Added support for system device-tree flow.
 *      sd   1/30/24  Moved prints under DEBUG flag.
+* 1.8  vn   07/30/26 Fix Doxygen warnings
+* 1.8  tb   09/22/26 Align Doxygen comments with AMD documentation standards
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup i3cpsx_api I3CPSX APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -36,35 +41,34 @@
 /*****************************************************************************/
 /**
 *
-* @brief
-* Initializes a specific XI3cPsx instance such that the driver is ready to use.
+* @brief Initializes an XI3cPsx instance so the driver is ready to use.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	ConfigPtr is a reference to a structure containing information
-*		about a specific I3C device. This function initializes an
-*		InstancePtr object for a specific device specified by the
-*		contents of Config.
-* @param	EffectiveAddr is the device base address in the virtual memory
-*		address space. The caller is responsible for keeping the address
-*		mapping from EffectiveAddr to the device physical base address
-*		unchanged once this function is invoked. Unexpected errors may
-*		occur if the address mapping changes after this function is
-*		called. If address translation is not used, use
-*		ConfigPtr->BaseAddress for this parameter, passing the physical
-*		address instead.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] ConfigPtr Reference to a structure containing information
+*            about a specific I3C device. This function initializes an
+*            InstancePtr object for a specific device specified by the contents
+*            of Config.
+* @param[in] EffectiveAddr The device base address in the virtual memory
+*            address space. The caller is responsible for keeping the address
+*            mapping from EffectiveAddr to the device physical base address
+*            unchanged once this function is invoked. Unexpected errors may
+*            occur if the address mapping changes after this function is called.
+*            If address translation is not used, use ConfigPtr->BaseAddress for
+*            this parameter, passing the physical address instead.
 *
-* @return	XST_SUCCESS if successful.
-*		XST_DEVICE_IS_STARTED if the instance is already initialized.
-*		XST_FAILURE if SCL clock programming or bus initialization fails
-*		(master mode only).
-*
-* @note		None.
+* @return
+*        - XST_SUCCESS if successful.
+*        - XST_DEVICE_IS_STARTED if the instance is already initialized.
+*        - XST_FAILURE if SCL clock programming or bus initialization fails
+*          (master mode only).
 *
 ******************************************************************************/
 s32 XI3cPsx_CfgInitialize(XI3cPsx *InstancePtr, XI3cPsx_Config *ConfigPtr,
 			  u32 EffectiveAddr)
 {
 	s32 Status;
+	u32 Reg;
+	u32 Index;
 
 	/* Assert the arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -84,6 +88,40 @@ s32 XI3cPsx_CfgInitialize(XI3cPsx *InstancePtr, XI3cPsx_Config *ConfigPtr,
 
 	/* Indicate the instance is now ready to use, initialized without error */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
+
+	/* Cleared before the first command, in case the memory was not. */
+	InstancePtr->Error = 0U;
+	InstancePtr->LastDatIndex = 0U;
+	InstancePtr->LastTransCmd = 0U;
+	InstancePtr->OvfPending = 0U;
+
+	/* Discover the DAT geometry, capped by the driver's per-device arrays. */
+	Reg = XI3cPsx_ReadReg(EffectiveAddr, XI3CPSX_DEVICE_ADDR_TABLE_POINTER);
+	InstancePtr->DatStartAddr = XI3CPSX_BASEADDR +
+				    ((Reg &
+				      XI3CPSX_DEVICE_ADDR_TABLE_POINTER_P_DEV_ADDR_TABLE_START_ADDR_MASK) >>
+				     XI3CPSX_DEVICE_ADDR_TABLE_POINTER_P_DEV_ADDR_TABLE_START_ADDR_SHIFT);
+	InstancePtr->MaxDevs = (Reg &
+				XI3CPSX_DEVICE_ADDR_TABLE_POINTER_DEV_ADDR_TABLE_DEPTH_MASK) >>
+			       XI3CPSX_DEVICE_ADDR_TABLE_POINTER_DEV_ADDR_TABLE_DEPTH_SHIFT;
+	if (InstancePtr->MaxDevs > XI3CPSX_MAX_DAT_ENTRIES) {
+		InstancePtr->MaxDevs = XI3CPSX_MAX_DAT_ENTRIES;
+	}
+
+	/*
+	 * Default every target to "no IBI payload" so XI3cPsx_EnableIbi()
+	 * cannot act on an uncaptured BCR.
+	 */
+	for (Index = 0U; Index < XI3CPSX_MAX_DAT_ENTRIES; Index++) {
+		InstancePtr->Bcr[Index] = 0U;
+	}
+	InstancePtr->SirRejectMask = 0xFFFFFFFFU;
+	InstancePtr->IbiHandler = NULL;
+	InstancePtr->IbiCallBackRef = NULL;
+	InstancePtr->RespDone = 0U;
+	InstancePtr->HjHandler = NULL;
+	InstancePtr->HjCallBackRef = NULL;
+	InstancePtr->HotJoinPending = 0U;
 
 	/*
 	 * Reset the I3C controller to get it into its initial state. It is expected
@@ -154,16 +192,11 @@ s32 XI3cPsx_CfgInitialize(XI3cPsx *InstancePtr, XI3cPsx_Config *ConfigPtr,
 
 /***************************************************************************/
 /**
-* @brief
-* Fill I3CPsx Write Tx FIFO.
+* @brief Writes data into the I3C transmit FIFO.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	TxBuf is the pointer to the send buffer.
-* @param	TxLen is the number of bytes to be sent.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] TxBuf Pointer to the send buffer.
+* @param[in] TxLen The number of bytes to be sent.
 *
 ******************************************************************************/
 void XI3cPsx_WrTxFifo(XI3cPsx *InstancePtr, u32 *TxBuf, u16 TxLen)
@@ -174,6 +207,14 @@ void XI3cPsx_WrTxFifo(XI3cPsx *InstancePtr, u32 *TxBuf, u16 TxLen)
 	(void)TxBuf;
 
 	while (TxLen > 0 && InstancePtr->SendByteCount > 0) {
+		/*
+		 * Clear the word accumulator every iteration. The partial
+		 * last-word branch below builds the word with |=, so a stale
+		 * value left over from the previous full word would bleed its
+		 * bits into the trailing 1-3 bytes and corrupt them.
+		 */
+		Data = 0;
+
 		if (InstancePtr->SendByteCount > 3) {
 			Data = (u32)((*(InstancePtr->SendBufferPtr + 0) << 0) |
 				     (*(InstancePtr->SendBufferPtr + 1) << 8) |
@@ -188,7 +229,7 @@ void XI3cPsx_WrTxFifo(XI3cPsx *InstancePtr, u32 *TxBuf, u16 TxLen)
 			for (Index = 0; Index < InstancePtr->SendByteCount; Index++) {
 				Data |= (u32)(*(InstancePtr->SendBufferPtr + Index) << (8*Index));
 			}
-			InstancePtr->SendByteCount -= TxLen;
+			InstancePtr->SendByteCount = 0;
 			TxLen = 0;
 		}
 
@@ -198,19 +239,21 @@ void XI3cPsx_WrTxFifo(XI3cPsx *InstancePtr, u32 *TxBuf, u16 TxLen)
 
 /***************************************************************************/
 /**
-* @brief
-* Fill I3CPsx Command FIFO.
+* @brief Writes a command into the I3C command FIFO.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	Cmd is a pointer to the XI3cPsx_Cmd structure.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] Cmd Pointer to the XI3cPsx_Cmd structure.
 *
 ******************************************************************************/
 void XI3cPsx_WrCmdFifo(XI3cPsx *InstancePtr, XI3cPsx_Cmd *Cmd)
 {
+	/*
+	 * Remembered so an overflow reported later, possibly from the
+	 * interrupt handler, can still be tied back to the target.
+	 */
+	InstancePtr->LastTransCmd = Cmd->TransCmd;
+	InstancePtr->LastDatIndex = (u8)((Cmd->TransCmd >> 16) & 0x1FU);
+
 	if (Cmd->TransArg)
 		XI3cPsx_WriteReg(InstancePtr->Config.BaseAddress,
 				 XI3CPSX_COMMAND_QUEUE_PORT, Cmd->TransArg);
@@ -222,16 +265,11 @@ void XI3cPsx_WrCmdFifo(XI3cPsx *InstancePtr, XI3cPsx_Cmd *Cmd)
 
 /***************************************************************************/
 /**
-* @brief
-* Read I3CPsx Rx FIFO.
+* @brief Reads data from the I3C receive FIFO.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	RxBuf is the pointer to the recv buffer.
-* @param	RxLen is the number of bytes to be recv.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[out] RxBuf Pointer to the recv buffer.
+* @param[in] RxLen The number of bytes to be recv.
 *
 ******************************************************************************/
 void XI3cPsx_RdRxFifo(XI3cPsx *InstancePtr, u32 *RxBuf, u16 RxLen)
@@ -241,6 +279,10 @@ void XI3cPsx_RdRxFifo(XI3cPsx *InstancePtr, u32 *RxBuf, u16 RxLen)
 
 	(void)RxBuf;
 
+	/*
+	 * RxLen comes from the word based FIFO level, so it can exceed the
+	 * bytes left in the buffer.
+	 */
 	if (RxLen > InstancePtr->RecvByteCount) {
 		RxLen = InstancePtr->RecvByteCount;
 	}
@@ -270,17 +312,14 @@ void XI3cPsx_RdRxFifo(XI3cPsx *InstancePtr, u32 *RxBuf, u16 RxLen)
 
 /*****************************************************************************/
 /**
-* @brief
-* This function sends the transfer command.
+* @brief Sends the transfer command.
 *
-*
-* @param        InstancePtr is a pointer to the XI3cPsx instance.
-* @param        CmdCCC is a pointer to the Command Info.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] CmdCCC Pointer to the Command Info.
 *
 * @return
-*               - XST_SUCCESS if everything went well.
-*               - XST_FAILURE if any error.
-*
+*        - XST_SUCCESS if successful.
+*        - XST_FAILURE otherwise.
 *
 ******************************************************************************/
 s32 XI3cPsx_SendTransferCmd(XI3cPsx *InstancePtr, struct CmdInfo *CmdCCC)
@@ -318,17 +357,14 @@ s32 XI3cPsx_SendTransferCmd(XI3cPsx *InstancePtr, struct CmdInfo *CmdCCC)
 
 /*****************************************************************************/
 /**
-* @brief
-* This function sends the Address Assignment command.
+* @brief Sends the Address Assignment command.
 *
-*
-* @param        InstancePtr is a pointer to the XI3cPsx instance.
-* @param        CmdCCC is a pointer to the Command Info.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] CmdCCC Pointer to the Command Info.
 *
 * @return
-*               - XST_SUCCESS if everything went well.
-*               - XST_FAILURE if any error.
-*
+*        - XST_SUCCESS if successful.
+*        - XST_FAILURE otherwise.
 *
 ******************************************************************************/
 s32 XI3cPsx_SendAddrAssignCmd(XI3cPsx *InstancePtr, struct CmdInfo *CmdCCC)

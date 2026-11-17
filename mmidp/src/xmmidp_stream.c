@@ -23,7 +23,9 @@
 *******************************************************************************/
 /******************************* Include Files ********************************/
 #include <stdlib.h>
+#include <string.h>
 #include <xstatus.h>
+#include <xil_assert.h>
 #include <sleep.h>
 
 #include "xmmidp.h"
@@ -31,13 +33,64 @@
 #define XMMIDP_VCP_TABLE_MAX_TIMEOUT_COUNT 	30
 #define XMMIDP_STREAM_OFFSET			0x10000
 
-/* Transfer Unit (TU) parameter constants */
+/** Transfer unit (TU) size, in link symbols per lane. */
 #define XMMIDP_TU_SIZE				64
-#define XMMIDP_TU_AVG_MAX			63
+/** Largest integer average bytes per TU (6-bit field). */
+#define XMMIDP_AVG_BYTES_PER_TU_MAX		63U
+/** Largest fractional average bytes per TU, in 1/64 (6-bit field). */
+#define XMMIDP_AVG_BYTES_PER_TU_FRAC_MAX	63U
 #define XMMIDP_TU_FRAC_SCALE			64
 #define XMMIDP_BITS_PER_BYTE			8
 #define XMMIDP_MHZ_TO_HZ			1000000ULL
 #define XMMIDP_YCBCR420_BW_DIVISOR		2
+
+/* MST payload bandwidth number (PBN) constants (DP 1.4 section 2.6.4.3). */
+/** Bits per pixel = BPC * 2 for YCbCr 4:2:2. */
+#define XMMIDP_PBN_CHROMA422_BPC_MULT		2U
+/** Bits per pixel = BPC * 3 for RGB and YCbCr 4:4:4. */
+#define XMMIDP_PBN_RGB444_BPC_MULT		3U
+/** Bits per pixel = BPC * 15 / 10 for YCbCr 4:2:0 (numerator). */
+#define XMMIDP_PBN_Y420_BPC_NUM			15U
+/** Bits per pixel = BPC * 15 / 10 for YCbCr 4:2:0 (denominator). */
+#define XMMIDP_PBN_Y420_BPC_DEN			10U
+/** PBN per MBps is 64 / 54 (numerator). */
+#define XMMIDP_PBN_SCALING_NUM			64U
+/** PBN per MBps is 64 / 54 (denominator). */
+#define XMMIDP_PBN_SCALING_DEN			54U
+/** 0.6% PBN margin is 1006 / 1000 (numerator). */
+#define XMMIDP_PBN_MARGIN_SCALE			1006U
+/** 0.6% PBN margin is 1006 / 1000 (denominator). */
+#define XMMIDP_PBN_MARGIN_DIVISOR		1000U
+
+/* MST target average stream symbol slots (dp14 XDp_TxCalculateTs). */
+/** Target symbol slots are computed in 1/8 slot steps. */
+#define XMMIDP_TS_FRAC_DENOMINATOR		8U
+/** Link MBps per lane for one LinkBW unit (0.27 Gbps). */
+#define XMMIDP_TS_LINK_BW_SCALE			27U
+/** Max slots = PBN * 54 / link MBps (one PBN is 54/64 MBps). */
+#define XMMIDP_TS_PBN_LINK_SCALE		54U
+
+/* DP 1.4 Table 2-138: link rate and lane count array dimensions. */
+/** Link rates in XMmiDp_LinkPbnTable: RBR, HBR, HBR2, HBR3. */
+#define XMMIDP_LINK_PBN_RATE_COUNT		4U
+/** Lane counts in XMmiDp_LinkPbnTable: 1, 2, 4. */
+#define XMMIDP_LINK_PBN_LANE_COUNT		3U
+/** MTP time slots usable for payload; slot 0 is the MTP header. */
+#define XMMIDP_MTP_PAYLOAD_SLOTS_MAX		63U
+/** MTP slot count including header slot 0. */
+#define XMMIDP_MST_VC_SLOT_COUNT		64U
+/** First payload slot after the MTP header. */
+#define XMMIDP_MST_VC_FIRST_SLOT		1U
+/** Stream IDs packed per VCP table register. */
+#define XMMIDP_MST_VCP_SLOTS_PER_REG		8U
+/** 4-bit stream ID field width within a packed VCP register. */
+#define XMMIDP_MST_VCP_STREAM_ID_MASK		0xFU
+/** Bits per stream ID in a packed VCP register (not register stride). */
+#define XMMIDP_MST_VCP_STREAM_ID_BITS		4U
+/** Byte stride between MST_VCP_TABLE_REG0 and REG7. */
+#define XMMIDP_MST_VCP_REG_STRIDE		4U
+/** 0x3F = all 63 payload slots; DP 1.4 full-table clear. */
+#define XMMIDP_DPCD_PAYLOAD_CLEAR_SLOT_COUNT	0x3FU
 
 /* TU threshold boundaries */
 #define XMMIDP_TU_LOW_AVG_BOUNDARY		16
@@ -52,6 +105,24 @@
 #define XMMIDP_INIT_THRESHOLD_LO_MASK		0x7F
 #define XMMIDP_INIT_THRESHOLD_LO_BITS		7
 #define XMMIDP_INIT_THRESHOLD_HI_MASK		0x3
+
+/** VC payload bandwidth (PBN) for one time slot per MTP. */
+static const u16 XMmiDp_LinkPbnTable[XMMIDP_LINK_PBN_RATE_COUNT]
+				    [XMMIDP_LINK_PBN_LANE_COUNT] = {
+	/* 1 lane, 2 lanes, 4 lanes */
+	{  3,  6, 12 }, /* RBR  */
+	{  5, 10, 20 }, /* HBR  */
+	{ 10, 20, 40 }, /* HBR2 */
+	{ 15, 30, 60 }, /* HBR3 */
+};
+
+static u8 XMmiDp_GetSinkVcPayloadStartSlot(XMmiDp *InstancePtr, u8 Stream);
+static void XMmiDp_WriteMstVcpTableRegs(XMmiDp *InstancePtr,
+					const u8 *VcpSlotStreamId);
+static void XMmiDp_SetTuInitThresholdFromTsInt(XMmiDp *InstancePtr, u8 Stream,
+					       u8 TsInt);
+static void XMmiDp_ApplyMstStreamAllocatedSlots(XMmiDp *InstancePtr, u8 Stream,
+						u8 AllocSlots);
 
 /******************************************************************************/
 /**
@@ -575,18 +646,19 @@ void XMmiDp_SetHBlankInterval(XMmiDp *InstancePtr, u8 Stream)
 
 /******************************************************************************/
 /**
- * This is helper api that programs the VideoController MSA, VideoConfig registers
- * for a specific stream
+ * Program VideoController MSA and VideoConfig registers for one stream.
  *
- * @param       InstancePtr is a pointer to the XDpPsu instance.
- * @param       Stream is the stream number for which to enable or disable
- *              video stream.
+ * For SST, this includes VIDEO_CONFIG5 (TU / InitThreshold) via
+ * XMmiDp_SetVideoConfig5(). For MST (CtrlConfig[].MstModeEn), this function
+ * does not program VIDEO_CONFIG5; the caller must write it later with
+ * XMmiDp_SetVideoConfig5() after TU fields are valid (from
+ * XMmiDp_ComputeTuParams()) and before VC payload allocate / ACT — typically
+ * batched for all active MST streams before payload allocate.
  *
- * @return      None.
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
  *
- * @note        None.
- *
-*******************************************************************************/
+ ******************************************************************************/
 void XMmiDp_ConfigureVideoController(XMmiDp *InstancePtr, u8 Stream)
 {
 
@@ -599,7 +671,8 @@ void XMmiDp_ConfigureVideoController(XMmiDp *InstancePtr, u8 Stream)
 	XMmiDp_SetVideoConfig2(InstancePtr, Stream);
 	XMmiDp_SetVideoConfig3(InstancePtr, Stream);
 	XMmiDp_SetVideoConfig4(InstancePtr, Stream);
-	XMmiDp_SetVideoConfig5(InstancePtr, Stream);
+	if (!InstancePtr->CtrlConfig[Stream - 1].MstModeEn)
+		XMmiDp_SetVideoConfig5(InstancePtr, Stream);
 
 	XMmiDp_SetVideoMsa1(InstancePtr, Stream);
 	XMmiDp_SetVideoMsa2(InstancePtr, Stream);
@@ -680,6 +753,10 @@ void XMmiDp_SetPixModeSel(XMmiDp *InstancePtr, u8 Stream, XMmiDp_PPC PixModeSel)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid((Stream >= XMMIDP_STREAM_ID1) &&
 		       (Stream <= XMMIDP_STREAM_ID4));
+
+	Xil_AssertVoid((PixModeSel == XMMIDP_SINGLE_PIX_MODE) ||
+		       (PixModeSel == XMMIDP_DUAL_PIX_MODE) ||
+		       (PixModeSel == XMMIDP_QUAD_PIX_MODE));
 
 	InstancePtr->VSampleCtrl[Stream - 1].PixModeSel = PixModeSel;
 }
@@ -1468,9 +1545,7 @@ void XMmiDp_SetSdpRegBank(XMmiDp *InstancePtr, u8 Stream, u32 SdpReg)
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       ScrambleDis is 1 to disable scrambling, 0 to enable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerScrambleDis(XMmiDp *InstancePtr, u8 Stream, u8 ScrambleDis)
@@ -1491,9 +1566,8 @@ void XMmiDp_SetControllerScrambleDis(XMmiDp *InstancePtr, u8 Stream, u8 Scramble
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       EnhanceFramingEn is 1 to enable enhanced framing,
+ *              0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerEnhanceFramingEn(XMmiDp *InstancePtr, u8 Stream, u8 EnhanceFramingEn)
@@ -1514,9 +1588,8 @@ void XMmiDp_SetControllerEnhanceFramingEn(XMmiDp *InstancePtr, u8 Stream, u8 Enh
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       EnhanceFramingWithFecEn is 1 to enable enhanced framing
+ *              with FEC, 0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerEnhanceFramingWithFecEn(XMmiDp *InstancePtr, u8 Stream,
@@ -1538,9 +1611,8 @@ void XMmiDp_SetControllerEnhanceFramingWithFecEn(XMmiDp *InstancePtr, u8 Stream,
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       FastLinkTrainEn is 1 to enable fast link training,
+ *              0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerFastLinkTrainEn(XMmiDp *InstancePtr, u8 Stream, u8 FastLinkTrainEn)
@@ -1561,9 +1633,8 @@ void XMmiDp_SetControllerFastLinkTrainEn(XMmiDp *InstancePtr, u8 Stream, u8 Fast
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       ScaleDownModeEn is 1 to enable scale-down mode,
+ *              0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerScaleDownModeEn(XMmiDp *InstancePtr, u8 Stream, u8 ScaleDownModeEn)
@@ -1584,9 +1655,8 @@ void XMmiDp_SetControllerScaleDownModeEn(XMmiDp *InstancePtr, u8 Stream, u8 Scal
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable or disable
- *
- * @return      None.
+ * @param       DisableInterleaving is 1 to disable interleaving,
+ *              0 to enable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerDisableInterleaving(XMmiDp *InstancePtr, u8 Stream, u8 DisableInterleaving)
@@ -1607,9 +1677,8 @@ void XMmiDp_SetControllerDisableInterleaving(XMmiDp *InstancePtr, u8 Stream, u8 
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       0x0 for 400us, 0x1 for 3.2ms
- *
- * @return      None.
+ * @param       SelAuxTimeout32Ms is 0 for a 400 us AUX reply timeout,
+ *              1 for 3.2 ms.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerSelAuxTimeout32Ms(XMmiDp *InstancePtr, u8 Stream, u8 SelAuxTimeout32Ms)
@@ -1630,9 +1699,7 @@ void XMmiDp_SetControllerSelAuxTimeout32Ms(XMmiDp *InstancePtr, u8 Stream, u8 Se
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable/disable
- *
- * @return      None.
+ * @param       MstModeEn is 1 to enable MST mode, 0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerMstModeEn(XMmiDp *InstancePtr, u8 Stream, u8 MstModeEn)
@@ -1653,9 +1720,7 @@ void XMmiDp_SetControllerMstModeEn(XMmiDp *InstancePtr, u8 Stream, u8 MstModeEn)
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable/disable
- *
- * @return      None.
+ * @param       FecEn is 1 to enable FEC, 0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerFecEn(XMmiDp *InstancePtr, u8 Stream, u8 FecEn)
@@ -1676,9 +1741,7 @@ void XMmiDp_SetControllerFecEn(XMmiDp *InstancePtr, u8 Stream, u8 FecEn)
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable/disable
- *
- * @return      None.
+ * @param       eDpEn is 1 to enable eDP mode, 0 to disable it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllereDpEn(XMmiDp *InstancePtr, u8 Stream, u8 eDpEn)
@@ -1699,9 +1762,8 @@ void XMmiDp_SetControllereDpEn(XMmiDp *InstancePtr, u8 Stream, u8 eDpEn)
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @param       Stream is the stream number for which to set the color depth.
- * @param       Controller enable/disable
- *
- * @return      None.
+ * @param       InitiateMstActSeq is 1 to initiate the MST ACT sequence,
+ *              0 to clear it.
  *
 *******************************************************************************/
 void XMmiDp_SetControllerInitiateMstActSeq(XMmiDp *InstancePtr, u8 Stream, u8 InitiateMstActSeq)
@@ -1723,8 +1785,6 @@ void XMmiDp_SetControllerInitiateMstActSeq(XMmiDp *InstancePtr, u8 Stream, u8 In
  * @param       InstancePtr is a pointer to the XDpPsu instance.
  * @param       Stream is the stream number for which to enable or disable
  *              video stream.
- *
- * @return      None.
  *
  * @note        None.
  *
@@ -1769,45 +1829,93 @@ void XMmiDp_SetCoreCtrl(XMmiDp *InstancePtr, u8 Stream)
 
 /******************************************************************************/
 /**
- * This function enables mst mode in the core controller
+ * Set CCTL0 ENABLE_MST_MODE for the TX core.
  *
- * @param       InstancePtr is a pointer to the XDpPsu instance.
- * @return
- *              - none.
- *
- * @note        None.
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Enable 1 to enable MST mode on TX, 0 to disable.
  *
 *******************************************************************************/
-void XMmiDp_MstModeEnable(XMmiDp *InstancePtr)
+void XMmiDp_MstModeEnable(XMmiDp *InstancePtr, u8 Enable)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid((Enable == 0U) || (Enable == 1U));
 
 	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
 				  XMMIDP_CCTL0_ENABLE_MST_MODE_MASK,
 				  XMMIDP_CCTL0_ENABLE_MST_MODE_SHIFT,
-				  InstancePtr->RxConfig.MstCap);
+				  Enable);
 }
 
 /******************************************************************************/
 /**
- * This function enables mst act seq in the core controller
+ * Enable MST source mode on the sink (DPCD MSTM_CTRL) and TX MST in CCTL0.
  *
- * @param       InstancePtr is a pointer to the XDpPsu instance.
- * @return
- *              - none.
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
  *
- * @note        None.
+ * @return	XST_SUCCESS if MST was enabled or the sink is SST-only;
+ *		XST_FAILURE if the MSTM_CTRL AUX write failed.
+ *
+ * @note	Call after SST link training (MSTM_CTRL cleared during
+ *		XMmiDp_SetSinkDpcdLinkCfgField()).
  *
 *******************************************************************************/
+u32 XMmiDp_SinkMstModeEnable(XMmiDp *InstancePtr)
+{
+	u32 Status;
+	u8 MstmCtrl;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (!InstancePtr->RxConfig.MstCap) {
+		xil_printf("[MSTM] Sink MST_CAP=0, SST mode unchanged\r\n");
+		return XST_SUCCESS;
+	}
+
+	/* MSTM_CTRL (0x111) exists only for DPCD rev >= 1.2 */
+	if (InstancePtr->RxConfig.DpcdRev < 0x12U) {
+		return XST_SUCCESS;
+	}
+
+	/* UP_REQ_EN stays clear: the driver has no UP_REQ / UP_REP handling. */
+	MstmCtrl = (u8)(XMMIDP_DPCD_UPSTREAM_IS_SRC_MASK |
+			XMMIDP_DPCD_MST_EN_MASK);
+
+	Status = XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_MSTM_CTRL, 1, &MstmCtrl);
+	if (Status != XST_SUCCESS) {
+		xil_printf("[MSTM] ERROR: Failed to write DPCD MSTM_CTRL (0x111)\r\n");
+		return XST_FAILURE;
+	}
+
+	XMmiDp_MstModeEnable(InstancePtr, 1U);
+	xil_printf("[MSTM] MST enabled (MSTM_CTRL=0x%02X)\r\n", MstmCtrl);
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * Assert MST mode and initiate the MST ACT sequence in CCTL0.
+ *
+ * Uses CCTL0 read-modify-write so non-MST fields (e.g. enhanced framing) are
+ * preserved. Does not poll DPCD; the caller must wait for
+ * PAYLOAD_TABLE_UPDATE_STATUS (2C0h) ACT_HANDLED — typically via
+ * XMmiDp_InitiateActSeq() / XMmiDp_WaitActHandledStatus().
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ *
+ ******************************************************************************/
 void XMmiDp_MstActSeqEnable(XMmiDp *InstancePtr)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
 
-	/* Act Init Seq */
-	XMmiDp_WriteReg(InstancePtr->Config.BaseAddr, XMMIDP_CCTL0,
-			(XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_MASK |
-			 XMMIDP_CCTL0_ENABLE_MST_MODE_MASK));
-
+	/* SinkMstModeEnable / MstModeEnable already set MST mode; re-assert
+	 * defensively, then assert ACT trigger (mode before trigger). */
+	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
+				  XMMIDP_CCTL0_ENABLE_MST_MODE_MASK,
+				  XMMIDP_CCTL0_ENABLE_MST_MODE_SHIFT, 1U);
+	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
+				  XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_MASK,
+				  XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_SHIFT, 1U);
 }
 
 /******************************************************************************/
@@ -1828,6 +1936,7 @@ u32 XMmiDp_WaitPayloadTableUpdateStatus(XMmiDp *InstancePtr)
 	u8 TimeoutCount = 0;
 
 	do {
+		AuxReply = 0;
 		XMmiDp_AuxRead(InstancePtr, XMMIDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS,
 			       1, &AuxReply);
 
@@ -1866,7 +1975,9 @@ u32 XMmiDp_WaitActHandledStatus(XMmiDp *InstancePtr)
 	u8 AuxReply = 0;
 	u8 TimeoutCount = 0;
 
+	XMmiDp_WaitUs(InstancePtr, 1000);
 	do {
+		AuxReply = 0;
 		XMmiDp_AuxRead(InstancePtr, XMMIDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS,
 			       1, &AuxReply);
 
@@ -1889,21 +2000,24 @@ u32 XMmiDp_WaitActHandledStatus(XMmiDp *InstancePtr)
 
 /******************************************************************************/
 /**
- * This function initiates CCTL ACT sequence between DpTx and DpRx
- * of the immediate branch device connected. Check DPCD Payload table update
- * status. This ensures successful handling of ACT trigger sequence.
+ * Initiates the MST ACT sequence on the immediate branch device.
  *
- * @param       InstancePtr is a pointer to the XDpPsu instance.
+ * Asserts CCTL0 INITIATE_MST_ACT_SEQ via XMmiDp_MstActSeqEnable(), then polls
+ * DPCD PAYLOAD_TABLE_UPDATE_STATUS (2C0h) until ACT_HANDLED is set.
+ * CCTL0 INITIATE_MST_ACT_SEQ is not polled; DP 1.4 completion is ACT_HANDLED.
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
  * @return
- *              - none.
+ *              - XST_SUCCESS if ACT was handled by the branch sink.
+ *              - Error code on ACT timeout or AUX failure.
  *
- * @note        None.
+ * @note        Caller must have already updated the sink VC payload table and
+ *              confirmed VC_PAYLOAD_ID_UPDATED before calling this function.
  *
 *******************************************************************************/
 u32 XMmiDp_InitiateActSeq(XMmiDp *InstancePtr)
 {
 	u32 Status;
-	u8 TimeoutCount = 0;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -1916,30 +2030,15 @@ u32 XMmiDp_InitiateActSeq(XMmiDp *InstancePtr)
 		return Status;
 	}
 
-	do {
-		Status = XMmiDp_ReadReg(InstancePtr->Config.BaseAddr, XMMIDP_CCTL0);
-		Status &= XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_MASK;
-
-		if (TimeoutCount > XMMIDP_VCP_TABLE_MAX_TIMEOUT_COUNT) {
-			xil_printf("CCTL0_INITIATE_MST_ACT_SEQ timeout error\r\n");
-
-			return XST_ERROR_COUNT_MAX;
-		}
-		TimeoutCount++;
-
-	} while (Status == XMMIDP_CCTL0_INITIATE_MST_ACT_SEQ_MASK);
-
 	return XST_SUCCESS;
 }
 
 /******************************************************************************/
 /**
- * This function sets the virtual channel payload allocation table.
+ * This function sets MST_VCP_TABLE_REG0 (VC payload slots 0..7).
  *
  * @param       InstancePtr is a pointer to the XMmiDp instance.
- * @param       u32 Payload slot for each stream
- *
- * @return      None.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
  *
 *******************************************************************************/
 void XMmiDp_SetMstVcpTable0(XMmiDp *InstancePtr, u32 Payload)
@@ -1951,6 +2050,14 @@ void XMmiDp_SetMstVcpTable0(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG1 (VC payload slots 8..15).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable1(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1960,6 +2067,14 @@ void XMmiDp_SetMstVcpTable1(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG2 (VC payload slots 16..23).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable2(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1969,6 +2084,14 @@ void XMmiDp_SetMstVcpTable2(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG3 (VC payload slots 24..31).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable3(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1978,6 +2101,14 @@ void XMmiDp_SetMstVcpTable3(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG4 (VC payload slots 32..39).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable4(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1987,6 +2118,14 @@ void XMmiDp_SetMstVcpTable4(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG5 (VC payload slots 40..47).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable5(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -1996,6 +2135,14 @@ void XMmiDp_SetMstVcpTable5(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG6 (VC payload slots 48..55).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable6(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -2005,6 +2152,14 @@ void XMmiDp_SetMstVcpTable6(XMmiDp *InstancePtr, u32 Payload)
 
 }
 
+/******************************************************************************/
+/**
+ * This function sets MST_VCP_TABLE_REG7 (VC payload slots 56..63).
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       Payload is the packed 4-bit stream IDs of the slots.
+ *
+*******************************************************************************/
 void XMmiDp_SetMstVcpTable7(XMmiDp *InstancePtr, u32 Payload)
 {
 	Xil_AssertVoid(InstancePtr != NULL);
@@ -2013,6 +2168,157 @@ void XMmiDp_SetMstVcpTable7(XMmiDp *InstancePtr, u32 Payload)
 			XMMIDP_MST_VCP_TABLE_REG7, Payload);
 
 }
+
+/******************************************************************************/
+/**
+ * Write packed stream IDs to MST_VCP_TABLE_REG0..REG7.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	VcpSlotStreamId is a 64-entry map (index = MTP slot).
+ *
+ * @return	None.
+ *
+ ******************************************************************************/
+static void XMmiDp_WriteMstVcpTableRegs(XMmiDp *InstancePtr,
+					const u8 *VcpSlotStreamId)
+{
+	u32 RegIdx;
+	u32 SlotIdx;
+	u32 RegVal;
+	u32 AbsSlot;
+
+	for (RegIdx = 0U; RegIdx < XMMIDP_MST_VCP_REG_COUNT; RegIdx++) {
+		RegVal = 0U;
+		for (SlotIdx = 0U; SlotIdx < XMMIDP_MST_VCP_SLOTS_PER_REG;
+		     SlotIdx++) {
+			AbsSlot = (RegIdx * XMMIDP_MST_VCP_SLOTS_PER_REG) +
+				  SlotIdx;
+			RegVal |= ((u32)(VcpSlotStreamId[AbsSlot] &
+					 XMMIDP_MST_VCP_STREAM_ID_MASK)) <<
+				  (SlotIdx * XMMIDP_MST_VCP_STREAM_ID_BITS);
+		}
+		XMmiDp_WriteReg(InstancePtr->Config.BaseAddr,
+				XMMIDP_MST_VCP_TABLE_REG0 +
+				(RegIdx * XMMIDP_MST_VCP_REG_STRIDE),
+				RegVal);
+	}
+}
+
+/******************************************************************************/
+/**
+ * Clears the TX and immediate sink VC payload ID tables.
+ *
+ * TX: zero MST_VCP_TABLE_REG0..REG7 via XMmiDp_WriteMstVcpTableRegs().
+ * Sink: DP 1.4 VcId=0 DPCD allocate (start slot 0, slot count 0x3F).
+ * Downstream branches are cleared separately by
+ * XMmiDp_SendSbMsgClearPayloadIdTable().
+ *
+ * Clears only VC_PAYLOAD_ID_UPDATED at PAYLOAD_TABLE_UPDATE_STATUS (0x2C0);
+ * ACT_HANDLED is left unchanged so a later WaitActHandledStatus() can observe
+ * it (this clear typically runs first on a new HPD MST path).
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ *
+ * @return	XST_SUCCESS if the tables were cleared; otherwise the AUX status
+ *		from the failing write or poll.
+ *
+ * @note	Call only when MST is in use (MST-capable design / sink). SST
+ *		payload DPCD registers are undefined.
+ * @note	Does not clear MstStreamConfig[] (TimeSlots, StartSlot, MstPbn);
+ *		the caller must refresh active-stream state after clear.
+ *
+ ******************************************************************************/
+u32 XMmiDp_ClearPayloadVcIdTable(XMmiDp *InstancePtr)
+{
+	u8 AuxData[3];
+	u8 VcpSlotStreamId[XMMIDP_MST_VC_SLOT_COUNT];
+	u32 Status;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	memset(VcpSlotStreamId, 0, sizeof(VcpSlotStreamId));
+	XMmiDp_WriteMstVcpTableRegs(InstancePtr, VcpSlotStreamId);
+
+	AuxData[0] = XMMIDP_DPCD_VC_PAYLOAD_ID_UPDATED_MASK;
+	Status = XMmiDp_AuxWrite(InstancePtr,
+				 XMMIDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS,
+				 1, AuxData);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	AuxData[0] = 0U;
+	AuxData[1] = 0U;
+	AuxData[2] = XMMIDP_DPCD_PAYLOAD_CLEAR_SLOT_COUNT;
+	Status = XMmiDp_AuxWrite(InstancePtr,
+				 XMMIDP_DPCD_PAYLOAD_ALLOCATE_SET,
+				 3, AuxData);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	return XMmiDp_WaitPayloadTableUpdateStatus(InstancePtr);
+}
+
+/******************************************************************************/
+/**
+ * Programs the TX MST VC payload table for streams 1 through Stream.
+ * Builds a 64-slot map (4-bit stream ID per slot) from allocated time slots
+ * and writes MST_VCP_TABLE_REG0..REG7 via XMmiDp_WriteMstVcpTableRegs().
+ * Call XMmiDp_ComputeTimeSlot() first.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4) through which
+ *		to build the table cumulatively.
+ *
+ * @return
+ *		- XST_SUCCESS if the TX table was programmed.
+ *		- XST_FAILURE if slot allocation exceeds the 64-entry table.
+ *
+ * @note	Uses MstStream->StartSlot when already set (e.g. by
+ *		XMmiDp_SetSinkVcPayloadTable()); otherwise computes and stores
+ *		it once via XMmiDp_GetSinkVcPayloadStartSlot().
+ *
+ ******************************************************************************/
+u32 XMmiDp_SetTxVcPayloadTable(XMmiDp *InstancePtr, u8 Stream)
+{
+	u8 StreamId;
+	u8 VcpSlotStreamId[XMMIDP_MST_VC_SLOT_COUNT];
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream >= XMMIDP_STREAM_ID1) &&
+			  (Stream <= XMMIDP_STREAM_ID4));
+
+	memset(VcpSlotStreamId, 0, sizeof(VcpSlotStreamId));
+
+	for (StreamId = XMMIDP_STREAM_ID1; StreamId <= Stream; StreamId++) {
+		XMmiDp_MstStream *MstStream =
+			&InstancePtr->MstStreamConfig[StreamId - 1];
+		u8 TimeSlots = MstStream->TimeSlots;
+		u8 StartSlot;
+		u32 Idx;
+
+		if (TimeSlots == 0U)
+			continue;
+
+		if (MstStream->StartSlot != 0U)
+			StartSlot = MstStream->StartSlot;
+		else {
+			StartSlot = XMmiDp_GetSinkVcPayloadStartSlot(InstancePtr,
+								     StreamId);
+			MstStream->StartSlot = StartSlot;
+		}
+
+		if ((StartSlot + TimeSlots - 1U) >= XMMIDP_MST_VC_SLOT_COUNT)
+			return XST_FAILURE;
+
+		for (Idx = 0U; Idx < TimeSlots; Idx++)
+			VcpSlotStreamId[StartSlot + Idx] = StreamId;
+	}
+
+	XMmiDp_WriteMstVcpTableRegs(InstancePtr, VcpSlotStreamId);
+
+	return XST_SUCCESS;
+}
+
 /******************************************************************************/
 /**
  * Computes the MSA Misc0 field from the stream's BitsPerColor and the
@@ -2021,8 +2327,6 @@ void XMmiDp_SetMstVcpTable7(XMmiDp *InstancePtr, u32 Payload)
  * @param	InstancePtr is a pointer to the XMmiDp instance.
  * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
  * @param	ColorFormat is the color format (RGB, YCbCr 4:4:4/4:2:2).
- *
- * @return	None.
  *
  ******************************************************************************/
 void XMmiDp_ComputeMisc0(XMmiDp *InstancePtr, u8 Stream,
@@ -2086,8 +2390,6 @@ void XMmiDp_ComputeMisc0(XMmiDp *InstancePtr, u8 Stream,
  * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
  * @param	ColorFormat is the color format (RGB, YCbCr 4:4:4/4:2:2/4:2:0).
  *
- * @return	None.
- *
  ******************************************************************************/
 void XMmiDp_ComputeHBlankInterval(XMmiDp *InstancePtr, u8 Stream,
 				  XVidC_ColorFormat ColorFormat)
@@ -2132,14 +2434,486 @@ void XMmiDp_ComputeHBlankInterval(XMmiDp *InstancePtr, u8 Stream,
 
 /******************************************************************************/
 /**
+ * Returns effective bits per pixel for MST PBN from stream MSA and mapping.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	Effective bits per pixel for PBN calculation.
+ *
+ ******************************************************************************/
+static u32 XMmiDp_GetPbnBitsPerPixel(XMmiDp *InstancePtr, u8 Stream)
+{
+	XMmiDp_MainStreamAttributes *MsaConfig;
+	XMmiDp_VidMap VidMap;
+	u32 Bpc;
+
+	MsaConfig = &InstancePtr->MsaConfig[Stream - 1];
+	VidMap = InstancePtr->VSampleCtrl[Stream - 1].VideoMapping;
+	Bpc = MsaConfig->BitsPerColor;
+
+	if ((VidMap >= XMMIDP_YCbCr422_8BPC) &&
+	    (VidMap <= XMMIDP_YCbCr422_16BPC))
+		return Bpc * XMMIDP_PBN_CHROMA422_BPC_MULT;
+	if ((VidMap >= XMMIDP_Y_8BPC) && (VidMap <= XMMIDP_Y_16BPC))
+		return Bpc;
+	if ((VidMap >= XMMIDP_YCbCr420_8BPC) &&
+	    (VidMap <= XMMIDP_YCbCr420_16BPC))
+		return (Bpc * XMMIDP_PBN_Y420_BPC_NUM) / XMMIDP_PBN_Y420_BPC_DEN;
+
+	return Bpc * XMMIDP_PBN_RGB444_BPC_MULT;
+}
+
+/******************************************************************************/
+/**
+ * Returns VC payload bandwidth (PBN) for one time slot per MTP for the
+ * current link configuration using DP 1.4 Table 2-138 lookup.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ *
+ * @return	PBN for one time slot on the configured link, or 0 on error.
+ *
+ ******************************************************************************/
+u16 XMmiDp_GetLinkPbn(XMmiDp *InstancePtr)
+{
+	XMmiDp_LinkConfig *LinkConfig;
+	u8 RateIdx;
+	u8 LaneIdx;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	LinkConfig = &InstancePtr->LinkConfig;
+	RateIdx = (u8)LinkConfig->LinkRate;
+	LaneIdx = LinkConfig->LaneCount;
+
+	if ((RateIdx >= XMMIDP_LINK_PBN_RATE_COUNT) ||
+	    (LaneIdx >= XMMIDP_LINK_PBN_LANE_COUNT))
+		return 0U;
+
+	return XMmiDp_LinkPbnTable[RateIdx][LaneIdx];
+}
+
+/******************************************************************************/
+/**
+ * Compute stream PBN and VC payload time slot count for one MST stream.
+ * Does not program VIDEO_CONFIG5; call XMmiDp_ComputeTuParams() for TU fields.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	Number of time slots, or 0 if the request does not fit or on error.
+ *
+ ******************************************************************************/
+u8 XMmiDp_ComputeTimeSlot(XMmiDp *InstancePtr, u8 Stream)
+{
+	XMmiDp_MainStreamAttributes *MsaConfig;
+	XMmiDp_MstStream *MstStream;
+	u32 BitsPerPixel;
+	u16 StreamPbn;
+	u16 LinkPbn;
+	u32 TimeSlots;
+	u64 PbnNum;
+	u64 PbnDen;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream >= XMMIDP_STREAM_ID1) &&
+			  (Stream <= XMMIDP_STREAM_ID4));
+
+	MsaConfig = &InstancePtr->MsaConfig[Stream - 1];
+	MstStream = &InstancePtr->MstStreamConfig[Stream - 1];
+
+	BitsPerPixel = XMmiDp_GetPbnBitsPerPixel(InstancePtr, Stream);
+	/*
+	 * Integer PBN (no FPU): ceil(PeakMBps * 64/54 * 1.006).
+	 *
+	 * PeakMBps = PixelClockHz * BitsPerPixel / (MHZ_TO_HZ * BITS_PER_BYTE)
+	 *          = pixel rate (Hz) * bpp / (1e6 * 8) -> megabytes/s.
+	 *
+	 * PBN = PeakMBps * (SCALING_NUM/SCALING_DEN) * (MARGIN_SCALE/MARGIN_DIVISOR)
+	 *     = PeakMBps * (64/54) * (1006/1000)   per DP 1.4 section 2.6.4.3.
+	 *
+	 * Folded into one ceil division: StreamPbn = ceil(PbnNum / PbnDen).
+	 * PbnNum: PixelClockHz * bpp * 64 * 1006
+	 * PbnDen: 1e6 * 8 * 54 * 1000
+	 */
+	PbnNum = (u64)MsaConfig->PixelClockHz * (u64)BitsPerPixel *
+		 (u64)XMMIDP_PBN_SCALING_NUM * (u64)XMMIDP_PBN_MARGIN_SCALE;
+	PbnDen = (u64)XMMIDP_MHZ_TO_HZ * (u64)XMMIDP_BITS_PER_BYTE *
+		 (u64)XMMIDP_PBN_SCALING_DEN * (u64)XMMIDP_PBN_MARGIN_DIVISOR;
+	if ((PbnDen == 0U) || (PbnNum == 0U)) {
+		MstStream->MstPbn = 0U;
+		MstStream->TimeSlots = 0U;
+		MstStream->StartSlot = 0U;
+		return 0U;
+	}
+
+	StreamPbn = (u16)((PbnNum + PbnDen - 1ULL) / PbnDen);
+	MstStream->MstPbn = StreamPbn;
+
+	LinkPbn = XMmiDp_GetLinkPbn(InstancePtr);
+	if ((LinkPbn == 0U) || (StreamPbn == 0U)) {
+		MstStream->TimeSlots = 0U;
+		MstStream->StartSlot = 0U;
+		return 0U;
+	}
+
+	/* Ceiling divide stream PBN by PBN per MTP slot (Table 2-138). */
+	TimeSlots = ((u32)StreamPbn + (u32)LinkPbn - 1U) / (u32)LinkPbn;
+
+	if (TimeSlots > XMMIDP_MTP_PAYLOAD_SLOTS_MAX) {
+		MstStream->TimeSlots = 0U;
+		MstStream->StartSlot = 0U;
+		return 0U;
+	}
+
+	/* Invalidate prior StartSlot; allocate recomputes from TimeSlots. */
+	MstStream->StartSlot = 0U;
+	MstStream->TimeSlots = (u8)TimeSlots;
+	return MstStream->TimeSlots;
+}
+
+/******************************************************************************/
+/**
+ * Starting MTP time slot for Stream from lower streams' TimeSlots.
+ * Slot 0 is reserved for the MTP header.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	Starting time slot for the stream.
+ *
+ * @note	Allocate streams in ascending ID order. Do not change a lower
+ *		stream's TimeSlots after a higher stream is allocated.
+ *
+ ******************************************************************************/
+static u8 XMmiDp_GetSinkVcPayloadStartSlot(XMmiDp *InstancePtr, u8 Stream)
+{
+	u8 StreamId;
+	u8 StartSlot = XMMIDP_MST_VC_FIRST_SLOT;
+
+	for (StreamId = XMMIDP_STREAM_ID1; StreamId < Stream; StreamId++)
+		StartSlot += InstancePtr->MstStreamConfig[StreamId - 1].TimeSlots;
+
+	return StartSlot;
+}
+
+/******************************************************************************/
+/**
+ * Sets VIDEO_CONFIG5 InitThreshold fields from the target TU integer.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ * @param	TsInt is the integer part of the target/allocated TU size.
+ *
+ ******************************************************************************/
+static void XMmiDp_SetTuInitThresholdFromTsInt(XMmiDp *InstancePtr, u8 Stream,
+					       u8 TsInt)
+{
+	XMmiDp_VideoConfig *VideoConfig;
+	u32 Threshold;
+	XMmiDp_VidMap VidMap;
+
+	VideoConfig = &InstancePtr->VideoConfig[Stream - 1];
+
+	if (TsInt <= XMMIDP_TU_LOW_AVG_BOUNDARY) {
+		Threshold = XMMIDP_TU_THRESHOLD_LOW_AVG;
+	} else {
+		VidMap = InstancePtr->VSampleCtrl[Stream - 1].VideoMapping;
+		if ((VidMap >= XMMIDP_YCbCr420_8BPC) &&
+		    (VidMap <= XMMIDP_YCbCr420_16BPC) &&
+		    (VideoConfig->HBlank <= XMMIDP_TU_HBLANK_NARROW_420)) {
+			Threshold = XMMIDP_TU_THRESHOLD_NARROW_420;
+		} else if (VideoConfig->HBlank <= XMMIDP_TU_HBLANK_NARROW) {
+			Threshold = XMMIDP_TU_THRESHOLD_NARROW;
+		} else {
+			Threshold = XMMIDP_TU_THRESHOLD_DEFAULT;
+		}
+	}
+
+	VideoConfig->InitThreshold =
+		(u8)(Threshold & XMMIDP_INIT_THRESHOLD_LO_MASK);
+	VideoConfig->InitThresholdHi =
+		(u8)((Threshold >> XMMIDP_INIT_THRESHOLD_LO_BITS) &
+		     XMMIDP_INIT_THRESHOLD_HI_MASK);
+}
+
+/******************************************************************************/
+/**
+ * Stores throttled VC payload slot count and matching VIDEO_CONFIG5 TU fields.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ * @param	AllocSlots is the allocated MTP payload slot count.
+ *
+ ******************************************************************************/
+static void XMmiDp_ApplyMstStreamAllocatedSlots(XMmiDp *InstancePtr, u8 Stream,
+						u8 AllocSlots)
+{
+	XMmiDp_MstStream *MstStream;
+	XMmiDp_VideoConfig *VideoConfig;
+
+	MstStream = &InstancePtr->MstStreamConfig[Stream - 1];
+	VideoConfig = &InstancePtr->VideoConfig[Stream - 1];
+
+	MstStream->TimeSlots = AllocSlots;
+	VideoConfig->AvgBytesPerTu = AllocSlots;
+	VideoConfig->AvgBytesPerTuFrac = 0U;
+	if (VideoConfig->AvgBytesPerTu > XMMIDP_AVG_BYTES_PER_TU_MAX)
+		VideoConfig->AvgBytesPerTu = XMMIDP_AVG_BYTES_PER_TU_MAX;
+
+	XMmiDp_SetTuInitThresholdFromTsInt(InstancePtr, Stream, AllocSlots);
+}
+
+/******************************************************************************/
+/**
+ * Throttles MST VC payload slots when the sum of per-stream requirements
+ * exceeds the MTP budget. Streams are served in order with their computed
+ * slot count while budget allows; any remainder is split equally across the
+ * streams that still need allocation.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	NumStreams is the number of active MST streams (1..4).
+ *
+ * @return
+ *		- XST_SUCCESS if slots fit or were redistributed.
+ *		- XST_FAILURE if any stream has TimeSlots == 0.
+ *
+ ******************************************************************************/
+u32 XMmiDp_DistributeMstPayloadSlots(XMmiDp *InstancePtr, u8 NumStreams)
+{
+	u8 Required[XMMIDP_STREAM_ID4];
+	u8 Allocated[XMMIDP_STREAM_ID4];
+	u32 TotalRequired = 0U;
+	u8 Remaining = XMMIDP_MTP_PAYLOAD_SLOTS_MAX;
+	u8 Idx;
+	u8 StreamId;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((NumStreams >= XMMIDP_STREAM_ID1) &&
+			  (NumStreams <= XMMIDP_STREAM_ID4));
+
+	for (Idx = 0U; Idx < NumStreams; Idx++) {
+		StreamId = Idx + XMMIDP_STREAM_ID1;
+		Required[Idx] =
+			InstancePtr->MstStreamConfig[StreamId - 1].TimeSlots;
+		if (Required[Idx] == 0U) {
+			xil_printf("ERROR: MST payload distribute: stream %u "
+				   "TimeSlots is 0\r\n", StreamId);
+			return XST_FAILURE;
+		}
+		TotalRequired += Required[Idx];
+	}
+
+	if (TotalRequired > XMMIDP_MTP_PAYLOAD_SLOTS_MAX) {
+		xil_printf("WARNING: MST payload throttle: %u slots required across "
+			   "%u streams (MTP max %u)\r\n",
+			   TotalRequired, NumStreams, XMMIDP_MTP_PAYLOAD_SLOTS_MAX);
+
+		for (Idx = 0U; Idx < NumStreams; Idx++) {
+			u8 StreamsLeft = NumStreams - Idx;
+			u8 Req = Required[Idx];
+
+			if (Remaining == 0U) {
+				xil_printf("ERROR: MST payload distribute: no slots "
+					   "remain for stream %u\r\n",
+					   Idx + XMMIDP_STREAM_ID1);
+				return XST_FAILURE;
+			}
+
+			if (StreamsLeft == 1U) {
+				Allocated[Idx] = Remaining;
+				Remaining = 0U;
+				break;
+			}
+
+			if (Remaining >= Req) {
+				Allocated[Idx] = Req;
+				Remaining -= Req;
+			} else {
+				u8 Base = Remaining / StreamsLeft;
+				u8 Extra = Remaining % StreamsLeft;
+				u8 J;
+
+				for (J = 0U; J < StreamsLeft; J++)
+					Allocated[Idx + J] = Base + ((J < Extra) ?
+								       1U : 0U);
+				Remaining = 0U;
+				break;
+			}
+		}
+
+		for (Idx = 0U; Idx < NumStreams; Idx++) {
+			StreamId = Idx + XMMIDP_STREAM_ID1;
+			if (Allocated[Idx] != Required[Idx]) {
+				xil_printf("  Stream %u: %u -> %u slots\r\n",
+					   StreamId, Required[Idx], Allocated[Idx]);
+				XMmiDp_ApplyMstStreamAllocatedSlots(InstancePtr,
+								    StreamId,
+								    Allocated[Idx]);
+			}
+		}
+	}
+
+	/* Contiguous StartSlots from finalized TimeSlots (S1@1, S2@1+TS1, ...). */
+	for (Idx = 0U; Idx < NumStreams; Idx++) {
+		StreamId = Idx + XMMIDP_STREAM_ID1;
+		InstancePtr->MstStreamConfig[StreamId - 1].StartSlot =
+			XMmiDp_GetSinkVcPayloadStartSlot(InstancePtr, StreamId);
+	}
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * Program the sink VC payload allocate registers (DPCD) for one stream.
+ *
+ * Call XMmiDp_ComputeTimeSlot() first. VCPID is set to the stream number.
+ * Downstream branches are programmed by XMmiDp_AllocatePayloadStream().
+ *
+ * Clears only VC_PAYLOAD_ID_UPDATED at PAYLOAD_TABLE_UPDATE_STATUS (0x2C0);
+ * ACT_HANDLED is left unchanged so XMmiDp_WaitActHandledStatus() can observe
+ * it after the ACT sequence on back-to-back per-stream allocations.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return
+ *		- XST_SUCCESS if the sink table was programmed.
+ *		- XST_FAILURE if slot allocation is invalid or AUX failed.
+ *
+ * @note	Allocate streams in ascending ID order. Do not change a lower
+ *		stream's TimeSlots after a higher stream is allocated.
+ *
+ ******************************************************************************/
+u32 XMmiDp_SetSinkVcPayloadTable(XMmiDp *InstancePtr, u8 Stream)
+{
+	XMmiDp_MstStream *MstStream;
+	u8 AuxData[3];
+	u8 StartSlot;
+	u8 TimeSlots;
+	u32 Status;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream >= XMMIDP_STREAM_ID1) &&
+			  (Stream <= XMMIDP_STREAM_ID4));
+
+	MstStream = &InstancePtr->MstStreamConfig[Stream - 1];
+	TimeSlots = MstStream->TimeSlots;
+	if (TimeSlots == 0U) {
+		xil_printf("ERROR: Stream %u VC payload alloc: TimeSlots is 0 "
+			   "(run ComputeTimeSlot first or check link BW)\r\n",
+			   Stream);
+		return XST_FAILURE;
+	}
+
+	if (MstStream->StartSlot != 0U)
+		StartSlot = MstStream->StartSlot;
+	else {
+		StartSlot = XMmiDp_GetSinkVcPayloadStartSlot(InstancePtr, Stream);
+		MstStream->StartSlot = StartSlot;
+	}
+
+	if ((StartSlot + TimeSlots - 1U) >= XMMIDP_MST_VC_SLOT_COUNT) {
+		u8 AvailSlots = XMMIDP_MST_VC_SLOT_COUNT - StartSlot;
+
+		xil_printf("ERROR: Stream %u VC payload alloc: need %u slots "
+			   "at start %u but only %u remain (VC slot count %u)\r\n",
+			   Stream, TimeSlots, StartSlot, AvailSlots,
+			   XMMIDP_MST_VC_SLOT_COUNT);
+		return XST_FAILURE;
+	}
+
+	AuxData[0] = XMMIDP_DPCD_VC_PAYLOAD_ID_UPDATED_MASK;
+	Status = XMmiDp_AuxWrite(InstancePtr,
+				 XMMIDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS,
+				 1, AuxData);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	AuxData[0] = Stream;
+	AuxData[1] = StartSlot;
+	AuxData[2] = TimeSlots;
+	Status = XMmiDp_AuxWrite(InstancePtr,
+				 XMMIDP_DPCD_PAYLOAD_ALLOCATE_SET,
+				 3, AuxData);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	return XMmiDp_WaitPayloadTableUpdateStatus(InstancePtr);
+}
+
+/******************************************************************************/
+/**
+ * Allocate VC payload for one MST stream on TX, the immediate branch, and the
+ * branch that owns the stream's sink port.
+ *
+ * Programs the TX MST VC payload table, updates the branch sink VC payload ID
+ * table over DPCD (PAYLOAD_ALLOCATE_SET at 1C0h), waits for
+ * VC_PAYLOAD_ID_UPDATED in PAYLOAD_TABLE_UPDATE_STATUS (2C0h), triggers the
+ * ACT sequence via CCTL0, then waits for ACT_HANDLED in 2C0h. When the stream
+ * has a sink set by XMmiDp_MstSetStreamSink(), sends sideband
+ * ALLOCATE_PAYLOAD so the branch forwards the VC to that port.
+ *
+ * Call XMmiDp_ComputeTimeSlot() first. VCPID is the stream number.
+ *
+ * On failure after the TX table is programmed (e.g. sink table or ACT), the
+ * caller must call XMmiDp_ClearPayloadVcIdTable() to recover; this function
+ * does not roll back the TX table.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return
+ *		- XST_SUCCESS if payload allocation and ACT completed.
+ *		- Error code on TX/sink table, AUX, or ACT failure.
+ *
+ ******************************************************************************/
+u32 XMmiDp_AllocatePayloadStream(XMmiDp *InstancePtr, u8 Stream)
+{
+	XMmiDp_MstStream *MstStream;
+	u32 Status;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid((Stream >= XMMIDP_STREAM_ID1) &&
+			  (Stream <= XMMIDP_STREAM_ID4));
+
+	Status = XMmiDp_SetTxVcPayloadTable(InstancePtr, Stream);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	Status = XMmiDp_SetSinkVcPayloadTable(InstancePtr, Stream);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	Status = XMmiDp_InitiateActSeq(InstancePtr);
+	if (Status != XST_SUCCESS)
+		return Status;
+
+	MstStream = &InstancePtr->MstStreamConfig[Stream - 1];
+	if (MstStream->LinkCountTotal < XMMIDP_MST_SINK_MIN_LCT)
+		return XST_SUCCESS;
+
+	return XMmiDp_SendSbMsgAllocatePayload(InstancePtr,
+					       MstStream->LinkCountTotal,
+					       MstStream->RelativeAddress,
+					       Stream, MstStream->MstPbn);
+}
+
+/******************************************************************************/
+/**
  * Computes AvgBytesPerTu, AvgBytesPerTuFrac, InitThreshold, and
  * InitThresholdHi for the VIDEO_CONFIG5 register using the stream's
  * pixel clock, color depth, link config, and blanking parameters.
  *
+ * For MST, AvgBytesPerTu / AvgBytesPerTuFrac (×64) and InitThreshold are
+ * derived from the dp14 target average stream symbol slots (not the raw
+ * PeakBw/LinkBw average). Reuses MstStreamConfig[].MstPbn from
+ * XMmiDp_ComputeTimeSlot(); call that first. SST keeps the raw average path.
+ *
  * @param	InstancePtr is a pointer to the XMmiDp instance.
  * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
  * @param	ColorFormat is the color format (RGB, YCbCr 4:4:4/4:2:2/4:2:0).
- * @return	None.
  *
  ******************************************************************************/
 void XMmiDp_ComputeTuParams(XMmiDp *InstancePtr, u8 Stream,
@@ -2150,8 +2924,9 @@ void XMmiDp_ComputeTuParams(XMmiDp *InstancePtr, u8 Stream,
 	XMmiDp_LinkConfig *LinkConfig;
 	u64 PeakStreamBw;
 	u64 LinkBw;
+	u64 Remainder;
 	u32 BitsPerPixel;
-	u32 AvgInt, AvgFrac;
+	u32 AvgInt, AvgFrac, Fraction;
 	u32 Threshold;
 	u16 LinkRateMHz;
 	u32 TuFracScale = InstancePtr->CtrlConfig[Stream - 1].MstModeEn ?
@@ -2221,14 +2996,110 @@ void XMmiDp_ComputeTuParams(XMmiDp *InstancePtr, u8 Stream,
 		return;
 	}
 
-	AvgInt = (u32)((PeakStreamBw * XMMIDP_TU_SIZE) / LinkBw);
-	AvgFrac = (u32)(((PeakStreamBw * XMMIDP_TU_SIZE) % LinkBw) *
-		  TuFracScale / LinkBw) << TuFracShift;
+	if (InstancePtr->CtrlConfig[Stream - 1].MstModeEn) {
+		XMmiDp_MstStream *MstStream;
+		u16 StreamPbn;
+		u32 LinkBwMb;
+		u32 Avg_x8;
+		u32 FloorAvg_x8;
+		u32 Max_x8;
+		u32 Target_x8;
+		u32 TsInt;
 
-	if (AvgInt > XMMIDP_TU_AVG_MAX)
-		AvgInt = XMMIDP_TU_AVG_MAX;
-	if (AvgFrac > XMMIDP_TU_AVG_MAX)
-		AvgFrac = XMMIDP_TU_AVG_MAX;
+		/*
+		 * MST VIDEO_CONFIG5 from target average stream symbol slots
+		 * (review 0019 / dp14 XDp_TxCalculateTs): Average -> MaximumTarget
+		 * -> Target in 1/8 steps; AvgBytesPerTuFrac uses x64.
+		 * StreamPbn from ComputeTimeSlot (MstPbn); do not recompute.
+		 */
+		MstStream = &InstancePtr->MstStreamConfig[Stream - 1];
+		StreamPbn = MstStream->MstPbn;
+
+		LinkBwMb = (u32)LinkConfig->NumLanes *
+			   (u32)LinkConfig->LinkBW *
+			   XMMIDP_TS_LINK_BW_SCALE;
+		if ((LinkBwMb == 0U) || (StreamPbn == 0U)) {
+			xil_printf("[VID] WARNING: Invalid MST TU inputs "
+				   "(LinkBwMb=%u PBN=%u)\r\n",
+				   LinkBwMb, StreamPbn);
+			Threshold = XMMIDP_TU_THRESHOLD_DEFAULT;
+			VideoConfig->AvgBytesPerTu = 0U;
+			VideoConfig->AvgBytesPerTuFrac = 0U;
+			VideoConfig->InitThreshold =
+				(u8)(Threshold & XMMIDP_INIT_THRESHOLD_LO_MASK);
+			VideoConfig->InitThresholdHi =
+				(u8)((Threshold >> XMMIDP_INIT_THRESHOLD_LO_BITS) &
+				     XMMIDP_INIT_THRESHOLD_HI_MASK);
+			return;
+		}
+
+		/* Average and max target in 1/8-slot fixed point. */
+		Avg_x8 = (u32)((PeakStreamBw * (u64)XMMIDP_TU_SIZE *
+				(u64)XMMIDP_TS_FRAC_DENOMINATOR) / LinkBw);
+		FloorAvg_x8 = (Avg_x8 / XMMIDP_TS_FRAC_DENOMINATOR) *
+			      XMMIDP_TS_FRAC_DENOMINATOR;
+		Max_x8 = (u32)(((u64)XMMIDP_TS_PBN_LINK_SCALE *
+				(u64)StreamPbn *
+				(u64)XMMIDP_TS_FRAC_DENOMINATOR) /
+			       LinkBwMb);
+		if (Max_x8 < FloorAvg_x8)
+			Max_x8 = FloorAvg_x8;
+
+		/*
+		 * Target = floor(Avg) + floor(8*(Max-floor(Avg)))/8. Both terms
+		 * are already in 1/8 slots, so in x8 units this is Max_x8.
+		 */
+		Target_x8 = Max_x8;
+
+		TsInt = Target_x8 / XMMIDP_TS_FRAC_DENOMINATOR;
+		/* (Target - TsInt) * 64 == (Target_x8 % 8) * 8 */
+		AvgFrac = (Target_x8 % XMMIDP_TS_FRAC_DENOMINATOR) *
+			  (XMMIDP_TU_FRAC_SCALE / XMMIDP_TS_FRAC_DENOMINATOR);
+		AvgInt = TsInt;
+
+		if (AvgInt > XMMIDP_AVG_BYTES_PER_TU_MAX)
+			AvgInt = XMMIDP_AVG_BYTES_PER_TU_MAX;
+		if (AvgFrac > XMMIDP_AVG_BYTES_PER_TU_FRAC_MAX)
+			AvgFrac = XMMIDP_AVG_BYTES_PER_TU_FRAC_MAX;
+
+		VideoConfig->AvgBytesPerTu = (u8)AvgInt;
+		VideoConfig->AvgBytesPerTuFrac = (u8)AvgFrac;
+
+		if (TsInt <= XMMIDP_TU_LOW_AVG_BOUNDARY) {
+			Threshold = XMMIDP_TU_THRESHOLD_LOW_AVG;
+		} else if (ColorFormat == XVIDC_CSF_YCRCB_420 &&
+			   VideoConfig->HBlank <= XMMIDP_TU_HBLANK_NARROW_420) {
+			Threshold = XMMIDP_TU_THRESHOLD_NARROW_420;
+		} else if (VideoConfig->HBlank <= XMMIDP_TU_HBLANK_NARROW) {
+			Threshold = XMMIDP_TU_THRESHOLD_NARROW;
+		} else {
+			Threshold = XMMIDP_TU_THRESHOLD_DEFAULT;
+		}
+
+		VideoConfig->InitThreshold =
+			(u8)(Threshold & XMMIDP_INIT_THRESHOLD_LO_MASK);
+		VideoConfig->InitThresholdHi =
+			(u8)((Threshold >> XMMIDP_INIT_THRESHOLD_LO_BITS) &
+			     XMMIDP_INIT_THRESHOLD_HI_MASK);
+		return;
+	}
+
+	/* Integer part of average bytes per TU. */
+	AvgInt = (u32)((PeakStreamBw * XMMIDP_TU_SIZE) / LinkBw);
+
+	/* Fractional part in TuFracScale units, rounded to nearest. */
+	Remainder = (PeakStreamBw * XMMIDP_TU_SIZE) % LinkBw;
+	Fraction = (u32)((Remainder * TuFracScale + (LinkBw / 2U)) / LinkBw);
+
+	/* Combine: fold full-scale fraction units into AvgInt. */
+	AvgInt += Fraction / TuFracScale;
+	AvgFrac = Fraction % TuFracScale;
+	AvgFrac <<= TuFracShift;
+
+	if (AvgInt > XMMIDP_AVG_BYTES_PER_TU_MAX)
+		AvgInt = XMMIDP_AVG_BYTES_PER_TU_MAX;
+	if (AvgFrac > XMMIDP_AVG_BYTES_PER_TU_FRAC_MAX)
+		AvgFrac = XMMIDP_AVG_BYTES_PER_TU_FRAC_MAX;
 
 	VideoConfig->AvgBytesPerTu = (u8)AvgInt;
 	VideoConfig->AvgBytesPerTuFrac = (u8)AvgFrac;
@@ -2257,12 +3128,16 @@ void XMmiDp_ComputeTuParams(XMmiDp *InstancePtr, u8 Stream,
  * including HActive, VActive, sync widths, blanking intervals, pixel clock,
  * and dynamically computed MSA and transfer unit parameters.
  *
+ * For MST, XMmiDp_ComputeTimeSlot() fills MstPbn / VC payload slots first,
+ * then XMmiDp_ComputeTuParams() reuses MstPbn for VIDEO_CONFIG5 TU fields.
+ * SST uses ComputeTuParams only. ComputeTimeSlot derives bits-per-pixel from
+ * VSampleCtrl[].VideoMapping; ComputeTuParams uses ColorFormat — keep them
+ * consistent for the same stream.
+ *
  * @param	InstancePtr is a pointer to the XMmiDp instance.
  * @param	VideoMode is the standard video mode to configure.
  * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
  * @param	ColorFormat is the color format (RGB, YCbCr 4:4:4/4:2:2/4:2:0).
- *
- * @return	None.
  *
  ******************************************************************************/
 void XMmiDp_SetVidControllerUseStdVidMode(XMmiDp *InstancePtr,
@@ -2322,6 +3197,8 @@ void XMmiDp_SetVidControllerUseStdVidMode(XMmiDp *InstancePtr,
 
 	XMmiDp_ComputeMisc0(InstancePtr, Stream, ColorFormat);
 	XMmiDp_ComputeHBlankInterval(InstancePtr, Stream, ColorFormat);
+	if (InstancePtr->CtrlConfig[Stream - 1].MstModeEn)
+		XMmiDp_ComputeTimeSlot(InstancePtr, Stream);
 	XMmiDp_ComputeTuParams(InstancePtr, Stream, ColorFormat);
 }
 

@@ -6,6 +6,7 @@
 
 /*****************************************************************************/
 /**
+*
 * @file  xttcps_intr_example.c
 *
 * This file contains a example using two timer counters in the Triple Timer
@@ -18,8 +19,7 @@
 * from the Ticker, and increases its duty cycle. When the duty cycle of
 * PWM reaches 100, the example terminates.
 *
-* @note
-*  The example may take seconds to minutes to finish. A small setting of
+* @note		The example may take seconds to minutes to finish. A small setting of
 *  PWM_DELTA_DUTY gives a long running time, while a large setting makes
 *  the example finishes faster.
 *
@@ -49,6 +49,9 @@
 * 3.23 bdk    12/08/25 Updated comments to support SDT flow for Doxygen
 *                      documentation.
 * 3.23 ml     02/03/26 Fix codespell warnings
+* 3.24 ml     08/11/26 Added bounds check in SDT flow of SetupTicker() and SetupPWM() to
+*                      prevent out-of-bounds access.
+* 3.25 ml     09/16/26 Fixed doxygen 1.15.0 and compliance checker warnings.
 *</pre>
 ******************************************************************************/
 
@@ -70,10 +73,10 @@
 
 /************************** Constant Definitions *****************************/
 #if defined (PLATFORM_ZYNQ)
-#define NUM_DEVICES    9U
+#define NUM_DEVICES    9U /**< Number of TTC devices. */
 
 #else
-#define NUM_DEVICES    12U
+#define NUM_DEVICES    12U /**< Number of TTC devices. */
 #endif
 
 /*
@@ -84,7 +87,7 @@
  *       needs to be done
  *       - Map constants given below to the intended TTC devices
  *       - Fill SettingsTable array based on the intended device IDs.
- *         e.g. If intended device IDs are 3 and 4, then SettingsTable[3]
+ *         for example, if intended device IDs are 3 and 4, then SettingsTable[3]
  *              and SettingsTable[4] should be set properly.
  */
 #ifndef SDT
@@ -102,32 +105,32 @@
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #else
 #if !defined (XPM_SUPPORT)
-#define TTC_TICK_BASEADDR	XPAR_XTTCPS_1_BASEADDR
+#define TTC_TICK_BASEADDR	XPAR_XTTCPS_1_BASEADDR /**< Base address of TTC tick timer. */
 #else
-#define TTC_TICK_BASEADDR	XPAR_XTTCPS_3_BASEADDR
+#define TTC_TICK_BASEADDR	XPAR_XTTCPS_3_BASEADDR /**< Base address of TTC tick timer. */
 #endif
-#define TTC_PWM_BASEADDR       XPAR_XTTCPS_0_BASEADDR
+#define TTC_PWM_BASEADDR       XPAR_XTTCPS_0_BASEADDR /**< Base address of TTC PWM timer. */
 #endif
 
-#define TTCPS_CLOCK_HZ		XPAR_XTTCPS_0_CLOCK_HZ
+#define TTCPS_CLOCK_HZ		XPAR_XTTCPS_0_CLOCK_HZ /**< TTC peripheral clock frequency in Hz. */
 /*
  * Constants to set the basic operating parameters.
  * PWM_DELTA_DUTY is critical to the running time of the test. Smaller values
  * make the test run longer.
  */
-#define	TICK_TIMER_FREQ_HZ	100  /* Tick timer counter's output frequency */
-#define	PWM_OUT_FREQ		350  /* PWM timer counter's output frequency */
+#define	TICK_TIMER_FREQ_HZ	100  /**< Tick timer output frequency in Hz. */
+#define	PWM_OUT_FREQ		350  /**< PWM timer output frequency in Hz. */
 
-#define PWM_DELTA_DUTY	50 /* Initial and increment to duty cycle for PWM */
-#define TICKS_PER_CHANGE_PERIOD TICK_TIMER_FREQ_HZ * 5 /* Tick signals PWM */
-#define XTTCPS_SW_TIMEOUT_VAL	20000000U /* Wait for 20 sec */
+#define PWM_DELTA_DUTY	50 /**< PWM duty cycle increment value. */
+#define TICKS_PER_CHANGE_PERIOD TICK_TIMER_FREQ_HZ * 5 /**< Number of ticks per PWM change period. */
+#define XTTCPS_SW_TIMEOUT_VAL	20000000U /**< Software timeout in microseconds (20 sec). */
 
 /**************************** Type Definitions *******************************/
 typedef struct {
-	u32 OutputHz;	/* Output frequency */
-	XInterval Interval;	/* Interval value */
-	u8 Prescaler;	/* Prescaler value */
-	u16 Options;	/* Option settings */
+	u32 OutputHz;  /**< Output frequency */
+	XInterval Interval;	/**< Interval value */
+	u8 Prescaler;  /**< Prescaler value */
+	u16 Options;  /**< Option settings */
 } TmrCntrSetup;
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -135,7 +138,7 @@ typedef struct {
 
 /************************** Function Prototypes ******************************/
 
-static int TmrInterruptExample(void);  /* Main test */
+static int TmrInterruptExample(void);  /**< Main test */
 
 /* Set up routines for timer counters */
 static int SetupTicker(void);
@@ -157,7 +160,7 @@ static void PWMHandler(void *CallBackRef, u32 StatusEvent);
 
 /************************** Variable Definitions *****************************/
 
-static XTtcPs TtcPsInst[NUM_DEVICES];	/* Number of available timer counters */
+static XTtcPs TtcPsInst[NUM_DEVICES];  /**< Number of available timer counters */
 
 static TmrCntrSetup SettingsTable[NUM_DEVICES] = {
 	{200, 0, 0, 0}, /* PWM timer counter initial setup, only output freq */
@@ -172,14 +175,14 @@ static TmrCntrSetup SettingsTable[NUM_DEVICES] = {
 extern XTtcPs_Config XTtcPs_ConfigTable[NUM_DEVICES];
 #endif
 
-XScuGic InterruptController;  /* Interrupt controller instance */
+XScuGic InterruptController;  /**< Interrupt controller instance */
 
 static u32 MatchValue;  /* Match value for PWM, set by PWM interrupt handler,
 			updated by main test routine */
 
-static volatile u32 PWM_UpdateFlag;	/* Flag used by Ticker to signal PWM */
-static volatile u8 ErrorCount;		/* Errors seen at interrupt time */
-static volatile u32 TickCount;		/* Ticker interrupts between PWM change */
+static volatile u32 PWM_UpdateFlag;  /**< Flag used by Ticker to signal PWM */
+static volatile u8 ErrorCount;  /**< Errors seen at interrupt time */
+static volatile u32 TickCount;  /**< Ticker interrupts between PWM change */
 
 #ifdef SDT
 u32 Index_Tick;
@@ -192,13 +195,9 @@ u32 Index_PWM;
 *
 * This function calls the Ttc interrupt example.
 *
-* @param	None
-*
 * @return
 *		- XST_SUCCESS to indicate Success
 *		- XST_FAILURE to indicate Failure.
-*
-* @note		None
 *
 *****************************************************************************/
 int main(void)
@@ -222,13 +221,9 @@ int main(void)
 *
 * This function sets up the interrupt example.
 *
-* @param	None.
-*
 * @return
 *		- XST_SUCCESS to indicate Success
 *		- XST_FAILURE to indicate Failure.
-*
-* @note		None
 *
 ****************************************************************************/
 static int TmrInterruptExample(void)
@@ -303,11 +298,7 @@ static int TmrInterruptExample(void)
 *
 * This function sets up the Ticker timer.
 *
-* @param	None
-*
 * @return	XST_SUCCESS if everything sets up well, XST_FAILURE otherwise.
-*
-* @note		None
 *
 *****************************************************************************/
 int SetupTicker(void)
@@ -319,10 +310,13 @@ int SetupTicker(void)
 #ifndef SDT
 	TimerSetup = &(SettingsTable[TTC_TICK_DEVICE_ID]);
 #else
-	for (Index_Tick = 0U; XTtcPs_ConfigTable[Index_Tick].Name != NULL; Index_Tick++) {
+	for (Index_Tick = 0U; Index_Tick < NUM_DEVICES && XTtcPs_ConfigTable[Index_Tick].Name != NULL; Index_Tick++) {
 		if (XTtcPs_ConfigTable[Index_Tick].BaseAddress == TTC_TICK_BASEADDR) {
 			break;
 		}
+	}
+	if (Index_Tick >= NUM_DEVICES || XTtcPs_ConfigTable[Index_Tick].Name == NULL) {
+		return XST_FAILURE;
 	}
 	TimerSetup = &(SettingsTable[Index_Tick]);
 #endif
@@ -392,14 +386,9 @@ int SetupTicker(void)
 
 /****************************************************************************/
 /**
-*
 * This function sets up the waveform output timer counter (PWM).
 *
-* @param	None
-*
 * @return	XST_SUCCESS if everything sets up well, XST_FAILURE otherwise.
-*
-* @note		None
 *
 *****************************************************************************/
 int SetupPWM(void)
@@ -411,10 +400,13 @@ int SetupPWM(void)
 #ifndef SDT
 	TimerSetup = &(SettingsTable[TTC_PWM_DEVICE_ID]);
 #else
-	for (Index_PWM = 0U; XTtcPs_ConfigTable[Index_PWM].Name != NULL; Index_PWM++) {
+	for (Index_PWM = 0U; Index_PWM < NUM_DEVICES && XTtcPs_ConfigTable[Index_PWM].Name != NULL; Index_PWM++) {
 		if (XTtcPs_ConfigTable[Index_PWM].BaseAddress == TTC_PWM_BASEADDR) {
 			break;
 		}
+	}
+	if (Index_PWM >= NUM_DEVICES || XTtcPs_ConfigTable[Index_PWM].Name == NULL) {
+		return XST_FAILURE;
 	}
 	TimerSetup = &(SettingsTable[Index_PWM]);
 #endif
@@ -453,6 +445,7 @@ int SetupPWM(void)
 
 	XTtcPs_SetStatusHandler(&(TtcPsInst[TTC_PWM_DEVICE_ID]), &(TtcPsInst[TTC_PWM_DEVICE_ID]),
 		              (XTtcPs_StatusHandler) PWMHandler);
+
 	/*
 	 * Enable the interrupt for the Timer counter
 	 */
@@ -493,19 +486,15 @@ int SetupPWM(void)
 * The function exits successfully when the duty cycle for PWM timer
 * counter reaches beyond 100.
 *
-* @param	None
-*
 * @return	XST_SUCCESS if duty cycle successfully reaches beyond 100,
 *		otherwise, XST_FAILURE.
-*
-* @note		None.
 *
 *****************************************************************************/
 int WaitForDutyCycleFull(void)
 {
 	TmrCntrSetup *TimerSetup;
-	u8 DutyCycle;		/* The current output duty cycle */
-	XTtcPs *TtcPs_PWM;	/* Pointer to the instance structure */
+	u8 DutyCycle;  /**< The current output duty cycle */
+	XTtcPs *TtcPs_PWM;  /**< Pointer to the instance structure */
 	u32 PollCount = XTTCPS_SW_TIMEOUT_VAL;
 
 #ifndef SDT
@@ -568,17 +557,15 @@ int WaitForDutyCycleFull(void)
 /****************************************************************************/
 /**
 *
-* This function sets up a timer counter device, using the information in its
-* setup structure.
-*  . initialize device
-*  . set options
-*  . set interval and prescaler value for given output frequency.
+* @brief Sets up a timer counter device from its setup structure.
 *
+* . initialize device . set options . set interval and prescaler value for
+* given output frequency.
 * @if SDT
-* @param	Index is the index in the SettingsTable.
-* @param	BaseAddr is the base address of the TTC device.
+* @param[in]	Index is the index in the SettingsTable.
+* @param[in]	BaseAddr is the base address of the TTC device.
 * @else
-* @param	DeviceID is the unique ID for the device.
+* @param[in]	DeviceID is the unique ID for the device.
 * @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
@@ -652,6 +639,7 @@ int SetupTimer(u32 Index, u32 BaseAddr)
 }
 
 /****************************************************************************/
+#ifndef SDT
 /**
 *
 * This function setups the interrupt system such that interrupts can occur.
@@ -660,16 +648,12 @@ int SetupTimer(u32 Index, u32 BaseAddr)
 * processor without an interrupt controller.  The user should modify this
 * function to fit the application.
 *
-* @param	IntcDeviceID is the unique ID of the interrupt controller
-* @param	IntcInstacePtr is a pointer to the interrupt controller
-*		instance.
+* @param[in] IntcDeviceID is the unique ID of the interrupt controller.
+* @param[in] IntcInstancePtr is a pointer to the interrupt controller instance.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
 *
-* @note		None.
-*
 *****************************************************************************/
-#ifndef SDT
 static int SetupInterruptSystem(u16 IntcDeviceID,
 				    XScuGic *IntcInstancePtr)
 {
@@ -718,12 +702,9 @@ static int SetupInterruptSystem(u16 IntcDeviceID,
 * This handler provides an example of how to handle data for the TTC and
 * is application specific.
 *
-* @param	CallBackRef contains a callback reference from the driver, in
+* @param[in]	CallBackRef contains a callback reference from the driver, in
 *		this case it is the instance pointer for the TTC driver.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]	StatusEvent is the status event indicating the type of interrupt.
 *
 *****************************************************************************/
 static void TickHandler(void *CallBackRef, u32 StatusEvent)
@@ -750,18 +731,14 @@ static void TickHandler(void *CallBackRef, u32 StatusEvent)
 /***************************************************************************/
 /**
 *
-* This function is the handler which handles the PWM interrupt.
+* @brief Handles the PWM interrupt and updates the match register.
 *
 * It updates the match register to reflect the change on duty cycle. It also
 * disable interrupt at the end. The interrupt will be enabled by the Ticker
 * timer counter.
-*
-* @param	CallBackRef contains a callback reference from the driver, in
+* @param[in]	CallBackRef contains a callback reference from the driver, in
 *		this case it is a pointer to the MatchValue variable.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]	StatusEvent is the status event indicating the type of interrupt.
 *
 *****************************************************************************/
 static void PWMHandler(void *CallBackRef, u32 StatusEvent)

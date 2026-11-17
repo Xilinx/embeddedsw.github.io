@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,7 @@
 * @addtogroup axicdma Overview
 * @{
  *
+* @brief Implements interrupt-related functions for AXI CDMA.
  * The implementation of the interrupt related API. The interrupt handler is
  * also implemented here.
  *
@@ -30,15 +31,11 @@
 
 /*****************************************************************************/
 /**
- * This function enables interrupts specified by the Mask. Interrupts that are
+ * @brief Enables interrupts specified by the Mask. Interrupts that are
  * not in the mask are not affected.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	Mask is the mask for the interrupts to be enabled
- *
- * @return	None
- *
- * @note	None.
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] Mask is the mask for the interrupts to be enabled
  *
  *****************************************************************************/
 void XAxiCdma_IntrEnable(XAxiCdma *InstancePtr, u32 Mask)
@@ -53,13 +50,11 @@ void XAxiCdma_IntrEnable(XAxiCdma *InstancePtr, u32 Mask)
 
 /*****************************************************************************/
 /**
- * This function gets the mask for the interrupts that are currently enabled
+ * @brief Reads the mask for currently enabled interrupts.
  *
- * @param	InstancePtr is the driver instance we are working on
+ * @param[in] InstancePtr is the driver instance we are working on
  *
  * @return	The bit mask for the interrupts that are currently enabled
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_IntrGetEnabled(XAxiCdma *InstancePtr)
@@ -70,15 +65,11 @@ u32 XAxiCdma_IntrGetEnabled(XAxiCdma *InstancePtr)
 
 /*****************************************************************************/
 /**
- * This function disables interrupts specified by the Mask. Interrupts that
+ * @brief Disables interrupts specified by the Mask. Interrupts that
  * are not in the mask are not affected.
  *
- * @param	InstancePtr is the driver instance we are working on
- * @param	Mask is the mask for the interrupts to be disabled
- *
- * @return	None
- *
- * @note	None.
+ * @param[in] InstancePtr is the driver instance we are working on
+ * @param[in] Mask is the mask for the interrupts to be disabled
  *
  *****************************************************************************/
 void XAxiCdma_IntrDisable(XAxiCdma *InstancePtr, u32 Mask)
@@ -93,15 +84,13 @@ void XAxiCdma_IntrDisable(XAxiCdma *InstancePtr, u32 Mask)
 
 /*****************************************************************************/
 /**
- * This function is the interrupt handler for the driver, it handles all the
+ * @brief Handles driver interrupts, it handles all the
  * interrupts. For the completion of a transfer that has a callback function,
  * the callback function is called.
  *
- * @param	HandlerRef is a reference pointer passed to the interrupt
+ * @param[in] HandlerRef is a reference pointer passed to the interrupt
  *			registration function. It will be a pointer to the driver
  *			instance we are working on
- *
- * @return	None
  *
  * @note	If one transfer does not have all its submitted BDs completed
  *		successfully,then a reset is needed to clean up the mess left
@@ -215,7 +204,7 @@ void XAxiCdma_IntrHandler(void *HandlerRef)
 		 */
 		if (!TimeOut) {
 			/* Mark the driver/engine is not in working state
-			 */
+*/
 			InstancePtr->Initialized = 0;
 		}
 

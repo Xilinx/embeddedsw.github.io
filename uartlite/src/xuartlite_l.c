@@ -1,20 +1,19 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
 * @file xuartlite_l.c
-* @addtogroup uartlite Overview
-* @{
 *
-* This file contains low-level driver functions that can be used to access the
-* device.  The user should refer to the hardware device specification for more
+* @brief Low-level driver functions for the UART Lite device.
+*
+* Refer to the hardware device specification for more
 * details of the device operation.
-
+*
 * <pre>
 * MODIFICATION HISTORY:
 *
@@ -30,9 +29,15 @@
 *       	      don't pull it for PLM template app case.
 *       ss   07/11/25 Add define for ASUFW as outbyte() specific implementation
 *                     for ASUFW is added
+* 3.14  vn   08/26/26 Fix Doxygen warnings
+* 3.14  vn   09/09/26 Align Doxygen comments with AMD standards
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup uartlite Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -53,19 +58,16 @@
 /************************** Variable Prototypes ******************************/
 
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
-* This functions sends a single byte using the UART. It is blocking in that it
-* waits for the transmitter to become non-full before it writes the byte to
-* the transmit register.
+* @brief Sends a single byte using the UART.
 *
-* @param	BaseAddress is the base address of the device
-* @param	Data is the byte of data to send
+* It is blocking in that it waits for the transmitter to become non-full
+* before it writes the byte to the transmit register.
 *
-* @return	None.
-*
-* @note		None.
+* @param[in]   BaseAddress Base address of the device.
+* @param[in]   Data Byte of data to send.
 *
 ******************************************************************************/
 void XUartLite_SendByte(UINTPTR BaseAddress, u8 Data)
@@ -76,18 +78,17 @@ void XUartLite_SendByte(UINTPTR BaseAddress, u8 Data)
 }
 
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
-* This functions receives a single byte using the UART. It is blocking in that
-* it waits for the receiver to become non-empty before it reads from the
-* receive register.
+* @brief Receives a single byte using the UART.
 *
-* @param	BaseAddress is the base address of the device
+* It is blocking in that it waits for the receiver to become non-empty
+* before it reads from the receive register.
 *
-* @return	The byte of data received.
+* @param[in]   BaseAddress Base address of the device.
 *
-* @note		None.
+* @return      The byte of data received.
 *
 ******************************************************************************/
 u8 XUartLite_RecvByte(UINTPTR BaseAddress)
@@ -99,11 +100,27 @@ u8 XUartLite_RecvByte(UINTPTR BaseAddress)
 
 #if defined (SDT) && defined (XPAR_STDIN_IS_UARTLITE)
 #if !defined(VERSAL_PLM) && !defined(ASUFW)
+/*****************************************************************************/
+/**
+*
+* @brief Sends a single character to the standard output.
+*
+* @param[in]   c Character to send.
+*
+******************************************************************************/
 void outbyte(char c) {
          XUartLite_SendByte(STDOUT_BASEADDRESS, c);
 }
 #endif
 
+/*****************************************************************************/
+/**
+*
+* @brief Receives a single character from the standard input.
+*
+* @return      The received character.
+*
+******************************************************************************/
 char inbyte(void) {
          return XUartLite_RecvByte(STDIN_BASEADDRESS);
 }

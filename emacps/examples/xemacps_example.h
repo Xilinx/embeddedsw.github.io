@@ -1,13 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XEMACPS_EXAMPLE_H
+#define XEMACPS_EXAMPLE_H
 
 /****************************************************************************/
 /**
 *
 * @file xemacps_example.h
+* @addtogroup emacps Overview
+* @{
+*
+* @brief Defines common data types and prototypes for EmacPs examples.
 *
 * Defines common data types, prototypes, and includes the proper headers
 * for use with the EMACPS example code residing in this directory.
@@ -34,8 +41,6 @@
 * </pre>
 *
 *****************************************************************************/
-#ifndef XEMACPS_EXAMPLE_H
-#define XEMACPS_EXAMPLE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,22 +76,21 @@ extern "C" {
 
 /************************** Constant Definitions ****************************/
 
-#define EMACPS_LOOPBACK_SPEED    	100	/* 100Mbps */
-#define EMACPS_LOOPBACK_SPEED_1G 	1000	/* 1000Mbps */
-#define EMACPS_LOOPBACK_SPEED_2_5G 	2500	/* 5000Mbps */
-#define EMACPS_LOOPBACK_SPEED_5G 	5000	/* 5000Mbps */
-#define EMACPS_LOOPBACK_SPEED_10G 	10000	/* 10000Mbps */
-#define EMACPS_PHY_DELAY_SEC     4	/* Amount of time to delay waiting on
-					   PHY to reset */
-#define EMACPS_SLCR_DIV_MASK	0xFC0FC0FF
+#define EMACPS_LOOPBACK_SPEED    	100	/**< Loopback speed of 100 Mbps. */
+#define EMACPS_LOOPBACK_SPEED_1G 	1000	/**< Loopback speed of 1000 Mbps. */
+#define EMACPS_LOOPBACK_SPEED_2_5G 	2500	/**< Loopback speed of 2500 Mbps. */
+#define EMACPS_LOOPBACK_SPEED_5G 	5000	/**< Loopback speed of 5000 Mbps. */
+#define EMACPS_LOOPBACK_SPEED_10G 	10000	/**< Loopback speed of 10000 Mbps. */
+#define EMACPS_PHY_DELAY_SEC     4	/**< Seconds to wait for PHY reset completion. */
+#define EMACPS_SLCR_DIV_MASK	0xFC0FC0FF	/**< Mask for SLCR GEM clock divisor fields. */
 
-#define CSU_VERSION		0xFFCA0044
-#define PLATFORM_MASK		0xF000
-#define PLATFORM_SILICON	0x0000
-#define VERSAL_VERSION		0xF11A0004
-#define PLATFORM_MASK_VERSAL	0xF000000
-#define PLATFORM_VERSALEMU	0x1000000
-#define PLATFORM_VERSALSIL	0x0000000
+#define CSU_VERSION		0xFFCA0044	/**< CSU version register address. */
+#define PLATFORM_MASK		0xF000	/**< Platform type mask from CSU version. */
+#define PLATFORM_SILICON	0x0000	/**< Platform value for silicon. */
+#define VERSAL_VERSION		0xF11A0004	/**< Versal version register address. */
+#define PLATFORM_MASK_VERSAL	0xF000000	/**< Platform type mask for Versal. */
+#define PLATFORM_VERSALEMU	0x1000000	/**< Platform value for Versal emulation. */
+#define PLATFORM_VERSALSIL	0x0000000	/**< Platform value for Versal silicon. */
 
 /***************** Macros (Inline Functions) Definitions ********************/
 
@@ -111,14 +115,18 @@ __attribute__ ((aligned(64)));
 /*
  * Utility functions implemented in xemacps_example_util.c
  */
+/** @cond INTERNAL */
 void EmacPsUtilSetupUart(void);
+/** @endcond */
 void EmacPsUtilFrameHdrFormatMAC(EthernetFrame *FramePtr, char *DestAddr);
 void EmacPsUtilFrameHdrFormatType(EthernetFrame *FramePtr, u16 FrameType);
 void EmacPsUtilFrameSetPayloadData(EthernetFrame *FramePtr, u32 PayloadSize);
 LONG EmacPsUtilFrameVerify(EthernetFrame *CheckFrame,
 			   EthernetFrame *ActualFrame);
 void EmacPsUtilFrameMemClear(EthernetFrame *FramePtr);
+/** @cond INTERNAL */
 LONG EmacPsUtilEnterLoopback(XEmacPs *XEmacPsInstancePtr, u32 Speed);
+/** @endcond */
 void EmacPsUtilstrncpy(char *Destination, const char *Source, u32 n);
 void EmacPsUtilErrorTrap(const char *Message);
 void EmacpsDelay(u32 delay);
@@ -134,3 +142,5 @@ extern u32 Platform;
 #endif
 
 #endif /* XEMACPS_EXAMPLE_H */
+
+/** @} */

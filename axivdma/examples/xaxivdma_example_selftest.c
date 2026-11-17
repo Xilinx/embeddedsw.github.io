@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,7 +8,10 @@
 /**
 *
 * @file xaxivdma_example_selftest.c
-*
+ * @addtogroup axivdma Overview
+ * @{
+* @brief Demonstrates the AXI VDMA self-test example.
+ *
 * <pre>
 * MODIFICATION HISTORY:
 *
@@ -40,7 +43,7 @@
 
 #ifndef SDT
 #ifndef TESTAPP_GEN
-#define DMA_DEV_ID		XPAR_AXIVDMA_0_DEVICE_ID
+#define DMA_DEV_ID		XPAR_AXIVDMA_0_DEVICE_ID /**< Device ID of the AXI VDMA under test. */
 #endif
 #endif
 
@@ -60,24 +63,16 @@ int AxiVDMASelfTestExample(UINTPTR BaseAddress);
 #endif
 
 /************************** Variable Definitions *****************************/
-/*
- * Device instance definitions
- */
-XAxiVdma AxiVdma;
+XAxiVdma AxiVdma; /**< Driver instance for the AXI VDMA under test. */
 
 
 /*****************************************************************************/
 /**
-* The entry point for this example. It invokes the example function,
-* and reports the execution status.
-*
-* @param	None.
+* @brief Runs the example entry point, invokes the example function, and reports the execution status.
 *
 * @return
-*		- XST_SUCCESS if example finishes successfully
+*		- XST_SUCCESS if example finishes successfully.
 *		- XST_FAILURE if example fails.
-*
-* @note		None.
 *
 ******************************************************************************/
 #ifndef TESTAPP_GEN
@@ -111,21 +106,16 @@ int main()
 
 /*****************************************************************************/
 /**
-* This function performance a reset of the VDMA device and checks the device is
-* coming out of reset or not.
-*
+ * @brief Resets the VDMA device and checks that reset completes.
 * @if SDT
-* @param	BaseAddress contains the base address of the device
+* @param[in] BaseAddress contains the base address of the device.
 * @else
-* @param	DeviceId is the DMA device id.
+* @param[in] DeviceId is the DMA device id.
 * @endif
 *
 * @return
-*		- XST_SUCCESS if channel reset is successful
+*		- XST_SUCCESS if channel reset is successful.
 *		- XST_FAILURE if channel reset fails.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 #ifndef SDT
@@ -159,3 +149,5 @@ int AxiVDMASelfTestExample(UINTPTR BaseAddress)
 
 	return Status;
 }
+
+/** @} */

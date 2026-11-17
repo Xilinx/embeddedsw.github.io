@@ -9,11 +9,7 @@
 #include "xclk_wiz.h"
 #include "main.h"
 
-#ifndef SDT
-#define CLK_WIZ_BASE      				XPAR_CLK_WIZ_0_BASEADDR
-#else
 #define CLK_WIZ_BASE      				XPAR_XCLK_WIZ_0_BASEADDR
-#endif
 #define CLK_LOCK                        1
 
 //Following limits are for ZCU102 US+ device
@@ -30,6 +26,11 @@
 
 #define DIV_MAX 128
 #define DIV_MIN 1
+
+#if defined(XPS_BOARD_VCK190) || defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
+extern XClk_Wiz ClkWiz_Dynamic;
+extern XClk_Wiz_Config *CfgPtr_Dynamic;
+#endif /* Added for VCK190/VEK385 support */
 
 /************************** Function Prototypes ******************************/
 void ComputeMandD(u32 VidFreq);
@@ -84,7 +85,7 @@ void ComputeMandD(u32 VidFreq)
 	u32 DVal = 0;
 	u32 DivVal = 0;
 	u32 rdata=0;
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	RefFreq = 200000;
 #else
 	RefFreq = 100000;
@@ -202,11 +203,40 @@ void Dp21RxSs_Pt_GenVidClk(XDp *InstancePtr, u8 Stream)
 	XDp_TxMainStreamAttributes *MsaConfig =
 			&InstancePtr->TxInstance.MsaConfig[Stream - 1];
 
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 	/*
 	 * The clock generated from clk_wiz is not accurate. For example in case of 148.5Mhz
 	 * clock generated would be 148. Hence adding 1Mhz. This will make the TX vid_clk
 	 * a little more. This is needed to ensure that TX does not go into underflow
 	 * condition in case of Adaptive mode of 1
 	 */
-	ComputeMandD(((MsaConfig->PixelClockHz/1000)/MsaConfig->UserPixelWidth));
+	/*
+	 * For YCbCr 4:2:0 two luma samples are carried per pixel-clock, so the
+	 * effective TX video clock is half of the nominal pixel rate. Halve the
+	 * clock for 4:2:0. The VTC also halves the horizontal timing for 4:2:0
+	 * (see xdptxss_vtc.c).
+	 */
+	if (MsaConfig->ComponentFormat ==
+			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+		ComputeMandD(((MsaConfig->PixelClockHz/1000)/
+				(MsaConfig->UserPixelWidth * 2)));
+	} else {
+		ComputeMandD(((MsaConfig->PixelClockHz/1000)/
+				MsaConfig->UserPixelWidth));
+	}
+#else /* Added for VCK190/VEK385 support */
+	u32 Count = 0;
+
+	XClk_Wiz_WriteReg(ClkWiz_Dynamic.Config.BaseAddr, XCLK_WIZ_REG25_OFFSET, 0x0);
+	XClk_Wiz_SetRateHz(&ClkWiz_Dynamic, ((MsaConfig->PixelClockHz)/MsaConfig->UserPixelWidth));
+	XClk_Wiz_WriteReg(ClkWiz_Dynamic.Config.BaseAddr, XCLK_WIZ_RECONFIG_OFFSET, 0x3);
+	while(!((XClk_Wiz_ReadReg(ClkWiz_Dynamic.Config.BaseAddr, 0x4)) & CLK_LOCK)) {
+		if(Count == 10000)
+			break;
+		usleep(100);
+		Count++;
+	}
+	if (Count == 10000)
+		xil_printf ("Clk_wizard failed to lock\r\n");
+#endif /* Added for VCK190/VEK385 support */
 }

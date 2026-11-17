@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,8 +11,10 @@
 * @addtogroup emacps Overview
 * @{
 *
+* @brief Implements interrupt-related functions for the EmacPs driver.
+*
 * Functions in this file implement general purpose interrupt processing related
-* functionality. See xemacps.h for a detailed description of the driver.
+* functionality.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -58,23 +60,7 @@
 
 /*****************************************************************************/
 /**
- * Install an asynchronous handler function for the given HandlerType:
- *
- * @param InstancePtr is a pointer to the instance to be worked on.
- * @param HandlerType indicates what interrupt handler type is.
- *        XEMACPS_HANDLER_DMASEND, XEMACPS_HANDLER_DMARECV and
- *        XEMACPS_HANDLER_ERROR.
- * @param FuncPointer is the pointer to the callback function
- * @param CallBackRef is the upper layer callback reference passed back when
- *        when the callback function is invoked.
- *
- * @return
- *
- * None.
- *
- * @note
- * There is no assert on the CallBackRef since the driver doesn't know what
- * it is.
+ * @brief Sets the handler callback for EmacPs interrupts.
  *
  *****************************************************************************/
 LONG XEmacPs_SetHandler(XEmacPs *InstancePtr, u32 HandlerType,
@@ -110,16 +96,9 @@ LONG XEmacPs_SetHandler(XEmacPs *InstancePtr, u32 HandlerType,
 
 /*****************************************************************************/
 /**
-* Master interrupt handler for EMAC driver. This routine will query the
-* status of the device, bump statistics, and invoke user callbacks.
-*
-* This routine must be connected to an interrupt controller using OS/BSP
-* specific methods.
-*
-* @param XEmacPsPtr is a pointer to the XEMACPS instance that has caused the
-*        interrupt.
-*
-******************************************************************************/
+ * @brief Handles EmacPs interrupts.
+ *
+ *****************************************************************************/
 void XEmacPs_IntrHandler(void *XEmacPsPtr)
 {
 	u32 RegISR;

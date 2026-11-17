@@ -30,12 +30,32 @@
 #define XMMIDP_HBR_LINK_RATE	270
 #define XMMIDP_HBR2_LINK_RATE	540
 #define XMMIDP_HBR3_LINK_RATE	810
+/** Number of MST_VCP_TABLE_REGn registers (REG0..REG7). */
+#define XMMIDP_MST_VCP_REG_COUNT	8U
 
 /****************************** Type Definitions ******************************/
 
+/**
+ * Populated from SDT / BSP-generated xmmidp_g.c (field order matches mmidp.yaml).
+ */
 typedef struct {
-	u32 BaseAddr;
+	char *Name;		/**< compatible */
+	u32 BaseAddr;		/**< reg (DP core base) */
+	char *RegNames;		/**< reg-names */
+	u32 IntrId;		/**< interrupts */
+	char *IntrNames;	/**< interrupt-names */
+	u32 IntrParent;		/**< interrupt-parent */
+	u32 Ports;		/**< ports (placeholder) */
+	u32 Hdcp1x;		/**< xlnx,hdcp-1x */
+	u32 Hdcp2x;		/**< xlnx,hdcp-2x */
+	u32 MstModeEn;		/**< xlnx,mst-mode-en: 1=MST design, 0=SST-only */
+	u32 DptxStreams;	/**< xlnx,dptx-streams */
+	u32 DptxPixelMode;	/**< xlnx,dptx-pixel-mode */
+	u32 DpLanes;		/**< xlnx,dp-lanes */
+	u32 Phys;		/**< phys (placeholder) */
 } XMmiDp_Config;
+
+extern XMmiDp_Config XMmiDp_ConfigTable[];	/**< Configuration table */
 
 /**
  * This typedef describes PHY LANES
@@ -329,6 +349,72 @@ typedef struct {
 	u8 Reserved[2];
 } XMmiDp_VideoConfig;
 
+/** @name MST topology discovery sizes
+ * @{
+ */
+#define XMMIDP_MST_MAX_RAD		15	/**< Max relative address hops. */
+#define XMMIDP_MST_MAX_PORTS		15	/**< LINK_ADDRESS port count field. */
+#define XMMIDP_MST_MAX_SINKS		16	/**< Sinks kept by discovery. */
+#define XMMIDP_MST_MAX_BRANCHES		8	/**< Branches walked by discovery. */
+#define XMMIDP_MST_SINK_MIN_LCT		2	/**< LCT of a sink behind a branch. */
+#define XMMIDP_GUID_NBYTES		16	/**< Bytes in a branch GUID. */
+/** @} */
+
+/**
+ * MST stream configuration (PBN, slots and the sink it is routed to).
+ */
+typedef struct {
+	u16 MstPbn;	/**< Payload bandwidth number for MST allocation. */
+	u8 TimeSlots;	/**< Allocated VC payload time slots for this stream. */
+	u8 StartSlot;	/**< Starting MTP time slot in sink VC payload table. */
+	u8 LinkCountTotal;	/**< Sink LCT; 0 = no sideband routing. */
+	u8 RelativeAddress[XMMIDP_MST_MAX_RAD];	/**< Sink RAD (port per hop). */
+} XMmiDp_MstStream;
+
+/**
+ * One output port from a LINK_ADDRESS reply.
+ */
+typedef struct {
+	u8 InputPort;	/**< 1 = input (upstream) port. */
+	u8 PeerDeviceType;	/**< XMMIDP_PEER_DEVICE_* */
+	u8 PortNum;	/**< Port number on the branch. */
+	u8 MsgCapStatus;	/**< 1 = peer handles sideband messages. */
+	u8 DpDevPlugStatus;	/**< 1 = DP device plugged in. */
+	u8 LegacyDevPlugStatus;	/**< 1 = legacy device plugged in. */
+	u8 DpcdRev;	/**< DPCD revision of the peer. */
+	u8 NumSdpStreams;	/**< SDP streams the port supports. */
+	u8 NumSdpStreamSinks;	/**< SDP stream sinks on the port. */
+} XMmiDp_SbLinkAddressPort;
+
+/**
+ * Decoded LINK_ADDRESS reply of one branch device.
+ */
+typedef struct {
+	u8 Guid[XMMIDP_GUID_NBYTES];	/**< GUID of the branch. */
+	u8 NumPorts;	/**< Entries used in Ports[]. */
+	/** Ports listed in the reply. */
+	XMmiDp_SbLinkAddressPort Ports[XMMIDP_MST_MAX_PORTS];
+} XMmiDp_SbLinkAddressReply;
+
+/**
+ * Stream sink found during MST topology discovery.
+ */
+typedef struct {
+	u8 LinkCountTotal;	/**< Hops from the source, incl. the sink. */
+	u8 RelativeAddress[XMMIDP_MST_MAX_RAD];	/**< Port per hop. */
+	u8 PeerDeviceType;	/**< XMMIDP_PEER_DEVICE_* */
+	u8 DpcdRev;	/**< DPCD revision of the sink. */
+} XMmiDp_MstSink;
+
+/**
+ * MST topology found by XMmiDp_MstDiscoverTopology().
+ */
+typedef struct {
+	u8 BranchTotal;	/**< Branches walked. */
+	u8 SinkTotal;	/**< Entries used in Sinks[]. */
+	XMmiDp_MstSink Sinks[XMMIDP_MST_MAX_SINKS];	/**< Found sinks. */
+} XMmiDp_MstTopology;
+
 typedef struct {
 	XMmiDp_PPC PixModeSel;
 	XMmiDp_VidMap VideoMapping;
@@ -361,13 +447,13 @@ typedef struct {
 } XMmiDp_AudioConfig;
 
 typedef struct {
-	u32 EnVerticalSdp;
-	u8 FixedPriorityArb;
-	u8 DisableExtSdp;
-	u8 En128Bytes;
-	u8 EnAudioStreamSdp;
-	u8 EnAudioTimeStampSdp;
-	u8 Reserved[3];
+	u32 EnVerticalSdp;	/**< SDP_VERTICAL_CTRL EN_VERTICAL_SDP bits */
+	u8 FixedPriorityArb;	/**< 1 = fixed priority SDP arbitration */
+	u8 DisableExtSdp;	/**< 1 = disable external SDP */
+	u8 En128Bytes;		/**< 1 = enable 128-byte SDPs */
+	u8 EnAudioStreamSdp;	/**< 1 = send audio stream SDP in vblank */
+	u8 EnAudioTimeStampSdp;	/**< 1 = send audio timestamp SDP in vblank */
+	u8 Reserved[3];		/**< Reserved */
 } XMmiDp_SdpVerticalCtrl;
 
 typedef struct {
@@ -422,6 +508,10 @@ typedef struct {
 	XMmiDp_SdpConfig SdpCfg3[XMMIDP_MAX_LANES];
 	u32 SdpRegBank[XMMIDP_MAX_LANES];
 	XMmiDp_Controller CtrlConfig[XMMIDP_MAX_LANES];
+	/** MST payload allocation per stream. */
+	XMmiDp_MstStream MstStreamConfig[XMMIDP_STREAM_ID4];
+	/** Result of the last MST topology discovery. */
+	XMmiDp_MstTopology MstTopology;
 	u32 AuxDelayUs;
 	XMmiDp_Config Config;
 	void *HpdHotPlugCallbackRef;
@@ -541,6 +631,19 @@ u32 XMmiDp_CheckChannelEqualization(XMmiDp *InstancePtr, u8 LaneCount);
 XMmiDp_TrainingState XMmiDp_TrainingStateChannelEqualization(XMmiDp *InstancePtr);
 u32 XMmiDp_CheckLinkStatus(XMmiDp *InstancePtr, u8 LaneCount);
 u32 XMmiDp_RunTraining(XMmiDp *InstancePtr);
+/**
+ * Read sink capabilities, apply optional lane/BW caps, and run full link
+ * training (CR + channel equalization).
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	UserMaxLanes Max lane count (0 = use sink maximum; else 1, 2, or 4).
+ * @param	UserMaxLinkBW Max link bandwidth in DPCD format (0 = auto;
+ *		0x06=RBR, 0x0A=HBR, 0x14=HBR2, 0x1E=HBR3).
+ *
+ * @return	XST_SUCCESS if link training succeeded, else XST_FAILURE.
+ */
+u32 XMmiDp_StartFullLinkTrainingCapped(XMmiDp *InstancePtr,
+				       u8 UserMaxLanes, u8 UserMaxLinkBW);
 
 void XMmiDp_WaitUs(XMmiDp *InstancePtr, u32 MicroSeconds);
 
@@ -578,10 +681,51 @@ void XMmiDp_ComputeHBlankInterval(XMmiDp *InstancePtr, u8 Stream,
 				  XVidC_ColorFormat ColorFormat);
 void XMmiDp_ComputeTuParams(XMmiDp *InstancePtr, u8 Stream,
 			    XVidC_ColorFormat ColorFormat);
+u16 XMmiDp_GetLinkPbn(XMmiDp *InstancePtr);
+u8 XMmiDp_ComputeTimeSlot(XMmiDp *InstancePtr, u8 Stream);
+u32 XMmiDp_DistributeMstPayloadSlots(XMmiDp *InstancePtr, u8 NumStreams);
+/**
+ * Program sink VC payload allocate (DPCD) for one MST stream.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the stream ID (XMMIDP_STREAM_ID1..ID4).
+ *
+ * @return	XST_SUCCESS if programmed; XST_FAILURE on invalid slots or AUX
+ *		failure.
+ *
+ * @note	Call XMmiDp_ComputeTimeSlot() first. VCPID=stream;
+ *		ascending stream order; lower TimeSlots must stay fixed.
+ *		Clears VC_PAYLOAD_ID_UPDATED only at 0x2C0 (not ACT_HANDLED).
+ */
+u32 XMmiDp_SetSinkVcPayloadTable(XMmiDp *InstancePtr, u8 Stream);
+u32 XMmiDp_AllocatePayloadStream(XMmiDp *InstancePtr, u8 Stream);
+/**
+ * Clear TX and immediate sink VC payload ID tables.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ *
+ * @return	XST_SUCCESS, or AUX status from a failing write/poll.
+ *
+ * @note	MST only. Clears VC_PAYLOAD_ID_UPDATED at 0x2C0 only (not
+ *		ACT_HANDLED). Does not reset MstStreamConfig[]. Downstream
+ *		branches are cleared by XMmiDp_SendSbMsgClearPayloadIdTable().
+ */
+u32 XMmiDp_ClearPayloadVcIdTable(XMmiDp *InstancePtr);
+/**
+ * Program TX MST VC payload table (REG0..REG7) for streams 1 through Stream.
+ *
+ * @param	InstancePtr is a pointer to the XMmiDp instance.
+ * @param	Stream is the highest stream ID to include cumulatively.
+ *
+ * @return	XST_SUCCESS if programmed; XST_FAILURE if slots exceed the table.
+ *
+ * @note	Call XMmiDp_ComputeTimeSlot() first. Reuses MstStream->StartSlot
+ *		when already set; otherwise computes it once.
+ */
+u32 XMmiDp_SetTxVcPayloadTable(XMmiDp *InstancePtr, u8 Stream);
 void XMmiDp_SetVidControllerUseStdVidMode(XMmiDp *InstancePtr,
 	XVidC_VideoMode VideoMode, u8 Stream,
 	XVidC_ColorFormat ColorFormat);
-
 void XMmiDp_ConfigureAudioController(XMmiDp *InstancePtr, u8 Stream);
 void XMmiDp_SetAudStreamInterfaceSel(XMmiDp *InstancePtr, u8 Stream, u8 InterfaceSel);
 void XMmiDp_SetAudDataInputEn(XMmiDp *InstancePtr, u8 Stream, u8 ActiveDataInput);
@@ -620,7 +764,8 @@ void XMmiDp_SetControllereDpEn(XMmiDp *InstancePtr, u8 Stream, u8 eDpEn);
 void XMmiDp_SetControllerInitiateMstActSeq(XMmiDp *InstancePtr, u8 Stream, u8 InitiateMstActSeq);
 void XMmiDp_SetCoreCtrl(XMmiDp *InstancePtr, u8 Stream);
 void XMmiDp_MstActSeqEnable(XMmiDp *InstancePtr);
-void XMmiDp_MstModeEnable(XMmiDp *InstancePtr);
+void XMmiDp_MstModeEnable(XMmiDp *InstancePtr, u8 Enable);
+u32 XMmiDp_SinkMstModeEnable(XMmiDp *InstancePtr);
 u32 XMmiDp_WaitPayloadTableUpdateStatus(XMmiDp *InstancePtr);
 u32 XMmiDp_WaitActHandledStatus(XMmiDp *InstancePtr);
 u32 XMmiDp_InitiateActSeq(XMmiDp *InstancePtr);
@@ -632,4 +777,18 @@ void XMmiDp_SetMstVcpTable4(XMmiDp *InstancePtr, u32 Payload);
 void XMmiDp_SetMstVcpTable5(XMmiDp *InstancePtr, u32 Payload);
 void XMmiDp_SetMstVcpTable6(XMmiDp *InstancePtr, u32 Payload);
 void XMmiDp_SetMstVcpTable7(XMmiDp *InstancePtr, u32 Payload);
+
+/* xmmidp_mst.c: MST sideband messaging and topology */
+u32 XMmiDp_SendSbMsgLinkAddress(XMmiDp *InstancePtr, u8 LinkCountTotal,
+				const u8 *RelativeAddress,
+				XMmiDp_SbLinkAddressReply *Reply);
+u32 XMmiDp_SendSbMsgEnumPathResources(XMmiDp *InstancePtr, u8 LinkCountTotal,
+				      const u8 *RelativeAddress,
+				      u16 *AvailPbn, u16 *FullPbn);
+u32 XMmiDp_SendSbMsgAllocatePayload(XMmiDp *InstancePtr, u8 LinkCountTotal,
+				    const u8 *RelativeAddress, u8 VcId,
+				    u16 Pbn);
+u32 XMmiDp_SendSbMsgClearPayloadIdTable(XMmiDp *InstancePtr);
+u32 XMmiDp_MstDiscoverTopology(XMmiDp *InstancePtr);
+u32 XMmiDp_MstSetStreamSink(XMmiDp *InstancePtr, u8 Stream, u8 SinkIdx);
 #endif /* __XMMIDP_H__ */

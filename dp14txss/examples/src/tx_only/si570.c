@@ -1,5 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -20,10 +21,11 @@
 *
 ******************************************************************************/
 
-#include "xbasic_types.h"
+#include "xil_types.h"
+#include "xil_assert.h"
 #include "xdptxss_dp14_tx.h"
 
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 #if ENABLE_AUDIO
 volatile u8 TransmitComplete;   /* Flag to check completion of Transmission */
 volatile u8 ReceiveComplete;    /* Flag to check completion of Reception */
@@ -35,19 +37,26 @@ typedef u8 AddressType;
 u8 WriteBuffer[sizeof(AddressType) + PAGE_SIZE];
 u8 ReadBuffer[PAGE_SIZE];
 
-static void ReceiveHandler(XIic * InstancePtr)
+static void ReceiveHandler(void *CallBackRef, int ByteCount)
 {
+	(void)CallBackRef;
+	(void)ByteCount;
+
         ReceiveComplete = 0;
 }
 
-static void SendHandler(XIic * InstancePtr)
+static void SendHandler(void *CallBackRef, int ByteCount)
 {
+	(void)CallBackRef;
+	(void)ByteCount;
+
         TransmitComplete = 0;
 }
 
-static void StatusHandler(XIic * InstancePtr, int Event)
+static void StatusHandler(void *CallBackRef, int Event)
 {
-
+	(void)CallBackRef;
+	(void)Event;
 }
 
 int iic_write(u16 ByteCount)

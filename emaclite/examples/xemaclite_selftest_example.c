@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,12 +8,12 @@
 /**
 *
 * @file xemaclite_selftest_example.c
+* @addtogroup emaclite Overview
+* @{
 *
-* This file contains a design example using the EmacLite driver.
+* @brief Demonstrates EmacLite self-test example.
 *
-* @note
-*
-* None.
+* Contains a design example using the EmacLite driver.
 *
 * MODIFICATION HISTORY:
 *
@@ -42,9 +42,9 @@
  * change all the needed parameters in one place.
  */
 #ifdef SDT
-#define EMACLITE_BASEADDR	XPAR_XEMACLITE_0_BASEADDR
+#define EMACLITE_BASEADDR	XPAR_XEMACLITE_0_BASEADDR /**< Base address of the EmacLite device. */
 #else
-#define EMAC_DEVICE_ID			XPAR_EMACLITE_0_DEVICE_ID
+#define EMAC_DEVICE_ID			XPAR_EMACLITE_0_DEVICE_ID /**< Device ID of the EmacLite device. */
 #endif
 
 /**************************** Type Definitions *******************************/
@@ -68,13 +68,9 @@ static XEmacLite EmacLite;
 /****************************************************************************/
 /**
 *
-* This function is the main function of the EmacLite selftest example.
-*
-* @param	None
+* @brief Main entry point of the EmacLite selftest example.
 *
 * @return	XST_SUCCESS to indicate success, else XST_FAILURE.
-*
-* @note		None
 *
 *****************************************************************************/
 int main(void)
@@ -103,19 +99,16 @@ int main(void)
 /*****************************************************************************/
 /**
 *
-* The main entry point for the EmacLite driver selftest example.
+* @brief The main entry point for the EmacLite driver selftest example.
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the EmacLite device
+* @param[in] BaseAddress contains the base address of the EmacLite device.
 * @else
-* @param	DeviceId is the XPAR_<xemaclite_instance>_DEVICE_ID value from
-*		xparameters.h
+* @param[in] DeviceId is the XPAR_<xemaclite_instance>_DEVICE_ID value from
+*		xparameters.h.
 * @endif
 *
 * @return	XST_SUCCESS to indicate success, else XST_FAILURE.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 #ifdef SDT
@@ -156,3 +149,5 @@ int EMACLiteSelfTestExample(u16 DeviceId)
 
 	return XST_SUCCESS;
 }
+
+/** @} */

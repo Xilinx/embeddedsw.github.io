@@ -9,16 +9,12 @@
 *
 * @file xaxipmon_polled_example.c
 *
-* This file contains a design example showing how to use the driver APIs of the
-* AXI Performance Monitor driver in poll mode.
-*
+* @brief Demonstrates the AXI Performance Monitor driver APIs in polled mode.
 *
 * @note
-*
 * Global Clock Counter and Metric Counters are enabled. The Application
 * for which Metrics need to be computed should be run and then the Metrics
 * collected.
-*
 *
 * <pre>
 *
@@ -38,6 +34,9 @@
 * 6.10  ht    06/23/23 Added support for system device-tree flow.
 * 6.14  vlt  12/12/25 Update Doxygen comments to include SDT flow details.
 *       vlt  01/27/26 Fixed codespell issues.
+* 6.15  vn   07/30/26 Fix Doxygen warnings
+* 6.15  vn   09/08/26 Align Doxygen comments with AMD standards
+* 6.15  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 *****************************************************************************/
@@ -57,7 +56,7 @@
  * change all the needed parameters in one place.
  */
 #ifndef SDT
-#define AXIPMON_DEVICE_ID 	XPAR_AXIPMON_0_DEVICE_ID
+#define AXIPMON_DEVICE_ID 	XPAR_AXIPMON_0_DEVICE_ID /**< Device ID. */
 #endif
 
 
@@ -78,20 +77,16 @@ int AxiPmonPolledExample(UINTPTR BaseAddress, u32 *Metrics, u32 *ClkCntHigh,
 
 /************************** Variable Definitions ****************************/
 
-static XAxiPmon AxiPmonInst;      /* System Monitor driver instance */
+static XAxiPmon AxiPmonInst; /**< AXI Performance Monitor driver instance. */
 
 /****************************************************************************/
 /**
 *
-* Main function that invokes the example in this file.
-*
-* @param	None.
+* @brief Invokes the AXI Performance Monitor polled example.
 *
 * @return
 *		- XST_SUCCESS if the example has completed successfully.
 *		- XST_FAILURE if the example has failed.
-*
-* @note		None
 *
 *****************************************************************************/
 int main(void)
@@ -128,8 +123,9 @@ int main(void)
 /****************************************************************************/
 /**
 *
-* This function runs a test on the AXI Performance Monitor device using the
-* driver APIs.
+* @brief Runs a test on the AXI Performance Monitor device using the driver
+*        APIs.
+*
 * This function does the following tasks:
 *	- Initiate the AXI Performance Monitor device driver instance
 *	- Run self-test on the device
@@ -141,24 +137,24 @@ int main(void)
 *	- Read Global Clock Counter and Metric Counter 0
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the device
+* @param[in]   BaseAddress Base address of the device.
 * @else
-* @param	AxiPmonDeviceId is the XPAR_<AXIPMON_instance>_DEVICE_ID value
-*		from xparameters.h.
+* @param[in]   AxiPmonDeviceId XPAR_<AXIPMON_instance>_DEVICE_ID value
+*              from xparameters.h.
 * @endif
-* @param	Metrics is an user reference variable in which computed metrics
-*			will be filled
-* @param	ClkCntHigh is an user reference variable in which Higher 64 bits
-*			of Global Clock Counter are filled
-* @param	ClkCntLow is an user reference variable in which Lower 64 bits
-*			of Global Clock Counter are filled
+* @param[out]  Metrics Reference variable in which computed metrics
+*              are filled.
+* @param[out]  ClkCntHigh Reference variable in which the upper 32 bits
+*              of the Global Clock Counter are filled.
+* @param[out]  ClkCntLow Reference variable in which the lower 32 bits
+*              of the Global Clock Counter are filled.
 *
 * @return
-*		- XST_SUCCESS if the example has completed successfully.
-*		- XST_FAILURE if the example has failed.
+*              - XST_SUCCESS if the example has completed successfully.
+*              - XST_FAILURE if the example has failed.
 *
-* @note	        In XSCT/classic flow, DeviceId is used to look up the device
-*               configuration.
+* @note        In XSCT/classic flow, DeviceId is used to look up the device
+*              configuration.
 *
 ****************************************************************************/
 #ifndef SDT

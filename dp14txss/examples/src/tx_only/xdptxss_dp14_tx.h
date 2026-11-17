@@ -34,7 +34,7 @@ extern "C" {
 #include "xil_types.h"
 #include "xparameters.h"
 #include "xstatus.h"
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #include "xscugic.h"
 #else
 #include "xintc.h"
@@ -50,7 +50,7 @@ extern "C" {
 #else
 #include "xvphy.h"
 #include "xvphy_i.h"
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #include "xuartps_hw.h"
 #include "xiicps.h"
 #else
@@ -83,21 +83,8 @@ extern "C" {
 * There is only one interrupt controlled to be selected from SCUGIC and GPIO
 * INTC. INTC selection is based on INTC parameters defined xparameters.h file.
 */
-#ifndef PLATFORM_MB
-#ifndef SDT
-#define XINTC_DPTXSS_DP_INTERRUPT_ID \
-	XPAR_FABRIC_DP14TXSS_0_VEC_ID
-
-#define XINTC				XScuGic
-#define XINTC_HANDLER			XScuGic_InterruptHandler
-#endif
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #else
-#ifndef SDT
-#define XINTC_DPTXSS_DP_INTERRUPT_ID \
-	XPAR_INTC_0_DP14TXSS_0_VEC_ID
-
-#define XINTC_HANDLER			XIntc_InterruptHandler
-#endif
 #endif
 
 /* The unique device ID of the DisplayPort Transmitter Subsystem HIP instance
@@ -132,13 +119,8 @@ extern "C" {
  */
 #define DPTXSS_BPC			XPAR_DPTXSS_0_BITS_PER_COLOR
 
-#ifndef SDT
-#define SET_TX_TO_2BYTE		\
-		(XPAR_XDP_0_GT_DATAWIDTH/2)
-#else
 #define SET_TX_TO_2BYTE		\
 		(XPAR_XDP_0_GT_DATA_WIDTH/2)
-#endif
 
 #define TIMER_RESET_VALUE				1000
 #define is_TX_CPLL 0
@@ -163,12 +145,7 @@ extern "C" {
 #define	DIV 						0x00000260
 #define DIV_MASK 					0x000003FF
 
-#ifndef SDT
-#define XINTC_DEVICE_ID			        XPAR_SCUGIC_0_DEVICE_ID
-#define CLK_WIZ_BASE      				XPAR_CLK_WIZARD_1_BASEADDR
-#else
 #define CLK_WIZ_BASE                    XPAR_XCLK_WIZ_0_BASEADDR
-#endif
 #define XVPHY_DEVICE_ID					0
 #define IIC_BASE_ADDR 					0
 #define IIC_DEVICE_ID                   0
@@ -192,18 +169,14 @@ extern "C" {
  */
 #define VERSAL_FABRIC_8B10B             1
 #else
-#ifndef PLATFORM_MB
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 #define XINTC_DEVICE_ID			XPAR_SCUGIC_SINGLE_DEVICE_ID
 #else
 #define XINTC_DEVICE_ID	XPAR_INTC_0_DEVICE_ID
 #endif
 #define XVPHY_DEVICE_ID		XPAR_VPHY_0_DEVICE_ID
-#define CLK_WIZ_BASE      	XPAR_CLK_WIZ_0_BASEADDR
-#ifndef SDT
-#define IIC_BASE_ADDR 		XPAR_IIC_0_BASEADDR
-#else
+//#define CLK_WIZ_BASE      	XPAR_CLK_WIZ_0_BASEADDR
 #define IIC_BASE_ADDR 		XPAR_XIIC_0_BASEADDR
-#endif
 #define IIC_DEVICE_ID       XPAR_IIC_0_DEVICE_ID
 #endif
 

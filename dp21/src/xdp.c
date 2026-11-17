@@ -65,6 +65,24 @@
 /* Error out if checking for a connected device times out more than 50 times. */
 #define XDP_IS_CONNECTED_MAX_TIMEOUT_COUNT 50
 
+ /**
+ * Maximum number of poll attempts for the INTRAHOP_AUX_REPLY_INDICATION bit
+ * (DPCD 0x00205, bit 3) to clear before starting link training.
+ */
+#define XDP_TX_INTRA_HOP_MAX_RETRIES 10
+
+ /**
+ * Delay in microseconds between successive INTRAHOP_AUX_REPLY_INDICATION
+ * poll attempts.
+ */
+#define XDP_TX_INTRA_HOP_POLL_DELAY_US 100
+
+ /**
+ * CR retries at the minimum link rate (reduced bit rate method) before the
+ * lane count is reduced as a last resort.
+ */
+#define XDP_TX_MIN_RATE_CR_MAX_RETRIES 5
+
 /* Link Status/Adjust Request read interval during Main-Link training sequences */
 #define XDP_LINK_ADJUST_TIMEOUT_IN_USEC 400
 #define XDP_LINK_ADJUST_TIMEOUT_IN_32MSEC 32000
@@ -185,6 +203,7 @@ static u32 XDp_TxAuxWaitReply(XDp *InstancePtr);
 static u32 XDp_TxAuxWaitReady(XDp *InstancePtr);
 /* Miscellaneous functions. */
 static u32 XDp_TxSetClkSpeed(XDp *InstancePtr, u32 Speed);
+static u32 XDp_WaitPhyReady(XDp *InstancePtr, u32 Mask);
 /* Train DP2.1 main link. */
 static u32 XDp_Tx_Run_2x_LinkTraining(XDp *InstancePtr);
 static XDp_TxTrainingState XDp_Tx_2x_ChannelEqualization(XDp *InstancePtr, u8 NumOfRepeaters);
@@ -196,8 +215,6 @@ static u32 XDp_Tx_2x_AdjustFfePresetValues(XDp *InstancePtr, u8 LaneCount);
 static u32 XDp_Tx_2x_AdjustLinkTrainparams(XDp *InstancePtr, u8 TrainingFailure);
 static void XDp_Tx_2x_LttprModeSet(XDp *InstancePtr, XDp_Tx_LttprMode mode);
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
-
-static u32 XDp_WaitPhyReady(XDp *InstancePtr, u32 Mask);
 
 /**************************** Function Definitions ****************************/
 
@@ -362,9 +379,9 @@ u8 XDp_TxGetActiveRepeater(XDp *InstancePtr)
 static void XDp_TxSetActiveRepeater(XDp *InstancePtr, u8 NumOfRepeaters)
 {
 	/* Verify arguments. */
-	Xil_AssertNonvoid(InstancePtr != NULL);
-	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
-	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
+	Xil_AssertVoid(XDp_GetCoreType(InstancePtr) == XDP_TX);
 
 	InstancePtr->TxInstance.LinkConfig.ActiveRepeaterCount = NumOfRepeaters;
 }
@@ -724,6 +741,17 @@ u32 XDp_TxGetRxCapabilities(XDp *InstancePtr)
 	LinkConfig->MaxLinkRate =
 			(RxMaxLinkRate > ConfigPtr->MaxLinkRate) ? ConfigPtr->MaxLinkRate :
 			 RxMaxLinkRate;
+
+	/*
+	 * A sink that does not support 128b/132b channel coding cannot operate
+	 * above HBR3 (8.10 Gbps). If such a sink advertised a reserved/non-standard
+	 * MAX_LINK_RATE (e.g. 0x26), the value above defaults MaxLinkRate to the TX
+	 * core maximum, which may be a UHBR SW rate (encoded above 0x1E).
+	 */
+	if (!LinkConfig->Downstream2xSupported &&
+	    LinkConfig->MaxLinkRate > XDP_TX_LINK_BW_SET_810GBPS) {
+		LinkConfig->MaxLinkRate = XDP_TX_LINK_BW_SET_810GBPS;
+	}
 
 	LinkConfig->MaxLaneCount = (RxMaxLaneCount > ConfigPtr->MaxLaneCount) ?
 		ConfigPtr->MaxLaneCount : RxMaxLaneCount;
@@ -2599,6 +2627,8 @@ u8 XDp_IsLinkRateValid(XDp *InstancePtr, u8 LinkRate)
 {
 	u8 Valid;
 
+	(void)InstancePtr;
+
 	if ((LinkRate != XDP_LINK_BW_SET_162GBPS) &&
 		(LinkRate != XDP_LINK_BW_SET_270GBPS) &&
 		(LinkRate != XDP_LINK_BW_SET_540GBPS) &&
@@ -2672,7 +2702,6 @@ static u32 XDp_TxInitialize(XDp *InstancePtr)
 {
 	u32 PhyVal;
 	u32 RegVal;
-	u32 Status;
 	XDp_Config *ConfigPtr = &InstancePtr->Config;
 
 	/* Preserve the current PHY settings. */
@@ -2964,6 +2993,9 @@ static u32 XDp_TxRunTrain8b_10b(XDp *InstancePtr, u8 NumOfRepeaters)
 	u32 Status = 0;
 	XDp_TxTrainingState TrainingState = XDP_TX_TS_CLOCK_RECOVERY;
 
+	InstancePtr->TxInstance.LinkConfig.MinRateCrRetry = 0;
+	InstancePtr->TxInstance.LinkConfig.SkipCrTpOff = 0;
+
 	while (1) {
 		switch (TrainingState) {
 		case XDP_TX_TS_CLOCK_RECOVERY:
@@ -3009,6 +3041,8 @@ static u32 XDp_TxRunTrain8b_10b(XDp *InstancePtr, u8 NumOfRepeaters)
 			if (Status != XST_SUCCESS) {
 				return XST_FAILURE;
 			}
+			if (TrainingState == XDP_TX_TS_ADJUST_LANE_COUNT)
+				InstancePtr->TxInstance.LinkConfig.SkipCrTpOff = 1;
 		}
 	}
 
@@ -3094,6 +3128,42 @@ static u32 XDp_TxRunTraining(XDp *InstancePtr)
 
 /******************************************************************************/
 /**
+ * This function verifies that the INTRAHOP_AUX_REPLY_INDICATION state in the
+ * sink's SINK_STATUS register (DPCD 0x00205, bit 3) is cleared before the
+ * source starts link training by writing TRAINING_PATTERN_SET (DPCD 0x00102).
+ *
+ * @param	InstancePtr is a pointer to the XDp instance.
+ *
+ * @return
+ *		- XST_SUCCESS if the intra-hop indication is cleared.
+ *		- XST_FAILURE if the AUX read failed or the bit did not clear.
+ *
+ * @note	None.
+ *
+*******************************************************************************/
+static u32 XDp_TxWaitIntraHopAuxReplyCleared(XDp *InstancePtr)
+{
+	u32 Status;
+	u8 SinkStatus = 0;
+	u32 Retry;
+
+	for (Retry = 0; Retry < XDP_TX_INTRA_HOP_MAX_RETRIES; Retry++) {
+		Status = XDp_TxAuxRead(InstancePtr, XDP_DPCD_SINK_STATUS, 1,
+				       &SinkStatus);
+		if (Status != XST_SUCCESS)
+			return XST_FAILURE;
+
+		if (!(SinkStatus & XDP_DPCD_INTRA_HOP_INDICATION))
+			return XST_SUCCESS;
+
+		XDp_WaitUs(InstancePtr, XDP_TX_INTRA_HOP_POLL_DELAY_US);
+	}
+
+	return XST_FAILURE;
+}
+
+/******************************************************************************/
+/**
  * This function runs the clock recovery sequence as part of link training. The
  * sequence is as follows:
  *	0) Start signaling at the minimum voltage swing, pre-emphasis, and post-
@@ -3136,12 +3206,19 @@ static XDp_TxTrainingState XDp_TxTrainingStateClockRecovery(XDp *InstancePtr, u8
 	XDp_TxLinkConfig *LinkConfig = &InstancePtr->TxInstance.LinkConfig;
 
 	/* UCD500 complaince expects the training pattern to be set off
-	 * before starting training.
+	 * before starting training. On a fallback restart the state machine
+	 * has already cleared the pattern before reconfiguring, so skip it
+	 * here; otherwise the TP_OFF at the reduced config makes the sink
+	 * treat training as complete and fail the CR fallback at the minimum
+	 * lane count.
 	 */
-	Status = XDp_TxSetTrainingPattern(InstancePtr,
+	if (!LinkConfig->SkipCrTpOff) {
+		Status = XDp_TxSetTrainingPattern(InstancePtr,
 					  XDP_TX_TRAINING_PATTERN_SET_OFF, NumOfRepeaters);
-	if (Status != XST_SUCCESS)
-		return XDP_TX_TS_FAILURE;
+		if (Status != XST_SUCCESS)
+			return XDP_TX_TS_FAILURE;
+	}
+	LinkConfig->SkipCrTpOff = 0;
 	/* Obtain the required delay for clock recovery as specified by the
 	 * RX device. */
 	DelayUs = XDp_TxGetTrainingDelay(InstancePtr, XDP_TX_TS_CLOCK_RECOVERY);
@@ -3171,6 +3248,10 @@ static XDp_TxTrainingState XDp_TxTrainingStateClockRecovery(XDp *InstancePtr, u8
 	if (Status != XST_SUCCESS)
 		return XDP_TX_TS_FAILURE;
 #endif
+
+	Status = XDp_TxWaitIntraHopAuxReplyCleared(InstancePtr);
+	if (Status != XST_SUCCESS)
+		return XDP_TX_TS_FAILURE;
 
 	Status = XDp_TxSetTrainingPattern(InstancePtr,
 					XDP_TX_TRAINING_PATTERN_SET_TP1, NumOfRepeaters);
@@ -3483,9 +3564,17 @@ static XDp_TxTrainingState XDp_TxTrainingStateAdjustLinkRate(XDp *InstancePtr)
 		Status = XDP_TX_TS_CLOCK_RECOVERY;
 		break;
 	default:
-	/* Already at the lowest link rate. Try reducing the lane
-	 * count next. */
-		Status = XDP_TX_TS_ADJUST_LANE_COUNT;
+	/* Already at the lowest link rate. Per the DP "reduced bit rate"
+	 * method, keep the lane count and re-attempt clock
+	 * recovery rather than dropping the lane count; only reduce the lane
+	 * count as a last resort so a genuinely bad link still falls back. */
+		if (InstancePtr->TxInstance.LinkConfig.MinRateCrRetry <
+				XDP_TX_MIN_RATE_CR_MAX_RETRIES) {
+			InstancePtr->TxInstance.LinkConfig.MinRateCrRetry++;
+			Status = XDP_TX_TS_CLOCK_RECOVERY;
+		} else {
+			Status = XDP_TX_TS_ADJUST_LANE_COUNT;
+		}
 		break;
 	}
 
@@ -3533,6 +3622,7 @@ static XDp_TxTrainingState XDp_TxTrainingStateAdjustLaneCount(XDp *InstancePtr)
 			Status = XDP_TX_TS_FAILURE;
 			break;
 		}
+		LinkConfig->MinRateCrRetry = 0;
 		Status = XDP_TX_TS_CLOCK_RECOVERY;
 		break;
 	case XDP_TX_LANE_COUNT_SET_2:
@@ -3549,6 +3639,7 @@ static XDp_TxTrainingState XDp_TxTrainingStateAdjustLaneCount(XDp *InstancePtr)
 			Status = XDP_TX_TS_FAILURE;
 			break;
 		}
+		LinkConfig->MinRateCrRetry = 0;
 		Status = XDP_TX_TS_CLOCK_RECOVERY;
 		break;
 	default:
@@ -4156,17 +4247,19 @@ static u32 XDp_TxGetTrainingDelay(XDp *InstancePtr,
 	u8 *Dpcd = InstancePtr->TxInstance.RxConfig.DpcdRxCapsField;
 	u16 Delay;
 
+	/* Per the DP spec, the clock recovery phase always polls the link
+	 * status at 100us. TRAINING_AUX_RD_INTERVAL applies to the channel
+	 * equalization phase only.
+	 */
+	if (TrainingState == XDP_TX_TS_CLOCK_RECOVERY)
+		return 100;
+
 	switch ((Dpcd[XDP_DPCD_TRAIN_AUX_RD_INTERVAL] &
 			 XDP_DPCD_TRAIN_AUX_RD_INT_MASK)) {
 	case XDP_DPCD_TRAIN_AUX_RD_INT_100_400US:
-		if (TrainingState == XDP_TX_TS_CLOCK_RECOVERY) {
-			/* Delay for the clock recovery phase. */
-			Delay = 100;
-		}
-		else {
-			/* Delay for the channel equalization phase. */
-			Delay = 400;
-		}
+		/* Delay for the channel equalization phase; clock recovery
+		 * already returned above. */
+		Delay = 400;
 		break;
 	case XDP_DPCD_TRAIN_AUX_RD_INT_4MS:
 		Delay = 4000;
@@ -4727,6 +4820,7 @@ u32 XDp_TxCheckVscColorimetrySupport(XDp *InstancePtr)
 
 #endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 
+#if XPAR_XDPTXSS_NUM_INSTANCES
 /******************************************************************************/
 /**
  * This function waits for the DisplayPort PHY to come out of reset.
@@ -4772,6 +4866,7 @@ static u32 XDp_WaitPhyReady(XDp *InstancePtr, u32 Mask)
 
 	return XST_SUCCESS;
 }
+#endif /* XPAR_XDPTXSS_NUM_INSTANCES */
 
 #if XPAR_XDPTXSS_NUM_INSTANCES
 /******************************************************************************/
@@ -5355,7 +5450,7 @@ static u32 XDp_Tx_2x_AdjustLinkTrainparams(XDp *InstancePtr, u8 TrainingFailure)
 	u32 next_id = 0;
 	int status = XST_FAILURE;
 
-
+	(void)TrainingFailure;
 
 	while (curr_id < ARRAY_SIZE(dptx_lt_fallbacks))
 		/* find current index */
@@ -5592,6 +5687,10 @@ static XDp_TxTrainingState XDp_Tx_2x_ChannelEqualization(XDp *InstancePtr, u8 Nu
 	/* UCD500 complaince expects the Lane to be set here it has to match the max cap of Sink */
 	Status = XDp_TxSetLinkRate(InstancePtr,
 				    InstancePtr->TxInstance.LinkConfig.LinkRate);
+	if (Status != XST_SUCCESS)
+		return XDP_TX_TS_FAILURE;
+
+	Status = XDp_TxWaitIntraHopAuxReplyCleared(InstancePtr);
 	if (Status != XST_SUCCESS)
 		return XDP_TX_TS_FAILURE;
 

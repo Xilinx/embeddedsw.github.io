@@ -13,13 +13,13 @@
 ## @BEGIN_CHANGELOG EDK_M
 ##
 ##  11/18/2009 ktn Removed support for opb_uartlite opb_jtag_uart opb_mdm
-##    
+##
 ## @END_CHANGELOG
 
 ## @BEGIN_CHANGELOG EDK_MS3
 ##
 ## 06/16/10 sv Added support for axi_uartlite
-##    
+##
 ## @END_CHANGELOG
 
 OPTION psf_version = 2.1;
@@ -28,9 +28,9 @@ BEGIN driver uartlite
 
   OPTION supported_peripherals = (mdm axi_uartlite tmr_sem psv_pmc_ppu1_mdm mdm_riscv);
   OPTION driver_state = ACTIVE;
-  OPTION copyfiles = all;	
-  OPTION VERSION = 3.13;
-  OPTION NAME = uartlite; 
+  OPTION copyfiles = all;
+  OPTION VERSION = 3.14;
+  OPTION NAME = uartlite;
 
     BEGIN INTERFACE stdin
       PROPERTY header = xuartlite_l.h;

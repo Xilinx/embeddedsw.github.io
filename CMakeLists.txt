@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 # SPDX-License-Identifier: MIT
 cmake_minimum_required(VERSION 3.15)
 project(libxil)
@@ -30,9 +30,16 @@ ENDFOREACH()
 # Reverse the OBJS list to ensure correct order
 list(REVERSE OBJS)
 
-# Append the reversed OBJS to xil_mri
+# Append the reversed OBJS to xil_mri using RELATIVE paths.
+# GNU ar -M (MRI scripting mode) does not support quoting or escaping and
+# treats '@' as control syntax.  Absolute paths that contain '@' (e.g. from
+# a workspace directory like /proj/foo@bar/bsp) cause ar to truncate the
+# path and fail with "can't open file".  Since the add_custom_target below
+# already sets WORKING_DIRECTORY to CMAKE_BINARY_DIR, relative paths resolve
+# identically to absolute ones but never expose the '@' from the workspace.
 foreach(drv_archive ${OBJS})
-    list(APPEND xil_mri "addlib ${drv_archive}\n")
+    file(RELATIVE_PATH drv_archive_rel "${CMAKE_BINARY_DIR}" "${drv_archive}")
+    list(APPEND xil_mri "addlib ${drv_archive_rel}\n")
 endforeach()
 
 list(APPEND xil_mri "save\n")
@@ -64,7 +71,7 @@ add_custom_target(combined ALL
 	COMMAND ${CUSTOM_COMMAND}
 	COMMAND ${CMAKE_COMMAND} -E copy ${XIL_LIB} ${CMAKE_LIBRARY_PATH}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMENT "Archiving C static library libsrc/build_configs/gen_bsp/libxil.a"
+	COMMENT "Archiving C static library ${CMAKE_BINARY_DIR}/libxil.a"
 	DEPENDS ${DRIVER_LIST})
 
 if("${proc_compiler}" STREQUAL "iccarm.exe")

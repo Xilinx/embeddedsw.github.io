@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -33,6 +33,108 @@
 static void DpPsu_StartVideoStream(XDpPsu *InstancePtr);
 
 /**************************** Function Definitions ****************************/
+
+/******************************************************************************/
+/**
+ * This function performs the platform initialization required before the
+ * DisplayPort TX core can be used. It is provided as an empty default so that
+ * the examples build and link out of the box.
+ *
+ * @return
+ *		- XST_SUCCESS always.
+ *
+ * @note	The contents of this function are hardware system specific - it
+ *		is up to the user to fill it in as needed. Typical tasks are
+ *		bringing up the clocking for the video pixel clock and the
+ *		DisplayPort reference clock, releasing resets, and configuring
+ *		the PS-GT lanes and the video pipeline routing.
+ *
+*******************************************************************************/
+u32 DpPsu_PlatformInit(void)
+{
+	/* Add platform specific initialization here. */
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * This function sets up the video stream source that feeds the DisplayPort TX
+ * core. It is provided as an empty default so that the examples build and link
+ * out of the box.
+ *
+ * @param	InstancePtr is a pointer to the XDpPsu instance.
+ *
+ * @return
+ *		- XST_SUCCESS always.
+ *
+ * @note	The contents of this function are hardware system specific - it
+ *		is up to the user to fill it in as needed. For the PS DisplayPort
+ *		this typically means selecting the video and audio input sources
+ *		using the AVBuf driver, for example XAVBuf_InputVideoSelect.
+ *
+*******************************************************************************/
+u32 DpPsu_StreamSrcSetup(XDpPsu *InstancePtr)
+{
+	(void)InstancePtr;
+
+	/* Add stream source setup here. */
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * This function configures the video stream source that feeds the DisplayPort
+ * TX core. It is provided as an empty default so that the examples build and
+ * link out of the box.
+ *
+ * @param	InstancePtr is a pointer to the XDpPsu instance.
+ *
+ * @return
+ *		- XST_SUCCESS always.
+ *
+ * @note	The contents of this function are hardware system specific - it
+ *		is up to the user to fill it in as needed. For the PS DisplayPort
+ *		this typically means programming the video format, the blender
+ *		and the audio/video buffer attributes using the AVBuf driver,
+ *		for example XAVBuf_ConfigureVideoPipeline.
+ *
+*******************************************************************************/
+u32 DpPsu_StreamSrcConfigure(XDpPsu *InstancePtr)
+{
+	(void)InstancePtr;
+
+	/* Add stream source configuration here. */
+
+	return XST_SUCCESS;
+}
+
+/******************************************************************************/
+/**
+ * This function synchronizes the video stream source with the DisplayPort TX
+ * core. It is provided as an empty default so that the examples build and link
+ * out of the box.
+ *
+ * @param	InstancePtr is a pointer to the XDpPsu instance.
+ *
+ * @return
+ *		- XST_SUCCESS always.
+ *
+ * @note	The contents of this function are hardware system specific - it
+ *		is up to the user to fill it in as needed. For the PS DisplayPort
+ *		this typically means enabling the video and audio timing and
+ *		releasing the buffer outputs so the stream tracks the main link.
+ *
+*******************************************************************************/
+u32 DpPsu_StreamSrcSync(XDpPsu *InstancePtr)
+{
+	(void)InstancePtr;
+
+	/* Add stream source synchronization here. */
+
+	return XST_SUCCESS;
+}
 
 /******************************************************************************/
 /**
@@ -83,21 +185,13 @@ u32 DpPsu_Run(XDpPsu *InstancePtr)
  * @note	None.
  *
 *******************************************************************************/
-#ifndef SDT
-u32 DpPsu_SetupExample(XDpPsu *InstancePtr, u16 DeviceId)
-#else
 u32 DpPsu_SetupExample(XDpPsu *InstancePtr, u32 BaseAddress)
-#endif
 {
 	XDpPsu_Config *ConfigPtr;
 	u32 Status;
 
 	/* Obtain the device configuration for the DisplayPort TX core. */
-#ifndef SDT
-	ConfigPtr = XDpPsu_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XDpPsu_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -221,9 +315,9 @@ u32 DpPsu_StartLink(XDpPsu *InstancePtr)
  *
  * @return	None.
  *
- * @note	The DpPsu_StreamSrc* are intentionally left for the user to
- *		implement since configuration of the stream source is
- *		application-specific.
+ * @note	The DpPsu_StreamSrc* are empty stubs since configuration of the
+ *		stream source is application-specific. They are intentionally
+ *		left for the user to fill in as needed.
  * @note	The Extended Display Identification Data (EDID) is read in order
  *		to obtain the video resolution and timings. If this read fails,
  *		a resolution of 640x480 is used at a refresh rate of 60Hz.

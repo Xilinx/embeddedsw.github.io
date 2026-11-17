@@ -5,6 +5,14 @@
     <includedby refid="xcfupmc_8h" local="yes">xcfupmc.h</includedby>
     <includedby refid="xcfupmc__hw_8h" local="yes">xcfupmc_hw.h</includedby>
     <invincdepgraph>
+      <node id="1">
+        <label>cfu_apb.h</label>
+        <link refid="cfu_apb.h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
       <node id="4">
         <label>xcfupmc_g.c</label>
       </node>
@@ -37,14 +45,6 @@
       <node id="6">
         <label>xcfupmc_sinit.c</label>
         <link refid="xcfupmc__sinit_8c"/>
-      </node>
-      <node id="1">
-        <label>cfu_apb.h</label>
-        <link refid="cfu_apb.h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
       </node>
     </invincdepgraph>
     <briefdescription>
@@ -121,6 +121,6 @@
 <codeline lineno="106"><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>CFU_APB_H_<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
-    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/cfupmc/src/cfu_apb.h"/>
+    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/cfupmc/src/cfu_apb.h"/>
   </compounddef>
 </doxygen>

@@ -22,7 +22,7 @@
 
 ## BEGIN_CHANGELOG EDK_Im_SP2
 ##
-##  - Added Interrupt support 
+##  - Added Interrupt support
 ##
 ## END_CHANGELOG
 
@@ -37,7 +37,7 @@
 ##  - Added support for generation of multiple applications.
 ##    All TCL procedures are now required to have a software
 ##    project type as its first argument
-##    
+##
 ## END_CHANGELOG
 
 
@@ -60,9 +60,9 @@ proc gen_include_files {swproj mhsinst} {
   if {$swproj == 1} {
     set spi_intr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
       if { ${spi_intr} == 1} {
-          set inc_file_lines {xspi.h spi_header.h spi_intr_header.h}    
+          set inc_file_lines {xspi.h spi_header.h spi_intr_header.h}
       } else {
-          set inc_file_lines {xspi.h spi_header.h}    
+          set inc_file_lines {xspi.h spi_header.h}
       }
 
     return $inc_file_lines
@@ -96,7 +96,7 @@ proc gen_init_code {swproj mhsinst} {
     if {$swproj == 1} {
         set spi_intr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
         set ipname [common::get_property NAME $mhsinst]
-        
+
         if { ${spi_intr} == 1} {
             set decl "   static XSpi ${ipname}_Spi;"
             set inc_file_lines $decl
@@ -122,7 +122,7 @@ proc gen_testfunc_call {swproj mhsinst} {
        set hasStdout 1
   }
   set spi_intr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
-  
+
   if { ${spi_intr} == 1} {
       set intr_pin_name [hsi::get_pins -of_objects [hsi::get_cells -hier $ipname]  -filter "TYPE==INTERRUPT"]
       set intcname [::hsi::utils::get_connected_intr_cntrl $ipname  $intr_pin_name]
@@ -139,7 +139,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       XStatus status;
-                  
+
       status = SpiSelfTestExample(${deviceid});
 
    }"
@@ -150,7 +150,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 		 set intr_id "XPAR_${intcname}_${ipname}_${intr_pin_name}_INTR"
 	 } else {
 		 set intr_id "XPAR_FABRIC_${ipname}_${intr_pin_name}_INTR"
-	 }  
+	 }
           set intr_id [string toupper $intr_id]
           append testfunc_call "
     {
@@ -159,21 +159,21 @@ proc gen_testfunc_call {swproj mhsinst} {
        Status = SpiIntrExample(&${intcvar}, &${ipname}_Spi, \\
                                 ${deviceid}, \\
                                 ${intr_id});
-    }"  
+    }"
         }
-      
-      
+
+
   } else {
 
       append testfunc_call "
 
    {
       XStatus status;
-      
+
       print(\"\\r\\n Running SpiSelfTestExample() for ${ipname}...\\r\\n\");
-      
+
       status = SpiSelfTestExample(${deviceid});
-      
+
       if (status == 0) {
          print(\"SpiSelfTestExample PASSED\\r\\n\");
       }
@@ -201,14 +201,14 @@ proc gen_testfunc_call {swproj mhsinst} {
                                 ${intr_id});
       if (Status == 0) {
          print(\"Spi Interrupt Test PASSED\\r\\n\");
-      } 
+      }
       else {
          print(\"Spi Interrupt Test FAILED\\r\\n\");
       }
 
-    }"  
+    }"
       }
   }
-  
+
   return $testfunc_call
 }

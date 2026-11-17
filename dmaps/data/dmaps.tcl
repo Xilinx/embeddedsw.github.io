@@ -25,5 +25,3 @@ proc generate {drv_handle} {
     ::hsi::utils::define_zynq_canonical_xpars $drv_handle "xparameters.h" "XDmaPs" "DEVICE_ID" "C_S_AXI_BASEADDR" "C_S_AXI_HIGHADDR"
 
 }
-
-

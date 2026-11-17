@@ -9,11 +9,7 @@
 #include "xclk_wiz.h"
 #include "main.h"
 
-#ifndef SDT
-#define CLK_WIZ_BASE      				XPAR_CLK_WIZ_0_BASEADDR
-#else
 #define CLK_WIZ_BASE      				XPAR_XCLK_WIZ_0_BASEADDR
-#endif
 #define CLK_LOCK                        1
 
 // Following limits are for ZCU102 US+ device
@@ -84,7 +80,7 @@ void ComputeMandD(u32 VidFreq){
 	u32 DVal = 0;
 	u32 DivVal = 0;
 	u32 rdata=0;
-#ifdef PLATFORM_MB
+#if defined (PLATFORM_MB) || defined (__riscv)
 	RefFreq = 200000;
 #else
 	RefFreq = 100000;
@@ -197,6 +193,19 @@ void Gen_vid_clk(XDp *InstancePtr, u8 Stream)
 	 * a little more. This is needed to ensure that TX does not go into underflow
 	 * condition in case of Adaptive mode of 1
 	 */
-	ComputeMandD(((MsaConfig->PixelClockHz/1000)/MsaConfig->UserPixelWidth));
+	/*
+	 * For YCbCr 4:2:0 two luma samples are carried per pixel-clock, so the
+	 * effective TX video clock is half of the nominal pixel rate. Halve the
+	 * clock for 4:2:0. The VTC also halves the horizontal timing for 4:2:0
+	 * (see xdptxss_vtc.c).
+	 */
+	if (MsaConfig->ComponentFormat ==
+			XDP_MAIN_VSC_SDP_COMPONENT_FORMAT_YCBCR420) {
+		ComputeMandD(((MsaConfig->PixelClockHz/1000)/
+				(MsaConfig->UserPixelWidth * 2)));
+	} else {
+		ComputeMandD(((MsaConfig->PixelClockHz/1000)/
+				MsaConfig->UserPixelWidth));
+	}
 
 }

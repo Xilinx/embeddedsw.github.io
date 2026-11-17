@@ -9,8 +9,8 @@
 #
 # Ver      Who    Date     Changes
 # -------- ------ -------- --------------------------------------------------
-# 4.0     adk    10/12/13  Removed support for opb_emc_v2_00_a plb_emc 
-#			   mch_opb_emc xps_mch_emc 
+# 4.0     adk    10/12/13  Removed support for opb_emc_v2_00_a plb_emc
+#			   mch_opb_emc xps_mch_emc
 ##############################################################################
 OPTION psf_version = 2.1;
 
@@ -18,7 +18,7 @@ BEGIN driver emc
 
  OPTION supported_peripherals = (axi_emc);
  OPTION driver_state = ACTIVE;
- OPTION VERSION = 4.6;
+ OPTION VERSION = 4.7;
  OPTION NAME = emc;
 
 END driver

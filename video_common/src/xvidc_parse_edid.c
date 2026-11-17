@@ -1872,6 +1872,17 @@ static const struct xvidc_edid_extension_handler {
 	[XVIDC_EDID_EXTENSION_DDDB]           = { NULL },
 };
 
+/*****************************************************************************/
+/**
+*
+* This function parses a complete EDID, the base block followed by every
+* extension block it advertises, into the EDID control parameters.
+*
+* @param    data is a pointer to the raw EDID data.
+* @param    EdidCtrlParam is a pointer to the EDID Control parameter
+* @param    VerboseEn is the verbosity enable flag for debug output.
+*
+******************************************************************************/
 void
 XV_VidC_parse_edid(const u8 * const data,
                   XV_VidC_EdidCntrlParam *EdidCtrlParam,
@@ -1935,6 +1946,49 @@ void XV_VidC_handle_extension(const struct xvidc_edid_extension *extension,
 	}
 }
 
+/*****************************************************************************/
+/**
+*
+* This function stores the identification fields of the base EDID block in
+* the EDID control parameters.
+*
+* @param    base_edid is a pointer to the 128-byte base EDID block
+* @param    EdidCtrlParam is a pointer to the EDID Control parameter
+*
+******************************************************************************/
+static void
+xvidc_store_base_edid_identity(const u8 * const base_edid,
+                  XV_VidC_EdidCntrlParam *EdidCtrlParam)
+{
+    if (base_edid[0] != 0x00 || base_edid[1] != 0xFF) {
+        return;
+    }
+
+    EdidCtrlParam->ManufacturerId = (base_edid[8] << 8) | base_edid[9];
+    EdidCtrlParam->DispIdProductCode = base_edid[10] | (base_edid[11] << 8);
+    EdidCtrlParam->DispIdSerialNumber = (base_edid[15] << 24) |
+                       (base_edid[14] << 16) |
+                       (base_edid[13] << 8) | base_edid[12];
+    EdidCtrlParam->ManufactureWeek = base_edid[16];
+    EdidCtrlParam->ManufactureYear = base_edid[17] + 1990;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function parses one segment of an EDID read over DDC into the EDID
+* control parameters.
+*
+* @param    data is a pointer to the EDID segment data.
+* @param    EdidCtrlParam is a pointer to the EDID Control parameter
+* @param    VerboseEn is the verbosity enable flag for debug output.
+* @param    SegmentNum is the segment number the data was read from.
+*
+* @note   Segment 0 holds the base block and the first extension block, so
+*         the control parameters are initialised there. Each later segment
+*         holds two extension blocks and adds to that state.
+*
+******************************************************************************/
 void
 XV_VidC_parse_edid_extension(const u8 * const data,
                   XV_VidC_EdidCntrlParam *EdidCtrlParam,
@@ -1950,6 +2004,11 @@ XV_VidC_parse_edid_extension(const u8 * const data,
 
         xvidc_disp_edid1(edid, EdidCtrlParam, VerboseEn);
 
+        /* Only this segment carries the base block the fields come from. */
+        if (extension->tag == XVIDC_EDID_EXTENSION_DID) {
+            xvidc_store_base_edid_identity(data, EdidCtrlParam);
+        }
+
         /* Handle the base segment */
         XV_VidC_handle_extension(extension, EdidCtrlParam, VerboseEn);
         return;
@@ -1960,7 +2019,7 @@ XV_VidC_parse_edid_extension(const u8 * const data,
 	const struct xvidc_edid_extension *extensions =
 		(const struct xvidc_edid_extension *)data;
 	const struct xvidc_edid_extension *extension =
-		&extensions[i * XVIDC_EDID_BLOCK_SIZE];
+		&extensions[i];
 
 	XV_VidC_handle_extension(extension, EdidCtrlParam, VerboseEn);
     }
@@ -2576,18 +2635,20 @@ xvidc_parse_displayid_serial_number(const u8 *x, XV_VidC_EdidCntrlParam *EdidCtr
     u32 offset = XVIDC_DISPLAYID_DATA_BLOCK_HEADER_LEN;
     u32 i = 0;
 
-    while (i < XVIDC_DISPLAYID_STRING_MAX_LEN && offset < (u32)(length + 3) && offset < 128 && x[offset] != 0x0A && x[offset] != 0x00) {
-        EdidCtrlParam->DispIdProductString[i] = x[offset];
+    while (i < sizeof(EdidCtrlParam->DispIdSerialString) - 1 &&
+           offset < (u32)(length + 3) && offset < 128 &&
+           x[offset] != 0x0A && x[offset] != 0x00) {
+        EdidCtrlParam->DispIdSerialString[i] = x[offset];
         i++;
         offset++;
     }
-    EdidCtrlParam->DispIdProductString[i] = 0x00;
-    EdidCtrlParam->DispIdProductStringLen = i;
+    EdidCtrlParam->DispIdSerialString[i] = 0x00;
+    EdidCtrlParam->DispIdSerialStringLen = i;
 
 #if XVIDC_EDID_VERBOSITY > 0
     if (VerboseEn) {
         xil_printf("    Serial Number Data Block\r\n");
-        xil_printf("    Value: %s\r\n", EdidCtrlParam->DispIdProductString);
+        xil_printf("    Value: %s\r\n", EdidCtrlParam->DispIdSerialString);
     }
 #endif
 }
@@ -3360,12 +3421,17 @@ xvidc_dispid_block(const struct xvidc_edid_extension * const ext,
     const u8 *data = (const u8 *)ext;
     u8 index = 5;
     u8 block_length = data[2];
-    u8 end_index = 5 + block_length;
+    u16 end_index = 5U + block_length;
     u8 max_iterations = 64;
 
     /* Validate DisplayID extension tag */
     if (data[0] != XVIDC_EDID_EXTENSION_DID) {
         return;
+    }
+
+    /* The section shares the 128-byte block with the trailing checksum. */
+    if (end_index > XVIDC_EDID_BLOCK_SIZE - 1U) {
+        end_index = XVIDC_EDID_BLOCK_SIZE - 1U;
     }
 
     /* Extract header information */
@@ -3380,24 +3446,6 @@ xvidc_dispid_block(const struct xvidc_edid_extension * const ext,
 
     /* Determine DisplayID version for proper block tag mapping */
     u8 is_displayid_2_0 = (version_major == 2 && version_minor == 0);
-
-    /* Extract product information from base EDID (first 128 bytes) */
-    const u8 *base_edid = (const u8 *)ext - 128;
-    if (base_edid[0] == 0x00 && base_edid[1] == 0xFF) {
-        u16 mfg_id = (base_edid[8] << 8) | base_edid[9];
-        u16 product_code = base_edid[10] | (base_edid[11] << 8);
-        u32 serial_number = (base_edid[15] << 24) | (base_edid[14] << 16) |
-                           (base_edid[13] << 8) | base_edid[12];
-        u8 mfg_week = base_edid[16];
-        u8 mfg_year = base_edid[17];
-
-        /* Store in EdidCtrlParam for later use */
-        EdidCtrlParam->ManufacturerId = mfg_id;
-        EdidCtrlParam->DispIdProductCode = product_code;
-        EdidCtrlParam->DispIdSerialNumber = serial_number;
-        EdidCtrlParam->ManufactureWeek = mfg_week;
-        EdidCtrlParam->ManufactureYear = mfg_year + 1990;
-    }
 
 #if XVIDC_EDID_VERBOSITY > 0
     if (VerboseEn) {

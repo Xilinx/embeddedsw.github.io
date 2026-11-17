@@ -872,6 +872,9 @@ int XHdcp1x_RxGetRepeaterInfo(XHdcp1x *InstancePtr,
 
 	/* Copy the KSVList */
 	ksvsToCopy = InstancePtr->RepeaterValues.DeviceCount;
+	if (ksvsToCopy > XHDCP1X_RPTR_MAX_DEVS_COUNT) {
+		ksvsToCopy = XHDCP1X_RPTR_MAX_DEVS_COUNT;
+	}
 
 	for(ksvCount=0 ; ksvCount < ksvsToCopy ; ksvCount++) {
 		InstancePtr->RepeaterValues.KsvList[ksvCount]
@@ -912,15 +915,9 @@ static void XHdcp1x_RxDebugLog(const XHdcp1x *InstancePtr, const char *LogMsg)
 {
 	char Label[16];
 
-#ifndef SDT
 	/* Format Label */
-	snprintf(Label, sizeof(Label), "hdcp-rx(%hu) - ",
-			 InstancePtr->Config.DeviceId);
-#else
-	/* Format Label */
-	snprintf(Label, sizeof(Label), "hdcp-rx(%hu) - ",
-		 InstancePtr->Config.BaseAddress);
-#endif
+	snprintf(Label, sizeof(Label), "hdcp-rx(%lx) - ",
+		 (unsigned long)InstancePtr->Config.BaseAddress);
 
 	/* Log it */
 	XHDCP1X_DEBUG_LOGMSG(Label);
@@ -1109,9 +1106,6 @@ static void XHdcp1x_RxSetCheckLinkState(XHdcp1x *InstancePtr, int IsEnabled)
 ******************************************************************************/
 static void XHdcp1x_RxEnableState(XHdcp1x *InstancePtr)
 {
-	u64 MyKsv = 0;
-	u8 Buf[8];
-
 	/* Disable and register the link failure callback */
 	XHdcp1x_CipherSetLinkStateCheck(InstancePtr, FALSE);
 	XHdcp1x_CipherSetCallback(InstancePtr,
@@ -1469,6 +1463,10 @@ void XHdcp1x_RxSetTopologyKSVList(XHdcp1x *InstancePtr, u8 *ListPtr,
 		u32 ListSize)
 {
 	u32 i;
+
+	if (ListSize > XHDCP1X_RPTR_MAX_DEVS_COUNT) {
+		ListSize = XHDCP1X_RPTR_MAX_DEVS_COUNT;
+	}
 
 	for(i=0 ; i<ListSize; i++) {
 		memcpy(&InstancePtr->RepeaterValues.KsvList[i],

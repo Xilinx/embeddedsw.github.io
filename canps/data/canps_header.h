@@ -1,11 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2011 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-#ifndef CANPS_HEADER_H		/* prevent circular inclusions */
-#define CANPS_HEADER_H		/* by using protection macros */
+#ifndef CANPS_HEADER_H
+#define CANPS_HEADER_H
+
+/*****************************************************************************/
+/**
+*
+* @file canps_header.h
+*
+* @brief Declares prototypes for the CANPS driver examples.
+*
+******************************************************************************/
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +24,7 @@ extern "C" {
 #include "xil_assert.h"
 #include "xstatus.h"
 
+/** @cond INTERNAL */
 #ifndef SDT
 int CanPsPolledExample(u16 DeviceId);
 
@@ -32,6 +42,7 @@ int CanPsIntrExample(XIntc *IntcInstPtr, XCanPs *CanInstPtr,
 int CanPsPolledExample(XCanPs *CanInstPtr, UINTPTR BaseAddress);
 int CanPsIntrExample(XCanPs *CanInstPtr, UINTPTR BaseAddress);
 #endif
+/** @endcond */
 
 #ifdef __cplusplus
 }

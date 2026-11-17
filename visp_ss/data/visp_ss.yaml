@@ -35,6 +35,26 @@ properties:
     description: Maximum columns supported by core instance
   xlnx,iba0_max-height:
     description: Maximum rows supported by core instance
+  xlnx,image-splitter-stitcher-enable:
+    description: Image splitter/stitcher enable
+  xlnx,image-splitter-stitcher-data-format:
+    description: Image splitter/stitcher data format
+  xlnx,image-splitter-stitcher-hres:
+    description: Image splitter/stitcher horizontal resolution
+  xlnx,image-splitter-stitcher-vres:
+    description: Image splitter/stitcher vertical resolution
+  xlnx,image-splitter-stitcher-rpu:
+    description: Image splitter/stitcher RPU id
+  xlnx,image-splitter-stitcher-vcid:
+    description: Image splitter/stitcher vcid
+  xlnx,image-splitter-stitcher-rgb888:
+    description: Image splitter/stitcher RGB888 support
+  xlnx,image-splitter-stitcher-y:
+    description: Image splitter/stitcher Y support
+  xlnx,image-splitter-stitcher-yuv422:
+    description: Image splitter/stitcher YUV422 support
+  xlnx,image-splitter-stitcher-yuv420:
+    description: Image splitter/stitcher YUV420 support
 
 config:
     - xvisp_ss_Config
@@ -88,11 +108,22 @@ required:
     - xlnx,oba1_sp_bpp
     - xlnx,oba1_sp_ppc
     - xlnx,oba1_sp_data_format
+    - xlnx,image-splitter-stitcher-enable
+    - xlnx,image-splitter-stitcher-data-format
+    - xlnx,image-splitter-stitcher-hres
+    - xlnx,image-splitter-stitcher-vres
+    - xlnx,image-splitter-stitcher-rpu
+    - xlnx,image-splitter-stitcher-vcid
+    - xlnx,image-splitter-stitcher-rgb888
+    - xlnx,image-splitter-stitcher-y
+    - xlnx,image-splitter-stitcher-yuv422
+    - xlnx,image-splitter-stitcher-yuv420
     - interrupts : 4
     - interrupt-parent
 
 depends_libs:
     xilffs: {}
+    xilpm: {}
 
 examples:
     xvisp_ss_example.c:
@@ -103,32 +134,13 @@ examples:
             - lilo.h
             - image.h
             - test.cmake
-            - libvisp.a
+            - libvisp_a78.a
+            - libvisp_r52.a
             - vvbench
-            - lscript.ld
+            - lscript_a78.ld
+            - lscript_r52.ld
             - reference_jsons
-            - audiogen_drv.c
-            - onsemi_nb7nq621m.c
-            - rc21008adrv.c
-            - ti_lmk03318.c
-            - video_fmc.c
-            - xhdmi_edid.c
-            - xhdmi_intr.c
-            - idt_8t49n24x.c
-            - si5344drv.c
-            - ti_tmds1204.c
-            - vmix_hdmi_bridge.c
-            - xhdmi_exdes_sm_tx.c
-            - onsemi_nb7nq621m.h
-            - audiogen_drv.h
-            - idt_8t49n24x.h
-            - rc21008adrv.h
-            - video_fmc.h
-            - xhdmi_intr.h
-            - si5344drv.h
-            - vmix_hdmi_bridge.h
-            - ti_lmk03318.h
-            - xhdmi_edid.h
-            - ti_tmds1204.h
-            - xhdmi_exdes_sm_tx.h
+            - hdmi_display
+            - dp_display
+            - mpu_config.h
 ...

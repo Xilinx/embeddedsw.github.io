@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,9 +8,12 @@
 /**
 *
 * @file xzdma_linkedlist_example.c
+* @addtogroup zdma Overview
+* @{
 *
-* This file contains the example using XZDma driver to do data transfer in
-* Linked list mode on ZDMA device.
+* @brief Demonstrates ZDMA data transfer in linked-list mode.
+* Demonstrates data transfer using the XZDma driver in linked list mode on the
+* ZDMA device.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -55,12 +58,17 @@
 
 #ifndef SDT
 int XZDma_LinkedListExample(u16 DeviceId);
-static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
-				XZDma *InstancePtr, u16 IntrId);
 #else
 int XZDma_LinkedListExample(UINTPTR BaseAddress);
 #endif
+/** @cond INTERNAL */
+#ifndef SDT
+static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
+				XZDma *InstancePtr, u16 IntrId);
+#endif
 static void DoneHandler(void *CallBackRef);
+/** @endcond */
+
 
 /************************** Constant Definitions ******************************/
 
@@ -81,8 +89,8 @@ static void DoneHandler(void *CallBackRef);
 #define DESCRIPTOR1_DATA_SIZE	1024 /**< Descriptor 1 data in bytes */
 #define DESCRIPTOR2_DATA_SIZE	64   /**< Descriptor 2 data in bytes */
 
-#define POLL_TIMEOUT_COUNTER    1000000U
-#define NUM_OF_EVENTS           1
+#define POLL_TIMEOUT_COUNTER    1000000U /**< Maximum poll iterations while waiting for a DMA event. */
+#define NUM_OF_EVENTS           1 /**< Number of events to wait for in Xil_WaitForEventSet. */
 /**************************** Type Definitions *******************************/
 
 
@@ -117,13 +125,11 @@ static volatile u32 Done = 0;
 /*****************************************************************************/
 /**
 *
-* Main function to call the example.
+* @brief Main function to call the example.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 int main(void)
@@ -148,21 +154,19 @@ int main(void)
 /*****************************************************************************/
 /**
 *
-* This function does a test of the data transfer in linked mode on the ZDMA
+* @brief This function does a test of the data transfer in linked mode on the ZDMA
 * driver.
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the ZDMA device
+* @param[in] BaseAddress contains the base address of the ZDMA device
 * @else
-* @param	DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID value from
+* @param[in] DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID value from
 *		xparameters.h.
 * @endif
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -219,7 +223,7 @@ int XZDma_LinkedListExample(UINTPTR BaseAddress)
 		return XST_FAILURE;
 	}
 
-	/* Allocated memory starting address should be 64 bit aligned */
+	/* Allocated memory starting address should be 64-bit aligned */
 	XZDma_CreateBDList(&ZDma, XZDMA_LINKEDLIST, (UINTPTR)AlloMem, 256);
 
 	/* Interrupt call back has been set */
@@ -337,23 +341,20 @@ int XZDma_LinkedListExample(UINTPTR BaseAddress)
 #ifndef SDT
 /*****************************************************************************/
 /**
-* This function sets up the interrupt system so interrupts can occur for the
+* @brief This function sets up the interrupt system so interrupts can occur for the
 * ZDMA. This function is application-specific. The user should modify this
 * function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the INTC.
-* @param	InstancePtr contains a pointer to the instance of the ZDMA
+* @param[in] IntcInstancePtr is a pointer to the instance of the INTC.
+* @param[in] InstancePtr contains a pointer to the instance of the ZDMA
 *		driver which is going to be connected to the interrupt
 *		controller.
-* @param	IntrId is the interrupt Id and is typically
+* @param[in] IntrId is the interrupt Id and is typically
 *		XPAR_<ZDMA_instance>_INTR value from xparameters.h.
 *
 * @return
 *		- XST_SUCCESS if successful
 *		- XST_FAILURE if failed
-*
-* @note		None.
-
 *
 ****************************************************************************/
 static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
@@ -416,15 +417,10 @@ static int SetupInterruptSystem(XScuGic *IntcInstancePtr,
 #endif
 /*****************************************************************************/
 /**
-* This static function handles ZDMA Done interrupts.
+* @brief This static function handles ZDMA Done interrupts.
 *
-* @param	CallBackRef is the callback reference passed from the interrupt
+* @param[in] CallBackRef is the callback reference passed from the interrupt
 *		handler, which in our case is a pointer to the driver instance.
-* @param	Event specifies which interrupts were occurred.
-*
-* @return	None.
-*
-* @note		None.
 *
 ******************************************************************************/
 static void DoneHandler(void *CallBackRef)
@@ -433,3 +429,5 @@ static void DoneHandler(void *CallBackRef)
 	Done = 1;
 
 }
+
+/** @} */

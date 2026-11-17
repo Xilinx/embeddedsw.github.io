@@ -1,18 +1,19 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XOSPIPSV_LOWLEVEL_H_
+#define XOSPIPSV_LOWLEVEL_H_
 
 /*****************************************************************************/
 /**
 *
 * @file xospipsv_control.h
-* @addtogroup ospipsv_api OSPIPSV APIs
-* @{
+* @brief Declares the low-level functions of the OSPIPSV driver.
 *
-* The xospipsv_control.h header file for the low-level functions of OSPIPSV driver.
-* These functions will be used internally by the user API's.
+* These functions are used internally by the user API's.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -25,12 +26,17 @@
 * 1.8   akm  01/03/23 Use Xil_WaitForEvent() API for register bit polling.
 * 1.9   sb   26/04/23 Updated address calculation logic in DAC read and write API's
 * 1.11  ng  08/20/24 Add spartanup device support
+* 1.15  zm  08/07/26 Added XOspiPsv_CheckStigWriteMsg prototype and STIG_MAX_DATA_BYTES macro.
+* 1.15  tb  09/30/26 Align Doxygen comments with AMD documentation standards
 *
 * </pre>
 *
 ******************************************************************************/
-#ifndef XOSPIPSV_LOWLEVEL_H_		/**< prevent circular inclusions */
-#define XOSPIPSV_LOWLEVEL_H_		/**< by using protection macros */
+
+/**
+* @addtogroup ospipsv_api OSPIPSV APIs
+* @{
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,12 +51,9 @@ extern "C" {
 
 /*****************************************************************************/
 /**
-* @brief
-* Disables the OSPIPSV device.
+* @brief Disables the OSPIPSV device.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_Disable(const XOspiPsv *InstancePtr)
@@ -67,12 +70,9 @@ static inline void XOspiPsv_Disable(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Enables the OSPIPSV device.
+* @brief Enables the OSPIPSV device.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_Enable(const XOspiPsv *InstancePtr)
@@ -87,12 +87,9 @@ static inline void XOspiPsv_Enable(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Configures the OSPI MUX to Linear mode
+* @brief Configures the OSPI MUX to Linear mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_ConfigureMux_Linear(const XOspiPsv *InstancePtr)
@@ -125,12 +122,9 @@ static inline void XOspiPsv_ConfigureMux_Linear(const XOspiPsv *InstancePtr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Configures the OSPI MUX to DMA mode
+* @brief Configures the OSPI MUX to DMA mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-*
-* @return	None.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 ******************************************************************************/
 static inline void XOspiPsv_ConfigureMux_Dma(const XOspiPsv *InstancePtr)
@@ -156,10 +150,15 @@ static inline void XOspiPsv_ConfigureMux_Dma(const XOspiPsv *InstancePtr)
 	XOspiPsv_Enable(InstancePtr);
 }
 
+/************************** Constant Definitions *****************************/
+
+#define XOSPIPSV_STIG_MAX_DATA_BYTES	8U	/**< STIG data register size in bytes */
+
 /************************** Function Prototypes ******************************/
 
 u32 XOspiPsv_Stig_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);
 u32 XOspiPsv_Stig_Write(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);
+u32 XOspiPsv_CheckStigWriteMsg(const XOspiPsv_Msg *Msg);
 u32 XOspiPsv_Dac_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);
 u32 XOspiPsv_Dac_Write(XOspiPsv *InstancePtr, const XOspiPsv_Msg *Msg);
 u32 XOspiPsv_Dma_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg);

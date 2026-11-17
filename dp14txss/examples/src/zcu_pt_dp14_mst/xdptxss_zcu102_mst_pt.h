@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -51,9 +51,7 @@ extern "C" {
 #ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
 #include "xv_axi4s_remap.h"
 #endif
-#ifdef SDT
 #define XPAR_IIC_0_BASEADDR XPAR_XIIC_0_BASEADDR
-#endif
 /************************** Constant Definitions *****************************/
 
 /*
@@ -109,19 +107,11 @@ extern "C" {
 #define FRMBUF_RD_DEVICE_ID  XPAR_XV_FRMBUFRD_0_DEVICE_ID
 #define FRMBUF_WR_DEVICE_ID  XPAR_XV_FRMBUFWR_0_DEVICE_ID
 
-#ifndef SDT
-#define SET_TX_TO_2BYTE		\
-		(XPAR_XDP_0_GT_DATAWIDTH/2)
-
-#define SET_RX_TO_2BYTE		\
-		(XPAR_XDP_0_GT_DATAWIDTH/2)
-#else
 #define SET_TX_TO_2BYTE		\
 		(XPAR_XDP_0_GT_DATA_WIDTH/2)
 
 #define SET_RX_TO_2BYTE		\
 		(XPAR_XDP_0_GT_DATA_WIDTH/2)
-#endif
 
 #define TIMER_RESET_VALUE				1000
 #define is_TX_CPLL 0
@@ -227,7 +217,6 @@ typedef struct
 void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128], u8 Edid1_org[128], u16 res_update);
 //void hpd_pulse_con(XDpTxSs *InstancePtr);
 char xil_getc(u32 timeout_ms);
-static u32 xil_gethex(u8 num_chars);
 //void sendAudioInfoFrame(XilAudioInfoFrame *xilInfoFrame);
 void Vpg_Audio_start(void);
 void Vpg_Audio_stop(void);
@@ -378,11 +367,7 @@ void Dppt_DetectResolution(void *InstancePtr, u16 offset,
 void remap_start(XDpTxSs_MainStreamAttributes Msa[4], u8 downshift4K);
 void Dprx_ResetVideoOutput(void *InstancePtr);
 u32 Dp_SetupIntrSystem(void);
-#ifndef SDT
-u32 DpTxSs_VideoPhyInit(u16 DeviceId);
-#else
 u32 DpTxSs_VideoPhyInit(u32 BaseAddress);
-#endif
 void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds);
 u32 DpTxSubsystem_Start(XDpTxSs *InstancePtr,
 			XDpTxSs_MainStreamAttributes Msa[4]);
@@ -395,7 +380,6 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, u8 only_tx);
 int Vpg_StreamSrcConfigure(XDp *InstancePtr, u8 VSplitMode, u8 first_time);
 void Vpg_VidgenSetUserPattern(XDp *InstancePtr, u8 Pattern);
 //void LMK04906_init(XSpi *SPI_LMK04906);
-static u8 CalculateChecksum(u8 *Data, u8 Size);
 XVidC_VideoMode GetPreferredVm(u8 *EdidPtr, u8 cap, u8 lane);
 void ReportVideoCRC(void);
 extern void main_loop(void);

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021  Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#include "xbasic_types.h"
 #include "xil_types.h"
 #include "xparameters.h"
 #include "xil_cache.h"
@@ -37,6 +36,7 @@ extern "C" {
 #include "xuartlite_l.h"
 #include "xtmrctr.h"
 #include "xintc.h"
+#include "sleep.h"
 #include "xvphy.h"
 #include "xvphy_i.h"
 #include "xvidc_edid.h"
@@ -81,21 +81,14 @@ extern user_config_struct user_config;
 
 typedef unsigned int    UINT32;
 
-#ifdef SDT
 #define XPAR_XDPTXSS_NUM_INSTANCES XPAR_DPTXSS_NUM_INSTANCES
 #define XPAR_XDPRXSS_NUM_INSTANCES XPAR_DPRXSS_NUM_INSTANCES
-#endif
 
 #define UART_BASEADDR    				\
 	XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_UARTLITE_1_BASEADDR
-#ifndef SDT
-#define TIMER_BASEADDR			XPAR_TMRCTR_0_BASEADDR
-#define CLK_2_GPIO_BASEADDR             XPAR_AXI_GPIO_0_BASEADDR
-#else
 #define TIMER_BASEADDR                  XPAR_XTMRCTR_0_BASEADDR
 #define CLK_2_GPIO_BASEADDR             XPAR_XGPIO_0_BASEADDR
-#endif
-#define VIDPHY_BASEADDR			XPAR_VID_PHY_CONTROLLER_0_BASEADDR
+#define VIDPHY_BASEADDR  				XPAR_VID_PHY_CONTROLLER_0_BASEADDR
 
 #if (XPAR_XHDCP_NUM_INSTANCES > 0)
 #define XINTC_DPTXSS_DP_INTERRUPT_ID  	\

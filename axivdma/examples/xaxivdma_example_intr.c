@@ -8,6 +8,9 @@
 /**
  *
  * @file xaxivdma_example_intr.c
+ * @addtogroup axivdma Overview
+ * @{
+* @brief Demonstrates AXI VDMA frame transfers in interrupt loopback mode.
  *
  * This example demonstrates how to use the AXI Video DMA in loopback mode
  * to do video frame transfers. This example reads video frames from memory,
@@ -110,34 +113,8 @@
 #define READ_INTR_ID		XPAR_FABRIC_AXIVDMA_0_MM2S_INTROUT_VEC_ID
 #endif
 
-#ifdef XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#define DDR_BASE_ADDR		XPAR_AXI_7SDDR_0_S_AXI_BASEADDR
-#define DDR_HIGH_ADDR		XPAR_AXI_7SDDR_0_S_AXI_HIGHADDR
-#elif XPAR_MIG7SERIES_0_BASEADDR
-#define DDR_BASE_ADDR		XPAR_MIG7SERIES_0_BASEADDR
-#define DDR_HIGH_ADDR	 	XPAR_MIG7SERIES_0_HIGHADDR
-#elif XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#define DDR_BASE_ADDR		XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR
-#define DDR_HIGH_ADDR	 	XPAR_MIG_0_C0_DDR4_MEMORY_MAP_HIGHADDR
-#endif
 #else
 
-#ifdef XPAR_MEM0_BASEADDRESS
-#define DDR_BASE_ADDR		XPAR_MEM0_BASEADDRESS
-#define DDR_HIGH_ADDR		XPAR_MEM0_HIGHADDRESS
-#endif
-
-#ifdef XPAR_PSU_DDR_1_BASEADDRESS
-#define DDR_BASE_ADDR		XPAR_PSU_DDR_1_BASEADDRESS
-#define DDR_HIGH_ADDR		XPAR_PSU_DDR_1_HIGHADDRESS
-#endif
-#endif
-
-#ifndef DDR_BASE_ADDR
-#warning CHECK FOR THE VALID DDR ADDRESS IN XPARAMETERS.H, \
-DEFAULT SET TO 0x01000000
-#define DDR_BASE_ADDR		0x10000000
-#define DDR_HIGH_ADDR		0x20000000
 #endif
 
 /* Memory space for the frame buffers
@@ -148,19 +125,18 @@ DEFAULT SET TO 0x01000000
  *
  * For 16 frames of 1080p, it needs 0x07E90000 memory for frame buffers
  */
-#define MEM_BASE_ADDR		(DDR_BASE_ADDR + 0x01000000)
-#define MEM_HIGH_ADDR		DDR_HIGH_ADDR
-#define MEM_SPACE		(MEM_HIGH_ADDR - MEM_BASE_ADDR)
+#define FRAME_HORIZONTAL_LEN  0x1E00   /**< Horizontal frame length in bytes (1920 pixels, 4 bytes each). */
+#define FRAME_VERTICAL_LEN    0x438    /**< Vertical frame length in lines (1080 pixels). */
+#define FRAME_SIZE            (FRAME_HORIZONTAL_LEN * FRAME_VERTICAL_LEN) /**< Frame size in bytes. */
+#define MAX_FRAME_STORE       XAXIVDMA_MAX_FRAMESTORE /**< Maximum frame store count. */
 
-/* Read channel and write channel addresses
- */
-#define READ_ADDRESS_BASE	MEM_BASE_ADDR
-#define WRITE_ADDRESS_BASE	(MEM_BASE_ADDR + 0x02000000)
+#define READ_BUFFER_SIZE      (MAX_FRAME_STORE * FRAME_SIZE) /**< Read buffer size in bytes. */
+#define WRITE_BUFFER_SIZE     (MAX_FRAME_STORE * FRAME_SIZE) /**< Write buffer size in bytes. */
 
-/* Frame size related constants
- */
-#define FRAME_HORIZONTAL_LEN  0x1E00   /* 1920 pixels, each pixel 4 bytes */
-#define FRAME_VERTICAL_LEN    0x438    /* 1080 pixels */
+/** @cond INTERNAL */
+static u8 ReadFrameBuffer[READ_BUFFER_SIZE] __attribute__ ((aligned (64)));
+static u8 WriteFrameBuffer[WRITE_BUFFER_SIZE] __attribute__ ((aligned (64)));
+/** @endcond */
 
 /* Subframe to be transferred by Video DMA
  *
@@ -185,17 +161,17 @@ DEFAULT SET TO 0x01000000
  * Note that SUBFRAME_HORIZONTAL_SIZE and SUBFRAME_VERTICAL_SIZE must ensure
  * to be inside the frame.
  */
-#define SUBFRAME_START_OFFSET    (FRAME_HORIZONTAL_LEN * 5 + 64)
-#define SUBFRAME_HORIZONTAL_SIZE 0x100
-#define SUBFRAME_VERTICAL_SIZE   0x100
+#define SUBFRAME_START_OFFSET    (FRAME_HORIZONTAL_LEN * 5 + 64) /**< Byte offset of the subframe within a frame. */
+#define SUBFRAME_HORIZONTAL_SIZE 0x100 /**< Horizontal subframe size in bytes. */
+#define SUBFRAME_VERTICAL_SIZE   0x100 /**< Vertical subframe size in lines. */
 
 /* Number of frames to transfer
  *
  * This is used to monitor the progress of the test, test purpose only
  */
-#define NUM_TEST_FRAME_SETS	10
+#define NUM_TEST_FRAME_SETS	10 /**< Number of frame sets to transfer for the test. */
 
-#define TEST_START_VALUE        0xC
+#define TEST_START_VALUE        0xC /**< Starting value used to fill and verify frame data. */
 
 /* Delay timer counter
  *
@@ -204,13 +180,13 @@ DEFAULT SET TO 0x01000000
  * care about inactivity of the hardware, set this counter to be 0, which
  * disables delay interrupt.
  */
-#define DELAY_TIMER_COUNTER	10
+#define DELAY_TIMER_COUNTER	10 /**< Delay timer counter programmed into the VDMA. */
 
 /* Default reset timeout
  */
-#define XAXIVDMA_RESET_TIMEOUT_USEC	500
-#define POLL_TIMEOUT_COUNTER            1100000U
-#define NUMBER_OF_EVENTS		1
+#define XAXIVDMA_RESET_TIMEOUT_USEC	500 /**< Maximum microseconds to wait for VDMA reset. */
+#define POLL_TIMEOUT_COUNTER            1100000U /**< Maximum poll iterations before a transfer times out. */
+#define NUMBER_OF_EVENTS		1 /**< Number of interrupt events expected to complete the test. */
 /*
  * Device instance definitions
  */
@@ -278,10 +254,9 @@ static void WriteErrorCallBack(void *CallbackRef, u32 Mask);
 
 #if defined(XPAR_UARTNS550_0_BASEADDR)
 /*****************************************************************************/
-/*
+/**
 *
-* Uart16550 setup routine, need to set baudrate to 9600 and data bits to 8
-*
+* @brief Sets up UART16550 with a baud rate of 9600 and 8 data bits.
 *
 ******************************************************************************/
 static void Uart550_Setup(void)
@@ -301,18 +276,13 @@ static void Uart550_Setup(void)
 /*****************************************************************************/
 /**
 *
-* Main function
+* @brief Runs the AXI VDMA interrupt loopback example entry point.
 *
-* This function is the main entry point of the example on DMA core. It sets up
-* DMA engine to be ready to receive and send frames, and start the transfers.
-* It waits for the transfer of the specified number of frame sets, and check
-* for transfer errors.
+* Sets up the DMA engine, starts frame transfers, and checks for errors.
 *
 * @return
-*		- XST_SUCCESS if example finishes successfully
+*		- XST_SUCCESS if example finishes successfully.
 *		- XST_FAILURE if example fails.
-*
-* @note		None.
 *
 ******************************************************************************/
 int main(void)
@@ -333,8 +303,8 @@ int main(void)
 	WriteError = 0;
 	ReadError = 0;
 
-	ReadFrameAddr = READ_ADDRESS_BASE;
-	WriteFrameAddr = WRITE_ADDRESS_BASE;
+	ReadFrameAddr = (UINTPTR)ReadFrameBuffer;
+	WriteFrameAddr = (UINTPTR)WriteFrameBuffer;
 	BlockStartOffset = SUBFRAME_START_OFFSET;
 	BlockHoriz = SUBFRAME_HORIZONTAL_SIZE;
 	BlockVert = SUBFRAME_VERTICAL_SIZE;
@@ -644,13 +614,11 @@ Done:
 /*****************************************************************************/
 /**
 *
-* This function sets up the read channel
+* @brief Sets up the read channel for the interrupt example.
 *
-* @param	InstancePtr is the instance pointer to the DMA engine.
+* @param[in] InstancePtr is the instance pointer to the DMA engine.
 *
 * @return	XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int ReadSetup(XAxiVdma *InstancePtr)
@@ -685,7 +653,7 @@ static int ReadSetup(XAxiVdma *InstancePtr)
 	 *
 	 * These addresses are physical addresses
 	 */
-	Addr = READ_ADDRESS_BASE + BlockStartOffset;
+	Addr = ReadFrameAddr + BlockStartOffset;
 	for (Index = 0; Index < ReadCount; Index++) {
 		ReadCfg.FrameStoreStartAddr[Index] = Addr;
 
@@ -712,13 +680,11 @@ static int ReadSetup(XAxiVdma *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* This function sets up the write channel
+* @brief Sets up the write channel for the interrupt example.
 *
-* @param	InstancePtr is the instance pointer to the DMA engine.
+* @param[in] InstancePtr is the instance pointer to the DMA engine.
 *
 * @return	XST_SUCCESS if the setup is successful, XST_FAILURE otherwise.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int WriteSetup(XAxiVdma *InstancePtr)
@@ -755,7 +721,7 @@ static int WriteSetup(XAxiVdma *InstancePtr)
 	 *
 	 * Use physical addresses
 	 */
-	Addr = WRITE_ADDRESS_BASE + BlockStartOffset;
+	Addr = WriteFrameAddr + BlockStartOffset;
 	for (Index = 0; Index < WriteCount; Index++) {
 		WriteCfg.FrameStoreStartAddr[Index] = Addr;
 
@@ -784,18 +750,12 @@ static int WriteSetup(XAxiVdma *InstancePtr)
 
 /*****************************************************************************/
 /**
-*
-* This function starts the DMA transfers. Since the DMA engine is operating
-* in circular buffer mode, video frames will be transferred continuously.
-*
-* @param	InstancePtr points to the DMA engine instance
-*
-* @return	XST_SUCCESS if both read and write start successfully
-*		XST_FAILURE if one or both directions cannot be started
-*
-* @note		None.
-*
-******************************************************************************/
+ * @brief Starts DMA transfers in circular buffer mode for read and write channels.
+ *
+ * @param[in] InstancePtr Pointer to the DMA engine instance.
+ *
+ * @return Returns XST_SUCCESS if both channels start, XST_FAILURE otherwise.
+ */
 static int StartTransfer(XAxiVdma *InstancePtr)
 {
 	int Status;
@@ -821,18 +781,17 @@ static int StartTransfer(XAxiVdma *InstancePtr)
 
 #ifndef SDT
 /*****************************************************************************/
-/*
+/**
 *
-* This function setups the interrupt system so interrupts can occur for the
-* DMA.  This function assumes INTC component exists in the hardware system.
+* @brief Sets up the interrupt system for the DMA engine.
 *
-* @param	AxiDmaPtr is a pointer to the instance of the DMA engine
-* @param	ReadIntrId is the read channel Interrupt ID.
-* @param	WriteIntrId is the write channel Interrupt ID.
+* Assumes an INTC or GIC component exists in the hardware system.
+*
+* @param[in] AxiVdmaPtr is a pointer to the instance of the DMA engine.
+* @param[in] ReadIntrId is the read channel Interrupt ID.
+* @param[in] WriteIntrId is the write channel Interrupt ID.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 ******************************************************************************/
 static int SetupIntrSystem(XAxiVdma *AxiVdmaPtr, u16 ReadIntrId,
@@ -963,14 +922,10 @@ static int SetupIntrSystem(XAxiVdma *AxiVdmaPtr, u16 ReadIntrId,
 /*****************************************************************************/
 /**
 *
-* This function disables the interrupts
+* @brief Disables the DMA channel interrupts.
 *
-* @param	ReadIntrId is interrupt ID associated w/ DMA read channel
-* @param	WriteIntrId is interrupt ID associated w/ DMA write channel
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] ReadIntrId is interrupt ID associated with DMA read channel.
+* @param[in] WriteIntrId is interrupt ID associated with DMA write channel.
 *
 ******************************************************************************/
 static void DisableIntrSystem(u16 ReadIntrId, u16 WriteIntrId)
@@ -996,16 +951,12 @@ static void DisableIntrSystem(u16 ReadIntrId, u16 WriteIntrId)
 #endif
 
 /*****************************************************************************/
-/*
- * Call back function for read channel
+/**
+ * @brief Handles the read-channel frame-count interrupt callback.
  *
- * This callback only clears the interrupts and updates the transfer status.
+ * @param[in] CallbackRef is the call back reference pointer.
+ * @param[in] Mask is the interrupt mask passed in from the driver.
  *
- * @param	CallbackRef is the call back reference pointer
- * @param	Mask is the interrupt mask passed in from the driver
- *
- * @return	None
-*
 ******************************************************************************/
 static void ReadCallBack(void *CallbackRef, u32 Mask)
 {
@@ -1016,14 +967,12 @@ static void ReadCallBack(void *CallbackRef, u32 Mask)
 }
 
 /*****************************************************************************/
-/*
- * Call back function for read channel error interrupt
+/**
+ * @brief Handles the read-channel error interrupt callback.
  *
- * @param	CallbackRef is the call back reference pointer
- * @param	Mask is the interrupt mask passed in from the driver
+ * @param[in] CallbackRef is the call back reference pointer.
+ * @param[in] Mask is the interrupt mask passed in from the driver.
  *
- * @return	None
-*
 ******************************************************************************/
 static void ReadErrorCallBack(void *CallbackRef, u32 Mask)
 {
@@ -1034,16 +983,12 @@ static void ReadErrorCallBack(void *CallbackRef, u32 Mask)
 }
 
 /*****************************************************************************/
-/*
- * Call back function for write channel
+/**
+ * @brief Handles the write-channel frame-count interrupt callback.
  *
- * This callback only clears the interrupts and updates the transfer status.
+ * @param[in] CallbackRef is the call back reference pointer.
+ * @param[in] Mask is the interrupt mask passed in from the driver.
  *
- * @param	CallbackRef is the call back reference pointer
- * @param	Mask is the interrupt mask passed in from the driver
- *
- * @return	None
-*
 ******************************************************************************/
 static void WriteCallBack(void *CallbackRef, u32 Mask)
 {
@@ -1054,13 +999,11 @@ static void WriteCallBack(void *CallbackRef, u32 Mask)
 }
 
 /*****************************************************************************/
-/*
-* Call back function for write channel error interrupt
+/**
+* @brief Handles the write-channel error interrupt callback.
 *
-* @param	CallbackRef is the call back reference pointer
-* @param	Mask is the interrupt mask passed in from the driver
-*
-* @return	None
+* @param[in] CallbackRef is the call back reference pointer.
+* @param[in] Mask is the interrupt mask passed in from the driver.
 *
 ******************************************************************************/
 static void WriteErrorCallBack(void *CallbackRef, u32 Mask)
@@ -1073,13 +1016,13 @@ static void WriteErrorCallBack(void *CallbackRef, u32 Mask)
 
 /*****************************************************************************/
 /**
- * Compare a range of data from one frame with data from another frame
+ * @brief Compares data from a read frame with data from a write frame.
  *
- * @param FrameIndex, frame index for read and write frames
+ * @param[in] FrameIndex Frame index for read and write frames.
  *
  * @return
- *      - XST_SUCCESS if frames are identical
- *      - XST_FAILURE otherwise
+ *      - XST_SUCCESS if frames are identical.
+ *      - XST_FAILURE otherwise.
  *******************************************************************************/
 static int CheckFrame(int FrameIndex)
 {
@@ -1097,7 +1040,10 @@ static int CheckFrame(int FrameIndex)
 	Hsize_Max = ReadCfg.HoriSizeInput;
 	Vsize_Max = ReadCfg.VertSizeInput;
 
-	Xil_DCacheInvalidateRange((UINTPTR)RdAddr, Vsize_Max * Hsize_Max * ReadCount);
+	Xil_DCacheInvalidateRange((UINTPTR)RdAddr,
+				  FRAME_HORIZONTAL_LEN * FRAME_VERTICAL_LEN);
+	Xil_DCacheInvalidateRange((UINTPTR)WrAddr,
+				  FRAME_HORIZONTAL_LEN * FRAME_VERTICAL_LEN);
 #if 1
 	xdbg_printf(XDBG_DEBUG_GENERAL, "Check frame %d/%d with hsize %d vsize %d\n\r",
 		    RdFrame, WrFrame, Hsize_Max, Vsize_Max);
@@ -1121,20 +1067,13 @@ static int CheckFrame(int FrameIndex)
 	return XST_SUCCESS;
 }
 
-/*****************************************************************************/
 /**
- * Buffer initialization
+ * @brief Initializes a buffer with an incrementing byte pattern.
  *
- * Initialize a buffer from a specified value. Value increases in the buffer,
- * and wraps around at 0xFF.
- *
- * @param BaseAddr, starting address for buffer
- * @param Length, length of the buffer in bytes
- * @param StartValue, value for first byte
- *
- * @return
- *      None
- ******************************************************************************/
+ * @param[in] BaseAddr Starting address for the buffer.
+ * @param[in] Length Length of the buffer in bytes.
+ * @param[in] StartValue Value for the first byte.
+ */
 static void BufferInit(UINTPTR BaseAddr, int Length, u8 StartValue)
 {
 	int Tmp;
@@ -1152,3 +1091,5 @@ static void BufferInit(UINTPTR BaseAddr, int Length, u8 StartValue)
 
 	return;
 }
+
+/** @} */

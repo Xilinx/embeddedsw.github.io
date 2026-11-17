@@ -1,17 +1,14 @@
 /******************************************************************************
 * Copyright (C) 2002 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
 * @file xuartns550_stats.c
-* @addtogroup uartns550 Overview
-* @{
-*
-* This file contains the statistics functions for the 16450/16550 UART driver.
+* @brief Statistics functions for the 16450/16550 UART driver.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -23,9 +20,15 @@
 * 1.11a sv   03/20/07 Updated to use the new coding guidelines.
 * 2.00a ktn  10/20/09 Updated to use HAL processor APIs. XUartNs550_mClearStats
 *		      macro is removed.
+* 3.15  vn   07/30/26 Fix Doxygen warnings
+* 3.15  vn   09/09/26 Align Doxygen comments with AMD standards
 * </pre>
 *
-*****************************************************************************/
+******************************************************************************/
+
+/** @addtogroup uartns550 Overview
+ * @{
+ */
 
 /***************************** Include Files ********************************/
 
@@ -44,21 +47,16 @@
 /************************** Function Prototypes *****************************/
 
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
-* This functions returns a snapshot of the current statistics in the area
-* provided.
+* @brief Returns a snapshot of the current statistics in the area provided.
 *
-* @param	InstancePtr is a pointer to the XUartNs550 instance.
-* @param	StatsPtr is a pointer to a XUartNs550Stats structure to where
-*		the statistics are to be copied to.
+* @param[in]   InstancePtr Pointer to the XUartNs550 instance.
+* @param[out]  StatsPtr Pointer to a XUartNs550Stats structure to where
+*              the statistics are to be copied to.
 *
-* @return 	None.
-*
-* @note		None.
-*
-*****************************************************************************/
+******************************************************************************/
 void XUartNs550_GetStats(XUartNs550 *InstancePtr, XUartNs550Stats *StatsPtr)
 {
 	/*
@@ -84,18 +82,14 @@ void XUartNs550_GetStats(XUartNs550 *InstancePtr, XUartNs550Stats *StatsPtr)
 				InstancePtr->Stats.ReceiveBreakDetected;
 }
 
-/****************************************************************************/
+/*****************************************************************************/
 /**
 *
-* This function zeros the statistics for the given instance.
+* @brief Zeros the statistics for the given instance.
 *
-* @param	InstancePtr is a pointer to the XUartNs550 instance.
+* @param[in,out] InstancePtr Pointer to the XUartNs550 instance.
 *
-* @return	None.
-*
-* @note		None.
-*
-*****************************************************************************/
+******************************************************************************/
 void XUartNs550_ClearStats(XUartNs550 *InstancePtr)
 {
 	/*

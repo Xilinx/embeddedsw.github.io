@@ -41,6 +41,7 @@
 * 1.11	ssh    01/25/23 Added support for VEK280
 * 1.12  ssh    09/14/23 Added Tx compliance values for UltrascalePlus
 * 1.13	ssh    04/07/25 Added support for VEK385
+* 1.14  ssh    10/15/26 Added support for SCU200
 *
 * </pre>
 *
@@ -48,13 +49,28 @@
 
 /***************************** Include Files *********************************/
 #include "xhdmi_example.h"
-#ifdef SDT
 #include "xinterrupt_wrap.h"
-#endif
 /***************** Macros (Inline Functions) Definitions *********************/
 #define AUX_FIFO_CLEAR 1
+/* HDCP repeater topology limits matching the HDMI 1.4/2.0 repeater example. */
+#define EXDES_HDCP_DEVICE_ID_SIZE 5U
+#define EXDES_HDCP_MAX_DEVICE_CNT_HDCP14 127U
+#define EXDES_HDCP_MAX_DEVICE_CNT_HDCP22 31U
+#define EXDES_HDCP_MAX_DEPTH_HDCP14 7U
+#define EXDES_HDCP_MAX_DEPTH_HDCP22 4U
 
 /**************************** Type Definitions *******************************/
+typedef struct {
+	u32 DeviceCnt;
+	u32 Depth;
+	u8 DeviceList[EXDES_HDCP_MAX_DEVICE_CNT_HDCP14]
+		     [EXDES_HDCP_DEVICE_ID_SIZE];
+	u8 MaxDevsExceeded;
+	u8 MaxCascadeExceeded;
+	u8 Hdcp2LegacyDeviceDownstream;
+	u8 Hdcp1DeviceDownstream;
+	u8 Valid;
+} Exdes_HdcpRepeaterTopology;
 
 /************************** Function Prototypes ******************************/
 int I2cMux(void);
@@ -160,6 +176,8 @@ void Exdes_UpdateVidParamstoTx(XV_HdmiRxSs1 *HdmiRxSs1Ptr,
 static void XHdcp_EnforceBlanking(XV_Rx *UpstreamInstancePtr,
 				  XV_Tx *DownstreamInstancePtr);
 #endif
+void SetHdmiRxHpd(XHdmiphy1 *Hdmiphy1Ptr, XV_HdmiRxSs1 *HdmiRxSs1Ptr,
+		  u8 Hpd);
 #endif
 #if defined (XPAR_XV_FRMBUFWR_NUM_INSTANCES) && \
                       (XPAR_XV_FRMBUFRD_NUM_INSTANCES)
@@ -176,12 +194,7 @@ void XV_ConfigVidFrameBuf_rd(XV_FrmbufRd_l2 *FrmBufRdPtr);
 #endif
 
 u32 Exdes_LoadHdcpKeys(void *IicPtr);
-#ifndef SDT
-u32 Exdes_SysTmrInitialize(XHdmi_Exdes *InstancePtr, u32 TmrId,
-		u32 TmrIntrId);
-#else
 u32 Exdes_SysTmrInitialize(XHdmi_Exdes *InstancePtr, u32 TmrBaseAddr);
-#endif
 u32 Exdes_UsToTicks(u32 TimeInUs, u32 TmrCtrClkFreq);
 void Exdes_StartSysTmr(XHdmi_Exdes *InstancePtr, u32 IntervalInMs);
 void Exdes_SysTmrCallback(void *CallbackRef, u8 TmrCtrNumber);
@@ -298,6 +311,12 @@ extern XV_Rx xhdmi_example_rx_controller;
 extern XV_Tx xhdmi_example_tx_controller;
 #endif
 XHdmi_Exdes xhdmi_exdes_ctrlr;
+
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && \
+	defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	(defined(USE_HDCP_HDMI_RX) || defined(USE_HDCP_HDMI_TX))
+static Exdes_HdcpRepeaterTopology HdcpRepeaterTopology;
+#endif
 
 /* Scratch pad for user enabled printing. */
 Exdes_Debug_Printf exdes_debug_print = NULL;
@@ -466,13 +485,8 @@ void Exdes_SetHdcpDebugPrintf(Exdes_Debug_Printf PrintFunc)
 * @note
 *
 ******************************************************************************/
-#ifndef SDT
-u32 XV_Tx_InitController(XV_Tx *InstancePtr, u32 HdmiTxSsDevId,
-		u32 VPhyDevId)
-#else
 u32 XV_Tx_InitController(XV_Tx *InstancePtr, u32 HdmiTxSsBaseAddr,
 		u32 VPhyBaseAddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 
@@ -480,63 +494,9 @@ u32 XV_Tx_InitController(XV_Tx *InstancePtr, u32 HdmiTxSsBaseAddr,
 	InstancePtr->HdmiTxSs = &HdmiTxSs;
 	InstancePtr->VidPhy = &Hdmiphy1;
 	InstancePtr->Intc = &Intc;
-#ifndef SDT
-	/* Setup the System Interrupt vector Id references. */
-	XV_Tx_IntrVecId IntrVecIds;
-#if defined(__arm__) || (__aarch64__)
-#if defined(USE_HDCP_HDMI_TX)
-	IntrVecIds.IntrVecId_HdmiTxSs = XPAR_FABRIC_V_HDMITXSS1_0_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_HdmiTxSs = XPAR_FABRIC_V_HDMITXSS1_0_VEC_ID;
-#endif /* USE_HDCP_HDMI_TX */
-#ifdef XPAR_XHDCP_NUM_INSTANCES
-	IntrVecIds.IntrVecId_Hdcp14 =
-			XPAR_FABRIC_V_HDMITXSS1_0_HDCP14_IRQ_VEC_ID;
-	IntrVecIds.IntrVecId_Hdcp14Timer =
-			XPAR_FABRIC_V_HDMITXSS1_0_HDCP14_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp14 = (UINTPTR)(NULL);
-	IntrVecIds.IntrVecId_Hdcp14Timer = (UINTPTR)NULL;
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES)
-	IntrVecIds.IntrVecId_Hdcp22Timer =
-			XPAR_FABRIC_V_HDMITXSS1_0_HDCP22_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp22Timer = (UINTPTR)NULL;
-#endif
-	IntrVecIds.IntrVecId_VPhy = XPAR_FABRIC_V_HDMIPHY1_0_VEC_ID;
-#else /* microblaze */
-#if defined(USE_HDCP_HDMI_TX)
-	IntrVecIds.IntrVecId_HdmiTxSs = XPAR_INTC_0_V_HDMITXSS1_0_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_HdmiTxSs = XPAR_INTC_0_V_HDMITXSS1_0_VEC_ID;
-#endif /* USE_HDCP_HDMI_TX */
-#ifdef XPAR_XHDCP_NUM_INSTANCES
-	IntrVecIds.IntrVecId_Hdcp14 =
-			XPAR_INTC_0_V_HDMITXSS1_0_HDCP14_IRQ_VEC_ID;
-	IntrVecIds.IntrVecId_Hdcp14Timer =
-			XPAR_INTC_0_V_HDMITXSS1_0_HDCP14_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp14 = (UINTPTR)NULL;
-	IntrVecIds.IntrVecId_Hdcp14Timer = (UINTPTR)NULL;
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES)
-	IntrVecIds.IntrVecId_Hdcp22Timer =
-			XPAR_INTC_0_V_HDMITXSS1_0_HDCP22_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp22Timer = (UINTPTR)NULL;
-#endif
-	IntrVecIds.IntrVecId_VPhy = XPAR_INTC_0_V_HDMIPHY1_0_VEC_ID;
-#endif /* defined(__arm__) || (__aarch64__) */
-#endif /* SDT */
 	/* Initialize the Video Transmitter for HDMI. */
-#ifndef SDT
-	Status = XV_Tx_Hdmi_Initialize(InstancePtr, HdmiTxSsDevId,
-					VPhyDevId, IntrVecIds);
-#else
 	Status = XV_Tx_Hdmi_Initialize(InstancePtr, HdmiTxSsBaseAddr,
 					VPhyBaseAddr);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Initialization of Video "
 		           "Transmitter for HDMI failed !!\r\n");
@@ -635,13 +595,8 @@ u32 XV_Tx_InitController(XV_Tx *InstancePtr, u32 HdmiTxSsBaseAddr,
 * @note
 *
 ******************************************************************************/
-#ifndef SDT
-u32 XV_Rx_InitController(XV_Rx *InstancePtr, u32 HdmiRxSsDevId,
-		u32 VPhyDevId)
-#else
 u32 XV_Rx_InitController(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 		u32 VPhyBaseAddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 
@@ -649,56 +604,6 @@ u32 XV_Rx_InitController(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 	InstancePtr->HdmiRxSs = &HdmiRxSs;
 	InstancePtr->VidPhy = &Hdmiphy1;
 	InstancePtr->Intc = &Intc;
-#ifndef SDT
-	/* Setup the System Interrupt vector Id references. */
-	XV_Rx_IntrVecId IntrVecIds;
-#if defined(__arm__) || (__aarch64__)
-#if defined(USE_HDCP_HDMI_RX)
-	IntrVecIds.IntrVecId_HdmiRxSs =
-			XPAR_FABRIC_V_HDMIRXSS1_0_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_HdmiRxSs = XPAR_FABRIC_V_HDMIRXSS1_0_VEC_ID;
-#endif /* USE_HDCP_HDMI_RX */
-#ifdef XPAR_XHDCP_NUM_INSTANCES
-	IntrVecIds.IntrVecId_Hdcp14 =
-			XPAR_FABRIC_V_HDMIRXSS1_0_HDCP14_IRQ_VEC_ID;
-	IntrVecIds.IntrVecId_Hdcp14Timer =
-			XPAR_FABRIC_V_HDMIRXSS1_0_HDCP14_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp14 = (UINTPTR)NULL;
-	IntrVecIds.IntrVecId_Hdcp14Timer = (UINTPTR)NULL;
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES)
-	IntrVecIds.IntrVecId_Hdcp22Timer =
-			XPAR_FABRIC_V_HDMIRXSS1_0_HDCP22_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp22Timer = (UINTPTR)NULL;
-#endif
-	IntrVecIds.IntrVecId_VPhy = XPAR_FABRIC_V_HDMIPHY1_0_VEC_ID;
-#else /* microblaze */
-#if defined(USE_HDCP_HDMI_RX)
-	IntrVecIds.IntrVecId_HdmiRxSs = XPAR_INTC_0_V_HDMIRXSS1_0_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_HdmiRxSs = XPAR_INTC_0_V_HDMIRXSS1_0_VEC_ID;
-#endif /* USE_HDCP_HDMI_RX */
-#ifdef XPAR_XHDCP_NUM_INSTANCES
-	IntrVecIds.IntrVecId_Hdcp14 =
-			XPAR_INTC_0_V_HDMIRXSS1_0_HDCP14_IRQ_VEC_ID;
-	IntrVecIds.IntrVecId_Hdcp14Timer =
-			XPAR_INTC_0_V_HDMIRXSS1_0_HDCP14_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp14 = (UINTPTR)NULL;
-	IntrVecIds.IntrVecId_Hdcp14Timer = (UINTPTR)NULL;
-#endif
-#if (XPAR_XHDCP22_TX_NUM_INSTANCES)
-	IntrVecIds.IntrVecId_Hdcp22Timer =
-			XPAR_INTC_0_V_HDMIRXSS1_0_HDCP22_TIMER_IRQ_VEC_ID;
-#else
-	IntrVecIds.IntrVecId_Hdcp22Timer = (UINTPTR)NULL;
-#endif
-	IntrVecIds.IntrVecId_VPhy = XPAR_INTC_0_V_HDMIPHY1_0_VEC_ID;
-#endif /* defined(__arm__) || (__aarch64__) */
-#endif /* SDT */
 #if defined (XPAR_XV_FRMBUFWR_NUM_INSTANCES) && \
                       (XPAR_XV_FRMBUFRD_NUM_INSTANCES) || (!defined XPAR_XVTC_NUM_INSTANCES)
 
@@ -737,13 +642,8 @@ u32 XV_Rx_InitController(XV_Rx *InstancePtr, u32 HdmiRxSsBaseAddr,
 			sizeof(InstancePtr->Edid) / sizeof(InstancePtr->Edid[0]));
 
 	/* Initialize the Video Receiver for HDMI. */
-#ifndef SDT
-	Status = XV_Rx_Hdmi_Initialize(InstancePtr, HdmiRxSsDevId,
-			VPhyDevId, IntrVecIds);
-#else
 	Status = XV_Rx_Hdmi_Initialize(InstancePtr, HdmiRxSsBaseAddr,
 					VPhyBaseAddr);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Initialization of Video "
 		           "Receiver for HDMI failed !!\r\n");
@@ -922,48 +822,18 @@ void Exdes_InitController(XHdmi_Exdes *InstancePtr)
 * @note	    None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Exdes_SysTmrInitialize(XHdmi_Exdes *InstancePtr, u32 TmrId,
-		u32 TmrIntrId)
-#else
 u32 Exdes_SysTmrInitialize(XHdmi_Exdes *InstancePtr, u32 TmrBaseAddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 
 	/* Initialize the system timer */
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&InstancePtr->SysTmrInst, TmrId);
-#else
 	Status = XTmrCtr_Initialize(&InstancePtr->SysTmrInst, TmrBaseAddr);
-#endif
-#ifndef SDT
-#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES)
-	/* Setup the timer interrupt */
-#if defined(__arm__) || (__aarch64__)
-	Status |= XScuGic_Connect(InstancePtr->hdmi_tx_ctlr->Intc,
-			TmrIntrId,
-			(XInterruptHandler)Exdes_SysTimerIntrHandler,
-			(void *)InstancePtr);
-
-	XScuGic_Enable(InstancePtr->hdmi_tx_ctlr->Intc, TmrIntrId);
-#else
-	Status |= XIntc_Connect(InstancePtr->hdmi_tx_ctlr->Intc,
-			TmrIntrId,
-			(XInterruptHandler)Exdes_SysTimerIntrHandler,
-			(void *)&xhdmi_exdes_ctrlr);
-
-	XIntc_Enable(InstancePtr->hdmi_tx_ctlr->Intc, TmrIntrId);
-#endif
-#endif
-#else
 #if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES)
 	Status = XSetupInterruptSystem(InstancePtr,
 				       Exdes_SysTimerIntrHandler,
 				       InstancePtr->SysTmrInst.Config.IntrId,
 				       InstancePtr->SysTmrInst.Config.IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
-#endif
 #endif
 	return Status;
 }
@@ -1181,13 +1051,8 @@ u32 Exdes_FBInitialize(XV_FrmbufWr_l2 *WrInstancePtr,
 	}
 
 	/* Initialize Video Frame Buffer Read */
-#ifndef SDT
-	FrameBufRd_ConfigPtr =
-			XV_frmbufrd_LookupConfig(XPAR_XV_FRMBUFRD_0_DEVICE_ID);
-#else
 	FrameBufRd_ConfigPtr =
 			XV_frmbufrd_LookupConfig(XPAR_XV_FRMBUF_RD_0_BASEADDR);
-#endif
 
 	if (FrameBufRd_ConfigPtr == NULL) {
 		RdInstancePtr->FrmbufRd.IsReady = 0;
@@ -1210,40 +1075,13 @@ u32 Exdes_FBInitialize(XV_FrmbufWr_l2 *WrInstancePtr,
 		return(XST_FAILURE);
 	}
 
-#ifndef SDT
-#if defined(__arm__) || (__aarch64__)
-	/* Register Video Frame Buffer Read Interrupt Handler
-	 *  with Interrupt Controller
-	 */
-	Status |= XScuGic_Connect(&Intc,
-				  XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID,
-				  (XInterruptHandler)XVFrmbufRd_InterruptHandler,
-				  (void *)RdInstancePtr);
-#else
-	/* Register Video Frame Buffer Read Interrupt Handler
-	 *  with Interrupt Controller
-	 */
-	Status |= XIntc_Connect(&Intc,
-				XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID,
-				(XInterruptHandler)XVFrmbufRd_InterruptHandler,
-				(void *)RdInstancePtr);
-#endif
-#else
 	Status = XSetupInterruptSystem(RdInstancePtr,
 				       (XInterruptHandler)XVFrmbufRd_InterruptHandler,
 				       RdInstancePtr->FrmbufRd.Config.IntrId,
 				       RdInstancePtr->FrmbufRd.Config.IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
-#endif
 
 	if (Status == XST_SUCCESS) {
-#ifndef SDT
-#if defined(__arm__) || (__aarch64__)
-		XScuGic_Enable(&Intc, XPAR_FABRIC_V_FRMBUF_RD_0_VEC_ID);
-#else
-		XIntc_Enable(&Intc, XPAR_INTC_0_V_FRMBUF_RD_0_VEC_ID);
-#endif
-#endif
 	} else {
 		xil_printf("ERR:: Unable to register Vid. Frame "
 			   "Buff. Rd interrupt handler\r\n");
@@ -1259,13 +1097,8 @@ u32 Exdes_FBInitialize(XV_FrmbufWr_l2 *WrInstancePtr,
 	xil_printf("Video Frame Buffer Read Initialization Complete\r\n");
 
 	/* Initialize Video Frame Buffer Write */
-#ifndef SDT
-	FrameBufWr_ConfigPtr =
-			XV_frmbufwr_LookupConfig(XPAR_XV_FRMBUFWR_0_DEVICE_ID);
-#else
 	FrameBufWr_ConfigPtr =
 			XV_frmbufwr_LookupConfig(XPAR_XV_FRMBUF_WR_0_BASEADDR);
-#endif
 
 	if (FrameBufWr_ConfigPtr == NULL) {
 		WrInstancePtr->FrmbufWr.IsReady = 0;
@@ -1283,40 +1116,13 @@ u32 Exdes_FBInitialize(XV_FrmbufWr_l2 *WrInstancePtr,
 	}
 
 
-#ifndef SDT
-#if defined(__arm__) || (__aarch64__)
-	/* Register Video Frame Buffer Write Interrupt Handler
-	 *  with Interrupt Controller
-	 */
-	Status |= XScuGic_Connect(&Intc,
-				  XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID,
-				  (XInterruptHandler)XVFrmbufWr_InterruptHandler,
-				  (void *)WrInstancePtr);
-#else
-	/* Register Video Frame Buffer Write Interrupt Handler
-	 *  with Interrupt Controller
-	 */
-	Status |= XIntc_Connect(&Intc,
-				XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID,
-				(XInterruptHandler)XVFrmbufWr_InterruptHandler,
-				(void *)WrInstancePtr);
-#endif
-#else
 	Status = XSetupInterruptSystem(WrInstancePtr,
 				       (XInterruptHandler)XVFrmbufRd_InterruptHandler,
 				       WrInstancePtr->FrmbufWr.Config.IntrId,
 				       WrInstancePtr->FrmbufWr.Config.IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
-#endif
 
 	if (Status == XST_SUCCESS) {
-#ifndef SDT
-#if defined(__arm__) || (__aarch64__)
-		XScuGic_Enable(&Intc, XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID);
-#else
-		XIntc_Enable(&Intc, XPAR_INTC_0_V_FRMBUF_WR_0_VEC_ID);
-#endif
-#endif
 	} else {
 		xil_printf("ERR:: Unable to register Vid. Frame "
 			   "Buff. Wr interrupt handler");
@@ -1333,11 +1139,7 @@ u32 Exdes_FBInitialize(XV_FrmbufWr_l2 *WrInstancePtr,
 #ifdef XPAR_XGPIOPS_NUM_INSTANCES
 	/* Initialize GPIO for VFRB Reset */
 	Gpio_VFRB_resetn_ConfigPtr =
-#ifndef SDT
-			XGpioPs_LookupConfig(XPAR_PSU_GPIO_0_DEVICE_ID);
-#else
 			XGpioPs_LookupConfig(XPAR_GPIO_BASEADDR);
-#endif
 
 	if (Gpio_VFRB_resetn_ConfigPtr == NULL) {
 		rstInstancePtr->IsReady = 0;
@@ -3861,6 +3663,8 @@ int I2cMuxSel(void *IicPtr, XOnBoard_IicDev Dev)
 		Iic_Mux_Addr = VCK190_U34_MUX_I2C_ADDR;
 		Buffer = VCK190_U135_MUX_I2C_ADDR;
 	}
+#elif defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200)
 #else
 
 	if (Dev == KCU105_SI570) {
@@ -3896,7 +3700,8 @@ int I2cClk(u32 InFreq, u32 OutFreq)
 	int Status;
 
 #if defined (XPS_BOARD_VEK280) || \
-	defined (XPS_BOARD_VEK385)
+	defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200)
 	if (OutFreq != 0) {
 	/* VFMC TX Clock Source */
 		Status = IDT_8T49N24x_I2cClk(&Iic, I2C_CLK_ADDR1,
@@ -4274,6 +4079,415 @@ void DetailedInfo(void)
 /*****************************************************************************/
 /**
 *
+* This function clears the cached HDCP repeater topology.
+*
+* @param    None.
+*
+* @return   None.
+*
+* @note	    None.
+*
+******************************************************************************/
+void Exdes_HdcpClearRepeaterTopology(void)
+{
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && \
+	defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_TX) && defined(USE_HDCP_HDMI_RX)
+	memset(&HdcpRepeaterTopology, 0, sizeof(HdcpRepeaterTopology));
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function checks whether the upstream protocol topology limits are
+* exceeded by a candidate repeater topology.
+*
+* @param    TopologyPtr is the candidate topology.
+*
+* @return   None.
+*
+* @note	    None.
+*
+******************************************************************************/
+static void Exdes_HdcpCheckRepeaterTopologyLimits(
+		Exdes_HdcpRepeaterTopology *TopologyPtr)
+{
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_RX)
+	int HdcpProtocol;
+
+	Xil_AssertVoid(TopologyPtr != NULL);
+
+	HdcpProtocol = XV_HdmiRxSs1_HdcpGetProtocol(&HdmiRxSs);
+	switch (HdcpProtocol) {
+	case XV_HDMIRXSS1_HDCP_22:
+		if (TopologyPtr->DeviceCnt > EXDES_HDCP_MAX_DEVICE_CNT_HDCP22) {
+			TopologyPtr->MaxDevsExceeded = TRUE;
+		}
+		if (TopologyPtr->Depth > EXDES_HDCP_MAX_DEPTH_HDCP22) {
+			TopologyPtr->MaxCascadeExceeded = TRUE;
+		}
+		break;
+	case XV_HDMIRXSS1_HDCP_14:
+		if (TopologyPtr->DeviceCnt > EXDES_HDCP_MAX_DEVICE_CNT_HDCP14) {
+			TopologyPtr->MaxDevsExceeded = TRUE;
+		}
+		if (TopologyPtr->Depth > EXDES_HDCP_MAX_DEPTH_HDCP14) {
+			TopologyPtr->MaxCascadeExceeded = TRUE;
+		}
+		break;
+	default:
+		break;
+	}
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function publishes a changed repeater topology to the upstream HDCP RX.
+*
+* @param    TopologyPtr is the candidate topology.
+*
+* @return   XST_SUCCESS if the topology is published or unchanged.
+*
+* @note	    None.
+*
+******************************************************************************/
+static int Exdes_HdcpPublishRepeaterTopology(
+		Exdes_HdcpRepeaterTopology *TopologyPtr)
+{
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_RX)
+	int Status = XST_SUCCESS;
+
+	Xil_AssertNonvoid(TopologyPtr != NULL);
+
+	if ((HdcpRepeaterTopology.Valid == TRUE) &&
+	    (memcmp(&HdcpRepeaterTopology, TopologyPtr,
+		    sizeof(*TopologyPtr)) == 0)) {
+		return XST_SUCCESS;
+	}
+
+	Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+			XV_HDMIRXSS1_HDCP_TOPOLOGY_MAXDEVSEXCEEDED,
+			TopologyPtr->MaxDevsExceeded);
+	Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+			XV_HDMIRXSS1_HDCP_TOPOLOGY_MAXCASCADEEXCEEDED,
+			TopologyPtr->MaxCascadeExceeded);
+	Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+			XV_HDMIRXSS1_HDCP_TOPOLOGY_HDCP2LEGACYDEVICEDOWNSTREAM,
+			TopologyPtr->Hdcp2LegacyDeviceDownstream);
+	Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+			XV_HDMIRXSS1_HDCP_TOPOLOGY_HDCP1DEVICEDOWNSTREAM,
+			TopologyPtr->Hdcp1DeviceDownstream);
+
+	if (TopologyPtr->MaxDevsExceeded == FALSE) {
+		Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+				XV_HDMIRXSS1_HDCP_TOPOLOGY_DEVICECNT,
+				TopologyPtr->DeviceCnt);
+		Status |= XV_HdmiRxSs1_HdcpSetTopologyReceiverIdList(
+				&HdmiRxSs, &TopologyPtr->DeviceList[0][0],
+				TopologyPtr->DeviceCnt);
+	}
+
+	if (TopologyPtr->MaxCascadeExceeded == FALSE) {
+		Status |= XV_HdmiRxSs1_HdcpSetTopologyField(&HdmiRxSs,
+				XV_HDMIRXSS1_HDCP_TOPOLOGY_DEPTH,
+				TopologyPtr->Depth);
+	}
+
+	if (Status == XST_SUCCESS) {
+		memcpy(&HdcpRepeaterTopology, TopologyPtr,
+		       sizeof(HdcpRepeaterTopology));
+		HdcpRepeaterTopology.Valid = TRUE;
+		Status |= XV_HdmiRxSs1_HdcpSetTopologyUpdate(&HdmiRxSs);
+	}
+
+	return Status;
+#else
+	return XST_SUCCESS;
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function enables or disables HDCP repeater mode on the available
+* upstream and downstream HDCP interfaces.
+*
+* @param    Enable is TRUE to enable repeater mode and FALSE to disable it.
+*
+* @return   XST_SUCCESS if the repeater mode request was applied.
+*
+* @note	    RX HPD is toggled so the upstream source re-reads the repeater
+*           capability.
+*
+******************************************************************************/
+int Exdes_HdcpSetRepeaterMode(u8 Enable)
+{
+	int Status = XST_SUCCESS;
+	u8 Repeater = Enable ? TRUE : FALSE;
+
+	if (Repeater == FALSE) {
+		Exdes_HdcpClearRepeaterTopology();
+	}
+
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_TX)
+	xhdmi_example_tx_controller.HdcpConfig.IsRepeater = Repeater;
+	if (xhdmi_example_tx_controller.HdcpConfig.IsReady == TRUE) {
+		Status |= XV_HdmiTxSs1_HdcpSetRepeater(&HdmiTxSs, Repeater);
+	}
+#endif
+
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_RX)
+	xhdmi_example_rx_controller.HdcpConfig.IsRepeater = Repeater;
+	if (xhdmi_example_rx_controller.HdcpConfig.IsReady == TRUE) {
+		Status |= XV_HdmiRxSs1_HdcpSetRepeater(&HdmiRxSs, Repeater);
+	}
+#endif
+
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_RX)
+	if (xhdmi_example_rx_controller.HdcpConfig.IsReady == TRUE) {
+		XV_HdmiRxSs1_ToggleHpd(&HdmiRxSs);
+	}
+#endif
+
+	if (Status == XST_SUCCESS) {
+		xil_printf("HDCP repeater mode %s\r\n",
+			   Repeater ? "enabled" : "disabled");
+	} else {
+		xil_printf("ERR:: Unable to update HDCP repeater mode\r\n");
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function forwards an upstream repeater authentication request to the
+* downstream HDCP transmitter.
+*
+* @param    None.
+*
+* @return   XST_SUCCESS if the request was handled.
+*
+* @note	    None.
+*
+******************************************************************************/
+int Exdes_HdcpHandleAuthenticationRequest(void)
+{
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && \
+	defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_TX) && defined(USE_HDCP_HDMI_RX)
+	int Status = XST_SUCCESS;
+
+	if (xhdmi_example_rx_controller.HdcpConfig.IsRepeater == FALSE) {
+		return XST_SUCCESS;
+	}
+
+	Exdes_HdcpClearRepeaterTopology();
+
+	if (XV_HdmiRxSs1_HdcpGetProtocol(&HdmiRxSs) ==
+	    XV_HDMIRXSS1_HDCP_14) {
+		xhdmi_example_rx_controller.HdcpConfig.StreamType =
+			XV_HDMIRXSS1_HDCP_STREAMTYPE_0;
+		XV_HdmiTxSs1_HdcpSetContentStreamType(&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_STREAMTYPE_0);
+	}
+
+	if ((xhdmi_example_tx_controller.HdcpConfig.IsReady == FALSE) ||
+	    (xhdmi_example_tx_controller.HdcpConfig.DownstreamInstanceConnected
+	     == FALSE)) {
+		xil_printf("HDCP repeater auth request: downstream not ready.\r\n");
+		return XST_FAILURE;
+	}
+
+	if (XV_HdmiTxSs1_HdcpIsEnabled(&HdmiTxSs) == FALSE) {
+		Status |= XV_HdmiTxSs1_HdcpEnable(&HdmiTxSs);
+	}
+
+	Status |= XV_HdmiTxSs1_HdcpAuthRequest(&HdmiTxSs);
+	XV_Tx_SetHdcpAuthReqExclusion(&xhdmi_example_tx_controller, FALSE);
+
+	if (Status == XST_SUCCESS) {
+		Status = Exdes_HdcpUpdateRepeaterTopology();
+	}
+
+	return Status;
+#else
+	return XST_SUCCESS;
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function copies the downstream HDCP topology into the upstream
+* repeater topology.
+*
+* @param    None.
+*
+* @return   XST_SUCCESS if the topology update was applied or not required.
+*
+* @note	    The receiver ID list size is the number of downstream receiver IDs.
+*
+******************************************************************************/
+int Exdes_HdcpUpdateRepeaterTopology(void)
+{
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && \
+	defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_TX) && defined(USE_HDCP_HDMI_RX)
+	int Status = XST_SUCCESS;
+	u32 DeviceCnt;
+	u32 Depth;
+	u8 *ReceiverIdList;
+	Exdes_HdcpRepeaterTopology Topology;
+
+	if (xhdmi_example_rx_controller.HdcpConfig.IsRepeater == FALSE) {
+		return XST_SUCCESS;
+	}
+
+	if ((XV_HdmiRxSs1_HdcpGetProtocol(&HdmiRxSs) ==
+	     XV_HDMIRXSS1_HDCP_NONE) ||
+	    (XV_HdmiTxSs1_HdcpGetProtocol(&HdmiTxSs) ==
+	     XV_HDMITXSS1_HDCP_NONE)) {
+		return XST_SUCCESS;
+	}
+
+	if (XV_HdmiTxSs1_HdcpGetTopology(&HdmiTxSs) == NULL) {
+		xil_printf("HDCP repeater topology not ready.\r\n");
+		return XST_FAILURE;
+	}
+
+	DeviceCnt = XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_TOPOLOGY_DEVICECNT);
+	ReceiverIdList = XV_HdmiTxSs1_HdcpGetTopologyReceiverIdList(&HdmiTxSs);
+
+	if ((DeviceCnt == 0U) || (ReceiverIdList == NULL)) {
+		xil_printf("HDCP repeater topology not ready.\r\n");
+		return XST_FAILURE;
+	}
+
+	memset(&Topology, 0, sizeof(Topology));
+	Topology.Valid = TRUE;
+	Topology.DeviceCnt = DeviceCnt;
+	Depth = XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_TOPOLOGY_DEPTH);
+	Topology.Depth = Depth + 1U;
+	Topology.MaxDevsExceeded = XV_HdmiTxSs1_HdcpGetTopologyField(
+			&HdmiTxSs, XV_HDMITXSS1_HDCP_TOPOLOGY_MAXDEVSEXCEEDED);
+	Topology.MaxCascadeExceeded = XV_HdmiTxSs1_HdcpGetTopologyField(
+			&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_TOPOLOGY_MAXCASCADEEXCEEDED);
+	Topology.Hdcp2LegacyDeviceDownstream =
+		XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+		XV_HDMITXSS1_HDCP_TOPOLOGY_HDCP2LEGACYDEVICEDOWNSTREAM);
+	Topology.Hdcp1DeviceDownstream =
+		XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+		XV_HDMITXSS1_HDCP_TOPOLOGY_HDCP1DEVICEDOWNSTREAM);
+	Exdes_HdcpCheckRepeaterTopologyLimits(&Topology);
+	if (Topology.MaxDevsExceeded == FALSE) {
+		memcpy(&Topology.DeviceList[0][0], ReceiverIdList,
+		       DeviceCnt * EXDES_HDCP_DEVICE_ID_SIZE);
+	}
+	Status = Exdes_HdcpPublishRepeaterTopology(&Topology);
+
+	return Status;
+#else
+	return XST_SUCCESS;
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
+* This function prints HDCP repeater mode and topology status.
+*
+* @param    None.
+*
+* @return   None.
+*
+* @note	    None.
+*
+******************************************************************************/
+void Exdes_HdcpPrintRepeaterStatus(void)
+{
+	xil_printf("\r\nHDCP Repeater Status\r\n");
+	xil_printf("--------------------\r\n");
+
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_RX)
+	xil_printf("RX protocol           : ");
+	switch (XV_HdmiRxSs1_HdcpGetProtocol(&HdmiRxSs)) {
+	case XV_HDMIRXSS1_HDCP_14:
+		xil_printf("HDCP 1.4\r\n");
+		break;
+	case XV_HDMIRXSS1_HDCP_22:
+		xil_printf("HDCP 2.x\r\n");
+		break;
+	default:
+		xil_printf("None\r\n");
+		break;
+	}
+	xil_printf("RX repeater requested : %s\r\n",
+		   xhdmi_example_rx_controller.HdcpConfig.IsRepeater ?
+		   "Yes" : "No");
+	xil_printf("RX repeater active    : %s\r\n",
+		   XV_HdmiRxSs1_HdcpIsRepeater(&HdmiRxSs) ? "Yes" : "No");
+	xil_printf("RX authenticated      : %s\r\n",
+		   XV_HdmiRxSs1_HdcpIsAuthenticated(&HdmiRxSs) ?
+		   "Yes" : "No");
+	xil_printf("RX encrypted          : %s\r\n",
+		   XV_HdmiRxSs1_HdcpIsEncrypted(&HdmiRxSs) ? "Yes" : "No");
+#endif
+
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && defined(USE_HDCP_HDMI_TX)
+	u32 DownstreamDepth = XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_TOPOLOGY_DEPTH);
+	u32 DownstreamDevices = XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+			XV_HDMITXSS1_HDCP_TOPOLOGY_DEVICECNT);
+	u8 DownstreamRepeater = FALSE;
+
+	xil_printf("TX protocol           : ");
+	switch (XV_HdmiTxSs1_HdcpGetProtocol(&HdmiTxSs)) {
+	case XV_HDMITXSS1_HDCP_14:
+		xil_printf("HDCP 1.4\r\n");
+		DownstreamRepeater = XV_HdmiTxSs1_HdcpIsRepeater(&HdmiTxSs);
+		break;
+	case XV_HDMITXSS1_HDCP_22:
+		xil_printf("HDCP 2.x\r\n");
+		DownstreamRepeater =
+			((DownstreamDepth != 0U) || (DownstreamDevices > 1U)) ?
+			TRUE : FALSE;
+		break;
+	default:
+		xil_printf("None\r\n");
+		break;
+	}
+	xil_printf("Downstream repeater   : %s\r\n",
+		   DownstreamRepeater ? "Yes" : "No");
+	xil_printf("TX authenticated      : %s\r\n",
+		   XV_HdmiTxSs1_HdcpIsAuthenticated(&HdmiTxSs) ?
+		   "Yes" : "No");
+	xil_printf("TX encrypted          : %s\r\n",
+		   XV_HdmiTxSs1_HdcpIsEncrypted(&HdmiTxSs) ? "Yes" : "No");
+
+	xil_printf("Downstream depth      : %d\r\n",
+		   DownstreamDepth);
+	xil_printf("Downstream devices    : %d\r\n",
+		   DownstreamDevices);
+	xil_printf("Max devices exceeded  : %d\r\n",
+		   XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+		   XV_HDMITXSS1_HDCP_TOPOLOGY_MAXDEVSEXCEEDED));
+	xil_printf("Max cascade exceeded  : %d\r\n",
+		   XV_HdmiTxSs1_HdcpGetTopologyField(&HdmiTxSs,
+		   XV_HDMITXSS1_HDCP_TOPOLOGY_MAXCASCADEEXCEEDED));
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
 * This function is responsible for executing the state machine for the
 * upstream interface and each connected downstream interface. The
 * state machines are executed using round robin scheduling. Interface
@@ -4510,6 +4724,15 @@ void XV_Tx_HdmiTrigCb_CableConnectionChange(void *InstancePtr)
 		}
 #endif
 		xhdmi_exdes_ctrlr.IsTxPresent = FALSE;
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_RX) && defined(USE_HDCP_HDMI_TX)
+		if (xhdmi_example_rx_controller.HdcpConfig.IsRepeater == TRUE) {
+			Exdes_HdcpClearRepeaterTopology();
+			if (HdmiRxSs.IsStreamConnected == TRUE) {
+				SetHdmiRxHpd(&Hdmiphy1, &HdmiRxSs, FALSE);
+			}
+		}
+#endif
 	} else {
 
 		if (Exdes_CheckDwnstrmSinkCaps() == XST_SUCCESS) {
@@ -4539,6 +4762,13 @@ void XV_Tx_HdmiTrigCb_CableConnectionChange(void *InstancePtr)
 		}
 
 		xhdmi_exdes_ctrlr.IsTxPresent = TRUE;
+#if defined(XPAR_XV_HDMIRXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_RX) && defined(USE_HDCP_HDMI_TX)
+		if ((xhdmi_example_rx_controller.HdcpConfig.IsRepeater == TRUE) &&
+		    (HdmiRxSs.IsStreamConnected == TRUE)) {
+			SetHdmiRxHpd(&Hdmiphy1, &HdmiRxSs, TRUE);
+		}
+#endif
 	}
 
 	EXDES_DBG_PRINT("sysEventDebug:%s:%d:::%d\r\n", __func__,
@@ -4614,7 +4844,8 @@ void XV_Tx_HdmiTrigCb_SetupTxFrlRefClk(void *InstancePtr)
 {
 	int Status;
 #if !(defined (XPS_BOARD_VEK280) || \
-	  defined (XPS_BOARD_VEK385))
+	  defined (XPS_BOARD_VEK385) || \
+	  defined (XPS_BOARD_SCU200))
 	Status = XST_FAILURE;
 	xil_printf("XV_Tx_HdmiTrigCb_SetupTxFrlRefClk\r\n");
 	Status = Vfmc_Mezz_HdmiTxRefClock_Sel(&Vfmc[0],
@@ -4651,7 +4882,8 @@ void XV_Tx_HdmiTrigCb_SetupTxTmdsRefClk(void *InstancePtr)
 	u8 IsRx = xhdmi_exdes_ctrlr.IsRxPresent;
 
 #if !(defined (XPS_BOARD_VEK280) || \
-	  defined (XPS_BOARD_VEK385))
+	  defined (XPS_BOARD_VEK385) || \
+	  defined (XPS_BOARD_SCU200))
 	Status = Vfmc_Mezz_HdmiTxRefClock_Sel(&Vfmc[0],
 			VFMC_MEZZ_TxRefclk_From_IDT);
 #endif
@@ -5011,7 +5243,8 @@ void XV_Tx_HdmiTrigCb_EnableCableDriver(void *InstancePtr)
 
 #if defined (XPS_BOARD_ZCU106) || \
 	defined (XPS_BOARD_VCU118) || \
-	defined (XPS_BOARD_ZCU102)
+	defined (XPS_BOARD_ZCU102) || \
+	  defined (XPS_BOARD_SCU200)
 			/* Adjust GT TX Diff Swing based on Line rate */
 			if (Vfmc[0].TxMezzType >= VFMC_MEZZ_HDMI_ONSEMI_R0 &&
 				Vfmc[0].TxMezzType <  VFMC_MEZZ_INVALID) {
@@ -5119,7 +5352,11 @@ void XV_Tx_HdmiTrigCb_EnableCableDriver(void *InstancePtr)
 			Vfmc_Gpio_Mezz_HdmiTxDriver_Reconfig(&Vfmc[0],
 							     TRUE,
 							     TxLineRate, Lanes);
-#if defined (XPS_BOARD_ZCU106) || \
+#if defined (XPS_BOARD_SCU200)
+			TxDiffSwingVal = 0x5;
+            TxprecursorVal = 0x4;
+            TxpostcursorVal = 0x4;
+#elif defined (XPS_BOARD_ZCU106) || \
 	defined (XPS_BOARD_ZCU102)
 			TxDiffSwingVal = 0xD;
             TxprecursorVal = 0x5;
@@ -5267,7 +5504,10 @@ void XV_Tx_HdmiTrigCb_FrlConfigDeviceSetup(void *InstancePtr)
 			Data = 0xD;
 #endif
 		}
-#if defined (XPS_BOARD_ZCU106) || \
+#if defined (XPS_BOARD_SCU200)
+		Data = 0x5;
+		XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId, Data);
+#elif defined (XPS_BOARD_ZCU106) || \
 	defined (XPS_BOARD_VCU118) || \
 	defined (XPS_BOARD_ZCU102) || \
 	defined (XPS_BOARD_VCK190) || \
@@ -5398,6 +5638,12 @@ void XV_Rx_HdmiTrigCb_CableConnectionChange(void *InstancePtr)
 		}
 
 		xhdmi_exdes_ctrlr.IsRxPresent = FALSE;
+#if defined(XPAR_XV_HDMITXSS1_NUM_INSTANCES) && \
+	defined(USE_HDCP_HDMI_RX) && defined(USE_HDCP_HDMI_TX)
+		if (xhdmi_example_rx_controller.HdcpConfig.IsRepeater == TRUE) {
+			Exdes_HdcpClearRepeaterTopology();
+		}
+#endif
 		if (xhdmi_exdes_ctrlr.ForceIndependent == FALSE) {
 			xhdmi_exdes_ctrlr.SystemEvent = TRUE;
 		} else {
@@ -5954,21 +6200,24 @@ void XV_Rx_HdmiTrigCb_VfmcRxClkSel(void *InstancePtr)
 #if defined(XPAR_XV_HDMI_RX_FRL_ENABLE)
 	if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl == TRUE) {
 #if !(defined (XPS_BOARD_VEK280) || \
-	defined (XPS_BOARD_VEK385))
+	defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200))
 		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Si5344);
 		 XHdmiphy1_ClkDetFreqReset(&Hdmiphy1, 0, XHDMIPHY1_DIR_RX);
 #endif
 		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 1, LineRate, Lanes);
 	} else if (xhdmi_exdes_ctrlr.hdmi_rx_ctlr->HdmiRxSs->HdmiRx1Ptr->Stream.IsFrl == FALSE) {
 #if !(defined (XPS_BOARD_VEK280) || \
-	defined (XPS_BOARD_VEK385))
+	defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200))
 		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Cable);
 #endif
 		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 0, LineRate, Lanes);
 	}
 #else
 #if !(defined (XPS_BOARD_VEK280) || \
-	defined (XPS_BOARD_VEK385))
+	defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200))
 		 Vfmc_Mezz_HdmiRxRefClock_Sel(&Vfmc[0], VFMC_MEZZ_RxRefclk_From_Cable);
 #endif
 		 Vfmc_Gpio_Mezz_HdmiRxDriver_Reconfig(&Vfmc[0], 0, LineRate, Lanes);
@@ -6252,11 +6501,7 @@ void Xil_AssertCallbackRoutine(u8 *File, s32 Line)
 * @note   None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Exdes_SetupClkSrc(u32 ps_iic0_deviceid, u32 ps_iic1_deviceid)
-#else
 u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 	u8 Buffer;
@@ -6268,11 +6513,7 @@ u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
 
 	/* Initialize IIC */
 	/* Initialize PS IIC0 */
-#ifndef SDT
-	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic0_deviceid);
-#else
 	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic0_baseaddr);
-#endif
 	if (NULL == XIic0Ps_ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -6290,11 +6531,7 @@ u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
 	XIicPs_SetSClk(&Ps_Iic0, PS_IIC_CLK);
 
 	/* Initialize PS IIC1 */
-#ifndef SDT
-	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic1_deviceid);
-#else
 	XIic1Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic1_baseaddr);
-#endif
 	if (NULL == XIic1Ps_ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -6323,11 +6560,7 @@ u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
 	XIicPs_Config *XIic0Ps_ConfigPtr;
 	/* Initialize IIC */
 	/* Initialize PS IIC0 */
-#ifndef SDT
-	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic0_deviceid);
-#else
 	XIic0Ps_ConfigPtr = XIicPs_LookupConfig(ps_iic0_baseaddr);
-#endif
 	if (NULL == XIic0Ps_ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -6358,23 +6591,17 @@ u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
 	} else if (Status == XST_SUCCESS){
 		xil_printf("RC21008A initialization done.\r\n");
 	}
-#ifndef SDT
-	Status = XIic_Initialize(&Iic, XPAR_IIC_0_DEVICE_ID);
-#else
 	Status = XIic_Initialize(&Iic, XPAR_XIIC_0_BASEADDR);
-#endif
 	Status |= XIic_Start(&Iic);
 
 #else
-#ifndef SDT
-	Status = XIic_Initialize(&Iic, XPAR_IIC_0_DEVICE_ID);
-#else
 	Status = XIic_Initialize(&Iic, XPAR_XIIC_0_BASEADDR);
-#endif
 	Status |= XIic_Start(&Iic);
 
 #if defined (XPS_BOARD_VEK280)
 	I2cMuxSel(&Iic, VCK190_MGT_SI570);
+#elif defined (XPS_BOARD_VEK385) || \
+	defined (XPS_BOARD_SCU200)
 #else
 	I2cMuxSel(&Iic, VCU118_FMCP);
 #endif
@@ -6389,7 +6616,8 @@ u32 Exdes_SetupClkSrc(u32 ps_iic0_baseaddr, u32 ps_iic1_baseaddr)
 	/* Delay 50ms to allow SI chip to lock */
 	usleep (50000);
 #endif
-#elif (!defined XPS_BOARD_VCU118) && (!defined XPS_BOARD_VEK280)
+#elif (!defined XPS_BOARD_VCU118) && (!defined XPS_BOARD_VEK280) && \
+      (!defined XPS_BOARD_VEK385) && (!defined XPS_BOARD_SCU200)
 #ifdef XPAR_XV_HDMIRXSS1_NUM_INSTANCES
 	/* Set DRU MGT REFCLK Frequency */
 	Si570_SetFreq(&Iic, 0x5D, 400.00);
@@ -6552,42 +6780,6 @@ int SetupInterruptSystem(void)
 #else
 	XIntc *IntcInstPtr = &Intc;
 #endif
-#ifndef SDT
-	/*
-	 * Initialize the interrupt controller driver so that it's ready to
-	 * use, specify the device ID that was generated in xparameters.h
-	 */
-#if defined (ARMR5) || (__aarch64__) || (__arm__)
-	XScuGic_Config *IntcCfgPtr;
-	IntcCfgPtr = XScuGic_LookupConfig(XPAR_SCUGIC_0_DEVICE_ID);
-	if (IntcCfgPtr == NULL) {
-		xil_printf("ERR:: Interrupt Controller not found");
-		return (XST_DEVICE_NOT_FOUND);
-	}
-	Status = XScuGic_CfgInitialize(IntcInstPtr,
-				IntcCfgPtr,
-				IntcCfgPtr->CpuBaseAddress);
-#else
-	Status = XIntc_Initialize(IntcInstPtr, XPAR_INTC_0_DEVICE_ID);
-#endif
-	if (Status != XST_SUCCESS) {
-		xil_printf("Intc initialization failed!\r\n");
-		return XST_FAILURE;
-	}
-
-
-	/*
-	 * Start the interrupt controller such that interrupts are recognized
-	 * and handled by the processor
-	 */
-#if defined (__MICROBLAZE__)
-	Status = XIntc_Start(IntcInstPtr, XIN_REAL_MODE);
-        /* Status = XIntc_Start(IntcInstPtr, XIN_SIMULATION_MODE); */
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-#endif
-#endif
 	Xil_ExceptionInit();
 
 	/*
@@ -6622,19 +6814,11 @@ int SetupInterruptSystem(void)
 * @note   None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Exdes_RemapInitialize(u32 inremap_deviceid, u32 outremap_deviceid)
-#else
 u32 Exdes_RemapInitialize(u32 inremap_deviceid, u32 outremap_baseaddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 	XV_axi4s_remap_Config *InRemapPtr, *OutRemapPtr;
-#ifndef SDT
-	InRemapPtr = XV_axi4s_remap_LookupConfig(inremap_deviceid);
-#else
 	InRemapPtr = XV_axi4s_remap_LookupConfig(inremap_baseaddr);
-#endif
 	if (InRemapPtr == NULL) {
 		InRemap.IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -6646,11 +6830,7 @@ u32 Exdes_RemapInitialize(u32 inremap_deviceid, u32 outremap_baseaddr)
 			Status);
 		return(XST_FAILURE);
 	}
-#ifndef SDT
-	OutRemapPtr = XV_axi4s_remap_LookupConfig(outremap_deviceid);
-#else
 	OutRemapPtr = XV_axi4s_remap_LookupConfig(outremap_baseaddr);
-#endif
 	if (OutRemapPtr == NULL) {
 		OutRemap.IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -6681,22 +6861,14 @@ u32 Exdes_RemapInitialize(u32 inremap_deviceid, u32 outremap_baseaddr)
 * @note   None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Exdes_TpgInitialize(u32 Gpio_tpg_resetn_deviceid, u32 tpg_deviceid)
-#else
 u32 Exdes_TpgInitialize(UINTPTR Gpio_tpg_resetn_baseaddr, UINTPTR tpg_baseaddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 	XGpio_Config *Gpio_Tpg_resetn_ConfigPtr;
 	XV_tpg_Config *Tpg_ConfigPtr;
 
 	/* Initialize GPIO for Tpg Reset */
-#ifndef SDT
-	Gpio_Tpg_resetn_ConfigPtr = XGpio_LookupConfig(Gpio_tpg_resetn_deviceid);
-#else
 	Gpio_Tpg_resetn_ConfigPtr = XGpio_LookupConfig(Gpio_tpg_resetn_baseaddr);
-#endif
 	if (Gpio_Tpg_resetn_ConfigPtr == NULL) {
 		Gpio_Tpg_resetn.IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -6710,11 +6882,7 @@ u32 Exdes_TpgInitialize(UINTPTR Gpio_tpg_resetn_baseaddr, UINTPTR tpg_baseaddr)
 				"Initialization failed %d\r\n", Status);
 		return (XST_FAILURE);
 	}
-#ifndef SDT
-	Tpg_ConfigPtr = XV_tpg_LookupConfig(tpg_deviceid);
-#else
 	Tpg_ConfigPtr = XV_tpg_LookupConfig(tpg_baseaddr);
-#endif
 	if (Tpg_ConfigPtr == NULL) {
 		Tpg.IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -6746,21 +6914,13 @@ u32 Exdes_TpgInitialize(UINTPTR Gpio_tpg_resetn_baseaddr, UINTPTR tpg_baseaddr)
 * @note   None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 Exdes_AxisSwitchInitialize(XAxis_Switch *AxisSwitchPtr,u32 deviceid)
-#else
 u32 Exdes_AxisSwitchInitialize(XAxis_Switch *AxisSwitchPtr,u32 baseaddr)
-#endif
 {
 	u32 Status = XST_SUCCESS;
 	XAxis_Switch_Config *AxisSwitchConfigPtr;
 
 	/* Initialize GPIO for Tpg Reset */
-#ifndef SDT
-	AxisSwitchConfigPtr = XAxisScr_LookupConfig(deviceid);
-#else
 	AxisSwitchConfigPtr = XAxisScr_LookupConfig(baseaddr);
-#endif
 	if (AxisSwitchConfigPtr == NULL) {
 		AxisSwitchPtr->IsReady = 0;
 		return (XST_DEVICE_NOT_FOUND);
@@ -6769,13 +6929,8 @@ u32 Exdes_AxisSwitchInitialize(XAxis_Switch *AxisSwitchPtr,u32 baseaddr)
 	Status = XAxisScr_CfgInitialize(AxisSwitchPtr, AxisSwitchConfigPtr,
 					AxisSwitchConfigPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
-#ifndef SDT
-		xil_printf("ERR:: AXIS Stream Switch \r\n "
-                   "Initialization failed for Device ID: %d, Status: %d\r\n", deviceid, Status);
-#else
 		xil_printf("ERR:: AXIS Stream Switch \r\n "
                    "Initialization failed for Base Address: 0x%08x, Status: %d\r\n", baseaddr, Status);
-#endif
 
 		return (XST_FAILURE);
 	}
@@ -6852,21 +7007,17 @@ int main()
 	xil_printf("Initializing IIC and clock sources. \r\n");
 #if (defined (ARMR5) || (__aarch64__)) && (!defined XPS_BOARD_ZCU104)
 	/* Initialize the PS_I2C and Initialize the clocks */
-#ifndef SDT
-	Status = Exdes_SetupClkSrc(XPAR_XIICPS_0_DEVICE_ID,
-			XPAR_XIICPS_1_DEVICE_ID);
-#else
-#ifndef XPS_BOARD_VEK385
+#if !(defined (XPS_BOARD_VEK385) || \
+	  defined (XPS_BOARD_SCU200))
 	Status = Exdes_SetupClkSrc(XPAR_XIICPS_0_BASEADDR,
 			XPAR_XIICPS_1_BASEADDR);
 #else
 	Status = Exdes_SetupClkSrc((u32)NULL, (u32)NULL);
 #endif
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("PS IIC initialization failed. \r\n");
 	}
-#elif (__microblaze__)
+#elif (__microblaze__)  || defined (__riscv)
 	/* Initialize the IIC and Initialize the clocks */
 	Status = Exdes_SetupClkSrc((u32)NULL, (u32)NULL);
 	if (Status != XST_SUCCESS) {
@@ -6940,15 +7091,9 @@ int main()
 	xil_printf("Initializing HDMI Video Transmitter. \r\n");
 
 	/* Initialize the controller for the Video TX for HDMI */
-#ifndef SDT
-	Status = XV_Tx_InitController(&xhdmi_example_tx_controller,
-			XPAR_XV_HDMITXSS1_0_DEVICE_ID,
-			XPAR_HDMIPHY1_0_DEVICE_ID);
-#else
 	Status = XV_Tx_InitController(&xhdmi_example_tx_controller,
 			XPAR_XV_HDMITXSS1_0_BASEADDR,
 			XPAR_XV_HDMIPHY1_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("HDMI Video Transmitter system setup failed !!\r\n");
 	} else {
@@ -6964,15 +7109,9 @@ int main()
 	xil_printf("Initializing HDMI Video Receiver. \r\n");
 
 	/* Initialize the controller for the Video RX for HDMI. */
-#ifndef SDT
-	Status = XV_Rx_InitController(&xhdmi_example_rx_controller,
-			XPAR_XV_HDMIRXSS1_0_DEVICE_ID,
-			XPAR_HDMIPHY1_0_DEVICE_ID);
-#else
 	Status = XV_Rx_InitController(&xhdmi_example_rx_controller,
 			XPAR_XV_HDMIRXSS1_0_BASEADDR,
 			XPAR_XV_HDMIPHY1_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("HDMI Video Receiver system setup failed !!\r\n");
 	} else {
@@ -6995,13 +7134,8 @@ int main()
 #endif
 
 	/* Initialize Video FMC and GT TX output*/
-#ifndef SDT
-	Status = Vfmc_HdmiInit(&Vfmc[0], XPAR_VFMC_CTLR_SS_0_VFMC_GPIO_DEVICE_ID,
-						&Iic, VFMC_HPC0);
-#else
 	Status = Vfmc_HdmiInit(&Vfmc[0], XPAR_VFMC_CTLR_SS_0_VFMC_GPIO_BASEADDR,
 						&Iic, VFMC_HPC0);
-#endif
 	if (Status == XST_FAILURE) {
 		xil_printf("VFMC Initialization Error! Exiting Program...\r\n");
 		return 0;
@@ -7050,6 +7184,13 @@ int main()
 					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x1);/*1, A */
 			XHdmiphy1_SetTxPostCursor(&Hdmiphy1, 0, ChId,
 					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x2);/*1, B */
+#elif defined (XPS_BOARD_SCU200)
+			XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0xC : 0xD);/*0xc 0xb */
+			XHdmiphy1_SetTxPreEmphasis(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x5);/*1, A */
+			XHdmiphy1_SetTxPostCursor(&Hdmiphy1, 0, ChId,
+					(Vfmc[0].TxMezzType == VFMC_MEZZ_HDMI_PASSIVE) ? 0x1 : 0x5);/*1, B */
 #else
 /* Place holder for future board support, Below Value just a random value */
 			XHdmiphy1_SetTxVoltageSwing(&Hdmiphy1, 0, ChId, 0xD);
@@ -7063,7 +7204,8 @@ int main()
 	}
 
 	/* Initialize IDT to make sure LoL is LOW */
-#ifndef XPS_BOARD_VEK385
+#if !(defined (XPS_BOARD_VEK385) || \
+	  defined (XPS_BOARD_SCU200))
 	I2cClk(0, 400000000);
 #endif
 	/* Delay 50ms to allow clockgen to lock */
@@ -7081,13 +7223,8 @@ int main()
 #ifdef XPAR_XV_HDMITXSS1_NUM_INSTANCES
 #ifdef XPAR_XV_TPG_NUM_INSTANCES
 	xil_printf("Initializing TPG. \r\n");
-#ifndef SDT
-	Status = Exdes_TpgInitialize(XPAR_V_TPG_SS_0_AXI_GPIO_DEVICE_ID,
-			XPAR_V_TPG_SS_0_V_TPG_DEVICE_ID);
-#else
 	Status = Exdes_TpgInitialize(XPAR_V_TPG_SS_0_AXI_GPIO_BASEADDR,
 			XPAR_V_TPG_SS_0_V_TPG_BASEADDR);
-#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("Error in initializing TPG and "
@@ -7100,13 +7237,8 @@ int main()
 
 #ifdef XPAR_XV_AXI4S_REMAP_NUM_INSTANCES
 	xil_printf("Initializing In-Remapper and Out-Remapper. \r\n");
-#ifndef SDT
-	Status = Exdes_RemapInitialize(XPAR_XV_AXI4S_REMAP_0_DEVICE_ID,
-			XPAR_XV_AXI4S_REMAP_1_DEVICE_ID);
-#else
 	Status = Exdes_RemapInitialize(XPAR_XV_AXI4S_REMAP_0_BASEADDR,
 			XPAR_XV_AXI4S_REMAP_1_BASEADDR);
-#endif
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("Error in initializing InRemap and "
@@ -7131,11 +7263,7 @@ int main()
 
 #if defined	(XPAR_V_HDMI_RXSS1_DSC_EN) && \
 		defined (XPAR_XAXIS_SWITCH_NUM_INSTANCES)
-#ifndef SDT
-	Status = Exdes_AxisSwitchInitialize (&HdmiRxAxiSwitch,XPAR_AXIS_SWITCH_0_DEVICE_ID);
-#else
 	Status = Exdes_AxisSwitchInitialize (&HdmiRxAxiSwitch,XPAR_AXIS_SWITCH_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS) {
 		xil_printf("Error in initializing HDMI 2.1 RX AXI Stream Switch !! \r\n");
 	} else {
@@ -7151,18 +7279,8 @@ int main()
 	Xil_ExceptionEnable();
 
 	/* Initialize the system timer */
-#ifndef SDT
-	Exdes_SysTmrInitialize(&xhdmi_exdes_ctrlr,
-					XPAR_TMRCTR_1_DEVICE_ID,
-#if defined(__arm__) || (__aarch64__)
-					XPAR_FABRIC_TMRCTR_1_VEC_ID);
-#else
-					XPAR_INTC_0_TMRCTR_1_VEC_ID);
-#endif
-#else
 	Exdes_SysTmrInitialize(&xhdmi_exdes_ctrlr,
 					XPAR_XTMRCTR_1_BASEADDR);
-#endif
 
 	/* Initialize menu */
 	XHdmi_MenuInitialize(&HdmiMenu, UART_BASEADDR,
@@ -7335,6 +7453,13 @@ int main()
 			} else {
 				xil_printf("XV_Tx_VideoSetupAndStart Success\r\n");
 			}
+
+#if defined (XPS_BOARD_SCU200)
+	if (xhdmi_exdes_ctrlr.ForceIndependent == TRUE) {
+			XHdmiphy1_ResetGtTxRx(&Hdmiphy1, 0, XHDMIPHY1_CHANNEL_ID_CHA,
+					      XHDMIPHY1_DIR_RX, FALSE);
+	}
+#endif
 
 			/* Set VRR Mode */
 #if (!defined XPAR_XVTC_NUM_INSTANCES) || (defined (XPAR_XV_FRMBUFRD_NUM_INSTANCES) && \

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,11 +8,10 @@
 /**
 *
 * @file xospipsv_control.c
-* @addtogroup ospipsv_api OSPIPSV APIs
-* @{
+* @brief Implements the low level functions of the OSPIPSV driver.
 *
-* The xospipsv_control.c file implements the low level functions used by the functions in
-* xospipsv.c and xospipsv_options.c files.
+* These functions are used by the functions in xospipsv.c and
+* xospipsv_options.c files.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -28,18 +27,25 @@
 * 1.8   akm  01/03/23 Use Xil_WaitForEvent() API for register bit polling.
 * 1.9   sb   26/04/23 Updated address calculation logic in DAC read and write API's
 * 1.13  sb   10/28/25 Added cache invalidate when EL1_NONSECURE is not defined.
+* 1.15  zm   08/07/26 Added XOspiPsv_CheckStigWriteMsg() for the STIG write path.
+* 1.15  tb   09/30/26 Align Doxygen comments with AMD documentation standards
+* 1.15  zm   09/01/26 Check DAC transfer offset and length against 512MB window.
 *
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup ospipsv_api OSPIPSV APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 #include "xospipsv_control.h"
 #include "sleep.h"
 
 /************************** Constant Definitions *****************************/
-/**< Maximum delay count */
-#define MAX_DELAY_CNT	10000U
+#define MAX_DELAY_CNT	10000U	/**< Maximum delay count */
 #define MAX_IDAC_DELAY_CNT	10000000U	/**< Max INDAC delay count */
 
 /**************************** Type Definitions *******************************/
@@ -52,11 +58,10 @@
 
 /*****************************************************************************/
 /**
-* @brief
-* Flash command based data reading using flash command control registers.
+* @brief Reads data using the flash command control registers.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -112,11 +117,37 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Flash command based data write using flash command control registers.
+* @brief Checks whether a write message can be issued on the STIG path.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* STIG uses one transfer width for the command, address and data phases, so a
+* message using all three phases must use a protocol whose widths all match.
+*
+* @param[in]	Msg Pointer to the structure containing transfer data.
+*
+* @return
+*		- XST_SUCCESS if the message can be issued on STIG.
+*		- XST_FAILURE if it cannot.
+*
+******************************************************************************/
+u32 XOspiPsv_CheckStigWriteMsg(const XOspiPsv_Msg *Msg)
+{
+	u32 Status = (u32)XST_SUCCESS;
+
+	if ((Msg->Addrvalid != 0U) && (Msg->ByteCount != 0U) &&
+			(Msg->Proto != XOSPIPSV_WRITE_1_1_1) &&
+			(Msg->Proto != XOSPIPSV_WRITE_8_8_8)) {
+		Status = (u32)XST_FAILURE;
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief Writes data using the flash command control registers.
+*
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 * 		- XST_SUCCESS if successful.
@@ -170,11 +201,10 @@ u32 XOspiPsv_Stig_Write(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 
 /*****************************************************************************/
 /**
-* @brief
-* Reads the data using DMA.
+* @brief Reads the data using DMA.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 * 		- XST_SUCCESS if successful.
@@ -242,15 +272,14 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Reads the data using Linear controller.
+* @brief Reads the data using Linear controller.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 * 		- XST_SUCCESS if successful.
-*		- XST_FAILURE for invalid address.
+*		- XST_FAILURE for invalid address or length.
 *
 ******************************************************************************/
 u32 XOspiPsv_Dac_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
@@ -258,7 +287,8 @@ u32 XOspiPsv_Dac_Read(XOspiPsv *InstancePtr, XOspiPsv_Msg *Msg)
 	u32 Status;
 	const UINTPTR Addr= (UINTPTR)(XOSPIPSV_LINEAR_ADDR_BASE + Msg->Addr);
 
-	if (Addr >= (UINTPTR)(XOSPIPSV_LINEAR_ADDR_BASE + SIZE_512MB)) {
+	if ((Msg->Addr >= SIZE_512MB) ||
+			(InstancePtr->RxBytes > (SIZE_512MB - Msg->Addr))) {
 		Status = XST_FAILURE;
 		goto ERROR_PATH;
 	}
@@ -273,15 +303,14 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Writes the data Using Linear controller.
+* @brief Writes the data using Linear controller.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	Msg Pointer to the structure containing transfer data.
 *
 * @return
 * 		- XST_SUCCESS if successful.
-*		- XST_FAILURE for invalid address.
+*		- XST_FAILURE for invalid address or length.
 *
 ******************************************************************************/
 u32 XOspiPsv_Dac_Write(XOspiPsv *InstancePtr, const XOspiPsv_Msg *Msg)
@@ -289,7 +318,8 @@ u32 XOspiPsv_Dac_Write(XOspiPsv *InstancePtr, const XOspiPsv_Msg *Msg)
 	u32 Status;
 	UINTPTR Addr = (UINTPTR)(XOSPIPSV_LINEAR_ADDR_BASE + Msg->Addr);
 
-	if (Addr >= (UINTPTR)(XOSPIPSV_LINEAR_ADDR_BASE + SIZE_512MB)) {
+	if ((Msg->Addr >= SIZE_512MB) ||
+			(InstancePtr->TxBytes > (SIZE_512MB - Msg->Addr))) {
 		Status = XST_FAILURE;
 		goto ERROR_PATH;
 	}
@@ -304,13 +334,11 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Performs RX Tuning for SDR/DDR mode to calculate RX DLL Delay.
+* @brief Performs RX Tuning for SDR/DDR mode to calculate RX DLL Delay.
 *
-*
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	FlashMsg Pointer to the XOspiPsv_Msg structure.
-* @param	TXTap TX DLL Delay value.
+* @param[in,out]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in,out]	FlashMsg Pointer to the XOspiPsv_Msg structure.
+* @param[in]	TXTap TX DLL Delay value.
 *
 * @return
 *		- XST_SUCCESS if successful.
@@ -363,17 +391,15 @@ RETURN_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Configures the Rx and Tx taps in Phy Configuration register.
+* @brief Configures the Rx and Tx taps in Phy Configuration register.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	RxTap Rx tap value.
-* @param	TxTap Tx tap value.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	RxTap Rx tap value.
+* @param[in]	TxTap Tx tap value.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if fails.
-*
 *
 ******************************************************************************/
 u32 XOspiPsv_ConfigureTaps(const XOspiPsv *InstancePtr, u32 RxTap, u32 TxTap)
@@ -398,16 +424,14 @@ u32 XOspiPsv_ConfigureTaps(const XOspiPsv *InstancePtr, u32 RxTap, u32 TxTap)
 }
 /*****************************************************************************/
 /**
-* @brief
-* Checks for OSPI idle which means Serial interface and low level SPI pipeline
-* is IDLE.
+* @brief Checks for OSPI idle which means Serial interface and low level SPI
+* pipeline is IDLE.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if fails.
-*
 *
 ******************************************************************************/
 u32 XOspiPsv_CheckOspiIdle(const XOspiPsv *InstancePtr)
@@ -429,11 +453,10 @@ ERROR_PATH:
 
 /*****************************************************************************/
 /**
-* @brief
-* Writes data in Non-DMA Indirect mode.
+* @brief Writes data in Non-DMA Indirect mode.
 *
-* @param	InstancePtr Pointer to the XOspiPsv instance.
-* @param	Msg Pointer to the structure containing transfer data.
+* @param[in]	InstancePtr Pointer to the XOspiPsv instance.
+* @param[in]	Msg Pointer to the structure containing transfer data.
 *
 * @return   - XST_SUCCESS if successful.
 *			- XST_FAILURE if fails.

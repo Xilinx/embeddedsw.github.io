@@ -1,7 +1,7 @@
 /******************************************************************************
 * Copyright (C) 2006 Vreelin Engineering, Inc.  All Rights Reserved.
 * Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -30,12 +30,18 @@
  *		       dma transfer is over.
  * 5.6   pm   07/05/23 Removed powerpc support.
  * 5.6   pm   07/05/23 Added support for system device-tree flow.
+ * 5.7   sm   09/23/26 Added Xil_AssertVoid checks to fix GCC warnings
+ *			(CR-1276275).
+ * 5.7   sm   10/01/26 Reject out-of-range SCSI READ/WRITE through
+ *			xusb_msc.c. Clear the CSW status and residue for
+ *			each command.
  * </pre>
  *****************************************************************************/
 /***************************** Include Files *********************************/
 
 #include "xusb.h"
 #include "xusb_storage.h"
+#include "xusb_msc.h"
 #include "stdio.h"
 #include "xparameters.h"
 #include "xil_cache.h"
@@ -56,7 +62,7 @@
 
 /************************** Variable Definitions *****************************/
 
-XUsb UsbInstance;		/* The instance of the USB device */
+XUsb UsbInstance;		/**< The instance of the USB device */
 XUsb_Config *UsbConfigPtr;	/* Instance of the USB config structure */
 
 volatile u8 CmdFlag = 0;
@@ -68,17 +74,14 @@ volatile u8 RdIndex = 0;
 volatile u8 WrIndex = 0;
 
 volatile u32 IntrStatus;
+volatile u8 SendStatus = FALSE;
 /*****************************************************************************/
 /**
  * This main function starts the USB application.
  *
- *
- * @param	None.
- *
  * @return
  *		- XST_SUCCESS if successful.
  *		- XST_FAILURE if test fails.
- * @note	None.
  *
  *****************************************************************************/
 int main()
@@ -202,19 +205,14 @@ int main()
 }
 
 /*****************************************************************************/
-/**
+/*
  * This is the USB initialization function. This example initializes the device
  * for Mass Storage Application. The following configuration is done.
  *	- EP0 : CONTROL end point, Bidirectional, Packet size 64 bytes.
  *	- EP1 : NON_ISOCHRONOUS, BULK_IN, packet size 512 bytes.
  *	- EP2 : NON_ISOCHRONOUS, BULK_OUT, packet size 512 bytes
  *
- *
- * @param	InstancePtr is a pointer to the XUsb instance.
- *
- * @return	None.
- *
- * @note	None.
+ * @param[in] InstancePtr is a pointer to the XUsb instance.
  *
  ******************************************************************************/
 void InitUsbInterface(XUsb *InstancePtr)
@@ -285,18 +283,13 @@ void InitUsbInterface(XUsb *InstancePtr)
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function processes the reset and disconnect conditions of the
  * USB mass storage device.
  *
- *
- * @param    	CallBackRef is the callback reference passed from to the
+ * @param[in] CallBackRef is the callback reference passed to the
  *           	function, which in our case is a pointer to the driver instance.
- * @param    	IntrStatus is a bit mask indicating pending interrupts.
- *
- * @return   	None.
- *
- * @note        None.
+ * @param[in] IntrStatus is a bit mask indicating pending interrupts.
  *
  ******************************************************************************/
 void UsbIfIntrHandler(void *CallBackRef, u32 IntrStatus)
@@ -341,18 +334,15 @@ void UsbIfIntrHandler(void *CallBackRef, u32 IntrStatus)
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function processes the USB End point Zero events.
  *
- *
- * @param    	CallBackRef is the callback reference passed from the caller
+ * @param[in] CallBackRef is the callback reference passed from the caller
  *           	function, which in our case is a pointer to the driver instance.
- * @param	EpNum is the end point number.
- * @param    	IntrStatus is a bit mask indicating pending interrupts.
+ * @param[in] EpNum is the end point number.
+ * @param[in] IntrStatus is a bit mask indicating pending interrupts.
  *
- * @return	None.
- *
- * @note	EpNum is not used in this function as the handler is attached
+  * @note	EpNum is not used in this function as the handler is attached
  *		specific to end point zero. This parameter is useful when a
  *		single handler is used for processing all end point interrupts.
  *
@@ -364,6 +354,7 @@ void Ep0IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 	int SetupRequest;
 
 	InstancePtr = (XUsb *) CallBackRef;
+	Xil_AssertVoid(EpNum == 0);
 
 	/*
 	 * Process the end point zero buffer interrupt.
@@ -406,14 +397,13 @@ void Ep0IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function processes the USB End point one events.
  *
- * @param    	CallBackRef is the callback reference passed from the caller
+ * @param[in] CallBackRef is the callback reference passed from the caller
  *           	function, which in our case is a pointer to the driver instance.
- * @param    	IntrStatus is a bit mask indicating pending interrupts.
- *
- * @return	None.
+ * @param[in] EpNum is the endpoint number (not used in this handler).
+ * @param[in] IntrStatus is a bit mask indicating pending interrupts.
  *
  * @note	EpNum is not used in this function as the handler is attached
  *		specific to end point one. This parameter is useful when a
@@ -426,7 +416,7 @@ void Ep1IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 	XUsb *InstancePtr;
 
 	InstancePtr = (XUsb *) CallBackRef;
-
+	Xil_AssertVoid(EpNum == 1);
 
 	/*
 	 * Process the End point 1 interrupts.
@@ -440,12 +430,13 @@ void Ep1IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 
 	if (CmdFlag == READ_COMMAND) {
 
-
-		if (FirstPkt == 0) {
-			BlockCount.IntBlockCount--;
-			Lba.IntLba++;
+		if (BlockCount.IntBlockCount) {
+			if (FirstPkt == 0) {
+				BlockCount.IntBlockCount--;
+				Lba.IntLba++;
+			}
+			FirstPkt = 1;
 		}
-		FirstPkt = 1;
 
 		if (BlockCount.IntBlockCount > 0) {
 
@@ -472,7 +463,6 @@ void Ep1IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 		} else {
 			FirstPkt = 0;
 			CmdFlag = 0;
-			CmdStatusBlock.bCSWStatus = CMD_PASSED;
 			CmdStatusBlock.Residue.value = 0;
 
 			if (InstancePtr->Config.DmaEnabled) {
@@ -497,14 +487,13 @@ void Ep1IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function processes the USB End point two events.
  *
- * @param    	CallBackRef is the callback reference passed from the caller
+ * @param[in] CallBackRef is the callback reference passed from the caller
  *           	function, which in our case is a pointer to the driver instance.
- * @param    	IntrStatus is a bit mask indicating pending interrupts.
- *
- * @return	None.
+ * @param[in] EpNum is the endpoint number (not used in this handler).
+ * @param[in] IntrStatus is a bit mask indicating pending interrupts.
  *
  * @note	EpNum is not used in this function as the handler is attached
  *		specific to end point two. This parameter is useful when a
@@ -517,6 +506,7 @@ void Ep2IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 	XUsb *InstancePtr;
 
 	InstancePtr = (XUsb *) CallBackRef;
+	Xil_AssertVoid(EpNum == 2);
 
 	/*
 	 * Process end point 2 interrupts.
@@ -589,15 +579,11 @@ void Ep2IntrHandler(void *CallBackRef, u8 EpNum, u32 IntrStatus)
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function processes mass storage specific commands and sends the required
  * response.
  *
- * @param	InstancePtr is a pointer to the XUsb instance.
- *
- * @return	None.
- *
- * @note	None.
+ * @param[in] InstancePtr is a pointer to the XUsb instance.
  *
  ******************************************************************************/
 void ProcessRxCmd(XUsb *InstancePtr)
@@ -605,7 +591,8 @@ void ProcessRxCmd(XUsb *InstancePtr)
 	u8 Length;
 	u8 *BufPtr;
 	u8 SendResp = FALSE;
-	u8 SendStatus = FALSE;
+
+	SendStatus = FALSE;
 
 	/*
 	 * Setup status block.
@@ -616,6 +603,8 @@ void ProcessRxCmd(XUsb *InstancePtr)
 	CmdStatusBlock.dCBWSignature[1] = 'S';
 	CmdStatusBlock.dCBWSignature[2] = 'B';
 	CmdStatusBlock.dCBWSignature[3] = 'S';
+	CmdStatusBlock.bCSWStatus = CMD_PASSED;
+	CmdStatusBlock.Residue.value = 0;
 
 
 	/*
@@ -836,20 +825,15 @@ FuncExit:
 	return;
 }
 
-
 /*****************************************************************************/
-/**
+/*
  * This function implements the transmission of data from the device to the READ
  * request from the USB Host.
  *
- * @param	InstancePtr is a pointer to the XUsb instance.
- * @param	pCmdBlock is a pointer to the Mass Storage Command Block
+ * @param[in] InstancePtr is a pointer to the XUsb instance.
+ * @param[in] pCmdBlock is a pointer to the Mass Storage Command Block
  *		wrapper.
- * @param	pStatusBlock is a pointer to the Mass Storage Status wrapper.
- *
- * @return	None.
- *
- * @note	None.
+ * @param[in] pStatusBlock is a pointer to the Mass Storage Status wrapper.
  *
  ******************************************************************************/
 void Read10(XUsb *InstancePtr, PUSBCBW pCmdBlock, PUSBCSW pStatusBlock)
@@ -879,6 +863,20 @@ void Read10(XUsb *InstancePtr, PUSBCBW pCmdBlock, PUSBCSW pStatusBlock)
 	BlockCount.CharBlockCount[2] = pCmdBlock->transfer_length[0];
 	BlockCount.CharBlockCount[3] = pCmdBlock->transfer_length[1];
 #endif
+
+	if (Lba.IntLba >= RAMDISKSECTORS ||
+	    BlockCount.IntBlockCount > (RAMDISKSECTORS - Lba.IntLba)) {
+#ifdef XUSB_MS_DEBUG
+		xil_printf("LBA EXCEEDS DEVICE CAPACITY\r\n");
+#endif
+		XUsb_MsRejectCommand(InstancePtr, 1, pCmdBlock->Length.VALUE,
+				     &pStatusBlock->bCSWStatus,
+				     &pStatusBlock->Residue.value,
+				     &BlockCount.IntBlockCount, &CmdFlag,
+				     &SendStatus);
+		goto FuncExit;
+	}
+
 	CmdFlag = READ_COMMAND;
 
 
@@ -929,18 +927,14 @@ FuncExit:
 }
 
 /*****************************************************************************/
-/**
+/*
  * This function implements the reception of data in the USB device for the
  * write request from the USB Host.
  *
- * @param	InstancePtr is a pointer to the XUsb instance.
- * @param	pCmdBlock is a pointer to the Mass Storage Command Block
+ * @param[in] InstancePtr is a pointer to the XUsb instance.
+ * @param[in] pCmdBlock is a pointer to the Mass Storage Command Block
  *		wrapper.
- * @param	pStatusBlock is a pointer to the Mass Storage Status wrapper.
- *
- * @return	None.
- *
- * @note	None.
+ * @param[out] pStatusBlock is a pointer to the Mass Storage Status wrapper.
  *
  ******************************************************************************/
 void Write10(XUsb *InstancePtr, PUSBCBW pCmdBlock, PUSBCSW pStatusBlock)
@@ -969,6 +963,19 @@ void Write10(XUsb *InstancePtr, PUSBCBW pCmdBlock, PUSBCSW pStatusBlock)
 	BlockCount.CharBlockCount[2] = pCmdBlock->transfer_length[0];
 	BlockCount.CharBlockCount[3] = pCmdBlock->transfer_length[1];
 #endif
+
+	if (Lba.IntLba >= RAMDISKSECTORS ||
+	    BlockCount.IntBlockCount > (RAMDISKSECTORS - Lba.IntLba)) {
+#ifdef XUSB_MS_DEBUG
+		xil_printf("LBA EXCEEDS DEVICE CAPACITY\r\n");
+#endif
+		XUsb_MsRejectCommand(InstancePtr, 2, pCmdBlock->Length.VALUE,
+				     &pStatusBlock->bCSWStatus,
+				     &pStatusBlock->Residue.value,
+				     &BlockCount.IntBlockCount, &CmdFlag,
+				     &SendStatus);
+		goto FuncExit;
+	}
 
 	CmdFlag = WRITE_COMMAND;
 
@@ -1023,14 +1030,10 @@ FuncExit:
 }
 
 /******************************************************************************/
-/**
+/*
 * This routine is called when a RESET class command is received.
 *
-* @param	InstancePtr is a pointer to the XUsb instance of the controller.
-*
-* @return 	None.
-*
-* @note    	None.
+* @param[in] InstancePtr is a pointer to the XUsb instance of the controller.
 *
 ******************************************************************************/
 void MassStorageReset(XUsb *InstancePtr)
@@ -1057,14 +1060,10 @@ void MassStorageReset(XUsb *InstancePtr)
 
 /* Class Commands */
 /******************************************************************************/
-/**
+/*
 * This routine is called when a GETMAXLUN class command is received.
 *
-* @param	InstancePtr is a pointer to the XUsb instance of the controller.
-*
-* @return 	None.
-*
-* @note		None.
+* @param[in] InstancePtr is a pointer to the XUsb instance of the controller.
 *
 ******************************************************************************/
 void GetMaxLUN(XUsb *InstancePtr)

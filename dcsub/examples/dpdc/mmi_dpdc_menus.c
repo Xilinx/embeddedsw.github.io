@@ -29,8 +29,10 @@
 #include "xdcsub.h"
 #include "xdc.h"
 #include "xmmidp.h"
+#include "mmi_dp_init.h"
 #include <string.h>
 #include "xavpg.h"
+#include "mmi_dc_bypass_test.h"
 
 
 extern void outbyte(char c);
@@ -103,7 +105,6 @@ static const char* format_to_string(u32 format)
         /* RGB 8-bit */
         case RGB888: return "RGB888";
         case RGB565: return "RGB565";
-        case RGB888_GFX: return "RGB888_GFX";
         case RGB888dc: return "RGB888dc";
 
         /* RGBA 8-bit */
@@ -208,6 +209,52 @@ static const char* format_to_string(u32 format)
     }
 }
 
+typedef struct {
+    u32 width;
+    u32 height;
+    const char *label;
+} XDpDc_ResolutionPreset;
+
+static const XDpDc_ResolutionPreset XDpDc_StandardPresets[] = {
+    { 640, 480, "640x480 (VGA)" },
+    { 1280, 720, "1280x720 (720p)" },
+    { 1920, 1080, "1920x1080 (1080p)" },
+    { 3840, 2160, "3840x2160 (4K)" },
+};
+
+#define XDpDc_NUM_STANDARD_PRESETS \
+    (sizeof(XDpDc_StandardPresets) / sizeof(XDpDc_StandardPresets[0]))
+
+static void XDpDc_ApplyStandardPreset(InitRunConfig *config, u32 idx)
+{
+    config->width = XDpDc_StandardPresets[idx].width;
+    config->height = XDpDc_StandardPresets[idx].height;
+}
+
+static void XDpDc_SetDefaultResolution(InitRunConfig *config)
+{
+    xil_printf("Invalid choice! Using default 1920x1080\r\n");
+    XDpDc_ApplyStandardPreset(config, 2);
+}
+
+static u8 XDpDc_IsCustomResolutionChoice(char choice, u8 is_bypass)
+{
+    return (choice == (is_bypass ? '6' : '5'));
+}
+
+static u8 XDpDc_IsBypass8kPresetChoice(char choice, u8 is_bypass)
+{
+    return (is_bypass && choice == '5');
+}
+
+static u8 XDpDc_StandardPresetIndex(char choice)
+{
+    if (choice >= '1' && choice <= '0' + XDpDc_NUM_STANDARD_PRESETS)
+        return (u8)(choice - '1');
+
+    return XDpDc_NUM_STANDARD_PRESETS;
+}
+
 /*****************************************************************************/
 /**
 *
@@ -220,21 +267,29 @@ static const char* format_to_string(u32 format)
 * @note     None
 *
 ******************************************************************************/
-void XDpDc_ResolutionHelpMenu(void)
+void XDpDc_ResolutionHelpMenu(const InitRunConfig *config)
 {
+    u32 idx;
+    u32 max_width = APP_FUNCTIONAL_MAX_WIDTH;
+    u32 max_height = APP_FUNCTIONAL_MAX_HEIGHT;
+
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        max_width = APP_BYPASS_8K_WIDTH;
+        max_height = APP_BYPASS_8K_HEIGHT;
+    }
+
     xil_printf("\r\n");
     xil_printf("============================================\r\n");
     xil_printf("          Resolution Help Menu              \r\n");
     xil_printf("============================================\r\n");
     xil_printf("Common Resolutions:\r\n");
-    xil_printf("  640x480   (VGA)\r\n");
-    xil_printf("  1280x720  (720p/HD)\r\n");
-    xil_printf("  1920x1080 (1080p/Full HD)\r\n");
-    xil_printf("  3840x2160 (4K/UHD)\r\n");
-    xil_printf("  7680x4320 (8K)\r\n");
+    for (idx = 0; idx < XDpDc_NUM_STANDARD_PRESETS; idx++)
+        xil_printf("  %s\r\n", XDpDc_StandardPresets[idx].label);
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS)
+        xil_printf("  7680x4320 (8K)\r\n");
     xil_printf("\r\n");
-    xil_printf("Width range:  1-7680 pixels\r\n");
-    xil_printf("Height range: 1-4320 pixels\r\n");
+    xil_printf("Width range:  1-%d pixels\r\n", max_width);
+    xil_printf("Height range: 1-%d pixels\r\n", max_height);
     xil_printf("============================================\r\n");
 }
 
@@ -310,7 +365,6 @@ void XDpDc_ListNonliveFormats(void)
     xil_printf("  %2d     %-20s  YV16 4:2:0\r\n", YV16_420, "YV16_420");
     xil_printf("  %2d     %-20s  RGBA 32-bit\r\n", RGBA8888, "RGBA8888");
     xil_printf("  %2d     %-20s  ABGR 32-bit\r\n", ABGR8888, "ABGR8888");
-    xil_printf("  %2d     %-20s  RGB 24-bit (GFX)\r\n", RGB888_GFX, "RGB888_GFX");
     xil_printf("  %2d     %-20s  BGR 24-bit\r\n", BGR888, "BGR888");
     xil_printf("  %2d     %-20s  RGBA 16-bit (5551)\r\n", RGBA5551, "RGBA5551");
     xil_printf("  %2d     %-20s  RGBA 16-bit (4444)\r\n", RGBA4444, "RGBA4444");
@@ -387,36 +441,52 @@ void XDpDc_MainHelpMenu(InitRunConfig *config)
         if (config->presentationmode == XDCSUB_PPTMODE_MIXED)
             xil_printf("--            Mixed InitRunConfig Menu               --\r\n");
     }
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        if (config->design_mst_en)
+            xil_printf("--         Bypass MST InitRunConfig Menu             --\r\n");
+        else
+            xil_printf("--         Bypass SST InitRunConfig Menu             --\r\n");
+    }
 
     xil_printf("====================================================\r\n");
     xil_printf("Available Commands:\r\n");
     xil_printf("  r - Configure Resolution\r\n");
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        xil_printf("  c - Configure streams / per-stream format (bypass)\r\n");
+    }
     if (config->operatingmode == XDCSUB_OPMODE_FUNCTIONAL) {
         if (config->presentationmode == XDCSUB_PPTMODE_NONLIVE) {
+            xil_printf("  c - Toggle Cursor Enable (functional non-live)\r\n");
             xil_printf("  f - Configure Stream1 Format\r\n");
             xil_printf("  g - Configure Stream2 Format\r\n");
-            xil_printf("  c - Toggle Cursor Enable (with Position & Size config)\r\n");
             xil_printf("  x - Configure Cursor Position & Size\r\n");
-            xil_printf("  a - Toggle Audio Enable (and select channels 1-8)\r\n");
+            xil_printf("  a - Toggle Audio Enable (select channels %d-%d and sample frequency)\r\n",
+                       XDCSUB_AUDIO_CHANNELS_MIN, XDCSUB_AUDIO_CHANNELS_MAX);
             xil_printf("  n - Toggle SDP Enable\r\n");
+            xil_printf("  o - Configure Output Format\r\n");
         }
 
         if (config->presentationmode == XDCSUB_PPTMODE_LIVE) {
             /* TODO - Add SDP and audio */
             xil_printf("  f - config AVPG 1\r\n");
             xil_printf("  g - config AVPG 2\r\n");
+            xil_printf("  o - Configure Output Format\r\n");
         }
 
         if (config->presentationmode == XDCSUB_PPTMODE_MIXED) {
                 xil_printf("  f - config AVPG 1 (Live) \r\n");
                 xil_printf("  g - Configure Stream2 Format (Non live)\r\n");
+                xil_printf("  o - Configure Output Format\r\n");
         }
-
+    }
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS)
+        xil_printf("  o - Configure Output Format\r\n");
+    if (config->operatingmode == XDCSUB_OPMODE_FUNCTIONAL) {
         xil_printf("  p - Toggle Partial Plane Blend Enable\r\n");
         xil_printf("  b - Configure Partial Plane Blend Parameters\r\n");
-        xil_printf("  o - Configure Output Format\r\n");
+        xil_printf("  t - Select Presentation Mode (Non live/Live/Mixed)\r\n");
     }
-    xil_printf("  t - Select Presentation Mode (Non live/Live/Mixed)\r\n");
+
     xil_printf("  l - Configure DP Link (Lane Count & Link Rate)\r\n");
     xil_printf("  m - Toggle Power Cycle Monitor on Start\r\n");
     xil_printf("  d - Display Current Configuration\r\n");
@@ -486,11 +556,40 @@ void XDpDc_DisplayConfig(InitRunConfig *config)
                 config->avpg[idx].pix_fmt ? "YUV 422" : "RGB",
                 config->avpg[idx].colorimetry ? "BT.709" : "BT.601");
     }
+
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        u8 idx;
+
+        xil_printf("Design (SDT mst-mode-en): %s\r\n",
+                   config->design_mst_en ? "MST" : "SST-only");
+        xil_printf("Operating Mode:         Bypass\r\n");
+        xil_printf("  Active Streams:       %d (XSA max: %d)\r\n",
+                   config->byp_streams, config->byp_streams_max);
+        for (idx = 0; idx < config->byp_streams; idx++) {
+            u8 ppc = XDpDc_BypassPpcFromXsa(idx);
+
+            xil_printf("  Stream %d PPC:        %d (%s pixel)\r\n",
+                       idx, ppc,
+                       (ppc == 4U) ? "Quad" :
+                       (ppc == 2U) ? "Dual" : "Single");
+            xil_printf("  Stream %d Format:     %s %d-bpc, pattern %d, %s\r\n",
+                       idx,
+                       config->avpg[idx].pix_fmt ? "YCbCr422" : "RGB",
+                       config->avpg[idx].bpc,
+                       config->avpg[idx].pattern,
+                       config->avpg[idx].colorimetry ? "BT.709" : "BT.601");
+        }
+    }
 #endif
 
     xil_printf("Audio Enable:           %s\r\n", config->audio_enable ? "Yes" : "No");
     if (config->audio_enable) {
+        u32 audioRateHz = XDpDc_GetAudSampleRateHz(config->audio_frequency);
+
         xil_printf("Audio Channels:         %d\r\n", config->audio_channels);
+        xil_printf("Audio Frequency:        %d.%d kHz\r\n",
+                   audioRateHz / XDPDC_HZ_PER_KHZ,
+                   (audioRateHz % XDPDC_HZ_PER_KHZ) / XDPDC_HZ_PER_TENTH_KHZ);
     }
     xil_printf("SDP Enable:             %s\r\n", config->sdp_enable ? "Yes" : "No");
     xil_printf("Partial Plane Blend:    %s\r\n", config->partial_plane_blend_enable ? "Yes" : "No");
@@ -528,13 +627,16 @@ void XDpDc_DisplayConfig(InitRunConfig *config)
 * @note     None
 *
 ******************************************************************************/
-u32 XDpDc_GetWidth(void)
+u32 XDpDc_GetWidth(const InitRunConfig *config)
 {
     u32 width;
-    xil_printf("\r\nEnter width (1-7680): ");
+    u32 max_width = (config->operatingmode == XDCSUB_OPMODE_BYPASS) ?
+                    APP_BYPASS_8K_WIDTH : APP_FUNCTIONAL_MAX_WIDTH;
+
+    xil_printf("\r\nEnter width (1-%d): ", max_width);
     width = read_uint();
 
-    if (width < 1 || width > 7680) {
+    if (width < 1 || width > max_width) {
         xil_printf("Invalid width! Using default 1920\r\n");
         width = 1920;
     }
@@ -554,18 +656,79 @@ u32 XDpDc_GetWidth(void)
 * @note     None
 *
 ******************************************************************************/
-u32 XDpDc_GetHeight(void)
+u32 XDpDc_GetHeight(const InitRunConfig *config)
 {
     u32 height;
-    xil_printf("Enter height (1-4320): ");
+    u32 max_height = (config->operatingmode == XDCSUB_OPMODE_BYPASS) ?
+                     APP_BYPASS_8K_HEIGHT : APP_FUNCTIONAL_MAX_HEIGHT;
+
+    xil_printf("Enter height (1-%d): ", max_height);
     height = read_uint();
 
-    if (height < 1 || height > 4320) {
+    if (height < 1 || height > max_height) {
         xil_printf("Invalid height! Using default 1080\r\n");
         height = 1080;
     }
 
     return height;
+}
+
+static u8 XDpDc_IsBypass8kResolution(u32 width, u32 height)
+{
+    return (width == APP_BYPASS_8K_WIDTH && height == APP_BYPASS_8K_HEIGHT);
+}
+
+static u8 XDpDc_IsRgbLiveFormat(u32 format)
+{
+    return (format >= RGB_6BPC && format <= RGB_12BPC);
+}
+
+static u32 XDpDc_AvpgToLiveFormat(u8 pix_fmt, u8 bpc)
+{
+    if (pix_fmt == XAVPATGEN_CS_RGB) {
+        switch (bpc) {
+        case 10: return RGB_10BPC;
+        case 12: return RGB_12BPC;
+        default: return RGB_8BPC;
+        }
+    }
+
+    switch (bpc) {
+    case 10: return YCbCr422_10BPC;
+    case 12: return YCbCr422_12BPC;
+    default: return YCbCr422_8BPC;
+    }
+}
+
+void XDpDc_Apply8kFormatDefaults(InitRunConfig *config)
+{
+    u8 bpc = config->avpg[0].bpc;
+
+    if (bpc == 0)
+        bpc = 8;
+
+    config->avpg[0].pix_fmt = 1;
+    config->output_format = XDpDc_AvpgToLiveFormat(1, bpc);
+
+    xil_printf("8K: defaulting stream 0 to YCbCr422 %d-bpc "
+               "(recommended for DP link bandwidth)\r\n", bpc);
+}
+
+void XDpDc_Warn8kRgbIfNeeded(const InitRunConfig *config)
+{
+    if (config->operatingmode != XDCSUB_OPMODE_BYPASS)
+        return;
+
+    if (!XDpDc_IsBypass8kResolution(config->width, config->height))
+        return;
+
+    if (config->avpg[0].pix_fmt != XAVPATGEN_CS_RGB &&
+        !XDpDc_IsRgbLiveFormat(config->output_format))
+        return;
+
+    xil_printf("WARNING: 8K@30 RGB exceeds 4-lane HBR3 DP 1.4 link "
+               "bandwidth (~25.9 Gbps effective). Display may not come up. "
+               "Use YCbCr422.\r\n");
 }
 
 /*****************************************************************************/
@@ -583,57 +746,58 @@ u32 XDpDc_GetHeight(void)
 u32 XDpDc_ConfigureResolution(InitRunConfig *config)
 {
     char choice;
+    u32 idx;
+    u8 lock_30hz = 0;
+    u8 is_bypass = (config->operatingmode == XDCSUB_OPMODE_BYPASS);
 
     xil_printf("\r\n=== Resolution Configuration ===\r\n");
-    xil_printf("1. 640x480 (VGA)\r\n");
-    xil_printf("2. 1280x720 (720p)\r\n");
-    xil_printf("3. 1920x1080 (1080p)\r\n");
-    xil_printf("4. 3840x2160 (4K)\r\n");
-    xil_printf("5. Custom\r\n");
-    xil_printf("Enter choice (1-5): ");
+    for (idx = 0; idx < XDpDc_NUM_STANDARD_PRESETS; idx++)
+        xil_printf("%u. %s\r\n", idx + 1, XDpDc_StandardPresets[idx].label);
+    if (is_bypass)
+        xil_printf("5. 7680x4320 (8K @ %d Hz, YCbCr422 default)\r\n",
+                   APP_BYPASS_8K_FPS);
+    xil_printf("%s. Custom\r\n", is_bypass ? "6" : "5");
+    xil_printf("Enter choice (%s): ", is_bypass ? "1-6" : "1-5");
 
     choice = read_char();
     xil_printf("\r\n");
 
-    switch(choice) {
-        case '1':
-            config->width = 640;
-            config->height = 480;
-            break;
-        case '2':
-            config->width = 1280;
-            config->height = 720;
-            break;
-        case '3':
-            config->width = 1920;
-            config->height = 1080;
-            break;
-        case '4':
-            config->width = 3840;
-            config->height = 2160;
-            break;
-        case '5':
-            config->width = XDpDc_GetWidth();
-            config->height = XDpDc_GetHeight();
-            break;
-        default:
-            xil_printf("Invalid choice! Using default 1920x1080\r\n");
-            config->width = 1920;
-            config->height = 1080;
+    if (XDpDc_IsBypass8kPresetChoice(choice, is_bypass)) {
+        config->width = APP_BYPASS_8K_WIDTH;
+        config->height = APP_BYPASS_8K_HEIGHT;
+        lock_30hz = 1;
+    } else if (XDpDc_IsCustomResolutionChoice(choice, is_bypass)) {
+        config->width = XDpDc_GetWidth(config);
+        config->height = XDpDc_GetHeight(config);
+        if (is_bypass &&
+            XDpDc_IsBypass8kResolution(config->width, config->height))
+            lock_30hz = 1;
+    } else {
+        idx = XDpDc_StandardPresetIndex(choice);
+        if (idx < XDpDc_NUM_STANDARD_PRESETS)
+            XDpDc_ApplyStandardPreset(config, idx);
+        else
+            XDpDc_SetDefaultResolution(config);
     }
 
-    xil_printf("\r\nSelect Frame Rate:\r\n");
-    xil_printf("  1 - 24 Hz\r\n");
-    xil_printf("  2 - 30 Hz\r\n");
-    xil_printf("  3 - 50 Hz\r\n");
-    xil_printf("  4 - 60 Hz (default)\r\n");
-    xil_printf("  5 - Custom\r\n");
-    xil_printf("Enter choice (1-5): ");
+    if (lock_30hz) {
+        config->frame_rate = APP_BYPASS_8K_FPS;
+        XDpDc_Apply8kFormatDefaults(config);
+        xil_printf("8K resolution: frame rate fixed at %d Hz\r\n",
+                   APP_BYPASS_8K_FPS);
+    } else {
+        xil_printf("\r\nSelect Frame Rate:\r\n");
+        xil_printf("  1 - 24 Hz\r\n");
+        xil_printf("  2 - 30 Hz\r\n");
+        xil_printf("  3 - 50 Hz\r\n");
+        xil_printf("  4 - 60 Hz (default)\r\n");
+        xil_printf("  5 - Custom\r\n");
+        xil_printf("Enter choice (1-5): ");
 
-    choice = read_char();
-    xil_printf("\r\n");
+        choice = read_char();
+        xil_printf("\r\n");
 
-    switch(choice) {
+        switch (choice) {
         case '1': config->frame_rate = 24; break;
         case '2': config->frame_rate = 30; break;
         case '3': config->frame_rate = 50; break;
@@ -644,9 +808,11 @@ u32 XDpDc_ConfigureResolution(InitRunConfig *config)
             break;
         default:
             config->frame_rate = 60;
+        }
     }
 
     xil_printf("Resolution set to: %dx%d @%dHz\r\n", config->width, config->height, config->frame_rate);
+
     return XST_SUCCESS;
 }
 
@@ -829,6 +995,8 @@ avpg_cfg_fmt_menu:
 
     config->avpg[idx].pix_fmt = choice - '0';
 
+    XDpDc_Warn8kRgbIfNeeded(config);
+
     XAvpg_Config_printcfg(config, idx);
 }
 
@@ -841,7 +1009,8 @@ void XAvpg_Config(InitRunConfig *config, u8 idx)
 
     /* Disable audio */
     config->audio_enable = 0;
-    config->audio_channels = 0;
+    config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+    config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
 
 avpg_cfg_menu:
 
@@ -975,11 +1144,10 @@ u32 XDpDc_ConfigureFormat(u32 *format, const char *format_name)
     xil_printf("3. RGB565 (%d)\r\n", RGB565);
     xil_printf("4. YV16 (%d)\r\n", YV16);
     xil_printf("5. YV16_420 (%d)\r\n", YV16_420);
-    xil_printf("6. RGB888_GFX (%d)\r\n", RGB888_GFX);
-    xil_printf("7. Custom (enter format number)\r\n");
+    xil_printf("6. Custom (enter format number)\r\n");
     xil_printf("n. List All Non-Live Input Formats\r\n");
     xil_printf("l. List All Live Output Formats\r\n");
-    xil_printf("Enter choice (1-7, n, l): ");
+    xil_printf("Enter choice (1-6, n, l): ");
 
     choice = read_char();
     xil_printf("\r\n");
@@ -1001,9 +1169,6 @@ u32 XDpDc_ConfigureFormat(u32 *format, const char *format_name)
             *format = YV16_420;
             break;
         case '6':
-            *format = RGB888_GFX;
-            break;
-        case '7':
             xil_printf("Enter format number: ");
             *format = read_uint();
             xil_printf("%s set to: %s (%d)\r\n", format_name, format_to_string(*format), *format);
@@ -1279,6 +1444,22 @@ rate_select:
 
 static void XDpDc_ValidateModeSpecificConfig(InitRunConfig *config)
 {
+    if (config->operatingmode != XDCSUB_OPMODE_BYPASS &&
+        XDpDc_IsBypass8kResolution(config->width, config->height)) {
+        xil_printf("8K resolution is bypass-only; using 3840x2160@60\r\n");
+        config->width = APP_FUNCTIONAL_MAX_WIDTH;
+        config->height = APP_FUNCTIONAL_MAX_HEIGHT;
+        config->frame_rate = 60;
+    }
+
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS &&
+        XDpDc_IsBypass8kResolution(config->width, config->height) &&
+        config->frame_rate != APP_BYPASS_8K_FPS) {
+        xil_printf("8K bypass mode requires %d Hz; adjusting frame rate\r\n",
+                   APP_BYPASS_8K_FPS);
+        config->frame_rate = APP_BYPASS_8K_FPS;
+    }
+
     if (config->presentationmode == XDCSUB_PPTMODE_NONLIVE) {
         if (config->livevidselect != XDCSUB_LIVVID_SEL_NONE) {
             xil_printf("Adjusting livevidselect to Disabled for non-live mode\r\n");
@@ -1335,7 +1516,8 @@ static void XDpDc_SelectPresentationMode(InitRunConfig *config)
         config->stream2_format = RGBA8888;
         config->cursor_enable = 0;
         config->audio_enable = 0;
-        config->audio_channels = 0;
+        config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+        config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
         config->sdp_enable = 0;
         break;
     case '1':
@@ -1353,7 +1535,8 @@ static void XDpDc_SelectPresentationMode(InitRunConfig *config)
         config->avpg[1] = config->avpg[0];
         config->cursor_enable = 0;
         config->audio_enable = 0;
-        config->audio_channels = 0;
+        config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+        config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
         config->sdp_enable = 0;
         break;
     case '2':
@@ -1370,7 +1553,8 @@ static void XDpDc_SelectPresentationMode(InitRunConfig *config)
         config->avpg[0].ppc = 0;
         config->cursor_enable = 0;
         config->audio_enable = 0;
-        config->audio_channels = 0;
+        config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+        config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
         config->sdp_enable = 0;
         break;
     default:
@@ -1379,6 +1563,146 @@ static void XDpDc_SelectPresentationMode(InitRunConfig *config)
         return;
     }
 
+}
+
+/*****************************************************************************/
+/**
+*
+* Configure a bypass stream's bus format (color space, BPC, pattern).
+* PPC is fixed by the XSA and displayed but not editable.
+*
+* @param    config    - Pointer to InitRunConfig structure
+* @param    stream_idx - Stream index (0-based)
+*
+* @return   None
+*
+******************************************************************************/
+void XDpDc_BypassConfigureStream(InitRunConfig *config, u8 stream_idx)
+{
+    u32 val;
+    u8 ppc = XDpDc_BypassPpcFromXsa(stream_idx);
+
+    xil_printf("\r\n  --- Configure Bypass Stream %d (PPC=%d, fixed by XSA) ---\r\n",
+               stream_idx, ppc);
+
+    xil_printf("  Color Space (0=RGB, 1=YCbCr422) [%d]: ",
+               config->avpg[stream_idx].pix_fmt);
+    val = read_uint();
+    config->avpg[stream_idx].pix_fmt = (val == 1) ? 1 : 0;
+    if (stream_idx == 0)
+        config->output_format = XDpDc_AvpgToLiveFormat(
+            config->avpg[stream_idx].pix_fmt,
+            config->avpg[stream_idx].bpc ? config->avpg[stream_idx].bpc : 8);
+    XDpDc_Warn8kRgbIfNeeded(config);
+
+    xil_printf("  BPC (8/10/12) [%d]: ", config->avpg[stream_idx].bpc);
+    val = read_uint();
+    if (val == 10 || val == 12)
+        config->avpg[stream_idx].bpc = val;
+    else
+        config->avpg[stream_idx].bpc = 8;
+    if (stream_idx == 0)
+        config->output_format = XDpDc_AvpgToLiveFormat(
+            config->avpg[stream_idx].pix_fmt, config->avpg[stream_idx].bpc);
+    XDpDc_Warn8kRgbIfNeeded(config);
+
+    xil_printf("  Test Pattern (0-7) [%d]: ", config->avpg[stream_idx].pattern);
+    val = read_uint();
+    if (val <= 7)
+        config->avpg[stream_idx].pattern = val;
+
+    xil_printf("  Colorimetry (0=BT.601, 1=BT.709) [%d]: ",
+               config->avpg[stream_idx].colorimetry);
+    val = read_uint();
+    config->avpg[stream_idx].colorimetry = (val == 1) ? 1 : 0;
+
+    config->avpg[stream_idx].ppc = (ppc == 4) ? 1 : 0;
+
+    xil_printf("  Stream %d: %s %d-bpc, %d PPC, pattern %d, %s\r\n",
+               stream_idx,
+               config->avpg[stream_idx].pix_fmt ? "YCbCr422" : "RGB",
+               config->avpg[stream_idx].bpc,
+               ppc,
+               config->avpg[stream_idx].pattern,
+               config->avpg[stream_idx].colorimetry ? "BT.709" : "BT.601");
+}
+
+/*****************************************************************************/
+/**
+ * Show the bus format submenu for the active bypass streams.
+ *
+ * @param	config is a pointer to the InitRunConfig structure.
+ *
+ * @return	None.
+ *
+ ******************************************************************************/
+static void XDpDc_BypassStreamFormatSubmenu(InitRunConfig *config)
+{
+    char cmd;
+    u8 done = 0;
+
+    while (!done) {
+        u8 idx;
+
+        xil_printf("\r\n=== Stream Bus Format Submenu (%d active stream(s)) ===\r\n",
+                   config->byp_streams);
+        for (idx = 0; idx < config->byp_streams; idx++)
+            xil_printf("  %d - Configure Stream %d bus format\r\n", idx, idx);
+        xil_printf("  q - Return\r\n");
+        xil_printf("Enter choice: ");
+
+        cmd = read_char();
+        xil_printf("\r\n");
+
+        if (cmd == 'q' || cmd == 'Q') {
+            done = 1;
+        } else if (cmd >= '0' &&
+                   (u8)(cmd - '0') < XDPDC_BYPASS_STREAM_MAX) {
+            u8 stream_idx = (u8)(cmd - '0');
+
+            if (stream_idx < config->byp_streams)
+                XDpDc_BypassConfigureStream(config, stream_idx);
+            else
+                xil_printf("Stream %d not active (only %d stream(s) configured).\r\n",
+                           stream_idx, config->byp_streams);
+        } else {
+            xil_printf("Unknown choice.\r\n");
+        }
+    }
+}
+
+/*****************************************************************************/
+/**
+ * Prompt for the number of active bypass streams, then configure each stream.
+ *
+ * @param	config is a pointer to the InitRunConfig structure.
+ *
+ ******************************************************************************/
+void XDpDc_ConfigureBypassStreams(InitRunConfig *config)
+{
+    u32 count;
+    u8 max = config->byp_streams_max;
+
+    if (max == 0U) {
+        xil_printf("No bypass streams available in XSA.\r\n");
+        return;
+    }
+
+    xil_printf("\r\n=== Bypass Stream Configuration ===\r\n");
+    xil_printf("XSA supports up to %d stream(s). Currently active: %d\r\n",
+               max, config->byp_streams);
+    xil_printf("Enter number of streams (1-%d): ", max);
+    count = read_uint();
+
+    if (count < 1U || count > max) {
+        xil_printf("Invalid count (%d). Keeping %d stream(s).\r\n",
+                   count, config->byp_streams);
+        return;
+    }
+
+    config->byp_streams = (u8)count;
+    xil_printf("Active streams set to %d.\r\n", config->byp_streams);
+    XDpDc_BypassStreamFormatSubmenu(config);
 }
 
 /*****************************************************************************/
@@ -1446,24 +1770,32 @@ void XDpDc_MenuLoop(InitRunConfig *config)
 
             case 'c':
             case 'C':
-                config->cursor_enable = !config->cursor_enable;
-                xil_printf("Cursor Enable: %s\r\n", config->cursor_enable ? "Yes" : "No");
-                if (config->cursor_enable && config->sdp_enable)
-                    xil_printf("Cursor+SDP mode enabled (cursor transmits first, then SDP)\r\n");
+                if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+                    /* Bypass: stream count / format (ungated for SST too). */
+                    XDpDc_ConfigureBypassStreams(config);
+                } else if (config->presentationmode == XDCSUB_PPTMODE_NONLIVE) {
+                    config->cursor_enable = !config->cursor_enable;
+                    xil_printf("Cursor Enable: %s\r\n", config->cursor_enable ? "Yes" : "No");
+                    if (config->cursor_enable && config->sdp_enable)
+                        xil_printf("Cursor+SDP mode enabled (cursor transmits first, then SDP)\r\n");
 
-                /* If enabling cursor, prompt for position & size configuration */
-                if (config->cursor_enable) {
-                    char subchoice;
-                    xil_printf("\r\nConfigure cursor position & size? (y/n): ");
-                    subchoice = read_char();
-                    xil_printf("\r\n");
-                    if (subchoice == 'y' || subchoice == 'Y') {
-                        XDpDc_ConfigureCursor(config);
-                    } else {
-                        xil_printf("Using default cursor settings: Position(%d,%d) Size(%dx%d)\r\n",
-                                   config->cursor_coord_x, config->cursor_coord_y,
-                                   config->cursor_size_x, config->cursor_size_y);
+                    /* If enabling cursor, prompt for position & size configuration */
+                    if (config->cursor_enable) {
+                        char subchoice;
+                        xil_printf("\r\nConfigure cursor position & size? (y/n): ");
+                        subchoice = read_char();
+                        xil_printf("\r\n");
+                        if (subchoice == 'y' || subchoice == 'Y') {
+                            XDpDc_ConfigureCursor(config);
+                        } else {
+                            xil_printf("Using default cursor settings: Position(%d,%d) Size(%dx%d)\r\n",
+                                       config->cursor_coord_x, config->cursor_coord_y,
+                                       config->cursor_size_x, config->cursor_size_y);
+                        }
                     }
+                } else {
+                    xil_printf("'c' toggles cursor in functional non-live mode; "
+                               "in bypass it configures streams.\r\n");
                 }
                 break;
 
@@ -1482,6 +1814,9 @@ void XDpDc_MenuLoop(InitRunConfig *config)
                 }
                 if (config->audio_enable) {
                     u32 channels;
+                    u32 freq;
+                    u32 idx;
+                    u32 audioRateHz;
 
                     xil_printf("Enter Number of audio channels (1-8): ");
                     channels = read_uint();
@@ -1490,13 +1825,42 @@ void XDpDc_MenuLoop(InitRunConfig *config)
                         xil_printf("ERROR: Invalid channel count %d. Audio disabled.\r\n",
                                    channels);
                         config->audio_enable = 0;
-                        config->audio_channels = 0;
-                    } else {
-                        config->audio_channels = (u8)channels;
-                        xil_printf("Audio Channels: %d\r\n", config->audio_channels);
+                        config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+                        config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
+                        break;
                     }
+
+                    config->audio_channels = (u8)channels;
+                    xil_printf("Audio Channels: %d\r\n", config->audio_channels);
+
+                    do {
+                        xil_printf("\r\nAudio Sample Frequency:\r\n");
+                        for (idx = 0; idx <= (u32)XDCSUB_AUDIO_FREQ_MAX; idx++) {
+                            audioRateHz = XDpDc_GetAudSampleRateHz((u8)idx);
+                            xil_printf("  %d: %d.%d kHz\r\n", idx,
+                                       audioRateHz / XDPDC_HZ_PER_KHZ,
+                                       (audioRateHz % XDPDC_HZ_PER_KHZ) /
+                                       XDPDC_HZ_PER_TENTH_KHZ);
+                        }
+                        xil_printf("Enter selection (0-%d): ",
+                                   XDCSUB_AUDIO_FREQ_MAX);
+                        freq = read_uint();
+                        if (freq > (u32)XDCSUB_AUDIO_FREQ_MAX) {
+                            xil_printf("ERROR: %d is not a supported audio sample frequency. "
+                                       "Select only one of the listed frequencies.\r\n",
+                                       freq);
+                        }
+                    } while (freq > (u32)XDCSUB_AUDIO_FREQ_MAX);
+
+                    config->audio_frequency = (u8)freq;
+                    audioRateHz = XDpDc_GetAudSampleRateHz(config->audio_frequency);
+                    xil_printf("Audio Frequency: %d.%d kHz\r\n",
+                               audioRateHz / XDPDC_HZ_PER_KHZ,
+                               (audioRateHz % XDPDC_HZ_PER_KHZ) /
+                               XDPDC_HZ_PER_TENTH_KHZ);
                 } else {
-                    config->audio_channels = 0;
+                    config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+                    config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
                     xil_printf("Audio Channels: %d\r\n", config->audio_channels);
                 }
                 break;
@@ -1544,8 +1908,12 @@ void XDpDc_MenuLoop(InitRunConfig *config)
 
             case 't':
             case 'T':
-                XDpDc_SelectPresentationMode(config);
-                XDpDc_MainHelpMenu(config);
+                if (config->operatingmode == XDCSUB_OPMODE_FUNCTIONAL) {
+                    XDpDc_SelectPresentationMode(config);
+                    XDpDc_MainHelpMenu(config);
+                } else {
+                    xil_printf("Not available in bypass mode.\r\n");
+                }
                 break;
 
             case 'd':
@@ -1736,6 +2104,8 @@ void XDpDc_InitConfigDefaults(InitRunConfig *config)
 
     DcSubCfgPtr = XDcSub_LookupConfig(DC_BASEADDR);
 
+    config->design_mst_en = (u8)XDpDc_GetDesignMstEn();
+
     if (!strncmp(DcSubCfgPtr->DcConfig.operatingmode, opmodefunc, strlen(opmodefunc)))
         config->operatingmode = XDCSUB_OPMODE_FUNCTIONAL;
 
@@ -1775,19 +2145,51 @@ void XDpDc_InitConfigDefaults(InitRunConfig *config)
     config->livevideosdpen = DcSubCfgPtr->DcConfig.livevideosdpen;
     config->livevideoalphaen = DcSubCfgPtr->DcConfig.livevideoalphaen;
 
-    config->byp_streams = DcSubCfgPtr->DcConfig.streams;
+    /*
+     * byp_streams_max is DC stream count intersected with contiguous PL
+     * AVPG+VTC pairs (DcConfig.streams alone is not a PL instance count).
+     */
+    config->byp_streams_max = DcSubCfgPtr->DcConfig.streams;
+    if (config->byp_streams_max > XDPDC_BYPASS_STREAM_MAX)
+        config->byp_streams_max = XDPDC_BYPASS_STREAM_MAX;
+    {
+        u8 PlMax = XDpDc_BypassPlStreamMax();
+
+        if ((PlMax != 0U) && (config->byp_streams_max > PlMax))
+            config->byp_streams_max = PlMax;
+    }
+    config->byp_streams = config->byp_streams_max;
+
+    /*
+     * MST default: 4 streams when XSA/PL supports >= 4 (byp_streams_max is
+     * already DC streams intersected with contiguous PL AVPG+VTC pairs).
+     *
+     * Four 1920x1080@60 RGB8 ≈ 1782 MB/s / PBN 532 each. Slot fit depends on
+     * link and XSA PPC: @PPC4 HBR2x4 needs 64 slots (>63) and fails admission;
+     * @PPC1/2 the same four ask 14 each (56) and fit. Lane/link default to
+     * auto (sink max). RunStreamPolicySetup admits total TimeSlots and clears
+     * VC tables if allocate fails mid-batch.
+     */
+    if (!config->design_mst_en)
+        config->byp_streams = 1U;
+    else if (config->byp_streams_max >= 4U)
+        config->byp_streams = 4U;
 
 #if defined (XPAR_XVTC_NUM_INSTANCES)
     if (config->byp_streams > 0) {
         u32 i;
 
-        for (i = 0; i < XAVPATGEN_INST_MAX_COUNT; i++) {
+        /*
+         * Bypass PPC is not taken from StreamConfig[].pixel_mode (DC IP);
+         * that field is wrong/redundant for PL AVPG. Use XSA xparameters via
+         * XDpDc_BypassPpcFromXsa() at the sites that need PPC.
+         */
+        for (i = 0; i < XDPDC_BYPASS_STREAM_MAX; i++) {
             if (!strncmp(DcSubCfgPtr->DcConfig.StreamConfig[i].mode, avmode, strlen(avmode)))
                 config->byp_stream_vid_mode[i] = XDCSUB_VIDMODE_AV;
             else
                 config->byp_stream_vid_mode[i] = XDCSUB_VIDMODE_VONLY;
 
-            config->byp_stream_pix_mode[i] = DcSubCfgPtr->DcConfig.StreamConfig[i].pixel_mode;
             config->byp_stream_sdp_en[i] = DcSubCfgPtr->DcConfig.StreamConfig[i].sdpen;
         }
     }
@@ -1815,7 +2217,8 @@ void XDpDc_InitConfigDefaults(InitRunConfig *config)
         config->ppb_offset_y = 80;
 
         config->audio_enable = 0;
-        config->audio_channels = 0;
+        config->audio_channels = XDPDC_AUD_CHANNELS_NONE;
+        config->audio_frequency = XDPDC_AUD_FREQ_UNSET;
         config->sdp_enable = 0;
 
         if (config->presentationmode == XDCSUB_PPTMODE_NONLIVE) {
@@ -1870,6 +2273,66 @@ void XDpDc_InitConfigDefaults(InitRunConfig *config)
         xil_printf("  Audio: Disabled, Channels: %d\r\n",
                    config->audio_channels);
         xil_printf("  SDP: Disabled\r\n");
+    }
+
+    if (config->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        /*
+         * Bypass defaults: 1920x1080@60, RGB 8-bpc.
+         * MST: 4 active streams with distinct AVPG patterns per stream.
+         * PPC is fixed by XSA (BypassPpcFromXsa / xparameters).
+         */
+        /* MST: 2=vert lines, 3=color squares, 4=flat red, 6=flat blue */
+        static const u8 byp_mst_default_patterns[4] = { 2, 3, 4, 6 };
+        /* SST: 3=color squares, 4=flat red, 1=color ramp, 5=flat green */
+        static const u8 byp_sst_default_patterns[4] = { 3, 4, 1, 5 };
+        const u8 *default_patterns = config->design_mst_en ?
+            byp_mst_default_patterns : byp_sst_default_patterns;
+        u32 idx;
+
+        config->width = APP_DEFAULT_WIDTH;
+        config->height = APP_DEFAULT_HEIGHT;
+        config->frame_rate = APP_DEFAULT_FPS;
+        config->output_format = RGB_8BPC;
+
+        for (idx = 0; idx < 4; idx++) {
+            u8 ppc = XDpDc_BypassPpcFromXsa((u8)idx);
+
+            config->avpg[idx].bpc = 8;
+            config->avpg[idx].pix_fmt = 0;
+            config->avpg[idx].pattern = default_patterns[idx];
+            config->avpg[idx].colorimetry = 0;
+            config->avpg[idx].ppc = (ppc == 4U) ? 1U : 0U;
+        }
+
+        xil_printf("InitRunConfig initialized for Bypass %s design\r\n",
+                   config->design_mst_en ? "MST" : "SST-only");
+        xil_printf("  SDT mst-mode-en:    %d\r\n", config->design_mst_en);
+        xil_printf("  XSA Max Streams:    %d\r\n", config->byp_streams_max);
+        xil_printf("  Active Streams:     %d\r\n", config->byp_streams);
+        if (config->design_mst_en) {
+            xil_printf("  Default:            %dx%d@%d RGB 8-bpc, "
+                       "patterns 2/3/4/6 (link auto)\r\n",
+                       config->width, config->height, config->frame_rate);
+            for (idx = 0; idx < config->byp_streams; idx++) {
+                u8 ppc = XDpDc_BypassPpcFromXsa((u8)idx);
+
+                xil_printf("  Stream %u:           PPC %d (%s), pattern %d\r\n",
+                           idx, ppc,
+                           (ppc == 4U) ? "Quad" :
+                           (ppc == 2U) ? "Dual" : "Single",
+                           config->avpg[idx].pattern);
+            }
+        } else {
+            u8 ppc0 = XDpDc_BypassPpcFromXsa(0U);
+
+            xil_printf("  Stream 0 PPC:       %d (%s pixel)\r\n",
+                       ppc0,
+                       (ppc0 == 4U) ? "Quad" :
+                       (ppc0 == 2U) ? "Dual" : "Single");
+            xil_printf("  Default:            RGB 8-bpc, pattern %d, %dx%d@%d\r\n",
+                       config->avpg[0].pattern,
+                       config->width, config->height, config->frame_rate);
+        }
     }
 
     config->lane_count = 0;

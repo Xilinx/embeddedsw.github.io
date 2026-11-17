@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -43,26 +43,26 @@
  * This typedef declares the driver instances of all the cores in the subsystem
  */
 typedef struct {
-	XDsi2Rx Dsi2RxInst;
+	XDsi2Rx Dsi2RxInst;	/**< DSI2 RX controller sub-core instance */
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	XDphy DphyInst;
 #endif
 } XDsi2Ss_SubCores;
 
 /**************************** Variable Definitions ***********************************/
-XDsi2Ss_SubCores Dsi2SsSubCores[];
+
+XDsi2Ss_SubCores Dsi2SsSubCores[XPAR_XDSIRXSS_NUM_INSTANCES];
+
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
 /************************** Function Prototypes ******************************/
 
-static void XDsi2RxSs_GetIncludedSubCores(XDsi2RxSs *Dsi2RxSsPtr);
+static s32 XDsi2RxSs_GetIncludedSubCores(XDsi2RxSs *Dsi2RxSsPtr);
 static s32 XDsi2RxSs_SubCoreInitDsi(XDsi2RxSs *Dsi2RxSsPtr);
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static s32 XDsi2RxSs_SubCoreInitDphy(XDsi2RxSs *Dsi2RxSsPtr);
 #endif
-static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr, UINTPTR SsHighAddr,
-					u32 Offset, UINTPTR *BaseAddr);
 
 /************************** Function Definitions ******************************/
 
@@ -105,7 +105,9 @@ s32 XDsi2RxSs_CfgInitialize(XDsi2RxSs *InstancePtr, XDsi2RxSs_Config *CfgPtr,
 	/* Determine sub-cores included in the
 	 * provided instance of subsystem
 	 */
-	XDsi2RxSs_GetIncludedSubCores(InstancePtr);
+	if (XDsi2RxSs_GetIncludedSubCores(InstancePtr) != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
 
 	if (InstancePtr->Dsi2RxPtr) {
 		Status = XDsi2RxSs_SubCoreInitDsi(InstancePtr);
@@ -200,8 +202,6 @@ int XDsi2RxSs_Activate(XDsi2RxSs *InstancePtr, XDsi2RxSs_SubCore core, u8 Flag)
 *
 * @param	InstancePtr is a pointer to the Subsystem instance to be worked on.
 *
-* @return	None
-*
 * @note		None.
 *
 ******************************************************************************/
@@ -224,8 +224,6 @@ void XDsi2RxSs_Reset(XDsi2RxSs *InstancePtr)
 * This function reports list of cores included in DSI RX Subsystem
 *
 * @param	InstancePtr is a pointer to the DSI RX Subsystem instance.
-*
-* @return	None
 *
 * @note		None.
 *
@@ -262,8 +260,6 @@ void XDsi2RxSs_ReportCoreInfo(XDsi2RxSs *InstancePtr)
 * This function will get the information from the GUI settings
 *
 * @param	InstancePtr is the XDsi instance to operate on
-*
-* @return 	None
 *
 * @note		None.
 *
@@ -329,17 +325,36 @@ u32 XDsi2RxSs_GetPixelFormat(XDsi2RxSs *InstancePtr)
 *
 * @param	Dsi2RxSsPtr is a pointer to the Subsystem instance
 *
-* @return	None
+* @return
+*		- XST_SUCCESS if the sub-cores were resolved successfully
+*		- XST_FAILURE if the base address was not found in the config
+*		  table (out-of-range index)
 *
 * @note		None
 *
 ******************************************************************************/
-static void XDsi2RxSs_GetIncludedSubCores(XDsi2RxSs *Dsi2RxSsPtr)
+static s32 XDsi2RxSs_GetIncludedSubCores(XDsi2RxSs *Dsi2RxSsPtr)
 {
+	u32 Index;
+
 	/* Verify argument */
-	Xil_AssertVoid(Dsi2RxSsPtr != NULL);
-	u32 Index = 0;
-	Index = XDsi2RxSs_GetDrvIndex(Dsi2RxSsPtr, Dsi2RxSsPtr->Config.BaseAddr);
+	Xil_AssertNonvoid(Dsi2RxSsPtr != NULL);
+
+	Index = XDsi2RxSs_GetDrvIndex(Dsi2RxSsPtr->Config.BaseAddr);
+	/*
+	 * XDsi2RxSs_GetDrvIndex() returns the sentinel (past-the-end) index
+	 * when the base address is not present in the config table, e.g. when
+	 * a translated/virtual EffectiveAddr is passed to CfgInitialize().
+	 * Reject such an out-of-range index instead of using it to index
+	 * Dsi2SsSubCores[], which would be an out-of-bounds access.
+	 */
+	if (Index >= XPAR_XDSIRXSS_NUM_INSTANCES) {
+		Dsi2RxSsPtr->Dsi2RxPtr = NULL;
+#if (XPAR_XDPHY_NUM_INSTANCES > 0)
+		Dsi2RxSsPtr->DphyPtr = NULL;
+#endif
+		return XST_FAILURE;
+	}
 
 	Dsi2RxSsPtr->Dsi2RxPtr = ((Dsi2RxSsPtr->Config.Dsi2RxInfo.IsPresent) ?
 				(&Dsi2SsSubCores[Index].Dsi2RxInst) : NULL);
@@ -347,6 +362,8 @@ static void XDsi2RxSs_GetIncludedSubCores(XDsi2RxSs *Dsi2RxSsPtr)
 	Dsi2RxSsPtr->DphyPtr = ((Dsi2RxSsPtr->Config.DphyInfo.IsPresent) ?
 				(&Dsi2SsSubCores[Index].DphyInst) : NULL);
 #endif
+
+	return XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -381,16 +398,7 @@ static s32 XDsi2RxSs_SubCoreInitDsi(XDsi2RxSs *Dsi2RxSsPtr)
 	}
 
 	/* Compute absolute base address */
-	AbsAddr = 0;
-	Status = ComputeSubCoreAbsAddr(Dsi2RxSsPtr->Config.BaseAddr,
-					Dsi2RxSsPtr->Config.HighAddr,
-					Dsi2RxSsPtr->Config.Dsi2RxInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "DSI2RXSS ERR:: DSI2 RX core base"
-			"address (0x%x) invalid \n\r", AbsAddr);
-		return XST_FAILURE;
-	}
+	AbsAddr = ConfigPtr->BaseAddr;
 
 	/* Initialize core */
 	Status = XDsi2Rx_CfgInitialize(Dsi2RxSsPtr->Dsi2RxPtr, ConfigPtr, AbsAddr);
@@ -439,16 +447,7 @@ static s32 XDsi2RxSs_SubCoreInitDphy(XDsi2RxSs *Dsi2RxSsPtr)
 	}
 
 	/* Compute absolute base address */
-	AbsAddr = 0;
-	Status = ComputeSubCoreAbsAddr(Dsi2RxSsPtr->Config.BaseAddr,
-					Dsi2RxSsPtr->Config.HighAddr,
-					Dsi2RxSsPtr->Config.DphyInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "DSIRXSS ERR:: DPHY core base address "
-				"(0x%x) invalid \n\r", AbsAddr);
-		return XST_FAILURE;
-	}
+	AbsAddr = ConfigPtr->BaseAddr;
 
 	/* Initialize core */
 	Status = XDphy_CfgInitialize(Dsi2RxSsPtr->DphyPtr, ConfigPtr, AbsAddr);
@@ -462,49 +461,4 @@ static s32 XDsi2RxSs_SubCoreInitDphy(XDsi2RxSs *Dsi2RxSsPtr)
 }
 #endif
 
-/*****************************************************************************/
-/**
-* This function computes the subcore absolute address on axi-lite interface
-* Subsystem is mapped at an absolute address and all included sub-cores are
-* at pre-defined offset from the subsystem base address. To access the subcore
-* register map from host CPU an absolute address is required.
-* The subsystem is aligned to 128K address and has address range of max 192K
-* By default, DSI is at offset 0x0_0000 and DPHY is at offset 0x1_0000.
-* In case DPHY register interface is also absent then the address
-* range shrinks to 64K with only the DSI subcore at offset 0x0_0000.
-*
-* @param	SsBaseAddr is the base address of the the Subsystem instance
-* @param	SsHighAddr is the max address of the Subsystem instance
-* @param	Offset is the offset of the specified core
-* @param	BaseAddr is the computed absolute base address of the subcore
-*
-* @return
-*		- XST_SUCCESS if base address computation is successful
-*		  and within subsystem address range
-*		- XST_FAILURE on address out of range
-*
-* @note		None
-*
-******************************************************************************/
-static s32 ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
-				UINTPTR SsHighAddr,
-				u32 Offset,
-				UINTPTR *BaseAddr)
-{
-	s32 Status;
-	UINTPTR AbsAddr;
-
-	AbsAddr = SsBaseAddr + Offset;
-
-	if ((AbsAddr >= SsBaseAddr) && (AbsAddr < SsHighAddr)) {
-		*BaseAddr = AbsAddr;
-		Status = XST_SUCCESS;
-	}
-	else {
-		*BaseAddr = 0;
-		Status = XST_FAILURE;
-	}
-
-	return Status;
-}
 /** @} */

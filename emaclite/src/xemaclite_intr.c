@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,8 +11,10 @@
 * @addtogroup emaclite Overview
 * @{
 *
+* @brief Implements interrupt-related functions for the EmacLite driver.
+*
 * Functions in this file are for the interrupt driven processing functionality.
-* See xemaclite.h for a detailed description of the driver.
+*
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -52,21 +54,19 @@
 /*****************************************************************************/
 /**
 *
-* Enable the EmacLite Interrupts.
+* @brief Enable the EmacLite Interrupts.
 *
-* This function must be called before other functions to send or receive data
+* Call this API before before other functions to send or receive data
 * in interrupt driven mode. The user should have connected the
 * interrupt handler of the driver to an interrupt source such as an interrupt
 * controller or the processor interrupt prior to this function being called.
 *
-* @param	InstancePtr is a pointer to the XEmacLite instance.
+* @param[in] InstancePtr is a pointer to the XEmacLite instance.
 *
 * @return
 * 		- XST_SUCCESS if the device interrupts were enabled
 *			successfully.
 *		- XST_NO_CALLBACK if the callbacks were not set.
-*
-* @note		None.
 *
 ******************************************************************************/
 int XEmacLite_EnableInterrupts(XEmacLite *InstancePtr)
@@ -119,16 +119,12 @@ int XEmacLite_EnableInterrupts(XEmacLite *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* Disables the interrupts from the device (the higher layer software is
+* @brief Disables the interrupts from the device (the higher layer software is
 * responsible for disabling interrupts at the interrupt controller).
 *
 * To start using the device again, _EnableInterrupts must be called.
 *
-* @param	InstancePtr is a pointer to the XEmacLite instance .
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] InstancePtr is a pointer to the XEmacLite instance.
 *
 ******************************************************************************/
 void XEmacLite_DisableInterrupts(XEmacLite *InstancePtr)
@@ -173,20 +169,15 @@ void XEmacLite_DisableInterrupts(XEmacLite *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* Interrupt handler for the EmacLite driver. It performs the following
+* @brief Interrupt handler for the EmacLite driver. It performs the following
 * processing:
 *
 *	- Get the interrupt status from the registers to determine the source
 * 	of the interrupt.
 * 	- Call the appropriate handler based on the source of the interrupt.
 *
-* @param	InstancePtr contains a pointer to the EmacLite device instance
+* @param[in] InstancePtr contains a pointer to the EmacLite device instance
 *		for the interrupt.
-*
-* @return	None.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 void XEmacLite_InterruptHandler(void *InstancePtr)
@@ -268,7 +259,7 @@ void XEmacLite_InterruptHandler(void *InstancePtr)
 /*****************************************************************************/
 /**
 *
-* Sets the callback function for handling received frames in interrupt mode.
+* @brief Sets the callback function for handling received frames in interrupt mode.
 * The upper layer software should call this function during initialization.
 * The callback is called when a frame is received. The callback function
 * should communicate the data to a thread such that the processing is not
@@ -278,15 +269,11 @@ void XEmacLite_InterruptHandler(void *InstancePtr)
 * to do its job quickly. If there are other potentially slow operations
 * within the callback, these should be done at task-level.
 *
-* @param	InstancePtr is a pointer to the XEmacLite instance..
-* @param	CallBackRef is a reference pointer to be passed back to the
+* @param[in] InstancePtr is a pointer to the XEmacLite instance.
+* @param[in] CallBackRef is a reference pointer to be passed back to the
 *		application in the callback. This helps the application
 *		correlate the callback to a particular driver.
-* @param	FuncPtr is the pointer to the callback function.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] FuncPtr is the pointer to the callback function.
 *
 ******************************************************************************/
 void XEmacLite_SetRecvHandler(XEmacLite *InstancePtr, void *CallBackRef,
@@ -304,7 +291,7 @@ void XEmacLite_SetRecvHandler(XEmacLite *InstancePtr, void *CallBackRef,
 /*****************************************************************************/
 /**
 *
-* Sets the callback function for handling transmitted frames in interrupt mode.
+* @brief Sets the callback function for handling transmitted frames in interrupt mode.
 * The upper layer software should call this function during initialization.
 * The callback is called when a frame is transmitted. The callback function
 * should communicate the data to a thread such that the processing is not
@@ -314,15 +301,11 @@ void XEmacLite_SetRecvHandler(XEmacLite *InstancePtr, void *CallBackRef,
 * to do its job quickly. If there are other potentially slow operations
 * within the callback, these should be done at task-level.
 *
-* @param	InstancePtr is a pointer to the XEmacLite instance.
-* @param	CallBackRef is a reference pointer to be passed back to the
+* @param[in] InstancePtr is a pointer to the XEmacLite instance.
+* @param[in] CallBackRef is a reference pointer to be passed back to the
 *		application in the callback. This helps the application
 *		correlate the callback to a particular driver.
-* @param	FuncPtr is the pointer to the callback function.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] FuncPtr is the pointer to the callback function.
 *
 ******************************************************************************/
 void XEmacLite_SetSendHandler(XEmacLite *InstancePtr, void *CallBackRef,

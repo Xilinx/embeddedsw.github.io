@@ -50,7 +50,7 @@
 * The application needs to do following steps in order for preparing the
 * MIPI mipi_tx_phy core to be ready.
 *
-* - Call XMipi_Tx_Phy_LookupConfig using a device ID to find the core
+* - Call XMipi_Tx_Phy_LookupConfig using a base address to find the core
 *   configuration.
 * - Call XMipi_Tx_Phy_CfgInitialize to initialize the device and the driver
 *   instance associated with it.
@@ -148,6 +148,13 @@ extern "C" {
  * @{
 */
 #define XMIPI_TX_PHY_HS_SETTLE_MAX_VALUE	0x1FF /**< Maximum HS settle value (9-bit) */
+/** @} */
+
+/** @name mipi_tx_phy Dynamic Line Rate range
+ * @{
+*/
+#define XMIPI_TX_PHY_LINERATE_MIN	400	/**< Minimum line rate in Mbps */
+#define XMIPI_TX_PHY_LINERATE_MAX	4500	/**< Maximum line rate in Mbps */
 /** @} */
 
 /** @name mipi_tx_phy Flags to Enable or Disable core
@@ -281,11 +288,12 @@ typedef enum {
 *
 */
 typedef struct {
-    char *Name;
+    char *Name; /**< Unique name of the device */
 	UINTPTR BaseAddr; /**< Base address of mipi_tx_phy */
 	u32 IsDphy; /**< CPHY or DPHY Mode */
 	u32 IsRegisterPresent; /**< Is register access allowed */
 	u32 MaxLanesPresent; /**< Number of Lanes. Range 1 - 4 */
+	u32 IsDynamicLineRate; /**< Enable dynamic line rate */
 	u32 EscClkPeriod; /**< Escape Clock Period */
 	u32 EscTimeout; /**< Escape Timeout */
 	u32 HSLineRate; /**< High Speed Line Rate */
@@ -308,6 +316,15 @@ typedef struct {
 /************************** Function Prototypes ******************************/
 
 /* Initialization function in xmipi_tx_phy_sinit.c */
+/**
+ * @brief Look up the device configuration based on the base address.
+ *
+ * @param	BaseAddress is the base address of the device to look up.
+ *
+ * @return	Pointer to the XMipi_Tx_Phy_Config entry, or NULL if not found.
+ *
+ * @note	None.
+ ******************************************************************************/
 XMipi_Tx_Phy_Config *XMipi_Tx_Phy_LookupConfig(UINTPTR BaseAddress);
 
 /* Initialization and control functions xmipi_tx_phy.c */
@@ -325,6 +342,15 @@ u8 XMipi_Tx_Phy_GetDLCalibStatus(XMipi_Tx_Phy *InstancePtr, u8 DataLane);
 u32 XMipi_Tx_Phy_GetDataLaneMode(XMipi_Tx_Phy *InstancePtr, u8 DataLane);
 void XMipi_Tx_Phy_Activate(XMipi_Tx_Phy *InstancePtr, u8 Flag);
 u8 XMipi_Tx_Phy_GetRegIntfcPresent(XMipi_Tx_Phy *InstancePtr);
+/* Dynamic line rate configuration in xmipi_tx_phy.c */
+u32 XMipi_Tx_Phy_DynamicLineRateConfig(XMipi_Tx_Phy *InstancePtr,
+			UINTPTR PllBaseAddr, u32 LineRate);
+
+/* X5PLL configuration in xmipi_tx_phy_xpll.c */
+u32 XMipi_Tx_Phy_XPllConfig(UINTPTR PllBaseAddr, u32 LineRate);
+
+/* MMCM configuration in xmipi_tx_phy_mmcm.c */
+u32 XMipi_Tx_Phy_MmcmConfig(XMipi_Tx_Phy *InstancePtr, u32 LineRate);
 
 u32 XMipi_Tx_Phy_Prog_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq bitpos, u32 Value);
 u32 XMipi_Tx_Phy_Get_Seq_Data(XMipi_Tx_Phy *InstancePtr, XMipi_Tx_Phy_ProgSeq bitpos);
@@ -332,6 +358,15 @@ u32 XMipi_Tx_Phy_En_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr);
 u32 XMipi_Tx_Phy_Dis_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr);
 u32 XMipi_Tx_Phy_Get_Prog_Seq_Ctrl(XMipi_Tx_Phy *InstancePtr);
 /* Self test function in xcsiss_selftest.c */
+/**
+ * @brief Run a self-test on the MIPI TX PHY.
+ *
+ * @param	InstancePtr is a pointer to the XMipi_Tx_Phy instance.
+ *
+ * @return	XST_SUCCESS if the self-test passed, XST_FAILURE otherwise.
+ *
+ * @note	None.
+ ******************************************************************************/
 u32 XMipi_Tx_Phy_SelfTest(XMipi_Tx_Phy *InstancePtr);
 
 #ifdef __cplusplus

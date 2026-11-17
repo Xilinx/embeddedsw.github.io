@@ -1,5 +1,5 @@
 /******************************************************************************\
-|* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+|* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 |* Copyright (c) 2020 by VeriSilicon Holdings Co., Ltd. ("VeriSilicon")       *|
 |* All Rights Reserved.                                                       *|
 |*                                                                            *|
@@ -100,11 +100,21 @@ static RESULT Ox08b40_IsiReadRegIss(IsiSensorHandle_t handle, const uint16_t add
 	xil_printf("%s (enter)\n", __func__);
 
 	Ox08b40_Context_t *pOx08b40Ctx = (Ox08b40_Context_t *) handle;
+
 	if (pOx08b40Ctx == NULL)
 		return RET_NULL_POINTER;
+
+	if (pOx08b40Ctx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (pValue == NULL || g_fmc_single.sensor_array[pOx08b40Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId]->readIIC == NULL)
+		return RET_NULL_POINTER;
+
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx08b40Ctx->sensorDevId]->sensor_alias_addr) >> 1;
 	result = g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId]->readIIC(pOx08b40Ctx->i2cId,
 		 slave_addr, addr, 0x2, pValue, 1);
+
 	if (result != RET_SUCCESS) {
 		xil_printf("%s: hal read sensor register error!\n", __func__);
 		return (RET_FAILURE);
@@ -121,13 +131,22 @@ static RESULT Ox08b40_IsiWriteRegIss(IsiSensorHandle_t handle, const uint16_t ad
 	xil_printf("%s (enter)\n", __func__);
 
 	Ox08b40_Context_t *pOx08b40Ctx = (Ox08b40_Context_t *) handle;
+
 	if (pOx08b40Ctx == NULL)
+		return RET_NULL_POINTER;
+
+	if (pOx08b40Ctx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (g_fmc_single.sensor_array[pOx08b40Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId]->writeIIC == NULL)
 		return RET_NULL_POINTER;
 
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx08b40Ctx->sensorDevId]->sensor_alias_addr) >> 1;
 	result = g_fmc_single.accessiic_array[pOx08b40Ctx->sensorDevId]->writeIIC(pOx08b40Ctx->i2cId,
 		 slave_addr, addr, 0x2, value, 1);
-	if (result != RET_SUCCESS) {
+
+    if (result != RET_SUCCESS) {
 		xil_printf("%s: hal write sensor register error!\n", __func__);
 		return (RET_FAILURE);
 	}
@@ -212,6 +231,11 @@ static RESULT Ox08b40_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	RESULT result = RET_SUCCESS;
 	uint32_t desId = 0, pipeId = 0;
 	xil_printf("%s (enter)\n", __func__);
+	if (pConfig == NULL || pHandle == NULL)
+		return RET_NULL_POINTER;
+	*pHandle = NULL;
+	if (pConfig->cameraDevId >= IN_PIPE_LAST)
+		return RET_UNSUPPORT_ID;
 
 	Ox08b40_Context_t *pOx08b40Ctx = (Ox08b40_Context_t *) osMalloc(sizeof(Ox08b40_Context_t));
 	if (!pOx08b40Ctx) {
@@ -236,20 +260,38 @@ static RESULT Ox08b40_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	uint8_t busId = (uint8_t)pOx08b40Ctx->i2cId;
 	pipeId = pOx08b40Ctx->sensorDevId;
 
-	*pHandle = (IsiSensorHandle_t) pOx08b40Ctx;
-
 	if (pipeId >= IN_PIPE_LAST) {
 		xil_printf("%s: sensor device ID %d is mot support!\n", __func__, pipeId);
+		MEMSET(pOx08b40Ctx, 0, sizeof(Ox08b40_Context_t));
+		osFree(pOx08b40Ctx);
 		return RET_UNSUPPORT_ID;
 	}
-	desId = MAPPING_INPIPE_TO_DES_ID(pipeId);
 
-	init_iic_access(pOx08b40Ctx->i2cId, pipeId);
+	*pHandle = (IsiSensorHandle_t) pOx08b40Ctx;
+
+	desId = MAPPING_INPIPE_TO_DES_ID(pipeId);
+	if (desId >= DS_MAX) {
+		result = RET_OUTOFRANGE;
+		goto fail;
+	}
+
+	result = init_iic_access(pOx08b40Ctx->i2cId, pipeId);
+	if (result != RET_SUCCESS)
+		goto fail;
 	init_des(desId);
-	init_sensor(pipeId, desId);
+	result = init_sensor(pipeId, desId);
+	if (result != RET_SUCCESS)
+		goto fail_iic;
 
 	xil_printf("%s (exit)\n", __func__);
 	return (result);
+
+fail_iic:
+	release_iic_access(pipeId);
+fail:
+	osFree(pOx08b40Ctx);
+	*pHandle = NULL;
+	return result;
 }
 
 static RESULT Ox08b40_AecSetModeParameters(IsiSensorHandle_t handle)
@@ -1072,7 +1114,7 @@ RESULT Ox08b40_IsiGetDGainIss(IsiSensorHandle_t handle, IsiSensorGain_t *pSensor
 	return (result);
 }
 
-RESULT Ox08b40_IsiSetIntTimeIss(IsiSensorHandle_t handle, IsiSensorIntTime_t *pSensorIntTime)
+RESULT Ox08b40_IsiSetIntTimeIss(IsiSensorHandle_t handle, const IsiSensorIntTime_t *pSensorIntTime)
 {
 	RESULT result = RET_SUCCESS;
 	xil_printf("%s: (enter)\n", __func__);
@@ -1199,7 +1241,7 @@ RESULT Ox08b40_IsiSetFpsIss(IsiSensorHandle_t handle, uint32_t fps)
 	RESULT result = RET_SUCCESS;
 	int32_t NewVts = 0;
 	uint32_t vs_exp = 0;
-	uint8_t value = 0;
+	uint16_t value = 0;
 	xil_printf("%s: (enter)\n", __func__);
 
 	Ox08b40_Context_t *pOx08b40Ctx = (Ox08b40_Context_t *) handle;
@@ -1320,7 +1362,7 @@ RESULT Ox08b40_IsiGetTpgIss(IsiSensorHandle_t handle, IsiSensorTpg_t *pTpg)
 	return (result);
 }
 
-static RESULT Ox08b40_IsiSetWBIss(IsiSensorHandle_t handle, IsiSensorWb_t *pWb)
+static RESULT Ox08b40_IsiSetWBIss(IsiSensorHandle_t handle, const IsiSensorWb_t *pWb)
 {
 	RESULT result = RET_SUCCESS;
 
@@ -1411,7 +1453,7 @@ static RESULT Ox08b40_IsiGetWBIss(IsiSensorHandle_t handle, IsiSensorWb_t *pWb)
 	return (result);
 }
 
-static RESULT Ox08b40_IsiSetBlcIss(IsiSensorHandle_t handle, IsiSensorBlc_t *pBlc)
+static RESULT Ox08b40_IsiSetBlcIss(IsiSensorHandle_t handle, const IsiSensorBlc_t *pBlc)
 {
 	RESULT result = RET_SUCCESS;
 	uint16_t blcGain = 0;

@@ -75,20 +75,14 @@ typedef enum {
 * Each core instance should have a configuration structure associated.
 */
 typedef struct {
-#ifndef SDT
-    u16 DeviceId;          /**< Unique ID of device */
-#else
   char *Name;              /**< Device name string */
-#endif
     UINTPTR BaseAddress;   /**< The base address of the core instance */
     u16 PixPerClk;         /**< Samples Per Clock supported by core instance */
     u16 MaxWidth;          /**< Maximum columns supported by core instance */
     u16 MaxHeight;         /**< Maximum rows supported by core instance */
     u16 MaxDataWidth;      /**< Maximum Data width of each channel */
-#ifdef SDT
   u16 IntrId; 		       /**< Interrupt ID */
   UINTPTR IntrParent; 	   /**< Bit[0] Interrupt parent type Bit[64/32:1] Parent base address */
-#endif
 } XV_gamma_lut_Config;
 #endif
 
@@ -170,13 +164,8 @@ typedef struct {
 /* Section contains global variable definitions, if any */
 
 #ifndef __linux__
-#ifndef SDT
-int XV_gamma_lut_Initialize(XV_gamma_lut *InstancePtr, u16 DeviceId);
-XV_gamma_lut_Config* XV_gamma_lut_LookupConfig(u16 DeviceId);
-#else
 int XV_gamma_lut_Initialize(XV_gamma_lut *InstancePtr, UINTPTR BaseAddress);
 XV_gamma_lut_Config* XV_gamma_lut_LookupConfig(UINTPTR BaseAddress);
-#endif
 int XV_gamma_lut_CfgInitialize(XV_gamma_lut *InstancePtr,
                                XV_gamma_lut_Config *ConfigPtr,
                                UINTPTR EffectiveAddr);
@@ -203,28 +192,28 @@ u32 XV_gamma_lut_Get_HwReg_gamma_lut_0_HighAddress(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_0_TotalBytes(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_0_BitWidth(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_0_Depth(XV_gamma_lut *InstancePtr);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_0_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_0_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_0_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_0_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_0_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_0_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_0_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_0_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_1_BaseAddress(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_1_HighAddress(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_1_TotalBytes(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_1_BitWidth(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_1_Depth(XV_gamma_lut *InstancePtr);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_1_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_1_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_1_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_1_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_1_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_1_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_1_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_1_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_2_BaseAddress(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_2_HighAddress(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_2_TotalBytes(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_2_BitWidth(XV_gamma_lut *InstancePtr);
 u32 XV_gamma_lut_Get_HwReg_gamma_lut_2_Depth(XV_gamma_lut *InstancePtr);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_2_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_2_Words(XV_gamma_lut *InstancePtr, int offset, int *data, int length);
-u32 XV_gamma_lut_Write_HwReg_gamma_lut_2_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
-u32 XV_gamma_lut_Read_HwReg_gamma_lut_2_Bytes(XV_gamma_lut *InstancePtr, int offset, char *data, int length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_2_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_2_Words(XV_gamma_lut *InstancePtr, u32 offset, int *data, u32 length);
+u32 XV_gamma_lut_Write_HwReg_gamma_lut_2_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
+u32 XV_gamma_lut_Read_HwReg_gamma_lut_2_Bytes(XV_gamma_lut *InstancePtr, u32 offset, char *data, u32 length);
 
 void XV_gamma_lut_InterruptGlobalEnable(XV_gamma_lut *InstancePtr);
 void XV_gamma_lut_InterruptGlobalDisable(XV_gamma_lut *InstancePtr);

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -37,6 +37,7 @@ extern "C" {
 #include "xuartlite_l.h"
 #include "xtmrctr.h"
 #include "xintc.h"
+#include "sleep.h"
 #include "xvphy.h"
 #include "xvidc_edid.h"
 #include "xvidc.h"
@@ -81,13 +82,8 @@ typedef unsigned int    UINT32;
 
 #define UART_BASEADDR    				\
 	XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_UARTLITE_1_BASEADDR
-#ifndef SDT
-#define TIMER_BASEADDR   				XPAR_TMRCTR_0_BASEADDR
-#define CLK_2_GPIO_BASEADDR             XPAR_AXI_GPIO_0_BASEADDR
-#else
 #define TIMER_BASEADDR                  XPAR_XTMRCTR_0_BASEADDR
 #define CLK_2_GPIO_BASEADDR             XPAR_XGPIO_0_BASEADDR
-#endif
 #define VIDPHY_BASEADDR  				XPAR_VID_PHY_CONTROLLER_0_BASEADDR
 
 #if (XPAR_XHDCP_NUM_INSTANCES > 0)
@@ -102,11 +98,6 @@ typedef unsigned int    UINT32;
 			XPAR_INTC_0_DP12RXSS_0_DPRXSS_DP_IRQ_VEC_ID
 #define XINTC_DPRXSS_IIC_INTERRUPT_ID  	\
 			XPAR_INTC_0_DPRXSS_0_DPRXSS_IIC_IRQ_VEC_ID
-#define XDPRXSS_DEVICE_ID		      	XPAR_DPRXSS_0_DEVICE_ID
-#define XINTC_DEVICE_ID					XPAR_INTC_0_DEVICE_ID
-#define XDPTXSS_DEVICE_ID		      	XPAR_DPTXSS_0_DEVICE_ID
-#define IIC_DEVICE_ID                  	\
-			XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_IIC_1_DEVICE_ID
 
 #define XINTC_TIMER_0 					XPAR_INTC_0_TMRCTR_0_VEC_ID
 #define XINTC_HDCP_TIMER_ID				\
@@ -170,7 +161,6 @@ typedef unsigned int    UINT32;
 #define SET_RX_TO_2BYTE	(XPAR_DP_RX_HIER_DP_RX_SUBSYSTEM_0_DP_GT_DATAWIDTH/2)
 
 #define BUFFER_BYPASS            XPAR_VID_PHY_CONTROLLER_0_TX_BUFFER_BYPASS
-
 #ifdef __cplusplus
 }
 #endif

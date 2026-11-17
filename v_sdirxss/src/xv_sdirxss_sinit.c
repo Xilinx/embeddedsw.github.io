@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2020 Xilinx, Inc. All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -54,21 +54,6 @@ extern XV_SdiRxSs_Config XV_SdiRxSs_ConfigTable[];
 *		given device ID, or NULL if no match is found
 *
 *******************************************************************************/
-#ifndef SDT
-XV_SdiRxSs_Config *XV_SdiRxSs_LookupConfig(u32 DeviceId)
-{
-	XV_SdiRxSs_Config *CfgPtr = NULL;
-	u32 Index;
-
-	for (Index = 0U; Index < (u32)XPAR_XV_SDIRXSS_NUM_INSTANCES; Index++) {
-		if (XV_SdiRxSs_ConfigTable[Index].DeviceId == DeviceId) {
-			CfgPtr = &XV_SdiRxSs_ConfigTable[Index];
-			break;
-		}
-	}
-	return CfgPtr;
-}
-#else
 XV_SdiRxSs_Config *XV_SdiRxSs_LookupConfig(UINTPTR BaseAddress)
 {
 	XV_SdiRxSs_Config *CfgPtr = NULL;
@@ -99,6 +84,7 @@ XV_SdiRxSs_Config *XV_SdiRxSs_LookupConfig(UINTPTR BaseAddress)
 
 u32 XV_SdiRxSs_GetDrvIndex(XV_SdiRxSs *InstancePtr, UINTPTR BaseAddress)
 {
+	(void)InstancePtr;
 	u32 Index = 0;
 
 	for (Index = 0U; XV_SdiRxSs_ConfigTable[Index].Name; Index++) {
@@ -109,4 +95,3 @@ u32 XV_SdiRxSs_GetDrvIndex(XV_SdiRxSs *InstancePtr, UINTPTR BaseAddress)
 	}
 	return Index;
 }
-#endif

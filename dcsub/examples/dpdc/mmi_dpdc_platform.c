@@ -21,6 +21,10 @@
 #include <xil_cache.h>
 #include <xil_types.h>
 #include <sleep.h>
+#include <xparameters.h>
+#ifdef XPAR_XCLK_WIZ_NUM_INSTANCES
+#include <xclk_wiz.h>
+#endif
 
 #include "mmi_dpdc_platform.h"
 #include "mmi_dp_init.h"
@@ -34,9 +38,17 @@
 #define CLK_LOCK			1
 #define PL_AUD_CLK_MULT			512
 
+/* Clock wizard output driving the audio sample clock */
+#define XDPDC_AUD_CLK_WIZ_OUT0		0U
+
 #define XDCDMA_IEN_VSYNC_INT_MASK	0x0000000C
 #define XDCDMA_INTR_ID			179
 #define XDCDMA_INTR_PARENT		0xe2000000
+
+/** RST_DC write attempts before giving up */
+#define XDPDC_DC_RST_RETRIES		5U
+/** Wait after each RST_DC write, in microseconds */
+#define XDPDC_DC_RST_DELAY_US		10U
 
 static RunConfig *XDpDc_IrqRunCfgPtr;
 static u8 XDpDc_CursorToSdpPending;
@@ -62,6 +74,7 @@ static void XDpDc_DmaInterruptHandler(void *CallbackRef)
 	}
 }
 
+#ifdef XPAR_XCLK_WIZ_NUM_INSTANCES
 /*****************************************************************************/
 /**
 *
@@ -74,11 +87,11 @@ static void XDpDc_DmaInterruptHandler(void *CallbackRef)
 * @note		None.
 *
 *****************************************************************************/
-u32 XClk_WaitForLock(XClk_Wiz_Config *CfgPtr)
+static u32 XClk_WaitForLock(XClk_Wiz_Config *CfgPtr)
 {
 	u32 Count = 0;
 
-	while (!XClk_Wiz_ReadReg(CfgPtr->BaseAddr, XCLK_WIZ_REG4_OFFSET) & CLK_LOCK) {
+	while (!(XClk_Wiz_ReadReg(CfgPtr->BaseAddr, XCLK_WIZ_STATUS_OFFSET) & CLK_LOCK)) {
 		if (Count == 10000) {
 			return XST_FAILURE;
 		}
@@ -91,24 +104,194 @@ u32 XClk_WaitForLock(XClk_Wiz_Config *CfgPtr)
 /*****************************************************************************/
 /**
 *
+* This function looks up the configuration of a clock wizard instance.
+*
+* @param	BaseAddr is the base address of the clock wizard, or 0 if the
+*		clock wizard is not in the design.
+*
+* @return	Pointer to the configuration, or NULL if BaseAddr is 0 or no
+*		instance has that base address.
+*
+* @note		XClk_Wiz_LookupConfig(0) returns the first instance in the
+*		configuration table, so 0 is rejected here.
+*
+*****************************************************************************/
+static XClk_Wiz_Config *XDpDc_LookupClkWiz(UINTPTR BaseAddr)
+{
+	if (BaseAddr == 0U)
+		return NULL;
+
+	return XClk_Wiz_LookupConfig(BaseAddr);
+}
+#endif
+
+/*****************************************************************************/
+/**
+*
+* This function writes the DC reset bits in MMI_CRX.RST_DC and waits for them
+* to read back. RST_DC is write protected: WPROTS and WPROTP must be written
+* with XMMI_CRX_WPROT_DISABLE (0) before the RST_DC write takes effect. Their
+* previous values are restored after the write. The write is retried up to
+* XDPDC_DC_RST_RETRIES times.
+*
+* @param	Val is the new value of the XMMI_CRX_RST_DC_MASK bits.
+*
+* @return	XST_SUCCESS if the reset bits read back as Val, else
+*		XST_FAILURE
+*
+* @note		None.
+*
+*****************************************************************************/
+static u32 XDpDc_WriteDcReset(u32 Val)
+{
+	u32 WprotS, WprotP, Reg;
+	u32 Retry;
+
+	for (Retry = 0U; Retry < XDPDC_DC_RST_RETRIES; Retry++) {
+		WprotS = XMmiCrx_ReadReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTS);
+		WprotP = XMmiCrx_ReadReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTP);
+		XMmiCrx_WriteReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTS,
+				 XMMI_CRX_WPROT_DISABLE);
+		XMmiCrx_WriteReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTP,
+				 XMMI_CRX_WPROT_DISABLE);
+
+		Reg = XMmiCrx_ReadReg(XMMI_CRX_BASEADDR, XMMI_CRX_RST_DC);
+		XMmiCrx_WriteReg(XMMI_CRX_BASEADDR, XMMI_CRX_RST_DC,
+				 (Reg & ~XMMI_CRX_RST_DC_MASK) | Val);
+
+		XMmiCrx_WriteReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTS, WprotS);
+		XMmiCrx_WriteReg(XMMI_CRX_BASEADDR, XMMI_CRX_WPROTP, WprotP);
+		usleep(XDPDC_DC_RST_DELAY_US);
+
+		Reg = XMmiCrx_ReadReg(XMMI_CRX_BASEADDR, XMMI_CRX_RST_DC);
+		if ((Reg & XMMI_CRX_RST_DC_MASK) == Val)
+			return XST_SUCCESS;
+	}
+
+	xil_printf("  ERROR: MMI_CRX.RST_DC reads 0x%x, expected 0x%x\r\n",
+		   Reg & XMMI_CRX_RST_DC_MASK, Val);
+
+	return XST_FAILURE;
+}
+
+/*****************************************************************************/
+/**
+*
+* This function asserts the DC block reset and releases SS_CFG_POR in
+* MMI_CRX.RST_DC, whatever state the boot CDO left them in. The DC is then
+* configured in reset. XDpDc_ReleaseDcReset() takes it out of reset after
+* DP link training.
+*
+* @return	XST_SUCCESS if RST_DC reads back as requested, else
+*		XST_FAILURE
+*
+* @note		None.
+*
+*****************************************************************************/
+u32 XDpDc_AssertDcReset(void)
+{
+	return XDpDc_WriteDcReset(XMMI_CRX_RST_DC_BLK_MASK);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function releases the DC block reset in MMI_CRX.RST_DC. Call it after
+* DP link training and before the DP video stream is configured. The DP video
+* stream registers do not latch while the DC block reset is asserted.
+*
+* @return	XST_SUCCESS if RST_DC reads back released, else XST_FAILURE
+*
+* @note		None.
+*
+*****************************************************************************/
+u32 XDpDc_ReleaseDcReset(void)
+{
+	return XDpDc_WriteDcReset(XMMI_CRX_RST_DC_RELEASE);
+}
+
+/*****************************************************************************/
+/**
+*
+* This function returns the video clock rate the XSA programs at boot, which
+* is the rate the PL video pipeline is timed for. The rate is read on the
+* first call and cached, so the first call must come before
+* XDpDc_InitClkWiz() reprograms the clock.
+*
+* @return	Boot rate in Hz, or 0 if it cannot be read, the clock may
+*		already have been reprogrammed or the design has no clock
+*		wizard.
+*
+*****************************************************************************/
+u64 XDpDc_GetVidClkBootHz(void)
+{
+#ifndef XPAR_XCLK_WIZ_NUM_INSTANCES
+	return 0U;
+#else
+	static u64 BootHz;
+	static u8 BootHzRead;
+	XClk_Wiz ClkWiz;
+	XClk_Wiz_Config *CfgPtr;
+	u64 Rate;
+
+	if (BootHzRead)
+		return BootHz;
+	BootHzRead = 1U;
+
+	CfgPtr = XDpDc_LookupClkWiz(CLK_WIZ_BASEADDR);
+	if ((CfgPtr == NULL) ||
+	    (XClk_Wiz_CfgInitialize(&ClkWiz, CfgPtr, CfgPtr->BaseAddr) !=
+	     XST_SUCCESS) ||
+	    (XClk_Wiz_GetRate(&ClkWiz, 0U, &Rate) != XST_SUCCESS))
+		return 0U;
+
+	/*
+	 * Reprogramming (XDpDc_InitClkWiz() and the driver) always clears
+	 * REG25, so only a non-zero REG25 proves the clock still has the PDI
+	 * setting. After an ELF-only reload it holds an earlier run's rate.
+	 */
+	if (XClk_Wiz_ReadReg(CfgPtr->BaseAddr, XCLK_WIZ_REG25_OFFSET) == 0U) {
+		xil_printf("  ClkWiz: PDI clock setting not confirmed, video "
+			   "clock check off\r\n");
+		return 0U;
+	}
+
+	BootHz = Rate;
+	xil_printf("  ClkWiz: PDI video clock %llu Hz (%llu.%03llu MHz)\r\n",
+		   BootHz, BootHz / 1000000U, (BootHz % 1000000U) / 1000U);
+
+	return BootHz;
+#endif
+}
+
+/*****************************************************************************/
+/**
+*
 * This function initializes the Clock Wizard IP for video and audio clocks
 *
 * @param	RunCfgPtr is a pointer to the application configuration structure
 *
 * @return	XST_SUCCESS if successful, else XST_FAILURE
 *
-* @note		None.
+* @note		Returns XST_FAILURE if the BSP has no clock wizard driver.
 *
 *****************************************************************************/
 u32 XDpDc_InitClkWiz(RunConfig *RunCfgPtr)
 {
+#ifndef XPAR_XCLK_WIZ_NUM_INSTANCES
+	(void)RunCfgPtr;
+	xil_printf("  ERROR: No Clock Wizard in the design. This example needs "
+		   "a PL Clock Wizard for the DC video clock\r\n");
+
+	return XST_FAILURE;
+#else
 	XClk_Wiz InstancePtr, AudInstancePtr;
 	XClk_Wiz_Config *CfgPtr, *AudCfgPtr;
 	u32 Status = XST_SUCCESS;
 	u32 Reg;
 	u64 Rate;
 
-	CfgPtr = XClk_Wiz_LookupConfig(CLK_WIZ_BASEADDR);
+	CfgPtr = XDpDc_LookupClkWiz(CLK_WIZ_BASEADDR);
 	if (!CfgPtr) {
 		xil_printf("  ERROR: Failed to lookup Clock Wizard IP\r\n");
 		return XST_FAILURE;
@@ -151,7 +334,7 @@ u32 XDpDc_InitClkWiz(RunConfig *RunCfgPtr)
 
 	Status = XClk_WaitForLock(CfgPtr);
 	if (Status != XST_SUCCESS) {
-		Reg = XClk_Wiz_ReadReg(CfgPtr->BaseAddr, XCLK_WIZ_REG4_OFFSET) & CLK_LOCK;
+		Reg = XClk_Wiz_ReadReg(CfgPtr->BaseAddr, XCLK_WIZ_STATUS_OFFSET) & CLK_LOCK;
 		xil_printf("  ERROR: Video clock not locked: 0x%x (expected: 0x1)\r\n", Reg);
 	} else {
 		xil_printf("  ClkWiz: PLL locked\r\n");
@@ -163,8 +346,11 @@ u32 XDpDc_InitClkWiz(RunConfig *RunCfgPtr)
 
 	if(RunCfgPtr->AudioEnable)
 	{
+		u32 AudFs;
+		u32 AudClkkHz;
+		u64 AudClkHz;
 
-		AudCfgPtr = XClk_Wiz_LookupConfig(CLK_WIZ_AUD_BASEADDR);
+		AudCfgPtr = XDpDc_LookupClkWiz(CLK_WIZ_AUD_BASEADDR);
 		if (!AudCfgPtr) {
 			xil_printf("  ERROR: Failed to lookup Audio Clock Wizard IP\r\n");
 			return XST_FAILURE;
@@ -178,7 +364,29 @@ u32 XDpDc_InitClkWiz(RunConfig *RunCfgPtr)
 
 		XClk_Wiz_WriteReg(AudCfgPtr->BaseAddr, XCLK_WIZ_REG25_OFFSET, 0);
 
-		Status = XClk_Wiz_SetRateHz(&AudInstancePtr, PL_AUD_CLK_MULT * 48000);
+		/* Scale the PL audio clock with the selected sample rate so the
+		 * DC audio sampler matches the rate advertised in the channel
+		 * status (PL_AUD_CLK_MULT x Fs) */
+		AudFs = XDpDc_GetAudSampleRateHz(RunCfgPtr->AudioFrequency);
+
+		if (AudFs == XDPDC_AUD_RATE_UNSUPPORTED_HZ) {
+			xil_printf("  ERROR: Unsupported audio sample frequency %d. "
+				   "Select a frequency from the audio menu\r\n",
+				   RunCfgPtr->AudioFrequency);
+			return XST_FAILURE;
+		}
+
+		AudClkHz = (u64)PL_AUD_CLK_MULT * (u64)AudFs;
+
+		/* Round the requested rate to the nearest kHz */
+		AudClkkHz = (u32)((AudClkHz + (XDPDC_HZ_PER_KHZ / 2U)) /
+				  XDPDC_HZ_PER_KHZ);
+
+		xil_printf("  AudClkWiz: target Fs=%u Hz -> clock=%u kHz\r\n",
+			   AudFs, AudClkkHz);
+
+		Status = XClk_Wiz_SetOutFreqkHz(&AudInstancePtr,
+						XDPDC_AUD_CLK_WIZ_OUT0, AudClkkHz);
 		if (Status != XST_SUCCESS) {
 			xil_printf("  ERROR: Failed to set Audio Clock Wizard rate\r\n");
 			return XST_FAILURE;
@@ -189,12 +397,19 @@ u32 XDpDc_InitClkWiz(RunConfig *RunCfgPtr)
 
 		Status = XClk_WaitForLock(AudCfgPtr);
 		if (Status != XST_SUCCESS) {
-			Reg = XClk_Wiz_ReadReg(AudCfgPtr->BaseAddr, XCLK_WIZ_REG4_OFFSET) & CLK_LOCK;
+			Reg = XClk_Wiz_ReadReg(AudCfgPtr->BaseAddr, XCLK_WIZ_STATUS_OFFSET) & CLK_LOCK;
 			xil_printf("  ERROR: Audio clock not locked: 0x%x (expected: 0x1)\r\n", Reg);
+		} else {
+			xil_printf("  AudClkWiz: PLL locked\r\n");
 		}
+
+		XClk_Wiz_GetRate(&AudInstancePtr, XDPDC_AUD_CLK_WIZ_OUT0, &Rate);
+		xil_printf("  AudClkWiz: PLL rate %llu kHz\r\n",
+			   Rate / XDPDC_HZ_PER_KHZ);
 
 	}
 	return Status;
+#endif
 }
 
 /*****************************************************************************/

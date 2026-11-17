@@ -8,12 +8,11 @@
 /**
 *
 * @file xcan_selftest.c
-* @addtogroup can Overview
-* @{
+* @brief Implements a diagnostic self-test function for the CAN driver.
 *
 * This file contains a diagnostic self-test function for the XCan driver.
 *
-* Please see xcan.h for more information.
+* See xcan.h for more information.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -26,9 +25,15 @@
 *		      The macros have been renamed to remove _m from the name.
 * 3.3   ask  08/01/18 Fixed Cppcheck and GCC warnings in can driver
 * 3.12  vlt  01/28/26 Fixed codespell issues.
+* 3.13  vn   09/08/26 Align Doxygen comments with AMD standards
+* 3.13  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 *****************************************************************************/
+
+/** @addtogroup can Overview
+ * @{
+ */
 
 /***************************** Include Files ********************************/
 
@@ -37,8 +42,8 @@
 
 /************************** Constant Definitions ****************************/
 
+/** Max Frame Size. */
 #define XCAN_MAX_FRAME_SIZE_IN_WORDS (XCAN_MAX_FRAME_SIZE / sizeof(u32))
-				/**< Max Frame Size */
 
 /**************************** Type Definitions ******************************/
 
@@ -47,44 +52,44 @@
 /************************** Variable Definitions ****************************/
 
 /* Buffers to hold frames to send and receive. */
-static u32 TxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< TxFrame Buffer */
-static u32 RxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< RxFrame Buffer */
+static u32 TxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< TxFrame Buffer. */
+static u32 RxFrame[XCAN_MAX_FRAME_SIZE_IN_WORDS]; /**< RxFrame Buffer. */
 
 /************************** Function Prototypes *****************************/
 
 /* Message Id Constant. */
-#define TEST_MESSAGE_ID	1024  /**< Message ID */
+#define TEST_MESSAGE_ID	1024  /**< Message ID. */
 
 /* CAN Dlc Value */
-#define TEST_CAN_DLC	8     /**< DLC length */
+#define TEST_CAN_DLC	8     /**< DLC length. */
 
 /*****************************************************************************/
 /**
 *
-* This function runs a self-test on the CAN driver/device. The test resets
-* the device, sets up the Loop Back mode, sends a standard frame, receives the
-* frame, verifies the contents, and resets the device again.
+* @brief Runs a self-test on the CAN driver/device.
+*
+* The test resets the device and sets up the Loop Back mode. It then sends a
+* standard frame, receives the frame, verifies the contents, and resets the
+* device again.
 *
 * Note that this is a destructive test in that resets of the device are
 * performed. Refer to the device specification for the device status
 * after the reset operation.
 *
-*
-* @param	InstancePtr is a pointer to the XCan instance to be worked on.
+* @param[in]    InstancePtr Pointer to the XCan instance to be worked on.
 *
 * @return
-*		- XST_SUCCESS   if the self-test passed. i.e., the frame
+*		- XST_SUCCESS   if the self-test passed, that is, the frame
 *		received via the internal loop back has the same contents as the
-* 		sent frame.
+*                 sent frame.
 * 		- XST_FAILURE   Otherwise.
 *
 * @note
-*
 * If the CAN device does not work properly, this function may enter an
-* infinite loop and will never return to the caller.
+* infinite loop and never returns to the caller.
 * <br><br>
 * If XST_FAILURE is returned, the device is not reset so that the caller could
-* have a chance to check reason(s) causing the failure.
+* have a chance to check reasons causing the failure.
 *
 ******************************************************************************/
 int XCan_SelfTest(XCan *InstancePtr)

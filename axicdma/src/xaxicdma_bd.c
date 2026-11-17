@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,7 @@
 * @addtogroup axicdma Overview
 * @{
  *
+* @brief Implements buffer descriptor access helpers for AXI CDMA.
  * The implementation for the Buffer Descriptor (BD) API functions.
  *
  * <pre>
@@ -28,7 +29,9 @@
 #include "xaxicdma.h"
 #include "xaxicdma_bd.h"
 
+/** @cond INTERNAL */
 #define XAXICDMA_PAGE_SIZE  0x1000
+/** @endcond */
 
 /************************** Constant Definitions *****************************/
 
@@ -36,13 +39,9 @@
 
 /*****************************************************************************/
 /**
- * This function clears the content of the BD.
+ * @brief Clears the content of the BD.
  *
- * @param 	BdPtr is the pointer to the BD to be cleared
- *
- * @return	None.
- *
- * @note	None.
+ * @param[in] BdPtr is the pointer to the BD to be cleared
  *
  *****************************************************************************/
 void XAxiCdma_BdClear(XAxiCdma_Bd *BdPtr)
@@ -55,14 +54,10 @@ void XAxiCdma_BdClear(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function clones the content from the template BD
+ * @brief Clones the content from the template BD.
  *
- * @param 	BdPtr is the pointer to the BD to be cloned to
- * @param 	TmpBd is the pointer to the BD to be cloned from
- *
- * @return	None.
- *
- * @note	None.
+ * @param[in] BdPtr is the pointer to the BD to be cloned to
+ * @param[in] TmpBd is the pointer to the BD to be cloned from
  *
  *****************************************************************************/
 void XAxiCdma_BdClone(XAxiCdma_Bd *BdPtr, XAxiCdma_Bd *TmpBd)
@@ -77,13 +72,11 @@ void XAxiCdma_BdClone(XAxiCdma_Bd *BdPtr, XAxiCdma_Bd *TmpBd)
 
 /*****************************************************************************/
 /**
- * This function gets the next BD pointer of the BD.
+ * @brief Reads the next BD pointer from the BD.
  *
- * @param 	BdPtr is the pointer to the BD to get the next BD ptr
+ * @param[in] BdPtr is the pointer to the BD to read the next BD pointer.
  *
- * @return	The next BD ptr of the BD.
- *
- * @note	None.
+ * @return	The next BD pointer of the BD.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdGetNextPtr(XAxiCdma_Bd *BdPtr)
@@ -101,14 +94,10 @@ LONG XAxiCdma_BdGetNextPtr(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function set the Next BD ptr of a BD
+ * @brief Sets the next BD pointer in the BD.
  *
- * @param 	BdPtr is the pointer to the BD to set the Next BD ptr
- * @param 	NextBdPtr is the valud of Next BD ptr
- *
- * @return	None
- *
- * @note	None.
+ * @param[in] BdPtr is the pointer to the BD to set the next BD pointer.
+ * @param[in] NextBdPtr is the next BD pointer value.
  *
  *****************************************************************************/
 void XAxiCdma_BdSetNextPtr(XAxiCdma_Bd *BdPtr, UINTPTR NextBdPtr)
@@ -126,13 +115,11 @@ void XAxiCdma_BdSetNextPtr(XAxiCdma_Bd *BdPtr, UINTPTR NextBdPtr)
 
 /*****************************************************************************/
 /**
- * This function gets the completion status of the BD.
+ * @brief Reads the completion status of the BD.
  *
- * @param	BdPtr is the pointer to the BD to get the status
+ * @param[in] BdPtr is the pointer to the BD to get the status
  *
  * @return	The status bits of the BD.
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdGetSts(XAxiCdma_Bd *BdPtr)
@@ -144,18 +131,14 @@ u32 XAxiCdma_BdGetSts(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function clears the status bits of the BD. The status bits include
+ * @brief Clears the status bits of the BD. The status bits include
  * the completion bit as well as the error bits.
  *
  * This is the only function that needs to be called to clear a completed
  * BD. All other fields (except reserved words) need to be re-assigned before
  * re-submission.
  *
- * @param	BdPtr is the pointer to the BD to clear the status
- *
- * @return	None
- *
- * @note	None.
+ * @param[in] BdPtr is the pointer to the BD to clear the status
  *
  *****************************************************************************/
 void XAxiCdma_BdClearSts(XAxiCdma_Bd *BdPtr)
@@ -168,17 +151,15 @@ void XAxiCdma_BdClearSts(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function sets the source address of the BD.
+ * @brief Sets the source address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to set the source address
- * @param	Addr is the source address of the buffer
+ * @param[in] BdPtr is the pointer to the BD to set the source address
+ * @param[in] Addr is the source address of the buffer
  *
  * @return
  *		- XST_SUCCESS if buffer address set successfully
  *		- XST_INVALID_PARAM if buffer address is not aligned and
  *		hardware build has no DRE or in lite mode
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdSetSrcBufAddr(XAxiCdma_Bd *BdPtr, UINTPTR Addr)
@@ -209,13 +190,11 @@ u32 XAxiCdma_BdSetSrcBufAddr(XAxiCdma_Bd *BdPtr, UINTPTR Addr)
 
 /*****************************************************************************/
 /**
- * This function gets the source address of the BD.
+ * @brief Reads the source address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to get the source address
+ * @param[in] BdPtr is the pointer to the BD to get the source address
  *
  * @return	The source address of the buffer that this BD describes
- *
- * @note	None.
  *
  *****************************************************************************/
 LONG XAxiCdma_BdGetSrcBufAddr(XAxiCdma_Bd *BdPtr)
@@ -234,17 +213,15 @@ LONG XAxiCdma_BdGetSrcBufAddr(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function sets the destination address of the BD.
+ * @brief Sets the destination address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to set the destination address
- * @param	Addr is the destination address of the buffer
+ * @param[in] BdPtr is the pointer to the BD to set the destination address
+ * @param[in] Addr is the destination address of the buffer
  *
  * @return
  * 		- XST_SUCCESS if buffer address set successfully
  * 		- XST_INVALID_PARAM if buffer address is not aligned and
  *			hardware build has no DRE or in lite mode
- *
- * @note	None.
  *
  *****************************************************************************/
 u32 XAxiCdma_BdSetDstBufAddr(XAxiCdma_Bd *BdPtr, UINTPTR Addr)
@@ -274,13 +251,11 @@ u32 XAxiCdma_BdSetDstBufAddr(XAxiCdma_Bd *BdPtr, UINTPTR Addr)
 
 /*****************************************************************************/
 /**
- * This function gets the destination address of the BD.
+ * @brief Reads the destination address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to get the destination address
+ * @param[in] BdPtr is the pointer to the BD to get the destination address
  *
  * @return	The destination address of the buffer that this BD describes
- *
- * @note	None
  *
  *****************************************************************************/
 LONG XAxiCdma_BdGetDstBufAddr(XAxiCdma_Bd *BdPtr)
@@ -298,10 +273,10 @@ LONG XAxiCdma_BdGetDstBufAddr(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function sets the length of the BD.
+ * @brief Sets the length of the BD.
  *
- * @param	BdPtr is the pointer to the BD to set the length
- * @param	LenBytes is the length of the buffer
+ * @param[in] BdPtr is the pointer to the BD to set the length
+ * @param[in] LenBytes is the length of the buffer
  *
  * @return
  *		- XST_SUCCESS for success
@@ -331,13 +306,11 @@ u32 XAxiCdma_BdSetLength(XAxiCdma_Bd *BdPtr, int LenBytes)
 
 /*****************************************************************************/
 /**
- * This function gets the length of the BD.
+ * @brief Reads the length of the BD.
  *
- * @param	BdPtr is the pointer to the BD to get the length
+ * @param[in] BdPtr is the pointer to the BD to get the length
  *
  * @return	The length of the buffer that this BD describes
- *
- * @note	None
  *
  *****************************************************************************/
 u32 XAxiCdma_BdGetLength(XAxiCdma_Bd *BdPtr)
@@ -348,14 +321,10 @@ u32 XAxiCdma_BdGetLength(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function sets the Physical address of the BD.
+ * @brief Sets the physical address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to set the physical address
- * @param	PhysAddr is the physical address of the BD
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to set the physical address
+ * @param[in] PhysAddr is the physical address of the BD
  *
  *****************************************************************************/
 void XAxiCdma_BdSetPhysAddr(XAxiCdma_Bd *BdPtr, UINTPTR PhysAddr)
@@ -373,14 +342,10 @@ void XAxiCdma_BdSetPhysAddr(XAxiCdma_Bd *BdPtr, UINTPTR PhysAddr)
 
 /*****************************************************************************/
 /**
- * This function sets the is lite mode field of the BD.
+ * @brief Sets the lite mode field of the BD.
  *
- * @param	BdPtr is the pointer to the BD to work on
- * @param	IsLite is the value for whether hardware is in lite mode
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to work on
+ * @param[in] IsLite is the value for whether hardware is in lite mode
  *
  *****************************************************************************/
 void XAxiCdma_BdSetIsLite(XAxiCdma_Bd *BdPtr, int IsLite)
@@ -393,14 +358,10 @@ void XAxiCdma_BdSetIsLite(XAxiCdma_Bd *BdPtr, int IsLite)
 
 /*****************************************************************************/
 /**
- * This function sets the has DRE field of the BD.
+ * @brief Sets the DRE field of the BD.
  *
- * @param	BdPtr is the pointer to the BD to work on
- * @param	HasDRE is the value for whether hardware has DRE built in
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to work on
+ * @param[in] HasDRE is the value for whether hardware has DRE built in
  *
  *****************************************************************************/
 void XAxiCdma_BdSetHasDRE(XAxiCdma_Bd *BdPtr, int HasDRE)
@@ -413,14 +374,10 @@ void XAxiCdma_BdSetHasDRE(XAxiCdma_Bd *BdPtr, int HasDRE)
 
 /*****************************************************************************/
 /**
- * This function sets the word length field of the BD.
+ * @brief Sets the word length field of the BD.
  *
- * @param	BdPtr is the pointer to the BD to work on
- * @param	WordLen is the length of word in bytes
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to work on
+ * @param[in] WordLen is the length of word in bytes
  *
  *****************************************************************************/
 void XAxiCdma_BdSetWordLen(XAxiCdma_Bd *BdPtr, int WordLen)
@@ -433,14 +390,10 @@ void XAxiCdma_BdSetWordLen(XAxiCdma_Bd *BdPtr, int WordLen)
 
 /*****************************************************************************/
 /**
- * This function sets the maximum transfer length field of the BD.
+ * @brief Sets the maximum transfer length field of the BD.
  *
- * @param	BdPtr is the pointer to the BD to work on
- * @param	MaxLen is the maximum transfer length in bytes
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to work on
+ * @param[in] MaxLen is the maximum transfer length in bytes
  *
  *****************************************************************************/
 void XAxiCdma_BdSetMaxLen(XAxiCdma_Bd *BdPtr, int MaxLen)
@@ -453,13 +406,11 @@ void XAxiCdma_BdSetMaxLen(XAxiCdma_Bd *BdPtr, int MaxLen)
 
 /*****************************************************************************/
 /**
- * This function gets the Physical address of the BD.
+ * @brief Reads the physical address of the BD.
  *
- * @param	BdPtr is the pointer to the BD to get the physical address
+ * @param[in] BdPtr is the pointer to the BD to get the physical address
  *
  * @return	The physical address of the BD
- *
- * @note	None
  *
  *****************************************************************************/
 LONG XAxiCdma_BdGetPhysAddr(XAxiCdma_Bd *BdPtr)
@@ -478,13 +429,9 @@ LONG XAxiCdma_BdGetPhysAddr(XAxiCdma_Bd *BdPtr)
 
 /*****************************************************************************/
 /**
- * This function dumps the BD, it is a debug utility
+ * @brief Dumps the BD for debug purposes.
  *
- * @param	BdPtr is the pointer to the BD to get the physical address
- *
- * @return	None
- *
- * @note	None
+ * @param[in] BdPtr is the pointer to the BD to get the physical address
  *
  *****************************************************************************/
 void XAxiCdma_DumpBd(XAxiCdma_Bd *BdPtr)

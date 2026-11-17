@@ -1,12 +1,11 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
 /****************************************************************************/
 /**
-*
 * @file xtmr_manager.c
 * @addtogroup Overview
 * @{
@@ -23,6 +22,10 @@
 * 1.3   adk  02/23/22 Added new API XTMR_Manager_Configure_BrkDelay()
 *       	      for configuring break delay.
 * 1.7   adk  04/04/25 Added Interrupt fields in the config struct in SDT flow.
+* 1.10  ml   09/24/26 Fix copy Magic1 field into InstancePtr->Config
+*                     in SDT flow CfgInitialize to prevent assert failure in
+*                     break handler.
+* 1.10  ml   25/09/26 Fixed doxygen 1.15.0 and compliance checker warnings.
 * </pre>
 *
 *****************************************************************************/
@@ -47,6 +50,11 @@
 
 /************************** Function Prototypes *****************************/
 
+/**
+ * @brief Perform low-level hardware initialization of the TMR Manager.
+ *
+ * @param[in] InstancePtr is a pointer to the XTMR_Manager instance.
+ */
 extern void _xtmr_manager_initialize(XTMR_Manager *InstancePtr);
 
 static void StubHandler(void *CallBackRef);
@@ -54,7 +62,6 @@ static void StubHandler(void *CallBackRef);
 
 /****************************************************************************/
 /**
-*
 * Initialize a XTMR_Manager instance. The receive and transmit FIFOs of the
 * core are not flushed, so the user may want to flush them. The hardware
 * device does not have any way to disable the receiver such that any valid
@@ -62,14 +69,14 @@ static void StubHandler(void *CallBackRef);
 * interrupt. The baudrate and format of the data are fixed in the hardware
 * at hardware build time.
 *
-* @param	InstancePtr is a pointer to the XTMR_Manager instance.
-* @param	Config is a reference to a structure containing information
+* @param[in] InstancePtr is a pointer to the XTMR_Manager instance.
+* @param[in] Config is a reference to a structure containing information
 *		about a specific TMR Manager device. This function initializes
 *		an InstancePtr object for a specific device specified by the
 *		contents of Config. This function can initialize multiple
 *		instance objects with the use of multiple calls giving different
 *		Config information on each call.
-* @param 	EffectiveAddr is the device base address in the virtual memory
+* @param[in] EffectiveAddr is the device base address in the virtual memory
 *		address space. The caller is responsible for keeping the address
 *		mapping from EffectiveAddr to the device physical base address
 *		unchanged once this function is invoked. Unexpected errors may
@@ -87,7 +94,7 @@ static void StubHandler(void *CallBackRef);
 *
 *****************************************************************************/
 int XTMR_Manager_CfgInitialize(XTMR_Manager *InstancePtr, XTMR_Manager_Config *Config,
-				UINTPTR EffectiveAddr)
+			       UINTPTR EffectiveAddr)
 {
 	(void) Config;
 	u32 cr;
@@ -100,22 +107,25 @@ int XTMR_Manager_CfgInitialize(XTMR_Manager *InstancePtr, XTMR_Manager_Config *C
 	/*
 	 * Perform low-level initialization
 	 */
-        _xtmr_manager_initialize(InstancePtr);
+	_xtmr_manager_initialize(InstancePtr);
 
 	/*
 	 * Set some default values, including setting the callback
 	 * handlers to stubs.
 	 */
 	if (Config->ComparatorsMask) {
-	  InstancePtr->Cmr0 = (u32)(Config->MaskRstValue & 0xffffffff);
-	  InstancePtr->Cmr1 = (u32)(Config->MaskRstValue >> 32);
+		InstancePtr->Cmr0 = (u32)(Config->MaskRstValue & 0xffffffff);
+		InstancePtr->Cmr1 = (u32)(Config->MaskRstValue >> 32);
 	}
-	if (Config->BrkDelayWidth > 0)
+	if (Config->BrkDelayWidth > 0) {
 		InstancePtr->Bdir = Config->BrkDelayRstValue;
-	if (Config->SemInterface > 0)
+	}
+	if (Config->SemInterface > 0) {
 		InstancePtr->SemImr = 0;
-	if (Config->TestComparator == 2)
+	}
+	if (Config->TestComparator == 2) {
 		InstancePtr->Cfir = 0;
+	}
 
 	InstancePtr->PreResetHandler = NULL;
 	InstancePtr->RecoveryHandler = NULL;
@@ -129,21 +139,22 @@ int XTMR_Manager_CfgInitialize(XTMR_Manager *InstancePtr, XTMR_Manager_Config *C
 #ifdef SDT
 	InstancePtr->Config.IntrId = Config->IntrId;
 	InstancePtr->Config.IntrParent = Config->IntrParent;
+	InstancePtr->Config.Magic1 = Config->Magic1;
 #endif
 
 	/*
 	 * Write to the SEM interrupt mask register to disable the interrupts
 	 */
 	XTMR_Manager_WriteReg(InstancePtr->RegBaseAddress,
-				XTM_SEMIMR_OFFSET, 0);
+			      XTM_SEMIMR_OFFSET, 0);
 
 	/*
 	 * Write to the Control Register to set RIR and MACGI1 to allow
-         * recovery reset by default.
+	 * recovery reset by default.
 	 */
-        cr = (1 << XTM_CR_RIR) | Config->Magic1;
+	cr = (1 << XTM_CR_RIR) | Config->Magic1;
 	XTMR_Manager_WriteReg(InstancePtr->RegBaseAddress,
-				XTM_CR_OFFSET, cr);
+			      XTM_CR_OFFSET, cr);
 	InstancePtr->Cr = cr;
 
 	/*
@@ -155,17 +166,13 @@ int XTMR_Manager_CfgInitialize(XTMR_Manager *InstancePtr, XTMR_Manager_Config *C
 }
 
 
-/****************************************************************************
-*
+/****************************************************************************/
+/**
 * This function provides a stub handler such that if the application does not
 * define a handler but enables interrupts, this function will be called.
 *
-* @param	CallBackRef has no purpose but is necessary to match the
+* @param[in] CallBackRef has no purpose but is necessary to match the
 *		interface for a handler.
-*
-* @return	None.
-*
-* @note		None.
 *
 *****************************************************************************/
 static void StubHandler(void *CallBackRef)
@@ -178,17 +185,13 @@ static void StubHandler(void *CallBackRef)
 	Xil_AssertVoidAlways();
 }
 
-/****************************************************************************
-*
+/****************************************************************************/
+/**
 * This function configures the break delay value in Break Delay
 * Initialization Register.
 *
-* @param	InstancePtr is a pointer to the XTMR_Manager instance.
-* @param	BrkDelay is the break delay value.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] InstancePtr is a pointer to the XTMR_Manager instance.
+* @param[in] BrkDelay is the break delay value.
 *
 *****************************************************************************/
 void XTMR_Manager_Configure_BrkDelay(XTMR_Manager *InstancePtr, u32 BrkDelay)

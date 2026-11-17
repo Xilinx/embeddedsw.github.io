@@ -1,11 +1,11 @@
-# Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 %YAML 1.2
 ---
 title: Bindings for csi2txss Sub System Driver
 
 maintainers:
-  - Kunal Rane <kvrane@amd.com>
+  - Asif Ikbal <asif.ikbal@amd.com>
 
 type: driver
 
@@ -15,6 +15,7 @@ properties:
       - items:
         - enum:
           - xlnx,mipi-csi2-tx-subsystem-2.2
+          - xlnx,mipi-csi2-tx-subsystem-3.0
   reg:
     description: Physical base address and size of the controller register map
   xlnx,highaddr:
@@ -25,6 +26,8 @@ properties:
     description: Flag for number of lanes.
   xlnx,csi2-tx-pixel-mode:
     description: Pixel mode.
+  xlnx,csi2-tx-num-vc:
+    description: Number of Virtual Channels supported (4, 8 or 16). Defaults to 4 for older IP.
   xlnx,csi2-tx-line-bufr-depth:
     description: Line buffer depth.
   xlnx,dphy-linerate:
@@ -41,6 +44,10 @@ properties:
     description: Sub-core instance presence.
   dphy-connected:
     description: Sub-core instance configuration.
+  txphy-present:
+    description: Sub-core instance presence.
+  txphy-connected:
+    description: Sub-core instance configuration.
   interrupts:
     description: Interrupt number
   interrupt-parent:
@@ -53,6 +60,7 @@ required:
   - xlnx,csi2-tx-lanes
   - xlnx,csi2-tx-data-type
   - xlnx,csi2-tx-pixel-mode
+  - xlnx,csi2-tx-num-vc
   - xlnx,csi2-tx-line-bufr-depth
   - xlnx,dphy-linerate
   - xlnx,dphy-en-reg-if
@@ -61,6 +69,8 @@ required:
   - csi2tx-connected: phandle
   - dphy-present
   - dphy-connected: phandle
+  - txphy-present
+  - txphy-connected: phandle
   - interrupts
   - interrupt-parent
 

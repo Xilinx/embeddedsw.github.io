@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,7 +11,9 @@
 * @addtogroup emacps Overview
 * @{
 *
-* This file contains lookup method by device ID when success, it returns
+* @brief Implements static initialization and configuration lookup for EmacPs.
+*
+* Contains lookup method by device ID when success, it returns
 * pointer to config table to be used to initialize the device.
 *
 * <pre>
@@ -51,24 +53,9 @@ extern XEmacPs_Config XEmacPs_ConfigTable[XPAR_XEMACPS_NUM_INSTANCES];
 
 /*****************************************************************************/
 /**
-*
-* Looks up the device configuration based on the unique device ID/BaseAddress.
-* A table contains the configuration info for each device in the system.
-*
-* @if SDT
-* @param        BaseAddress contains the base address of the device
-* @else
-* @param        DeviceId contains the unique ID of the device
-* @endif
-*
-* @return
-*A pointer to the configuration table entry corresponding to the given
-*device ID/BaseAddress, or NULL if no match is found.
-*
-* @note        In XSCT/classic flow, DeviceId is used to look up the device
-*              configuration.
-*
-******************************************************************************/
+ * @brief Looks up device configuration by device ID or base address.
+ *
+ *****************************************************************************/
 #ifdef SDT
 XEmacPs_Config *XEmacPs_LookupConfig(UINTPTR BaseAddress)
 {

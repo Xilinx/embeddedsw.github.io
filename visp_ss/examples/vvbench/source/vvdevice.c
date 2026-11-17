@@ -45,6 +45,15 @@
 #include <isi_iss.h>
 #include "hal_i2c.h"
 #include "xvisp_ss.h"
+#include "xil_printf.h"
+#if defined(__aarch64__)
+#include "xiltimer.h"
+#endif
+#if ARMR52
+#include "trace.h"
+#include "cpu_info.h"
+#define MM_GET_HIGH_MEM_PREFIX 0x8
+#endif
 extern int tuning_json;
 
 /* Forward declarations for types from libvisp.a */
@@ -129,6 +138,14 @@ extern int TDatabase_query(void* hDatabase, char const *pCategory, void** result
 extern const EmbeddedJson *find_image_data(const char* name);
 
 extern XVisp_Ss VispSsInst[XPAR_XVISP_SS_NUM_INSTANCES];
+/* Image splitter/stitcher is a design-wide PL feature (all visp_ss instances share
+ * the same value), so gate it at compile time from the canonical XPAR macro. */
+#if defined(XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_ENABLE) && \
+    (XPAR_XVISP_SS_0_IMAGE_SPLITTER_STITCHER_ENABLE == 1)
+#define SPLITTER_ENABLED  1
+#else
+#define SPLITTER_ENABLED  0
+#endif
 extern int image_len;
 extern int custom_json;
 
@@ -144,7 +161,13 @@ extern int custom_json;
 #include "cam_device_app.h"
 #include "vvbench_gwdr_api.h"
 #include "sensor_cmd.h"
-
+#if ARMR52
+CREATE_TRACER(VSI_DEVICE_API_INFO, "VSI_DEVICE_API_INFO: ", INFO, 1);
+CREATE_TRACER(VSI_DEVICE_API_ALWAYS, "VSI_DEVICE_API_ALWAYS: ", ALWAYS, 1);
+CREATE_TRACER(VSI_DEVICE_API_WARN, "VSI_DEVICE_API_WARNING: ", WARNING, 1);
+CREATE_TRACER(VSI_DEVICE_API_ERR, "VSI_DEVICE_API_ERROR: ", ERROR, 1);
+CREATE_OFFLINE_TRACE(VSI_DEVICE_API);
+#endif
 VvbenchInstance_t *pBenchInstance = NULL;
 VvbenchVvdev_t *caseContext = NULL;
 int instanceNumber = 0;
@@ -157,6 +180,19 @@ bool_t isVvdeviceReleased = false;
 int showFrameNum = 0;
 BufIdentity outBuf[MAX_CAM_NUM][CAMDEV_BUFCHAIN_RAW];
 extern int ATM_ENABLE;
+/* SetATM() is provided by the visp_ss BSP driver (visp_common.c). Its header is
+ * not on the app include path, so declare the prototype explicitly here to get
+ * correct argument passing. Args are the high-mem prefix and is_64bit flag,
+ * both derived from where the linker placed the ISP buffer pools. */
+extern int SetATM(uint32_t high_mem, uint32_t is_64bit);
+/* SetIspInputSplit() is provided by the visp_ss BSP driver (visp_common.c). It
+ * tells the RPU whether to run the ISP pipeline in 2x2 split-input (quarter-tile)
+ * mode (1) or full-frame mode (0). Must be sent BEFORE the camera is connected. */
+extern int SetIspInputSplit(uint32_t enable);
+/* WdtSendTest() is provided by the visp_ss BSP driver (wdt_notifier.c). It
+ * kicks off the WDT test by asking the RPU to stop petting its WWDT so the
+ * APU-side notifier can observe the resulting WWDT0 expiry. */
+extern int WdtSendTest(void);
 extern int init_lilo;
 extern int userVirtualChannelId;
 int ISP_ID;
@@ -164,6 +200,7 @@ int isp_instance_idx;
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
 	extern int noOfFrmbufInstances;
 	extern struct aligned_buf Frame_Array_p[XPAR_XV_FRMBUF_WR_NUM_INSTANCES][3];
+	extern u64 fbwr_bufsize[XPAR_XV_FRMBUF_WR_NUM_INSTANCES];
 #endif
 
 volatile uint32_t apuBufferInform[CAMDEV_VIRTUAL_ID_MAX *
@@ -177,6 +214,48 @@ volatile uint32_t apuBufferInform[CAMDEV_VIRTUAL_ID_MAX *
 #define ALIGN_16BYTE(width)         (((width) + (0xF)) & (~(0xF)))
 
 uint64_t start, now;
+
+#if defined(__aarch64__)
+/* One measurement per application run, not per FPS interval or output path. */
+static uint64_t firstFrameStartTicks;
+static bool firstFrameTimerStarted = false;
+static bool firstFrameReported = false;
+
+void VsiVvdeviceStartFirstFrameTimer(void)
+{
+	XTime ticks;
+
+	/* The BSP enables a disabled generic timer without resetting a running one. */
+	XTime_GetTime(&ticks);
+	firstFrameStartTicks = ticks;
+	firstFrameTimerStarted = true;
+	firstFrameReported = false;
+}
+
+static void VsiVvdeviceReportFirstFrame(uint64_t entryTicks)
+{
+	uint64_t counterFrequency;
+	uint64_t elapsedTicks;
+	uint64_t elapsedUs;
+
+	firstFrameReported = true;
+	asm volatile("mrs %0, cntfrq_el0" : "=r"(counterFrequency));
+	if (!firstFrameTimerStarted || counterFrequency == 0 ||
+	    entryTicks <= firstFrameStartTicks) {
+		xil_printf("[FIRST_FRAME] ShowBuffer entry: timing unavailable "
+			   "(missing baseline, zero frequency, or non-advancing counter)\r\n");
+		return;
+	}
+
+	elapsedTicks = entryTicks - firstFrameStartTicks;
+	/* Split the conversion to avoid multiplying the full tick count by 1e6. */
+	elapsedUs = (elapsedTicks / counterFrequency) * 1000000ULL +
+		    ((elapsedTicks % counterFrequency) * 1000000ULL) / counterFrequency;
+	xil_printf("[FIRST_FRAME] main -> VsiVvdeviceShowBuffer entry: %llu.%03llu ms\r\n",
+		   (unsigned long long)(elapsedUs / 1000ULL),
+		   (unsigned long long)(elapsedUs % 1000ULL));
+}
+#endif
 
 // Timer variables for VsiCamDeviceDeQueBuffer counter (every second)
 int dequeue_call_count = 0;
@@ -226,6 +305,92 @@ struct resizer {
 	int sp1_enable;
 	int sp1_format;
 };
+
+static void VsiVvdeviceUnwindCaseLine
+(
+	VvbenchInstance_t *pVvbenchInstance,
+	VvbenchVvdev_t *caseCtx,
+	int totalInstance
+)
+{
+	for (int index = totalInstance - 1; index >= 0; index--) {
+		CamDeviceBufChainId_t bufIoArray[CAMDEV_BUFCHAIN_MAX];
+		int bufIoArrayCount = 0;
+
+		if (caseCtx->instanceCfgCtx[index].instanceEnable == 0 ||
+		    pVvbenchInstance->hCamDevice[index] == NULL)
+			continue;
+
+#ifdef APU_CORE
+		if (selectDestinationCore(caseCtx->instanceCfgCtx[index].hpId) != XST_SUCCESS)
+			LOGE("selectDestinationCore failed while unwinding ISP %d",
+			     caseCtx->instanceCfgCtx[index].hpId);
+#endif
+
+		for (int pathIndex = 0; pathIndex < CAMDEV_BUFCHAIN_MAX; pathIndex++) {
+			if (caseCtx->instanceCfgCtx[index].instancePath[pathIndex].pathState == ENABLE)
+				bufIoArray[bufIoArrayCount++] =
+					caseCtx->instanceCfgCtx[index].instancePath[pathIndex].path;
+		}
+
+		for (int pathIndex = 0; pathIndex < bufIoArrayCount; pathIndex++)
+			(void)VsiVvdevicePathDisable(pVvbenchInstance, caseCtx, index,
+						     bufIoArray + pathIndex, 1);
+
+		(void)VsiVvbenchUnRegister3ALib(pVvbenchInstance->hCamDevice[index], caseCtx, index);
+		(void)VsiCamDeviceDisconnectCamera(pVvbenchInstance->hCamDevice[index]);
+
+		if (caseCtx->instanceCfgCtx[index].inputType == CAMDEV_INPUT_TYPE_SENSOR) {
+			(void)VsiCamDeviceSensorClose(pVvbenchInstance->hCamDevice[index]);
+			(void)VsiCamDeviceSensorDrvHandleUnRegister(pVvbenchInstance->hCamDevice[index]);
+		}
+
+		for (int pathIndex = 0; pathIndex < CAMDEV_BUFCHAIN_MAX; pathIndex++) {
+			if (caseCtx->instanceCfgCtx[index].instancePath[pathIndex].pathState != UN_INIT) {
+				CamDeviceBufChainId_t bufIo =
+					caseCtx->instanceCfgCtx[index].instancePath[pathIndex].path;
+				(void)VsiVvdevicePathRelease(pVvbenchInstance, caseCtx, index, bufIo);
+			}
+		}
+
+		(void)VsiCamDeviceDestroy(pVvbenchInstance->hCamDevice[index]);
+		pVvbenchInstance->hCamDevice[index] = NULL;
+		(void)VsiCamCommonDestroy(&caseCtx->instanceCfgCtx[index].hCamCommon);
+	}
+}
+
+#ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
+static void VsiVvdevicePrintLiloDumpCommands
+(
+	VvbenchVvdev_t *caseCtx,
+	int totalInstance
+)
+{
+#if SPLITTER_ENABLED
+	if (caseCtx->instanceCfgCtx[0].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable) {
+		LOGI(" |  mrd -bin -file splitter.rgb 0x%llx 0x%llx\r\n\n",
+		     (unsigned long long)(uintptr_t)Frame_Array_p[0][0].aligned_addr,
+		     (unsigned long long)(fbwr_bufsize[0] / 4));
+	}
+#else
+	for (int idx = 0; idx < totalInstance; idx++) {
+		int hpId = caseCtx->instanceCfgCtx[idx].hpId;
+
+		if (caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable) {
+			LOGI(" |  mrd -bin -file lilo_ISP%d_MP.rgb 0x%llx 0x%llx\r\n\n",
+			     hpId, (unsigned long long)(uintptr_t)Frame_Array_p[hpId * 2][0].aligned_addr,
+			     (unsigned long long)(fbwr_bufsize[hpId * 2] / 4));
+		}
+		if (caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_SP1].pathEnable) {
+			LOGI(" |  mrd -bin -file lilo_ISP%d_SP.rgb 0x%llx 0x%llx\r\n\n",
+			     hpId, (unsigned long long)(uintptr_t)Frame_Array_p[hpId * 2 + 1][0].aligned_addr,
+			     (unsigned long long)(fbwr_bufsize[hpId * 2 + 1] / 4));
+		}
+	}
+#endif
+}
+#endif
+
 //class vvinstance_dev mdev;
 int VsiVvdeviceExecuteCaseline
 (
@@ -234,7 +399,6 @@ int VsiVvdeviceExecuteCaseline
 )
 {
 	int result;
-	bool oba_flag = false;
 	LOGI("%s enter \n", __func__);
 
 	if ((caseCtx == NULL) || (cfgCtx == NULL)) {
@@ -279,15 +443,15 @@ int VsiVvdeviceExecuteCaseline
 
 	bool_t initSwSimuEnable = caseCtx->swSimuCfg.enable;
 	for (int index = 0; index < totalInstance; index++) {
+
+		if (caseCtx->instanceCfgCtx[index].instanceEnable == 0) {
+			continue;
+		}
 		if (0 == caseCtx->instanceCfgCtx[index].hCamCommon) {
 			LOGE("%s: invalid cam common handle", __func__);
 			return VVCASE_EXEC_FAIL;
 		}
 		pCamCommonCtx = (CamCommonContext_t *)caseCtx->instanceCfgCtx[index].hCamCommon;
-
-		if (caseCtx->instanceCfgCtx[index].instanceEnable == 0) {
-			continue;
-		}
 
 		uint32_t instanceId = index;
 		LOGI("Testing instance: %d", instanceId);
@@ -307,7 +471,7 @@ int VsiVvdeviceExecuteCaseline
 		camConfig.ispHwId = caseCtx->instanceCfgCtx[index].hpId;
 		camConfig.inputCfg.inputType = caseCtx->instanceCfgCtx[index].inputType;
 		MEMCPY(camConfig.inputCfg.inputDevName, caseCtx->instanceCfgCtx[instanceId].sensorCfg.sensorName,
-		       sizeof(CAMDEV_INPUT_DEV_NAME_LEN));
+		       sizeof(camConfig.inputCfg.inputDevName));
 #ifdef APU_CORE
 		if (selectDestinationCore(camConfig.ispHwId) != XST_SUCCESS) {
 			LOGE("selectDestinationCore failed for ISP %d", camConfig.ispHwId);
@@ -341,8 +505,34 @@ int VsiVvdeviceExecuteCaseline
 			continue;
 		}
 #endif
-			result = SetATM();
+#ifndef ARMR52
+#if SPLITTER_ENABLED
+		/* Splitter/stitcher design: put the ISP pipeline in 2x2 split-input mode.
+		 * Not sent for full-frame designs (RPU defaults to full-frame), so older
+		 * firmware without this command is unaffected. Must precede camera connect. */
+		result = SetIspInputSplit(1);
+#endif
 
+		/* Always inform the RPU of the current addressing mode. SetATM() sends
+		 * the high-mem prefix (0x0 in 32-bit / low mode, 0x8 for DDR_LOW_1,
+		 * 0x500 for DDR_CH_1) and the is_64bit flag, both auto-derived from
+		 * where the linker placed the ISP buffer pools (BUFFER_POOL_REGION). */
+		result = SetATM((uint32_t)mm_get_high_mem_prefix(), (uint32_t)mm_is_high_mem());
+
+#ifdef WDT_SEND_TEST
+		/* Kick off the WDT test right after the ATM command: ask the RPU to
+		 * stop petting its WWDT after the configured interval so the APU-side
+		 * notifier observes the resulting WWDT0 expiry. Enable via -DWDT_SEND_TEST. */
+		WdtSendTest();
+#endif
+#endif
+#if ARMR52
+				/* Always inform the RPU of the current addressing mode. SetATM() sends
+		 * the high-mem prefix (0x0 in 32-bit / low mode, 0x8 for DDR_LOW_1,
+		 * 0x500 for DDR_CH_1) and the is_64bit flag, both auto-derived from
+		 * where the linker placed the ISP buffer pools (BUFFER_POOL_REGION). */
+		result = SetATM((uint32_t)mm_get_high_mem_prefix(), (uint32_t)mm_is_high_mem());
+#endif
 		LOGI("%s   %d: after VsiVvdeviceInstanceInit ", __func__, __LINE__);
 
 		result = SendFirmwareCompability();
@@ -712,7 +902,7 @@ int VsiVvdeviceExecuteCaseline
 		}
 
 		//Nr Reloc Control
-		result = VsiVvdeviceNrRelocControl(pVvbenchInstance->hCamDevice[index], caseCtx);
+		result = VsiVvdeviceNrRelocControl(pVvbenchInstance->hCamDevice[index], caseCtx, index);
 		if (0 != result) {
 			LOGE("Vsi cam device nr reloc control failed !");
 			mm_free(pVvbenchInstance);
@@ -755,7 +945,20 @@ int VsiVvdeviceExecuteCaseline
 
 	vvbench_vdev_iba_t *iba_vdev = mm_malloc(sizeof(vvbench_vdev_iba_t));
 	vvbench_vdev_oba_t *oba_vdev = mm_malloc(sizeof(vvbench_vdev_oba_t));
+	if (iba_vdev == NULL || oba_vdev == NULL) {
+		LOGE("failed to allocate IBA/OBA configuration");
+		VsiVvdeviceUnwindCaseLine(pVvbenchInstance, caseCtx, totalInstance);
+		if (iba_vdev != NULL)
+			mm_free(iba_vdev);
+		if (oba_vdev != NULL)
+			mm_free(oba_vdev);
+		mm_free(pVvbenchInstance);
+		return -1;
+	}
 	for (int index = 0; index < totalInstance; index++) {
+		if (caseCtx->instanceCfgCtx[index].instanceEnable == 0)
+			continue;
+
 		///////////////////////////// IBA //////////////////////////////
 		MEMSET(iba_vdev, 0, sizeof(vvbench_vdev_iba_t));
 		iba_vdev->inputType = caseCtx->instanceCfgCtx[index].inputType;
@@ -763,62 +966,79 @@ int VsiVvdeviceExecuteCaseline
 		ISP_ID = caseCtx->instanceCfgCtx[index].hpId;
 		isp_instance_idx = index;
 		iba_vdev->portId = caseCtx->instanceCfgCtx[index].workCfg.modeCfg.mcm.portId;
-		iba_vdev->sensorHeight = caseCtx->instanceCfgCtx[index].sensorCfg.sensorHeight;
-		iba_vdev->sensorWidth = caseCtx->instanceCfgCtx[index].sensorCfg.sensorWidth;
+		if (SPLITTER_ENABLED) {
+			/* Split/stitch: each ISP receives a 2x2 quarter tile (half width, half
+			 * height) of the shared sensor frame. */
+			iba_vdev->sensorWidth = caseCtx->instanceCfgCtx[index].sensorCfg.sensorWidth / 2;
+			iba_vdev->sensorHeight = caseCtx->instanceCfgCtx[index].sensorCfg.sensorHeight / 2;
+		} else {
+			iba_vdev->sensorWidth = caseCtx->instanceCfgCtx[index].sensorCfg.sensorWidth;
+			iba_vdev->sensorHeight = caseCtx->instanceCfgCtx[index].sensorCfg.sensorHeight;
+		}
 		iba_vdev->virtualChannelId = caseCtx->instanceCfgCtx[index].sensorCfg.virtualChannelId; //2026.1
 		if(iba_vdev->hpId%2 == 0) {
-			iba_vdev->ppc = VispSsInst[index].Config.Iba0Ppc;
+			iba_vdev->ppc = VispSsInst[iba_vdev->hpId].Config.Iba0Ppc;
 		}
 		else if(iba_vdev->hpId%2 == 1) {
-			iba_vdev->ppc = VispSsInst[index].Config.Iba4Ppc;
+			iba_vdev->ppc = VispSsInst[iba_vdev->hpId].Config.Iba4Ppc;
 		}
-		IBA_init_send_command(pVvbenchInstance->hCamDevice[index], iba_vdev, index);
+		result = IBA_init_send_command(pVvbenchInstance->hCamDevice[index], iba_vdev, index);
+		if (result != RET_SUCCESS) {
+			LOGE("IBA_init_send_command failed!");
+			VsiVvdeviceUnwindCaseLine(pVvbenchInstance, caseCtx, totalInstance);
+			mm_free(iba_vdev);
+			mm_free(oba_vdev);
+			mm_free(pVvbenchInstance);
+			return -1;
+		}
 
 		///////////////////////////////////////////////////////////////////
-		CamDeviceContext_t *hcmdv = pVvbenchInstance->hCamDevice[index];
-
-		//OBA Config
+		/* Configure OBA for every eligible ISP, not just the first instance.
+		 * The sender tracks initialization separately for each ISP/path.
+		 * MEMORY-only (LIMO) output does not use OBA. pathOutType defaults
+		 * to zero and must not override the instance output mode here. */
 		if (CAMDEV_INPUT_TYPE_SENSOR == caseCtx->instanceCfgCtx[index].inputType
+		    && CAMDEV_WORK_MODE_STREAM == caseCtx->instanceCfgCtx[index].workCfg.workMode
 		    && (caseCtx->instanceCfgCtx[index].outPutType == CAMDEV_OUTPUT_TYPE_ONLINE
 			|| caseCtx->instanceCfgCtx[index].outPutType == CAMDEV_OUTPUT_TYPE_BOTH
-			|| (caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathOutType == 1)
-			|| (caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathOutType == 0)
-			|| (caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathOutType == 1)
-			|| (caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathOutType == 0)
 		       )) {
-			if (oba_flag == false) {
-				MEMSET(oba_vdev, 0, sizeof(vvbench_vdev_oba_t));
-				oba_vdev->path[CAMDEV_BUFCHAIN_MP] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].path;
-				oba_vdev->pathEnable[CAMDEV_BUFCHAIN_MP] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable;
-				oba_vdev->pathOutType[CAMDEV_BUFCHAIN_MP] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathOutType;
-				oba_vdev->format[CAMDEV_BUFCHAIN_MP] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].format;
-				oba_vdev->dataBits[CAMDEV_BUFCHAIN_MP] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].dataBits;
+			MEMSET(oba_vdev, 0, sizeof(vvbench_vdev_oba_t));
+			oba_vdev->path[CAMDEV_BUFCHAIN_MP] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].path;
+			oba_vdev->pathEnable[CAMDEV_BUFCHAIN_MP] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable;
+			oba_vdev->pathOutType[CAMDEV_BUFCHAIN_MP] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].pathOutType;
+			oba_vdev->format[CAMDEV_BUFCHAIN_MP] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].format;
+			oba_vdev->dataBits[CAMDEV_BUFCHAIN_MP] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_MP].dataBits;
 
-				oba_vdev->hpId = caseCtx->instanceCfgCtx[index].hpId;
-				oba_vdev->inputType = caseCtx->instanceCfgCtx[index].inputType;
-				oba_vdev->workMode = caseCtx->instanceCfgCtx[index].workCfg.workMode;
-				oba_vdev->outPutType = caseCtx->instanceCfgCtx[index].outPutType;
+			oba_vdev->hpId = caseCtx->instanceCfgCtx[index].hpId;
+			oba_vdev->inputType = caseCtx->instanceCfgCtx[index].inputType;
+			oba_vdev->workMode = caseCtx->instanceCfgCtx[index].workCfg.workMode;
+			oba_vdev->outPutType = caseCtx->instanceCfgCtx[index].outPutType;
 
+			oba_vdev->path[CAMDEV_BUFCHAIN_SP1] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].path;
+			oba_vdev->pathEnable[CAMDEV_BUFCHAIN_SP1] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathEnable;
+			oba_vdev->pathOutType[CAMDEV_BUFCHAIN_SP1] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathOutType;
+			oba_vdev->format[CAMDEV_BUFCHAIN_SP1] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].format;
+			oba_vdev->dataBits[CAMDEV_BUFCHAIN_SP1] =
+				caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].dataBits;
 
-				oba_vdev->path[CAMDEV_BUFCHAIN_SP1] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].path;
-				oba_vdev->pathEnable[CAMDEV_BUFCHAIN_SP1] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathEnable;
-				oba_vdev->pathOutType[CAMDEV_BUFCHAIN_SP1] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].pathOutType;
-				oba_vdev->format[CAMDEV_BUFCHAIN_SP1] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].format;
-				oba_vdev->dataBits[CAMDEV_BUFCHAIN_SP1] =
-					caseCtx->instanceCfgCtx[index].instancePath[CAMDEV_BUFCHAIN_SP1].dataBits;
-
-
-				OBA_init_send_command(pVvbenchInstance->hCamDevice[index], oba_vdev, index);
-				oba_flag = true;
+			result = OBA_init_send_command(pVvbenchInstance->hCamDevice[index], oba_vdev, index);
+			if (result != RET_SUCCESS) {
+				LOGE("OBA init failed for ISP %u (case %d), status=%d",
+				     oba_vdev->hpId, index, result);
+				VsiVvdeviceUnwindCaseLine(pVvbenchInstance, caseCtx, totalInstance);
+				mm_free(iba_vdev);
+				mm_free(oba_vdev);
+				mm_free(pVvbenchInstance);
+				return -1;
 			}
 		}
 	}
@@ -828,6 +1048,10 @@ int VsiVvdeviceExecuteCaseline
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
 	enable_fbwr();
 #endif
+	/* Splitter/stitcher shares ONE physical sensor across all ISP instances, so its
+	 * frame rate must be set only once (before it streams). Re-setting it for later
+	 * instances hits an already-streaming sensor, which some sensors reject. */
+	int sensorFpsSet = 0;
 	for (int index = 0; index < totalInstance; index++) {
 
 		if (caseCtx->instanceCfgCtx[index].instanceEnable == 0) {
@@ -854,7 +1078,8 @@ int VsiVvdeviceExecuteCaseline
 				bufIoArray[bufIoArrayCount++] = bufIo;
 			}
 		}
-		if (CAMDEV_INPUT_TYPE_SENSOR == caseCtx->instanceCfgCtx[index].inputType) {
+		if (CAMDEV_INPUT_TYPE_SENSOR == caseCtx->instanceCfgCtx[index].inputType
+		    && !(SPLITTER_ENABLED && sensorFpsSet)) {
 			//set sensor fps
 			result = VsiCamDeviceSensorSetFrameRate(pVvbenchInstance->hCamDevice[index],
 								&caseCtx->instanceCfgCtx[index].sensorCfg.fps);
@@ -865,6 +1090,24 @@ int VsiVvdeviceExecuteCaseline
 				mm_free(pVvbenchInstance);
 				return -1;
 			}
+			//get sensor fps
+			float fps;
+			result = VsiCamDeviceSensorGetFrameRate(pVvbenchInstance->hCamDevice[index], &fps);
+			if (0 != result) {
+				LOGE("Vsi cam device sensor get frame rate failed for sensor name:%s, modeIndex:%d",
+				     caseCtx->instanceCfgCtx[index].sensorCfg.sensorName,
+				     caseCtx->instanceCfgCtx[index].sensorCfg.modeIndex);
+				mm_free(pVvbenchInstance);
+				return -1;
+			}
+			LOGI("SENSOR_FPS_GET Result, fps:%.2f", fps);
+			sensorFpsSet = 1;
+		}
+		else if (SPLITTER_ENABLED
+			 && CAMDEV_INPUT_TYPE_SENSOR == caseCtx->instanceCfgCtx[index].inputType) {
+			/* Shared sensor already configured by the first instance; skip the
+			 * redundant frame-rate set (some sensors reject it while streaming). */
+			LOGI("SENSOR_FPS: shared sensor already set, SKIPPING frame-rate for instance %d", index);
 		}
 		if (caseCtx->instanceCfgCtx[index].startPathSimultaneous) {
 			LOGI("VsiVvdevicePathEnable called Simultaneously");
@@ -908,7 +1151,7 @@ int VsiVvdeviceExecuteCaseline
 			TDatabaseRegister_t *pRegister = pRegisterDump->pRegisters + i;
 
 			unsigned int address = strtol(pRegister->address, NULL, 16);
-			unsigned int value = strtol(pRegister->value, NULL, 16);
+			uint32_t value = strtol(pRegister->value, NULL, 16);
 
 			if (pRegister->isReadAction) {
 				result = VsiCamDeviceReadRegister(pVvbenchInstance->hCamDevice[index], address, &value);
@@ -916,7 +1159,7 @@ int VsiVvdeviceExecuteCaseline
 					LOGE("VsiCamDeviceReadRegister failed!");
 					return -1;
 				}
-				LOGI("VsiCamDeviceReadRegister: address:0x%x  value:0x%x !", address, value);
+				LOGI("VsiCamDeviceReadRegister: address:0x%x  value:0x%x !", address, (unsigned int)value);
 			}
 			else {
 				result = VsiCamDeviceWriteRegister(pVvbenchInstance->hCamDevice[index], address, value);
@@ -924,7 +1167,7 @@ int VsiVvdeviceExecuteCaseline
 					LOGE("VsiCamDeviceWriteRegister failed!");
 					return -1;
 				}
-				LOGI("VsiCamDeviceWriteRegister: address:0x%x  value:0x%x !", address, value);
+				LOGI("VsiCamDeviceWriteRegister: address:0x%x  value:0x%x !", address, (unsigned int)value);
 			}
 		}
 
@@ -937,22 +1180,6 @@ int VsiVvdeviceExecuteCaseline
 				mm_free(pVvbenchInstance);
 				return -1;
 			}
-		}
-
-		if (CAMDEV_INPUT_TYPE_SENSOR == caseCtx->instanceCfgCtx[index].inputType) {
-			sensor_stream_flag = index;
-
-			//get sensor fps
-			float fps;
-			result = VsiCamDeviceSensorGetFrameRate(pVvbenchInstance->hCamDevice[index], &fps);
-			if (0 != result) {
-				LOGE("Vsi cam device sensor get frame rate failed for sensor name:%s, modeIndex:%d",
-				     caseCtx->instanceCfgCtx[index].sensorCfg.sensorName,
-				     caseCtx->instanceCfgCtx[index].sensorCfg.modeIndex);
-				mm_free(pVvbenchInstance);
-				return -1;
-			}
-			LOGI("SENSOR_FPS_GET Result, fps:%.2f", fps);
 		}
 
 		if (CAMDEV_INPUT_TYPE_IMAGE == caseCtx->instanceCfgCtx[index].inputType) {
@@ -1122,21 +1349,33 @@ int VsiVvdeviceExecuteCaseline
 			}
 		}
 	}
-	MediaBuffer_t *tempBuf[6][CAMDEV_BUFCHAIN_SP2] = {NULL};
+	/* Sized to the loop bounds actually used below: MAX_CAM_NUM instances
+	 * (matches the totalInstance check at function entry) x MP..RAW path
+	 * indices (CAMDEV_BUFCHAIN_RAW + 1), instead of the previous [6][SP2]
+	 * which both dimensions could be indexed past. */
+	MediaBuffer_t *tempBuf[MAX_CAM_NUM][CAMDEV_BUFCHAIN_RAW + 1] = {NULL};
 #if 1
 	/*Sensor display, need change displayInstance to show difference instance*/
 
 	// Initialize timer-based approach for every second reporting
 	dequeue_call_count = 0;
 	uint64_t displayInstance = 0;
+	uint32_t freq;
+	uint64_t elapsed_ticks;
 	// Debug: Check the loop condition flags
+#if ARMR52
+	TimeStamp ts = { .sec = 0 , .secFrac = 0};
+	TRACE(VSI_DEVICE_API_ALWAYS,"*******Streaming Started******\n");
+	getTimeStamp(&ts);
+	start=ts.sec;
+
+#else
 	xil_printf("Starting main loop: sensor_stream_flag=%d, memory_out_flag=%d\n", sensor_stream_flag,
 		   memory_out_flag);
 
-	uint32_t freq;
 	asm volatile("mrs %0, cntfrq_el0" : "=r"(freq));
 	start = GetTime();
-
+#endif
 	while (sensor_stream_flag >= 0 && memory_out_flag >= 0) {
 #ifdef XPAR_XV_MIX_NUM_INSTANCES
 		/* Poll HDMI TX state machine for event-driven stream start */
@@ -1144,8 +1383,20 @@ int VsiVvdeviceExecuteCaseline
 #endif
 		MediaBuffer_t *pBuf;
 		// Timer-based approach for every second reporting
+#if ARMR52
+		getTimeStamp(&ts);
+		now=ts.sec;
+		elapsed_ticks = now - start;
+
+		if (elapsed_ticks>=1) {
+			TRACE(VSI_DEVICE_API_ALWAYS,"================================FPS=%dfps\n",dequeue_call_count);
+			// Reset counters for next second
+			getTimeStamp(&ts);
+			start=ts.sec;
+
+#else
 		now = GetTime();
-		u64 elapsed_ticks = now - start;
+		elapsed_ticks = now - start;
 		double elapsed_seconds = (double)elapsed_ticks / freq;
 
 		if (elapsed_seconds >= 1.0) {
@@ -1153,6 +1404,7 @@ int VsiVvdeviceExecuteCaseline
 			xil_printf("================================\n");
 			// Reset counters for next second
 			start = GetTime();
+#endif
 			dequeue_call_count = 0;
 			displayInstance++;
 		}
@@ -1322,19 +1574,26 @@ int VsiVvdeviceExecuteCaseline
 			for (int idx = 0; idx < totalInstance; idx++) {
 				if(caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable
 				   && tempBuf[idx][CAMDEV_BUFCHAIN_MP] != NULL) {
-					u64 dumpAddr = (u64)tempBuf[idx][CAMDEV_BUFCHAIN_MP]->baseAddress | ((u64)0x8 << 32);
+					u64 dumpAddr = (u64)tempBuf[idx][CAMDEV_BUFCHAIN_MP]->baseAddress | (mm_get_high_mem_prefix() << 32);
 					LOGI(" |  mrd -bin -file dump_ISP%d_MP.rgb 0x%llx 0x%x\r\n\n",
-					     caseCtx->instanceCfgCtx[idx].hpId, dumpAddr,
-					     tempBuf[idx][CAMDEV_BUFCHAIN_MP]->baseSize / 4);
+					    caseCtx->instanceCfgCtx[idx].hpId, dumpAddr,
+					    tempBuf[idx][CAMDEV_BUFCHAIN_MP]->baseSize / 4);
 				}
 				if(caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_SP1].pathEnable
 				   && tempBuf[idx][CAMDEV_BUFCHAIN_SP1] != NULL) {
-					u64 dumpAddr = (u64)tempBuf[idx][CAMDEV_BUFCHAIN_SP1]->baseAddress | ((u64)0x8 << 32);
+					u64 dumpAddr = (u64)tempBuf[idx][CAMDEV_BUFCHAIN_SP1]->baseAddress | (mm_get_high_mem_prefix() << 32);
 					LOGI(" |  mrd -bin -file dump_ISP%d_SP.rgb 0x%llx 0x%x\r\n\n",
-					     caseCtx->instanceCfgCtx[idx].hpId, dumpAddr,
-					     tempBuf[idx][CAMDEV_BUFCHAIN_SP1]->baseSize / 4);
+					    caseCtx->instanceCfgCtx[idx].hpId, dumpAddr,
+					    tempBuf[idx][CAMDEV_BUFCHAIN_SP1]->baseSize / 4);
 				}
 			}
+#ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
+			/* In a combined memory-output + live-output case this loop never
+			 * exits, so report the LILO frame-writer buffers here as well. */
+			if (fbwr_flag == 1) {
+				VsiVvdevicePrintLiloDumpCommands(caseCtx, totalInstance);
+			}
+#endif
 			LOGI("------------------------------------------------------------\r\n");
 			displayInstance = 0;
 		}
@@ -1371,17 +1630,7 @@ int VsiVvdeviceExecuteCaseline
 					LOGI("------------------------------------------------------------\r\n");
 					LOGI(" |  📥 To retrieve the image dump, use the following command:\r\n");
 #ifdef XPAR_XV_FRMBUF_WR_NUM_INSTANCES
-					for (int idx = 0; idx < totalInstance; idx++) {
-						int hpId = caseCtx->instanceCfgCtx[idx].hpId;
-						if (caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_MP].pathEnable) {
-							LOGI(" |  mrd -bin -file lilo_ISP%d_MP.rgb 0x%llx 0x17BC00\r\n\n",
-							     hpId, (unsigned long long)(uintptr_t)Frame_Array_p[hpId * 2][0].aligned_addr);
-						}
-						if (caseCtx->instanceCfgCtx[idx].instancePath[CAMDEV_BUFCHAIN_SP1].pathEnable) {
-							LOGI(" |  mrd -bin -file lilo_ISP%d_SP.rgb 0x%llx 0x17BC00\r\n\n",
-							     hpId, (unsigned long long)(uintptr_t)Frame_Array_p[hpId * 2 + 1][0].aligned_addr);
-						}
-					}
+					VsiVvdevicePrintLiloDumpCommands(caseCtx, totalInstance);
 #endif
 					LOGI("------------------------------------------------------------\r\n");
 					displayInstance = 0;
@@ -1946,7 +2195,21 @@ int VsiVvdeviceLoadImageJsonToDatabase
 				osFputs("\n", swSimuList);
 			}
 			else {
-				snprintf(szBuffer, FILE_LEN, pDbConfig->input.path[pathId], index);
+				/* pDbConfig->input.path[pathId] comes from the config JSON and
+				 * must never be used as a printf format string. Substitute the
+				 * first "%d" ourselves: copy the literal prefix, format the
+				 * index in its place, then emit the remainder via "%s" so any
+				 * extra conversion specifiers in the template are treated as
+				 * plain data, not interpreted. */
+				const char *pathTemplate = pDbConfig->input.path[pathId];
+				const char *pctD = strstr(pathTemplate, "%d");
+				size_t prefixLen = (size_t)(pctD - pathTemplate);
+
+				if (prefixLen >= FILE_LEN) {
+					prefixLen = FILE_LEN - 1;
+				}
+				memcpy(szBuffer, pathTemplate, prefixLen);
+				snprintf(szBuffer + prefixLen, FILE_LEN - prefixLen, "%d%s", index, pctD + 2);
 				osFputs(szBuffer, swSimuList);
 				osFputs("\n", swSimuList);
 			}
@@ -1972,7 +2235,10 @@ int VsiVvdeviceSubModuleControl
 	LOGI("%s enter \n", __func__);
 
 	//AWB
-	if (caseCtx->instanceCfgCtx[index].moduleCfg.awb.isSupport || caseCtx->swSimuCfg.enable) {
+	/* 3A tuning (AWB/AE/AF) is disabled for splitter/stitcher designs: calibration is
+	 * keyed to the full sensor resolution and does not apply to the per-ISP tiles. */
+	if ((caseCtx->instanceCfgCtx[index].moduleCfg.awb.isSupport || caseCtx->swSimuCfg.enable)
+	    && !SPLITTER_ENABLED) {
 		result = VsiVvbenchAwbFunc(hCamDevice, caseCtx, index);
 		if (0 != result) {
 			LOGE("VsiVvbenchAwbFunc failed!");
@@ -1982,7 +2248,8 @@ int VsiVvdeviceSubModuleControl
 
 	if (caseCtx->instanceCfgCtx[index].inputType != CAMDEV_INPUT_TYPE_IMAGE) {
 		//AEC
-		if (caseCtx->instanceCfgCtx[index].moduleCfg.ae.isSupport || caseCtx->fineTuneMode) {
+		if ((caseCtx->instanceCfgCtx[index].moduleCfg.ae.isSupport || caseCtx->fineTuneMode)
+		    && !SPLITTER_ENABLED) {
 			result = VsiVvbenchAeFunc(hCamDevice, caseCtx, index);
 			if (0 != result) {
 				LOGE("VsiVvbenchAeFunc failed!");
@@ -1991,7 +2258,8 @@ int VsiVvdeviceSubModuleControl
 		}
 
 		//AF
-		if (caseCtx->instanceCfgCtx[index].moduleCfg.af.isSupport || caseCtx->fineTuneMode) {
+		if ((caseCtx->instanceCfgCtx[index].moduleCfg.af.isSupport || caseCtx->fineTuneMode)
+		    && !SPLITTER_ENABLED) {
 			result = VsiVvbenchAfFunc(hCamDevice, caseCtx, index);
 			if (0 != result) {
 				LOGE("VsiVvbenchAeFunc failed!");
@@ -2243,19 +2511,19 @@ int VsiVvdeviceSubModuleControl
 int VsiVvdeviceNrRelocControl
 (
 	CamDeviceHandle_t hCamDevice,
-	VvbenchVvdev_t *caseCtx
+	VvbenchVvdev_t *caseCtx,
+	uint32_t idx
 )
 {
 	int result = 0;
-	uint32_t instanceId = 0;
 	CamCommonContext_t *pCamCommonCtx = NULL;
 	LOGI("%s enter \n", __func__);
 
-	if (NULL == hCamDevice || 0 == caseCtx->instanceCfgCtx[instanceId].hCamCommon || NULL == caseCtx) {
+	if (NULL == hCamDevice || 0 == caseCtx->instanceCfgCtx[idx].hCamCommon || NULL == caseCtx) {
 		LOGE("%s: NUll pointer\n", __func__);
 		return -1;
 	}
-	pCamCommonCtx = (CamCommonContext_t *)caseCtx->instanceCfgCtx[instanceId].hCamCommon;
+	pCamCommonCtx = (CamCommonContext_t *)caseCtx->instanceCfgCtx[idx].hCamCommon;
 
 	//NR post-position in ISP
 	result = VsiCamDeviceNrRelocDisable(hCamDevice);
@@ -2347,7 +2615,6 @@ int VsiVvdeviceInstanceInit
 		// return result;
 		// }
 	}
-	sleep(3);
 	LOGI("%s exit \n", __func__);
 
 	return result;
@@ -2756,9 +3023,24 @@ void VsiVvdeviceShowBuffer
 	CamDeviceBufChainId_t bufferIO
 )
 {
+#if defined(__aarch64__)
+	uint64_t firstEntryTicks = 0;
+
+	/* Capture at entry, before validation, allocation, conversion or display work. */
+	if (!firstFrameReported) {
+		asm volatile("isb\n\tmrs %0, cntpct_el0"
+			     : "=r"(firstEntryTicks) : : "memory");
+	}
+#endif
 	if (NULL == pVvInstance || NULL == pBuffer) {
 		return ;
 	}
+#if defined(__aarch64__)
+	/* Invalid calls must not consume the first-frame measurement. */
+	if (!firstFrameReported && showChannel >= 0 && showChannel < MAX_CAM_NUM) {
+		VsiVvdeviceReportFirstFrame(firstEntryTicks);
+	}
+#endif
 	uint8_t bufferNum = 1;
 
 	for (int iBuf = 0; iBuf < bufferNum; ++iBuf) {
@@ -3174,7 +3456,7 @@ void VsiVvdeviceShowBuffer
 		/* Reconstruct full 64-bit CPU address from 32-bit ATM address */
 		uint64_t showFullAddr;
 		if (ATM_ENABLE) {
-			showFullAddr = (uint64_t)pNowBuffer->baseAddress | ((uint64_t)0x8 << 32);
+			showFullAddr = (uint64_t)pNowBuffer->baseAddress | (mm_get_high_mem_prefix() << 32);
 		} else {
 			showFullAddr = (uint64_t)pNowBuffer->pIplAddress;
 		}
@@ -3370,6 +3652,11 @@ int VsiVvdeviceGetInputPicture
 #endif
 	/*****************************json change ********************/
 	const EmbeddedJson* json = find_image_data(pVvInstance->mPicCase[instanceId].pictureName);
+	if (json->size >= sizeof(imageFile)) {
+		LOGE("[vvbench]--%s:picture list entry size(0x%x) is larger than imageFile buffer(0x%x)", __func__,
+		     json->size, (unsigned int)sizeof(imageFile));
+		return RET_OUTOFRANGE;
+	}
 	memcpy(imageFile, json->data, json->size);
 	//memcpy(imageFile,&picture_raw_output_format_case_txt[0],picture_raw_output_format_case_txt_len);
 	imageFile[json->size] = '\0';
@@ -3456,6 +3743,12 @@ int VsiVvdeviceGetInputPicture
 			else {
 				RawpicLen = json->size - offset;
 			}
+			if (bufferSize < RawpicLen) {
+				LOGE("[vvbench]--%s:raw picture file size(0x%x) is larger than buffersize(0x%x)", __func__,
+				     RawpicLen, bufferSize);
+				result = RET_OUTOFRANGE;
+				break;
+			}
 			memset(pRawbuff, 0, RawpicLen);
 			memcpy(pRawbuff, &json->data[offset], RawpicLen);
 
@@ -3524,7 +3817,7 @@ int VsiVvdeviceGetInputPicture
 			 * pIplAddress is uint32_t and cannot hold 64-bit addr, so reconstruct here. */
 			uint64_t fullAddr;
 			if (ATM_ENABLE) {
-				fullAddr = (uint64_t)pBuff->baseAddress | ((uint64_t)0x8 << 32);
+				fullAddr = (uint64_t)pBuff->baseAddress | (mm_get_high_mem_prefix() << 32);
 			} else {
 				fullAddr = (uint64_t)pBuff->pIplAddress;
 			}

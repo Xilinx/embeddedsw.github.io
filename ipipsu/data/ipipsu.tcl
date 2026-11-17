@@ -102,7 +102,7 @@ proc ipi_generate_config {drv_handle file_name iszynqmp} {
 
 	# List of all IPIs on SoC
 	set ipi_list [get_cells -hier -filter { IP_NAME == "psu_ipi" || IP_NAME == "psv_ipi" || IP_NAME == "psxl_ipi" || IP_NAME == "psx_ipi"}]
-	
+
 	# List of IPIs owned by this processor
 
 	if { $iszynqmp == 1 } {

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (c) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,8 +7,7 @@
 /**
 *
 * @file xufspsxc_hw.c
-* @addtogroup ufspsxc Overview
-* @{
+* @brief Implements UFSPSXC low-level transfer helpers.
 *
 * This file implements the low level functions used by the APIs in xufspsxc.c
 * file.
@@ -19,10 +18,17 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.0   sk  01/16/24 First release
+* 1.3   vn  07/30/26 Fix Doxygen warnings
 *
+* 1.3   tb  09/16/26 Align Doxygen comments with AMD standards.
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup ufspsxc_api UFSPSXC APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -36,10 +42,8 @@
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
+/** Conversion factor from seconds to microseconds. */
 #define SEC_TO_MSEC		1000000U
-#define XUFSPSXC_HSG1A_MIN_BPS		78643200U
-#define XUFSPSXC_HSG1B_MIN_BPS		83886080U
-#define XUFSPSXC_PWMG1_MIN_BPS		393216U
 /************************** Function Prototypes ******************************/
 
 
@@ -47,13 +51,16 @@
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Sends a UIC command to the controller.
+*
 * Send UIC Command.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	UicCmdPtr is a pointer to the XUfsPsxc_UicCmd instance.
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in,out] UicCmdPtr Pointer to the XUfsPsxc_UicCmd instance.
 *
-* @return	Refer UIC Error Codes in xufspsxc.h file.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- UIC error codes as defined in xufspsxc.h.
 *
 ******************************************************************************/
 u32 XUfsPsxc_SendUICCmd(const XUfsPsxc *InstancePtr, XUfsPsxc_UicCmd *UicCmdPtr)
@@ -132,14 +139,16 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Enables or disables the host controller.
+*
 * Perform the Host Controller Enable/Disable.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	Value is used to enable/disable Host Controller.
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] Value Used to enable/disable Host Controller.
 *
-* @return	XUFSPSXC_SUCCESS for Success
-* 			XUFSPSXC_FAILURE for failure
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- XUFSPSXC_FAILURE if unsuccessful.
 *
 ******************************************************************************/
 u32 XUfsPsxc_SetHce(const XUfsPsxc *InstancePtr, u32 Value)
@@ -163,13 +172,12 @@ u32 XUfsPsxc_SetHce(const XUfsPsxc *InstancePtr, u32 Value)
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for NOP-OUT UPIU.
+* @brief Fills a NOP OUT UPIU transfer request.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* Fills the transfer-request descriptor for a NOP OUT UPIU.
 *
-* @return	None.
+* @param[out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
 *
 ******************************************************************************/
 void XUfsPsxc_FillNopOutUpiu(XUfsPsxc *InstancePtr,
@@ -191,13 +199,12 @@ void XUfsPsxc_FillNopOutUpiu(XUfsPsxc *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for TEST UNIT READY Command.
+* @brief Fills a TEST UNIT READY UPIU transfer request.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* Fills the transfer-request descriptor for a TEST UNIT READY command.
 *
-* @return	None.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
 *
 ******************************************************************************/
 void XUfsPsxc_FillTestUnitRdyUpiu(XUfsPsxc *InstancePtr,
@@ -222,16 +229,15 @@ void XUfsPsxc_FillTestUnitRdyUpiu(XUfsPsxc *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for READ Command.
+* @brief Fills a SCSI READ command UPIU with PRDT entries.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
-* @param	Address specifies the first logical block accessed by this command.
-* @param	BlkCnt is the number of blocks to be read.
-* @param	Buff is a pointer to the destination data buffer.
+* Fills the transfer-request descriptor for a READ command.
 *
-* @return	None.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] Address Specifies the first logical block accessed by this command.
+* @param[in] BlkCnt Number of blocks to be read.
+* @param[in] Buff Pointer to the destination data buffer.
 *
 ******************************************************************************/
 void XUfsPsxc_FillReadCmdUpiu(XUfsPsxc *InstancePtr,
@@ -304,16 +310,15 @@ void XUfsPsxc_FillReadCmdUpiu(XUfsPsxc *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for WRITE Command.
+* @brief Fills a SCSI WRITE command UPIU with PRDT entries.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
-* @param	Address specifies the first logical block accessed by this command.
-* @param	BlkCnt is the number of blocks to write.
-* @param	Buff is a pointer to the destination data buffer.
+* Fills the transfer-request descriptor for a WRITE command.
 *
-* @return	None.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] Address Specifies the first logical block accessed by this command.
+* @param[in] BlkCnt Number of blocks to write.
+* @param[in] Buff Pointer to the source data buffer.
 *
 ******************************************************************************/
 void XUfsPsxc_FillWriteCmdUpiu(XUfsPsxc *InstancePtr,
@@ -377,15 +382,14 @@ void XUfsPsxc_FillWriteCmdUpiu(XUfsPsxc *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for READ/SET FLAG Command.
+* @brief Fills a Query Flag UPIU for read or set operations.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
-* @param	IsRead is a flag to indicate whether the operation is read or write.
-* @param    FlagIDn is a Flag Identification number.
+* Fills the transfer-request descriptor for a read or set flag command.
 *
-* @return	None.
+* @param[out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] IsRead Flag to indicate whether the operation is read or write.
+* @param[in] FlagIDn Flag Identification number.
 *
 ******************************************************************************/
 void XUfsPsxc_FillFlagUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDescPtr,
@@ -404,7 +408,7 @@ void XUfsPsxc_FillFlagUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDesc
 		QueryTaskMangFn = XUFSPSXC_QRY_READ;
 		Opcode = XUFSPSXC_QRY_READ_FLAG_CMD;
 
-		/* Write 1 to the RespUpiu value as we are expecting 0 for fDeviceInit flag */
+		/* Write 1 to RespUpiu. Expect 0 for fDeviceInit. */
 		CmdDescPtr->RespUpiu.QueryRespUpiu.Tsf.Value = ((u32)1U << 24U);
 	} else {
 		TaskTag = (u32)XUFSPSXC_QRY_SET_FLAG_TASK_TAG;
@@ -425,18 +429,18 @@ void XUfsPsxc_FillFlagUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDesc
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for read or write Descriptor Command.
+* @brief Fills a Query Descriptor UPIU for read or write operations.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
-* @param	Tsf_DW0 contains information about Description identification Number(3rd byte),
-*           Index(2nd byte) and Selector(1st byte).
-* @param	IsRead is a flag to indicate whether the operation is read or write
-*           descriptor.
-* @param	Length is the number of bytes to read the descriptor.
+* Fills the transfer-request descriptor for a read or write
+* descriptor command.
 *
-* @return	None.
+* @param[out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] Tsf_DW0 Contains information about Description identification
+*   Number(3rd byte), Index(2nd byte) and Selector(1st byte).
+* @param[in] IsRead Flag to indicate whether the operation is read or write
+*   descriptor.
+* @param[in] Length Number of bytes to read the descriptor.
 *
 ******************************************************************************/
 void XUfsPsxc_FillDescUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDescPtr,
@@ -476,17 +480,16 @@ void XUfsPsxc_FillDescUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDesc
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Fill the transfer request descriptor for read or write Attribute Command.
+* @brief Fills a Query Attribute UPIU for read or write operations.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
-* @param	IsRead is a flag to indicate whether the operation is read or write
-*           descriptor.
-* @param    AttrIDn is a Attribute Identification number.
-* @param	Value is value to be written to the attributes.
+* Fills the transfer-request descriptor for a read or write
+* attribute command.
 *
-* @return	None.
+* @param[out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] IsRead Flag to indicate whether the operation is read or write.
+* @param[in] AttrIDn Attribute Identification number.
+* @param[in] Value Value to be written to the attributes.
 *
 ******************************************************************************/
 void XUfsPsxc_FillAttrUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDescPtr,
@@ -523,13 +526,77 @@ void XUfsPsxc_FillAttrUpiu(XUfsPsxc *InstancePtr, XUfsPsxc_Xfer_CmdDesc *CmdDesc
 
 /*****************************************************************************/
 /**
-* @brief
-* This API send the UPIU to the UFS device.
+* @brief Checks whether SpeedGear is a supported PWM/HS gear configuration.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	CmdDescPtr is a pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+* @param[in] SpeedGear Power Mode value to be validated.
 *
-* @return	Refer OCS in xufspsxc.h file, XUFSPSXC_FAILURE
+* @return 1U if SpeedGear is supported, otherwise 0U.
+*
+******************************************************************************/
+u32 XUfsPsxc_IsValidSpeedGear(u32 SpeedGear)
+{
+	static const u32 ValidGears[] = {
+		XUFSPSXC_PWM_G1, XUFSPSXC_PWM_G2, XUFSPSXC_PWM_G3, XUFSPSXC_PWM_G4,
+		XUFSPSXC_HS_G1, XUFSPSXC_HS_G2, XUFSPSXC_HS_G3, XUFSPSXC_HS_G4,
+		XUFSPSXC_HS_G1_B, XUFSPSXC_HS_G2_B, XUFSPSXC_HS_G3_B, XUFSPSXC_HS_G4_B
+	};
+	u32 Index;
+	u32 IsValid = 0U;
+
+	for (Index = 0U; Index < (u32)(sizeof(ValidGears) / sizeof(ValidGears[0])); Index++) {
+		if (SpeedGear == ValidGears[Index]) {
+			IsValid = 1U;
+			break;
+		}
+	}
+
+	return IsValid;
+}
+
+/*****************************************************************************/
+/**
+* @brief Waits for the power mode change to complete after a gear switch.
+*
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+*
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
+*
+******************************************************************************/
+u32 XUfsPsxc_WaitForPowerModeChange(const XUfsPsxc *InstancePtr)
+{
+	volatile u32 Status;
+	u32 TimeOut = 1000000;	/* One Second */
+
+	Status = Xil_WaitForEvent(InstancePtr->Config.BaseAddress + XUFSPSXC_IS, XUFSPSXC_IS_PWR_STS_MASK,
+						(u32)XUFSPSXC_IS_PWR_STS_MASK, TimeOut);
+	if (Status != (u32)XUFSPSXC_SUCCESS) {
+		Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_POWER_MODE_TIMEOUT;
+	} else {
+		TimeOut = 1000000;	/* One Second */
+		Status = Xil_WaitForEvent(InstancePtr->Config.BaseAddress + XUFSPSXC_HCS, XUFSPSXC_HCS_UPMCRS_MASK,
+								(u32)XUFSPSXC_PWR_MODE_VAL, TimeOut);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
+			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_POWER_MODE_FAILURE;
+		}
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief Sends a UPIU to the UFS device and waits for completion.
+*
+* Sends the UPIU to the UFS device.
+*
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] CmdDescPtr Pointer to the XUfsPsxc_Xfer_CmdDesc instance.
+*
+* @return
+*		- OCS codes as defined in xufspsxc.h.
+*		- XUFSPSXC_FAILURE if unsuccessful.
 *
 ******************************************************************************/
 u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDesc *CmdDescPtr)
@@ -556,47 +623,20 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 		goto ERROR;
 	}
 
-	if ((u8)(InstancePtr->PowerMode >> 8U) == XUFSPSXC_TX_RX_FAST) {
-		if ((u8)(InstancePtr->PowerMode >> 16U) == XUFSPSXC_HSSERIES_A) {
-			MinBytes = XUFSPSXC_HSG1A_MIN_BPS;
-		} else {
-			MinBytes = XUFSPSXC_HSG1B_MIN_BPS;
-		}
-	} else {
-		MinBytes = XUFSPSXC_PWMG1_MIN_BPS;
-	}
+	MinBytes = XUfsPsxc_GetMinBytesPerSec(InstancePtr->PowerMode);
 
 	TimeOut = ((u32)(Xil_EndianSwap32(CmdDescPtr->ReqUpiu.CmdUpiu.ExpDataXferLen) / MinBytes) * SEC_TO_MSEC) + (5U * SEC_TO_MSEC);
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
-		Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.UpiuHeader, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.UpiuHeader));
-		if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_NOP_UPIU_TRANS_CODE) {
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.NopOutUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.NopOutUpiu));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_CMD_UPIU_TRANS_CODE) {
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.CmdUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.CmdUpiu));
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->Prdt, (INTPTR)sizeof(CmdDescPtr->Prdt));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_QRY_UPIU_TRANS_CODE) {
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.QueryReqUpiu, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.QueryReqUpiu));
-			Xil_DCacheFlushRange((INTPTR)&CmdDescPtr->ReqUpiu.QueryReqUpiu.Tsf, (INTPTR)sizeof(CmdDescPtr->ReqUpiu.QueryReqUpiu.Tsf));
-		} else {
-			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_TRANS_CODE;
+		Status = XUfsPsxc_FlushReqUpiuCache(CmdDescPtr);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
 			goto ERROR;
 		}
 
-		Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.UpiuHeader, (INTPTR)sizeof(CmdDescPtr->RespUpiu.UpiuHeader));
-		if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_NOP_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.NopInUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.NopInUpiu));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_CMD_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.RespUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.RespUpiu));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_QRY_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.QueryRespUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.QueryRespUpiu));
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.QueryRespUpiu.Tsf, (INTPTR)sizeof(CmdDescPtr->RespUpiu.QueryRespUpiu.Tsf));
-		} else {
-			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_TRANS_CODE;
+		Status = XUfsPsxc_InvalidateRespUpiuCache(InstancePtr, CmdDescPtr);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
 			goto ERROR;
 		}
-
-		Xil_DCacheInvalidateRange((INTPTR)&InstancePtr->req_desc_baseaddr, (INTPTR)sizeof(InstancePtr->req_desc_baseaddr));
 	}
 
 	/* Start the transfer */
@@ -612,7 +652,7 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 	ReadReg = XUfsPsxc_ReadReg(InstancePtr->Config.BaseAddress, XUFSPSXC_IS);
 	XUfsPsxc_WriteReg(InstancePtr->Config.BaseAddress, XUFSPSXC_IS, ReadReg);
 
-	/* Wait for the controller to clear the corresponding UTRLDBR bit to ZERO */
+	/* Wait for the controller to clear the UTRLDBR bit. */
 	TimeOut = 1000000U;	/* One Second */
 	Status = Xil_WaitForEvent(InstancePtr->Config.BaseAddress + XUFSPSXC_UTRLDBR, 1U, 0U, TimeOut);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
@@ -621,35 +661,13 @@ u32 XUfsPsxc_ProcessUpiu(const XUfsPsxc *InstancePtr, const XUfsPsxc_Xfer_CmdDes
 	}
 
 	if (InstancePtr->Config.IsCacheCoherent == 0U) {
-		Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.UpiuHeader, (INTPTR)sizeof(CmdDescPtr->RespUpiu.UpiuHeader));
-		if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_NOP_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.NopInUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.NopInUpiu));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_CMD_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.RespUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.RespUpiu));
-		} else if (CmdDescPtr->ReqUpiu.UpiuHeader.TransactionType == XUFSPSXC_QRY_UPIU_TRANS_CODE) {
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.QueryRespUpiu, (INTPTR)sizeof(CmdDescPtr->RespUpiu.QueryRespUpiu));
-			Xil_DCacheInvalidateRange((INTPTR)&CmdDescPtr->RespUpiu.QueryRespUpiu.Tsf, (INTPTR)sizeof(CmdDescPtr->RespUpiu.QueryRespUpiu.Tsf));
-		} else {
-			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_TRANS_CODE;
+		Status = XUfsPsxc_InvalidateRespUpiuCache(InstancePtr, CmdDescPtr);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
 			goto ERROR;
 		}
-
-		Xil_DCacheInvalidateRange((INTPTR)&InstancePtr->req_desc_baseaddr, (INTPTR)sizeof(InstancePtr->req_desc_baseaddr));
 	}
 
-	if (InstancePtr->req_desc_baseaddr.DW2_Ocs != (u32)XUFSPSXC_OCS_SUCCESS) {
-		Status = ((u32)XUFSPSXC_OCS_ERROR << 8U) | InstancePtr->req_desc_baseaddr.DW2_Ocs;
-	} else {
-		if (CmdDescPtr->RespUpiu.UpiuHeader.Response != (u8)XUFSPSXC_SUCCESS) {
-			Status = ((u32)XUFSPSXC_RESPONSE_ERROR << 8U) | (u32)CmdDescPtr->RespUpiu.UpiuHeader.Response;
-		} else if (CmdDescPtr->RespUpiu.UpiuHeader.Status != XUFSPSXC_SCSI_GOOD) {
-			Status = ((u32)XUFSPSXC_STATUS_ERROR << 8U) | CmdDescPtr->RespUpiu.UpiuHeader.Status;
-		} else if (CmdDescPtr->RespUpiu.UpiuHeader.TaskTag != CmdDescPtr->ReqUpiu.UpiuHeader.TaskTag) {
-			Status = ((u32)XUFSPSXC_RESPONSE_TAG_ERROR << 8U) | (u32)XUFSPSXC_TASKTAG_NOT_MATCHED;
-		} else {
-			Status = (u32)XUFSPSXC_SUCCESS;
-		}
-	}
+	Status = XUfsPsxc_EvaluateUpiuResponse(InstancePtr, CmdDescPtr);
 
 ERROR:
 	return Status;
@@ -657,13 +675,15 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
-* This API does PHY Initialization sequence.
+* @brief Runs the PHY initialization sequence.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	UicCmdPtr is a pointer to the XUfsPsxc_UicCmd instance.
+* Runs the PHY initialization sequence.
 *
-* @return	XUFSPSXC_SUCCESS or Error codes.
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+*
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
 *
 ******************************************************************************/
 u32 XUfsPsxc_PhyInit(const XUfsPsxc *InstancePtr)
@@ -671,7 +691,6 @@ u32 XUfsPsxc_PhyInit(const XUfsPsxc *InstancePtr)
 	XUfsPsxc_UicCmd UicCmd = {0};
 	volatile u32 Status = (u32)XUFSPSXC_FAILURE;
 	u32 TimeOut;
-	u32 ReadReg;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
@@ -702,73 +721,19 @@ u32 XUfsPsxc_PhyInit(const XUfsPsxc *InstancePtr)
 	}
 
 	/* BYPASS RX-AFE Calibration */
-	Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, 0x401CU, &ReadReg);
+	Status = XUfsPsxc_BypassRxAfeCalib(InstancePtr, &UicCmd);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
 		goto ERROR;
 	}
 
-	Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x401CU, (ReadReg | 4U));
+	/* Program ATT/CTLE Compensation Values */
+	Status = XUfsPsxc_ProgramRxCompValues(InstancePtr, &UicCmd);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
 		goto ERROR;
-	}
-
-	Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, 0x411CU, &ReadReg);
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		goto ERROR;
-	}
-
-	Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x411CU, (ReadReg | 4U));
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		goto ERROR;
-	}
-
-	if ((InstancePtr->RxATTCompValL0 != (u32)0x0U) && (InstancePtr->RxATTCompValL0 != (u32)0xFFU)) {
-		/* Program ATT Compensation Value */
-		Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x4000U, InstancePtr->RxATTCompValL0);
-		if (Status != (u32)XUFSPSXC_SUCCESS) {
-			goto ERROR;
-		}
-	}
-
-	if ((InstancePtr->RxATTCompValL1 != (u32)0x0U) && (InstancePtr->RxATTCompValL1 != (u32)0xFFU)) {
-		Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x4100U, InstancePtr->RxATTCompValL1);
-		if (Status != (u32)XUFSPSXC_SUCCESS) {
-			goto ERROR;
-		}
-	}
-
-	if ((InstancePtr->RxCTLECompValL0 != (u32)0x0U) && (InstancePtr->RxCTLECompValL0 != (u32)0xFFU)) {
-		/* Program CTLE Compensation Value */
-		Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x4001U, InstancePtr->RxCTLECompValL0);
-		if (Status != (u32)XUFSPSXC_SUCCESS) {
-			goto ERROR;
-		}
-	}
-
-	if ((InstancePtr->RxCTLECompValL1 != (u32)0x0U) && (InstancePtr->RxCTLECompValL1 != (u32)0xFFU)) {
-		Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x4101U, InstancePtr->RxCTLECompValL1);
-		if (Status != (u32)XUFSPSXC_SUCCESS) {
-			goto ERROR;
-		}
 	}
 
 	/* Program RAWAONLANE_DIG_FW_CALIB_CONFIG[8]=1 */
-	Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, 0x404DU, &ReadReg);
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		goto ERROR;
-	}
-
-	Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x404DU, (ReadReg | 0x100U));
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		goto ERROR;
-	}
-
-	Status = XUfsPsxc_ReadPhyReg(InstancePtr, &UicCmd, 0x414DU, &ReadReg);
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		goto ERROR;
-	}
-
-	Status = XUfsPsxc_WritePhyReg(InstancePtr, &UicCmd, 0x414DU, (ReadReg | 0x100U));
+	Status = XUfsPsxc_ProgramRxCalibConfig(InstancePtr, &UicCmd);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
 		goto ERROR;
 	}
@@ -784,14 +749,17 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
-* This API Overrides the PHY rx_req.
+* @brief Overrides the PHY rx_req for lane initialization.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	RxReq indicates PHY should be receiver mode or not
-* @param	NumLanes indicates Number of connected lanes
+* Overrides the PHY rx_req.
 *
-* @return	XUFSPSXC_SUCCESS or Error codes.
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] RxReq Indicates PHY should be receiver mode or not.
+* @param[in] NumLanes Indicates Number of connected lanes.
+*
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
 *
 ******************************************************************************/
 u32 XUfsPsxc_OverridePhyRxReq(const XUfsPsxc *InstancePtr, u32 RxReq, u32 NumLanes)
@@ -848,6 +816,41 @@ u32 XUfsPsxc_OverridePhyRxReq(const XUfsPsxc *InstancePtr, u32 RxReq, u32 NumLan
 	}
 
 ERROR:
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief Clears the MPHY RX override bit on all connected RX lanes.
+*
+* @param[in] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[out] UicCmdPtr Pointer to the XUfsPsxc_UicCmd instance.
+* @param[in] RxLanes Number of connected RX data lanes.
+*
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
+*
+******************************************************************************/
+u32 XUfsPsxc_ClearPhyRxOverride(const XUfsPsxc *InstancePtr, XUfsPsxc_UicCmd *UicCmdPtr, u32 RxLanes)
+{
+	volatile u32 Status = (u32)XUFSPSXC_SUCCESS;
+	u32 Lane;
+	u32 ReadReg;
+
+	for (Lane = 0U; Lane < RxLanes; Lane++) {
+		Status = XUfsPsxc_ReadPhyReg(InstancePtr, UicCmdPtr, (0x3006U + (Lane * 0x100U)), &ReadReg);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
+			break;
+		}
+
+		ReadReg &= ~(0x8U); /* Clear MPHY_RX_OVRD_EN */
+		Status = XUfsPsxc_WritePhyReg(InstancePtr, UicCmdPtr, (0x3006U + (Lane * 0x100U)), ReadReg);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
+			break;
+		}
+	}
+
 	return Status;
 }
 

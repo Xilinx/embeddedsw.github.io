@@ -6,6 +6,12 @@
     <includedby refid="xv__sdirxss_8c" local="yes">xv_sdirxss.c</includedby>
     <includedby refid="xv__sdirxss__coreinit_8c" local="yes">xv_sdirxss_coreinit.c</includedby>
     <incdepgraph>
+      <node id="801">
+        <label>xv_sdirxss_coreinit.h</label>
+        <link refid="xv_sdirxss_coreinit.h"/>
+        <childnode refid="802" relation="include">
+        </childnode>
+      </node>
       <node id="804">
         <label>xv_sdivid.h</label>
       </node>
@@ -24,12 +30,6 @@
       <node id="806">
         <label>xv_sdirx.h</label>
       </node>
-      <node id="801">
-        <label>xv_sdirxss_coreinit.h</label>
-        <link refid="xv_sdirxss_coreinit.h"/>
-        <childnode refid="802" relation="include">
-        </childnode>
-      </node>
       <node id="803">
         <label>xstatus.h</label>
       </node>
@@ -38,10 +38,6 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="808">
-        <label>xv_sdirxss.c</label>
-        <link refid="xv__sdirxss_8c"/>
-      </node>
       <node id="809">
         <label>xv_sdirxss_coreinit.c</label>
         <link refid="xv__sdirxss__coreinit_8c"/>
@@ -54,6 +50,10 @@
         <childnode refid="809" relation="include">
         </childnode>
       </node>
+      <node id="808">
+        <label>xv_sdirxss.c</label>
+        <link refid="xv__sdirxss_8c"/>
+      </node>
     </invincdepgraph>
       <sectiondef kind="define">
       <memberdef kind="define" id="group__v__sdirxss_1ga933762ca8bd842e98d6de33b988fcd20" prot="public" static="no">
@@ -65,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h" line="27" column="9" bodyfile="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h" bodystart="27" bodyend="-1"/>
+        <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h" line="27" column="9" bodyfile="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -93,14 +93,14 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.c" line="51" column="1" bodyfile="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.c" bodystart="51" bodyend="87"/>
-        <references refid="struct_x_v___sdi_rx_ss___sub_core_1a9f70e8bf6414426919b91556c034c334" compoundref="xv__sdirxss_8h" startline="124">XV_SdiRxSs_SubCore::AbsAddr</references>
-        <references refid="struct_x_v___sdi_rx_ss_1a881d8188fa81829cfb38a44aea36e7a1" compoundref="xv__sdirxss_8h" startline="169">XV_SdiRxSs::Config</references>
-        <references refid="struct_x_v___sdi_rx_ss___config_1a778de600283189203c525664695ca373" compoundref="xv__sdirxss_8h" startline="143">XV_SdiRxSs_Config::SdiRx</references>
-        <references refid="struct_x_v___sdi_rx_ss_1ae3d8d6ae92334dc0e542d1af1f8d9a3e" compoundref="xv__sdirxss_8h" startline="172">XV_SdiRxSs::SdiRxPtr</references>
+        <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.c" line="51" column="1" bodyfile="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.c" bodystart="51" bodyend="83"/>
+        <references refid="struct_x_v___sdi_rx_ss___sub_core_1a9f70e8bf6414426919b91556c034c334" compoundref="xv__sdirxss_8h" startline="120">XV_SdiRxSs_SubCore::AbsAddr</references>
+        <references refid="struct_x_v___sdi_rx_ss_1a881d8188fa81829cfb38a44aea36e7a1" compoundref="xv__sdirxss_8h" startline="158">XV_SdiRxSs::Config</references>
+        <references refid="struct_x_v___sdi_rx_ss___config_1a778de600283189203c525664695ca373" compoundref="xv__sdirxss_8h" startline="134">XV_SdiRxSs_Config::SdiRx</references>
+        <references refid="struct_x_v___sdi_rx_ss_1ae3d8d6ae92334dc0e542d1af1f8d9a3e" compoundref="xv__sdirxss_8h" startline="161">XV_SdiRxSs::SdiRxPtr</references>
         <references refid="xv__sdirxss_8h_1ade9ffd7c4cd3343a53668c77788e00baab255967dc5490db2cd7f57f778aec61e" compoundref="xv__sdirxss_8h" startline="76">XV_SDIRXSS_LOG_EVT_SDIRX_INIT</references>
         <references refid="xv__sdirxss_8h_1a4ec835467423d601222535543e1ffedf" compoundref="xv__sdirxss__log_8c" startline="61" endline="93">XV_SdiRxSs_LogWrite</references>
-        <referencedby refid="xv__sdirxss_8h_1a43a9c2aa8bc176afeaa71534eb0e8304" compoundref="xv__sdirxss_8c" startline="200" endline="237">XV_SdiRxSs_CfgInitialize</referencedby>
+        <referencedby refid="xv__sdirxss_8h_1a43a9c2aa8bc176afeaa71534eb0e8304" compoundref="xv__sdirxss_8c" startline="188" endline="221">XV_SdiRxSs_CfgInitialize</referencedby>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -135,6 +135,6 @@
 <codeline lineno="43"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
 <codeline lineno="44"><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
-    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h"/>
+    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_sdirxss/src/xv_sdirxss_coreinit.h"/>
   </compounddef>
 </doxygen>

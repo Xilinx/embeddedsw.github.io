@@ -1,11 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-#ifndef CAN_HEADER_H		/* prevent circular inclusions */
-#define CAN_HEADER_H		/* by using protection macros */
+#ifndef CAN_HEADER_H
+#define CAN_HEADER_H
+
+/*****************************************************************************/
+/**
+*
+* @file can_header.h
+*
+* @brief Declares prototypes for the CAN driver examples.
+*
+******************************************************************************/
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,11 +24,13 @@ extern "C" {
 #include "xil_assert.h"
 #include "xstatus.h"
 
+/** @cond INTERNAL */
 #ifndef SDT
 int XCanPolledExample(u16 DeviceId);
 #else
 int XCanPolledExample(XCan *Can, UINTPTR BaseAddress);
 #endif
+/** @endcond */
 
 #ifdef __cplusplus
 }

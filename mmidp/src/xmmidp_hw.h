@@ -963,11 +963,13 @@ extern "C" {
 
 #define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_FRAC_SHIFT	14
 #define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_FRAC_WIDTH	6
-#define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_FRAC_MASK		0x00007E000
+/** VIDEO_CONFIG5 AVERAGE_BYTES_PER_TU_FRAC field, bits [19:14]. */
+#define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_FRAC_MASK		0x000FC000
 
 #define XMMIDP_VIDEO_CONFIG5_INIT_THRESHOLD_SHIFT		7
 #define XMMIDP_VIDEO_CONFIG5_INIT_THRESHOLD_WIDTH		7
-#define XMMIDP_VIDEO_CONFIG5_INIT_THRESHOLD_MASK		0x00001FC0
+/** VIDEO_CONFIG5 INIT_THRESHOLD field, bits [13:7]. */
+#define XMMIDP_VIDEO_CONFIG5_INIT_THRESHOLD_MASK		0x00003F80
 
 #define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_SHIFT		0
 #define XMMIDP_VIDEO_CONFIG5_AVG_BYTES_PER_TU_WIDTH		6
@@ -1948,6 +1950,35 @@ extern "C" {
 #define XMMIDP_DPCD_PAYLOAD_TABLE_UPDATE_STATUS		0x002C0
 #define XMMIDP_DPCD_VC_PAYLOAD_ID_UPDATED_MASK		0x1
 #define XMMIDP_DPCD_VC_PAYLOAD_ACT_HANDLED_MASK		0x2
+
+/** @name MST sideband message mailboxes and service IRQ vector
+ * @{
+ */
+#define XMMIDP_DPCD_DOWN_REQ				0x01000	/**< DOWN_REQ mailbox */
+#define XMMIDP_DPCD_DOWN_REP				0x01400	/**< DOWN_REP mailbox */
+#define XMMIDP_DPCD_SINK_DEVICE_SERVICE_IRQ_VECTOR_ESI0	0x02003	/**< ESI0 */
+#define XMMIDP_DPCD_ESI0_DOWN_REP_MSG_RDY_MASK		0x10	/**< DOWN_REP ready */
+#define XMMIDP_DPCD_ESI0_UP_REQ_MSG_RDY_MASK		0x20	/**< UP_REQ ready */
+/** @} */
+
+/** @name Sideband message request identifiers
+ * @{
+ */
+#define XMMIDP_SBMSG_LINK_ADDRESS			0x01	/**< List branch ports */
+#define XMMIDP_SBMSG_ENUM_PATH_RESOURCES		0x10	/**< Path PBN */
+#define XMMIDP_SBMSG_ALLOCATE_PAYLOAD			0x11	/**< Allocate a VC payload */
+#define XMMIDP_SBMSG_CLEAR_PAYLOAD_ID_TABLE		0x14	/**< Clear payload tables */
+/** @} */
+
+/** @name LINK_ADDRESS peer device types
+ * @{
+ */
+#define XMMIDP_PEER_DEVICE_NONE				0	/**< No device */
+#define XMMIDP_PEER_DEVICE_SOURCE_OR_SST_BRANCH		1	/**< Source or SST branch */
+#define XMMIDP_PEER_DEVICE_MST_BRANCHING_UNIT		2	/**< MST branch */
+#define XMMIDP_PEER_DEVICE_SST_SINK			3	/**< SST sink (DP monitor) */
+#define XMMIDP_PEER_DEVICE_DP_LEGACY_CONV		4	/**< DP to legacy converter */
+/** @} */
 
 /******************************************************************************/
 

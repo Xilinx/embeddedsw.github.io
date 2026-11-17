@@ -221,6 +221,7 @@ void Dp21RxSs_PtMst_PtHelpMenu()
 	print(" 3 = Toggle HPD to ask for Retraining\n\r");
 	print(" 4 = Restart TX path \n\r");
 	print(" m = Check SUM on Rx and Tx\n\r");
+	print(" s = Show received SDP / VSC colorimetry (HDR) packet\r\n");
 	print(" n = Clone EDID from Monitor\r\n");
 	print(" z = Display this menu again\r\n");
 	print(" x = Return to Main menu\r\n");
@@ -299,7 +300,8 @@ char Dp21RxSs_PtMst_Getc(u32 timeout_ms)
 		XTmrCtr_Start(&TmrCtr, 0);
 	}
 
-#ifndef PLATFORM_MB
+
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 	while ((!XUartPs_IsReceiveData(STDIN_BASEADDRESS)) && (timeout == 0)) {
 #else
 	while (XUartLite_IsReceiveEmpty(STDIN_BASEADDRESS) && (timeout == 0)) {
@@ -319,7 +321,8 @@ char Dp21RxSs_PtMst_Getc(u32 timeout_ms)
 	if (timeout == 1) {
 		c = 0;
 	} else {
-#ifndef PLATFORM_MB
+
+#if !defined (PLATFORM_MB) && !defined (__riscv)
 		c = XUartPs_RecvByte_NonBlocking();
 #else
 		c = XUartLite_RecvByte(STDIN_BASEADDRESS);

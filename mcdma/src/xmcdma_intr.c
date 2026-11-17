@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2017 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,7 @@
 * @file xmcdma_intr.c
 * @addtogroup mcdma Overview
 * @{
+* @brief Implements interrupt handling functions for the MCDMA driver.
 *
 * This file contains the implementation of the interrupt handling functions for
 * MCDMA driver.
@@ -40,11 +41,59 @@
 
 /************************** Function Definitions *****************************/
 
+/*****************************************************************************/
+/**
+ * @brief Returns the highest valid channel ID for a channel count.
+ *
+ * Channel arrays are 1-based and sized XMCDMA_MAX_CHAN_PER_DEVICE.
+ * The maximum valid channel ID is XMCDMA_MAX_CHAN_PER_DEVICE.
+ *
+ * @param[in]	NumChannels is the configured number of channels.
+ *
+ * @return	The maximum valid channel ID.
+ *
+ *****************************************************************************/
+static u16 XMcdma_GetMaxChanId(int NumChannels)
+{
+	u16 MaxChanId = (u16)(XMCDMA_MAX_CHAN_PER_DEVICE);
+
+	if (NumChannels <= 0) {
+		return 0U;
+	}
+
+	if ((u16)NumChannels < MaxChanId) {
+		MaxChanId = (u16)NumChannels;
+	}
+
+	return MaxChanId;
+}
+
+/*****************************************************************************/
+/**
+ * @brief Returns the interrupt service mask for configured channels.
+ *
+ * Channel IDs are 1-based, so bit 0 corresponds to channel 1.
+ *
+ * @param[in]	NumChannels is the configured number of channels.
+ *
+ * @return	A bit mask for valid channel interrupt service bits.
+ *
+ *****************************************************************************/
+static u32 XMcdma_GetValidChanMask(int NumChannels)
+{
+	u16 MaxChanId = XMcdma_GetMaxChanId(NumChannels);
+
+	if (MaxChanId == 0U) {
+		return 0U;
+	}
+
+	return (u32)((1ULL << MaxChanId) - 1U);
+}
 
 /*****************************************************************************/
 /**
 *
-* This function is the Per Channel interrupt handler for the MCDMA core.
+* @brief Handles per-channel MCDMA interrupts for the MCDMA core.
 *
 * This handler reads the pending interrupt from Status register, determines the
 * source of the interrupts and calls the respective callbacks for the
@@ -56,9 +105,8 @@
 * callbacks to handle interrupts and installing the callbacks using
 * XMcdma_ChanSetCallBack() during initialization phase.
 *
-* @param	Instance is a pointer to the Channel instance to be worked on.
+* @param[in]	Instance is a pointer to the Channel instance to be worked on.
 *
-* @return	None.
 *
 * @note		To generate interrupt required interrupts should be enabled.
 *
@@ -96,7 +144,7 @@ void XMcdma_ChanIntrHandler(void *Instance)
 /*****************************************************************************/
 /**
 *
-* This routine installs an asynchronous callback function for the given
+* @brief This routine installs an asynchronous callback function for the given
 * HandlerType.
 *
 * <pre>
@@ -107,10 +155,10 @@ void XMcdma_ChanIntrHandler(void *Instance)
 *
 * </pre>
 *
-* @param	Chan is the Channel instance to be worked on
-* @param	HandlerType specifies which callback is to be attached.
-* @param	CallBackFunc is the address of the callback function.
-* @param	CallBackRef is a user data item that will be passed to the
+* @param[in]	Chan is the Channel instance to be worked on.
+* @param[in]	HandlerType specifies which callback is to be attached.
+* @param[in]	CallBackFunc is the address of the callback function.
+* @param[in]	CallBackRef is a user data item that will be passed to the
 * 		callback function when it is invoked.
 *
 * @return
@@ -162,7 +210,7 @@ s32 XMcdma_ChanSetCallBack(XMcdma_ChanCtrl *Chan, XMcdma_ChanHandler HandlerType
 /*****************************************************************************/
 /**
 *
-* This function is the S2MM(RX) interrupt handler for the MCDMA core.
+* @brief Handles S2MM (RX) MCDMA interrupts for the MCDMA core.
 *
 * This handler reads the pending interrupt from Status register, determines the
 * source of the interrupts and calls the respective callbacks for the
@@ -174,9 +222,8 @@ s32 XMcdma_ChanSetCallBack(XMcdma_ChanCtrl *Chan, XMcdma_ChanHandler HandlerType
 * callbacks to handle interrupts and installing the callbacks using
 * XMcdma_SetCallBack() during initialization phase.
 *
-* @param	Instance is a pointer to the XMcdma instance to be worked on.
+* @param[in]	Instance is a pointer to the XMcdma instance to be worked on.
 *
-* @return	None.
 *
 * @note		To generate interrupt required interrupts should be enabled.
 *
@@ -186,20 +233,25 @@ void XMcdma_IntrHandler(void *Instance)
 	XMcdma *InstancePtr = (XMcdma *)((void *)Instance);
 	u32 IrqStatus;
 	u16 Chan_id = 1;
+	u16 MaxChanId;
 	XMcdma_ChanCtrl *Chan = NULL;
 	u32 i;
 	u32 Chan_SerMask;
+
+	MaxChanId = XMcdma_GetMaxChanId(InstancePtr->Config.RxNumChannels);
 
 	/* Serviced Channel Numbers */
 	while (1) {
 		Chan_SerMask = XMcdma_ReadReg(InstancePtr->Config.BaseAddress,
 					      XMCDMA_RX_OFFSET + XMCDMA_RXINT_SER_OFFSET);
+		Chan_SerMask &= XMcdma_GetValidChanMask(InstancePtr->Config.RxNumChannels);
 
 		if (!Chan_SerMask) {
 			goto out;
 		}
 
-		for (i = 1, Chan_id = 1; i != 0 && i <= Chan_SerMask;
+		for (i = 1, Chan_id = 1;
+		     i != 0 && Chan_id <= MaxChanId && i <= Chan_SerMask;
 		     i <<= 1, Chan_id++) {
 			if (Chan_SerMask & i) {
 				Chan = XMcdma_GetMcdmaRxChan(InstancePtr,
@@ -243,7 +295,7 @@ out:
 /*****************************************************************************/
 /**
 *
-* This function is the MM2S interrupt handler for the MCDMA core.
+* @brief Handles MM2S MCDMA interrupts for the MCDMA core.
 *
 * This handler reads the pending interrupt from Status register, determines the
 * source of the interrupts and calls the respective callbacks for the
@@ -255,9 +307,8 @@ out:
 * callbacks to handle interrupts and installing the callbacks using
 * XMcdma_SetCallBack() during initialization phase.
 *
-* @param	Instance is a pointer to the XMcdma instance to be worked on.
+* @param[in]	Instance is a pointer to the XMcdma instance to be worked on.
 *
-* @return	None.
 *
 * @note		To generate interrupt required interrupts should be enabled.
 *
@@ -267,20 +318,25 @@ void XMcdma_TxIntrHandler(void *Instance)
 	XMcdma *InstancePtr = (XMcdma *)((void *)Instance);
 	u32 IrqStatus;
 	u16 Chan_id = 1;
+	u16 MaxChanId;
 	XMcdma_ChanCtrl *Chan = NULL;
 	u32 i;
 	u32 Chan_SerMask;
+
+	MaxChanId = XMcdma_GetMaxChanId(InstancePtr->Config.TxNumChannels);
 
 	/* Serviced Channel Numbers */
 	while (1) {
 		Chan_SerMask = XMcdma_ReadReg(InstancePtr->Config.BaseAddress,
 					      XMCDMA_TXINT_SER_OFFSET);
+		Chan_SerMask &= XMcdma_GetValidChanMask(InstancePtr->Config.TxNumChannels);
 
 		if (!Chan_SerMask) {
 			goto out;
 		}
 
-		for (i = 1, Chan_id = 1; i != 0 && i <= Chan_SerMask;
+		for (i = 1, Chan_id = 1;
+		     i != 0 && Chan_id <= MaxChanId && i <= Chan_SerMask;
 		     i <<= 1, Chan_id++) {
 			if (Chan_SerMask & i) {
 				Chan = XMcdma_GetMcdmaTxChan(InstancePtr, Chan_id);
@@ -320,7 +376,7 @@ out:
 /*****************************************************************************/
 /**
 *
-* This routine installs an asynchronous callback function for the given
+* @brief This routine installs an asynchronous callback function for the given
 * HandlerType.
 *
 * <pre>
@@ -334,10 +390,10 @@ out:
 *
 * </pre>
 *
-* @param	InstancePtr is a pointer to the XMcdma instance to be worked on.
-* @param	HandlerType specifies which callback is to be attached.
-* @param	CallBackFunc is the address of the callback function.
-* @param	CallBackRef is a user data item that will be passed to the
+* @param[in]	InstancePtr is a pointer to the XMcdma instance to be worked on.
+* @param[in]	HandlerType specifies which callback is to be attached.
+* @param[in]	CallBackFunc is the address of the callback function.
+* @param[in]	CallBackRef is a user data item that will be passed to the
 * 		callback function when it is invoked.
 *
 * @return

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,9 +8,12 @@
 /**
 *
 * @file xzdma_simple_example.c
+* @addtogroup zdma Overview
+* @{
 *
-* This file contains the example using XZDma driver to do simple data transfer
-* in Normal mode on ZDMA device for 1MB data transfer.
+* @brief Demonstrates simple ZDMA data transfer in normal mode.
+* Demonstrates simple data transfer using the XZDma driver in normal mode
+* on a ZDMA device for 1MB data transfer.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -86,15 +89,15 @@
 #endif
 
 #ifndef TESTAPP_GEN
-#define SIZE		1000000 /**< Size of the data to be transferred */
+#define SIZE		1000000 /**< Size of the data to be transferred. */
 #else
-#define SIZE		1000 /**< Size of the data to be transferred */
+#define SIZE		1000 /**< Size of the data to be transferred. */
 #endif
 
 #define TESTVALUE	0x1230 /**< For writing into source buffer */
 
-#define POLL_TIMEOUT_COUNTER		1000000U
-#define NUM_OF_EVENTS			1
+#define POLL_TIMEOUT_COUNTER		1000000U /**< Maximum poll iterations while waiting for a DMA event. */
+#define NUM_OF_EVENTS			1 /**< Number of events to wait for in Xil_WaitForEventSet. */
 /**************************** Type Definitions *******************************/
 
 /************************** Function Prototypes ******************************/
@@ -102,14 +105,19 @@
 #ifndef SDT
 int XZDma_SimpleExample(INTC *IntcInstPtr, XZDma *ZdmaInstPtr,
 			u16 DeviceId, u16 IntrId);
-static int SetupInterruptSystem(INTC *IntcInstancePtr,
-				XZDma *InstancePtr, u16 IntrId);
 #else
 int XZDma_SimpleExample(XZDma *ZdmaInstPtr,
 			UINTPTR BaseAddress);
 #endif
+/** @cond INTERNAL */
+#ifndef SDT
+static int SetupInterruptSystem(INTC *IntcInstancePtr,
+				XZDma *InstancePtr, u16 IntrId);
+#endif
 static void DoneHandler(void *CallBackRef);
 static void ErrorHandler(void *CallBackRef, u32 Mask);
+/** @endcond */
+
 
 
 /************************** Variable Definitions *****************************/
@@ -137,13 +145,11 @@ static volatile u32 ErrorStatus = 0;			/**< Error Status flag*/
 /*****************************************************************************/
 /**
 *
-* Main function to call the example.
+* @brief Main function to call the example.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 int main(void)
@@ -171,27 +177,25 @@ int main(void)
 /*****************************************************************************/
 /**
 *
-* This function does a test of the data transfer in simple mode of normal mode
+* @brief This function does a test of the data transfer in simple mode of normal mode
 * on the ZDMA driver.
 *
 * @if SDT
-* @param	ZdmaInstPtr contains a pointer to the ZDMA instance which
+* @param[in] ZdmaInstPtr contains a pointer to the ZDMA instance which
 *		is going to be connected to the interrupt controller.
-* @param	BaseAddress contains the base address of the ZDMA device
+* @param[in] BaseAddress contains the base address of the ZDMA device
 * @else
-* @param	IntcInstPtr is a pointer to the instance of the INTC.
-* @param	ZdmaInstPtr contains a pointer to the ZDMA instance which
+* @param[in] IntcInstPtr is a pointer to the instance of the INTC.
+* @param[in] ZdmaInstPtr contains a pointer to the ZDMA instance which
 *		is going to be connected to the interrupt controller.
-* @param	DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID macro value.
-* @param	IntrId is the interrupt Id and is typically
+* @param[in] DeviceId is the XPAR_<ZDMA Instance>_DEVICE_ID macro value.
+* @param[in] IntrId is the interrupt Id and is typically
 *		XPAR_<ZDMA_instance>_INTR macro value.
 * @endif
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_FAILURE if failed.
-*
-* @note		None.
 *
 ******************************************************************************/
 #ifndef SDT
@@ -374,23 +378,20 @@ int XZDma_SimpleExample(XZDma *ZdmaInstPtr, UINTPTR BaseAddress)
 #ifndef SDT
 /*****************************************************************************/
 /**
-* This function sets up the interrupt system so interrupts can occur for the
+* @brief This function sets up the interrupt system so interrupts can occur for the
 * ZDMA. This function is application-specific. The user should modify this
 * function to fit the application.
 *
-* @param	IntcInstancePtr is a pointer to the instance of the INTC.
-* @param	InstancePtr contains a pointer to the instance of the ZDMA
+* @param[in] IntcInstancePtr is a pointer to the instance of the INTC.
+* @param[in] InstancePtr contains a pointer to the instance of the ZDMA
 *		driver which is going to be connected to the interrupt
 *		controller.
-* @param	IntrId is the interrupt Id and is typically
+* @param[in] IntrId is the interrupt Id and is typically
 *		XPAR_<ZDMA_instance>_INTR value from xparameters.h.
 *
 * @return
 *		- XST_SUCCESS if successful
 *		- XST_FAILURE if failed
-*
-* @note		None.
-
 *
 ****************************************************************************/
 int SetupInterruptSystem(INTC *IntcInstancePtr,
@@ -499,14 +500,10 @@ int SetupInterruptSystem(INTC *IntcInstancePtr,
 
 /*****************************************************************************/
 /**
-* This static function handles ZDMA Done interrupts.
+* @brief This static function handles ZDMA Done interrupts.
 *
-* @param	CallBackRef is the callback reference passed from the interrupt
+* @param[in] CallBackRef is the callback reference passed from the interrupt
 *		handler, which in our case is a pointer to the driver instance.
-*
-* @return	None.
-*
-* @note		None.
 *
 ******************************************************************************/
 static void DoneHandler(void *CallBackRef)
@@ -517,15 +514,11 @@ static void DoneHandler(void *CallBackRef)
 }
 /*****************************************************************************/
 /**
-* This static function handles ZDMA error interrupts.
+* @brief This static function handles ZDMA error interrupts.
 *
-* @param	CallBackRef is the callback reference passed from the interrupt
+* @param[in] CallBackRef is the callback reference passed from the interrupt
 *		handler, which in our case is a pointer to the driver instance.
-* @param	Mask specifies which interrupts were occurred.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in] Mask specifies the interrupt error mask.
 *
 ******************************************************************************/
 static void ErrorHandler(void *CallBackRef, u32 Mask)
@@ -533,3 +526,5 @@ static void ErrorHandler(void *CallBackRef, u32 Mask)
 	Xil_AssertVoid(CallBackRef != NULL);
 	ErrorStatus = Mask;
 }
+
+/** @} */

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2012 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,8 @@
 * @file xaxivdma_sinit.c
 * @addtogroup axivdma Overview
 * @{
+*
+* @brief Looks up AXI VDMA hardware settings from the configuration table.
 *
 * Look up the hardware settings using device ID. The hardware setting is inside
 * the configuration table in xaxivdma_g.c, generated automatically by XPS or
@@ -40,19 +42,20 @@
 /************************** Constant Definitions *****************************/
 
 #ifndef XPAR_XAXIVDMA_NUM_INSTANCES
+/** Number of AXI VDMA instances when not defined in xparameters.h. */
 #define XPAR_XAXIVDMA_NUM_INSTANCES		0
 #endif
 
 /*****************************************************************************/
 /**
 *
-* Looks up the device configuration based on the unique device ID/BaseAddress.
+* @brief Looks up the device configuration based on the unique device ID/BaseAddress.
 * A table contains the configuration info for each device in the system.
 *
 * @if SDT
-* @param        BaseAddress contains the base address of the device
+* @param[in] BaseAddress contains the base address of the device
 * @else
-* @param        DeviceId contains the unique ID of the device
+* @param[in] DeviceId contains the unique ID of the device
 * @endif
 *
 * @return

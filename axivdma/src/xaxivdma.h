@@ -4,15 +4,19 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
+#ifndef XAXIVDMA_H_     /* Prevent circular inclusions */
+/** @brief Include guard for the AXI VDMA driver header. */
+#define XAXIVDMA_H_     /* by using protection macros */
+
 /*****************************************************************************/
 /**
-*
-* @file xaxivdma.h
-* @addtogroup axivdma Overview
-* @{
-* @details
-*
-* This is the Xilinx MVI AXI Video DMA device driver. The DMA engine transfers
+ *
+ * @file xaxivdma.h
+ * @addtogroup axivdma Overview
+ * @{
+ * @brief Defines the AXI Video DMA (VDMA) driver interface.
+ *
+ * This is the Xilinx MVI AXI Video DMA device driver. The DMA engine transfers
 * frames from the AXI Bus or to the AXI Bus. It is in the chain of video
 * IPs, which process video frames.
 *
@@ -32,7 +36,7 @@
 * The driver composes of three parts: initialization, start a DMA transfer, and
 * interrupt handling.
 *
-* <b> Driver Initialization </b>
+* \par  Driver Initialization
 *
 * To initialize the driver, the caller needs to pass a configuration structure
 * to the driver. This configuration structure contains information about the
@@ -53,7 +57,7 @@
 *       backfunctions: general and error
 *     - Enable interrupts that the user cares about
 *
-* <b>Start a DMA Transaction </b>
+* \par Start a DMA Transaction
 *
 * If you are using the driver API to start the transfer, then there are two
 * ways to start a DMA transaction:
@@ -87,7 +91,7 @@
 * and vice versa. The PointNum in structure XAxiVdma_DmaSetup decides which
 * VDMA instance this VDMA is working with.
 *
-* <b>Interrupt Handling </b>
+* \par Interrupt Handling
 *
 * Each VDMA channel supports 2 kinds of interrupts:
 * - General Interrupt: An interrupt other than error interrupt.
@@ -100,7 +104,7 @@
 * Each channel has two interrupt callback functions. One for IOC and delay
 * interrupt, or general interrupt; one for error interrupt.
 *
-* <b>Reset</b>
+* \par Reset
 *
 * Reset a DMA channel causes the channel enter the following state:
 *
@@ -132,7 +136,7 @@
 * If you are using the driver API to start a transfer after a reset, then it
 * should be fine.
 *
-* <b>Stop</b>
+* \par Stop
 *
 * Stop a channel using XAxiVDma_DmaStop() is similar to a reset, except the
 * registers are kept intact.
@@ -140,26 +144,25 @@
 * To start a transfer after a stop:
 *
 * - If there are error bits in the status register, then a reset is necessary.
-* Please refer to the <b>Reset</b> section for more details on how to start a
-* transfer after a reset.
+* Refer to the Reset section for how to start a transfer after a reset.
 * - If there are no error bits in the status register, then you can call
 * XAxiVdma_DmaStart() to start the transfer again. Note that the transfer
 * always starts from the first video frame.
 *
-* <b> Examples</b>
+* \par  Examples
 *
 * We provide one example on how to use the AXI VDMA with AXI Video IPs. This
 * example does not work by itself. To make it work, you must have two other
 * Video IPs to connect to the VDMA. One of the Video IP does the write and the
 * other does the read.
 *
-* <b>Cache Coherency</b>
+* \par Cache Coherency
 *
 * This driver does not handle any cache coherency for the data buffers.
 * The application is responsible for handling cache coherency, if the cache
 * is enabled.
 *
-* <b>Alignment</b>
+* \par Alignment
 *
 * The VDMA supports any buffer alignment when DRE is enabled in the hardware
 * configuration. It only supports word-aligned buffers otherwise. Note that
@@ -169,12 +172,12 @@
 * If the horizontal frame size is not word-aligned, then DRE must be enabled
 * in the hardware. Otherwise, undefined results happen.
 *
-* <b>Address Translation</b>
+* \par Address Translation
 *
 * Buffer addresses for transfers are physical addresses. If the system does not
 * use MMU, then physical and virtual addresses are the same.
 *
-* <b>API Change from PLB Video DMA</b>
+* \par API Change from PLB Video DMA
 *
 * We try to keep the API as consistent with the PLB Video DMA driver as
 * possible. However, due to hardware differences, some of the PLB video DMA
@@ -183,7 +186,7 @@
 *
 * For details on the API changes, please refer to xaxivdma_porting_guide.h.
 *
-* <pre>
+* @verbatim
 * MODIFICATION HISTORY:
 *
 * Ver   Who  Date     Changes
@@ -258,7 +261,7 @@
 * 5.1   adk  29/01/15  Added the sefltest api (XAxiVdma_Selftest) to the driver source files
 *                     (xaxivdma_selftest.c) and called this from the selftest example
 * 6.0   vak  27/07/15  Added example for demonstarting triple buffer api.
-* 6.0   vak  27/07/15  Added 64 bit addressing support to the driver.
+* 6.0   vak  27/07/15  Added 64-bit addressing support to the driver.
 * 6.0   vak  26/08/15  Added checks to align hsize and stride based on channel direction
 *                      (read or write)(CR 874861)
 * 6.1   sk   11/10/15 Used UINTPTR instead of u32 for Baseaddress CR# 867425.
@@ -277,15 +280,10 @@
 *                     definitions of axivdma in xparameters.h
 *       ms   08/07/17 Fixed compilation warnings in xaxivdma_sinit.c
 * 6.6   rsp  07/02/18 Add vertical flip states in config structures
-* 6.12  sa   08/12/22 Updated the examples to use latest MIG cannoical define
+* 6.12  sa   08/12/22 Updated the examples to use latest MIG canonical macro
 * 		       i.e XPAR_MIG_0_C0_DDR4_MEMORY_MAP_BASEADDR.
-*
-* </pre>
-*
-******************************************************************************/
-
-#ifndef XAXIVDMA_H_     /* Prevent circular inclusions */
-#define XAXIVDMA_H_     /* by using protection macros */
+* @endverbatim
+ ******************************************************************************/
 
 #ifdef __cplusplus
 extern "C" {
@@ -293,8 +291,13 @@ extern "C" {
 
 /***************************** Include Files *********************************/
 
+#if !defined(__DOXYGEN__) && !defined(DOXYGEN)
 #include "xaxivdma_hw.h"
 #include "xaxivdma_i.h"
+#else
+#define XAXIVDMA_MAX_FRAMESTORE 32
+typedef struct XAxiVdma_Channel XAxiVdma_Channel;
+#endif
 #include "xstatus.h"
 #include "xil_assert.h"
 
@@ -310,23 +313,23 @@ extern "C" {
 /**
  * Frame Sync Source Selection
  */
-#define XAXIVDMA_CHAN_FSYNC		0
-#define XAXIVDMA_CHAN_OTHER_FSYNC	1
-#define XAXIVDMA_S2MM_TUSER_FSYNC	2
+#define XAXIVDMA_CHAN_FSYNC		0        /**< Channel frame sync. */
+#define XAXIVDMA_CHAN_OTHER_FSYNC	1        /**< Other channel frame sync. */
+#define XAXIVDMA_S2MM_TUSER_FSYNC	2        /**< S2MM TUSER frame sync. */
 
 /**
  * GenLock Source Selection
  */
-#define XAXIVDMA_EXTERNAL_GENLOCK	0
-#define XAXIVDMA_INTERNAL_GENLOCK	1
+#define XAXIVDMA_EXTERNAL_GENLOCK	0        /**< External genlock source. */
+#define XAXIVDMA_INTERNAL_GENLOCK	1        /**< Internal genlock source. */
 
 /**
  * GenLock Mode Constants
  */
-#define XAXIVDMA_GENLOCK_MASTER		0
-#define XAXIVDMA_GENLOCK_SLAVE		1
-#define XAXIVDMA_DYN_GENLOCK_MASTER	2
-#define XAXIVDMA_DYN_GENLOCK_SLAVE	3
+#define XAXIVDMA_GENLOCK_MASTER		0        /**< Genlock master mode. */
+#define XAXIVDMA_GENLOCK_SLAVE		1        /**< Genlock slave mode. */
+#define XAXIVDMA_DYN_GENLOCK_MASTER	2        /**< Dynamic genlock master mode. */
+#define XAXIVDMA_DYN_GENLOCK_SLAVE	3        /**< Dynamic genlock slave mode. */
 
 /**
  * Interrupt type for setting up callback
@@ -342,53 +345,43 @@ extern "C" {
 /**
  * Debug Configuration Parameter Constants (C_ENABLE_DEBUG_INFO_*)
  */
-#define XAXIVDMA_ENABLE_DBG_THRESHOLD_REG	0x01
-#define XAXIVDMA_ENABLE_DBG_FRMSTORE_REG	0x02
-#define XAXIVDMA_ENABLE_DBG_FRM_CNTR	0x04
-#define XAXIVDMA_ENABLE_DBG_DLY_CNTR	0x08
-#define XAXIVDMA_ENABLE_DBG_ALL_FEATURES	0x0F
+#define XAXIVDMA_ENABLE_DBG_THRESHOLD_REG	0x01 /**< Enable debug threshold register. */
+#define XAXIVDMA_ENABLE_DBG_FRMSTORE_REG	0x02 /**< Enable debug frame store register. */
+#define XAXIVDMA_ENABLE_DBG_FRM_CNTR	0x04 /**< Enable debug frame counter. */
+#define XAXIVDMA_ENABLE_DBG_DLY_CNTR	0x08 /**< Enable debug delay counter. */
+#define XAXIVDMA_ENABLE_DBG_ALL_FEATURES	0x0F /**< Enable all debug features. */
 
-/* Defined for backward compatibility.
- * This  is a typical DMA Internal Error, which on detection does not require a
- * reset (as opposed to other errors). So user on seeing this need only to
- * reinitialize channels.
+/**
+ * @brief Frame or line mismatch error status code for backward compatibility.
  *
+ * This is a typical DMA internal error that does not require a reset.
+ * Reinitialize the channels when this error is observed.
  */
 #ifndef XST_VDMA_MISMATCH_ERROR
-#define XST_VDMA_MISMATCH_ERROR 1430
+#define XST_VDMA_MISMATCH_ERROR 1430 /**< VDMA mismatch error status code. */
 #endif
 
 /**************************** Type Definitions *******************************/
 
-/*****************************************************************************/
 /**
- * Callback type for general interrupts
+ * @brief Callback type for general interrupts.
  *
- * @param   CallBackRef is a callback reference passed in by the upper layer
- *          when setting the callback functions, and passed back to the
- *          upper layer when the callback is called.
- * @param   InterruptTypes indicates the detailed type(s) of the interrupt.
- *          Its value equals 'OR'ing one or more XAXIVDMA_IXR_* values defined
- *          in xaxivdma_hw.h
- *****************************************************************************/
+ * @param[in] CallBackRef Callback reference passed in by the upper layer.
+ * @param[in] InterruptTypes Detailed interrupt type bitmask.
+ */
 typedef void (*XAxiVdma_CallBack) (void *CallBackRef, u32 InterruptTypes);
 
 /*****************************************************************************/
 /**
- * Callback type for Error interrupt.
+ * @brief Callback type for error interrupts.
  *
- * @param   CallBackRef is a callback reference passed in by the upper layer
- *          when setting the callback function, and it is passed back to the
- *          upper layer when the callback is called.
- * @param   ErrorMask is a bit mask indicating the cause of the error. Its
- *          value equals 'OR'ing one or more XAXIVDMA_IXR_* values defined in
- *          xaxivdma_hw.h
- *****************************************************************************/
+ * @param[in] CallBackRef Callback reference passed in by the upper layer.
+ * @param[in] ErrorMask Bit mask indicating the error cause.
+ */
 typedef void (*XAxiVdma_ErrorCallBack) (void *CallBackRef, u32 ErrorMask);
 
 /**
- * This typedef contains the hardware configuration information for a VDMA
- * device. Each VDMA device should have a configuration structure associated
+ * @brief Holds hardware configuration for a VDMA device. Each VDMA device should have a configuration structure associated
  * with it.
  */
 typedef struct {
@@ -397,8 +390,7 @@ typedef struct {
 #else
 	char *Name;		/**< Unique name of the device */
 #endif
-	UINTPTR BaseAddress;      /**< BaseAddress is the physical base address of the
-                            *  device's registers */
+	UINTPTR BaseAddress;      /**< Physical base address of the device registers. */
 	u16 MaxFrameStoreNum; /**< The maximum number of Frame Stores */
 	int HasMm2S;          /**< Whether hw build has read channel */
 	int HasMm2SDRE;       /**< Read channel supports unaligned transfer */
@@ -407,12 +399,11 @@ typedef struct {
 	int HasS2MmDRE;       /**< Write channel supports unaligned transfer */
 	int S2MmWordLen;      /**< Write channel word length */
 	int HasSG;            /**< Whether hardware has SG engine */
+	/** Read enable for video parameters in direct register mode. */
 	int EnableVIDParamRead;
-	/**< Read Enable for video parameters in direct
-	  *  register mode */
 	int UseFsync;	  /**< DMA operations synchronized to Frame Sync */
-	int FlushonFsync;	  /**< VDMA Transactions are flushed & channel states
-			    *	reset on Frame Sync */
+	/** VDMA transactions are flushed and channel states reset on frame sync. */
+	int FlushonFsync;
 	int Mm2SBufDepth;	  /**< Depth of Read Channel Line Buffer FIFO */
 	int S2MmBufDepth;	  /**< Depth of Write Channel Line Buffer FIFO */
 	int Mm2SGenLock;	  /**< Mm2s Gen Lock Mode */
@@ -421,33 +412,24 @@ typedef struct {
 	int S2MmSOF;	  /**< S2MM Start of Flag Enable */
 	int Mm2SStreamWidth;  /**< MM2S TData Width */
 	int S2MmStreamWidth;  /**< S2MM TData Width */
-	int Mm2SThresRegEn;   /**< MM2S Threshold Register Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_1
-							   configuration parameter */
-	int Mm2SFrmStoreRegEn;/**< MM2S Frame Store Register Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_5
-							   configuration parameter */
-	int Mm2SDlyCntrEn;	  /**< MM2S Delay Counter (Control Reg) Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_6
-							   configuration parameter */
-	int Mm2SFrmCntrEn;    /**< MM2S Frame Counter (Control Reg) Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_7
-							   configuration parameter */
-	int S2MmThresRegEn;   /**< S2MM Threshold Register Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_9
-							   configuration parameter */
-	int S2MmFrmStoreRegEn;/**< S2MM Frame Store Register Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_13
-							   configuration parameter */
-	int S2MmDlyCntrEn;	  /**< S2MM Delay Counter (Control Reg) Enable Flag
-							   This corresponds to C_ENABLE_DEBUG_INFO_14
-							   configuration parameter */
-	int S2MmFrmCntrEn;	  /**< S2MM Frame Counter (Control Reg) Enable Flag
-						       This corresponds to C_ENABLE_DEBUG_INFO_15
-							   configuration parameter */
-	int EnableAllDbgFeatures;/**< Enable all Debug features
-						       This corresponds to C_ENABLE_DEBUG_ALL
-							   configuration parameter */
+	/** MM2S Threshold Register Enable Flag (C_ENABLE_DEBUG_INFO_1). */
+	int Mm2SThresRegEn;
+	/** MM2S Frame Store Register Enable Flag (C_ENABLE_DEBUG_INFO_5). */
+	int Mm2SFrmStoreRegEn;
+	/** MM2S Delay Counter (Control Reg) Enable Flag (C_ENABLE_DEBUG_INFO_6). */
+	int Mm2SDlyCntrEn;
+	/** MM2S Frame Counter (Control Reg) Enable Flag (C_ENABLE_DEBUG_INFO_7). */
+	int Mm2SFrmCntrEn;
+	/** S2MM Threshold Register Enable Flag (C_ENABLE_DEBUG_INFO_9). */
+	int S2MmThresRegEn;
+	/** S2MM Frame Store Register Enable Flag (C_ENABLE_DEBUG_INFO_13). */
+	int S2MmFrmStoreRegEn;
+	/** S2MM Delay Counter (Control Reg) Enable Flag (C_ENABLE_DEBUG_INFO_14). */
+	int S2MmDlyCntrEn;
+	/** S2MM Frame Counter (Control Reg) Enable Flag (C_ENABLE_DEBUG_INFO_15). */
+	int S2MmFrmCntrEn;
+	/** Enable all debug features (C_ENABLE_DEBUG_ALL). */
+	int EnableAllDbgFeatures;
 	int AddrWidth;		  /**< Address Width */
 	u8 HasVFlip;		 /**< Whether hardware has Vertical Flip enabled(c_enable_vert_flip) */
 	u16 IntrId[2]; /**< Bits[11:0] Interrupt-id Bits[15:12] trigger type and level flags */
@@ -455,10 +437,8 @@ typedef struct {
 } XAxiVdma_Config;
 
 /**
- * The XAxiVdma_DmaSetup structure contains all the necessary information to
- * start a frame write or read.
- *
- */
+ * @brief Holds settings to start a frame read or write transfer.
+  */
 typedef struct {
 	int VertSizeInput;      /**< Vertical size input */
 	int HoriSizeInput;      /**< Horizontal size input */
@@ -469,18 +449,15 @@ typedef struct {
 	int EnableSync;         /**< Gen-Lock Mode? */
 	int PointNum;           /**< Master we synchronize with */
 	int EnableFrameCounter; /**< Frame Counter Enable */
-	UINTPTR FrameStoreStartAddr[XAXIVDMA_MAX_FRAMESTORE];
-	/**< Start Addresses of Frame Store Buffers. */
+	UINTPTR FrameStoreStartAddr[XAXIVDMA_MAX_FRAMESTORE]; /**< Start addresses of frame store buffers. */
 	int FixedFrameStoreAddr;/**< Fixed Frame Store Address index */
 	int GenLockRepeat;      /**< Gen-Lock Repeat? */
 	u8 EnableVFlip;	    /**< Vertical Flip state */
 } XAxiVdma_DmaSetup;
 
 /**
- * The XAxiVdmaFrameCounter structure contains the interrupt threshold settings
- * for both the transmit and the receive channel.
- *
- */
+ * @brief Holds frame counter interrupt threshold settings.
+  */
 typedef struct {
 	u8 ReadFrameCount;      /**< Interrupt threshold for Receive */
 	u8 ReadDelayTimerCount; /**< Delay timer threshold for receive */
@@ -489,8 +466,8 @@ typedef struct {
 } XAxiVdma_FrameCounter;
 
 /**
- * Channel callback functions
- */
+ * @brief Holds channel callback function pointers.
+  */
 typedef struct {
 	XAxiVdma_CallBack CompletionCallBack; /**< Call back for completion intr */
 	void *CompletionRef;                  /**< Call back ref */
@@ -500,8 +477,8 @@ typedef struct {
 } XAxiVdma_ChannelCallBack;
 
 /**
- * The XAxiVdma driver instance data.
- */
+ * @brief Holds driver instance data for a VDMA engine.
+  */
 typedef struct {
 	UINTPTR BaseAddr;                   /**< Memory address for this device */
 	int HasSG;                      /**< Whether hardware has SG engine */
@@ -512,10 +489,10 @@ typedef struct {
 	int HasMm2SDRE;                 /**< Whether read channel has DRE */
 	int HasS2Mm;                    /**< Whether hw build has write channel */
 	int HasS2MmDRE;                 /**< Whether write channel has DRE */
-	int EnableVIDParamRead;	    /**< Read Enable for video parameters in
-				      *  direct register mode */
-	int UseFsync;       	    /**< DMA operations synchronized to
-				      * Frame Sync */
+	/** Read enable for video parameters in direct register mode. */
+	int EnableVIDParamRead;
+	/** Synchronizes DMA operations to frame sync. */
+	int UseFsync;
 	int InternalGenLock;  	    /**< Internal Gen Lock */
 	XAxiVdma_ChannelCallBack ReadCallBack;  /**< Call back for read channel */
 	XAxiVdma_ChannelCallBack WriteCallBack; /**< Call back for write channel */
@@ -604,5 +581,7 @@ int XAxiVdma_Selftest(XAxiVdma *InstancePtr);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */
 
 #endif /* end of protection macro */

@@ -379,16 +379,17 @@ extern "C" {
 
 /******************************* Include Files ********************************/
 #include "xparameters.h"
-#ifdef SDT
 #define XPAR_XDPTXSS_NUM_INSTANCES XPAR_DPTXSS_NUM_INSTANCES
 #define XPAR_XDPRXSS_NUM_INSTANCES XPAR_DPRXSS_NUM_INSTANCES
-#endif
 
 #include "xil_assert.h"
 #include "xil_types.h"
 #include "xdp_hw.h"
 #include "xstatus.h"
 #include "xvidc.h"
+
+/* Selects XDP_USE_DSC and supplies the PPS types used by the stream state. */
+#include "xdp21_dsc.h"
 
 /****************************** Type Definitions ******************************/
 
@@ -564,11 +565,7 @@ typedef struct {
  * This typedef contains configuration information for the DisplayPort core.
  */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;		/**< Device instance ID. */
-#else
 	char *Name;
-#endif
 	UINTPTR BaseAddr;	/**< The base address of the core instance. */
 	u32 SAxiClkHz;		/**< The clock frequency of the core instance's
 					S_AXI_ACLK port. */
@@ -602,6 +599,8 @@ typedef struct {
 					0 = v1.1a, 1 = v1.2, 2 = v1.4. */
 	u8 IsRx;		/**< The type of DisplayPort core.
 					0 = TX, 1 = RX. */
+	u8 DscEn;		/**< Display Stream Compression is built into
+					this core instance. */
 } XDp_Config;
 
 /**
@@ -672,6 +671,10 @@ typedef struct {
 						clock recovery */
 	u8 cr_done_oldstate;		/**< Restores the number of lanes done
 						with clock recovery. */
+	u8 MinRateCrRetry;		/**< Clock recovery retries at the minimum
+						link rate before reducing lane count. */
+	u8 SkipCrTpOff;			/**< Skip the clock recovery start TP_OFF on
+						a fallback restart. */
 	u8 LinkTraining2x;		/**< indicates link training in DP 2.1 mode. */
 	u8 Downstream2xSupported;	/**< indicates dp2.1 capability from downstream receiver. */
 	u8 ProtocolSwitch;		/*switch from Dp21. to Dp1.4 */
@@ -1075,9 +1078,13 @@ typedef struct {
 	u8 NumOfMstStreams;		/**< No of mst streams supported */
 	u8 IsTps4Supported;		/**< Is TPS4 supported by the
 							downstream sink */
-	u8 ColorimetryThroughVsc;		/**< Enable / Disable of sending
-                                                        colorimetry information
-                                                        through VSC packet */
+	u8 ColorimetryThroughVsc[4];		/**< Per-stream enable / disable of
+                                                        sending colorimetry
+                                                        information through the
+                                                        VSC packet. Index is
+                                                        (StreamId - 1). Only
+                                                        [0] is used in single
+                                                        stream mode. */
 	u8 SideBandMsgCapable; /**< SideBand Message Support */
 	u8 isRxMstCapable; /**< Sink MST Capable Status */
 	XDp_TxLttprConfig LttprConfig;	/**< Configuration structure
@@ -1097,9 +1104,12 @@ typedef struct {
 							of attributes. When MST
 							mode is disabled, only
 							MsaConfig[0] is used. */
-	XDp_TxVscExtPacket VscPacket;            /**< Configuration structure
-                                                        for VSC extended packet
-                                                        data */
+	XDp_TxVscExtPacket VscPacket[4];         /**< Per-stream configuration
+                                                        structure for the VSC
+                                                        extended packet data.
+                                                        Index is (StreamId - 1).
+                                                        Only [0] is used in
+                                                        single stream mode. */
 	XDp_TxMstStream MstStreamConfig[4];	/**< Configuration structure
 							for a multi-stream
 							transport (MST)
@@ -1206,6 +1216,14 @@ typedef struct {
 	void *PresetFfeAdjustCallbackRef;	/* A pointer to the user data passed to the
 						 * ffe preset adjust request callback function.
 						 */
+#ifdef XDP_USE_DSC
+	u8 DscStreamEnable;			/**< 1: use DSC TU formulas in
+					 * XDp_TxCfgMsaRecalculate(); 0: legacy
+					 * uncompressed HActive path. */
+	u8 DscPpsValid;				/**< 1: DscPps is valid when
+					 * DscStreamEnable is set. */
+	XDp21_DscPps DscPps;			/**< Parsed PPS for DSC TU / WPL. */
+#endif /* XDP_USE_DSC */
 } XDp_Tx;
 
 /**
@@ -1604,12 +1622,7 @@ typedef struct {
 } XDp;
 
 /**************************** Function Prototypes *****************************/
-#ifndef SDT
-/* xdp_sinit.c: Configuration extraction function. */
-XDp_Config *XDp_LookupConfig(u16 DeviceId);
-#else
 XDp_Config *XDp_LookupConfig(UINTPTR BaseAddress);
-#endif
 /* xdp.c: Setup and initialization functions. */
 void XDp_CfgInitialize(XDp *InstancePtr, XDp_Config *ConfigPtr,
 							UINTPTR EffectiveAddr);
@@ -1645,6 +1658,7 @@ u32 XDp_TxSetDownspread(XDp *InstancePtr, u8 Enable);
 u32 XDp_TxSetEnhancedFrameMode(XDp *InstancePtr, u8 Enable);
 u32 XDp_TxSetLaneCount(XDp *InstancePtr, u8 LaneCount);
 u32 XDp_TxSetLinkRate(XDp *InstancePtr, u8 LinkRate);
+u32 XDp_TxOverrideSetLinkRate(XDp *InstancePtr, u8 LinkRate);
 u32 XDp_TxSetScrambler(XDp *InstancePtr, u8 Enable);
 
 /* xdp.c: TX functions for VSC extended packet. */
@@ -1818,6 +1832,11 @@ void XDp_RxMstSetPbn(XDp *InstancePtr, u8 PortNum, u16 PbnVal);
 u32 XDp_SelfTest(XDp *InstancePtr);
 u8 Dp_GetMstSideBandMsgStatus(XDp *InstancePtr);
 #if XPAR_XDPTXSS_NUM_INSTANCES
+#ifdef XDP_USE_DSC
+/* DSC SST stream configuration (see xdp21_dsc_tu.c, xdp_spm.c). */
+void XDp_TxSetDscStreamEnable(XDp *InstancePtr, u8 Enable);
+int XDp_TxSetDscStreamPps(XDp *InstancePtr, const u8 *PpsData);
+#endif /* XDP_USE_DSC */
 /* xdp_spm.c: Stream policy maker functions. */
 void XDp_TxCfgMsaRecalculate(XDp *InstancePtr, u8 Stream);
 void XDp_TxCfgMsaUseStandardVideoMode(XDp *InstancePtr, u8 Stream,

@@ -8,11 +8,11 @@
 /**
 *
 * @file xdmapcie_hw.h
+* @addtogroup xdmapcie Overview
+* @{
 *
-* This header file contains identifiers and basic driver functions for the
-* XDmaPcie device driver.
-*
-* @note		None.
+* @brief Defines the register identifiers and the basic register access
+*        functions of the XDmaPcie device driver.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -49,7 +49,12 @@ extern "C" {
 #define versal
 #endif
 
-#if defined XPAR_MDB_PCIE0_COMPATIBLE
+#if defined(XPAR_CPM6_PCIE_COMPATIBLE)
+/** Marks a CPM6 PCIe host bridge, found on Versal Gen 2 (2VP) devices */
+#define versal_2vp
+#endif
+
+#if defined(XPAR_MDB_PCIE0_COMPATIBLE) || defined(XPAR_PCIE_EIO_COMPATIBLE)
 #define versal_2ve_2vm
 #endif
 
@@ -70,7 +75,7 @@ extern "C" {
 						       * register offset
 						       */
 
-#if (defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(versal_2ve_2vm)) && !defined(XDMA_PCIE_BRIDGE)
+#if (defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(versal_2ve_2vm) || defined(versal_2vp)) && !defined(XDMA_PCIE_BRIDGE)
 #define XDMAPCIE_VSECC_OFFSET			0xE00 /**<
 						       * VSEC Capability
 						       * Register
@@ -101,10 +106,16 @@ extern "C" {
 						       * Physical status and
 						       * Control Register
 						       */
+#elif defined(versal_2vp)
+#define XDMAPCIE_PHYSC_OFFSET			0x72C /**<
+						       * Physical status and
+						       * Control Register
+						       */
 #else
-#define XDMAPCIE_PHYSC_OFFSET                   0xE1C /**<
-                                                       * Physical status and
-                                                       * Control Register                      	                               							      */
+#define XDMAPCIE_PHYSC_OFFSET			0xE1C /**<
+						       * Physical status and
+						       * Control Register
+						       */
 #endif
 #define XDMAPCIE_RPSC_OFFSET			0xE20 /**<
 						       * Root Port Status &
@@ -320,6 +331,56 @@ extern "C" {
 
 /*@}*/
 
+#if defined(versal_2vp)
+/** @name CPM6 interrupt controller registers
+ *
+ * CPM6 exposes two PCIe controllers. The device tree only supplies the
+ * CSR/SLCR (csr-slcr) base of each controller, and the interrupt register
+ * block sits at a fixed offset from that base. The two offsets differ because
+ * the csr-slcr bases are 0x400000 apart while the interrupt blocks are only
+ * 0x100000 apart.
+ * @{
+ */
+#define XDMAPCIE_CPM6_CONTROLLER_0		0U /**< CPM6 controller index 0 */
+#define XDMAPCIE_CPM6_CONTROLLER_1		1U /**< CPM6 controller index 1 */
+
+#define XDMAPCIE_CPM6_CORE0_INTR_OFFSET		0x840000U /**<
+							   * Controller 0 interrupt
+							   * block, csr-slcr
+							   * 0xFC000000 -> 0xFC840000
+							   */
+#define XDMAPCIE_CPM6_CORE1_INTR_OFFSET		0x540000U /**<
+							   * Controller 1 interrupt
+							   * block, csr-slcr
+							   * 0xFC400000 -> 0xFC940000
+							   */
+
+#define XDMAPCIE_CPM6_LEGACY_INTX_OFFSET	0x90CU /**<
+							* LEGACY_INTX_DISABLE
+							* Register
+							*/
+#define XDMAPCIE_CPM6_MISC_EVENT_OFFSET		0x520U /**<
+							* MISC_EVENT_DISABLE
+							* Register
+							*/
+
+#define XDMAPCIE_CPM6_LEGACY_INTX_DISABLE_MASK	0x000000FFU /**<
+							     * Mask INTA/B/C/D
+							     */
+#define XDMAPCIE_CPM6_MISC_EVENT_DISABLE_MASK	0x20000000U /**<
+							     * Mask INTx aggregate
+							     */
+#define XDMAPCIE_CPM6_INTR_ENABLE_ALL_MASK	0x00000000U /**<
+							     * Clear mask = enable
+							     */
+
+#define XDMAPCIE_CPM6_HOST_COMPATIBLE		"amd,versal2-cpm6-host"
+						/**< Controller 0 compatible */
+#define XDMAPCIE_CPM6_HOST1_COMPATIBLE		"amd,versal2-cpm6-host1"
+						/**< Controller 1 compatible */
+/*@}*/
+#endif /* versal_2vp */
+
 
 /** @name IATU Programming Registers Offset
  * @{
@@ -513,6 +574,8 @@ extern "C" {
 
 #if defined(versal_2ve_2vm)
 #define XDMAPCIE_PHYSC_LINK_UP_MASK	0x00001000 /**< Link Up Status Mask */
+#elif defined(versal_2vp)
+#define XDMAPCIE_PHYSC_LINK_UP_MASK	0x00000010 /**< Link Up Status Mask */
 #else
 #define XDMAPCIE_PHYSC_LINK_UP_MASK	0x00000800 /**< Link Up Status Mask */
 #endif
@@ -612,7 +675,7 @@ extern "C" {
 						    * Root Port Completion
 						    * Timeout Shift
 						    */
-
+/*@}*/
 
 /** @name Root Port MSI Base Register bitmaps and masks
  *
@@ -622,7 +685,7 @@ extern "C" {
 						    * Upper 32 bits of 64 bit
 						    * MSI Base Address
 						    */
-#define XDMAPCIE_RPMSIB_UPPER_SHIFT 	32	   /* Shift of Upper 32 bits */
+#define XDMAPCIE_RPMSIB_UPPER_SHIFT 	32	   /**< Shift of Upper 32 bits */
 #define XDMAPCIE_RPMSIB_LOWER_MASK 	0xFFFFF000 /**<
 						    * Lower 32 bits of 64 bit
 						    * MSI Base Address
@@ -715,26 +778,26 @@ extern "C" {
 #define XDMAPCIE_ECAM_BYT_SHIFT		0   /**< Byte Offset Shift Value */
 /*@}*/
 
-/* Offset used for getting the VSEC register contents */
+/** Offset used for getting the VSEC register contents */
 #define XDMAPCIE_VSEC2_OFFSET_WRT_VSEC1 	0xD8
 
-#if defined(versal) || defined(QDMA_PCIE_BRIDGE)
-/* Number of buses */
+#if defined(versal) || defined(QDMA_PCIE_BRIDGE) || defined(versal_2vp)
+/** Number of buses supported by the bridge */
 #define XDMAPCIE_NUM_BUSES	16
 #endif
 
 /****************** Macros (Inline Functions) Definitions ********************/
 /*****************************************************************************/
 /**
-* Macro to read register.
+* @brief Reads a PCIe register.
 *
-* @param	BaseAddress is the base address of the PCIe.
-* @param	RegOffset is the register offset.
+* @param[in] BaseAddress Base address of the PCIe.
+* @param[in] RegOffset Register offset.
 *
-* @return	Value of the register.
+* @return Value of the register.
 *
-* @note		C-style signature:
-*		u32 XDmaPcie_ReadReg(u32 BaseAddress, u32 RegOffset)
+* @note C-style signature:
+*       u32 XDmaPcie_ReadReg(u32 BaseAddress, u32 RegOffset)
 *
 ******************************************************************************/
 #define XDmaPcie_ReadReg(BaseAddress, RegOffset) \
@@ -743,22 +806,18 @@ extern "C" {
 
 /*****************************************************************************/
 /**
-* Macro to write register.
+* @brief Writes a PCIe register.
 *
-* @param 	BaseAddress is the base address of the PCIe.
-* @param 	RegOffset is the register offset.
-* @param 	Data is the data to write.
+* @param[in] BaseAddress Base address of the PCIe.
+* @param[in] RegOffset Register offset.
+* @param[in] Data Data to write.
 *
-* @return 	None
-*
-* @note		C-style signature:
-*		void XDmaPcie_WriteReg(u32 BaseAddress, u32 RegOffset,
-*								u32 Data)
+* @note C-style signature:
+*       void XDmaPcie_WriteReg(u32 BaseAddress, u32 RegOffset, u32 Data)
 *
 ******************************************************************************/
 #define XDmaPcie_WriteReg(BaseAddress, RegOffset, Data) \
 	Xil_Out32((BaseAddress) + (RegOffset), (Data))
-
 
 
 /*************************** Variable Definitions ****************************/
@@ -768,4 +827,5 @@ extern "C" {
 }
 #endif
 
+/** @} */
 #endif /* XDMAPCIE_HW_H */

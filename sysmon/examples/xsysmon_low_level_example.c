@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -9,17 +9,16 @@
 *
 * @file xsysmon_low_level_example.c
 *
+* @brief Demonstrates low-level register access to the System Monitor device.
+*
 * This file contains a design example using the basic driver functions
 * of the System Monitor driver. The example here shows using the
 * driver/device in polled mode to check the on-chip temperature and voltages.
 *
-*
 * @note
-*
 * The values of the on-chip temperature and the on-chip Vccaux voltage are read
 * from the device and then the alarm thresholds are set in such a manner that
 * the alarms occur.
-*
 *
 * <pre>
 *
@@ -43,6 +42,8 @@
 *                     are available in all examples. This is a fix for
 *                     CR-965028.
 * 7.8   cog  07/20/23 Added support for SDT flow
+* 8.1   vn   07/30/26 Fix Doxygen warnings
+* 8.1   vn   09/29/26 Align Doxygen comments with AMD standards
 * </pre>
 *
 *****************************************************************************/
@@ -60,6 +61,7 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
+/** System Monitor base address. */
 #define SYSMON_BASEADDR		XPAR_SYSMON_0_BASEADDR
 
 /**************************** Type Definitions ******************************/
@@ -75,15 +77,11 @@ int SysMonLowLevelExample(u32 BaseAddress);
 /****************************************************************************/
 /**
 *
-* Main function that invokes the example given in this file.
-*
-* @param	None.
+* @brief Invokes the example given in this file.
 *
 * @return
-*		- XST_SUCCESS if the example has completed successfully.
-*		- XST_FAILURE if the example has failed.
-*
-* @note		None.
+*              - XST_SUCCESS if the example has completed successfully.
+*              - XST_FAILURE if the example has failed.
 *
 *****************************************************************************/
 int main(void)
@@ -107,8 +105,9 @@ int main(void)
 /****************************************************************************/
 /**
 *
-* This function runs a test on the System Monitor device using the
-* basic driver functions.
+* @brief Runs a test on the System Monitor device using the basic driver
+* functions.
+*
 * The function does the following tasks:
 *	- Reset the device
 *	- Setup alarm thresholds for on-chip temperature and VCCAUX.
@@ -118,12 +117,10 @@ int main(void)
 *	- Read latest on-chip temperature and VCCAUX, as well as their maximum
 *	 and minimum values. Also check if alarm(s) are set.
 *
-* @param	BaseAddress is the XPAR_<SYSMON_ADC_instance>_BASEADDRESS value
-*		from xparameters.h.
+* @param[in]   BaseAddress XPAR_<SYSMON_ADC_instance>_BASEADDRESS value
+*              from xparameters.h.
 *
-* @return	XST_SUCCESS
-*
-* @note		None.
+* @return      XST_SUCCESS.
 *
 ****************************************************************************/
 int SysMonLowLevelExample(u32 BaseAddress)

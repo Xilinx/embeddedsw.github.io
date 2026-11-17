@@ -22,6 +22,7 @@
 * 1.0 ram 11/02/16 Initial Release DSI driver
 * 1.1 sss 08/17/16 Added 64 bit support
 *     sss 08/26/16 Add "Command Queue Vacancy" API
+* 1.2 ai 08/12/26 Added escape mode(LPDT/ULPS) support
 *
 * </pre>
 *
@@ -32,6 +33,7 @@
 #include "xstatus.h"
 #include "xdsi.h"
 #include "xvidc.h"
+#include "sleep.h"
 
 /************************** Constant Definitions *****************************/
 
@@ -278,10 +280,10 @@ void XDsi_SendShortPacket(XDsi *InstancePtr, XDsi_ShortPacket *ShortPacket)
 * Send a DSI long packet to the controller.
 *
 * @brief Sends a DSI long packet (>2 data bytes, up to 255 bytes) to the DSI
-* controller. The function writes the payload data to the XDSI_DATA_OFFSET
-* register in 32-bit chunks, then sends the packet header as a short packet.
-* Long packets are used for bulk data transfers such as image data or command
-* sequences in command mode.
+* controller. The function sends the packet header first, then writes the
+* payload to the XDSI_DATA_OFFSET register in 32-bit chunks. Long packets are
+* used for bulk data transfers such as image data or command sequences in
+* command mode.
 *
 * @param	InstancePtr is the XDsi instance to operate on. The instance must
 *		have been initialized and activated.
@@ -313,11 +315,14 @@ void XDsi_SendLongPacket(XDsi *InstancePtr, XDsiTx_CmdModePkt *CmdPacket)
 	else
 		MaxSize = MaxSize/4 + 1;
 
+	/* The header has to be queued first: the controller only raises
+	 * "wait for long packet data" once it has the header, and payload
+	 * written before that is not attached to any packet. */
+	XDsi_SendShortPacket(InstancePtr, &CmdPacket->SpktData);
+
 	for (i = 0; i < MaxSize; i++)
 		XDsi_WriteReg(InstancePtr->Config.BaseAddr,
 				XDSI_DATA_OFFSET, CmdPacket->LongPktData[i]);
-
-	XDsi_SendShortPacket(InstancePtr, &CmdPacket->SpktData);
 }
 
 /*****************************************************************************/
@@ -424,6 +429,154 @@ int XDsi_SetMode(XDsi *InstancePtr, XDsi_DsiModeType mode)
 
 	return XST_SUCCESS;
 }
+
+/*****************************************************************************/
+/**
+* Selects the DCS command mode or LPDT transport.
+*
+* @brief Chooses whether the next command packets go out in DCS command mode
+* or over LPDT. The controller must already be in command mode.
+*
+* @param[in]	InstancePtr  Pointer to the XDsi instance. The instance must
+*			     have been initialized via XDsi_CfgInitialize().
+* @param[in]	Mode         Desired transport, one of:
+*			     - XDSI_DCS_CMD_MODE: DCS command mode (High-Speed)
+*			     - XDSI_LPDT_MODE: Low-Power Data Transmission
+*
+* @return
+*		- XST_SUCCESS if the transport was selected.
+*		- XST_FAILURE if the controller is not in command mode, or a
+*		  previous command never completed.
+*
+* @note	The caller must enable command mode (XDsi_SetMode with
+*		XDSI_COMMAND_MODE) before selecting LPDT.
+*
+* @see XDsi_SetMode, XDsi_SendLpdtPacket
+*
+****************************************************************************/
+int XDsi_SetLpdtMode(XDsi *InstancePtr, XDsi_CmdLpdtType Mode)
+{
+	u32 Timeout;
+
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	/* LPDT/DCS command transport is only valid in command mode */
+	if (!XDsi_IsModeEnabled(InstancePtr))
+		return XST_FAILURE;
+
+	/* Wait for any in-progress command before switching transport. A
+	 * command that never completes must not trap the caller here. */
+	if (XDsi_IsEnabled(InstancePtr)) {
+		for (Timeout = XDSI_CMD_TIMEOUT;
+		     Timeout && XDsi_GetInProgress(InstancePtr); Timeout--)
+			;
+
+		if (!Timeout)
+			return XST_FAILURE;
+	}
+
+	XDsi_SetCmdLpdt(InstancePtr, Mode);
+
+	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+* Sends a command packet over LPDT.
+*
+* @brief Sends a short or long command packet while the controller is in LPDT
+* mode. Long-packet payloads are limited to 251 bytes.
+*
+* @param[in]	InstancePtr  Pointer to the XDsi instance. The instance must
+*			     have been initialized via XDsi_CfgInitialize().
+* @param[in]	CmdPktData   Pointer to the XDsiTx_CmdModePkt structure that
+*			     specifies the packet type, short-packet header and
+*			     long-packet payload.
+*
+* @return
+*		- XST_SUCCESS if the packet was accepted for transmission.
+*		- XST_INVALID_PARAM if a long-packet payload exceeds 251 bytes.
+*		- XST_FAILURE if the controller is not enabled or not in command
+*		  mode (propagated from XDsi_SendCmdModePkt).
+*
+* @see XDsi_SetLpdtMode, XDsi_SendCmdModePkt
+*
+****************************************************************************/
+int XDsi_SendLpdtPacket(XDsi *InstancePtr, XDsiTx_CmdModePkt *CmdPktData)
+{
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+	Xil_AssertNonvoid(CmdPktData != NULL);
+
+	/* Enforce the LPDT 251-byte payload cap for long packets. The word
+	 * count is carried in the long-packet header bytes (Data0=WC[7:0],
+	 * Data1=WC[15:8]). */
+	if (CmdPktData->CmdPkt == XDSI_CMD_MODE_LONG_PKT) {
+		u32 WordCount = ((u32)CmdPktData->SpktData.Data1 << 8) |
+				 (u32)CmdPktData->SpktData.Data0;
+		if (WordCount > 251U)
+			return XST_INVALID_PARAM;
+	}
+
+	return XDsi_SendCmdModePkt(InstancePtr, CmdPktData);
+}
+
+/*****************************************************************************/
+/**
+* Enters or exits the Ultra-Low Power State (ULPS).
+*
+* @brief Puts the DSI link into ULPS to save power, or brings it back out.
+*
+* @param[in]	InstancePtr  Pointer to the XDsi instance. The instance must
+*			     have been initialized via XDsi_CfgInitialize().
+* @param[in]	Enable       1 to enter ULPS, 0 to exit ULPS.
+*
+* @return
+*		- XST_SUCCESS if the requested ULPS transition completed.
+*		- XST_FAILURE if ULPS entry or exit was not observed in time.
+*
+* @note	ULPS entry resets the controller image FIFOs; the caller must
+*		re-arm the video output from a fresh frame after exit.
+*
+* @see XDsi_IsUlps, XDsi_SetUlps
+*
+****************************************************************************/
+int XDsi_SetUlpsMode(XDsi *InstancePtr, u32 Enable)
+{
+	u32 Timeout;
+
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	if (Enable) {
+		/* Case 6: ULPS entry requires the core to be enabled */
+		if (!XDsi_IsEnabled(InstancePtr))
+			XDsi_Enable(InstancePtr);
+
+		XDsi_SetUlps(InstancePtr, 1U);
+
+		/* Wait for the lanes to report ULPS */
+		for (Timeout = XDSI_ULPS_TIMEOUT;
+		     Timeout && !XDsi_IsUlps(InstancePtr); Timeout--)
+			;
+
+		return Timeout ? XST_SUCCESS : XST_FAILURE;
+	}
+
+	XDsi_SetUlps(InstancePtr, 0U);
+
+	/* Honor the ULPS wake-up time (T_WAKEUP > 1 ms) */
+	usleep(2000);
+
+	/* Clear the ULPS state interrupt, then re-read: cleared means the
+	 * lanes have exited ULPS. */
+	XDsi_WriteReg(InstancePtr->Config.BaseAddr, XDSI_ISR_OFFSET,
+		      XDSI_ISR_ULPS_MASK);
+
+	return XDsi_IsUlps(InstancePtr) ? XST_FAILURE : XST_SUCCESS;
+}
+
 /*****************************************************************************/
 /**
 * Read current DSI controller configuration parameters.

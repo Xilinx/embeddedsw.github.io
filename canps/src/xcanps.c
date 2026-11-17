@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,14 +8,10 @@
 /**
 *
 * @file xcanps.c
-* @addtogroup canps Overview
-* @{
+* @brief Implements core functions for the XCanPs CAN driver.
 *
 * Functions in this file are the minimum required functions for the XCanPs
 * driver. See xcanps.h for a detailed description of the driver.
-*
-* @note 	None.
-*
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -30,9 +26,16 @@
 * 3.5	sne    07/01/20 Fixed MISRAC warnings.
 * 3.5	sne    07/01/20 Fixed multiple packets send issue.
 * 3.7	ht     06/28/23 Added support for system device-tree flow.
+* 3.13  vn     07/30/26 Fix Doxygen warnings
+* 3.13  vn   09/08/26 Align Doxygen comments with AMD standards
+* 3.13  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup canps Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -52,25 +55,22 @@ static void StubHandler(void);
 
 /*****************************************************************************/
 /**
-*
-* This function initializes a XCanPs instance/driver.
+* @brief Initializes a XCanPs instance/driver.
 *
 * The initialization entails:
 * - Initialize all members of the XCanPs structure.
-* - Reset the CAN device. The CAN device will enter Configuration Mode
-*   immediately after the reset is finished.
+* - Reset the CAN device. The CAN device enters Configuration Mode
+*   immediately after the reset finishes.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	ConfigPtr points to the XCanPs device configuration structure.
-* @param	EffectiveAddr is the device base address in the virtual memory
-*		address space. If the address translation is not used then the
-*		physical address is passed.
-*		Unexpected errors may occur if the address mapping is changed
-*		after this function is invoked.
+* @param[out]  InstancePtr Pointer to the XCanPs instance.
+* @param[in]   ConfigPtr Pointer to the XCanPs device configuration structure.
+* @param[in]   EffectiveAddr Device base address in the virtual memory
+*              address space. If the address translation is not used then the
+*              physical address is passed.
+*              Unexpected errors may occur if the address mapping changes
+*              after this function is invoked.
 *
-* @return	XST_SUCCESS always.
-*
-* @note		None.
+* @return      XST_SUCCESS always.
 *
 ******************************************************************************/
 s32 XCanPs_CfgInitialize(XCanPs *InstancePtr, XCanPs_Config *ConfigPtr,
@@ -115,27 +115,24 @@ s32 XCanPs_CfgInitialize(XCanPs *InstancePtr, XCanPs_Config *ConfigPtr,
 
 /*****************************************************************************/
 /**
+* @brief Resets the CAN device.
 *
-* This function resets the CAN device. Calling this function resets the device
-* immediately, and any pending transmission or reception is terminated at once.
+* Calling this function resets the device immediately, and any pending
+* transmission or reception terminates at once.
 * Both Object Layer and Transfer Layer are reset. This function does not reset
 * the Physical Layer. All registers are reset to the default values, and no
-* previous status will be restored. TX FIFO, RX FIFO and TX High Priority
+* previous status is restored. TX FIFO, RX FIFO and TX High Priority
 * Buffer are also reset.
 *
-* When a reset is required due to an internal error, the driver notifies the
-* upper layer software of this need through the error status code or interrupts.
-* The upper layer software is responsible for calling this Reset function and
-* then re-configuring the device.
+* When an internal error requires a reset, the driver notifies the upper layer
+* software through the error status code or interrupts. The upper layer software
+* is responsible for calling this Reset function and then re-configuring the
+* device.
 *
-* The CAN device will be in Configuration Mode immediately after this function
+* The CAN device enters Configuration Mode immediately after this function
 * returns.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
 *
 ******************************************************************************/
 void XCanPs_Reset(XCanPs *InstancePtr)
@@ -149,19 +146,16 @@ void XCanPs_Reset(XCanPs *InstancePtr)
 
 /****************************************************************************/
 /**
+* @brief Returns the current operation mode of the CAN device.
 *
-* This routine returns the current operation mode of the CAN device.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
 *
 * @return
-* 		- XCANPS_MODE_CONFIG if the device is in Configuration Mode.
-* 		- XCANPS_MODE_SLEEP if the device is in Sleep Mode.
-* 		- XCANPS_MODE_NORMAL if the device is in Normal Mode.
-* 		- XCANPS_MODE_LOOPBACK if the device is in Loop Back Mode.
-* 		- XCANPS_MODE_SNOOP if the device is in Snoop Mode.
-*
-* @note		None.
+*              - XCANPS_MODE_CONFIG if the device is in Configuration Mode.
+*              - XCANPS_MODE_SLEEP if the device is in Sleep Mode.
+*              - XCANPS_MODE_NORMAL if the device is in Normal Mode.
+*              - XCANPS_MODE_LOOPBACK if the device is in Loop Back Mode.
+*              - XCANPS_MODE_SNOOP if the device is in Snoop Mode.
 *
 *****************************************************************************/
 u8 XCanPs_GetMode(XCanPs *InstancePtr)
@@ -195,8 +189,9 @@ u8 XCanPs_GetMode(XCanPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Enters the specified CAN operation mode.
 *
-* This function allows the CAN device to enter one of the following operation
+* Allows the CAN device to enter one of the following operation
 * modes:
 *	- Configuration Mode: Pass in parameter XCANPS_MODE_CONFIG
 *	- Sleep Mode: Pass in parameter XCANPS_MODE_SLEEP
@@ -207,15 +202,12 @@ u8 XCanPs_GetMode(XCanPs *InstancePtr)
 * Read the xcanps.h file and device specification for detailed description of
 * each operation mode.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	OperationMode specify which operation mode to enter. Valid value
-*		is any of XCANPS_MODE_* defined in xcanps.h. Multiple modes
-*		can not be entered at the same time.
-*
-* @return	None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   OperationMode Specify which operation mode to enter. Valid value
+*              is any of XCANPS_MODE_* defined in xcanps.h. Multiple modes
+*              cannot be entered at the same time.
 *
 * @note
-*
 * This function does NOT ensure CAN device enters the specified operation mode
 * before it returns the control to the caller. The caller is responsible for
 * checking current operation mode using XCanPs_GetMode().
@@ -318,16 +310,14 @@ void XCanPs_EnterMode(XCanPs *InstancePtr, u8 OperationMode)
 
 /*****************************************************************************/
 /**
+* @brief Returns the Status value from Status Register (SR).
 *
-* This function returns Status value from Status Register (SR). Use the
-* XCANPS_SR_* constants defined in xcanps_hw.h to interpret the returned
-* value.
+* Use the XCANPS_SR_* constants defined in xcanps_hw.h to interpret the
+* returned value.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	The 32-bit value read from Status Register.
-*
-* @note		None.
 *
 ******************************************************************************/
 u32 XCanPs_GetStatus(XCanPs *InstancePtr)
@@ -342,18 +332,13 @@ u32 XCanPs_GetStatus(XCanPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Reads Receive and Transmit error counters.
 *
-* This function reads Receive and Transmit error counters.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	RxErrorCount is a pointer to data in which the Receive Error
-*		counter value is returned.
-* @param	TxErrorCount is a pointer to data in which the Transmit Error
-*		counter value is returned.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[out]  RxErrorCount Pointer to data in which the Receive Error
+*              counter value is returned.
+* @param[out]  TxErrorCount Pointer to data in which the Transmit Error
+*              counter value is returned.
 *
 ******************************************************************************/
 void XCanPs_GetBusErrorCounter(XCanPs *InstancePtr, u8 *RxErrorCount,
@@ -377,16 +362,14 @@ void XCanPs_GetBusErrorCounter(XCanPs *InstancePtr, u8 *RxErrorCount,
 
 /*****************************************************************************/
 /**
+* @brief Reads the Error Status value from Error Status Register (ESR).
 *
-* This function reads Error Status value from Error Status Register (ESR). Use
-* the XCANPS_ESR_* constants defined in xcanps_hw.h to interpret the
+* Use the XCANPS_ESR_* constants defined in xcanps_hw.h to interpret the
 * returned value.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	The 32-bit value read from Error Status Register.
-*
-* @note		None.
 *
 ******************************************************************************/
 u32 XCanPs_GetBusErrorStatus(XCanPs *InstancePtr)
@@ -401,19 +384,16 @@ u32 XCanPs_GetBusErrorStatus(XCanPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Clears Error Status bits previously set in Error Status Register (ESR).
 *
-* This function clears Error Status bit(s) previously set in Error
-* Status Register (ESR). Use the XCANPS_ESR_* constants defined in xcanps_hw.h
-* to create the value to pass in. If a bit was cleared in Error Status Register
-* before this function is called, it will not be modified.
+* Use the XCANPS_ESR_* constants defined in xcanps_hw.h to create the value
+* to pass in. If a bit was cleared in Error Status Register
+* before this function is called, it is not modified.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-*
-* @param	Mask is he 32-bit mask used to clear bits in Error Status
-*		Register. Multiple XCANPS_ESR_* values can be 'OR'ed to clear
-*		multiple bits.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   Mask 32-bit mask used to clear bits in Error Status
+*              Register. A bitwise OR of multiple XCANPS_ESR_* values clears
+*              multiple bits.
 *
 ******************************************************************************/
 void XCanPs_ClearBusErrorStatus(XCanPs *InstancePtr, u32 Mask)
@@ -427,24 +407,22 @@ void XCanPs_ClearBusErrorStatus(XCanPs *InstancePtr, u32 Mask)
 
 /*****************************************************************************/
 /**
+* @brief Sends a CAN Frame.
 *
-* This function sends a CAN Frame. If the TX FIFO is not full then the given
-* frame is written into the the TX FIFO otherwise, it returns an error code
-* immediately.
-* This function does not wait for the given frame being sent to CAN bus.
+* If the TX FIFO is not full then the given frame is written into the TX
+* FIFO; otherwise, it returns an error code immediately.
+* This function does not wait for the given frame to be sent to the CAN bus.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer containing the
-*		CAN frame to be sent.
+* @param[in,out] InstancePtr Pointer to the XCanPs instance.
+* @param[in]     FramePtr Pointer to a 32-bit aligned buffer containing the
+*                CAN frame to be sent.
 *
 * @return
-*		- XST_SUCCESS if TX FIFO was not full and the given frame was
-*		written into the FIFO.
-*		- XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
-*		given frame.
-*		- XST_DEVICE_BUSY if a transfer is already in progress.
-*
-* @note		None.
+*                - XST_SUCCESS if TX FIFO was not full and the given frame was
+*                  written into the FIFO.
+*                - XST_FIFO_NO_ROOM if there is no room in the TX FIFO for the
+*                  given frame.
+*                - XST_DEVICE_BUSY if a transfer is already in progress.
 *
 ******************************************************************************/
 s32 XCanPs_Send(XCanPs *InstancePtr, u32 *FramePtr)
@@ -493,22 +471,21 @@ END:
 
 /*****************************************************************************/
 /**
+* @brief Receives a CAN Frame.
 *
-* This function receives a CAN Frame. This function first checks if RX FIFO is
-* empty, if not, it then reads a frame from the RX FIFO into the given buffer.
-* This function returns error code immediately if there is no frame in the RX
+* This function first checks if RX FIFO is empty; if not, it then reads a
+* frame from the RX FIFO into the given buffer.
+* This function returns an error code immediately if there is no frame in the RX
 * FIFO.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer where the CAN
-*		frame to be written.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[out]  FramePtr Pointer to a 32-bit aligned buffer where the CAN
+*              frame is written.
 *
 * @return
-*		- XST_SUCCESS if RX FIFO was not empty and a frame was read from
-*		RX FIFO successfully and written into the given buffer.
-*		- XST_NO_DATA if there is no frame to be received from the FIFO.
-*
-* @note		None.
+*              - XST_SUCCESS if RX FIFO was not empty and a frame was read from
+*                RX FIFO successfully and written into the given buffer.
+*              - XST_NO_DATA if there is no frame to be received from the FIFO.
 *
 ******************************************************************************/
 s32 XCanPs_Recv(XCanPs *InstancePtr, u32 *FramePtr)
@@ -547,28 +524,28 @@ s32 XCanPs_Recv(XCanPs *InstancePtr, u32 *FramePtr)
 
 /*****************************************************************************/
 /**
+* @brief Sends a CAN High Priority frame.
 *
-* This routine sends a CAN High Priority frame. This function first checks if
-* TX High Priority Buffer is empty. If yes, it then writes the given frame into
-* the Buffer. If not, this function returns immediately. This function does not
-* wait for the given frame being sent to CAN bus.
+* This function first checks if TX High Priority Buffer is empty. If yes, it
+* then writes the given frame into the Buffer. If not, this function returns
+* immediately. This function does not wait for the given frame to be sent
+* to the CAN bus.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FramePtr is a pointer to a 32-bit aligned buffer containing the
-*		CAN High Priority frame to be sent.
+* @param[in,out] InstancePtr Pointer to the XCanPs instance.
+* @param[in]     FramePtr Pointer to a 32-bit aligned buffer containing the
+*                CAN High Priority frame to be sent.
 *
 * @return
-*		- XST_SUCCESS if TX High Priority Buffer was not full and the
-*		given frame was written into the buffer.
-*		- XST_FIFO_NO_ROOM if there is no room in the TX High Priority
-*		Buffer for this frame.
-*		- XST_DEVICE_BUSY if a transfer is already in progress.
+*                - XST_SUCCESS if TX High Priority Buffer was not full and the
+*                  given frame was written into the buffer.
+*                - XST_FIFO_NO_ROOM if there is no room in the TX High Priority
+*                  Buffer for this frame.
+*                - XST_DEVICE_BUSY if a transfer is already in progress.
 *
 * @note
-*
-* If the frame needs to be sent immediately and not delayed by processor's
-* interrupt handling, the caller should disable interrupt at processor
-* level before invoking this function.
+* To send the frame immediately, without a delay from processor interrupt
+* handling, disable interrupts at the processor level before invoking this
+* function.
 *
 ******************************************************************************/
 s32 XCanPs_SendHighPriority(XCanPs *InstancePtr, u32 *FramePtr)
@@ -617,21 +594,16 @@ END:
 
 /*****************************************************************************/
 /**
+* @brief Enables individual acceptance filters.
 *
-* This routine enables individual acceptance filters. Up to 4 filters could
-* be enabled.
+* Up to 4 filters can be enabled.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FilterIndexes specifies which filter(s) to enable. Use
-*		any XCANPS_AFR_UAF*_MASK to enable one filter, and "Or"
-*		multiple XCANPS_AFR_UAF*_MASK values if multiple filters need
-*		to be enabled. Any filter not specified in this parameter will
-*		keep its previous enable/disable setting.
-*
-* @return	None.
-*
-* @note		None.
-*
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   FilterIndexes Specifies which filters to enable. Use
+*              any XCANPS_AFR_UAF*_MASK to enable one filter, and combine
+*              multiple XCANPS_AFR_UAF*_MASK values if multiple filters need
+*              to be enabled. Any filter not specified in this parameter
+*              keeps its previous enable/disable setting.
 *
 ******************************************************************************/
 void XCanPs_AcceptFilterEnable(XCanPs *InstancePtr, u32 FilterIndexes)
@@ -654,23 +626,19 @@ void XCanPs_AcceptFilterEnable(XCanPs *InstancePtr, u32 FilterIndexes)
 
 /*****************************************************************************/
 /**
+* @brief Disables individual acceptance filters.
 *
-* This routine disables individual acceptance filters. Up to 4 filters could
-* be disabled. If all acceptance filters are disabled then all the received
-* frames are stored in the RX FIFO.
+* Up to 4 filters can be disabled. If all acceptance filters are disabled
+* then all the received frames are stored in the RX FIFO.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FilterIndexes specifies which filter(s) to disable. Use
-*		any XCANPS_AFR_UAF*_MASK to disable one filter, and "Or"
-*		multiple XCANPS_AFR_UAF*_MASK values if multiple filters need
-* 		to be disabled. Any filter not specified in this parameter will
-*		keep its previous enable/disable setting. If all acceptance
-*		filters are disabled then all received frames are stored in the
-*		RX FIFO.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   FilterIndexes Specifies which filters to disable. Use
+*              any XCANPS_AFR_UAF*_MASK to disable one filter, and combine
+*              multiple XCANPS_AFR_UAF*_MASK values if multiple filters need
+*              to be disabled. Any filter not specified in this parameter
+*              keeps its previous enable/disable setting. If all acceptance
+*              filters are disabled then all received frames are stored in the
+*              RX FIFO.
 *
 ******************************************************************************/
 void XCanPs_AcceptFilterDisable(XCanPs *InstancePtr, u32 FilterIndexes)
@@ -692,17 +660,15 @@ void XCanPs_AcceptFilterDisable(XCanPs *InstancePtr, u32 FilterIndexes)
 
 /*****************************************************************************/
 /**
+* @brief Returns enabled acceptance filters.
 *
-* This function returns enabled acceptance filters. Use XCANPS_AFR_UAF*_MASK
-* defined in xcanps_hw.h to interpret the returned value. If no acceptance
-* filters are enabled then all received frames are stored in the RX FIFO.
+* Use XCANPS_AFR_UAF*_MASK defined in xcanps_hw.h to interpret the returned
+* value. If no acceptance filters are enabled then all received frames are
+* stored in the RX FIFO.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	The value stored in Acceptance Filter Register.
-*
-* @note		None.
-*
 *
 ******************************************************************************/
 u32 XCanPs_AcceptFilterGetEnabled(XCanPs *InstancePtr)
@@ -718,31 +684,30 @@ u32 XCanPs_AcceptFilterGetEnabled(XCanPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Sets values to the Acceptance Filter Mask and ID Registers.
 *
-* This function sets values to the Acceptance Filter Mask Register (AFMR) and
+* Sets values to the Acceptance Filter Mask Register (AFMR) and
 * Acceptance Filter ID Register (AFIR) for the specified Acceptance Filter.
 * Use XCANPS_IDR_* defined in xcanps_hw.h to create the values to set the
 * filter. Read the xcanps.h file and device specification for details.
 *
 * This function should be called only after:
-*   - The given filter is disabled by calling XCanPs_AcceptFilterDisable()
-*   - And the CAN device is ready to accept writes to AFMR and AFIR, i.e.,
+*   - The given filter is disabled by calling XCanPs_AcceptFilterDisable().
+*   - And the CAN device is ready to accept writes to AFMR and AFIR, that is,
 *	 XCanPs_IsAcceptFilterBusy() returns FALSE.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FilterIndex defines which Acceptance Filter Mask and ID Register
-*		to set. Use any single XCANPS_AFR_UAF*_MASK value.
-* @param	MaskValue is the value to write to the chosen Acceptance Filter
-*		Mask Register.
-* @param	IdValue is the value to write to the chosen Acceptance Filter
-*		ID Register.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   FilterIndex Defines which Acceptance Filter Mask and ID Register
+*              to set. Use any single XCANPS_AFR_UAF*_MASK value.
+* @param[in]   MaskValue Value to write to the chosen Acceptance Filter
+*              Mask Register.
+* @param[in]   IdValue Value to write to the chosen Acceptance Filter
+*              ID Register.
 *
 * @return
-*		- XST_SUCCESS if the values were set successfully.
-*		- XST_FAILURE if the given filter was not disabled, or the CAN
-*		device was not ready to accept writes to AFMR and AFIR.
-*
-* @note		None.
+*              - XST_SUCCESS if the values were set successfully.
+*              - XST_FAILURE if the given filter was not disabled, or the CAN
+*                device was not ready to accept writes to AFMR and AFIR.
 *
 ******************************************************************************/
 s32 XCanPs_AcceptFilterSet(XCanPs *InstancePtr, u32 FilterIndex,
@@ -818,23 +783,20 @@ s32 XCanPs_AcceptFilterSet(XCanPs *InstancePtr, u32 FilterIndex,
 
 /*****************************************************************************/
 /**
+* @brief Reads the Acceptance Filter Mask and ID Register values.
 *
-* This function reads the values of the Acceptance Filter Mask and ID Register
+* Reads the values of the Acceptance Filter Mask and ID Register
 * for the specified Acceptance Filter. Use XCANPS_IDR_* defined in xcanps_hw.h
 * to interpret the values. Read the xcanps.h file and device specification for
 * details.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	FilterIndex defines which Acceptance Filter Mask Register to get
-*		Mask and ID from. Use any single XCANPS_FILTER_* value.
-* @param	MaskValue is a pointer to the data in which the Mask value read
-*		from the chosen Acceptance Filter Mask Register is returned.
-* @param	IdValue is a pointer to the data in which the ID value read
-*		from the chosen Acceptance Filter ID Register is returned.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   FilterIndex Defines which Acceptance Filter Mask Register to get
+*              Mask and ID from. Use any single XCANPS_FILTER_* value.
+* @param[out]  MaskValue Pointer to the data in which the Mask value read
+*              from the chosen Acceptance Filter Mask Register is returned.
+* @param[out]  IdValue Pointer to the data in which the ID value read
+*              from the chosen Acceptance Filter ID Register is returned.
 *
 ******************************************************************************/
 void XCanPs_AcceptFilterGet(XCanPs *InstancePtr, u32 FilterIndex,
@@ -888,25 +850,23 @@ void XCanPs_AcceptFilterGet(XCanPs *InstancePtr, u32 FilterIndex,
 
 /*****************************************************************************/
 /**
+* @brief Sets the Baud Rate Prescaler value.
 *
-* This routine sets Baud Rate Prescaler value. The system clock for the CAN
-* controller is divided by (Prescaler + 1) to generate the quantum clock
-* needed for sampling and synchronization. Read the device specification
-* for details.
+* The system clock for the CAN controller is divided by (Prescaler + 1) to
+* generate the quantum clock needed for sampling and synchronization. Read
+* the device specification for details.
 *
 * Baud Rate Prescaler can be set only if the CAN device is in Configuration
 * Mode. Call XCanPs_EnterMode() to enter Configuration Mode before using this
 * function.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	Prescaler is the value to set. Valid values are from 0 to 255.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   Prescaler Value to set. Valid values are from 0 to 255.
 *
 * @return
-*		- XST_SUCCESS if the Baud Rate Prescaler value is set
-*		successfully.
-*		- XST_FAILURE if CAN device is not in Configuration Mode.
-*
-* @note		None.
+*              - XST_SUCCESS if the Baud Rate Prescaler value is set
+*                successfully.
+*              - XST_FAILURE if CAN device is not in Configuration Mode.
 *
 ******************************************************************************/
 s32 XCanPs_SetBaudRatePrescaler(XCanPs *InstancePtr, u8 Prescaler)
@@ -929,18 +889,16 @@ s32 XCanPs_SetBaudRatePrescaler(XCanPs *InstancePtr, u8 Prescaler)
 
 /*****************************************************************************/
 /**
+* @brief Gets the Baud Rate Prescaler value.
 *
-* This routine gets Baud Rate Prescaler value. The system clock for the CAN
-* controller is divided by (Prescaler + 1) to generate the quantum clock
-* needed for sampling and synchronization. Read the device specification for
-* details.
+* The system clock for the CAN controller is divided by (Prescaler + 1) to
+* generate the quantum clock needed for sampling and synchronization. Read
+* the device specification for details.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	Current used Baud Rate Prescaler value. The value's range is
 *		from 0 to 255.
-*
-* @note		None.
 *
 ******************************************************************************/
 u8 XCanPs_GetBaudRatePrescaler(XCanPs *InstancePtr)
@@ -956,29 +914,28 @@ u8 XCanPs_GetBaudRatePrescaler(XCanPs *InstancePtr)
 
 /*****************************************************************************/
 /**
+* @brief Sets the Bit time parameters.
 *
-* This routine sets Bit time. Time segment 1, Time segment 2 and
-* Synchronization Jump Width are set in this function. Device specification
-* requires the values passed into this function be one less than the actual
+* Time segment 1, Time segment 2 and Synchronization Jump Width are set in
+* this function. Device specification requires the values passed into this
+* function be one less than the actual
 * values of these fields. Read the device specification for details.
 *
 * Bit time can be set only if the CAN device is in Configuration Mode.
 * Call XCanPs_EnterMode() to enter Configuration Mode before using this
 * function.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	SyncJumpWidth is the Synchronization Jump Width value to set.
-*		Valid values are from 0 to 3.
-* @param	TimeSegment2 is the Time Segment 2 value to set. Valid values
-*		are from 0 to 7.
-* @param	TimeSegment1 is the Time Segment 1 value to set. Valid values
-*		are from 0 to 15.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   SyncJumpWidth Synchronization Jump Width value to set.
+*              Valid values are from 0 to 3.
+* @param[in]   TimeSegment2 Time Segment 2 value to set. Valid values
+*              are from 0 to 7.
+* @param[in]   TimeSegment1 Time Segment 1 value to set. Valid values
+*              are from 0 to 15.
 *
 * @return
-*		- XST_SUCCESS if the Bit time is set successfully.
-*		- XST_FAILURE if CAN device is not in Configuration Mode.
-*
-* @note		None.
+*              - XST_SUCCESS if the Bit time is set successfully.
+*              - XST_FAILURE if CAN device is not in Configuration Mode.
 *
 ******************************************************************************/
 s32 XCanPs_SetBitTiming(XCanPs *InstancePtr, u8 SyncJumpWidth,
@@ -1013,23 +970,20 @@ s32 XCanPs_SetBitTiming(XCanPs *InstancePtr, u8 SyncJumpWidth,
 
 /*****************************************************************************/
 /**
+* @brief Gets the Bit time parameters.
 *
-* This routine gets Bit time. Time segment 1, Time segment 2 and
-* Synchronization Jump Width values are read in this function. According to
-* device specification, the actual value of each of these fields is one
+* Time segment 1, Time segment 2 and Synchronization Jump Width values are
+* read in this function. According to device specification, the actual value
+* of each of these fields is one
 * more than the value read. Read the device specification for details.
 *
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	SyncJumpWidth will store the Synchronization Jump Width value
-*		after this function returns. Its value ranges from 0 to 3.
-* @param	TimeSegment2 will store the Time Segment 2 value after this
-*		function returns. Its value ranges from 0 to 7.
-* @param	TimeSegment1 will store the Time Segment 1 value after this
-*		function returns. Its value ranges from 0 to 15.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[out]  SyncJumpWidth Synchronization Jump Width value
+*              after this function returns. Its value ranges from 0 to 3.
+* @param[out]  TimeSegment2 Time Segment 2 value after this
+*              function returns. Its value ranges from 0 to 7.
+* @param[out]  TimeSegment1 Time Segment 1 value after this
+*              function returns. Its value ranges from 0 to 15.
 *
 ******************************************************************************/
 void XCanPs_GetBitTiming(XCanPs *InstancePtr, u8 *SyncJumpWidth,
@@ -1056,20 +1010,19 @@ void XCanPs_GetBitTiming(XCanPs *InstancePtr, u8 *SyncJumpWidth,
 
 /****************************************************************************/
 /**
+* @brief Sets the Rx Full threshold in the Watermark Interrupt Register.
 *
-* This routine sets the Rx Full threshold in the Watermark Interrupt Register.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	Threshold is the threshold to be set. The valid values are
-*		from 1 to 63.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   Threshold Threshold to be set. The valid values are
+*              from 1 to 63.
 *
 * @return
-*		- XST_FAILURE - If the CAN device is not in Configuration Mode.
-*		- XST_SUCCESS - If the Rx Full threshold is set in Watermark
-*		Interrupt Register.
+*              - XST_FAILURE - If the CAN device is not in Configuration Mode.
+*              - XST_SUCCESS - If the Rx Full threshold is set in Watermark
+*                Interrupt Register.
 *
-* @note		The threshold can only be set when the CAN device is in the
-*		configuration mode.
+* @note        The threshold can only be set when the CAN device is in the
+*              configuration mode.
 *
 *****************************************************************************/
 s32 XCanPs_SetRxIntrWatermark(XCanPs *InstancePtr, u8 Threshold)
@@ -1100,15 +1053,12 @@ s32 XCanPs_SetRxIntrWatermark(XCanPs *InstancePtr, u8 Threshold)
 
 /****************************************************************************/
 /**
+* @brief Gets the Rx Full threshold from the Watermark Interrupt Register.
 *
-* This routine gets the Rx Full threshold from the Watermark Interrupt Register.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	The Rx FIFO full watermark threshold value. The valid values
 *		are 1 to 63.
-*
-* @note		None.
 *
 *****************************************************************************/
 u8 XCanPs_GetRxIntrWatermark(XCanPs *InstancePtr)
@@ -1126,20 +1076,19 @@ u8 XCanPs_GetRxIntrWatermark(XCanPs *InstancePtr)
 
 /****************************************************************************/
 /**
+* @brief Sets the Tx Empty Threshold in the Watermark Interrupt Register.
 *
-* This routine sets the Tx Empty Threshold in the Watermark Interrupt Register.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
-* @param	Threshold is the threshold to be set. The valid values are
-*		from 1 to 63.
+* @param[in]   InstancePtr Pointer to the XCanPs instance.
+* @param[in]   Threshold Threshold to be set. The valid values are
+*              from 1 to 63.
 *
 * @return
-*		- XST_FAILURE - If the CAN device is not in Configuration Mode.
-*		- XST_SUCCESS - If the threshold is set in Watermark
-*		Interrupt Register.
+*              - XST_FAILURE - If the CAN device is not in Configuration Mode.
+*              - XST_SUCCESS - If the threshold is set in Watermark
+*                Interrupt Register.
 *
-* @note		The threshold can only be set when the CAN device is in the
-*		configuration mode.
+* @note        The threshold can only be set when the CAN device is in the
+*              configuration mode.
 *
 *****************************************************************************/
 s32 XCanPs_SetTxIntrWatermark(XCanPs *InstancePtr, u8 Threshold)
@@ -1170,14 +1119,11 @@ s32 XCanPs_SetTxIntrWatermark(XCanPs *InstancePtr, u8 Threshold)
 
 /****************************************************************************/
 /**
+* @brief Gets the Tx Empty threshold from the Watermark Interrupt Register.
 *
-* This routine gets the Tx Empty threshold from Watermark Interrupt Register.
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in]    InstancePtr Pointer to the XCanPs instance.
 *
 * @return	The Tx Empty FIFO threshold value. The valid values are 1 to 63.
-*
-* @note		None.
 *
 *****************************************************************************/
 u8 XCanPs_GetTxIntrWatermark(XCanPs *InstancePtr)
@@ -1196,10 +1142,11 @@ u8 XCanPs_GetTxIntrWatermark(XCanPs *InstancePtr)
 
 /******************************************************************************/
 /**
- * This routine is a stub for the asynchronous callbacks. The stub is here in
- * case the upper layer forgot to set the handler(s). On initialization, all
- * handlers are set to this callback. It is considered an error for this handler
- * to be invoked.
+ * @brief Serves as a stub for the asynchronous callbacks.
+ *
+ * The stub is here in case the upper layer forgot to set the handlers.
+ * On initialization, all handlers are set to this callback. It is considered
+ * an error for this handler to be invoked.
  *
  ******************************************************************************/
 static void StubHandler(void)

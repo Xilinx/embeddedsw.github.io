@@ -49,10 +49,8 @@ extern "C" {
 #include "xil_io.h"
 #include "xparameters.h"
 /************************** Constant Definitions ******************************/
-#ifdef SDT
 #define XPAR_XDPTXSS_NUM_INSTANCES XPAR_DPTXSS_NUM_INSTANCES
 #define XPAR_XDPRXSS_NUM_INSTANCES XPAR_DPRXSS_NUM_INSTANCES
-#endif
 
 /** @name Protocol Selection definitions : DP 1.1, DP 1.2, DP 1.4, DP 2.1.
  * @{
@@ -347,6 +345,30 @@ extern "C" {
 #define XDP_TX_AUDIO_EXT_DATA(NUM)	(0x330 + 4 * (NUM - 1)) /**< Word
 							formatted as per
 							extension packet. */
+
+/* Per-stream secondary-data-packet (SDP) support for MST (DP2.1a).
+ * Each MST video stream has its own VSC extended-packet buffer. Stream 1
+ * reuses the legacy 0x330 bank so that Single stream mode and DP1.4 behaviour
+ * is unchanged. */
+
+/* VSC extended-packet (SDP) data buffers - 9 words each (header + DB0..DB28) */
+#define XDP_TX_AUDIO_EXT_DATA_STREAM2(NUM)	(0x37C + 4 * (NUM - 1))
+#define XDP_TX_AUDIO_EXT_DATA_STREAM3(NUM)	(0x628 + 4 * (NUM - 1))
+#define XDP_TX_AUDIO_EXT_DATA_STREAM4(NUM)	(0x674 + 4 * (NUM - 1))
+#define XDP_TX_AUDIO_EXT_DATA_STREAM2_OFFSET	(0x37C - 0x330)	/**< 0x04C */
+#define XDP_TX_AUDIO_EXT_DATA_STREAM3_OFFSET	(0x628 - 0x330)	/**< 0x2F8 */
+#define XDP_TX_AUDIO_EXT_DATA_STREAM4_OFFSET	(0x674 - 0x330)	/**< 0x344 */
+
+/* VSC_COLOR_INFO status registers (RO): color format/bpc extracted by the
+ * core from the transmitted VSC SDP, plus a packet-valid bit. */
+#define XDP_TX_VSC_COLOR_INFO		0x5F0
+#define XDP_TX_VSC_COLOR_INFO_STREAM2	0x5F4
+#define XDP_TX_VSC_COLOR_INFO_STREAM3	0x5F8
+#define XDP_TX_VSC_COLOR_INFO_STREAM4	0x5FC
+#define XDP_TX_VSC_COLOR_FORMAT_MASK	0x0000000F	/**< VSC_COLOR_FORMAT[3:0] */
+#define XDP_TX_VSC_BPC_MASK		0x00000070	/**< VSC_BPC[6:4] */
+#define XDP_TX_VSC_BPC_SHIFT		4
+#define XDP_TX_VSC_PACKET_VALID_MASK	0x00000080	/**< VSC_PACKET_VALID[7] */
 /** @} */
 
 /** @name DPTX core registers: DisplayPort video.
@@ -601,7 +623,14 @@ extern "C" {
 				0x00000020	/**< Extended packet has been
 							transmitted and the core
 							is ready to accept a new
-							packet. */
+							packet (stream 1). */
+/* Per-stream VSC/EXT packet-transmitted interrupts (INTERRUPT_STATUS 0x140). */
+#define XDP_TX_INTERRUPT_STATUS_EXT_PKT_TXD_STREAM2_MASK \
+				0x00000040	/**< EXT_PKT_TXD_STREAM2 [6] */
+#define XDP_TX_INTERRUPT_STATUS_EXT_PKT_TXD_STREAM3_MASK \
+				0x00000080	/**< EXT_PKT_TXD_STREAM3 [7] */
+#define XDP_TX_INTERRUPT_STATUS_EXT_PKT_TXD_STREAM4_MASK \
+				0x00000100	/**< EXT_PKT_TXD_STREAM4 [8] */
 #define XDP_TX_INTERRUPT_STATUS_VBLANK_STREAM1_MASK \
 				0x00000400	/** < For every Vsync
 							interrupt is generated */
@@ -1200,6 +1229,11 @@ extern "C" {
 #define XDP_RX_AUDIO_EXT_DATA(NUM)	(0x330 + 4 * (NUM - 1)) /**< Word
 							formatted as per
 							extension packet. */
+
+/* Bit[8] enables the secondary/SDP datapath; must be set before enabling
+ * VSC colorimetry reception via DTG_ENABLE[2] (XDp_RxVSCEn()). */
+#define XDP_RX_SEC_DATAPATH_ENABLE	0x464
+#define XDP_RX_SEC_DATAPATH_ENABLE_MASK	0x00000100	/**< bit[8] */
 /** @} */
 
 /** @name DPRX core registers: DPCD configuration space.
@@ -1354,6 +1388,50 @@ extern "C" {
 							of stream 1. */
 #define XDP_RX_SDP_PAYLOAD_STREAM1	0x0644	/**< VSC SDP payload data from
 							DB16 to DB18 */
+
+/* Per-stream VSC SDP colour-format registers for MST (streams 2-4 have
+ * dedicated copies; stream 1 falls back to XDP_RX_SDP_PAYLOAD_STREAM1). */
+#define XDP_RX_VSC_COLOR_FORMAT_STREAM1	0x648
+#define XDP_RX_VSC_COLOR_FORMAT_STREAM2	0x64C
+#define XDP_RX_VSC_COLOR_FORMAT_STREAM3	0x650
+#define XDP_RX_VSC_COLOR_FORMAT_STREAM4	0x654
+/** @} */
+
+/** @name DPRX core registers: Display Stream Compression and FEC.
+  * @{
+  */
+#define XDP_RX_FEC_CAPS			0x100	/**< FEC capability, exposed to
+							the upstream source in
+							the RX DPCD at 0x090. */
+#define XDP_RX_DSC_CAPS_1		0x790	/**< DSC capability, read only. */
+#define XDP_RX_DSC_CAPS_2		0x794	/**< DSC capability, second
+							word, read only. */
+#define XDP_RX_DSC_CRC_1		0x798	/**< DSC CRC and control. Bit 3
+							declares DSC support in
+							the RX DPCD at 0x060. */
+#define XDP_RX_DSC_CRC_2		0x79C	/**< DSC CRC, second word. */
+#define XDP_RX_DSC_PPS_DATA		0xC00	/**< Received picture parameter
+							set, 128 bytes held in 32
+							consecutive words. */
+#define XDP_RX_DSC_PPS_DATA_WORD(WordNum) \
+			(XDP_RX_DSC_PPS_DATA + ((WordNum) * 4))
+/** @} */
+
+/** @name DPRX core registers: Display Stream Compression and FEC bit masks.
+  * @{
+  */
+#define XDP_RX_DSC_CAPS_1_ENABLE_MASK	0x001	/**< The stream being received
+							is DSC compressed. */
+#define XDP_RX_DSC_CRC_1_SUPPORT_MASK	0x008	/**< Declares DSC support to
+							the upstream source. */
+#define XDP_RX_DSC_CRC_1_STATUS_MASK	0x070	/**< DSC status field. */
+#define XDP_RX_MSA_VBID_DSC_MASK	0x040	/**< VB-ID bit 6, set while the
+							stream carries DSC
+							compressed video. */
+#define XDP_RX_MSA_VBID_NO_VIDEO_MASK	0x080	/**< VB-ID bit 7, set while no
+							video is being
+							received. */
+#define XDP_RX_MSA_VBID_STREAM_ID_MASK	0x03F	/**< VB-ID stream identifier. */
 /** @} */
 
 /** @name DPRX core registers: DPCD registers for HDCP.

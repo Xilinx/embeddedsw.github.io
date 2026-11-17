@@ -1187,11 +1187,7 @@ static int XHdcp22Rx_InitializeCipher(XHdcp22_Rx *InstancePtr)
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_Cipher_Config *CipherConfigPtr = NULL;
 
-#ifndef SDT
-	CipherConfigPtr = XHdcp22Cipher_LookupConfig(InstancePtr->Config.CipherDeviceId);
-#else
 	CipherConfigPtr = XHdcp22Cipher_LookupConfig(InstancePtr->Config.CipherDeviceAddress);
-#endif
 	if(CipherConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1223,11 +1219,7 @@ static int XHdcp22Rx_InitializeMmult(XHdcp22_Rx *InstancePtr)
 	int Status = XST_SUCCESS;
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_mmult_Config *MmultConfigPtr;
-#ifndef SDT
-	MmultConfigPtr = XHdcp22_mmult_LookupConfig(InstancePtr->Config.MontMultDeviceId);
-#else
 	MmultConfigPtr = XHdcp22_mmult_LookupConfig(InstancePtr->Config.MontMultDeviceAddress);
-#endif
 	if(MmultConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1258,11 +1250,7 @@ static int XHdcp22Rx_InitializeRng(XHdcp22_Rx *InstancePtr)
 	UINTPTR SubcoreBaseAddr;
 	XHdcp22_Rng_Config *RngConfigPtr;
 
-#ifndef SDT
-	RngConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngDeviceId);
-#else
 	RngConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngDeviceAddress);
-#endif
 	if(RngConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1293,11 +1281,7 @@ static int XHdcp22Rx_InitializeTimer(XHdcp22_Rx *InstancePtr)
 	UINTPTR SubcoreBaseAddr;
 	XTmrCtr_Config *TimerConfigPtr;
 
-#ifndef SDT
-	TimerConfigPtr = XTmrCtr_LookupConfig(InstancePtr->Config.TimerDeviceId);
-#else
 	TimerConfigPtr = XTmrCtr_LookupConfig(InstancePtr->Config.TimerDeviceAddress);
-#endif
 	if(TimerConfigPtr == NULL)
 	{
 		return XST_FAILURE;
@@ -1775,6 +1759,7 @@ static int XHdcp22Rx_PollMessage(XHdcp22_Rx *InstancePtr)
 
 	u32 Size = 0;
 	u32 Offset = 0;
+	u32 CopySize;
 
 	/* Get message */
 	if(XHdcp22Rx_IsWriteMessageAvailable(InstancePtr) == TRUE)
@@ -1783,10 +1768,22 @@ static int XHdcp22Rx_PollMessage(XHdcp22_Rx *InstancePtr)
 
 		InstancePtr->Handles.DdcSetAddressCallback(InstancePtr->Handles.DdcSetAddressCallbackRef, XHDCP22_RX_DDC_WRITE_REG);
 
-		for(Offset = 0; Offset < Size; Offset++)
+		CopySize = Size;
+		if(CopySize > XHDCP22_RX_MAX_MESSAGE_SIZE) {
+			CopySize = XHDCP22_RX_MAX_MESSAGE_SIZE;
+		}
+
+		for(Offset = 0; Offset < CopySize; Offset++)
 		{
 			InstancePtr->MessageBuffer[Offset] = InstancePtr->Handles.DdcGetDataCallback(InstancePtr->Handles.DdcGetDataCallbackRef);
 		}
+
+		for(; Offset < Size; Offset++)
+		{
+			InstancePtr->Handles.DdcGetDataCallback(InstancePtr->Handles.DdcGetDataCallbackRef);
+		}
+
+		Size = CopySize;
 	}
 
 	return Size;
@@ -2414,6 +2411,12 @@ static void *XHdcp22Rx_StateC5(XHdcp22_Rx *InstancePtr)
 			InstancePtr->Info.ReturnState = InstancePtr->Info.CurrentState;
 			InstancePtr->Info.SkipRead = TRUE;
 			return (void *)XHdcp22Rx_StateC7;
+		case XHDCP22_RX_MSG_ID_REPEATERAUTHSENDACK: /* Transition C5->C6 */
+			/* Fast transmitter sent the Ack while still in C5;
+			   hand it to C6 for verification instead of resetting. */
+			InstancePtr->Info.NextState = XHDCP22_RX_STATE_C6_VERIFY_RECEIVERIDLISTACK;
+			InstancePtr->Info.SkipRead = TRUE;
+			return (void *)XHdcp22Rx_StateC6;
 		default:
 			XHdcp22Rx_ResetAfterError(InstancePtr);
 			return (void *)XHdcp22Rx_StateB0;
@@ -3036,7 +3039,8 @@ static int XHdcp22Rx_ProcessMessageAKENoStoredKm(XHdcp22_Rx *InstancePtr)
 	/* Compute Km, Perform RSA decryption */
 	XHdcp22Rx_LogWr(InstancePtr, XHDCP22_RX_LOG_EVT_DEBUG, XHDCP22_RX_LOG_DEBUG_COMPUTE_KM);
 	Status = XHdcp22Rx_RsaesOaepDecrypt(InstancePtr, (XHdcp22_Rx_KprivRx *)(InstancePtr->PrivateKeyPtr),
-										MsgPtr->AKENoStoredKm.EKpubKm, InstancePtr->Params.Km, &Size);
+										MsgPtr->AKENoStoredKm.EKpubKm, InstancePtr->Params.Km,
+										sizeof(InstancePtr->Params.Km), &Size);
 	XHdcp22Rx_LogWr(InstancePtr, XHDCP22_RX_LOG_EVT_DEBUG, XHDCP22_RX_LOG_DEBUG_COMPUTE_KM_DONE);
 
 	return (Status == XST_SUCCESS && Size == XHDCP22_RX_KM_SIZE) ? XST_SUCCESS : XST_FAILURE;
@@ -3651,7 +3655,6 @@ static void XHdcp22Rx_SetTopologyDeviceCnt(XHdcp22_Rx *InstancePtr, u8 DeviceCnt
 {
 	/* Verify arguments */
 	Xil_AssertVoid(InstancePtr != NULL);
-	Xil_AssertVoid(DeviceCnt > 0);
 	Xil_AssertVoid(DeviceCnt <= XHDCP22_RX_MAX_DEVICE_COUNT);
 
 	InstancePtr->Topology.DeviceCnt = DeviceCnt;

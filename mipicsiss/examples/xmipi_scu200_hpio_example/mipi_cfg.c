@@ -42,8 +42,8 @@
 #define HDMI_H_RES		(1920)
 #define HDMI_V_RES		(1080)
 
-#define DSI_H_RES		(1920)
-#define DSI_V_RES		(1200)
+#define DSI_H_RES		(720)
+#define DSI_V_RES		(1280)
 
 #ifndef SDT
 #define UART_BASEADDR	XPAR_XUARTPSV_0_BASEADDR
@@ -73,7 +73,7 @@
 #define IIC_SENSOR_DEV_ID	XPAR_IIC_1_DEVICE_ID
 #define XVPROCSS_DEVICE_ID	XPAR_XVPROCSS_1_DEVICE_ID
 #else
-#define IIC_SENSOR_BASE	XPAR_XIIC_1_BASEADDR
+#define IIC_SENSOR_BASE	XPAR_XIIC_2_BASEADDR
 #define XVPROCSS_BASE	XPAR_XVPROCSS_1_BASEADDR
 #endif
 
@@ -311,42 +311,35 @@ void InitVprocSs_Scaler(int count,int width,int height)
 	XVidC_VideoMode resIdIn, resIdOut;
 	XVidC_VideoStream StreamIn;
 
+	StreamIn.FrameRate = XVIDC_FR_60HZ;
+
 	if (Pipeline_Cfg.VideoMode == XVIDC_VM_1280x720_60_P) {
 		widthIn = 1280;
 		heightIn = 720;
-		StreamIn.FrameRate = XVIDC_FR_60HZ;
 	}
 
 	if (Pipeline_Cfg.VideoMode == XVIDC_VM_1920x1080_30_P) {
 		widthIn = 1920;
 		heightIn = 1080;
-		StreamIn.FrameRate = XVIDC_FR_60HZ;
 	}
 
 	if (Pipeline_Cfg.VideoMode == XVIDC_VM_1920x1080_60_P) {
 		widthIn = 1920;
 		heightIn = 1080;
-		StreamIn.FrameRate = XVIDC_FR_60HZ;
 	}
 
 	if (Pipeline_Cfg.VideoMode == XVIDC_VM_3840x2160_30_P) {
 		widthIn = 3840;
 		heightIn = 2160;
-		StreamIn.FrameRate = XVIDC_FR_60HZ;
 	}
 
 	if (Pipeline_Cfg.VideoMode == XVIDC_VM_3840x2160_60_P) {
 		widthIn = 3840;
 		heightIn = 2160;
-		StreamIn.FrameRate = XVIDC_FR_60HZ;
 	}
 
 	if (count) {
-#ifndef SDT
-		p_vpss_cfg = XVprocSs_LookupConfig(XVPROCSS_DEVICE_ID);
-#else
-		//p_vpss_cfg = XVprocSs_LookupConfig(XVPROCSS_BASE);
-#endif
+		p_vpss_cfg = XVprocSs_LookupConfig(XVPROCSS_BASE);
 		if (p_vpss_cfg == NULL) {
 			xil_printf("ERROR! Failed to find VPSS-based scaler.");
 			xil_printf("\n\r");
@@ -384,11 +377,15 @@ void InitVprocSs_Scaler(int count,int width,int height)
 		return;
 	}
 
-	/* Get resolution ID from frame size */
+	/* Get resolution ID from frame size. 720x1280 is not a standard
+	 * CEA/VESA mode, so this returns XVIDC_VM_NOT_SUPPORTED — fall back
+	 * to XVIDC_VM_CUSTOM (VPSS Scaler-only topology only needs
+	 * Timing.HActive/VActive, not a resolved standard VmId). */
 	resIdOut = XVidC_GetVideoModeId(widthOut, heightOut, XVIDC_FR_60HZ,
 					FALSE);
-
-
+	if (resIdOut == XVIDC_VM_NOT_SUPPORTED) {
+		resIdOut = XVIDC_VM_CUSTOM;
+	}
 
 	StreamOut.VmId = resIdOut;
 	StreamOut.Timing.HActive = widthOut;
@@ -399,13 +396,7 @@ void InitVprocSs_Scaler(int count,int width,int height)
 	StreamOut.FrameRate = XVIDC_FR_60HZ;
 	StreamOut.IsInterlaced = 0;
 
-	/* Get resolution ID from frame size */
-	resIdOut = XVidC_GetVideoModeId(widthOut, heightOut, XVIDC_FR_60HZ,
-					FALSE);
-
-
-
-	XVprocSs_SetVidStreamOut(&scaler_new_inst, &StreamOut);
+	status = XVprocSs_SetVidStreamOut(&scaler_new_inst, &StreamOut);
 	if (status != XST_SUCCESS) {
 		xil_printf("Unable to set output video stream parameters correctly\r\n");
 		return;
@@ -417,7 +408,6 @@ void InitVprocSs_Scaler(int count,int width,int height)
 		XVprocSs_LogDisplay(&scaler_new_inst);
 		return;
 	}
-
 }
 
 /*****************************************************************************/
@@ -912,7 +902,10 @@ void EnableCSI(void)
  *****************************************************************************/
 void DisableCSI(void)
 {
-	usleep(10000);
+	/* usleep matches the ZCU102 reference's DisableCSI() (1s, not 10ms) —
+	 * that reference switches HDMI/DSI reliably every time; ours didn't
+	 * until the same generous settle was adopted here. */
+	usleep(1000000);
 	XCsiSs_Reset(&CsiRxSs);
 }
 
@@ -1335,9 +1328,6 @@ int config_csi_cap_path(){
 				 TXT_RST, Status);
 		return XST_FAILURE;
 	}
-
-
-	print("\r\n\r\n--------------------------------\r\n");
 
 	return 0;
 

@@ -1,5 +1,5 @@
 /******************************************************************************\
-|* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+|* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 |* Copyright (c) 2020 by VeriSilicon Holdings Co., Ltd. ("VeriSilicon")       *|
 |* All Rights Reserved.                                                       *|
 |*                                                                            *|
@@ -110,6 +110,13 @@ static RESULT Ox03f10_IsiReadRegIss(IsiSensorHandle_t handle, const uint16_t add
 	if (pOx03f10Ctx == NULL)
 		return RET_NULL_POINTER;
 
+	if (pOx03f10Ctx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (pValue == NULL || g_fmc_single.sensor_array[pOx03f10Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx03f10Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx03f10Ctx->sensorDevId]->readIIC == NULL)
+		return RET_NULL_POINTER;
+
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx03f10Ctx->sensorDevId]->sensor_alias_addr) >> 1;
 	result = g_fmc_single.accessiic_array[pOx03f10Ctx->sensorDevId]->readIIC(pOx03f10Ctx->i2cId,
 		 slave_addr, addr, 0x2, pValue, 1);
@@ -128,6 +135,13 @@ static RESULT Ox03f10_IsiWriteRegIss(IsiSensorHandle_t handle, const uint16_t ad
 
 	Ox03f10_Context_t *pOx03f10Ctx = (Ox03f10_Context_t *) handle;
 	if (pOx03f10Ctx == NULL)
+		return RET_NULL_POINTER;
+
+	if (pOx03f10Ctx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (g_fmc_single.sensor_array[pOx03f10Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx03f10Ctx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx03f10Ctx->sensorDevId]->writeIIC == NULL)
 		return RET_NULL_POINTER;
 
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx03f10Ctx->sensorDevId]->sensor_alias_addr) >> 1;
@@ -217,6 +231,11 @@ static RESULT Ox03f10_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	RESULT result = RET_SUCCESS;
 	uint32_t desId = 0, pipeId = 0;
 	xil_printf("%s (enter)\n", __func__);
+	if (pConfig == NULL || pHandle == NULL)
+		return RET_NULL_POINTER;
+	*pHandle = NULL;
+	if (pConfig->cameraDevId >= IN_PIPE_LAST)
+		return RET_UNSUPPORT_ID;
 
 	Ox03f10_Context_t *pOx03f10Ctx = (Ox03f10_Context_t *) osMalloc(sizeof(Ox03f10_Context_t));
 	if (!pOx03f10Ctx) {
@@ -241,6 +260,12 @@ static RESULT Ox03f10_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	uint8_t busId = (uint8_t)pOx03f10Ctx->i2cId;
 	pipeId = pOx03f10Ctx->sensorDevId;
 
+	if (pipeId >= IN_PIPE_LAST) {
+		xil_printf("%s: sensor device ID %d is mot support!\n", __func__, pipeId);
+		osFree(pOx03f10Ctx);
+		return RET_UNSUPPORT_ID;
+	}
+
 	*pHandle = (IsiSensorHandle_t) pOx03f10Ctx;
 
 #if 0
@@ -251,20 +276,31 @@ static RESULT Ox03f10_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	}
 #endif
 
-	if (pipeId >= IN_PIPE_LAST) {
-		xil_printf("%s: sensor device ID %d is mot support!\n", __func__, pipeId);
-		return RET_UNSUPPORT_ID;
-	}
 	desId = MAPPING_INPIPE_TO_DES_ID(pipeId);
+	if (desId >= DS_MAX) {
+		result = RET_OUTOFRANGE;
+		goto fail;
+	}
 
 	xil_printf("\r\n desId %d pipeId:%d\r\n", desId, pipeId);
 
-	init_iic_access(pOx03f10Ctx->i2cId, pipeId);
+	result = init_iic_access(pOx03f10Ctx->i2cId, pipeId);
+	if (result != RET_SUCCESS)
+		goto fail;
 	init_des(desId);
-	init_sensor(pipeId, desId);
+	result = init_sensor(pipeId, desId);
+	if (result != RET_SUCCESS)
+		goto fail_iic;
 
 	xil_printf("%s (exit)\n", __func__);
 	return (result);
+
+fail_iic:
+	release_iic_access(pipeId);
+fail:
+	osFree(pOx03f10Ctx);
+	*pHandle = NULL;
+	return result;
 }
 
 static RESULT Ox03f10_AecSetModeParameters(IsiSensorHandle_t handle, Ox03f10_Context_t *pOx03f10Ctx)
@@ -757,7 +793,7 @@ RESULT Ox03f10_IsiGetDGainIss(IsiSensorHandle_t handle, IsiSensorGain_t *pSensor
 	return (result);
 }
 
-RESULT Ox03f10_IsiSetIntTimeIss(IsiSensorHandle_t handle, IsiSensorIntTime_t *pSensorIntTime)
+RESULT Ox03f10_IsiSetIntTimeIss(IsiSensorHandle_t handle, const IsiSensorIntTime_t *pSensorIntTime)
 {
 	RESULT result = RET_SUCCESS;
 	xil_printf("%s: (enter)\n", __func__);
@@ -881,7 +917,8 @@ RESULT Ox03f10_IsiSetFpsIss(IsiSensorHandle_t handle, uint32_t fps)
 {
 	RESULT result = RET_SUCCESS;
 	int32_t NewVts = 0;
-	int32_t vs_exp = 0, data = 0;
+	int32_t vs_exp = 0;
+	uint16_t data = 0;
 
 	xil_printf("%s: (enter)\n", __func__);
 
@@ -1003,7 +1040,7 @@ RESULT Ox03f10_IsiGetTpgIss(IsiSensorHandle_t handle, IsiSensorTpg_t *pTpg)
 	return (result);
 }
 
-static RESULT Ox03f10_IsiSetWBIss(IsiSensorHandle_t handle, IsiSensorWb_t *pWb)
+static RESULT Ox03f10_IsiSetWBIss(IsiSensorHandle_t handle, const IsiSensorWb_t *pWb)
 {
 	RESULT result = RET_SUCCESS;
 	xil_printf("%s: (enter)\n", __func__);
@@ -1085,7 +1122,7 @@ static RESULT Ox03f10_IsiGetWBIss(IsiSensorHandle_t handle, IsiSensorWb_t *pWb)
 	return (result);
 }
 
-static RESULT Ox03f10_IsiSetBlcIss(IsiSensorHandle_t handle, IsiSensorBlc_t *pBlc)
+static RESULT Ox03f10_IsiSetBlcIss(IsiSensorHandle_t handle, const IsiSensorBlc_t *pBlc)
 {
 	RESULT result = RET_SUCCESS;
 	uint16_t blcGain = 0;
@@ -1180,8 +1217,11 @@ static RESULT Ox03f10_IsiGetExpandCurveIss(IsiSensorHandle_t handle,
 				     1572863, 2097151, 3145727, 4194303, 8388607, 12582911, 16777215, 16777215
 				    };
 	float slope[34] = {0};
-	for (int i = 0; i < 34; i++)
+	for (int i = 0; i < 33; i++) {
+		if (expandXValue[i + 1] == expandXValue[i])
+			continue;
 		slope[i] = (expandYValue[i + 1] - expandYValue[i]) / (expandXValue[i + 1] - expandXValue[i]);
+	}
 
 	for (int i = 1; i < 65; i++) {
 		for (int j = 1; j < 34; j++) {

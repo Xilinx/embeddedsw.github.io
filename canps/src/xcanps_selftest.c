@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,18 +8,16 @@
 /**
 *
 * @file xcanps_selftest.c
-* @addtogroup canps Overview
-* @{
+* @brief Implements the self-test diagnostic for the XCanPs CAN driver.
 *
 * This file contains a diagnostic self-test function for the XCanPs driver.
-*
 * Read xcanps.h file for more information.
 *
 * @note
-* The  Baud Rate Prescaler Register (BRPR) and Bit Timing Register(BTR)
-* are setup such that CAN baud rate equals 40Kbps, given the CAN clock
-* equal to 24MHz. These need to be changed based on the desired baudrate
-* and CAN clock frequency.
+* The Baud Rate Prescaler Register (BRPR) and Bit Timing Register (BTR) are set
+* up for a CAN baud rate of 40Kbps. This setting assumes a CAN clock of 24MHz.
+* These need to be changed based on the desired baudrate and CAN clock
+* frequency.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -31,9 +29,15 @@
 *						 SDK claims a 40kbps baud rate but it's not.
 * 3.00  kvn    02/13/15 Modified code for MISRA_C:2012 compliance.
 * 3.5	sne    07/01/20 Fixed MISRAC warnings.
+* 3.13  vn   09/08/26 Align Doxygen comments with AMD standards
+* 3.13  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 *****************************************************************************/
+
+/** @addtogroup canps Overview
+ * @{
+ */
 
 /***************************** Include Files ********************************/
 
@@ -42,10 +46,10 @@
 
 /************************** Constant Definitions ****************************/
 
+/** Flag for Max Frame size. */
 #define XCANPS_MAX_FRAME_SIZE_IN_WORDS ((XCANPS_MAX_FRAME_SIZE) / (sizeof(u32)))
-				   /**< Flag for Max Frame size */
 
-#define FRAME_DATA_LENGTH	8U /**< Frame Data field length */
+#define FRAME_DATA_LENGTH	8U /**< Frame Data field length. */
 
 /**************************** Type Definitions ******************************/
 
@@ -57,38 +61,38 @@
  * Buffers to hold frames to send and receive. These are declared as global so
  * that they are not on the stack.
  */
-static u32 TxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS]; /**< Txframe buffer */
-static u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS]; /**< Rxframe buffer */
+static u32 TxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS]; /**< Txframe buffer. */
+static u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS]; /**< Rxframe buffer. */
 
 /************************** Function Prototypes *****************************/
 
 /*****************************************************************************/
 /**
 *
-* This function runs a self-test on the CAN driver/device. The test resets
-* the device, sets up the Loop Back mode, sends a standard frame, receives the
-* frame, verifies the contents, and resets the device again.
+* @brief Runs a self-test on the CAN driver and device.
+*
+* The test resets the device and sets up the Loop Back mode. It then sends a
+* standard frame, receives the frame, verifies the contents, and resets the
+* device again.
 *
 * Note that this is a destructive test in that resets of the device are
 * performed. Refer the device specification for the device status after
 * the reset operation.
 *
-*
-* @param	InstancePtr is a pointer to the XCanPs instance.
+* @param[in,out] InstancePtr Pointer to the XCanPs instance.
 *
 * @return
-*		- XST_SUCCESS if the self-test passed. i.e., the frame
-*		  received via the internal loop back has the same contents as
-*		  the frame sent.
-* 		- XST_FAILURE   Otherwise.
+*                - XST_SUCCESS if the self-test passed, that is, the frame
+*                  received via the internal loop back has the same contents as
+*                  the frame sent.
+*                - XST_FAILURE otherwise.
 *
-* @note
-*
-* If the CAN device does not work properly, this function may enter an
-* infinite loop and will never return to the caller.
-* <br><br>
-* If XST_FAILURE is returned, the device is not reset so that the caller could
-* have a chance to check reason(s) causing the failure.
+* @note          If the CAN device does not work properly, this function may
+*                enter an infinite loop and never returns to the caller.
+*                <br><br>
+*                If XST_FAILURE is returned, the device is not reset so that
+*                the caller could have a chance to check the reasons causing
+*                the failure.
 *
 ******************************************************************************/
 s32 XCanPs_SelfTest(XCanPs *InstancePtr)

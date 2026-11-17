@@ -1,19 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XQSPIPS_HW_H
+#define XQSPIPS_HW_H
 
 /*****************************************************************************/
 /**
 *
 * @file xqspips_hw.h
-* @addtogroup qspips Overview
-* @{
+* @brief Contains the identifiers and basic HW access driver functions (or
+* macros) that can be used to access the device.
 *
-* This header file contains the identifiers and basic HW access driver
-* functions (or  macros) that can be used to access the device. Other driver
-* functions are defined in xqspips.h.
+* Other driver functions are defined in xqspips.h.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -38,12 +39,17 @@
 * 					 controller does not update FIFO status flags as expected
 * 					 when thresholds are used.
 * 3.6   akm 03/28/19 Fixed memory leak issue while reading from qspi.(CR#1016357)
+* 3.16  vn  08/26/26 Fix Doxygen warnings
+* 3.16  tb  09/30/26 Align Doxygen comments with AMD documentation standards
 *
 * </pre>
 *
 ******************************************************************************/
-#ifndef XQSPIPS_HW_H		/* prevent circular inclusions */
-#define XQSPIPS_HW_H		/* by using protection macros */
+
+/**
+* @addtogroup qspips_api QSPIPS APIs
+* @{
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,7 +90,7 @@ extern "C" {
 #define XQSPIPS_LQSPI_SR_OFFSET  	0xA4 /**< Linear QSPI status register */
 #define XQSPIPS_MOD_ID_OFFSET  		0xFC /**< Module ID register */
 
-/* @} */
+/** @} */
 
 /** @name Configuration Register
  *
@@ -116,13 +122,14 @@ extern "C" {
 
 #define XQSPIPS_CR_REF_CLK_MASK   0x00000100 /**< Ref clk bit - should be 0 */
 
-/* Deselect the Slave select line and set the transfer size to 32 at reset */
+/** Deselect the Slave select line and set the transfer size to 32 at reset. */
 #define XQSPIPS_CR_RESET_MASK_SET  XQSPIPS_CR_IFMODE_MASK | \
 	XQSPIPS_CR_SSCTRL_MASK | \
 	XQSPIPS_CR_DATA_SZ_MASK | \
 	XQSPIPS_CR_MSTREN_MASK | \
 	XQSPIPS_CR_SSFORCE_MASK | \
 	XQSPIPS_CR_HOLD_B_MASK
+/** Configuration register bits cleared at reset. */
 #define XQSPIPS_CR_RESET_MASK_CLR  XQSPIPS_CR_CPOL_MASK | \
 	XQSPIPS_CR_CPHA_MASK | \
 	XQSPIPS_CR_PRESC_MASK | \
@@ -130,8 +137,7 @@ extern "C" {
 	XQSPIPS_CR_MANSTRT_MASK | \
 	XQSPIPS_CR_ENDIAN_MASK | \
 	XQSPIPS_CR_REF_CLK_MASK
-/* @} */
-
+/** @} */
 
 /** @name QSPI Interrupt Registers
  *
@@ -147,13 +153,13 @@ extern "C" {
  *
  * <b>QSPI Interrupt Enable Register</b>
  *
- * This register is used to enable chosen interrupts for an QSPI device.
+ * This register enables chosen interrupts for an QSPI device.
  * Writing a '1' to a bit in this register sets the corresponding bit in the
  * QSPI Interrupt Mask register.  Write only.
  *
  * <b>QSPI Interrupt Disable Register </b>
  *
- * This register is used to disable chosen interrupts for an QSPI device.
+ * This register disables chosen interrupts for an QSPI device.
  * Writing a '1' to a bit in this register clears the corresponding bit in the
  * QSPI Interrupt Mask register. Write only.
  *
@@ -180,22 +186,20 @@ extern "C" {
 						    need write to clear */
 #define XQSPIPS_ISR_RESET_STATE    0x00000004  /**< Default to tx/rx empty */
 #define XQSPIPS_IXR_DISABLE_ALL    0x0000007D  /**< Disable all interrupts */
-/* @} */
-
+/** @} */
 
 /** @name Enable Register
  *
- * This register is used to enable or disable an QSPI device.
+ * This register enables or disables an QSPI device.
  * Read/Write
  * @{
  */
 #define XQSPIPS_ER_ENABLE_MASK    0x00000001 /**< QSPI Enable Bit Mask */
-/* @} */
-
+/** @} */
 
 /** @name Delay Register
  *
- * This register is used to program timing delays in
+ * This register programs timing delays in
  * slave mode. Read/Write
  * @{
  */
@@ -209,7 +213,7 @@ extern "C" {
 #define XQSPIPS_DR_AFTER_MASK	0x0000FF00 /**< Delay After Transfers mask */
 #define XQSPIPS_DR_AFTER_SHIFT	8 	   /**< Delay After Transfers shift */
 #define XQSPIPS_DR_INIT_MASK	0x000000FF /**< Delay Initially mask */
-/* @} */
+/** @} */
 
 /** @name Slave Idle Count Registers
  *
@@ -221,8 +225,7 @@ extern "C" {
  * @{
  */
 #define XQSPIPS_SICR_MASK	0x000000FF /**< Slave Idle Count Mask */
-/* @} */
-
+/** @} */
 
 /** @name Transmit FIFO Watermark Register
  *
@@ -234,7 +237,7 @@ extern "C" {
 #define XQSPIPS_TXWR_RESET_VALUE    0x00000001 /**< Transmit Watermark
 						  * register reset value */
 
-/* @} */
+/** @} */
 
 /** @name Receive FIFO Watermark Register
  *
@@ -246,17 +249,16 @@ extern "C" {
 #define XQSPIPS_RXWR_RESET_VALUE    0x00000001 /**< Receive Watermark
 						  * register reset value */
 
-/* @} */
+/** @} */
 
 /** @name FIFO Depth
  *
- * This macro provides the depth of transmit FIFO and receive FIFO.
+ * The following macro provides the depth of transmit FIFO and receive FIFO.
  *
  * @{
  */
 #define XQSPIPS_FIFO_DEPTH	63	/**< FIFO depth (words) */
-/* @} */
-
+/** @} */
 
 /** @name Linear QSPI Configuration Register
  *
@@ -278,7 +280,7 @@ extern "C" {
 							 read data */
 #define XQSPIPS_LQSPI_CR_INST_MASK	 0x000000FF /**< Read instr code */
 #define XQSPIPS_LQSPI_CR_RST_STATE	 0x8000016B /**< Default CR value */
-/* @} */
+/** @} */
 
 /** @name Linear QSPI Status Register
  *
@@ -291,8 +293,7 @@ extern "C" {
 							  received */
 #define XQSPIPS_LQSPI_SR_WR_RECVD_MASK	  0x00000002 /**< AXI write command
 							  received */
-/* @} */
-
+/** @} */
 
 /** @name Loopback Delay Adjust Register
  *
@@ -303,8 +304,7 @@ extern "C" {
 
 #define XQSPIPS_LPBK_DLY_ADJ_USE_LPBK_MASK 0x00000020 /**< Loopback Bit */
 
-/* @} */
-
+/** @} */
 
 /** @name SLCR Register
  *
@@ -318,8 +318,7 @@ extern "C" {
 #define LQSPI_RST_CTRL 0x00000230 /**< Quad SPI Software Reset Control */
 #define SLCR_LOCKSTA 0x0000000C /**< SLCR Write Protection status */
 
-/* @} */
-
+/** @} */
 
 /** @name SLCR Register
  *
@@ -329,35 +328,35 @@ extern "C" {
  */
 
 #ifndef XPAR_XSLCR_0_BASEADDR
-#define XPAR_XSLCR_0_BASEADDR 0xF8000000
+#define XPAR_XSLCR_0_BASEADDR 0xF8000000	/**< SLCR base address. */
 #endif
 #define SLCR_LOCK_MASK 0x767B /**< Write Protection Lock mask*/
 #define SLCR_UNLOCK_MASK 0xDF0D /**< SLCR Write Protection Unlock */
 #define LQSPI_RST_CTRL_MASK 0x3 /**< Quad SPI Software Reset Control */
 
-/* @} */
-
+/** @} */
 
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
-#define XQspiPs_In32 Xil_In32
-#define XQspiPs_Out32 Xil_Out32
-#define XQSPIPS_DUMMY_TX_DATA   0xFFFFFFFF
+#define XQspiPs_In32 Xil_In32	/**< 32-bit register read function. */
+#define XQspiPs_Out32 Xil_Out32	/**< 32-bit register write function. */
+#define XQSPIPS_DUMMY_TX_DATA   0xFFFFFFFF	/**< Dummy transmit data. */
 
 /****************************************************************************/
 /**
-* Read a register.
+* @brief Reads a register.
 *
-* @param	BaseAddress contains the base address of the device.
-* @param	RegOffset contains the offset from the 1st register of the
+* @param[in]	BaseAddress The base address of the device.
+* @param[in]	RegOffset The offset from the 1st register of the
 *		device to the target register.
 *
 * @return	The value read from the register.
 *
-* @note		C-Style signature:
-*		u32 XQspiPs_ReadReg(u32 BaseAddress. int RegOffset)
+* @note
+* C-style signature
+*	u32 XQspiPs_ReadReg(u32 BaseAddress, int RegOffset)
 *
 ******************************************************************************/
 #define XQspiPs_ReadReg(BaseAddress, RegOffset) \
@@ -365,18 +364,16 @@ extern "C" {
 
 /***************************************************************************/
 /**
-* Write to a register.
+* @brief Writes to a register.
 *
-* @param	BaseAddress contains the base address of the device.
-* @param	RegOffset contains the offset from the 1st register of the
+* @param[in]	BaseAddress The base address of the device.
+* @param[in]	RegOffset The offset from the 1st register of the
 *		device to target register.
-* @param	RegisterValue is the value to be written to the register.
+* @param[in]	RegisterValue The value to be written to the register.
 *
-* @return	None.
-*
-* @note		C-Style signature:
-*		void XQspiPs_WriteReg(u32 BaseAddress, int RegOffset,
-*		u32 RegisterValue)
+* @note
+* C-style signature
+*	void XQspiPs_WriteReg(u32 BaseAddress, int RegOffset, u32 RegisterValue)
 *
 ******************************************************************************/
 #define XQspiPs_WriteReg(BaseAddress, RegOffset, RegisterValue) \

@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (c) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -7,11 +7,10 @@
 /**
 *
 * @file xufspsxc.c
-* @addtogroup ufspsxc Overview
-* @{
+* @brief Implements UFSPSXC transfer interface functions.
 *
 * This file implements the functions required to use the UFSPSXC hardware to
-* perform a transfer. These are accessible to the user via XOspiPsv.h.
+* perform a transfer through the interfaces in xufspsxc.h.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -19,10 +18,17 @@
 * Ver   Who Date     Changes
 * ----- --- -------- -----------------------------------------------
 * 1.0   sk  01/16/24 First release
+* 1.3   vn  07/30/26 Fix Doxygen warnings
 *
+* 1.3   tb  09/16/26 Align Doxygen comments with AMD standards.
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup ufspsxc_api UFSPSXC APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -42,16 +48,14 @@
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Initializes a UFSPSXC driver instance.
+*
 * Initializes a specific XUfsPsxc instance such that the driver is ready to use.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	ConfigPtr is a reference to a structure containing information
-*			about a specific UFSPSXC device. This function initializes an
-*			InstancePtr object for a specific device specified by the
-*			contents of Config.
-*
-* @return	None
+* @param[out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] ConfigPtr Reference to a structure containing information about a
+*   specific UFSPSXC device. This function initializes an InstancePtr object for
+*   a specific device specified by the contents of Config.
 *
 ******************************************************************************/
 void XUfsPsxc_CfgInitialize(XUfsPsxc *InstancePtr,
@@ -66,11 +70,12 @@ void XUfsPsxc_CfgInitialize(XUfsPsxc *InstancePtr,
 	InstancePtr->Config.RefPadClk = ConfigPtr->RefPadClk;
 	InstancePtr->Config.IsCacheCoherent = ConfigPtr->IsCacheCoherent;
 	InstancePtr->TestUnitRdyLun = XUFSPSXC_INVALID_LUN_ID;
+	InstancePtr->NumOfLuns = 0U;
 	InstancePtr->RxCTLECompValL0 = 0U;
 	InstancePtr->RxCTLECompValL1 = 0U;
 	InstancePtr->RxATTCompValL0 = 0U;
 	InstancePtr->RxATTCompValL1 = 0U;
-	(void)memset(&InstancePtr->LUNInfo, (s32)0, sizeof(XUfsPsxc_BLUNInfo) * 32U);
+	(void)memset((void *)InstancePtr->LUNInfo, (s32)0, sizeof(InstancePtr->LUNInfo));
 	(void)memset(&InstancePtr->CmdDesc, (s32)0, sizeof(XUfsPsxc_Xfer_CmdDesc));
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 	InstancePtr->DevBootEn = 0U;
@@ -83,12 +88,16 @@ void XUfsPsxc_CfgInitialize(XUfsPsxc *InstancePtr,
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Initializes the host controller and UFS device.
+*
 * Initializes the Host Controller and UFS device.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
 *
-* @return	XUFSPSXC_SUCCESS, XUFSPSXC_FAILURE, UIC Error Codes in xufspsxc.h file.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- XUFSPSXC_FAILURE if unsuccessful.
+*		- UIC error codes as defined in xufspsxc.h.
 *
 ******************************************************************************/
 u32 XUfsPsxc_Initialize(XUfsPsxc *InstancePtr)
@@ -107,6 +116,11 @@ u32 XUfsPsxc_Initialize(XUfsPsxc *InstancePtr)
 		goto ERROR;
 	}
 
+	Status = XUfsPsxc_SetbRefClkFreq(InstancePtr, &InstancePtr->CmdDesc);
+	if (Status != (u32)XUFSPSXC_SUCCESS) {
+		goto ERROR;
+	}
+
 	Status = XUfsPsxc_ReadDeviceInfo(InstancePtr, &InstancePtr->CmdDesc);
 	if (Status != (u32)XUFSPSXC_SUCCESS) {
 		goto ERROR;
@@ -121,14 +135,17 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Configures the UFS power mode.
+*
 * This API Configures the Power Mode.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	SpeedGear is the Power Mode value to be set.
-*           Refer XUFSPSXC_PWM_* XUFSPSXC_HS_* macros in xufspsxc.h file.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] SpeedGear Power Mode value to be set. Refer XUFSPSXC_PWM_*
+*   XUFSPSXC_HS_* macros in xufspsxc.h file.
 *
-* @return	XUFSPSXC_SUCCESS or ERROR_CODE.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
 *
 ******************************************************************************/
 u32 XUfsPsxc_ConfigureSpeedGear(XUfsPsxc *InstancePtr, u32 SpeedGear)
@@ -136,33 +153,25 @@ u32 XUfsPsxc_ConfigureSpeedGear(XUfsPsxc *InstancePtr, u32 SpeedGear)
 	volatile u32 Status = (u32)XUFSPSXC_FAILURE;
 	u32 TxTermCap;
 	u32 RxTermCap;
-	u32 TimeOut;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
 
-	if ((SpeedGear != XUFSPSXC_PWM_G1) && (SpeedGear != XUFSPSXC_PWM_G2) && (SpeedGear != XUFSPSXC_PWM_G3) &&
-			(SpeedGear != XUFSPSXC_PWM_G4) && (SpeedGear != XUFSPSXC_HS_G1) && (SpeedGear != XUFSPSXC_HS_G2) &&
-			(SpeedGear != XUFSPSXC_HS_G3) && (SpeedGear != XUFSPSXC_HS_G4) && (SpeedGear != XUFSPSXC_HS_G1_B) &&
-			(SpeedGear != XUFSPSXC_HS_G2_B) && (SpeedGear != XUFSPSXC_HS_G3_B) && (SpeedGear != XUFSPSXC_HS_G4_B)) {
+	if (!XUfsPsxc_IsValidSpeedGear(SpeedGear)) {
 		Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_GEAR_CFG;
 		goto ERROR;
 	}
 
-	if ((SpeedGear == XUFSPSXC_PWM_G1) || (SpeedGear == XUFSPSXC_PWM_G2) || (SpeedGear == XUFSPSXC_PWM_G3) ||
-			(SpeedGear == XUFSPSXC_PWM_G4)) {
-		TxTermCap = 0U;
-		RxTermCap = 0U;
-	} else {
+	if ((u8)(SpeedGear >> 8U) == XUFSPSXC_TX_RX_FAST) {
 		/* For High Speeds, Check if device is calibrated */
-		if (((InstancePtr->RxCTLECompValL0 == (u32)0x0U) || (InstancePtr->RxCTLECompValL0 == (u32)0xFFU))
-		    && ((InstancePtr->RxATTCompValL1 == (u32)0x0U) || (InstancePtr->RxATTCompValL1 == (u32)0xFFU))
-		    && ((InstancePtr->RxCTLECompValL0 == (u32)0x0U) || (InstancePtr->RxCTLECompValL0 == (u32)0xFFU))
-		    && ((InstancePtr->RxCTLECompValL1 == (u32)0x0U) || (InstancePtr->RxCTLECompValL1 == (u32)0xFFU))) {
+		if (XUfsPsxc_IsPhyUncalibrated(InstancePtr) != 0U) {
 			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_PHY_NOT_CALIBRATED;
 			goto ERROR;
 		}
 		TxTermCap = 1U;
 		RxTermCap = 1U;
+	} else {
+		TxTermCap = 0U;
+		RxTermCap = 0U;
 	}
 
 	Status = XUfsPsxc_ConfigureTxRxAttributes(InstancePtr, SpeedGear, RxTermCap, TxTermCap);
@@ -171,19 +180,7 @@ u32 XUfsPsxc_ConfigureSpeedGear(XUfsPsxc *InstancePtr, u32 SpeedGear)
 	}
 
 	/* Wait for Power Mode Status in IS */
-	TimeOut = 1000000;	/* One Second */
-	Status = Xil_WaitForEvent(InstancePtr->Config.BaseAddress + XUFSPSXC_IS, XUFSPSXC_IS_PWR_STS_MASK,
-						(u32)XUFSPSXC_IS_PWR_STS_MASK, TimeOut);
-	if (Status != (u32)XUFSPSXC_SUCCESS) {
-		Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_POWER_MODE_TIMEOUT;
-	} else {
-		TimeOut = 1000000;	/* One Second */
-		Status = Xil_WaitForEvent(InstancePtr->Config.BaseAddress + XUFSPSXC_HCS, XUFSPSXC_HCS_UPMCRS_MASK,
-								(u32)XUFSPSXC_PWR_MODE_VAL, TimeOut);
-		if (Status != (u32)XUFSPSXC_SUCCESS) {
-			Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_POWER_MODE_FAILURE;
-		}
-	}
+	Status = XUfsPsxc_WaitForPowerModeChange(InstancePtr);
 
 	XUfsPsxc_WriteReg(InstancePtr->Config.BaseAddress, XUFSPSXC_IS, XUFSPSXC_IS_PWR_STS_MASK);
 
@@ -198,12 +195,15 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Checks boot-enable and boot-LUN requirements.
+*
 * This API check boot requirements like BootEnable and bBootLunEn.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
 *
-* @return	XUFSPSXC_SUCCESS or ERROR_CODE.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
 *
 ******************************************************************************/
 u32 XUfsPsxc_CheckBootReq(XUfsPsxc *InstancePtr)
@@ -231,6 +231,11 @@ u32 XUfsPsxc_CheckBootReq(XUfsPsxc *InstancePtr)
 		BLunId = InstancePtr->BLunBLunId;
 	}
 
+	if (!XUfsPsxc_IsValidLun(InstancePtr, BLunId)) {
+		Status = ((u32)XUFSPSXC_DEVICE_CFG_ERROR << 8U) | (u32)XUFSPSXC_INVALID_BLUN;
+		goto ERROR;
+	}
+
 	if (InstancePtr->LUNInfo[BLunId].BootLunID == 0U) {
 		Status = ((u32)XUFSPSXC_DEVICE_CFG_ERROR << 8U) | (u32)XUFSPSXC_MISMATCH_BLUNEN_BLUNID;
 		goto ERROR;
@@ -252,13 +257,16 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Switches the active boot logical unit.
+*
 * This API switch the Boot-LU(1->2 or 2->1) by modifying the Attributes and
 * also set the block size to 4K if it is not 4K.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
 *
-* @return	XUFSPSXC_SUCCESS or ERROR_CODE.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- Error codes on failure.
 *
 ******************************************************************************/
 u32 XUfsPsxc_SwitchBootLUN(XUfsPsxc *InstancePtr)
@@ -273,14 +281,16 @@ u32 XUfsPsxc_SwitchBootLUN(XUfsPsxc *InstancePtr)
 	if (InstancePtr->BootLunEn == XUFSPSXC_BLUN_A) {
 		ReqBootLUNID = XUFSPSXC_BLUN_B;
 		BLunId = InstancePtr->BLunBLunId;
-		if (InstancePtr->LUNInfo[InstancePtr->BLunBLunId].BootLunID != XUFSPSXC_BLUN_B) {
+		if ((!XUfsPsxc_IsValidLun(InstancePtr, BLunId)) ||
+				(InstancePtr->LUNInfo[BLunId].BootLunID != XUFSPSXC_BLUN_B)) {
 			Status = (XUFSPSXC_DEVICE_CFG_ERROR << 8U) | XUFSPSXC_BLUNID2_NOT_CONFIGURED;
 			goto ERROR;
 		}
 	} else {
 		ReqBootLUNID = XUFSPSXC_BLUN_A;
 		BLunId = InstancePtr->BLunALunId;
-		if (InstancePtr->LUNInfo[InstancePtr->BLunALunId].BootLunID != XUFSPSXC_BLUN_A) {
+		if ((!XUfsPsxc_IsValidLun(InstancePtr, BLunId)) ||
+				(InstancePtr->LUNInfo[BLunId].BootLunID != XUFSPSXC_BLUN_A)) {
 			Status = (XUFSPSXC_DEVICE_CFG_ERROR << 8U) | XUFSPSXC_BLUNID1_NOT_CONFIGURED;
 			goto ERROR;
 		}
@@ -323,23 +333,27 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Reads data from the UFS device in polled mode.
+*
 * This API perform the data read from the UFS device.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	Lun is a Logical Unit Number.
-* @param	Address is the starting Logical Unit number.
-* @param	BlkCnt is the number of blocks to be read.
-* @param	Buff is a pointer to the destination data buffer.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] Lun Logical Unit Number.
+* @param[in] Address Starting Logical Unit number.
+* @param[in] BlkCnt Number of blocks to be read.
+* @param[out] Buff Pointer to the destination data buffer.
 *
-* @return	XUFSPSXC_SUCCESS, XUFSPSXC_FAILURE.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- XUFSPSXC_FAILURE if unsuccessful.
+*
+* @note		The controller writes the read data into Buff by DMA.
 *
 ******************************************************************************/
 u32 XUfsPsxc_ReadPolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt,
 								const u8 *Buff)
 {
 	volatile u32 Status = (u32)XUFSPSXC_FAILURE;
-	u32 TimeOut = 1000000U;		/* One Second */
 	u32 LunId;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -360,7 +374,7 @@ u32 XUfsPsxc_ReadPolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt,
 		LunId = Lun;
 	}
 
-	if (LunId == XUFSPSXC_INVALID_LUN_ID) {
+	if (!XUfsPsxc_IsValidLun(InstancePtr, LunId)) {
 		Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_LUNID;
 		goto ERROR;
 	}
@@ -371,22 +385,8 @@ u32 XUfsPsxc_ReadPolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt,
 	}
 
 	if (InstancePtr->TestUnitRdyLun != Lun) {
-		(void)memset((void *)&InstancePtr->CmdDesc, 0, sizeof(XUfsPsxc_Xfer_CmdDesc));
-		InstancePtr->CmdDesc.ReqUpiu.UpiuHeader.LUN = (u8)Lun;
-		XUfsPsxc_FillTestUnitRdyUpiu(InstancePtr, &InstancePtr->CmdDesc);
-		do {
-			Status = XUfsPsxc_ProcessUpiu(InstancePtr, &InstancePtr->CmdDesc);
-			if ((Status == (u32)XUFSPSXC_SUCCESS) &&
-					(InstancePtr->CmdDesc.RespUpiu.UpiuHeader.Status == XUFSPSXC_SCSI_GOOD)) {
-				break;
-			}
-
-			TimeOut = TimeOut - 1U;
-			usleep(1);
-		} while (TimeOut != 0U);
-
-		if (TimeOut == 0U) {
-			Status = ((u32)XUFSPSXC_CMD_TEST_UNIT_RDY_ERROR << 12U) | ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_FAILURE;
+		Status = XUfsPsxc_WaitTestUnitReady(InstancePtr, Lun);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
 			goto ERROR;
 		}
 
@@ -417,23 +417,25 @@ ERROR:
 
 /*****************************************************************************/
 /**
-* @brief
+* @brief Writes data to the UFS device in polled mode.
+*
 * This API perform the data Write to the UFS device.
 *
-* @param	InstancePtr is a pointer to the XUfsPsxc instance.
-* @param	Lun is a Logical Unit Number.
-* @param	Address is the starting Logical Unit number.
-* @param	BlkCnt is the number of blocks to be read.
-* @param	Buff is a pointer to the destination data buffer.
+* @param[in,out] InstancePtr Pointer to the XUfsPsxc instance.
+* @param[in] Lun Logical Unit Number.
+* @param[in] Address Starting Logical Unit number.
+* @param[in] BlkCnt Number of blocks to write.
+* @param[in] Buff Pointer to the source data buffer.
 *
-* @return	XUFSPSXC_SUCCESS, XUFSPSXC_FAILURE.
+* @return
+*		- XUFSPSXC_SUCCESS if successful.
+*		- XUFSPSXC_FAILURE if unsuccessful.
 *
 ******************************************************************************/
 u32 XUfsPsxc_WritePolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt,
 								const u8 *Buff)
 {
 	volatile u32 Status = XUFSPSXC_FAILURE;
-	u32 TimeOut = 1000000U;		/* One Second */
 	u32 LunId;
 
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -449,7 +451,7 @@ u32 XUfsPsxc_WritePolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt
 		LunId = Lun;
 	}
 
-	if (LunId == XUFSPSXC_INVALID_LUN_ID) {
+	if (!XUfsPsxc_IsValidLun(InstancePtr, LunId)) {
 		Status = ((u32)XUFSPSXC_GENERAL_ERROR << 8U) | (u32)XUFSPSXC_INVALID_LUNID;
 		goto ERROR;
 	}
@@ -460,22 +462,8 @@ u32 XUfsPsxc_WritePolled(XUfsPsxc *InstancePtr, u32 Lun, u64 Address, u32 BlkCnt
 	}
 
 	if (InstancePtr->TestUnitRdyLun != LunId) {
-		memset((void *)&InstancePtr->CmdDesc, 0, sizeof(XUfsPsxc_Xfer_CmdDesc));
-		InstancePtr->CmdDesc.ReqUpiu.UpiuHeader.LUN = LunId;
-		XUfsPsxc_FillTestUnitRdyUpiu(InstancePtr, &InstancePtr->CmdDesc);
-		do {
-			Status = XUfsPsxc_ProcessUpiu(InstancePtr, &InstancePtr->CmdDesc);
-			if ((Status == XUFSPSXC_SUCCESS) &&
-					(InstancePtr->CmdDesc.RespUpiu.UpiuHeader.Status == XUFSPSXC_SCSI_GOOD)) {
-				break;
-			}
-
-			TimeOut = TimeOut - 1U;
-			usleep(1);
-		} while (TimeOut != 0U);
-
-		if (TimeOut == 0U) {
-			Status = (XUFSPSXC_CMD_TEST_UNIT_RDY_ERROR << 12U) | (XUFSPSXC_GENERAL_ERROR << 8U) | XUFSPSXC_FAILURE;
+		Status = XUfsPsxc_WaitTestUnitReady(InstancePtr, LunId);
+		if (Status != (u32)XUFSPSXC_SUCCESS) {
 			goto ERROR;
 		}
 

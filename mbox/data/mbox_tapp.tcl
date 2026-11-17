@@ -9,7 +9,7 @@
 ## @BEGIN_CHANGELOG EDK_K_SP2
 ##
 ##  - Initial Revision
-##    
+##
 ## @END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -26,7 +26,7 @@
 
 proc gen_include_files {swproj mhsinst} {
    set inc_file_lines ""
-		
+
    if {$swproj == 0} {
       return ""
    }
@@ -62,31 +62,31 @@ proc gen_testfunc_call {swproj mhsinst} {
 
     set ipname [string toupper [common::get_property NAME $mhsinst]]
     set testfunc_call ""
-    
+
     if {$swproj == 0} {
-    	return $testfunc_call
+	return $testfunc_call
     }
 
     set numproc [::hsi::utils::get_procs]
     set numproc [llength $numproc]
-      
+
     if {$numproc == 1} {
-    	append testfunc_call "
+	append testfunc_call "
        /*
-      	* Peripheral SelfTest will not be run for ${ipname}
-      	* because design contains only one Processor.
-      	*/
+	* Peripheral SelfTest will not be run for ${ipname}
+	* because design contains only one Processor.
+	*/
     "
-     	return $testfunc_call
+	return $testfunc_call
     }
-    
+
     set deviceid "XPAR_${ipname}_TESTAPP_ID"
 
     append testfunc_call "
 
     {
         XStatus status;
-      
+
         print(\"\\r\\nRunning MailboxExample() for ${ipname}...\\r\\n\");
         status = MailboxExample(${deviceid});
         if (status == 0) {
@@ -99,4 +99,3 @@ proc gen_testfunc_call {swproj mhsinst} {
 
   return $testfunc_call
 }
-

@@ -21,13 +21,13 @@
 ##  - Added support for generation of multiple applications.
 ##    All TCL procedures are now required to have a software
 ##    project type as its first argument
-##    
+##
 ## @END_CHANGELOG
 
 ## @BEGIN_CHANGELOG EDK_M
 ##
 ##  - HAL phase 1 migration to use new test memory functions.
-##    
+##
 ## @END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -69,7 +69,7 @@ proc gen_testfunc_call {swproj mhsinst} {
   if {$swproj == 1} {
     return ""
   }
-  
+
   set ipname [common::get_property NAME $mhsinst]
   set stdout [common::get_property CONFIG.STDOUT [hsi::get_os]]
   if { $stdout == "" || $stdout == "none" } {
@@ -85,8 +85,8 @@ proc gen_testfunc_call {swproj mhsinst} {
     foreach progmem $prog_memranges {
       set baseaddrval [common::get_property CONFIG.${progmem} $mhsinst]
       append testfunc_call "
-   /* 
-    * MemoryTest routine will not be run for the memory at 
+   /*
+    * MemoryTest routine will not be run for the memory at
     * ${baseaddrval} (${ipname})
     * because it is being used to hold a part of this application program
     */
@@ -99,8 +99,8 @@ proc gen_testfunc_call {swproj mhsinst} {
     foreach romem $romemranges {
       set baseaddrval [common::get_property CONFIG.${romem} $mhsinst]
       append testfunc_call "
-   /* 
-    * MemoryTest routine will not be run for the memory at 
+   /*
+    * MemoryTest routine will not be run for the memory at
     * ${baseaddrval} (${ipname})
     * because it is a read-only memory
     */

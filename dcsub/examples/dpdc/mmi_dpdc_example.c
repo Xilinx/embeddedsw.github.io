@@ -29,6 +29,8 @@
 #include "xdcsub.h"
 #include "mmi_dpdc_menus.h"
 #include "mmi_dc_nonlive_test.h"
+#include "mmi_dpdc_platform.h"
+#include "mmi_dc_bypass_test.h"
 #if defined (XPAR_XVTC_NUM_INSTANCES)
 #include "mmi_dc_live_test.h"
 #include "mmi_dc_mixed_test.h"
@@ -56,6 +58,37 @@ u32 In_CSCOffset_YUV[] = { 0x0000, 0x1800, 0x1800 };
 /* RGB-to-YUV output conversion (SDTV BT.601) */
 u32 Out_CSCCoeff_YUV[] = { 0x04C8, 0x0964, 0x01D3, 0x7D4C, 0x7AB4, 0x0800, 0x0800, 0x7945, 0x7EB5 };
 u32 Out_CSCOffset_YUV[] = { 0x0000, 0x0800, 0x0800 };
+
+/* Audio sample rates in Hz, indexed by XDc_AudSampleFreq */
+static const u32 XDpDc_AudSampleRateHz[XDC_AUD_FREQ_192K + 1] = {
+    [XDC_AUD_FREQ_44_1K]  = XDPDC_AUD_RATE_44_1K_HZ,
+    [XDC_AUD_FREQ_48K]    = XDPDC_AUD_RATE_48K_HZ,
+    [XDC_AUD_FREQ_88_2K]  = XDPDC_AUD_RATE_88_2K_HZ,
+    [XDC_AUD_FREQ_96K]    = XDPDC_AUD_RATE_96K_HZ,
+    [XDC_AUD_FREQ_176_4K] = XDPDC_AUD_RATE_176_4K_HZ,
+    [XDC_AUD_FREQ_192K]   = XDPDC_AUD_RATE_192K_HZ,
+};
+
+/*****************************************************************************/
+/**
+*
+* This function returns the audio sample rate in Hz for a sample frequency
+* selector.
+*
+* @param    AudioFrequency is the sample frequency selector.
+*
+* @return   Sample rate in Hz, or XDPDC_AUD_RATE_UNSUPPORTED_HZ if the
+*           selector is not supported.
+*
+******************************************************************************/
+u32 XDpDc_GetAudSampleRateHz(u8 AudioFrequency)
+{
+    if (AudioFrequency > (u8)XDCSUB_AUDIO_FREQ_MAX) {
+        return XDPDC_AUD_RATE_UNSUPPORTED_HZ;
+    }
+
+    return XDpDc_AudSampleRateHz[AudioFrequency];
+}
 
 /*****************************************************************************/
 /**
@@ -91,7 +124,6 @@ static const char* format_to_string(XDc_VideoFormat format)
         /* RGB 8-bit */
         case RGB888: return "RGB888";
         case RGB565: return "RGB565";
-        case RGB888_GFX: return "RGB888_GFX";
         case RGB888dc: return "RGB888dc";
 
         /* RGBA 8-bit */
@@ -233,12 +265,12 @@ static XDc_VideoFormat MapFormat(u32 format)
 * @param    userConfig - User configuration from menu
 * @param    runConfig - Platform RunConfig structure
 *
-* @return   None
+* @return   XST_SUCCESS if configuration is valid, XST_FAILURE otherwise.
 *
 * @note     None
 *
 ******************************************************************************/
-static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfig)
+static u32 XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfig)
 {
     u32 idx;
 
@@ -254,6 +286,11 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
     runConfig->livevideoalphaen = userConfig->livevideoalphaen;
     runConfig->livevideosdpen = userConfig->livevideosdpen;
     runConfig->byp_streams = userConfig->byp_streams;
+    runConfig->DesignMstEn = userConfig->design_mst_en;
+    runConfig->MstMode = 0U;
+
+    if (!runConfig->DesignMstEn)
+        runConfig->byp_streams = 1U;
 
     for (idx = 0; idx < 4; idx++) {
         runConfig->avpg[idx].bpc = userConfig->avpg[idx].bpc;
@@ -263,16 +300,27 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
         runConfig->avpg[idx].colorimetry = userConfig->avpg[idx].colorimetry;
     }
 
+    if (runConfig->operatingmode == XDCSUB_OPMODE_BYPASS) {
+        for (idx = 0; idx < 4; idx++) {
+            u8 ppc = XDpDc_BypassPpcFromXsa((u8)idx);
+
+            runConfig->avpg[idx].ppc = (ppc == 4U) ? 1U : 0U;
+        }
+        runConfig->PPC = XDpDc_BypassPpcFromXsa(0U);
+    }
+
     /* Resolve standard video mode and pixel clock */
     runConfig->VideoMode = XVidC_GetVideoModeId(
         userConfig->width, userConfig->height,
         userConfig->frame_rate, FALSE);
-    if (runConfig->VideoMode == XVIDC_VM_NUM_SUPPORTED) {
-        xil_printf("WARNING: No standard mode for %dx%d@%dHz, "
-                   "defaulting to 640x480@60\r\n",
+    if (runConfig->VideoMode == XVIDC_VM_NOT_SUPPORTED) {
+        xil_printf("ERROR: Unsupported timing mode %dx%d@%dHz\r\n",
                    userConfig->width, userConfig->height,
                    userConfig->frame_rate);
-        runConfig->VideoMode = XVIDC_VM_640x480_60_P;
+        if (userConfig->width == 640U && userConfig->height == 480U)
+            xil_printf("       640x480 supports 60/72/75/85 Hz only\r\n");
+        xil_printf("Exiting application.\r\n");
+        return XST_FAILURE;
     }
     runConfig->PixelClkHz = XVidC_GetPixelClockHzByVmId(runConfig->VideoMode);
     xil_printf("VideoMode:              %s\r\n",
@@ -298,6 +346,12 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
           runConfig->CursorCoordY = userConfig->cursor_coord_y;
           runConfig->CursorSizeX = userConfig->cursor_size_x;
           runConfig->CursorSizeY = userConfig->cursor_size_y;
+
+          /*
+           * DC nonlive path programs full H/V timing and full pixel clock;
+           * DC->DP interface is 1 pixel/clock. Match DP Tx PixModeSel.
+           */
+          runConfig->PPC = 1U;
         }
 
         if (runConfig->presentationmode == XDCSUB_PPTMODE_MIXED) {
@@ -333,7 +387,27 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
     /* Set audio enable */
     runConfig->AudioEnable = userConfig->audio_enable ? XDC_AUD_ENABLE : XDC_AUD_DISABLE;
     runConfig->AudioChannels = userConfig->audio_enable ?
-                               userConfig->audio_channels : 0;
+                               userConfig->audio_channels : XDPDC_AUD_CHANNELS_NONE;
+    runConfig->AudioFrequency = userConfig->audio_frequency;
+
+    if ((runConfig->AudioEnable == XDC_AUD_ENABLE) &&
+        ((runConfig->AudioChannels < XDCSUB_AUDIO_CHANNELS_MIN) ||
+         (runConfig->AudioChannels > XDCSUB_AUDIO_CHANNELS_MAX))) {
+        xil_printf("ERROR: Unsupported audio channel count %d. Select %d to %d "
+                   "channels. Disabling audio.\r\n", runConfig->AudioChannels,
+                   XDCSUB_AUDIO_CHANNELS_MIN, XDCSUB_AUDIO_CHANNELS_MAX);
+        runConfig->AudioEnable = XDC_AUD_DISABLE;
+        runConfig->AudioChannels = XDPDC_AUD_CHANNELS_NONE;
+    }
+
+    if ((runConfig->AudioEnable == XDC_AUD_ENABLE) &&
+        (runConfig->AudioFrequency > (u8)XDCSUB_AUDIO_FREQ_MAX)) {
+        xil_printf("ERROR: Unsupported audio sample frequency %d. Select a "
+                   "frequency from the audio menu. Disabling audio.\r\n",
+                   runConfig->AudioFrequency);
+        runConfig->AudioEnable = XDC_AUD_DISABLE;
+        runConfig->AudioChannels = XDPDC_AUD_CHANNELS_NONE;
+    }
 
     /* Set SDP enable */
     runConfig->SdpEnable = userConfig->sdp_enable ? 1U : 0U;
@@ -369,6 +443,8 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
             xil_printf("  CursorSize:           %d x %d\r\n",
                        runConfig->CursorSizeX, runConfig->CursorSizeY);
         }
+        xil_printf("PPC (DP output):        %u (single pixel)\r\n",
+                   runConfig->PPC);
     }
 
 #if defined (XPAR_XVTC_NUM_INSTANCES)
@@ -396,12 +472,19 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
     xil_printf("OutStreamFormat:        %s (%d)\r\n", format_to_string(runConfig->OutStreamFormat), runConfig->OutStreamFormat);
     xil_printf("AudioEnable:            %s\r\n", runConfig->AudioEnable ? "ENABLED" : "DISABLED");
     if (runConfig->AudioEnable) {
+        u32 audioRateHz = XDpDc_GetAudSampleRateHz(runConfig->AudioFrequency);
+
         xil_printf("AudioChannels:          %d\r\n", runConfig->AudioChannels);
+        xil_printf("AudioFrequency:         %d.%d kHz\r\n",
+                   audioRateHz / XDPDC_HZ_PER_KHZ,
+                   (audioRateHz % XDPDC_HZ_PER_KHZ) / XDPDC_HZ_PER_TENTH_KHZ);
     }
     xil_printf("SdpEnable:              %s\r\n", runConfig->SdpEnable ? "ENABLED" : "DISABLED");
     xil_printf("Stream1 PartialBlend:   %s\r\n", runConfig->Stream1PbEnable == PB_ENABLE ? "ENABLED" : "DISABLED");
     xil_printf("Stream2 PartialBlend:   %s\r\n", runConfig->Stream2PbEnable == PB_ENABLE ? "ENABLED" : "DISABLED");
     xil_printf("=========================================\r\n\r\n");
+
+    return XST_SUCCESS;
 }
 
 /*****************************************************************************/
@@ -417,7 +500,7 @@ static void XDpDc_ApplyUserConfig(InitRunConfig *userConfig, RunConfig *runConfi
 int main(void)
 {
     InitRunConfig userConfig;
-    u32 Status;
+    u32 Status = XST_FAILURE;
 
     /* Disable caches */
     Xil_DCacheDisable();
@@ -440,10 +523,17 @@ restart:
     xil_printf("\r\n=== Starting Platform Initialization ===\r\n");
 
     /* Apply user configuration to platform RunConfig */
-    XDpDc_ApplyUserConfig(&userConfig, &RunCfg);
+    Status = XDpDc_ApplyUserConfig(&userConfig, &RunCfg);
+    if (Status != XST_SUCCESS)
+        return 0;
+
+    XDpDc_Warn8kRgbIfNeeded(&userConfig);
 
     /* Bandwidth check when link params are explicitly set (non-auto) */
-    if (userConfig.lane_count && userConfig.link_rate) {
+    if (userConfig.lane_count && userConfig.link_rate &&
+        !(RunCfg.operatingmode == XDCSUB_OPMODE_BYPASS &&
+          RunCfg.Width == APP_BYPASS_8K_WIDTH &&
+          RunCfg.Height == APP_BYPASS_8K_HEIGHT)) {
         const XDc_VideoAttribute *OutVidAttr;
         u32 bpp;
         u64 pixel_bw_kbps, link_bw_kbps;
@@ -502,6 +592,15 @@ restart:
         xil_printf("==================================================\r\n");
     }
 
+    /*
+     * The DC is configured in block reset. The HPD handler releases it
+     * after DP link training.
+     */
+    if (XDpDc_AssertDcReset() != XST_SUCCESS) {
+        xil_printf("  ERROR: Failed to assert DC block reset\r\n");
+        goto restart;
+    }
+
     if (RunCfg.operatingmode == XDCSUB_OPMODE_FUNCTIONAL) {
         if (RunCfg.presentationmode == XDCSUB_PPTMODE_NONLIVE)
             Status = XDpDc_MmiDcNonliveTest(&RunCfg);
@@ -516,6 +615,12 @@ restart:
             xil_printf("Invalid presentation mode!\r\n");
         }
     }
+
+#if defined (XPAR_XVTC_NUM_INSTANCES)
+    if (RunCfg.operatingmode == XDCSUB_OPMODE_BYPASS) {
+        Status = XDpDc_MmiDcBypassTest(&RunCfg);
+    }
+#endif
 
     if (Status != XST_SUCCESS) {
         xil_printf(
@@ -539,6 +644,14 @@ restart:
             xil_printf("MMI_DC_MIXED_TEST\r\n");
 #endif
     }
+#if defined (XPAR_XVTC_NUM_INSTANCES)
+    if (RunCfg.operatingmode == XDCSUB_OPMODE_BYPASS) {
+        if (RunCfg.DesignMstEn)
+            xil_printf("MMI_DC_BYPASS_MST_TEST\r\n");
+        else
+            xil_printf("MMI_DC_BYPASS_SST_TEST\r\n");
+    }
+#endif
 
     xil_printf("\r\n");
     xil_printf("==================================================\r\n");

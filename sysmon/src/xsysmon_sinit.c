@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,13 +8,11 @@
 /**
 *
 * @file xsysmon_sinit.c
-* @addtogroup Overview
-* @{
+*
+* @brief Implements the static initialization functionality for the driver.
 *
 * This file contains the implementation of the XSysMon driver's static
 * initialization functionality.
-*
-* @note	None.
 *
 * <pre>
 *
@@ -24,10 +22,15 @@
 * ----- -----  -------- -----------------------------------------------------
 * 1.00a xd/sv  05/22/07 First release
 * 7.8   cog    07/20/23 Added support for SDT flow
+* 8.1   vn     09/29/26 Align Doxygen comments with AMD standards
 *
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -42,23 +45,30 @@
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
+
+/**
+ * @brief Configuration table for each System Monitor/ADC device in the system.
+ */
 extern XSysMon_Config XSysMon_ConfigTable[];
 
 /*****************************************************************************/
 /**
 *
-* This function looks up the device configuration based on the unique device ID.
+* @brief Looks up the device configuration based on the unique device ID.
+*
 * The table XSysMon_ConfigTable contains the configuration info for each device
 * in the system.
 *
-* @param	DeviceId contains the ID of the device for which the
-*		device configuration pointer is to be returned.
+* @if SDT
+* @param[in]   BaseAddress Base address of the device.
+* @else
+* @param[in]   DeviceId ID of the device for which the
+*              device configuration pointer is to be returned.
+* @endif
 *
 * @return
-*		- A pointer to the configuration found.
-*		- NULL if the specified device ID was not found.
-*
-* @note		None.
+*              - A pointer to the configuration found.
+*              - NULL if the specified device ID was not found.
 *
 ******************************************************************************/
 #ifndef SDT

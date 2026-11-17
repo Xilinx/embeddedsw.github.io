@@ -71,6 +71,11 @@ volatile u8 prev_line_rate; 		/* This previous line rate to keep
 
 extern XVphy VPhyInst; 	/* The DPRX Subsystem instance.*/
 // extern XVphy_User_Config PHY_User_Config_Table[];
+
+/* VSC SDP colorimetry / static-HDR pass-through (defined in passthrough.c) */
+extern XDp_TxVscExtPacket ExtFrame_tx_vsc;
+extern u8 use_vsc;
+
 /************************** Variable Definitions *****************************/
 #define DPCD_TEST_CRC_R_Cr   0x240
 #define DPCD_TEST_SINK_MISC  0x246
@@ -667,8 +672,10 @@ void DpPt_HpdPulseHandler(void *InstancePtr)
 // Some monitors give HPD pulse repeatedly which causes HPD pulse function to
 //		be executed a huge number of times. Hence hpd_pulse interrupt is disabled
 //		and then enabled when hpd_pulse function is executed
+	/* 0x10 = HPD_PULSE masked (handled below); 0x20 = EXT_PKT_TXD kept
+	 * masked to avoid the VSC extended-packet interrupt storm. */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-		     XDP_TX_INTERRUPT_MASK, 0xFFFFF010);
+		     XDP_TX_INTERRUPT_MASK, 0xFFFFF030);
 		    //  XDP_TX_INTERRUPT_MASK_HPD_PULSE_DETECTED_MASK);
 	hpd_pulse_con_event = 1;
 	xil_printf ("HPD Pulse..\r\n");
@@ -938,11 +945,12 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, XDpTxSs_MainStreamAttributes Msa[4])
 		DpTxSubsystem_Start(&DpTxSsInst, Msa);
 	}
 
-	/* Mask unused interrupts
-	 *
+	/* Mask unused interrupts.
+	 * Bit5 (0x20) = EXT_PKT_TXD kept masked to avoid the VSC extended-packet
+	 * interrupt storm (static VSC SDP, no per-packet servicing needed).
 	 */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-			XDP_TX_INTERRUPT_MASK, 0xFFFFF000);
+			XDP_TX_INTERRUPT_MASK, 0xFFFFF020);
 }
 
 
@@ -1004,8 +1012,19 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 	usleep(100000);
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr, XDP_TX_ENABLE, 0x1);
 
-	xil_printf("\r\nTraining TX with: Link rate %x, Lane %d, BPC %d\r\n",
-		   line_rate,lane_count, bpc);
+	/*
+	 * DP TX supports sending colorimetry info over the VSC extended SDP.
+	 * If VSC information is to be sent, the TX has to be configured for VSC
+	 * mode before the training is started. The entire packet (captured from
+	 * the RX during pass-through) is provided here; BPC / VideoMode / dynamic
+	 * range / colorimetry are extracted by the driver from the packet
+	 * contents. This carries the colorimetry needed for static-HDR content.
+	 */
+	XDpTxss_EnableVscColorimetry(&DpTxSsInst, XDP_TX_STREAM_ID1, use_vsc);
+	XDpTxSs_SetVscExtendedPacket(&DpTxSsInst, XDP_TX_STREAM_ID1, ExtFrame_tx_vsc);
+
+	xil_printf("\r\nTraining TX with: Link rate %x, Lane %d, BPC %d, (VSC %d)\r\n",
+		   line_rate,lane_count, bpc, use_vsc);
 
 	Status = XDpTxSs_SetLinkRate(&DpTxSsInst, line_rate);
 	if(Status != XST_SUCCESS){
@@ -1042,6 +1061,9 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 		format = XVIDC_CSF_YCRCB_422;
 	}else if(format == 2){
 		format = XVIDC_CSF_YCRCB_444;
+	}else if(format == 3){
+		/* ComponentFormat 0x3 == YCbCr 4:2:0 (carried over VSC SDP) */
+		format = XVIDC_CSF_YCRCB_420;
 	}
 	XDp_TxCfgSetColorEncode(DpTxSsInst.DpPtr, XDP_TX_STREAM_ID1, \
 				format, XVIDC_BT_601, XDP_DR_VESA);
@@ -1089,11 +1111,17 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 			return (XST_FAILURE);
 		}
 	}
-	/* Mask unused interrupts
-	 *
+	/*
+	 * Mask unused interrupts.
+	 * Bit5 (0x20) = EXT_PKT_TXD: keep this MASKED. The VSC extended SDP
+	 * (used for YUV420 colorimetry) is a static packet programmed once via
+	 * XDpTxSs_SetVscExtendedPacket and re-sent by hardware every frame.
+	 * Leaving EXT_PKT_TXD unmasked causes a continuous interrupt storm
+	 * (the "ready for new packet" status is never cleared), which starves
+	 * the foreground and hangs the app after training.
 	 */
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
-			XDP_TX_INTERRUPT_MASK, 0xFFFFF000);
+			XDP_TX_INTERRUPT_MASK, 0xFFFFF020);
 
 	vsync_counter = 0;
 
@@ -1133,21 +1161,13 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 *
 ******************************************************************************/
 static void clk_wiz_locked(void) {
-#ifndef SDT
-	volatile u32 res = XDp_ReadReg(XPAR_GPIO_0_BASEADDR,0x0);
-#else
 volatile u32 res = XDp_ReadReg(XPAR_XGPIO_0_BASEADDR,0x0);
 
-#endif
 	u32 timer=0;
 
 	while(res == 0 && timer < 1000) {
 //		xil_printf ("~/~/");
-#ifndef SDT
-		res = XDp_ReadReg(XPAR_GPIO_0_BASEADDR,0x0);
-#else
 		res = XDp_ReadReg(XPAR_XGPIO_0_BASEADDR,0x0);
-#endif
 		timer++; // timer for timeout. No need to be specific time.
 					// As long as long enough to wait lock
 	}

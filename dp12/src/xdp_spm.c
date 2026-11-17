@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -415,6 +415,19 @@ void XDp_TxCfgMsaUseEdidPreferredTiming(XDp *InstancePtr, u8 Stream, u8 *Edid)
 					MsaConfig->Vtm.Timing.VActive +
 					MsaConfig->Vtm.Timing.F0PVBackPorch);
 
+	if ((MsaConfig->Vtm.Timing.HTotal == 0) ||
+			(MsaConfig->Vtm.Timing.F0PVTotal == 0)) {
+		/* Malformed/zeroed EDID PTM would divide by zero; fall back to
+		 * a safe default video mode instead. */
+		memcpy(&MsaConfig->Vtm,
+			XVidC_GetVideoModeData(XVIDC_VM_640x480_60_P),
+			sizeof(XVidC_VideoTimingMode));
+		MsaConfig->PixelClockHz =
+				XVidC_GetPixelClockHzByVmId(MsaConfig->Vtm.VmId);
+		XDp_TxCfgMsaRecalculate(InstancePtr, Stream);
+		return;
+	}
+
 	MsaConfig->Vtm.FrameRate = MsaConfig->PixelClockHz /
 					(MsaConfig->Vtm.Timing.HTotal *
 					MsaConfig->Vtm.Timing.F0PVTotal);
@@ -814,11 +827,7 @@ void XDp_TxClearMsaValues(XDp *InstancePtr, u8 Stream)
 *******************************************************************************/
 void XDp_TxOverrideSyncPolarity(XDp *InstancePtr, u8 Stream)
 {
-	XDp_Config *ConfigPtr;
 	XDp_TxMainStreamAttributes *MsaConfig;
-	u32 StreamOffset[4] = {0, XDP_TX_STREAM2_MSA_START_OFFSET,
-					XDP_TX_STREAM3_MSA_START_OFFSET,
-					XDP_TX_STREAM4_MSA_START_OFFSET};
 	/* Verify arguments. */
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);

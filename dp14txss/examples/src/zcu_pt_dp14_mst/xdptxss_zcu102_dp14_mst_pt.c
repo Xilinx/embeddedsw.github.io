@@ -41,9 +41,15 @@
 ******************************************************************************/
 
 #include "xdptxss_zcu102_mst_pt.h"
-#ifdef SDT
 #include "xinterrupt_wrap.h"
-#endif
+
+/* Prototypes for functions defined in other source files of this example */
+void operationMenu(void);
+extern void Gen_vid_clk(XDp *InstancePtr, u8 Stream);
+int XDpRxSs_MCDP6000_EnablePrbs7_Rx(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
+int XDpRxSs_MCDP6000_DisablePrbs7_Rx(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
+int XDpRxSs_MCDP6000_ClearCounter(XDpRxSs *DpRxSsPtr, u8 I2CSlaveAddress);
+static u8 CalculateChecksum(u8 *Data, u8 Size);
 
 #define I2C_MUX_device_address 0x74
 #define Si570_device_address 0x5D
@@ -61,10 +67,8 @@ XV_axi4s_remap_Config   *tx_remap_Config;
 XV_axi4s_remap          tx_remap;
 #endif
 
-#ifdef SDT
 #define INTRNAME_DPTX   0
 #define INTRNAME_DPRX   0
-#endif
 /************************** Function Prototypes ******************************/
 
 u32 DpMST_Main(void);
@@ -256,17 +260,13 @@ u32 DpMST_Main()
 {
 	u32 Status;
 	u8 UserInput;
-	u8 LineRate_init_tx = XDP_TX_LINK_BW_SET_540GBPS;
-
-
-	u8 connected = 0;
-
 
 	user_config_struct user_config;
 	user_config.user_bpc = 8;
 	user_config.VideoMode_local = XVIDC_VM_800x600_60_P;
 	user_config.user_pattern = 1; /*Color Ramp (Default)*/
 	user_config.user_format = XVIDC_CSF_RGB;
+	(void)user_config;
 
 	Xil_Out32(HLS_RST_BASE, 0x3);
 	Xil_Out32(TX_AUD_RST_BASE, 0x1);
@@ -308,10 +308,6 @@ u32 DpMST_Main()
     xil_printf ("used for this example application demo !!! \r\n");
 
     operationMenu();
-#ifndef SDT
-    XScuGic_Disable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
-    XScuGic_Disable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-#endif
 
 	while (1) { // for menu loop
 		UserInput = XUartPs_RecvByte_NonBlocking();
@@ -366,11 +362,7 @@ u32 DpMST_PlatformInit(void)
 	u8 LineRate_init = XDP_TX_LINK_BW_SET_540GBPS;
 
 	// Initialize timer.
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_TMRCTR_0_DEVICE_ID);
-#else
 	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_XTMRCTR_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS){
 		xil_printf("ERR:Timer failed to initialize. \r\n");
 		return XST_FAILURE;
@@ -383,11 +375,7 @@ u32 DpMST_PlatformInit(void)
     /*
      * Initialize the IIC driver so that it is ready to use.
      */
-#ifndef SDT
-    ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
     ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
-#endif
     if (ConfigPtr_IIC == NULL) {
             return XST_FAILURE;
     }
@@ -397,11 +385,7 @@ u32 DpMST_PlatformInit(void)
     if (Status != XST_SUCCESS) {
             return XST_FAILURE;
     }
-#ifndef SDT
-    XAxis_Switch_Config *ConfigPtr_AXIS_SWITCH = XAxisScr_LookupConfig(XPAR_DP_RX_HIER_0_AXIS_SWITCH_0_DEVICE_ID);
-#else
     XAxis_Switch_Config *ConfigPtr_AXIS_SWITCH = XAxisScr_LookupConfig(XPAR_XAXIS_SWITCH_0_BASEADDR);
-#endif
      if (ConfigPtr_AXIS_SWITCH == NULL) {
              return XST_FAILURE;
      }
@@ -445,21 +429,6 @@ u32 DpMST_PlatformInit(void)
 #endif
 //    XVidFrameCrc_Initialize(&VidFrameCRC);
 	/* FrameBuffer initialization. */
-#ifndef SDT
-	Status = XVFrmbufRd_Initialize(&frmbufrd, FRMBUF_RD_DEVICE_ID);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Frame Buffer Read "
-			   "initialization failed\r\n");
-		return (XST_FAILURE);
-	}
-
-	Status = XVFrmbufWr_Initialize(&frmbufwr, FRMBUF_WR_DEVICE_ID);
-	if(Status != XST_SUCCESS) {
-		xil_printf("ERROR:: Frame Buffer Write "
-			   "initialization failed\r\n");
-		return (XST_FAILURE);
-	}
-#else
 	Status = XVFrmbufRd_Initialize(&frmbufrd, XPAR_XV_FRMBUF_RD_0_BASEADDR);
 	if (Status != XST_SUCCESS) {
 		xil_printf("ERROR:: Frame Buffer Read "
@@ -473,7 +442,6 @@ u32 DpMST_PlatformInit(void)
 			   "initialization failed\r\n");
 		return (XST_FAILURE);
 	}
-#endif
 	resetIp_wr();
 	resetIp_rd();
 
@@ -487,17 +455,9 @@ u32 DpMST_PlatformInit(void)
 	i2c_write_dp141(XPAR_IIC_0_BASEADDR, I2C_TI_DP141_ADDR, 0x0B, 0x78);
 
 	/* Setup Video Phy, left to the user for implementation */
-#ifndef SDT
-	DpTxSs_VideoPhyInit(XVPHY_DEVICE_ID);
-#else
 	DpTxSs_VideoPhyInit(XPAR_XVPHY_0_BASEADDR);
-#endif
 	/* Obtain the device configuration for the DisplayPort TX Subsystem */
-#ifndef SDT
-	ConfigPtr = XDpTxSs_LookupConfig(XDPTXSS_DEVICE_ID);
-#else
 	ConfigPtr = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -541,11 +501,7 @@ u32 DpMST_PlatformInit(void)
 
 	/* Obtain the device configuration
 	 * for the DisplayPort RX Subsystem */
-#ifndef SDT
-	ConfigPtr_rx = XDpRxSs_LookupConfig (XDPRXSS_DEVICE_ID);
-#else
 	ConfigPtr_rx = XDpRxSs_LookupConfig (XPAR_DPRXSS_0_BASEADDR);
-#endif
 	if (!ConfigPtr_rx) {
 			return XST_FAILURE;
 	}
@@ -569,7 +525,7 @@ u32 DpMST_PlatformInit(void)
 	Status = XDpRxSs_Start(&DpRxSsInst);
 	if (Status != XST_SUCCESS) {
 		 xil_printf("ERR:DPRX SS start failed\n\r");
-		 return;
+		 return XST_FAILURE;
 	}
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_LINK_ENABLE, 0x0);
 
@@ -609,7 +565,6 @@ u32 DpMST_PlatformInit(void)
 u32 Dp_SetupIntrSystem(void)
 {
 	u32 Status;
-	XINTC *IntcInstPtr = &IntcInst;
 
 	/* Set custom timer wait */
 	XDpTxSs_SetUserTimerHandler(&DpTxSsInst, &DpPt_CustomWaitUs, &TmrCtr);
@@ -727,71 +682,6 @@ u32 Dp_SetupIntrSystem(void)
 
 	XVFrmbufWr_SetCallback(&frmbufwr, XVFRMBUFWR_HANDLER_DONE,
 			            bufferWr_callback, &frmbufwr);
-#ifndef SDT
-	/* The configuration parameters of the interrupt controller */
-	XScuGic_Config *IntcConfig;
-
-	/* Initialize the interrupt controller driver so that it is ready to
-	 * use.
-	 */
-	IntcConfig = XScuGic_LookupConfig(XINTC_DEVICE_ID);
-	if (NULL == IntcConfig) {
-		return XST_FAILURE;
-	}
-
-	Status = XScuGic_CfgInitialize(IntcInstPtr, IntcConfig,
-				IntcConfig->CpuBaseAddress);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-	/* Connect the device driver handler that will be called when an
-	 * interrupt for the device occurs, the handler defined above performs
-	 * the specific interrupt processing for the device
-	 */
-	Status = XScuGic_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-			(Xil_InterruptHandler)XDpTxSs_DpIntrHandler,
-				&DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-
-	/* Enable the interrupt */
-	XScuGic_Enable(IntcInstPtr,	XINTC_DPTXSS_DP_INTERRUPT_ID);
-
-    Status = XScuGic_Connect(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID,
-                            (Xil_InterruptHandler)XDpRxSs_DpIntrHandler,
-                            &DpRxSsInst);
-    if (Status != XST_SUCCESS) {
-            xil_printf("ERR: DP RX SS DP interrupt connect failed!\n\r");
-            return XST_FAILURE;
-    }
-    /* Enable the interrupt for the DP device */
-    XScuGic_Enable(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID);
-
-	Status = XScuGic_Connect(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID,
-				 (Xil_InterruptHandler)XVFrmbufWr_InterruptHandler,
-				 &frmbufwr);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERROR:: FRMBUF WR interrupt connect failed!\r\n");
-		return XST_FAILURE;
-	}
-	/* Enable the interrupt vector at the interrupt controller */
-	XScuGic_Enable(IntcInstPtr, XPAR_FABRIC_V_FRMBUF_WR_0_VEC_ID);
-
-	/* Initialize the exception table. */
-	Xil_ExceptionInit();
-
-	/* Register the interrupt controller handler with the exception
-	 * table.
-	 */
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XINTC_HANDLER, IntcInstPtr);
-
-	/* Enable exceptions. */
-	Xil_ExceptionEnable();
-#else
 	Status = XSetupInterruptSystem(&DpTxSsInst, (Xil_InterruptHandler)XDpTxSs_DpIntrHandler,
 				       DpTxSsInst.Config.IntrId[INTRNAME_DPTX],
 				       DpTxSsInst.Config.IntrParent,
@@ -819,7 +709,6 @@ u32 Dp_SetupIntrSystem(void)
 		return XST_FAILURE;
 	}
 
-#endif
 	return (XST_SUCCESS);
 }
 
@@ -838,6 +727,7 @@ u32 Dp_SetupIntrSystem(void)
 ******************************************************************************/
 void DpRxSs_VmChangeEventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -855,6 +745,7 @@ void DpRxSs_VmChangeEventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VmChange2EventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -872,6 +763,7 @@ void DpRxSs_VmChange2EventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VmChange3EventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -889,6 +781,7 @@ void DpRxSs_VmChange3EventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VmChange4EventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 /*****************************************************************************/
 /**
@@ -905,6 +798,7 @@ void DpRxSs_VmChange4EventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_PowerChangeHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -923,6 +817,7 @@ void DpRxSs_PowerChangeHandler(void *InstancePtr)
 
 void DpRxSs_NoVideoHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 #if USE_NO_VIDEO
 
         DpRxSsInst.VBlankCount = 0;
@@ -956,6 +851,7 @@ void DpRxSs_NoVideoHandler(void *InstancePtr)
 
 void DpRxSs_NoVideo2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -973,6 +869,7 @@ void DpRxSs_NoVideo2Handler(void *InstancePtr)
 
 void DpRxSs_NoVideo3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -990,6 +887,7 @@ void DpRxSs_NoVideo3Handler(void *InstancePtr)
 
 void DpRxSs_NoVideo4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -1007,21 +905,25 @@ void DpRxSs_NoVideo4Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VerticalBlankHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         DpRxSsInst.VBlankCount++;
 }
 
 void DpRxSs_VerticalBlank1Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
         DpRxSsInst.VBlankCount++;
 }
 
 void DpRxSs_VerticalBlank2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
         DpRxSsInst.VBlankCount++;
 }
 
 void DpRxSs_VerticalBlank3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
         DpRxSsInst.VBlankCount++;
 }
 
@@ -1046,6 +948,7 @@ u8 aud_info_rcvd = 0;
 
 void DpRxSs_TrainingLostHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         XDp_RxGenerateHpdInterrupt(DpRxSsInst.DpPtr, 750);
         XDpRxSs_AudioDisable(&DpRxSsInst);
     	XDp_RxDtgDis(DpRxSsInst.DpPtr);
@@ -1078,6 +981,7 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_VideoHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1096,6 +1000,7 @@ void DpRxSs_VideoHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_Video2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1114,6 +1019,7 @@ void DpRxSs_Video2Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_Video3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1132,6 +1038,7 @@ void DpRxSs_Video3Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_Video4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 /*****************************************************************************/
@@ -1149,8 +1056,7 @@ void DpRxSs_Video4Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_TrainingDoneHandler(void *InstancePtr)
 {
-	    u32 LaneCount, LineRate;
-	    u32 training_done_lane01, training_done_lane23;
+	(void)InstancePtr;
         DpRxSsInst.link_up_trigger = 1;
         DpRxSsInst.VBlankCount = 0;
         XDp_RxInterruptDisable(DpRxSsInst.DpPtr, XDP_RX_INTERRUPT_MASK_DOWN_REPLY_MASK);
@@ -1172,6 +1078,7 @@ void DpRxSs_TrainingDoneHandler(void *InstancePtr)
 
 void DpRxSs_UnplugHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         /* Disable & Enable Audio */
 //	    xil_printf ("Cable Unplugged !!\r\n");
 	    rx_unplugged = 1;
@@ -1229,6 +1136,7 @@ void DpRxSs_UnplugHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_LinkBandwidthHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         u32 Status;
         /*Program Video PHY to requested line rate*/
         PLLRefClkSel (&VPhyInst, DpRxSsInst.UsrOpt.LinkRate);
@@ -1237,7 +1145,8 @@ void DpRxSs_LinkBandwidthHandler(void *InstancePtr)
                          XVPHY_DIR_RX,(TRUE));
 
         XVphy_PllInitialize(&VPhyInst, 0, XVPHY_CHANNEL_ID_CHA,
-                                ONBOARD_REF_CLK, ONBOARD_REF_CLK,
+                                (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
+                                (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                 XVPHY_PLL_TYPE_QPLL1, XVPHY_PLL_TYPE_CPLL);
         Status = XVphy_ClkInitialize(&VPhyInst, 0,
                                                                         XVPHY_CHANNEL_ID_CHA, XVPHY_DIR_RX);
@@ -1263,6 +1172,7 @@ void DpRxSs_LinkBandwidthHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_PllResetHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
         /* Issue resets to Video PHY - This API
          * called after line rate is programmed */
@@ -1301,6 +1211,7 @@ void DpRxSs_PllResetHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_BWChangeHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 //    MCDP6000_ResetDpPath(XPAR_IIC_0_BASEADDR, I2C_MCDP6000_ADDR);
 }
 
@@ -1318,6 +1229,7 @@ void DpRxSs_BWChangeHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_AccessLaneSetHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -1334,6 +1246,7 @@ void DpRxSs_AccessLaneSetHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_CRCTestEventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 /*****************************************************************************/
@@ -1350,6 +1263,7 @@ void DpRxSs_CRCTestEventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_AccessLinkQualHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         u32 ReadVal;
         u32 DrpVal;
 
@@ -1405,6 +1319,7 @@ void DpRxSs_AccessLinkQualHandler(void *InstancePtr)
 
 void DpRxSs_AccessErrorCounterHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 }
 
 
@@ -1426,6 +1341,7 @@ u8 start_i2s_clk = 0;
 
 void DpRxSs_InfoPacketHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         u32 InfoFrame[9];
         int i=1;
 
@@ -1468,6 +1384,7 @@ void DpRxSs_InfoPacketHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_InfoPacket2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1485,6 +1402,7 @@ void DpRxSs_InfoPacket2Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_InfoPacket3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1501,6 +1419,7 @@ void DpRxSs_InfoPacket3Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_InfoPacket4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 /*****************************************************************************/
@@ -1518,6 +1437,7 @@ void DpRxSs_InfoPacket4Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_ExtPacketHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
         u32 ExtFrame[9];
         int i=1;
 
@@ -1559,6 +1479,7 @@ void DpRxSs_ExtPacketHandler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_ExtPacket2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1577,6 +1498,7 @@ void DpRxSs_ExtPacket2Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_ExtPacket3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
@@ -1595,53 +1517,63 @@ void DpRxSs_ExtPacket3Handler(void *InstancePtr)
 ******************************************************************************/
 void DpRxSs_ExtPacket4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 #if ADAPTIVE
 void DpRxSs_AdaptiveVblank1Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveVblank2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveVblank3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveVblank4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveSDP1Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveSDP2Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveSDP3Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 
 void DpRxSs_AdaptiveSDP4Handler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 #endif
 
 void Dprx_InterruptHandlerPayloadAlloc(void *InstancePtr)
 {
+	(void)InstancePtr;
 //	xil_printf ("payload alloc\r\n");
 	/* Virtual Channel Payload allocation,
 	 * de-allocation and partial deletion handler
@@ -1650,6 +1582,7 @@ void Dprx_InterruptHandlerPayloadAlloc(void *InstancePtr)
 	u32 RegVal = 0;
 	XDp *DpPtr = DpRxSsPtr->DpPtr;
 	RegVal = XDp_ReadReg(DpPtr->Config.BaseAddr, XDP_RX_MST_ALLOC);
+	(void)RegVal;
 //	StreamIdRecv = (RegVal & XDP_RX_MST_ALLOC_VCP_ID_MASK);
 
 	XDp_RxAllocatePayloadStream(DpPtr);
@@ -1657,6 +1590,7 @@ void Dprx_InterruptHandlerPayloadAlloc(void *InstancePtr)
 
 void Dprx_InterruptHandlerActRx(void *InstancePtr)
 {
+	(void)InstancePtr;
 	/* ACT Receive Interrupt Handler */
 //	ActCount++;
 //	xil_printf("ACT \r\n");
@@ -1669,6 +1603,7 @@ void Dprx_InterruptHandlerActRx(void *InstancePtr)
 
 void Dprx_InterruptHandlerDownReq(void *InstancePtr)
 {
+	(void)InstancePtr;
 	/* Down Request Buffer Ready handler
 	 * (Indicates the availability of the Down request)
 	 */
@@ -1679,6 +1614,7 @@ void Dprx_InterruptHandlerDownReq(void *InstancePtr)
 
 void Dprx_InterruptHandlerDownReply(void *InstancePtr)
 {
+	(void)InstancePtr;
 	/* Down Reply Buffer Read handler (indicates a
 	 * read event from down reply buffer by upstream source)
 	 */
@@ -1688,6 +1624,7 @@ void Dprx_InterruptHandlerDownReply(void *InstancePtr)
 }
 
 void bufferWr_callback(void *InstancePtr){
+	(void)InstancePtr;
 	u32 Status;
 	if(XVFRMBUFWR_BUFFER_BASEADDR >= (0 + (0x10000000) + (0x08000000 * 3))){
 		XVFRMBUFRD_BUFFER_BASEADDR = (0 + (0x10000000) + (0x08000000 * 2));
@@ -1725,20 +1662,12 @@ void bufferWr_callback(void *InstancePtr){
 * @note		None.
 *
 ******************************************************************************/
-#ifndef SDT
-u32 DpTxSs_VideoPhyInit(u16 DeviceId)
-#else
 u32 DpTxSs_VideoPhyInit(u32 BaseAddress)
-#endif
 {
 	XVphy_Config *ConfigPtr;
 
 	/* Obtain the device configuration for the DisplayPort RX Subsystem */
-#ifndef SDT
-	ConfigPtr = XVphy_LookupConfig(DeviceId);
-#else
 	ConfigPtr = XVphy_LookupConfig(BaseAddress);
-#endif
 	if (!ConfigPtr) {
 		return XST_FAILURE;
 	}
@@ -1746,8 +1675,8 @@ u32 DpTxSs_VideoPhyInit(u32 BaseAddress)
     PLLRefClkSel (&VPhyInst, PHY_User_Config_Table[5].LineRate);
 
 	XVphy_DpInitialize(&VPhyInst, ConfigPtr, 0,
-            PHY_User_Config_Table[5].CPLLRefClkSrc,
-            PHY_User_Config_Table[5].QPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[5].CPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[5].QPLLRefClkSrc,
             PHY_User_Config_Table[5].TxPLL,
             PHY_User_Config_Table[5].RxPLL,
             PHY_User_Config_Table[5].LineRate);
@@ -1793,10 +1722,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
         switch (link_rate) {
         case 0x6:
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
                                   XVPHY_DP_LINK_RATE_HZ_162GBPS);
@@ -1805,10 +1734,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
                 break;
         case 0x14:
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
                                   XVPHY_DP_LINK_RATE_HZ_540GBPS);
@@ -1817,10 +1746,10 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
                 break;
         case 0x1E:
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                        ONBOARD_REF_CLK,
+                                        (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                         XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
                                   XVPHY_DP_LINK_RATE_HZ_810GBPS);
@@ -1829,12 +1758,12 @@ void PLLRefClkSel (XVphy *InstancePtr, u8 link_rate) {
                 break;
         default:
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
-                                    ONBOARD_REF_CLK,
+                                    (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                     XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgQuadRefClkFreq(InstancePtr, 0,
 //                                  DP159_FORWARDED_CLK,
 //                                  XVPHY_DP_REF_CLK_FREQ_HZ_135);
-                                    ONBOARD_REF_CLK,
+                                    (XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
                                     XVPHY_DP_REF_CLK_FREQ_HZ_270);
                 XVphy_CfgLineRate(InstancePtr, 0, XVPHY_CHANNEL_ID_CHA,
                                   XVPHY_DP_LINK_RATE_HZ_270GBPS);
@@ -1964,6 +1893,7 @@ void PHY_Two_byte_set (XVphy *InstancePtr, u8 Tx_to_two_byte, u8 Rx_to_two_byte)
 ******************************************************************************/
 void DpPt_LinkrateChgHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 	// If TX is unable to train at what it has been asked then
 	// necessary down shift handling has to be done here
 	// eg. reconfigure GT to new rate etc
@@ -1982,6 +1912,7 @@ void DpPt_LinkrateChgHandler(void *InstancePtr)
 
 
 void DpPt_pe_vs_adjustHandler(void *InstancePtr){
+	(void)InstancePtr;
 //	u8 Buffer[2];
 //	u16 RegisterAddress;
 	if(PE_VS_ADJUST == 1){
@@ -2105,15 +2036,10 @@ void DpPt_pe_vs_adjustHandler(void *InstancePtr){
 ******************************************************************************/
 void DpPt_CustomWaitUs(void *InstancePtr, u32 MicroSeconds)
 {
-
+	(void)InstancePtr;
 	u32 TimerVal = 0, TimerVal_pre;
-#ifndef SDT
-	u32 NumTicks = (MicroSeconds * (
-			XPAR_PROCESSOR_HIER_0_AXI_TIMER_0_CLOCK_FREQ_HZ / 1000000));
-#else
 	u32 NumTicks = (MicroSeconds * (
 			XPAR_PROCESSOR_HIER_0_AXI_TIMER_0_CLOCK_FREQUENCY / 1000000));
-#endif
 	XTmrCtr_Reset(&TmrCtr, 0);
 	XTmrCtr_Start(&TmrCtr, 0);
 
@@ -2143,6 +2069,7 @@ extern u8 aud_started;
 
 void DpPt_HpdEventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 	tx_is_up = 0;
 	aud_started = 0;
 	if (XDpTxSs_IsConnected(&DpTxSsInst)) {
@@ -2178,7 +2105,7 @@ void DpPt_HpdEventHandler(void *InstancePtr)
 ******************************************************************************/
 void DpPt_HpdPulseHandler(void *InstancePtr)
 {
-	u32 Status;
+	(void)InstancePtr;
 // 		Some monitors give HPD pulse repeatedly which causes HPD pulse function to
 //		be executed huge number of time. Hence hpd_pulse interrupt is disabled
 //		and then enabled when hpd_pulse function is executed
@@ -2388,6 +2315,7 @@ void hpd_pulse_con(XDpTxSs *InstancePtr, u8 only_tx)
 // introduced to address reduced blanking linereset issue from 16.4 release
 u32 DpTxSubsystem_Start(XDpTxSs *InstancePtr,
 			XDpTxSs_MainStreamAttributes Msa[4]) {
+	(void)InstancePtr;
 	u32 Status;
 //	xil_printf ("MSA in TxSSStart is %d\r\n",Msa);
 	if (Msa == 0) {
@@ -2519,8 +2447,8 @@ u32 PHY_Configuration_Tx(XVphy *InstancePtr,
 	u32 Status = XST_FAILURE;
 	u32 retries = 0;
 
-	QpllRefClkSel   		= PHY_User_Config_Table.QPLLRefClkSrc;
-	CpllRefClkSel   		= PHY_User_Config_Table.CPLLRefClkSrc;
+	QpllRefClkSel   		= (XVphy_PllRefClkSelType)PHY_User_Config_Table.QPLLRefClkSrc;
+	CpllRefClkSel   		= (XVphy_PllRefClkSelType)PHY_User_Config_Table.CPLLRefClkSrc;
 	TxPllSelect             = PHY_User_Config_Table.TxPLL;
 	// Required for VPHY setting
 	RxPllSelect             = PHY_User_Config_Table.RxPLL;
@@ -2603,6 +2531,10 @@ u32 start_tx(u8 line_rate, u8 lane_count, user_config_struct user_config,
 	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
 												0x15, 0x16, 0x17}; //Duplicate
 	int i = 0;
+	(void)res_table;
+	(void)bpc;
+	(void)format;
+	(void)i;
 	u32 Status;
 	//Disabling TX interrupts
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,
@@ -2699,6 +2631,9 @@ u32 start_tx_only(u8 line_rate, u8 lane_count,user_config_struct user_config){
 	u8 format = user_config.user_format-1;
 	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
 												0x15, 0x16, 0x17}; //Duplicate
+	(void)pat;
+	(void)format;
+	(void)C_VideoUserStreamPattern;
 
     int i = 0;
 	num_sinks = 0;
@@ -2860,6 +2795,19 @@ void hpd_con(XDpTxSs *InstancePtr, u8 Edid_org[128],
 	u8 C_VideoUserStreamPattern[8] = {0x10, 0x11, 0x12, 0x13, 0x14,
 												0x15, 0x16, 0x17}; //Duplicate
 
+	(void)Edid1_org;
+	(void)res_update;
+	(void)Status;
+	(void)max_cap_new;
+	(void)max_cap_lanes_new;
+	(void)htotal_test_hpd;
+	(void)vtotal_test_hpd;
+	(void)freq_test_hpd;
+	(void)good_edid_hpd;
+	(void)VmId_test_hpd;
+	(void)VmId_ptm_hpd;
+	(void)bpc_hpd;
+	(void)C_VideoUserStreamPattern;
 
 	XDp_ReadReg(DpTxSsInst.DpPtr->Config.BaseAddr,XDP_TX_INTERRUPT_STATUS);
 	//Enabling TX interrupts
@@ -3300,11 +3248,7 @@ int VideoFMC_Init(void){
     /*
      * Initialize the IIC driver so that it is ready to use.
      */
-#ifndef SDT
-    ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
     ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
-#endif
     if (ConfigPtr_IIC == NULL) {
             return XST_FAILURE;
     }
@@ -3527,7 +3471,7 @@ u32 DpRxSs_Setup(void)
                         XDP_RX_INTERRUPT_MASK_ACCESS_ERROR_COUNTER_MASK);
 
         XDp_RxInterruptEnable1(DpRxSsInst.DpPtr,
-                        0xF0003FFFF);
+                        0x0003FFFFU);
 
 
         /* Setting AUX Defer Count of Link Status Reads to 8 during Link
@@ -3643,7 +3587,7 @@ u8 stream_id_used = 0;
 u8 invalid_stream = 0;
 void Dppt_DetectResolution(void *InstancePtr, u16 offset,
 							XDpTxSs_MainStreamAttributes Msa[4], u8 stream){
-
+	(void)InstancePtr;
 	u32 DpHres = 0;
 	u32 DpVres = 0;
 	int i = 0;
@@ -3790,6 +3734,7 @@ void Dppt_DetectResolution(void *InstancePtr, u16 offset,
 
 void Dprx_ResetVideoOutput(void *InstancePtr)
 {
+	(void)InstancePtr;
         XDp_RxDtgDis(DpRxSsInst.DpPtr);
 		XDp_RxDtgEn(DpRxSsInst.DpPtr);
 
@@ -4002,6 +3947,8 @@ void frameBuffer_start_wr(XDpTxSs_MainStreamAttributes Msa[4],
 	XVidC_ColorFormat Cfmt;
 	XVidC_VideoTiming const *TimingPtr;
 	XVidC_VideoStream VidStream;
+	(void)downshift4K;
+	(void)TimingPtr;
 
 //	resetIp_wr();
 
@@ -4063,6 +4010,8 @@ void frameBuffer_start_rd(XDpTxSs_MainStreamAttributes Msa[4],
 	XVidC_ColorFormat Cfmt;
 	XVidC_VideoTiming const *TimingPtr;
 	XVidC_VideoStream VidStream;
+	(void)downshift4K;
+	(void)TimingPtr;
 
 //	resetIp_rd();
 
@@ -4219,6 +4168,7 @@ u32 StreamOffsetAddr[4] = {0, 0x380,
 
 void DpPt_TxSetMsaValuesImmediate(void *InstancePtr)
 {
+	(void)InstancePtr;
 	int i = 0;
 
 //	for (i=0; i< 4; i++) {

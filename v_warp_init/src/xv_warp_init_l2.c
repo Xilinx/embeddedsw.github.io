@@ -168,7 +168,7 @@ void XVWarpInit_ClearNumOfDescriptors(XV_warp_init *InstancePtr)
 int XVWarpInit_ProgramDescriptor(XV_warp_init *InstancePtr,
 		u32 Descnum, XVWarpInit_InputConfigs *ConfigPtr)
 {
-	XVWarpInitVector_Hw desc;
+	XVWarpInitVector_Hw desc = {0};
 	XVWarpInit_ArbParam arbit_param;
 	XVWarpInitVector_Hw_Aligned *descptr;
 
@@ -212,23 +212,6 @@ int XVWarpInit_ProgramDescriptor(XV_warp_init *InstancePtr,
 		XVWarpInit_OnetimeCalcsArbt(&arbit_param,
 				desc.width, desc.height);
 	} else {
-		desc.k_pre	= ConfigPtr->k_pre;
-		desc.k_post	= ConfigPtr->k_post;
-		XVWarpInit_OneTimeCalcs(&desc, ConfigPtr->h);
-	}
-
-	XVWarpInit_SetDescriptor(descptr, &desc);
-
-	return XST_SUCCESS;
-}
-
-/*****************************************************************************/
-/**
-* This function starts the IP core with a selected descriptor configuration.
-*
-* @param  InstancePtr is a pointer to core instance to be worked upon
-* @param  descnum is the descriptor number with which configurations the IP
- {
 		desc.k_pre	= ConfigPtr->k_pre;
 		desc.k_post	= ConfigPtr->k_post;
 		XVWarpInit_OneTimeCalcs(&desc, ConfigPtr->h);
@@ -310,7 +293,6 @@ void XVWarpInit_Stop(XV_warp_init *InstancePtr)
 }
 
 
-/*****************************************************************************/
 /*****************************************************************************/
 /**
 * This function creates aligned void memory pointer.

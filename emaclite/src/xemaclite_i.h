@@ -1,21 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2004 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XEMACLITE_I_H		/* prevent circular inclusions */
+/** @brief Include guard for the EmacLite internal header. */
+#define XEMACLITE_I_H		/* by using protection macros */
+
 
 /******************************************************************************/
 /**
 * @file xemaclite_i.h
 * @addtogroup emaclite Overview
 * @{
-*
-* This header file contains internal identifiers, which are those shared
-* between the files of the driver. It is intended for internal use only.
-*
-* NOTES:
-*
-* None.
+* @brief Defines internal identifiers shared between driver source files.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -33,13 +32,9 @@
 * </pre>
 ******************************************************************************/
 
-#ifndef XEMACLITE_I_H		/* prevent circular inclusions */
-#define XEMACLITE_I_H		/* by using protection macros */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /***************************** Include Files *********************************/
 
@@ -54,14 +49,14 @@ extern "C" {
 /****************************************************************************/
 /**
 *
-* Get the TX active location to check status. This is used to check if
+* @brief Get the TX active location to check status. This is used to check if
 * the TX buffer is currently active. There isn't any way in the hardware
 * to implement this but the register is fully populated so the driver can
 * set the bit in the send routine and the ISR can clear the bit when
 * the handler is complete. This mimics the correct operation of the hardware
 * if it was possible to do this in hardware.
 *
-* @param	BaseAddress is the base address of the device
+* @param[in] BaseAddress is the base address of the device
 *
 * @return	Contents of active bit in register.
 *
@@ -75,17 +70,15 @@ extern "C" {
 /****************************************************************************/
 /**
 *
-* Set the TX active location to update status. This is used to set the bit
+* @brief Set the TX active location to update status. This is used to set the bit
 * indicating which TX buffer is currently active. There isn't any way in the
 * hardware to implement this but the register is fully populated so the driver
 * can set the bit in the send routine and the ISR can clear the bit when
 * the handler is complete. This mimics the correct operation of the hardware
 * if it was possible to do this in hardware.
 *
-* @param	BaseAddress is the base address of the device
-* @param	Mask is the data to be written
-*
-* @return	None
+* @param[in] BaseAddress is the base address of the device
+* @param[in] Mask is the data to be written
 *
 * @note		C-Style signature:
 * 		void XEmacLite_SetTxActive(u32 BaseAddress, u32 Mask)

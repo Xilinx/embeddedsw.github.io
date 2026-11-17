@@ -84,7 +84,10 @@ extern "C" {
 						  *  core Mask */
 #define XDSI_CCR_CORECMDMODE_MASK	0x00000008	/**< Enable/Disable
 						  *  Command/video mode Mask */
+#define XDSI_CCR_ULPS_MASK		0x00000040	/**< ULPS mode:
+						  *  1=entry, 0=exit */
 
+#define XDSI_CCR_ULPS_SHIFT		6	/**< Shift for ULPS mode */
 #define XDSI_CCR_CORECMDMODE_SHIFT      3	/**< Shift for selection of
 						  *  command/video mode */
 #define XDSI_CCR_CRREADY_SHIFT          2	/**< Shift for
@@ -101,6 +104,8 @@ extern "C" {
  * and number of lanes actively used.
  * @{
  */
+#define XDSI_PCR_CMD_LPDT_MASK		0x00004000  /**< CMD/LPDT mode select:
+						      *  0=DCS CMD, 1=LPDT */
 #define XDSI_PCR_EOTPENABLE_MASK	0x00002000  /**< End of Transmission
 						      *  Mask bit */
 #define XDSI_PCR_PIXELFORMAT_MASK	0x00001F80  /**< Pixel Format Type
@@ -114,6 +119,8 @@ extern "C" {
 #define XDSI_PCR_ACTLANES_MASK		0x00000003  /**< Active lanes
 						      *  in core */
 
+#define XDSI_PCR_CMD_LPDT_SHIFT		14  /**< Shift for CMD/LPDT
+						mode select */
 #define XDSI_PCR_EOTPENABLE_SHIFT	13  /**< Shift for EOTP
 						Enable */
 #define XDSI_PCR_PIXELFORMAT_SHIFT	7  /**< Shift for pixel
@@ -247,6 +254,7 @@ extern "C" {
  * This register contains the interrupt status.
  * @{
  */
+#define XDSI_ISR_ULPS_MASK		0x00000020 /**< Lanes are in ULPS */
 #define XDSI_ISR_CMDQ_FIFO_FULL_MASK	0x00000004 /**< Command queue vacancy
 							full */
 #define XDSI_ISR_DATA_ID_ERR_MASK	0x00000002  /**< Unsupported datatype
@@ -254,6 +262,7 @@ extern "C" {
 #define XDSI_ISR_PXL_UNDR_RUN_MASK	0x00000001  /**< Pixel under run
 						      *  error */
 #define XDSI_ISR_ALLINTR_MASK   	0x00000007 /**< All interrupts mask */
+#define XDSI_ISR_ULPS_SHIFT		5  /**< Shift for ULPS state */
 #define XDSI_ISR_DATA_ID_ERR_SHIFT	1  /**< Shift for
 						Unsupported Data Type */
 #define XDSI_ISR_PXL_UNDR_RUN_SHIFT	0  /**< Shift for

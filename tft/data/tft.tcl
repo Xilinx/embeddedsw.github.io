@@ -13,12 +13,12 @@
 ## @BEGIN_CHANGELOG EDK_LS3
 ##   Updated to handle the corner cases described in CR no. 518193 while
 ##   generating canonical definitions
-##   
+##
 ## @END_CHANGELOG
 ## @BEGIN_CHANGELOG 14.5/ 2013.1
 ##   Updated to remove parameters that are not applicable for AXI TFT controller
-##   - C_DCR_SPLB_SLAVE_IF,  C_DCR_BASEADDR 
-##  Modified to retrieve C_BASEADDR/C_HIGHADDR CR#757359. 
+##   - C_DCR_SPLB_SLAVE_IF,  C_DCR_BASEADDR
+##  Modified to retrieve C_BASEADDR/C_HIGHADDR CR#757359.
 ## @END_CHANGELOG
 
 
@@ -54,7 +54,7 @@ proc xdefine_canonical_xpars {drv_handle file_name drv_string args} {
     foreach periph $periphs {
         set canonical_name [string toupper [format "%s_%s" $drv_string $device_id]]
         lappend canonicals $canonical_name
-        
+
         # Create a list of IDs of the peripherals whose hardware instance name
         # doesn't match the canonical name. These IDs can be used later to
         # generate canonical definitions
@@ -76,7 +76,7 @@ proc xdefine_canonical_xpars {drv_handle file_name drv_string args} {
 	    foreach arg $args {
 	            if {[string compare -nocase "C_S_AXI_BASEADDR" $arg] == 0} {
                     set lvalue [::hsi::utils::get_driver_param_name $canonical_name "C_BASEADDR"]
-                    
+
                 } elseif {[string compare -nocase "C_S_AXI_HIGHADDR" $arg] == 0} {
                     set lvalue [::hsi::utils::get_driver_param_name $canonical_name "C_HIGHADDR"]
                 } else {
@@ -92,7 +92,7 @@ proc xdefine_canonical_xpars {drv_handle file_name drv_string args} {
                     set rvalue 0
                 }
                 set rvalue [::hsi::utils::format_addr_string $rvalue $arg]
-    
+
                 puts $file_handle "#define $lvalue $rvalue$uSuffix"
 
             }

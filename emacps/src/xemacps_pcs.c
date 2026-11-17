@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,7 +10,9 @@
 * @addtogroup emacps Overview
 * @{
 *
-* This file contains the implementation of the ethernet PCS block api's
+* @brief Implements ethernet PCS block APIs for EmacPs.
+*
+* Contains the implementation of the ethernet PCS block api's
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -26,7 +28,7 @@
 #include <stdlib.h>
 #include "xemacps_pcs.h"
 #include "xil_sutil.h"
-#define POLL_TIMEOUT	2000000
+#define POLL_TIMEOUT	2000000	/**< Poll timeout in microseconds. */
 
 /*****************************************************************************/
 /**
@@ -35,10 +37,6 @@
 *   - Configure serdes rate and speed in USX_CONTROL register
 *   - Assert Rx reset signal for GT reset
 *   - Wait for PCS_BLOCK_LOCK
-*
-* @param InstancePtr is a pointer to the instance to be worked on.
-*
-* @return N/A
 *
 ******************************************************************************/
 void XEmacPs_SetupPCS(XEmacPs *EmacPsInstancePtr)
@@ -73,9 +71,7 @@ void XEmacPs_SetupPCS(XEmacPs *EmacPsInstancePtr)
 
 /*****************************************************************************/
 /**
-* Get USX synchronisation status
-*
-* @param BaseAddr is the base address of the device
+* @brief Gets USX synchronisation status.
 *
 * @return
 * - true if block synchronization achieved
@@ -93,9 +89,7 @@ bool XEmacPs_USXPCSGetState(UINTPTR BaseAddr)
 
 /*****************************************************************************/
 /**
-* Detect if the device supports High Speeds ( 5G, 10G )
-*
-* @param BaseAddr is the base address of the device
+* @brief Detects if the device supports High Speeds ( 5G, 10G ).
 *
 * @return
 * - true if the device support High Speed

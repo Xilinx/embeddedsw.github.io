@@ -11,7 +11,9 @@
 * @addtogroup emacps Overview
 * @{
 *
-* This file contains the implementation of the ethernet interface reset sequence
+* @brief Implements the ethernet interface reset sequence for EmacPs.
+*
+* Contains the implementation of the ethernet interface reset sequence
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -42,7 +44,7 @@
 
 /*****************************************************************************/
 /**
-* This function perform the reset sequence to the given emacps interface by
+* @brief Resets the Ethernet MAC PS interface sequence to the given emacps interface by.
 * configuring the appropriate control bits in the emacps specific registers.
 * the emacps reset sequence involves the following steps
 *	Disable all the interuupts
@@ -51,13 +53,9 @@
 *	Update the Tx and Rx descriptor queue registers with reset values
 *	Update the other relevant control registers with reset value
 *
-* @param   BaseAddr of the interface
+* @param[in] BaseAddr of the interface
 *
-* @return N/A
-*
-* @note
-* This function will not modify the slcr registers that are relevant for
-* emacps controller
+* @note Does not modify SLCR registers relevant to the EMACPS controller.
 ******************************************************************************/
 void XEmacPs_ResetHw(u32 BaseAddr)
 {
@@ -98,10 +96,10 @@ void XEmacPs_ResetHw(u32 BaseAddr)
 
 /*****************************************************************************/
 /**
-* The register offset of a specific queue register is returned by this function.
+* @brief Provides register offset of a specific queue register is returned by this function.
 *
-* @param   RegName  Basename of the register
-* @param   Queue    Corresponding Queue
+* @param[in] RegName Basename of the register
+* @param[in] Queue Corresponding Queue
 *
 * @return  Register offset
 ******************************************************************************/

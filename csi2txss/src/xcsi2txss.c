@@ -22,6 +22,10 @@
 * 1.0 sss 07/14/16 Initial release
 *     vsa 15/12/17 Add support for Clock Mode
 * 1.2 vsa 02/28/18 Add Frame End Generation feature
+* 1.3 ai  09/17/26 Added multi-VC (NUM_VC 4/8/16) support: subsystem owns the
+*                  VC count, validates the VC range, widens the line count
+*                  interrupt allow-list and programs the per-bank (VC0-7 and
+*                  VC8-15) line count enables for the CSI2 TX subsystem v3.0 IP
 * </pre>
 *
 ******************************************************************************/
@@ -34,6 +38,9 @@
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 #include "xdphy.h"
 #endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+#include "xmipi_tx_phy.h"
+#endif
 #include "xcsi2txss.h"
 
 /************************** Constant Definitions *****************************/
@@ -45,20 +52,19 @@
  * This typedef declares the driver instances of all the cores in the subsystem
  */
 typedef struct {
-	XCsi2Tx CsiInst;
+	XCsi2Tx CsiInst;	/**< CSI2 TX controller sub-core instance */
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	XDphy DphyInst;
+#endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+	XMipi_Tx_Phy MipiTxPhyInst;	/**< MIPI TX PHY instance */
 #endif
 } XCsi2TxSs_SubCores;
 
 /**************************** Local Global ***********************************/
 
 /* Define Driver instance of all sub-core included in the design */
-#ifndef SDT
 XCsi2TxSs_SubCores Csi2TxSsSubCores[XPAR_XCSI2TXSS_NUM_INSTANCES];
-#else
-XCsi2TxSs_SubCores Csi2TxSsSubCores[];
-#endif
 /***************** Macros (Inline Functions) Definitions *********************/
 
 
@@ -69,9 +75,9 @@ static u32 Csi2TxSs_SubCoreInitCsi(XCsi2TxSs *Csi2TxSsPtr);
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 static u32 Csi2TxSs_SubCoreInitDphy(XCsi2TxSs *Csi2TxSsPtr);
 #endif
-static u32 Csi2TxSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
-					UINTPTR SsHighAddr,
-					u32 Offset, UINTPTR *BaseAddr);
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+static u32 Csi2TxSs_SubCoreInitMipiTxPhy(XCsi2TxSs *Csi2TxSsPtr);
+#endif
 
 /************************** Variable Definitions *****************************/
 
@@ -115,6 +121,13 @@ u32 XCsi2TxSs_CfgInitialize(XCsi2TxSs *InstancePtr, XCsi2TxSs_Config *CfgPtr,
 	InstancePtr->Config = *CfgPtr;
 	InstancePtr->Config.BaseAddr = EffectiveAddr;
 
+	/* Older IP (and older SDT that does not emit the VC count) leaves NumVC
+	 * as 0. Default to 4 to preserve the existing behaviour.
+	 */
+	if (InstancePtr->Config.NumVC == 0) {
+		InstancePtr->Config.NumVC = XCSI2TX_DEFAULT_NUM_VC;
+	}
+
 	/* Determine sub-cores included in provided instance of subsystem */
 	Csi2TxSs_GetIncludedSubCores(InstancePtr);
 
@@ -133,6 +146,13 @@ u32 XCsi2TxSs_CfgInitialize(XCsi2TxSs *InstancePtr, XCsi2TxSs_Config *CfgPtr,
 			return XST_FAILURE;
 		}
 	}
+#elif (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->MipiTxPhyPtr) {
+		Status = Csi2TxSs_SubCoreInitMipiTxPhy(InstancePtr);
+		if (Status != XST_SUCCESS) {
+			return XST_FAILURE;
+		}
+	}
 #endif
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;
 	return XST_SUCCESS;
@@ -145,26 +165,15 @@ u32 XCsi2TxSs_CfgInitialize(XCsi2TxSs *InstancePtr, XCsi2TxSs_Config *CfgPtr,
 * the sub-core driver instance is binded with the subsystem sub-core driver
 * handle
 *
-* @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
-*
-* @return	None
+* @param	Csi2TxSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @note		None
 *
 ******************************************************************************/
 static void Csi2TxSs_GetIncludedSubCores(XCsi2TxSs *Csi2TxSsPtr)
 {
-#ifndef SDT
-	Csi2TxSsPtr->CsiPtr = ((Csi2TxSsPtr->Config.CsiInfo.IsPresent) ?
-	(&Csi2TxSsSubCores[Csi2TxSsPtr->Config.DeviceId].CsiInst) : NULL);
-
-#if (XPAR_XDPHY_NUM_INSTANCES > 0)
-	Csi2TxSsPtr->DphyPtr = ((Csi2TxSsPtr->Config.DphyInfo.IsPresent) ?
-		(&Csi2TxSsSubCores[Csi2TxSsPtr->Config.DeviceId].DphyInst) : NULL);
-#endif
-#else
 	u32 Index = 0;
-	Index = XCsi2TxSs_GetDrvIndex(Csi2TxSsPtr, Csi2TxSsPtr->Config.BaseAddr);
+	Index = XCsi2TxSs_GetDrvIndex(Csi2TxSsPtr->Config.BaseAddr);
 
 	Csi2TxSsPtr->CsiPtr = ((Csi2TxSsPtr->Config.CsiInfo.IsPresent) ?
 	(&Csi2TxSsSubCores[Index].CsiInst) : NULL);
@@ -173,6 +182,9 @@ static void Csi2TxSs_GetIncludedSubCores(XCsi2TxSs *Csi2TxSsPtr)
 	Csi2TxSsPtr->DphyPtr = ((Csi2TxSsPtr->Config.DphyInfo.IsPresent) ?
 		(&Csi2TxSsSubCores[Index].DphyInst) : NULL);
 #endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+	Csi2TxSsPtr->MipiTxPhyPtr = ((Csi2TxSsPtr->Config.MipiTxPhyInfo.IsPresent) ?
+		(&Csi2TxSsSubCores[Index].MipiTxPhyInst) : NULL);
 #endif
 }
 
@@ -199,6 +211,7 @@ u32 XCsi2TxSs_Configure(XCsi2TxSs *InstancePtr, u8 ActiveLanes, u32 IntrMask)
 {
 	XCsi2Tx *CsiPtr;
 	u32 Status;
+	u32 AllowMask;
 
 	/* Verify arguments */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -209,20 +222,47 @@ u32 XCsi2TxSs_Configure(XCsi2TxSs *InstancePtr, u8 ActiveLanes, u32 IntrMask)
 	CsiPtr = InstancePtr->CsiPtr;
 
 	if (InstancePtr->Config.FEGenEnabled) {
-		IntrMask &= (XCSI2TX_ISR_ALLINTR_MASK |
-			     XCSITX_LCSTAT_VC0_IER_MASK |
-			     XCSITX_LCSTAT_VC1_IER_MASK |
-			     XCSITX_LCSTAT_VC2_IER_MASK |
-			     XCSITX_LCSTAT_VC3_IER_MASK);
-	} else
+		AllowMask = XCSI2TX_ISR_ALLINTR_MASK |
+			    XCSITX_LCSTAT_VC0_IER_MASK |
+			    XCSITX_LCSTAT_VC1_IER_MASK |
+			    XCSITX_LCSTAT_VC2_IER_MASK |
+			    XCSITX_LCSTAT_VC3_IER_MASK;
+		/* VC4-VC7 line count enables exist when NUM_VC >= 8. For
+		 * NUM_VC=16, VC8-VC15 reuse the same bank-relative bits.
+		 */
+		if (InstancePtr->Config.NumVC >= XCSI2TX_VC_PER_BANK) {
+			AllowMask |= XCSITX_LCSTAT_VC4_7_IER_MASK;
+		}
+		IntrMask &= AllowMask;
+	} else {
 		IntrMask &= XCSI2TX_ISR_ALLINTR_MASK;
+	}
 
+	/* Enable interrupts for bank 0 (VC0-VC7 and the base interrupts).
+	 * The line count enables in IER are bank-relative (muxed by ISR[6]),
+	 * so ensure the bank-0 window is selected before programming when the
+	 * core supports more than one bank.
+	 */
+	if (InstancePtr->Config.NumVC > XCSI2TX_VC_PER_BANK) {
+		XCsi2Tx_SetVcIsrBank(CsiPtr, 0);
+	}
 	XCsi2Tx_IntrEnable(CsiPtr, IntrMask);
 
 	CsiPtr->ActiveLanes = ActiveLanes;
 	Status = XCsi2Tx_Configure(CsiPtr);
 	if (Status != XST_SUCCESS) {
 		return XST_FAILURE;
+	}
+
+	/* For NUM_VC=16 the VC8-VC15 line count enables occupy the same IER
+	 * fields but are selected by ISR[6]=1. They must be programmed with a
+	 * second IER write per the HW sequence.
+	 */
+	if (InstancePtr->Config.FEGenEnabled &&
+	    (InstancePtr->Config.NumVC > XCSI2TX_VC_PER_BANK)) {
+		XCsi2Tx_SetVcIsrBank(CsiPtr, 1);
+		XCsi2Tx_IntrEnable(CsiPtr, IntrMask);
+		XCsi2Tx_SetVcIsrBank(CsiPtr, 0);
 	}
 
 	return XST_SUCCESS;
@@ -260,6 +300,11 @@ u32 XCsi2TxSs_Activate(XCsi2TxSs *InstancePtr, u8 Flag)
 #if (XPAR_XDPHY_NUM_INSTANCES > 0)
 	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->DphyPtr) {
 		XDphy_Activate(InstancePtr->DphyPtr, Flag);
+	}
+#endif
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
+	if (InstancePtr->Config.IsDphyRegIntfcPresent && InstancePtr->MipiTxPhyPtr) {
+		XMipi_Tx_Phy_Activate(InstancePtr->MipiTxPhyPtr, Flag);
 	}
 #endif
 	return Status;
@@ -303,8 +348,6 @@ u32 XCsi2TxSs_Reset(XCsi2TxSs *InstancePtr)
 * @param	InstancePtr is a pointer to the Subsystem instance to be
 * 		worked on.
 *
-* @return	None
-*
 * @note		None
 *
 ******************************************************************************/
@@ -343,8 +386,6 @@ void XCsi2TxSs_ReportCoreInfo(XCsi2TxSs *InstancePtr)
 * @param	InstancePtr is a pointer to the Subsystem instance to be
 *		worked on.
 *
-* @return	None
-*
 * @note		None
 *
 ******************************************************************************/
@@ -377,32 +418,14 @@ static u32 Csi2TxSs_SubCoreInitCsi(XCsi2TxSs *CsiSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing CSI2 Tx Controller.\n\r");
-#ifndef SDT
-	ConfigPtr = XCsi2Tx_LookupConfig(CsiSsPtr->Config.CsiInfo.DeviceId);
-#else
 	ConfigPtr = XCsi2Tx_LookupConfig(CsiSsPtr->Config.CsiInfo.AddrOffset);
-#endif
 	if (ConfigPtr == NULL) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
 			"CSISS2TX ERR:: CSI not found\n\r");
 		return XST_FAILURE;
 	}
 
-#ifndef SDT
-	/* Compute absolute base address */
-	AbsAddr = 0;
-	Status = Csi2TxSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
-					CsiSsPtr->Config.HighAddr,
-					CsiSsPtr->Config.CsiInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS2TX ERR:: CSI core"
-			"base address (0x%x) invalid %d\n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
 	AbsAddr = ConfigPtr->BaseAddr;
-#endif
 
 	/* Initialize core */
 	Status = XCsi2Tx_CfgInitialize(CsiSsPtr->CsiPtr, ConfigPtr, AbsAddr);
@@ -438,32 +461,14 @@ static u32 Csi2TxSs_SubCoreInitDphy(XCsi2TxSs *CsiSsPtr)
 
 	/* Get core configuration */
 	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing DPHY ...\n\r");
-#ifndef SDT
-	ConfigPtr = XDphy_LookupConfig(CsiSsPtr->Config.DphyInfo.DeviceId);
-#else
 	ConfigPtr = XDphy_LookupConfig(CsiSsPtr->Config.DphyInfo.AddrOffset);
-#endif
 	if (!ConfigPtr) {
 		xdbg_printf(XDBG_DEBUG_ERROR,
 				"CSISS2TX ERR:: DPHY not found\n\r");
 		return XST_FAILURE;
 	}
 
-#ifndef SDT
-	/* Compute absolute base address */
-	AbsAddr = 0;
-	Status = Csi2TxSs_ComputeSubCoreAbsAddr(CsiSsPtr->Config.BaseAddr,
-					CsiSsPtr->Config.HighAddr,
-					CsiSsPtr->Config.DphyInfo.AddrOffset,
-					&AbsAddr);
-	if (Status != XST_SUCCESS) {
-		xdbg_printf(XDBG_DEBUG_ERROR,"CSISS2TX ERR:: DPHY core base"
-			"address (0x%x) invalid %d\n\r", AbsAddr);
-		return XST_FAILURE;
-	}
-#else
 	AbsAddr = ConfigPtr->BaseAddr;
-#endif
 
 	/* Initialize core */
 	Status = XDphy_CfgInitialize(CsiSsPtr->DphyPtr, ConfigPtr, AbsAddr);
@@ -477,49 +482,87 @@ static u32 Csi2TxSs_SubCoreInitDphy(XCsi2TxSs *CsiSsPtr)
 }
 #endif
 
-
+#if (XPAR_XMIPI_TX_PHY_NUM_INSTANCES > 0)
 /*****************************************************************************/
 /**
-* This function computes the subcore absolute address on axi-lite interface
-* Subsystem is mapped at an absolute address and all included sub-cores are
-* at pre-defined offset from the subsystem base address. To access the subcore
-* register map from host CPU an absolute address is required.
-* The subsystem is aligned to 4K address and has address range of max 8K
-* (0x00000-0x2000). By default, CSI is at offset 0x0_0000, and DPHY is at
-* offset 0x0_1000.
-* @param	SsBaseAddr is the base address of the the Subsystem instance
-* @param	SsHighAddr is the max address of the Subsystem instance
-* @param	Offset is the offset of the specified core
-* @param	BaseAddr is the computed absolute base address of the subcore
+* This function initializes the included sub-core to it's static configuration
+*
+* @param	CsiSsPtr is a pointer to the Subsystem instance to be worked.
 *
 * @return
-*		- XST_SUCCESS if base address computation is successful and
-*		within subsystem address range
-*		- XST_FAILURE Otherwise
+*		- XST_SUCCESS If MIPI TX PHY sub core is initialised successfully
+*		- XST_FAILURE If MIPI TX PHY sub core initialization failed
 *
 * @note		None
 *
 ******************************************************************************/
-static u32 Csi2TxSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
-					UINTPTR SsHighAddr,
-					u32 Offset, UINTPTR *BaseAddr)
+static u32 Csi2TxSs_SubCoreInitMipiTxPhy(XCsi2TxSs *CsiSsPtr)
 {
 	u32 Status;
 	UINTPTR AbsAddr;
+	XMipi_Tx_Phy_Config *ConfigPtr;
 
-	AbsAddr = SsBaseAddr + Offset;
+	/* Get core configuration */
+	xdbg_printf(XDBG_DEBUG_GENERAL, "->Initializing MIPI TX PHY ...\n\r");
 
-	if ((AbsAddr >= SsBaseAddr) && (AbsAddr < SsHighAddr)) {
-		*BaseAddr = AbsAddr;
-		Status = XST_SUCCESS;
+	ConfigPtr = XMipi_Tx_Phy_LookupConfig(CsiSsPtr->Config.MipiTxPhyInfo.AddrOffset);
+	if (!ConfigPtr) {
+		xdbg_printf(XDBG_DEBUG_ERROR,
+			"CSISS2TX ERR:: MIPI TX PHY not found\n\r");
+		return XST_FAILURE;
 	}
-	else {
-		*BaseAddr = 0;
-		Status = XST_FAILURE;
+
+	/* Compute absolute base address */
+	AbsAddr = ConfigPtr->BaseAddr;
+
+	/* Initialize core */
+	Status = XMipi_Tx_Phy_CfgInitialize(CsiSsPtr->MipiTxPhyPtr, ConfigPtr, AbsAddr);
+	if (Status != XST_SUCCESS) {
+		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS2TX ERR:: Mipi Tx Phy core "
+			"Initialization failed\n\r");
+		return XST_FAILURE;
 	}
 
-	return Status;
+	return XST_SUCCESS;
 }
+
+/****************************************************************************/
+/**
+* This function configures the MIPI TX PHY PLL for a desired line rate at
+* runtime. It delegates to XMipi_Tx_Phy_DynamicLineRateConfig which handles
+* validation of CPHY mode and dynamic line rate hardware enablement.
+*
+* @param	InstancePtr is a pointer to the Subsystem instance to be
+*		worked on.
+* @param	PllBaseAddr is the base address of the PLL to be configured.
+* @param	LineRate is the desired line rate in Mbps (400-4500).
+*
+* @return
+*		- XST_SUCCESS if PLL configuration is successful.
+*		- XST_FAILURE if dynamic line rate configuration fails.
+*
+* @note		None.
+*
+****************************************************************************/
+u32 XCsi2TxSs_DynamicLineRateConfig(XCsi2TxSs *InstancePtr, UINTPTR PllBaseAddr,
+				u32 LineRate)
+{
+	u32 Status;
+
+	/* Verify arguments */
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	Status = XMipi_Tx_Phy_DynamicLineRateConfig(InstancePtr->MipiTxPhyPtr,
+						PllBaseAddr, LineRate);
+	if (Status != XST_SUCCESS) {
+		xdbg_printf(XDBG_DEBUG_ERROR, "CSISS2TX ERR:: Mipi Tx Phy core "
+			"Dynamic Line Rate Configuration failed\n\r");
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+#endif
 
 /****************************************************************************/
 /**
@@ -532,8 +575,6 @@ static u32 Csi2TxSs_ComputeSubCoreAbsAddr(UINTPTR SsBaseAddr,
 * @param	Value
 * 		0 : DISABLE
 * 		1 : ENABLE
-*
-* @return	None
 *
 * @note		None
 *
@@ -552,8 +593,6 @@ void XCsi2TxSs_LineGen(XCsi2TxSs *InstancePtr, u32 Value) {
 *
 * @param	Value
 * 		GSP 32 bit Entry
-*
-* @return	None
 *
 * @note		None
 *
@@ -635,8 +674,6 @@ u32 XCsi2TxSs_IsUlps(XCsi2TxSs *InstancePtr)
 *		- 1 - ulps mode enter
 *		- 0 - ulps mode exit
 *
-* @return	None
-*
 * @note		None
 *
 ****************************************************************************/
@@ -658,8 +695,6 @@ void XCsi2TxSs_SetUlps(XCsi2TxSs *InstancePtr, u32 Value)
 *		worked on.
 *
 * @param	Mode for Continuous Mode (0) or Non-continuous Mode (1)
-*
-* @return	None
 *
 * @note		None
 *
@@ -704,13 +739,14 @@ u32 XCsi2TxSs_GetClkMode(XCsi2TxSs *InstancePtr)
  *
  * @param	InstancePtr is a pointer to the Subsystem instance to be
  *		worked on.
- * @param	VC is which Virtual channel to be configured for (0-3).
+ * @param	VC is which Virtual channel to be configured for
+ *		(0 to NumVC-1).
  * @param	LineCount is valid line count for the Virtual channel.
  *
  * @return
  *		- XST_NO_FEATURE if Frame End generation is not enabled
  *		- XST_INVALID_PARAM if any param is invalid e.g.
- *			VC is always 0 to 3 and Line Count is 0 to 0xFFFF.
+ *			VC is always 0 to NumVC-1 and Line Count is 0 to 0xFFFF.
  *		- XST_FAILURE in case the core is already running.
  *		- XST_SUCCESS otherwise
  *
@@ -726,6 +762,10 @@ u32 XCsi2TxSs_SetLineCountForVC(XCsi2TxSs *InstancePtr, u8 VC, u16 LineCount)
 	if (!InstancePtr->Config.FEGenEnabled)
 		return XST_NO_FEATURE;
 
+	/* VC must be within the number of Virtual Channels supported */
+	if (VC >= InstancePtr->Config.NumVC)
+		return XST_INVALID_PARAM;
+
 	return XCsi2Tx_SetLineCountForVC(InstancePtr->CsiPtr, VC, LineCount);
 }
 
@@ -736,14 +776,15 @@ u32 XCsi2TxSs_SetLineCountForVC(XCsi2TxSs *InstancePtr, u8 VC, u16 LineCount)
  *
  * @param	InstancePtr is a pointer to the Subsystem instance to be
  *		worked on.
- * @param	VC is which Virtual channel to be configured for (0-3).
+ * @param	VC is which Virtual channel to be configured for
+ *		(0 to NumVC-1).
  * @param	LineCount is pointer to variable to be filled with line count
  *		for the Virtual channel
  *
  * @return
  *		- XST_NO_FEATURE if Frame End generation is not enabled
  *		- XST_INVALID_PARAM if any param is invalid e.g.
- *			VC is always 0 to 3 and Line Count is 0 to 0xFFFF.
+ *			VC is always 0 to NumVC-1 and Line Count is 0 to 0xFFFF.
  *		- XST_SUCCESS otherwise
  *
  * @note	None.
@@ -757,6 +798,10 @@ u32 XCsi2TxSs_GetLineCountForVC(XCsi2TxSs *InstancePtr, u8 VC, u16 *LineCount)
 	/* Is Frame End generation feature enabled? */
 	if (!InstancePtr->Config.FEGenEnabled)
 		return XST_NO_FEATURE;
+
+	/* VC must be within the number of Virtual Channels supported */
+	if (VC >= InstancePtr->Config.NumVC)
+		return XST_INVALID_PARAM;
 
 	return XCsi2Tx_GetLineCountForVC(InstancePtr->CsiPtr, VC, LineCount);
 }

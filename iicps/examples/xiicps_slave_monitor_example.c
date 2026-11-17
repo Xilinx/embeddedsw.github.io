@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,12 +8,14 @@
 /**
  * @file xiicps_slave_monitor_example.c
  *
+ * @brief Demonstrates checking the availability of a slave in monitor mode.
+ *
  * This example runs on zynqmp / versal / vek385 evaluation boards using the
  * IIC device as master to check slave's availability.
  *
  * @note
- * Please set the slave address to 0x3FB, which tests the device's ability
- *	to handle 10-bit address.
+ * Set the slave address to 0x3FB, which tests the device's ability
+ * to handle 10-bit address.
  *
  * <pre> MODIFICATION HISTORY:
  *
@@ -22,6 +24,8 @@
  * 1.00a jz  01/30/10 First release
  * 3.18  gm  07/14/23 Added SDT support.
  * 3.21  an  03/28/25 Added VEK385 board i2c slave address
+ * 3.24  vn  08/26/26 Fix Doxygen warnings
+ * 3.24  tb  09/30/26 Align Doxygen comments with AMD standards
  *
  * </pre>
  *
@@ -45,11 +49,15 @@
  * change all the needed parameters in one place.
  */
 #ifndef SDT
-#define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define INTC_DEVICE_ID	XPAR_SCUGIC_SINGLE_DEVICE_ID /**< SCUGIC device ID. */
 #endif
 
-#define IIC_SCLK_RATE		100000
-#define SLV_MON_LOOP_COUNT 0x000FFFFF	/**< Slave Monitor Loop Count*/
+/** @name Example configuration
+ * @{
+ */
+#define IIC_SCLK_RATE		100000 /**< IIC serial clock rate in Hz. */
+#define SLV_MON_LOOP_COUNT 0x000FFFFF	/**< Slave Monitor Loop Count. */
+/** @} */
 
 /**************************** Type Definitions ********************************/
 
@@ -70,37 +78,37 @@ static int IicPsFindDevice(u16 Addr);
 
 /************************** Variable Definitions ******************************/
 
-XIicPs	Iic;			/* Instance of the IIC Device */
+XIicPs	Iic;			/**< Instance of the IIC Device. */
 #ifndef SDT
-XScuGic InterruptController;	/* Instance of the Interrupt Controller */
+XScuGic InterruptController;	/**< Instance of the Interrupt Controller. */
 #endif
 
 /*
  * The following counters are used to determine when the entire buffer has
  * been sent and received.
  */
-volatile u8 TransmitComplete;	/**< Flag to check completion of Transmission */
-volatile u8 ReceiveComplete;	/**< Flag to check completion of Reception */
-volatile u32 TotalErrorCount;	/**< Total Error Count Flag */
-volatile u32 SlaveResponse;		/**< Slave Response Flag */
+volatile u8 TransmitComplete; /**< Flag to check completion of Transmission. */
+volatile u8 ReceiveComplete;	/**< Flag to check completion of Reception. */
+volatile u32 TotalErrorCount;	/**< Total Error Count Flag. */
+volatile u32 SlaveResponse;		/**< Slave Response Flag. */
 
-/**Searching for the required Slave Address and user can also add
- * their own slave Address in the below array list**/
+/**
+ * Holds the slave addresses to search for. The application can also add its
+ * own slave Address in the below array list.
+ */
 u16 SlvAddr[] = {0x54, 0x55, 0x74, 0x72, 0};
-XIicPs IicInstance;		/* The instance of the IIC device. */
+XIicPs IicInstance;		/**< The instance of the IIC device. */
 #ifdef SDT
+/** Configuration table of the IIC devices. */
 extern XIicPs_Config XIicPs_ConfigTable[XPAR_XIICPS_NUM_INSTANCES];
 #endif
 
 /******************************************************************************/
 /**
 *
-* Main function to call the Slave Monitor example.
-*
+* @brief Calls the Slave Monitor example from the main function.
 *
 * @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful.
-*
-* @note		None.
 *
 *******************************************************************************/
 int main(void)
@@ -125,13 +133,16 @@ int main(void)
 
 /*****************************************************************************/
 /**
-* This function perform the initial configuration for the IICPS Device.
+* @brief Performs the initial configuration for the IICPS Device.
 *
-* @param	DeviceId instance and Interrupt ID mapped to the device.
+* @if SDT
+* @param[in]    BaseAddress Base address of the device.
+* @else
+* @param[in]    DeviceId Device ID of the IicPs Device.
+* @param[in]    Int_Id Interrupt ID mapped to the device.
+* @endif
 *
 * @return	XST_SUCCESS if pass, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 ****************************************************************************/
 #ifndef SDT
@@ -194,12 +205,9 @@ static int IicPsConfig(UINTPTR BaseAddress)
 /*****************************************************************************/
 /**
 *
-* This function checks the availability of a slave using slave monitor mode.
-*
+* @brief Checks the availability of a slave using slave monitor mode.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note 	None.
 *
 *******************************************************************************/
 int IicPsSlaveMonitorExample(void)
@@ -218,14 +226,19 @@ int IicPsSlaveMonitorExample(void)
 /*****************************************************************************/
 /**
 *
+* @brief Checks the availability of a slave on one IIC instance.
+*
 * This function checks the availability of a slave using slave monitor mode.
 *
-* @param	DeviceId is the Device ID of the IicPs Device and is the
-*		XPAR_<IICPS_instance>_DEVICE_ID value from xparameters.h
+* @param[in]    Address Slave address to monitor.
+* @if SDT
+* @param[in]    BaseAddress Base address of the device.
+* @else
+* @param[in]    DeviceId Device ID of the IicPs Device.
+* @param[in]    Int_Id Interrupt ID mapped to the device.
+* @endif
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note 	None.
 *
 *******************************************************************************/
 #ifndef SDT
@@ -290,12 +303,10 @@ static int IicPsSlaveMonitor(u16 Address, UINTPTR BaseAddress)
 /*****************************************************************************/
 /**
 *
-* This function checks whether the slave in alive or not.
+* @brief Checks whether the slave is alive or not.
 *
-* @param	Addr : Address of the slave device
+* @param[in]    Addr Address of the slave device.
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note 	None.
 *
 *******************************************************************************/
 static int IicPsFindDevice(u16 Addr)
@@ -341,15 +352,13 @@ static int IicPsFindDevice(u16 Addr)
 /******************************************************************************/
 /**
 *
-* This function setups the interrupt system such that interrupts can occur
-* for the IIC.
+* @brief Sets up the interrupt system so that interrupts can occur for the IIC.
 *
-* @param	IicPsPtr contains a pointer to the instance of the Iic
+* @param[in]    IicPsPtr Contains a pointer to the instance of the Iic
 *		which is going to be connected to the interrupt controller.
+* @param[in]    Int_Id Interrupt ID mapped to the device.
 *
 * @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None.
 *
 *******************************************************************************/
 static int SetupInterruptSystem(XIicPs *IicPsPtr, u32 Int_Id)
@@ -413,20 +422,18 @@ static int SetupInterruptSystem(XIicPs *IicPsPtr, u32 Int_Id)
 /*****************************************************************************/
 /**
 *
+* @brief Handles data events from the IIC.
+*
 * This function is the handler which performs processing to handle data events
-* from the IIC.  It is called from an interrupt context such that the amount
+* from the IIC. It is called from an interrupt context such that the amount
 * of processing performed should be minimized.
 *
 * This handler provides an example of how to handle data for the IIC and
 * is application specific.
 *
-* @param	CallBackRef contains a callback reference from the driver, in
+* @param[in]    CallBackRef Contains a callback reference from the driver, in
 *		this case it is the instance pointer for the IIC driver.
-* @param	Event contains the specific kind of event that has occurred.
-*
-* @return	None.
-*
-* @note		None.
+* @param[in]    Event Contains the specific kind of event that has occurred.
 *
 *******************************************************************************/
 void Handler(void *CallBackRef, u32 Event)

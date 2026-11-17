@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2020 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -14,7 +14,7 @@
  * Ver   Who  Date     Changes
  * ----- ---- -------- -----------------------------------------------
  * 1.0   KU   04/20/16 Initial release.
- * 1.1   KI   02/15/17 Vivado 2016.4 compartible code
+ * 1.1   KI   02/15/17 Vivado 2016.4 compatible code
  *            02/23/17 Added compliance related for Rx
  *            03/03/17 Added tx_preset for stability
  * 1.2   ND   04/03/21 Moved all global variables declaration from .h to .c
@@ -26,15 +26,15 @@
 
 #include "dppt.h"
 #include <xil_io.h>
-#ifdef SDT
+#include "xil_exception.h"
+#include "xil_assert.h"
 #include "xinterrupt_wrap.h"
-#endif
-#ifdef SDT
+#ifndef CLK_WIZ_BASE
 #define CLK_WIZ_BASE XPAR_XCLK_WIZ_0_BASEADDR
+#endif
 #define INTRNAME_DPTX       0
 #define INTRNAME_DPRX       0
 #define INTRNAME_DPRX_TIMER 3
-#endif
 #if ENABLE_HDCP_IN_DESIGN
 unsigned int gKeyMGMTBaseAddress[2] = {
 		XPAR_DP_RX_HIER_HDCP_KEYMNGMT_BLK_0_BASEADDR,
@@ -713,10 +713,6 @@ int main(void)
 				rx_ran_once = 0;
 				vblank_done = 0;
 				if (manual_sel == 1) {
-#ifndef SDT
-					XIntc_Disable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
-					XIntc_Enable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-#endif
 					XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 									XDP_RX_LINK_ENABLE, 0x0);
 				}
@@ -842,7 +838,7 @@ int main(void)
 							XGpio_WriteReg (XPAR_AV_PAT_GEN_0_BASEADDR + 0x400,
 												0xA0, 0x10000244);
 
-							//channel statu    16.4 release
+							//channel status    16.4 release
 							XGpio_WriteReg (XPAR_AV_PAT_GEN_0_BASEADDR + 0x400,
 												0xA4, 0x40000000);
 							XGpio_WriteReg (XPAR_AV_PAT_GEN_0_BASEADDR + 0x400,
@@ -1014,7 +1010,7 @@ int main(void)
 					       default :
 							xil_printf("You have selected command %c\n\r",
 										CmdKey[0]);
-							if((Command>=0)&&(Command<9))
+							if(Command<9)
 							{
 								user_tx_LaneCount =
 										lane_link_table[Command].lane_count;
@@ -1191,7 +1187,7 @@ int main(void)
 		                }
 		                xil_printf("\r\nGiven base address offset is 0x%x\r\n",
 							aux_reg_address);
-		                for(i=0;i<num_of_aux_registers;i++)
+		                for(i=0;i<(int)num_of_aux_registers;i++)
 		                {
 		                        Status = XDp_TxAuxRead(DpTxSsInst.DpPtr,
 									(aux_reg_address+i), 1, &Data);
@@ -1254,10 +1250,6 @@ int main(void)
 						XDpTxSs_HdcpDisable(&DpTxSsInst);
 						XDpTxSs_SetPhysicalState(&DpTxSsInst, hdcp_capable_org);
 						XHdcp1xExample_Poll();
-#endif
-#ifndef SDT
-						XIntc_Disable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-						XIntc_Disable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
 #endif
 						XGpio_WriteReg (XPAR_AV_PAT_GEN_0_BASEADDR + 0x400,
 											0x0, 0x0);
@@ -1384,10 +1376,6 @@ int main(void)
 						"failure +++++++\r\n");
                 }
 				if (manual_sel == 1) {
-#ifndef SDT
-					XIntc_Enable(&IntcInst, XINTC_DPTXSS_DP_INTERRUPT_ID);
-					XIntc_Enable(&IntcInst, XINTC_DPRXSS_DP_INTERRUPT_ID);
-#endif
 				}
 
 				rx_help_menu();
@@ -1483,7 +1471,7 @@ xil_printf ("+++++++ TX GT configuration encountered a failure +++++++\r\n");
 							pwr_dwn_x = 0x1;
 							XDp_TxAuxWrite(DpTxSsInst.DpPtr, 0x00600, 1,
 									&pwr_dwn_x);
-// switchover to TX mode only when cable is unplugged in normal RX opreration
+// switchover to TX mode only when cable is unplugged in normal RX operation
 							if (switch_to_patgen == 1) {
 							only_tx_active = 1;
 						start_tx (LineRate, LaneCount, resolution_table[2],
@@ -1722,7 +1710,6 @@ xil_printf ("+++++++ TX GT configuration encountered a failure +++++++\r\n");
 													XAXIVDMA_WRITE);
 								XAxiVdma_DmaStop(&dma_struct[0].AxiVdma,
 													XAXIVDMA_READ);
-								Vpg_StreamSrcConfigure(DpTxSsInst.DpPtr, 0, 1);
 								XDpTxSs_Reset(&DpTxSsInst);
 
 							}
@@ -1733,12 +1720,9 @@ xil_printf ("+++++++ TX GT configuration encountered a failure +++++++\r\n");
 						if(TmrCntrRstDone == 1){
 							prog_tx =0;
 						}
-#else
-						//prog_tx =0;
 #endif
 					track_count1 = 0;
 				}
-
 #if ENABLE_HDCP_IN_DESIGN
 					XHdcp1xExample_Poll();
 					if(XHdcp1x_IsEncrypted(DpRxSsInst.Hdcp1xPtr)
@@ -1829,7 +1813,7 @@ xil_printf ("+++++++ TX GT configuration encountered a failure +++++++\r\n");
 								Command = Command -48;
 								xil_printf("You have selected command=%d \n\r",
 												Command);
-								if((Command>=0)&&(Command<9))
+								if(Command<9)
 								{
 									user_lane_count =
 											lane_link_table[Command].lane_count;
@@ -2121,12 +2105,6 @@ xil_printf ("+++++++ TX GT configuration encountered a failure +++++++\r\n");
 								rx_help_menu();
 								break;
 							case 'x' :
-#ifndef SDT
-								XIntc_Disable(&IntcInst,
-										XINTC_DPTXSS_DP_INTERRUPT_ID);
-								XIntc_Disable(&IntcInst,
-										XINTC_DPRXSS_DP_INTERRUPT_ID);
-#endif
 								XDpTxSs_Stop(&DpTxSsInst);
 				XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 						XDP_RX_LINK_ENABLE, 0x0);
@@ -2280,25 +2258,16 @@ int init_peripherals()
 {
 	u32 Status;
 	// Initialize UART
-#ifndef SDT
-	Status = XUartLite_Initialize(&UartLite,
-			XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_UARTLITE_1_DEVICE_ID);
-#else
 	Status = XUartLite_Initialize(&UartLite,
 			XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_UARTLITE_1_BASEADDR);
-#endif
 	if (Status!=XST_SUCCESS){
 	xil_printf("ERR:UART failed to initialize. \r\n");
 	return XST_FAILURE;
 	}
 
 	// Initialize timer.
-#ifndef SDT
-	Status = XTmrCtr_Initialize(&TmrCtr, XPAR_TMRCTR_0_DEVICE_ID);
-#else
 	Status = XTmrCtr_Initialize(&TmrCtr,
 				    XPAR_PROCESSOR_SUBSYSTEM_INTERCONNECT_AXI_TIMER_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS){
 	xil_printf("ERR:Timer failed to initialize. \r\n");
 	return XST_FAILURE;
@@ -2308,15 +2277,11 @@ int init_peripherals()
 	XTmrCtr_Start(&TmrCtr, XTC_TIMER_0);
 
 	// Initialize Video PHY Controller
-#ifndef SDT
-	XVphy_Config *CfgPtr = XVphy_LookupConfig(XPAR_VID_PHY_CONTROLLER_0_DEVICE_ID);
-#else
 	XVphy_Config *CfgPtr = XVphy_LookupConfig(XPAR_XVPHY_0_BASEADDR);
-#endif
 
 	XVphy_DpInitialize(&VPhy_Instance, CfgPtr, 0,
-            PHY_User_Config_Table[6].CPLLRefClkSrc,
-            PHY_User_Config_Table[6].QPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[6].CPLLRefClkSrc,
+            (XVphy_PllRefClkSelType)PHY_User_Config_Table[6].QPLLRefClkSrc,
             PHY_User_Config_Table[6].TxPLL,
             PHY_User_Config_Table[6].RxPLL,
             PHY_User_Config_Table[6].LineRate);
@@ -2334,11 +2299,7 @@ int init_peripherals()
     /*
      * Initialize the IIC driver so that it is ready to use.
      */
-#ifndef SDT
-	ConfigPtr_IIC = XIic_LookupConfig(IIC_DEVICE_ID);
-#else
 	ConfigPtr_IIC = XIic_LookupConfig(XPAR_XIIC_0_BASEADDR);
-#endif
     if (ConfigPtr_IIC == NULL) {
             return XST_FAILURE;
     }
@@ -2350,11 +2311,7 @@ int init_peripherals()
     }
 
     int i = 0;
-#ifndef SDT
-	dma_struct[i].Config = XAxiVdma_LookupConfig(i);
-#else
 	dma_struct[i].Config = XAxiVdma_LookupConfig(XPAR_AXI_VDMA_0_BASEADDR);
-#endif
 	if (!dma_struct[i].Config)
 	{
 		 xil_printf("No video DMA found for ID %d\n\r", i);
@@ -2384,11 +2341,7 @@ int init_peripherals()
 int DPTxInitialize()
 {
 	u32 Status;
-#ifndef SDT
-	DPTxSSConfig = XDpTxSs_LookupConfig(XDPTXSS_DEVICE_ID);
-#else
 	DPTxSSConfig = XDpTxSs_LookupConfig(XPAR_DPTXSS_0_BASEADDR);
-#endif
 	if (DPTxSSConfig == NULL) {
 		xil_printf("ERR: DPTX SS core not found!\n\r");
 		return (XST_FAILURE);
@@ -2420,11 +2373,7 @@ int DPRxInitialize()
 	u32 Status;
 
 	// Lookup and Initialize DP Rx Subsystem
-#ifndef SDT
-	DPRxSSConfig = XDpRxSs_LookupConfig(XDPRXSS_DEVICE_ID);
-#else
 	DPRxSSConfig = XDpRxSs_LookupConfig(XPAR_DPRXSS_0_BASEADDR);
-#endif
 	if (DPRxSSConfig == NULL) {
 		xil_printf("ERR: DPRX SS core not found!\n\r");
 		return (XST_FAILURE);
@@ -2485,6 +2434,7 @@ int DPRxInitialize()
 
 static void Dprx_DetectResolution(void *InstancePtr)
 {
+	(void)InstancePtr;
 	u32 DpHres = 0;
 	u32 DpVres = 0;
 	u32 GetResCount = 0;
@@ -2610,6 +2560,7 @@ static void Dprx_DetectResolution(void *InstancePtr)
 }
 static void Dprx_ResetVideoOutput(void *InstancePtr)
 {
+	(void)InstancePtr;
 	XDp_RxDtgDis(DpRxSsInst.DpPtr);
 //	DpPt_CustomWaitUs(DpTxSsInst.DpPtr, 800000);
 	XDp_RxDtgEn(DpRxSsInst.DpPtr);
@@ -2618,6 +2569,7 @@ static void Dprx_ResetVideoOutput(void *InstancePtr)
 
 static void Dprx_CheckSetupTx(void *InstancePtr)
 {
+	(void)InstancePtr;
 	XVidC_VideoMode VmId;
 	u8 tx_with_msa = 0;
     u32 Status;
@@ -2695,6 +2647,7 @@ static void Dprx_CheckSetupTx(void *InstancePtr)
 
 void Dprx_SetupTx(void *InstancePtr, u8 tx_with_msa, XVidC_VideoMode VmId)
 {
+	(void)InstancePtr;
 	u32 Status;
     u8 pwr_dwn;
 
@@ -2844,6 +2797,7 @@ void Dprx_SetupTx(void *InstancePtr, u8 tx_with_msa, XVidC_VideoMode VmId)
 
 static void Dprx_InterruptHandlerVmChange(void *InstancePtr)
 {
+	(void)InstancePtr;
 //	u32 Status;
 
 if (vblank_count >= 200 && training_done == 1) {
@@ -2869,6 +2823,7 @@ if (vblank_count >= 200 && training_done == 1) {
 }
 
 static void Dprx_InterruptHandlerNoVideo(void *InstancePtr) {
+	(void)InstancePtr;
 //	xil_printf("*** No Video detected ***\n\r");
 	IsResChange = 0;
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr,
@@ -2876,6 +2831,7 @@ static void Dprx_InterruptHandlerNoVideo(void *InstancePtr) {
 }
 
 static void Dprx_InterruptHandlerVBlank(void *InstancePtr) {
+	(void)InstancePtr;
 //    u32 Status;
 	if (DpRxSsInst.VBlankEnable == 1) {
 		vblank_count++;
@@ -2929,6 +2885,7 @@ static void Dprx_InterruptHandlerVBlank(void *InstancePtr) {
 
 }
 static void Dprx_InterruptHandlerVideo(void *InstancePtr) {
+	(void)InstancePtr;
 //	xil_printf("*** Interrupt > Video detected ***\n\r");
 	XDp_WriteReg(DpRxSsInst.DpPtr->Config.BaseAddr, XDP_RX_VIDEO_UNSUPPORTED
 					, 0);
@@ -2940,6 +2897,7 @@ static void Dprx_InterruptHandlerVideo(void *InstancePtr) {
 //this is a handler in TP1
 void Dprx_InterruptHandlerLinkBW(void *InstancePtr)
 {
+	(void)InstancePtr;
 	u32 Status;
 	PLLRefClkSel (&VPhy_Instance, DpRxSsInst.UsrOpt.LinkRate);
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr,0x144, 0xFFF);
@@ -2951,11 +2909,13 @@ void Dprx_InterruptHandlerLinkBW(void *InstancePtr)
 // For all other linerates it is CPLL for RX and TX
 	if ((DpRxSsInst.UsrOpt.LinkRate == 0x6) && (is_TX_CPLL == 0)) {
 		XVphy_PllInitialize(&VPhy_Instance, 0, XVPHY_CHANNEL_ID_CHA,
-					ONBOARD_REF_CLK, DP159_FORWARDED_CLK,
+					(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
+					(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK,
 					XVPHY_PLL_TYPE_QPLL, XVPHY_PLL_TYPE_CPLL);
 	} else {
 		XVphy_PllInitialize(&VPhy_Instance, 0, XVPHY_CHANNEL_ID_CHA,
-					DP159_FORWARDED_CLK, DP159_FORWARDED_CLK,
+					(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK,
+					(XVphy_PllRefClkSelType)DP159_FORWARDED_CLK,
 					XVPHY_PLL_TYPE_CPLL, XVPHY_PLL_TYPE_CPLL);
 	}
 	Status = XVphy_ClkInitialize(&VPhy_Instance, 0,
@@ -2972,6 +2932,7 @@ void Dprx_InterruptHandlerLinkBW(void *InstancePtr)
 
 void Dprx_InterruptHandlerPllReset(void *InstancePtr)
 {
+	(void)InstancePtr;
 	u32 Status1;
 	u32 Status2;
 
@@ -3021,6 +2982,7 @@ if (internal_rx_tx == 0) {
 
 void Dprx_InterruptHandlerTrainingDone(void *InstancePtr)
 {
+	(void)InstancePtr;
     LaneCount = XDp_ReadReg(DpRxSsInst.Config.DpSubCore.DpConfig.BaseAddr,
 							XDP_RX_DPCD_LANE_COUNT_SET);
     LineRate = DpRxSsInst.UsrOpt.LinkRate;
@@ -3054,6 +3016,7 @@ void Dprx_InterruptHandlerTrainingDone(void *InstancePtr)
 }
 
 static void Dprx_InterruptHandlerTrainingLost(void *InstancePtr) {
+	(void)InstancePtr;
 
 
 #if !COMPLIANCE
@@ -3097,6 +3060,7 @@ static void Dprx_InterruptHandlerTrainingLost(void *InstancePtr) {
 
 void Dprx_InterruptHandlerBwChange(void *InstancePtr)
 {
+	(void)InstancePtr;
 //	xil_printf("> Interrupt: Bandwidth Change !\n\r");
 }
 
@@ -3104,6 +3068,7 @@ void Dprx_InterruptHandlerBwChange(void *InstancePtr)
 
 void Dprx_InterruptHandlerUplug(void *InstancePtr)
 {
+	(void)InstancePtr;
 
     //power down GT PLL immediately.  Hold PLLs in power down
     XVphy_PowerDownGtPll(&VPhy_Instance, 0, XVPHY_CHANNEL_ID_CHA,
@@ -3144,7 +3109,8 @@ void Dprx_InterruptHandlerUplug(void *InstancePtr)
 	gt_stable = 1;
 	if (is_TX_CPLL == 1) {
 	XVphy_PllInitialize(&VPhy_Instance, 0, XVPHY_CHANNEL_ID_CHA,
-			ONBOARD_REF_CLK, ONBOARD_REF_CLK,
+			(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
+			(XVphy_PllRefClkSelType)ONBOARD_REF_CLK,
 			XVPHY_PLL_TYPE_CPLL, XVPHY_PLL_TYPE_CPLL);
 	}
 
@@ -3211,6 +3177,7 @@ void Dprx_InterruptHandlerUplug(void *InstancePtr)
 
 void Dprx_InterruptHandlerPwr(void *InstancePtr)
 {
+	(void)InstancePtr;
 // This is handled in drivers. Disabling from application
 #if 0
 #if !COMPLIANCE
@@ -3229,9 +3196,11 @@ void Dprx_InterruptHandlerPwr(void *InstancePtr)
 
 void Dprx_InterruptHandlerInfoPkt(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 }
 void Dprx_InterruptHandlerExtPkt(void *InstancePtr){
+	(void)InstancePtr;
 
 }
 
@@ -3312,13 +3281,8 @@ int DPPtIntrInitialize()
 void xildpWaitmS(u32 ms)
 {
     XTmrCtr_Start(&TmrCtr, 0);
-#ifndef SDT
-	while (XTmrCtr_GetValue(&TmrCtr, 0) <
-		(ms * (XPAR_MICROBLAZE_CORE_CLOCK_FREQ_HZ / 1000000)));
-#else
 	while (XTmrCtr_GetValue(&TmrCtr, 0) <
 		(ms * (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 1000000)));
-#endif
 
 	XTmrCtr_Stop(&TmrCtr, 0);
 }
@@ -3332,6 +3296,7 @@ u32 StreamOffsetAddr[4] = {0, XILINX_DISPLAYPORT_VID2_BASE_ADDRESS_OFFSET,
  */
 void DpPt_TxSetMsaValuesImmediate(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 	/* Set the main stream attributes to the associated DisplayPort TX core
 	 * registers. */
@@ -3371,6 +3336,7 @@ void DpPt_TxSetMsaValuesImmediate(void *InstancePtr)
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr, XDP_TX_MAIN_STREAM_MISC1 +
 			StreamOffsetAddr[0], XDp_ReadReg(DpRxSsInst.DpPtr->Config.BaseAddr,
 					XDP_RX_MSA_MISC1));
+
 	XDp_WriteReg(DpTxSsInst.DpPtr->Config.BaseAddr, XDP_TX_USER_PIXEL_WIDTH +
 			StreamOffsetAddr[0], pixel);
      /* Check for YUV422, BPP has to be set using component value to 2 */
@@ -3389,87 +3355,6 @@ void DpPt_TxSetMsaValuesImmediate(void *InstancePtr)
 
 }
 
-#ifndef SDT
-int DpPt_SetupIntrSystem()
-{
-	int Status;
-	XIntc *IntcInstPtr = &IntcInst;
-
-	/* Initialize the interrupt controller driver so that it's ready to
-	 * use, specify the device ID that was generated in xparameters.h
-	 */
-	Status = XIntc_Initialize(IntcInstPtr, XINTC_DEVICE_ID);
-	if (Status != XST_SUCCESS) {
-		xil_printf("Intc initialization failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	/* Hook up interrupt service routine */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPTXSS_DP_INTERRUPT_ID,
-			(XInterruptHandler)XDpTxSs_DpIntrHandler, &DpTxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP TX SS DP interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-	/* Hook up Rx interrupt service routine */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_DPRXSS_DP_INTERRUPT_ID,
-			(XInterruptHandler)XDpRxSs_DpIntrHandler, &DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: DP RX SS DP interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-	/* Hook up Rx interrupt service routine */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_TIMER_0,
-			(XInterruptHandler)XTmrCtr_InterruptHandler, &TmrCtr);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: Timer interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	Status = XIntc_Connect(IntcInstPtr, XINTC_IIC_ID,
-			(XInterruptHandler) XIic_InterruptHandler,  &IicInstance);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: IIC interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	XIntc_Enable(IntcInstPtr, XINTC_IIC_ID);
-
-#if ENABLE_HDCP_IN_DESIGN
-	/* Hook up Rx interrupt service routine */
-	Status = XIntc_Connect(IntcInstPtr, XINTC_HDCP_TIMER_ID,
-			(XInterruptHandler)XDpRxSs_TmrCtrIntrHandler,&DpRxSsInst);
-	if (Status != XST_SUCCESS) {
-		xil_printf("ERR: Timer interrupt connect failed!\n\r");
-		return XST_FAILURE;
-	}
-
-	XIntc_Enable(&IntcInst, XINTC_HDCP_TIMER_ID);
-#endif
-
-	/* Start the interrupt controller such that interrupts are recognized
-	 * and handled by the processor
-	 */
-
-	Status = XIntc_Start(IntcInstPtr, XIN_REAL_MODE);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-	/* Initialize the exception table. */
-	Xil_ExceptionInit();
-
-	/* Register the interrupt controller handler with the exception
-	 * table.
-	 */
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XIntc_InterruptHandler, IntcInstPtr);
-
-	/* Enable exceptions. */
-	Xil_ExceptionEnable();
-	return (XST_SUCCESS);
-}
-#else
 int DpPt_SetupIntrSystem(void)
 {
 	int Status;
@@ -3509,7 +3394,7 @@ int DpPt_SetupIntrSystem(void)
 	if (!ConfigPtr_IIC)
 		return XST_FAILURE;
 
-	Status = XSetupInterruptSystem(&ConfigPtr_IIC, XIic_InterruptHandler,
+	Status = XSetupInterruptSystem(&IicInstance, XIic_InterruptHandler,
 				       ConfigPtr_IIC->IntrId, ConfigPtr_IIC->IntrParent,
 				       XINTERRUPT_DEFAULT_PRIORITY);
 	if (Status != XST_SUCCESS) {
@@ -3530,7 +3415,6 @@ int DpPt_SetupIntrSystem(void)
 
 	return XST_SUCCESS;
 }
-#endif
 /*****************************************************************************/
 /**
 *
@@ -3783,6 +3667,7 @@ void hpd_con()
 
 void DpPt_HpdEventHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 	u8 pwr_dwn;
 
 	if (XDpTxSs_IsConnected(&DpTxSsInst)) {
@@ -4022,6 +3907,7 @@ void hpd_pulse_con()
 
 void DpPt_HpdPulseHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 	xdbg_printf(XDBG_DEBUG_GENERAL,"\r\nHPD Pulse event detected\n\r");
 		// Some monitors give HPD pulse repeatedly which causes HPD pulse
@@ -4039,6 +3925,7 @@ void DpPt_HpdPulseHandler(void *InstancePtr)
 
 void DpPt_LinkrateChgHandler(void *InstancePtr)
 {
+	(void)InstancePtr;
 
 // If TX is unable to train at what it has been asked then
 // necessary down shift handling has to be done here
@@ -4115,6 +4002,7 @@ void clk_wiz_locked() {
 
 void start_tx(u8 line_rate, u8 lane_count,
 				XVidC_VideoMode res_table,u8 bpc, u8 pat) {
+	(void)pat;
 
 	u32 Status;
     u8 pwr_dwn;
@@ -4235,19 +4123,24 @@ extern volatile u8 TransmitComplete;   /* Flag to check completion of Transmissi
 extern volatile u8 ReceiveComplete;    /* Flag to check completion of Reception */
 
 
-static void ReceiveHandler(XIic * InstancePtr)
+static void ReceiveHandler(void *CallBackRef, int ByteCount)
 {
+        (void)CallBackRef;
+        (void)ByteCount;
         ReceiveComplete = 0;
 }
 
-static void SendHandler(XIic * InstancePtr)
+static void SendHandler(void *CallBackRef, int ByteCount)
 {
+        (void)CallBackRef;
+        (void)ByteCount;
         TransmitComplete = 0;
 }
 
-static void StatusHandler(XIic * InstancePtr, int Event)
+static void StatusHandler(void *CallBackRef, int StatusEvent)
 {
-
+        (void)CallBackRef;
+        (void)StatusEvent;
 }
 
 int iic_write(u16 ByteCount)
@@ -4418,12 +4311,9 @@ int write_si570()
   AddressType Address = EEPROM_TEST_START_ADDRESS;
   AddressType addr;
 
-  XIic_SetSendHandler(&IicInstance, &IicInstance,
-                    (XIic_Handler) SendHandler);
-  XIic_SetRecvHandler(&IicInstance, &IicInstance,
-                    (XIic_Handler) ReceiveHandler);
-  XIic_SetStatusHandler(&IicInstance, &IicInstance,
-                      (XIic_StatusHandler) StatusHandler);
+  XIic_SetSendHandler(&IicInstance, &IicInstance, SendHandler);
+  XIic_SetRecvHandler(&IicInstance, &IicInstance, ReceiveHandler);
+  XIic_SetStatusHandler(&IicInstance, &IicInstance, StatusHandler);
   /*
    * Initialize the data to write and the read buffer.
    */
@@ -4650,6 +4540,8 @@ void sendAudioInfoFrame(XilAudioInfoFrame *xilInfoFrame)
 //To use this, the TX should be configured with buffer bypass option.(hw change)
 
 void prog_bb (u8 bw, u8 is_tx) {
+	(void)bw;
+	(void)is_tx;
 #if BUFFER_BYPASS
 
 // For Buffer Bypass, the clock output from GT is refclk
@@ -4776,6 +4668,9 @@ void vdma_stop() {
 }
 
 void vdma_start() {
+	if ((dp_msa_hres == 0) || (dp_msa_vres == 0) || (pixel == 0)) {
+		return;
+	}
     Dprx_StartVDMA(&dma_struct[0].AxiVdma, XAXIVDMA_WRITE, dp_msa_hres,
 					dp_msa_vres, pixel,dma_struct);
     Dprx_StartVDMA(&dma_struct[0].AxiVdma, XAXIVDMA_READ, dp_msa_hres,

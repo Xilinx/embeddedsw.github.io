@@ -61,11 +61,7 @@ u32 clk_set(u8 i2c_mux_addr, u8 i2c_dev_addr, double set_freq)
 	u8 WriteBuffer[16];
 
 	/* Initialize I2C driver. */
-#ifndef SDT
-	IicCfgPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_DEVICE_ID);
-#else
 	IicCfgPtr = XIicPs_LookupConfig(XPAR_XIICPS_1_BASEADDR);
-#endif
 	XIicPs_CfgInitialize(&IicPtr, IicCfgPtr, IicCfgPtr->BaseAddress);
 	/* Set serial clock rate. */
 	Status = XIicPs_SetSClk(&IicPtr, 400000);
@@ -158,6 +154,8 @@ static void si570_rfreq_calc(double Freq, u8 *RFreq_Cal, u8 *RFreq_Set,
    double DCO;
    double RFreq_Val;
 
+   (void)RFreq_Cal;
+
    /*
     * Find the lowest HS_DIV and N1 settings
     */
@@ -210,7 +208,8 @@ static void si570_write_rfreq(XIicPs *Iic, u8 Addr, u8 *RFreq_Set,
 	/*
 	 * Wait until bus is idle and then write all values
 	 */
-	while (XIicPs_BusIsBusy(Iic) && i++ < 10000);
+	while (XIicPs_BusIsBusy(Iic) && i++ < 10000)
+		;
 
 	do_iic_until_pass(">>> Fail freeze DCO\r\n",
 			XIicPs_MasterSendPolled(Iic, (u8[]){137,0x18}, 2, Addr)

@@ -25,7 +25,7 @@
 ## @BEGIN_CHANGELOG EDK_P
 ##
 ##  - Added the generation of C_*E_FAILING_DATA_REGISTERS to the config structure
-##    to distinguish between AXI BRAM and LMB BRAM. These registers are not present 
+##    to distinguish between AXI BRAM and LMB BRAM. These registers are not present
 ##    in the current common::version of the AXI BRAM Controller.
 ##
 ##  - Added sorting of address parameters to not depend on the order in the hardware
@@ -114,7 +114,7 @@ proc xdefine_include_file {drv_handle file_name drv_string args} {
     }
 
     # Check if it is a driver parameter
-    lappend newargs 
+    lappend newargs
     foreach arg $args {
         #set value [xget_value $drv_handle "PARAMETER" $arg]
         set value [common::get_property "$arg" $drv_handle]
@@ -180,7 +180,7 @@ proc xdefine_include_file {drv_handle file_name drv_string args} {
             puts $file_handle "#define [::hsi::utils::get_driver_param_name $periph "C_S_AXI_CTRL_HIGHADDR" ] 0xFFFFFFFF$uSuffix  "
         }
         puts $file_handle ""
-    }		
+    }
     puts $file_handle "\n/******************************************************************/\n"
     close $file_handle
 }
@@ -189,7 +189,7 @@ proc xdefine_include_file {drv_handle file_name drv_string args} {
 # Create configuration C file as required by Xilinx  drivers
 #
 proc xdefine_config_file {drv_handle file_name drv_string args} {
-    set filename [file join "src" $file_name] 
+    set filename [file join "src" $file_name]
     set config_file [open $filename w]
     ::hsi::utils::write_c_header $config_file "Driver configuration"
     puts $config_file "#include \"xparameters.h\""
@@ -216,7 +216,7 @@ proc xdefine_config_file {drv_handle file_name drv_string args} {
             # If a parameter isn't found locally (in the current
             # peripheral), we will (for some obscure and ancient reason)
             # look in peripherals connected via point to point links
-            if { [string compare -nocase $local_value ""] == 0} { 
+            if { [string compare -nocase $local_value ""] == 0} {
                 set p2p_name ""
                 set p2p_name [::hsi::utils::get_p2p_name $periph $arg]
                 if { [string compare -nocase $p2p_name ""] == 0} {
@@ -232,7 +232,7 @@ proc xdefine_config_file {drv_handle file_name drv_string args} {
                     regsub "S_AXI_" $arg_name "" arg_name
                 }
                 puts -nonewline $config_file [format "%s\t\t%s" $comma $arg_name]
-                
+
             }
             # Also output C_*E_FAILING_DATA_REGISTERS, set to 0 for axi_bram_ctrl
             # since the current common::version doesn't support FFD and FFE registers

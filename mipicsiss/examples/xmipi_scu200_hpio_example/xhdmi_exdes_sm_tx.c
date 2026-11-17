@@ -30,6 +30,15 @@
 #ifdef SDT
 #include "xinterrupt_wrap.h"
 #endif
+#include "sensor_cfgs.h"
+
+/* See the matching comment in xhdmi_example.c -- Pipeline_Cfg.VideoDestn
+ * tells Hdmiphy1HdmiTxReadyCallback() below (an async GT/PHY-ready
+ * interrupt callback, unrelated to the menu) whether HDMI is actually the
+ * active output right now, so its print can be muted while DSI is
+ * selected. */
+extern XPipeline_Cfg Pipeline_Cfg;
+
 /************************** Constant Definitions ****************************/
 
 static const XV_Tx_Hdmi_Events XHdmi_Tx_EventsPriorityQueue[XV_TX_HDMI_NUM_EVENTS] = {
@@ -175,7 +184,9 @@ void Hdmiphy1HdmiTxInitCallback(void *CallbackRef)
 ******************************************************************************/
 void Hdmiphy1HdmiTxReadyCallback(void *CallbackRef)
 {
-	xil_printf("%s,%d,\r\n", __func__, __LINE__);
+	if (Pipeline_Cfg.VideoDestn == XVIDDES_HDMI) {
+		xil_printf("%s,%d,\r\n", __func__, __LINE__);
+	}
 }
 
 void XV_Tx_VPhy_SetCallbacks(XV_Tx *InstancePtr)

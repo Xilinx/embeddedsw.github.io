@@ -95,6 +95,8 @@
 *                   XDpRxss_GetDynamicRange
 * 8.0  jb  01/12/22 Added clk_wizard configuration for rx_dec_clk which is
 *                   required for 8b10b logic.
+*      dnk 09/16/26 Program the decode Clocking Wizard from the driver on
+*                   link-rate change using clk_wiz APIs.
 * </pre>
 *
 ******************************************************************************/
@@ -116,11 +118,25 @@ extern "C" {
 #include "xdprxss_dprx.h"
 #include "xdprxss_iic.h"
 #include "xdprxss_hdcp1x.h"
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+#include "xclk_wiz.h"
+#endif
 #if (XPAR_XHDCP22_RX_DP_NUM_INSTANCES > 0)
 #include "xdprxss_hdcp22.h"
 #endif
 
 /************************** Constant Definitions *****************************/
+
+/*
+ * The value selects the build, because the macro is also generated as zero
+ * whenever the device tree carries xlnx,enable-dsc with that value. The core
+ * feature macro is required as well, since the subsystem compression sources
+ * use the core picture parameter set type and call the core entry points, and
+ * those exist only when the core itself builds its compression support.
+ */
+#if XPAR_DPRXSS_0_ENABLE_DSC && defined(XDP_USE_DSC)
+#define XDPRXSS_USE_DSC
+#endif
 
 /* XDPRXSS wrapper macros for XDP_RX register offsets - only used ones */
 /** DPCD link bandwidth set register */
@@ -388,20 +404,14 @@ typedef struct {
 * DpRxSs I2C dummy subcore instance.
 */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;	  /**< Unique ID  of device */
-#else
 	char *Name;
-#endif
 	UINTPTR BaseAddress;  /**< Device base address */
 	int Has10BitAddr; /**< Does device have 10 bit address decoding */
 	u8 GpOutWidth;	  /**< Number of bits in general purpose output */
-#ifdef SDT
 	u16 IntrId;             /** Bits[11:0] Interrupt-id Bits[15:12]
 				 * trigger type and level flags */
 	UINTPTR IntrParent;     /** Bit[0] Interrupt parent type Bit[64/32:1]
 				 * Parent base address */
-#endif
 } XDpRxSs_IicDummySubCoreConfig;
 
 /**
@@ -423,13 +433,8 @@ typedef struct {
 * DpRxSs subcore instances.
 */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;	/**< Device ID of the sub-core */
-	UINTPTR AbsAddr;/**< Absolute Base Address of the Sub-cores*/
-#else
 	char *Name;
     UINTPTR BaseAddress;
-#endif
 } XDpRxSs_SubCoreConfig;
 
 typedef struct {
@@ -473,12 +478,7 @@ typedef struct
 * a configuration structure associated.
 */
 typedef struct {
-#ifndef SDT
-	u16 DeviceId;		/**< DeviceId is the unique ID of the
-				  *  DisplayPort RX Subsystem core */
-#else
     char *Name;
-#endif
 	UINTPTR BaseAddress;	/**< BaseAddress is the physical base address
 				  *  of the core's registers */
 	u8 SecondaryChEn;	/**< This Subsystem core supports audio packets
@@ -501,6 +501,8 @@ typedef struct {
 				  *  core instance. */
 	u8 IncludeAxiIic;  	/**< AXI IIC support flag */
 	u8 IncludeClkWiz;	/**< Clocking wizard support for dec_clk */
+	u8 DscEn;		/**< This Subsystem core decompresses a Display
+				  *  Stream Compression encoded stream. */
 
 	XDpRxSs_IicSubCore IicSubCore;	/**< IIC Configuration */
 	XDpRxSs_TmrCtrSubCore TmrCtrSubCore;	/**< Timer Counter
@@ -509,10 +511,8 @@ typedef struct {
 	XDpRxSs_DpSubCore DpSubCore;	/**< DisplayPort Configuration */
 	XDpRxSs_Hdcp1xSubCore Hdcp1xSubCore;	/**< HDCP Configuration */
 	XDpRxSs_Hdcp22SubCore Hdcp22SubCore;	/**< HDCP 2.2 Configuration */
-#ifdef SDT
 	u32 IntrId[5];
 	UINTPTR IntrParent;
-#endif
 } XDpRxSs_Config;
 
 /*****************************************************************************/
@@ -613,6 +613,9 @@ typedef struct {
 	u16 EdidSize[XDP_MAX_NPORTS];	/**< Size of EDID Data */
 	UINTPTR EdidBaseAddr;		/**< BaseAddress of Edid */
 	UINTPTR clk_wiz_abs_addr;	/**< Clock Wizard absolute base address */
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+	XClk_Wiz ClkWiz;		/**< Decode-clock Clocking Wizard instance */
+#endif
 } XDpRxSs;
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -1064,14 +1067,8 @@ typedef struct {
 #endif
 
 /************************** Function Prototypes ******************************/
-#ifndef SDT
-/* Initialization function in xdprxss_sinit.c */
-/** Looks up the device configuration based on the unique device ID. */
-XDpRxSs_Config* XDpRxSs_LookupConfig(u16 DeviceId);
-#else
 XDpRxSs_Config *XDpRxSs_LookupConfig(UINTPTR BaseAddress);
 u32 XDpRxSs_GetDrvIndex(UINTPTR BaseAddress);
-#endif
 /* Initialization and control functions in xdprxss.c */
 u32 XDpRxSs_CfgInitialize(XDpRxSs *InstancePtr, XDpRxSs_Config *CfgPtr,
 				UINTPTR EffectiveAddr);

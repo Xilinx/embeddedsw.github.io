@@ -1,9 +1,11 @@
 # Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
-add_definitions(-DISP_HDR_STITCH_V3_1=1 -DISP_RGBIR_V2_1=1 -DNO_TERMINAL=1 -DDUMP_IMAGE=1 -DAPU_CORE=1 -DFMC_AXI_IIC=1 -DSDT=1 -DPORTING_25=1)
+add_definitions(-DISP_HDR_STITCH_V3_1=1 -DISP_RGBIR_V2_1=1 -DNO_TERMINAL=1 -DDUMP_IMAGE=1 -DAPU_CORE=1 -DFMC_AXI_IIC=1 -DSDT=1 -DPORTING_25=1 -DWDT_NOTIFIER)
+# Enable -DWDT_SEND_TEST when you need to run the WDT self test.
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/vvbench/include
     ${CMAKE_SOURCE_DIR}/vvbench/include/submodules
+    ${CMAKE_SOURCE_DIR}/hdmi_display
 )
 
 
@@ -11,6 +13,24 @@ file(READ "${CMAKE_INCLUDE_PATH}/xparameters.h" XPARAM_CONTENT)
 string(REGEX MATCH "#define XPAR_VISP_SS_00_IO_MODE \"([^\"]+)\"" _match "${XPARAM_CONTENT}")
 string(REGEX REPLACE "#define XPAR_VISP_SS_00_IO_MODE \"([^\"]+)\"" "\\1" IO_MODE "${_match}")
 message(STATUS "Detected IO_MODE: ${IO_MODE}")
+
+# DisplayPort live-output support needs both the frame-buffer reader (the live
+# source) and the DP/DC/Clock-Wizard IPs. Detect the frmbuf_rd and clk_wiz
+# driver instances so the same source tree also builds on ISP-only / HDMI
+# designs that lack them. When either is absent, the dp_display module is
+# neither included nor compiled and DP_DISPLAY_AVAILABLE is left undefined.
+string(FIND "${XPARAM_CONTENT}" "XPAR_XV_FRMBUF_RD_NUM_INSTANCES" _dp_fbrd_pos)
+string(FIND "${XPARAM_CONTENT}" "XPAR_XCLK_WIZ_NUM_INSTANCES" _dp_clkwiz_pos)
+if(NOT _dp_fbrd_pos EQUAL -1 AND NOT _dp_clkwiz_pos EQUAL -1)
+    set(DP_DISPLAY_AVAILABLE TRUE)
+    message(STATUS "DP display: frmbuf_rd + DP/DC/clk_wiz present -> enabling dp_display")
+    include_directories(${CMAKE_SOURCE_DIR}/dp_display)
+    add_definitions(-DDP_DISPLAY_AVAILABLE=1)
+else()
+    set(DP_DISPLAY_AVAILABLE FALSE)
+    message(STATUS "DP display: frmbuf_rd or clk_wiz/DP IPs missing -> skipping dp_display")
+endif()
+
 link_libraries("visp")
 add_compile_options(-w)
 
@@ -73,6 +93,52 @@ if(EXISTS ${IMAGE_RAW_FILE})
 
     list(APPEND GENERATED_JSON_HEADERS ${IMAGE_HEADER_FILE})
 endif()
+
+
+message(STATUS "Processor: ${CMAKE_SYSTEM_PROCESSOR}")
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "cortexa78")
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libvisp_a78.a")
+		file(RENAME
+			${CMAKE_CURRENT_SOURCE_DIR}/libvisp_a78.a
+			${CMAKE_CURRENT_SOURCE_DIR}/libvisp.a)
+	endif()
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lscript_a78.ld")
+		file(RENAME
+			${CMAKE_CURRENT_SOURCE_DIR}/lscript_a78.ld
+			${CMAKE_CURRENT_SOURCE_DIR}/lscript.ld)
+	endif()
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lscript_r52.ld")
+		file(REMOVE
+		    ${CMAKE_CURRENT_SOURCE_DIR}/lscript_r52.ld)
+	endif()
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libvisp_r52.a")
+		file(REMOVE
+		    ${CMAKE_CURRENT_SOURCE_DIR}/libvisp_r52.a)
+	endif()
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "cortexr52")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-short-enums")
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libvisp_r52.a")
+                file(RENAME
+                        ${CMAKE_CURRENT_SOURCE_DIR}/libvisp_r52.a
+                        ${CMAKE_CURRENT_SOURCE_DIR}/libvisp.a)
+        endif()
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lscript_r52.ld")
+                file(RENAME
+                        ${CMAKE_CURRENT_SOURCE_DIR}/lscript_r52.ld
+                        ${CMAKE_CURRENT_SOURCE_DIR}/lscript.ld)
+        endif()
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lscript_a78.ld")
+                file(REMOVE
+                    ${CMAKE_CURRENT_SOURCE_DIR}/lscript_a78.ld)
+        endif()
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libvisp_a78.a")
+                file(REMOVE
+                    ${CMAKE_CURRENT_SOURCE_DIR}/libvisp_a78.a)
+        endif()
+
+endif()
+
 
 # Create a custom target for all generated headers
 add_custom_target(generate_json_headers ALL DEPENDS ${GENERATED_JSON_HEADERS})

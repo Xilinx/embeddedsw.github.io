@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -48,13 +48,13 @@ extern XDsi2RxSs_Config XDsi2RxSs_ConfigTable[];
 /*****************************************************************************/
 /**
 * This function looks for the device configuration based on the unique device
-* ID. The table XDsi2RxSs_ConfigTable[] contains the configuration information
-* for each instance of the device in the system.
+* base address. The table XDsi2RxSs_ConfigTable[] contains the configuration
+* information for each instance of the device in the system.
 *
 * @param	BaseAddress is the unique address of the device being looked up
 *
 * @return	A pointer to the configuration table entry corresponding to the
-*		given device ID, or NULL if no match is found
+*		given base address, or NULL if no match is found
 *
 * @note		None.
 *
@@ -78,16 +78,14 @@ XDsi2RxSs_Config* XDsi2RxSs_LookupConfig(UINTPTR BaseAddress)
 /**
 * This function returns the Index number of config table using BaseAddress.
 *
-* @param  A pointer to the instance structure
-*
-* @param  Base address of the instance
+* @param  BaseAddress is the base address of the instance
 *
 * @return Index number of the config table
 *
 *
 *******************************************************************************/
 
-u32 XDsi2RxSs_GetDrvIndex(XDsi2RxSs *InstancePtr, UINTPTR BaseAddress)
+u32 XDsi2RxSs_GetDrvIndex(UINTPTR BaseAddress)
 {
  u32 Index = 0;
 

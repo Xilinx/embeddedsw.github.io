@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2010 - 2021 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,8 +8,7 @@
 /**
 *
 * @file xiicps_master.c
-* @addtogroup iicps_api IICPS APIs
-* @{
+* @brief Implements the master mode transfers of the XIicPs driver.
 *
 * The xiicps_master.c file handles master mode transfers.
 *
@@ -54,9 +53,17 @@
 *	rna 05/24/21 Fix Misra c violations
 * 3.18 gm  08/11/23 Update Receive Polled and Interrupt Handler functions
 * 		     as modular.
+* 3.24 vn  08/26/26 Fix Doxygen warnings
+* 3.24 tb  09/30/26 Align Doxygen comments with AMD standards
+* 3.24 vlt 10/02/26 Refactor XIicPs_MasterSendPolled() and
+*		     XIicPs_MasterInterruptHandler() to reduce CCM.
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup iicps_api IICPS APIs
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -69,28 +76,282 @@
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
-#define TX_MAX_LOOPCNT 1000000U	/**< Used to wait in polled function */
+#define TX_MAX_LOOPCNT 1000000U	/**< Used to wait in polled function. */
 
 /************************** Function Prototypes ******************************/
+
+static u32 XIicPs_MasterSendRemainingData(XIicPs *InstancePtr, u32 Intrs);
+static s32 XIicPs_MasterWaitSendComplete(XIicPs *InstancePtr,
+					  u32 Intrs,
+					  u32 IntrStatusReg);
+static void XIicPs_ClearHold(XIicPs *InstancePtr);
+static void XIicPs_ProcessMasterRecvComplete(XIicPs *InstancePtr,
+						    u32 IntrStatusReg,
+						    u32 *StatusEvent);
+static void XIicPs_ProcessMasterNackEvent(XIicPs *InstancePtr,
+				       u32 IntrStatusReg,
+				       u32 *StatusEvent);
+static void XIicPs_ProcessMasterStatusEvents(XIicPs *InstancePtr,
+						   u32 IntrStatusReg,
+						   u32 *StatusEvent);
+static void XIicPs_ProcessMasterErrorEvents(XIicPs *InstancePtr,
+						  u32 IntrStatusReg,
+						  u32 *StatusEvent);
 
 /************************* Variable Definitions *****************************/
 
 /*****************************************************************************/
 /**
 * @brief
-* Initiates an interrupt-driven send in master mode.
+* Clears the hold bit when repeated start is not enabled.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+*
+****************************************************************************/
+static void XIicPs_ClearHold(XIicPs *InstancePtr)
+{
+	UINTPTR BaseAddr;
+
+	if (InstancePtr->IsRepeatedStart == 0) {
+		BaseAddr = InstancePtr->Config.BaseAddress;
+		XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
+				XIicPs_ReadReg(BaseAddr, XIICPS_CR_OFFSET) &
+					(~XIICPS_CR_HOLD_MASK));
+	}
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Handles completion of master receive transfers.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     IntrStatusReg Current interrupt status register value.
+* @param[in,out] StatusEvent Pointer to the accumulated status event mask.
+*
+****************************************************************************/
+static void XIicPs_ProcessMasterRecvComplete(XIicPs *InstancePtr,
+						    u32 IntrStatusReg,
+						    u32 *StatusEvent)
+{
+	if ((InstancePtr->IsSend == 0) &&
+		(0U != (IntrStatusReg & XIICPS_IXR_COMP_MASK))) {
+		if (InstancePtr->RecvByteCount == 0) {
+			XIicPs_ClearHold(InstancePtr);
+			*StatusEvent |= XIICPS_EVENT_COMPLETE_RECV;
+		}
+	}
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Handles the NACK event for master mode.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     IntrStatusReg Current interrupt status register value.
+* @param[in,out] StatusEvent Pointer to the accumulated status event mask.
+*
+****************************************************************************/
+static void XIicPs_ProcessMasterNackEvent(XIicPs *InstancePtr,
+				       u32 IntrStatusReg,
+				       u32 *StatusEvent)
+{
+	if (0U != (IntrStatusReg & XIICPS_IXR_NACK_MASK)) {
+		XIicPs_ClearHold(InstancePtr);
+		*StatusEvent |= XIICPS_EVENT_NACK;
+	}
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Handles status events for master mode.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     IntrStatusReg Current interrupt status register value.
+* @param[in,out] StatusEvent Pointer to the accumulated status event mask.
+*
+****************************************************************************/
+static void XIicPs_ProcessMasterStatusEvents(XIicPs *InstancePtr,
+						   u32 IntrStatusReg,
+						   u32 *StatusEvent)
+{
+	if (0U != (IntrStatusReg & XIICPS_IXR_SLV_RDY_MASK)) {
+		*StatusEvent |= XIICPS_EVENT_SLAVE_RDY;
+	}
+
+	if (0U != (IntrStatusReg & XIICPS_IXR_ARB_LOST_MASK)) {
+		*StatusEvent |= XIICPS_EVENT_ARB_LOST;
+	}
+
+	if (0U != (IntrStatusReg & XIICPS_IXR_TO_MASK)) {
+		XIicPs_DisableInterrupts(InstancePtr->Config.BaseAddress,
+				 XIICPS_IXR_TO_MASK);
+		*StatusEvent |= XIICPS_EVENT_TIME_OUT;
+	}
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Handles error events for master mode.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     IntrStatusReg Current interrupt status register value.
+* @param[in,out] StatusEvent Pointer to the accumulated status event mask.
+*
+****************************************************************************/
+static void XIicPs_ProcessMasterErrorEvents(XIicPs *InstancePtr,
+						  u32 IntrStatusReg,
+						  u32 *StatusEvent)
+{
+	if (0U != (IntrStatusReg & (XIICPS_IXR_NACK_MASK |
+			XIICPS_IXR_RX_UNF_MASK | XIICPS_IXR_TX_OVR_MASK |
+			XIICPS_IXR_RX_OVR_MASK))) {
+		XIicPs_ClearHold(InstancePtr);
+		*StatusEvent |= XIICPS_EVENT_ERROR;
+	}
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Sends the remaining data by refilling the transmit FIFO.
+*
+* This function waits until the transmit FIFO becomes empty and refills it
+* with the remaining data. It continues until all the data is loaded into
+* the FIFO or a transfer error occurs.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     Intrs Mask containing the transfer error interrupts.
+*
+* @return	The latest interrupt status register value.
+*
+****************************************************************************/
+static u32 XIicPs_MasterSendRemainingData(XIicPs *InstancePtr, u32 Intrs)
+{
+	u32 IntrStatusReg;
+	u32 StatusReg;
+	UINTPTR BaseAddr;
+	_Bool Value;
+
+	BaseAddr = InstancePtr->Config.BaseAddress;
+
+	IntrStatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_ISR_OFFSET);
+
+	Value = ((InstancePtr->SendByteCount > (s32)0) &&
+		 ((IntrStatusReg & Intrs) == (u32)0U));
+
+	while (Value != FALSE) {
+		StatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_SR_OFFSET);
+
+		/*
+		 * Wait until the transmit FIFO is empty.
+		 */
+		if ((StatusReg & XIICPS_SR_TXDV_MASK) != 0U) {
+			IntrStatusReg = XIicPs_ReadReg(BaseAddr,
+						      XIICPS_ISR_OFFSET);
+
+			Value = ((InstancePtr->SendByteCount > (s32)0) &&
+				 ((IntrStatusReg & Intrs) == (u32)0U));
+			continue;
+		}
+
+		/*
+		 * Send more data through the transmit FIFO.
+		 */
+		(void)TransmitFifoFill(InstancePtr);
+
+		Value = ((InstancePtr->SendByteCount > (s32)0) &&
+			 ((IntrStatusReg & Intrs) == (u32)0U));
+	}
+
+	return IntrStatusReg;
+}
+
+/*****************************************************************************/
+/**
+* @brief
+* Waits for completion of a polled master send transfer.
+*
+* This function waits for the transfer-complete status and checks for
+* arbitration lost, transmit overflow, NACK, and timeout conditions.
+*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     Intrs Mask containing the transfer error interrupts.
+* @param[in]     IntrStatusReg Current interrupt status register value.
+*
+* @return
+*		- XST_SUCCESS if the transfer completed successfully.
+*		- XST_FAILURE if the transfer timed out or another error occurred.
+*		- XST_IIC_ARB_LOST if arbitration was lost.
+*
+****************************************************************************/
+static s32 XIicPs_MasterWaitSendComplete(XIicPs *InstancePtr,
+					  u32 Intrs,
+					  u32 IntrStatusReg)
+{
+	UINTPTR BaseAddr;
+	s32 Status = (s32)XST_FAILURE;
+	u32 Timeout = 0U;
+
+	BaseAddr = InstancePtr->Config.BaseAddress;
+
+	while ((IntrStatusReg & XIICPS_IXR_COMP_MASK) !=
+	       XIICPS_IXR_COMP_MASK) {
+		IntrStatusReg = XIicPs_ReadReg(BaseAddr,
+					      XIICPS_ISR_OFFSET);
+
+		/*
+		 * If there is an error, return the corresponding status.
+		 */
+		if ((IntrStatusReg & Intrs) != 0U) {
+			if ((IntrStatusReg &
+			     XIICPS_IXR_ARB_LOST_MASK) != 0U) {
+				Status = (s32)XST_IIC_ARB_LOST;
+			}
+			break;
+		}
+
+		/*
+		 * Timeout if stuck for more than one second.
+		 */
+		usleep(1);
+		Timeout++;
+
+		if (Timeout == TX_MAX_LOOPCNT) {
+			break;
+		}
+	}
+
+	XIicPs_ClearHold(InstancePtr);
+
+	/*
+	 * Set the status to success if there is no transfer error
+	 * and the operation has not timed out.
+	 */
+	if (((IntrStatusReg & Intrs) == 0U) &&
+	    (Timeout != TX_MAX_LOOPCNT)) {
+		Status = (s32)XST_SUCCESS;
+	}
+
+	return Status;
+}
+
+/*****************************************************************************/
+/**
+* @brief Initiates an interrupt-driven send in master mode.
 *
 * It tries to send the first FIFO full of data, then lets the interrupt
-* handler to handle the rest of the data if there is any.
+* handler handle the rest of the data, if any.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	MsgPtr Pointer to the send buffer.
-* @param	ByteCount Number of bytes to be sent.
-* @param	SlaveAddr Address of the slave we are sending to.
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     MsgPtr Pointer to the send buffer.
+* @param[in]     ByteCount Number of bytes to be sent.
+* @param[in]     SlaveAddr Address of the slave we are sending to.
 *
-* @return	None.
-*
-* @note		This send routine is for interrupt-driven transfer only.
+* @note          This send routine is for interrupt-driven transfer only.
 *
  ****************************************************************************/
 void XIicPs_MasterSend(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
@@ -165,20 +426,17 @@ void XIicPs_MasterSend(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 
 /*****************************************************************************/
 /**
-* @brief
-* Initiates an interrupt-driven receive in master mode.
+* @brief Initiates an interrupt-driven receive in master mode.
 *
 * It sets the transfer size register so the slave can send data.
-* The rest of the work is managed by interrupt handler.
+* The interrupt handler manages the rest of the work.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	MsgPtr Pointer to the receive buffer.
-* @param	ByteCount Number of bytes to be received.
-* @param	SlaveAddr Address of the slave we are receiving from.
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[out]    MsgPtr Pointer to the receive buffer.
+* @param[in]     ByteCount Number of bytes to be received.
+* @param[in]     SlaveAddr Address of the slave we are receiving from.
 *
-* @return	None.
-*
-* @note		This receive routine is for interrupt-driven transfer only.
+* @note          This receive routine is for interrupt-driven transfer only.
 *
 ****************************************************************************/
 void XIicPs_MasterRecv(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
@@ -253,38 +511,34 @@ void XIicPs_MasterRecv(XIicPs *InstancePtr, u8 *MsgPtr, s32 ByteCount,
 
 /*****************************************************************************/
 /**
-* @brief
-* Initiates a polled mode send in master mode.
+* @brief Initiates a polled mode send in master mode.
 *
 * It sends data to the FIFO and waits for the slave to pick them up.
-* If master fails to send data due arbitration lost, will stop transfer
-* and with arbitration lost status.
+* If the master fails to send data due to arbitration lost, it stops the
+* transfer and returns the arbitration lost status.
 * If slave fails to remove data from FIFO, the send fails with
 * time out.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	MsgPtr Pointer to the send buffer.
-* @param	ByteCount Number of bytes to be sent.
-* @param	SlaveAddr Address of the slave we are sending to.
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     MsgPtr Pointer to the send buffer.
+* @param[in]     ByteCount Number of bytes to be sent.
+* @param[in]     SlaveAddr Address of the slave we are sending to.
 *
 * @return
-*		- XST_SUCCESS if everything went well.
-*		- XST_FAILURE if timed out.
-*		- XST_IIC_ARB_LOST if arbitration lost
+*                - XST_SUCCESS if everything went well.
+*                - XST_FAILURE if timed out.
+*                - XST_IIC_ARB_LOST if arbitration lost.
 *
-* @note		This send routine is for polled mode transfer only.
+* @note          This send routine is for polled mode transfer only.
 *
 ****************************************************************************/
 s32 XIicPs_MasterSendPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 		 s32 ByteCount, u16 SlaveAddr)
 {
 	u32 IntrStatusReg;
-	u32 StatusReg;
 	UINTPTR BaseAddr;
 	u32 Intrs;
-	s32 Status = (s32)XST_FAILURE;
-	u32 timeout = 0;
-	_Bool Value;
+	s32 Status;
 
 	/*
 	 * Assert validates the input arguments.
@@ -333,97 +587,34 @@ s32 XIicPs_MasterSendPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 
 	XIicPs_WriteReg(BaseAddr, XIICPS_ADDR_OFFSET, (u32)SlaveAddr);
 
-	IntrStatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_ISR_OFFSET);
-
-	/*
-	 * Continue sending as long as there is more data and
-	 * there are no errors.
-	 */
-	Value = ((InstancePtr->SendByteCount > (s32)0) &&
-		((IntrStatusReg & Intrs) == (u32)0U));
-	while (Value != FALSE) {
-		StatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_SR_OFFSET);
-
-		/*
-		 * Wait until transmit FIFO is empty.
-		 */
-		if ((StatusReg & XIICPS_SR_TXDV_MASK) != 0U) {
-			IntrStatusReg = XIicPs_ReadReg(BaseAddr,
-					XIICPS_ISR_OFFSET);
-			Value = ((InstancePtr->SendByteCount > (s32)0) &&
-				((IntrStatusReg & Intrs) == (u32)0U));
-			continue;
-		}
-
-		/*
-		 * Send more data out through transmit FIFO.
-		 */
-		(void)TransmitFifoFill(InstancePtr);
-		Value = ((InstancePtr->SendByteCount > (s32)0) &&
-			((IntrStatusReg & Intrs) == (u32)0U));
-	}
-
-	/*
-	 * Check for completion of transfer.
-	 */
-	while ((IntrStatusReg & XIICPS_IXR_COMP_MASK) != XIICPS_IXR_COMP_MASK){
-
-		IntrStatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_ISR_OFFSET);
-		/*
-		 * If there is an error, tell the caller.
-		 */
-		if ((IntrStatusReg & Intrs) != 0U) {
-			if ((IntrStatusReg & XIICPS_IXR_ARB_LOST_MASK) != 0U) {
-				Status = (s32) XST_IIC_ARB_LOST;
-			}
-			break;
-		}
-		/*
-		 * Timeout if stuck for more than 1 second
-		 */
-		usleep(1);
-		timeout++;
-		if (timeout == TX_MAX_LOOPCNT) {
-			break;
-		}
-	}
-
-	if (InstancePtr->IsRepeatedStart == 0) {
-		XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
-				XIicPs_ReadReg(BaseAddr,XIICPS_CR_OFFSET) &
-						(~XIICPS_CR_HOLD_MASK));
-	}
-
-	/* Set the Status for XST_SUCCESS */
-	if (((IntrStatusReg & Intrs) == 0U) && (timeout != TX_MAX_LOOPCNT)) {
-		Status = (s32)XST_SUCCESS;
-	}
+	IntrStatusReg = XIicPs_MasterSendRemainingData(InstancePtr, Intrs);
+	Status = XIicPs_MasterWaitSendComplete(InstancePtr, Intrs,
+						IntrStatusReg);
 
 	return Status;
 }
 
 /*****************************************************************************/
 /**
-* @brief
-* Initiates a polled mode receive in master mode.
+* @brief Initiates a polled mode receive in master mode.
 *
 * It repeatedly sets the transfer size register so the slave can
 * send data to us. It polls the data register for data to come in.
-* If master fails to read data due arbitration lost, will return
+* If the master fails to read data due to arbitration lost, it returns
 * with arbitration lost status.
 * If slave fails to send us data, it fails with time out.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	MsgPtr Pointer to the receive buffer.
-* @param	ByteCount Number of bytes to be received.
-* @param	SlaveAddr Address of the slave we are receiving from.
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[out]    MsgPtr Pointer to the receive buffer.
+* @param[in]     ByteCount Number of bytes to be received.
+* @param[in]     SlaveAddr Address of the slave we are receiving from.
 *
 * @return
-*		- XST_SUCCESS if everything went well.
-*		- XST_FAILURE if timed out.
-*		- XST_IIC_ARB_LOST if arbitration lost
+*                - XST_SUCCESS if everything went well.
+*                - XST_FAILURE if timed out.
+*                - XST_IIC_ARB_LOST if arbitration lost.
 *
-* @note		This receive routine is for polled mode transfer only.
+* @note          This receive routine is for polled mode transfer only.
 *
 ****************************************************************************/
 s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
@@ -505,11 +696,7 @@ s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 	 */
 	IntrStatusReg = XIicPs_ReadReg(BaseAddr, XIICPS_ISR_OFFSET);
 
-	if (InstancePtr->IsRepeatedStart == 0) {
-		XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
-				XIicPs_ReadReg(BaseAddr,XIICPS_CR_OFFSET) &
-						(~XIICPS_CR_HOLD_MASK));
-	}
+	XIicPs_ClearHold(InstancePtr);
 
 	if ((IntrStatusReg & Intrs) != 0U) {
 		if ((IntrStatusReg & XIICPS_IXR_ARB_LOST_MASK) != 0U) {
@@ -526,19 +713,15 @@ s32 XIicPs_MasterRecvPolled(XIicPs *InstancePtr, u8 *MsgPtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* Enables the slave monitor mode.
+* @brief Enables the slave monitor mode.
 *
 * It enables slave monitor in the control register and enables
 * slave ready interrupt. It then does an address transfer to slave.
-* Interrupt handler will signal the caller if slave responds to
+* The interrupt handler signals the caller if the slave responds to
 * the address transfer.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-* @param	SlaveAddr Address of the slave to contact.
-*
-* @return	None.
-*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
+* @param[in]     SlaveAddr Address of the slave to contact.
 *
 ****************************************************************************/
 void XIicPs_EnableSlaveMonitor(XIicPs *InstancePtr, u16 SlaveAddr)
@@ -600,13 +783,9 @@ void XIicPs_EnableSlaveMonitor(XIicPs *InstancePtr, u16 SlaveAddr)
 
 /*****************************************************************************/
 /**
-* @brief
-* Disables slave monitor mode.
+* @brief Disables slave monitor mode.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-*
-* @return	None.
-*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
 *
 ****************************************************************************/
 void XIicPs_DisableSlaveMonitor(XIicPs *InstancePtr)
@@ -671,7 +850,9 @@ void XIicPs_DisableSlaveMonitor(XIicPs *InstancePtr)
 
 /*****************************************************************************/
 /**
-* The interrupt handler for the master mode. It does the protocol handling for
+* @brief Handles interrupts for the master mode.
+*
+* The interrupt handler for the master mode does the protocol handling for
 * the interrupt-driven transfers.
 *
 * Completion events and errors are signaled to upper layer for proper handling.
@@ -685,26 +866,23 @@ void XIicPs_DisableSlaveMonitor(XIicPs *InstancePtr)
 * - COMP:
 *	If the Master is transmitting data and there is more data to be
 *	sent then the data is written to the FIFO. If there is no more data to
-*	be transmitted then a completion event is signalled to the upper layer
+*	be transmitted then a completion event is signaled to the upper layer
 *	by calling the callback handler.
 *
 *	If the Master is receiving data then the data is read from the FIFO and
 *	the Master has to request for more data (if there is more data to
 *	receive). If all the data has been received then a completion event
-*	is signalled to the upper layer by calling the callback handler.
+*	is signaled to the upper layer by calling the callback handler.
 *	It is an error if the amount of received data is more than expected.
 *
 * - NAK and SLAVE_RDY:
-*	This is signalled to the upper layer by calling the callback handler.
+*	This is signaled to the upper layer by calling the callback handler.
 *
 * - All Other interrupts:
-*	These interrupts are marked as error. This is signalled to the upper
+*	These interrupts are marked as error. This is signaled to the upper
 *	layer by calling the callback handler.
 *
-* @param	InstancePtr Pointer to the XIicPs instance.
-*
-* @return	None.
-*
+* @param[in,out] InstancePtr Pointer to the XIicPs instance.
 *
 ****************************************************************************/
 void XIicPs_MasterInterruptHandler(XIicPs *InstancePtr)
@@ -755,65 +933,13 @@ void XIicPs_MasterInterruptHandler(XIicPs *InstancePtr)
 	 */
 	XIicPs_MasterIntrRead(InstancePtr, &IntrStatusReg, IsHold);
 
-	if ((InstancePtr->IsSend == 0) &&
-		(0U != (IntrStatusReg & XIICPS_IXR_COMP_MASK))) {
-		/*
-		 * If all done, tell the application.
-		 */
-		if (InstancePtr->RecvByteCount == 0){
-			if (InstancePtr->IsRepeatedStart == 0) {
-				XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
-						XIicPs_ReadReg(BaseAddr,
-						XIICPS_CR_OFFSET) &
-						(~XIICPS_CR_HOLD_MASK));
-			}
-			StatusEvent |= XIICPS_EVENT_COMPLETE_RECV;
-		}
-	}
-
-
-	/*
-	 * Slave ready interrupt, it is only meaningful for master mode.
-	 */
-	if (0U != (IntrStatusReg & XIICPS_IXR_SLV_RDY_MASK)) {
-		StatusEvent |= XIICPS_EVENT_SLAVE_RDY;
-	}
-
-	if (0U != (IntrStatusReg & XIICPS_IXR_NACK_MASK)) {
-		 if (InstancePtr->IsRepeatedStart == 0) {
-			XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
-					XIicPs_ReadReg(BaseAddr,
-					XIICPS_CR_OFFSET) &
-					(~XIICPS_CR_HOLD_MASK));
-		}
-		StatusEvent |= XIICPS_EVENT_NACK;
-	}
-
-	/*
-	 * Arbitration lost interrupt
-	 */
-	if (0U != (IntrStatusReg & XIICPS_IXR_ARB_LOST_MASK)) {
-		StatusEvent |= XIICPS_EVENT_ARB_LOST;
-	}
-
-	if (0U != (IntrStatusReg & XIICPS_IXR_TO_MASK)) {
-		XIicPs_DisableInterrupts(BaseAddr, XIICPS_IXR_TO_MASK);
-		StatusEvent |= XIICPS_EVENT_TIME_OUT;
-	}
-	/*
-	 * All other interrupts are treated as error.
-	 */
-	if (0U != (IntrStatusReg & (XIICPS_IXR_NACK_MASK |
-			XIICPS_IXR_RX_UNF_MASK | XIICPS_IXR_TX_OVR_MASK |
-			XIICPS_IXR_RX_OVR_MASK))) {
-		if (InstancePtr->IsRepeatedStart == 0) {
-			XIicPs_WriteReg(BaseAddr, XIICPS_CR_OFFSET,
-					XIicPs_ReadReg(BaseAddr,
-					XIICPS_CR_OFFSET) &
-					(~XIICPS_CR_HOLD_MASK));
-		}
-		StatusEvent |= XIICPS_EVENT_ERROR;
-	}
+	XIicPs_ProcessMasterRecvComplete(InstancePtr, IntrStatusReg,
+						 &StatusEvent);
+	XIicPs_ProcessMasterNackEvent(InstancePtr, IntrStatusReg, &StatusEvent);
+	XIicPs_ProcessMasterStatusEvents(InstancePtr, IntrStatusReg,
+						 &StatusEvent);
+	XIicPs_ProcessMasterErrorEvents(InstancePtr, IntrStatusReg,
+						 &StatusEvent);
 
 	/*
 	 * Signal application if there are any events.

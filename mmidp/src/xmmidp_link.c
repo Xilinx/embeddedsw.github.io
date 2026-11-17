@@ -24,9 +24,25 @@
 /******************************* Include Files ********************************/
 #include <stdlib.h>
 #include <xstatus.h>
-#include <sleep.h>
+#include <xil_assert.h>
 
 #include "xmmidp.h"
+
+#ifndef XMMIDP_LT_VERBOSE
+/** Set to 1 to print link training debug messages. */
+#define XMMIDP_LT_VERBOSE 0
+#endif
+
+#if XMMIDP_LT_VERBOSE
+/** Print a link training debug message. */
+#define XMMIDP_LT_LOG(...) xil_printf(__VA_ARGS__)
+#else
+/** Link training debug messages are compiled out. */
+#define XMMIDP_LT_LOG(...) ((void)0)
+#endif
+
+/** PHY/main link settle time after XMmiDp_StartLinkXmit() before CR/EQ. */
+#define XMMIDP_LINK_XMIT_SETTLE_US 1000000U
 
 #define XMMIDP_CR_TIMEOUT_COUNT 50
 #define XMMIDP_MAX_VSLEVEL_CNT 5
@@ -200,10 +216,10 @@ u32 XMmiDp_GetRxMstModeCap(XMmiDp *InstancePtr)
 u32 XMmiDp_StartLinkXmit(XMmiDp *InstancePtr)
 {
 	XMmiDp_SetPhyLaneCount(InstancePtr,
-			       InstancePtr->RxConfig.MaxLaneCount);
+			       InstancePtr->LinkConfig.LaneCount);
 
 	XMmiDp_SetPhyLinkRate(InstancePtr,
-			      InstancePtr->RxConfig.MaxLinkRate);
+			      InstancePtr->LinkConfig.LinkRate);
 
 	XMmiDp_SetPhyVoltageSwing(InstancePtr, InstancePtr->LinkConfig.VsLevel);
 	XMmiDp_SetPhyPreEmphasis(InstancePtr, InstancePtr->LinkConfig.PeLevel);
@@ -229,11 +245,10 @@ u32 XMmiDp_StartLinkXmit(XMmiDp *InstancePtr)
 *******************************************************************************/
 u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr)
 {
-	u32 MaxLinkBW = InstancePtr->RxConfig.MaxLinkBW;
+	u32 MaxLinkBW = InstancePtr->LinkConfig.LinkBW;
 	u32 ChannelCodingSet = InstancePtr->LinkConfig.ChannelCodingSet;
-	u8 MstmCtrl = (XMMIDP_DPCD_UPSTREAM_IS_SRC_MASK |
-		       XMMIDP_DPCD_UP_REQ_EN_MASK) |
-		      InstancePtr->RxConfig.MstCap;
+	/* Default SST source: UP_REQ_EN=0, MST_EN=0 */
+	u8 MstmCtrl = 0U;
 
 	/* Link BW Set */
 	XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_LINK_BW_SET,
@@ -244,7 +259,7 @@ u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr)
 				   XMMIDP_DPCD_LANE_COUNT_SET,
 				   XMMIDP_DPCD_LANE_COUNT_SET_MASK,
 				   XMMIDP_DPCD_LANE_COUNT_SET_SHIFT,
-				   InstancePtr->RxConfig.MaxNumLanes);
+				   InstancePtr->LinkConfig.NumLanes);
 
 	/* Enhanced Frame Enable -- set bit 7 of DPCD_LANE_COUNT_SET */
 	if (InstancePtr->RxConfig.EnhancedFrameCap) {
@@ -267,8 +282,15 @@ u32 XMmiDp_SetSinkDpcdLinkCfgField(XMmiDp *InstancePtr)
 			XMMIDP_DPCD_MAIN_LINK_CHANNEL_CODING_SET,
 			0x1, &ChannelCodingSet);
 
-	/* MultiStream Mode support*/
-	XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_MSTM_CTRL, 0x1, &MstmCtrl);
+	/* MultiStream Mode: default SST; use XMmiDp_SinkMstModeEnable()
+	 * after link training to opt in to MST when sink MST_CAP=1. */
+	XMmiDp_RegReadModifyWrite(InstancePtr, XMMIDP_CCTL0,
+				  XMMIDP_CCTL0_ENABLE_MST_MODE_MASK,
+				  XMMIDP_CCTL0_ENABLE_MST_MODE_SHIFT, 0U);
+	/* MSTM_CTRL (0x111) exists only for DPCD rev >= 1.2 */
+	if (InstancePtr->RxConfig.DpcdRev >= 0x12U)
+		XMmiDp_AuxWrite(InstancePtr, XMMIDP_DPCD_MSTM_CTRL, 0x1,
+				&MstmCtrl);
 
 	return XST_SUCCESS;
 }
@@ -1510,4 +1532,120 @@ u32 XMmiDp_RunTraining(XMmiDp *InstancePtr)
 	return XST_SUCCESS;
 
 }
+
+/******************************************************************************/
+/**
+ * This function limits the link to the user lane count and link
+ * bandwidth caps. A cap of 0, or one above the sink capability,
+ * is ignored.
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       UserMaxLanes User-configured max lane count (0=auto).
+ * @param       UserMaxLinkBW User-configured max link BW in DPCD format
+ *              (0=auto).
+ *
+ * @return      None.
+ *
+ * @note        None.
+ *
+*******************************************************************************/
+static void XMmiDp_ApplyUserLinkCaps(XMmiDp *InstancePtr,
+				     u8 UserMaxLanes, u8 UserMaxLinkBW)
+{
+	u8 NumLanes = InstancePtr->RxConfig.MaxNumLanes;
+	u8 LinkBW = InstancePtr->RxConfig.MaxLinkBW;
+
+	if (UserMaxLanes != 0 && UserMaxLanes < NumLanes) {
+		XMMIDP_LT_LOG("  User cap: limiting lanes from %d to %d\r\n",
+			      NumLanes, UserMaxLanes);
+		NumLanes = UserMaxLanes;
+	}
+
+	if (UserMaxLinkBW != 0 && UserMaxLinkBW < LinkBW) {
+		XMMIDP_LT_LOG("  User cap: limiting link BW from 0x%02X to 0x%02X\r\n",
+			      LinkBW, UserMaxLinkBW);
+		LinkBW = UserMaxLinkBW;
+	}
+
+	InstancePtr->LinkConfig.NumLanes = NumLanes;
+	InstancePtr->LinkConfig.LaneCount =
+		XMmiDp_GetLaneCount(InstancePtr, NumLanes);
+	InstancePtr->LinkConfig.LinkBW = LinkBW;
+	InstancePtr->LinkConfig.LinkRate =
+		XMmiDp_GetLinkRate(InstancePtr, LinkBW);
+}
+
+/******************************************************************************/
+/**
+ * This function prepares for link training. It reads receiver capabilities,
+ * applies user-configured lane/bandwidth caps, checks current link status,
+ * configures link parameters, and runs the clock recovery and channel
+ * equalization training sequence.
+ *
+ * @param       InstancePtr is a pointer to the XMmiDp instance.
+ * @param       UserMaxLanes User-configured max lane count (0=auto,
+ *              1, 2, or 4).
+ * @param       UserMaxLinkBW User-configured max link BW in DPCD format
+ *              (0=auto, 0x06=RBR, 0x0A=HBR, 0x14=HBR2, 0x1E=HBR3).
+ *
+ * @return
+ *              - XST_SUCCESS if the training process succeeded.
+ *              - XST_FAILURE otherwise.
+ *
+ * @note        None.
+ *
+*******************************************************************************/
+u32 XMmiDp_StartFullLinkTrainingCapped(XMmiDp *InstancePtr,
+				       u8 UserMaxLanes, u8 UserMaxLinkBW)
+{
+	u32 Status;
+
+	Xil_AssertNonvoid(InstancePtr != NULL);
+
+	Status = XMmiDp_GetRxCapabilities(InstancePtr);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	XMmiDp_ApplyUserLinkCaps(InstancePtr, UserMaxLanes, UserMaxLinkBW);
+
+	memset(InstancePtr->LinkConfig.VsLevel, 0, 4);
+	memset(InstancePtr->LinkConfig.PeLevel, 0, 4);
+
+	XMmiDp_FastLinkTrainDisable(InstancePtr);
+	XMMIDP_LT_LOG("    Fast Link Train   : Disabled\r\n");
+
+	Status = XMmiDp_SetSinkDpcdLinkCfgField(InstancePtr);
+	if (Status != XST_SUCCESS) {
+		return Status;
+	}
+	XMMIDP_LT_LOG("  Sink DPCD link config set\r\n");
+
+	if (InstancePtr->RxConfig.EnhancedFrameCap) {
+		XDpPSu14_EnableCctlEnhanceFraming(InstancePtr);
+		XMMIDP_LT_LOG("  Enhanced framing enabled on TX\r\n");
+	}
+
+	Status = XMmiDp_StartLinkXmit(InstancePtr);
+	if (Status != XST_SUCCESS) {
+		return Status;
+	}
+	/* Main link PHY settle after xmit enable, before training patterns */
+	XMmiDp_WaitUs(InstancePtr, XMMIDP_LINK_XMIT_SETTLE_US);
+	XMMIDP_LT_LOG("  Link transmission started -- running CR + EQ...\r\n");
+
+	Status = XMmiDp_RunTraining(InstancePtr);
+	if (Status != XST_SUCCESS) {
+		return Status;
+	}
+
+	XMmiDp_SetPhyTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
+	XMmiDp_SetDpcdTrainingPattern(InstancePtr, XMMIDP_PHY_NO_TRAIN);
+	XMMIDP_LT_LOG("  Stop LinkTraining with PHY_NO_TRAIN\r\n");
+
+	InstancePtr->LinkConfig.LinkTrained = 1;
+
+	return XST_SUCCESS;
+}
+
 /** @} */

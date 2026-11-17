@@ -6,10 +6,13 @@
 /**
 *
 * @file xclk_wiz_setrate_example.c
+* @brief Runs the CLK_WIZ set-rate example.
 *
-* This file contains a design example using the XClk_Wiz driver with different rates.
-* assigned to clock wizard 1. Modify this value as per your dynamic clock
+* This file contains a design example using the XClk_Wiz driver with different
+* rates assigned to clock wizard 1. Modify this value as per your dynamic clock
 * reconfiguration Clocking wizard
+*
+* @note This example targets ZynqMP platforms.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -21,9 +24,17 @@
 * 1.8 sd 9/5/24   Add GetRate and multi clock support.
 * 1.10 sd 12/2/24 Remove an un-needed register write.
 * 1.11 vlt 12/17/25 Update Doxygen comments to include SDT flow details.
+* 1.12 ss  8/15/26  Updated specifiers.
+* 1.12 vn  09/3/26  Fix doxygen warnings.
+* 1.12 ss  9/23/26  Document platform note.
+* 1.12 tb  09/16/26 Align Doxygen comments with AMD standards.
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup xclk_wiz_setrate_example
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -42,9 +53,11 @@
 * needed device IDs in one place.
 */
 #ifndef SDT
+/** CLK_WIZ example device ID. */
 #define XCLK_WIZARD_DEVICE_ID		XPAR_CLK_WIZ_0_DEVICE_ID
 #endif
-#define XCLK_US_WIZ_RECONFIG_OFFSET	0x0000025C  /**< Reconfig Register */
+/** Reconfig Register. */
+#define XCLK_US_WIZ_RECONFIG_OFFSET	0x0000025C
 
 /*
 * The following constants are part of clock dynamic reconfiguration
@@ -52,6 +65,7 @@
 * needed parameters
 */
 
+/** Clock-lock status bit value. */
 #define CLK_LOCK			1
 
 /***************** Macros (Inline Functions) Definitions *********************/
@@ -73,16 +87,15 @@ XClk_Wiz ClkWiz_Dynamic; /* The instance of the ClkWiz_Dynamic */
 
 /*****************************************************************************/
 /**
+* @brief Runs the CLK_WIZ example.
 *
 * This is the main function for XClk_Wiz rate example. If the
 * ClkWiz_Example function which sets up the system succeeds, this function
-* will set the desired rate.
+* sets the desired rate.
 *
-* @param	None.
-*
-* @return	XST_SUCCESS if successful, otherwise XST_FAILURE.
-*
-* @note		None
+* @return
+*		- XST_SUCCESS if successful.
+*		- XST_FAILURE if ClkWiz_Example fails.
 *
 ******************************************************************************/
 #ifndef TESTAPP_GEN
@@ -112,15 +125,15 @@ int main()
 
 /*****************************************************************************/
 /**
+* @brief Runs the CLK_WIZ rate example.
 *
 * This function is the main entry point for the example using the
 * XClk_Wiz driver.
 *
 * @if SDT
-* @param	BaseAddress contains the base address of the device
+* @param[in] BaseAddress Contains the base address of the device.
 * @else
-* @param	DeviceId is the unique device ID of the CLK_WIZ
-*		Subsystem core.
+* @param[in] DeviceId Unique device ID of the CLK_WIZ Subsystem core.
 * @endif
 *
 * @return
@@ -165,7 +178,7 @@ u32 ClkWiz_Example(UINTPTR BaseAddress)
 
 	XClk_Wiz_GetRate(&ClkWiz_Dynamic, 0, &Rate);
 	Rate = Rate / XCLK_MHZ;
-	xil_printf("\nCurrent Rate %ld MHz\t \n",  Rate);
+	xil_printf("\nCurrent Rate %llu MHz\t \n",  Rate);
 	/* Calling Clock wizard dynamic reconfig */
 
 	if (CfgPtr_Dynamic->NumClocks == 1) {
@@ -185,6 +198,8 @@ u32 ClkWiz_Example(UINTPTR BaseAddress)
 
 	XClk_Wiz_GetRate(&ClkWiz_Dynamic, 0, &Rate);
 	Rate = Rate / XCLK_MHZ;
-	xil_printf("\nThe Rate %ld MHz\t Expected 50 MHz \n",  Rate);
+	xil_printf("\nThe Rate %llu MHz\t Expected 50 MHz \n",  Rate);
 	return Status;
 }
+
+/** @} */

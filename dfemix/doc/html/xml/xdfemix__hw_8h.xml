@@ -16,15 +16,15 @@
         <childnode refid="48" relation="include">
         </childnode>
       </node>
+      <node id="48">
+        <label>xdfemix_one_instance_initialization_example.c</label>
+        <link refid="xdfemix__one__instance__initialization__example_8c"/>
+      </node>
       <node id="45">
         <label>xdfemix_hw.h</label>
         <link refid="xdfemix_hw.h"/>
         <childnode refid="46" relation="include">
         </childnode>
-      </node>
-      <node id="48">
-        <label>xdfemix_one_instance_initialization_example.c</label>
-        <link refid="xdfemix__one__instance__initialization__example_8c"/>
       </node>
     </invincdepgraph>
     <briefdescription>
@@ -329,6 +329,6 @@
 <codeline lineno="327"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
 <codeline lineno="328"><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
-    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/dfemix/src/xdfemix_hw.h"/>
+    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/dfemix/src/xdfemix_hw.h"/>
   </compounddef>
 </doxygen>

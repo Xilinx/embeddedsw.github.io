@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2007 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,10 +11,10 @@
 * @addtogroup emaclite Overview
 * @{
 *
-* This file contains the implementation of the XEmacLite driver's static
-* initialization functionality.
+* @brief Implements EmacLite static initialization and lookup helpers.
 *
-* @note		None.
+* Contains the implementation of the XEmacLite driver's static
+* initialization functionality.
 *
 * <pre>
 *
@@ -48,24 +48,10 @@ extern XEmacLite_Config XEmacLite_ConfigTable[];
 
 /*****************************************************************************/
 /**
-*
-* Looks up the device configuration based on the unique device ID/BaseAddress.
-* A table contains the configuration info for each device in the system.
-*
-* @if SDT
-* @param        BaseAddress contains the base address of the device
-* @else
-* @param        DeviceId contains the unique ID of the device
-* @endif
-*
-* @return
-*		A pointer to the configuration table entry corresponding to the given
-* 		device ID/BaseAddress, or NULL if no match is found.
-*
-* @note        In XSCT/classic flow, DeviceId is used to look up the device
-*              configuration.
-*
-******************************************************************************/
+ * @brief Implementation of XEmacLite_LookupConfig(). See xemaclite.h for the API
+ * description.
+ *
+ *****************************************************************************/
 #ifdef SDT
 XEmacLite_Config *XEmacLite_LookupConfig(UINTPTR BaseAddress)
 {
@@ -102,24 +88,26 @@ XEmacLite_Config *XEmacLite_LookupConfig(u16 DeviceId)
 /*****************************************************************************/
 /**
 *
-* Initialize a specific XEmacLite instance/driver.  The initialization entails:
+* @brief Initialize a specific XEmacLite instance/driver.  The initialization entails:
 * - Initialize fields of the XEmacLite instance structure.
 *
 * The driver defaults to polled mode operation.
 *
-* @param	InstancePtr is a pointer to the XEmacLite instance.
-* @param 	DeviceId is the unique id of the device controlled by this
-*		XEmacLite instance.  Passing in a device id associates the
+* @param[in] InstancePtr is a pointer to the XEmacLite instance.
+* @if SDT
+* @param[in] BaseAddress contains the base address of the device.
+* @else
+* @param[in] DeviceId is the unique id of the device controlled by this
+*		XEmacLite instance. Passing in a device id associates the
 *		generic XEmacLite instance to a specific device, as chosen by
 *		the caller or application developer.
+* @endif
 *
 * @return
 * 		- XST_SUCCESS if initialization was successful.
 * 		- XST_DEVICE_NOT_FOUND/XST_FAILURE if device configuration
 *		information was not found for a device with the supplied
 *		device ID.
-*
-* @note		None
 *
 ******************************************************************************/
 #ifdef SDT

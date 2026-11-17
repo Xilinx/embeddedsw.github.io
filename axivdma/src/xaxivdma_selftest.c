@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -10,6 +10,8 @@
 * @file xaxivdma_selftest.c
 * @addtogroup axivdma Overview
 * @{
+*
+* @brief Contains diagnostic and self-test functions for the XAxiVdma component.
 *
 * Contains diagnostic/self-test functions for the XAxiVdma component.
 *
@@ -30,7 +32,7 @@
 
 
 /************************** Constant Definitions *****************************/
-#define XAXIVDMA_RESET_TIMEOUT   500
+#define XAXIVDMA_RESET_TIMEOUT   500 /**< Maximum iterations to wait for reset completion. */
 
 /**************************** Type Definitions *******************************/
 
@@ -47,17 +49,14 @@
 /*****************************************************************************/
 /**
 *
-* Runs a self-test on the driver/device. This test perform a
+* @brief Runs a self-test on the driver/device. This test perform a.
 * reset of the VDMA device and checks the device is coming out of reset or not
 *
-* @param	InstancePtr is a pointer to the XAxiVdma instance.
+* @param[in] InstancePtr is a pointer to the XAxiVdma instance.
 *
 * @return
 * 		- XST_SUCCESS if self-test was successful
 *		- XST_FAILURE if the device is not coming out of reset.
-*
-* @note
-*     None.
 *
 ******************************************************************************/
 int XAxiVdma_Selftest(XAxiVdma *InstancePtr)

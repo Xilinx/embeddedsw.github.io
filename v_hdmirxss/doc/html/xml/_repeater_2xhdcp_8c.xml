@@ -10,8 +10,91 @@
       <node id="429">
         <label>xil_assert.h</label>
       </node>
+      <node id="425">
+        <label>xhdcp.c</label>
+        <link refid="Repeater/xhdcp.c"/>
+        <childnode refid="426" relation="include">
+        </childnode>
+        <childnode refid="427" relation="include">
+        </childnode>
+        <childnode refid="430" relation="include">
+        </childnode>
+        <childnode refid="431" relation="include">
+        </childnode>
+      </node>
       <node id="438">
         <label>xuartps.h</label>
+      </node>
+      <node id="427">
+        <label>xhdcp.h</label>
+        <childnode refid="428" relation="include">
+        </childnode>
+        <childnode refid="429" relation="include">
+        </childnode>
+        <childnode refid="430" relation="include">
+        </childnode>
+      </node>
+      <node id="434">
+        <label>platform.h</label>
+        <childnode refid="435" relation="include">
+        </childnode>
+      </node>
+      <node id="456">
+        <label>xvidframe_crc.h</label>
+        <link refid="xvidframe__crc_8h"/>
+        <childnode refid="428" relation="include">
+        </childnode>
+        <childnode refid="429" relation="include">
+        </childnode>
+        <childnode refid="437" relation="include">
+        </childnode>
+        <childnode refid="430" relation="include">
+        </childnode>
+      </node>
+      <node id="437">
+        <label>xil_io.h</label>
+      </node>
+      <node id="445">
+        <label>xvphy.h</label>
+      </node>
+      <node id="446">
+        <label>sleep.h</label>
+      </node>
+      <node id="453">
+        <label>aes256.h</label>
+      </node>
+      <node id="433">
+        <label>stdlib.h</label>
+      </node>
+      <node id="443">
+        <label>xv_hdmic_vsif.h</label>
+      </node>
+      <node id="450">
+        <label>xhdmi_hdcp_keys.h</label>
+        <link refid="xhdmi__hdcp__keys_8h"/>
+        <childnode refid="451" relation="include">
+        </childnode>
+        <childnode refid="452" relation="include">
+        </childnode>
+        <childnode refid="446" relation="include">
+        </childnode>
+        <childnode refid="436" relation="include">
+        </childnode>
+        <childnode refid="453" relation="include">
+        </childnode>
+        <childnode refid="454" relation="include">
+        </childnode>
+        <childnode refid="430" relation="include">
+        </childnode>
+        <childnode refid="426" relation="include">
+        </childnode>
+        <childnode refid="438" relation="include">
+        </childnode>
+      </node>
+      <node id="454">
+        <label>sha256.h</label>
+        <childnode refid="455" relation="include">
+        </childnode>
       </node>
       <node id="431">
         <label>xhdmi_example.h</label>
@@ -62,55 +145,14 @@
         <childnode refid="456" relation="include">
         </childnode>
       </node>
-      <node id="437">
-        <label>xil_io.h</label>
+      <node id="455">
+        <label>stddef.h</label>
       </node>
-      <node id="445">
-        <label>xvphy.h</label>
+      <node id="449">
+        <label>xintc.h</label>
       </node>
-      <node id="446">
-        <label>sleep.h</label>
-      </node>
-      <node id="433">
-        <label>stdlib.h</label>
-      </node>
-      <node id="444">
-        <label>dp159.h</label>
-        <childnode refid="428" relation="include">
-        </childnode>
-        <childnode refid="430" relation="include">
-        </childnode>
-        <childnode refid="445" relation="include">
-        </childnode>
-      </node>
-      <node id="425">
-        <label>xhdcp.c</label>
-        <link refid="Repeater/xhdcp.c"/>
-        <childnode refid="426" relation="include">
-        </childnode>
-        <childnode refid="427" relation="include">
-        </childnode>
-        <childnode refid="430" relation="include">
-        </childnode>
-        <childnode refid="431" relation="include">
-        </childnode>
-      </node>
-      <node id="427">
-        <label>xhdcp.h</label>
-        <childnode refid="428" relation="include">
-        </childnode>
-        <childnode refid="429" relation="include">
-        </childnode>
-        <childnode refid="430" relation="include">
-        </childnode>
-      </node>
-      <node id="443">
-        <label>xv_hdmic_vsif.h</label>
-      </node>
-      <node id="434">
-        <label>platform.h</label>
-        <childnode refid="435" relation="include">
-        </childnode>
+      <node id="426">
+        <label>string.h</label>
       </node>
       <node id="440">
         <label>si5324drv.h</label>
@@ -120,32 +162,8 @@
         <childnode refid="430" relation="include">
         </childnode>
       </node>
-      <node id="455">
-        <label>stddef.h</label>
-      </node>
-      <node id="449">
-        <label>xintc.h</label>
-      </node>
-      <node id="456">
-        <label>xvidframe_crc.h</label>
-        <link refid="xvidframe__crc_8h"/>
-        <childnode refid="428" relation="include">
-        </childnode>
-        <childnode refid="429" relation="include">
-        </childnode>
-        <childnode refid="437" relation="include">
-        </childnode>
-        <childnode refid="430" relation="include">
-        </childnode>
-      </node>
-      <node id="426">
-        <label>string.h</label>
-      </node>
       <node id="448">
         <label>xhdmi_menu.h</label>
-      </node>
-      <node id="453">
-        <label>aes256.h</label>
       </node>
       <node id="451">
         <label>xstatus.h</label>
@@ -156,37 +174,16 @@
       <node id="439">
         <label>xil_exception.h</label>
       </node>
-      <node id="450">
-        <label>xhdmi_hdcp_keys.h</label>
-        <link refid="xhdmi__hdcp__keys_8h"/>
-        <childnode refid="451" relation="include">
-        </childnode>
-        <childnode refid="452" relation="include">
-        </childnode>
-        <childnode refid="446" relation="include">
-        </childnode>
-        <childnode refid="436" relation="include">
-        </childnode>
-        <childnode refid="453" relation="include">
-        </childnode>
-        <childnode refid="454" relation="include">
-        </childnode>
-        <childnode refid="430" relation="include">
-        </childnode>
-        <childnode refid="426" relation="include">
-        </childnode>
-        <childnode refid="438" relation="include">
-        </childnode>
-      </node>
       <node id="428">
         <label>xil_types.h</label>
       </node>
-      <node id="435">
-        <label>platform_config.h</label>
-      </node>
-      <node id="454">
-        <label>sha256.h</label>
-        <childnode refid="455" relation="include">
+      <node id="444">
+        <label>dp159.h</label>
+        <childnode refid="428" relation="include">
+        </childnode>
+        <childnode refid="430" relation="include">
+        </childnode>
+        <childnode refid="445" relation="include">
         </childnode>
       </node>
       <node id="442">
@@ -200,6 +197,9 @@
       </node>
       <node id="436">
         <label>xiic.h</label>
+      </node>
+      <node id="435">
+        <label>platform_config.h</label>
       </node>
       <node id="432">
         <label>stdio.h</label>
@@ -1469,6 +1469,6 @@
 <codeline lineno="1687"><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1688"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>USE_HDCP</highlight></codeline>
     </programlisting>
-    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.1/embeddedsw/XilinxProcessorIPLib/drivers/v_hdmirxss/examples/xhdmi_example/Repeater/xhdcp.c"/>
+    <location file="/proj/xhdsswstaff1/bhawanas/patch_integration/auto_jobs/esw_github_doxy/git/2026.2/embeddedsw/XilinxProcessorIPLib/drivers/v_hdmirxss/examples/xhdmi_example/Repeater/xhdcp.c"/>
   </compounddef>
 </doxygen>

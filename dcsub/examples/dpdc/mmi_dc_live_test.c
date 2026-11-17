@@ -35,12 +35,10 @@
 #include "mmi_dpdc_example.h"
 #include "mmi_dpdc_platform.h"
 
-#include "xclk_wiz.h"
 #include "xvtc.h"
 #include "xavpg.h"
 
 XVtc Vtc0;
-XClk_Wiz ClkWiz0;
 
 void LiveAvpgConfig(RunConfig *RunCfgPtr) {
 	UINTPTR AvpgBaseAddr[2] = {AVPG_0_BASEADDR, AVPG_1_BASEADDR};
@@ -353,11 +351,21 @@ u32 XDpDc_MmiDcLiveTest(RunConfig *RunCfgPtr)
 		return XST_INVALID_PARAM;
 	}
 
+	if (AVPG_0_BASEADDR == 0U || AVPG_1_BASEADDR == 0U ||
+	    VTC_BASEADDR == 0U || LIVE_IN_GPIO_BASEADDR == 0U) {
+		xil_printf("  ERROR: Live mode PL IP not found in xparameters.h\r\n");
+		return XST_FAILURE;
+	}
+
 	InitLiveRunConfig(RunCfgPtr);
 
 	InitLiveDcSubPtr(RunCfgPtr);
 
-	XDpDc_InitClkWiz(RunCfgPtr);
+	Status = XDpDc_InitClkWiz(RunCfgPtr);
+	if (Status != XST_SUCCESS) {
+		xil_printf("  ERROR: Failed to initialize Clock Wizard\r\n");
+		return Status;
+	}
 
 	InitLiveDcSubsystem(RunCfgPtr);
 

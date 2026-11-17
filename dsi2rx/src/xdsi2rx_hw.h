@@ -1,8 +1,7 @@
 /******************************************************************************
-******************************************************************************
-* Copyright 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright 2024-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
-/*****************************************************************************/
+******************************************************************************/
 /**
  * @file xdsi2rx_hw.h
  * @addtogroup dsi2rx Overview
@@ -54,7 +53,7 @@ extern "C" {
 
 /** @name Core configuration register masks and shifts
  *
-/* This register is used for the enabling/disabling and resetting
+ * This register is used for the enabling/disabling and resetting
  * the core of DSI Rx Controller
  * @{
  */
@@ -122,6 +121,10 @@ extern "C" {
  */
 
 #define XDSI2RX_ISR_FRAME_START_MASK		 0x00200000 /**< FRAME START detected */
+#define XDSI2RX_ISR_WC_CORRUPTION_MASK		 0x00100000 /**< Word count
+							corruption */
+#define XDSI2RX_ISR_INCORRECT_LANE_CONFIG_MASK	 0x00080000 /**< Incorrect lane
+							configuration */
 #define XDSI2RX_ISR_GSP_FIFO_FULL_ERR_MASK	 0x00040000 /**< Generic short packet
 							FIFO FULL error */
 #define XDSI2RX_ISR_GSP_FIFO_NE_ERR_MASK	 0x00020000 /**< Generic short packet
@@ -157,9 +160,14 @@ extern "C" {
 #define XDSI2RX_ISR_UN_DATA_TYPE_MASK		 0x00000001 /**< Shift for
 							Unsupported Data Type*/
 
-#define XDSI2RX_ISR_ALLINTR_MASK		 0x00275FFF /* ALL intr Mask*/
+#define XDSI2RX_ISR_ALLINTR_MASK		 0x003F5FFF /**< Mask of all
+							defined interrupt
+							status bits */
 
 #define XDSI2RX_ISR_FRAME_START_SHIFT		 21 /**< FRAME START detected */
+#define XDSI2RX_ISR_WC_CORRUPTION_SHIFT		 20 /**< Word count corruption */
+#define XDSI2RX_ISR_INCORRECT_LANE_CONFIG_SHIFT	 19 /**< Incorrect lane
+							configuration */
 #define XDSI2RX_ISR_GSP_FIFO_FULL_ERR_SHIFT	 18 /**< Generic short packet
 							FIFO FULL error */
 #define XDSI2RX_ISR_GSP_FIFO_NE_ERR_SHIFT	 17 /**< Generic short packet
@@ -190,6 +198,10 @@ extern "C" {
  */
 
 #define XDSI2RX_IER_FRAME_START_MASK		 0x00200000 /**< FRAME START detected */
+#define XDSI2RX_IER_WC_CORRUPTION_MASK		 0x00100000 /**< Word count
+							corruption */
+#define XDSI2RX_IER_INCORRECT_LANE_CONFIG_MASK	 0x00080000 /**< Incorrect lane
+							configuration */
 #define XDSI2RX_IER_GSP_FIFO_FULL_ERR_MASK	 0x00040000 /**< Generic short packet
 							FIFO FULL error */
 #define XDSI2RX_IER_GSP_FIFO_NE_ERR_MASK	 0x00020000 /**< Generic short packet
@@ -225,9 +237,14 @@ extern "C" {
 #define XDSI2RX_IER_UN_DATA_TYPE_MASK		 0x00000001 /**< Shift for
 							Unsupported Data Type*/
 
-#define XDSI2RX_IER_ALLINTR_MASK		 0x00275FFF /* ALL intr Mask*/
+#define XDSI2RX_IER_ALLINTR_MASK		 0x003F5FFF /**< Mask of all
+							defined interrupt
+							enable bits */
 
 #define XDSI2RX_IER_FRAME_START_SHIFT		 21 /**< FRAME START detected */
+#define XDSI2RX_IER_WC_CORRUPTION_SHIFT		 20 /**< Word count corruption */
+#define XDSI2RX_IER_INCORRECT_LANE_CONFIG_SHIFT	 19 /**< Incorrect lane
+							configuration */
 #define XDSI2RX_IER_GSP_FIFO_FULL_ERR_SHIFT	 18 /**< Generic short packet
 							FIFO FULL error */
 #define XDSI2RX_IER_GSP_FIFO_NE_ERR_SHIFT	 17 /**< Generic short packet

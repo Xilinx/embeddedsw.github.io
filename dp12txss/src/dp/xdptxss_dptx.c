@@ -94,13 +94,7 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 	u8 StreamIndex;
 	u8 NumOfStreams;
 	u8 Edid[128];
-	u16 FullPbn;			/**< The payload bandwidth number (PBN)
-						associated with the sink
-						connected to this port. */
-	u16 AvailPbn;			/**< The available PBN of the sink
-						connected to this port. */
 	XDp_TxTopologyNode *Sink1;
-	int i;
 
 	/* Verify arguments. */
 	Xil_AssertNonvoid(InstancePtr != NULL);
@@ -184,7 +178,7 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 				"topology.\n\r");
 	    /* Wait the requested amount of time to start mst topology
 	     * discovery after link training got success */
-		usleep(10000);
+		XDp_WaitUs(InstancePtr, 10000);
 		/* Get list of sinks */
 		Status = Dp_GetTopology(InstancePtr);
 		if (Status)
@@ -258,9 +252,19 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 			"EDID...\n\r");
 
 		/* Read EDID of first sink */
+		if (InstancePtr->TxInstance.Topology.SinkTotal == 0) {
+			xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:No sink found "
+				"in topology.\n\r");
+			return XST_FAILURE;
+		}
 		Sink1 = InstancePtr->TxInstance.Topology.SinkList[0];
-		XDp_TxGetRemoteEdid(InstancePtr, Sink1->LinkCountTotal,
+		Status = XDp_TxGetRemoteEdid(InstancePtr, Sink1->LinkCountTotal,
 				Sink1->RelativeAddress, Edid);
+		if (Status != XST_SUCCESS) {
+			xdbg_printf(XDBG_DEBUG_GENERAL,"SS ERR:MST:Failed to read "
+				"sink EDID.\n\r");
+			return Status;
+		}
 
 		/* Check video mode for EDID preferred video mode */
 		if (VidMode == XVIDC_VM_USE_EDID_PREFERRED) {
@@ -586,10 +590,13 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 						0].SynchronousClockMode);
 		}
 		else {
-			InstancePtr->TxInstance.MsaConfig[
-				0].DynamicRange = 0;
-			InstancePtr->TxInstance.MsaConfig[
-				0].YCbCrColorimetry = 0;
+			if (InstancePtr->TxInstance.MsaConfig[0].ComponentFormat ==
+					XDP_TX_MAIN_STREAMX_MISC0_COMPONENT_FORMAT_RGB) {
+				InstancePtr->TxInstance.MsaConfig[
+					0].DynamicRange = 0;
+				InstancePtr->TxInstance.MsaConfig[
+					0].YCbCrColorimetry = 0;
+			}
 			/* Enable async clock mode */
 			XDp_TxCfgMsaEnSynchClkMode(InstancePtr,
 						XDP_TX_STREAM_ID1, 0);
@@ -653,10 +660,10 @@ u32 XDpTxSs_DpTxStart(XDp *InstancePtr, u8 TransportMode, u8 Bpc,
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO:Link "
 			"is DOWN after main link enabled!\n\r\n\r");
 		return Status;
-	}
-	else
+	} else {
 		xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO:Link "
 			"is UP after main link enabled!\n\r\n\r");
+	}
 
 	xdbg_printf(XDBG_DEBUG_GENERAL,"SS INFO:Enabled main link!"
 		"\n\r\n\r");

@@ -386,11 +386,7 @@ static int XHdcp22Tx_InitializeCipher(XHdcp22_Tx_Dp *InstancePtr)
 	XHdcp22_Cipher_Dp_Config *ConfigPtr = NULL;
 	UINTPTR SubcoreBaseAddr;
 
-#ifndef SDT
-	ConfigPtr = XHdcp22Cipher_Dp_LookupConfig(InstancePtr->Config.CipherId);
-#else
 	ConfigPtr = XHdcp22Cipher_Dp_LookupConfig(InstancePtr->Config.CipherAddress);
-#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -437,11 +433,7 @@ static int XHdcp22Tx_InitializeRng(XHdcp22_Tx_Dp *InstancePtr)
 
 	XHdcp22_Rng_Config *ConfigPtr = NULL;
 
-#ifndef SDT
-	ConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngId);
-#else
 	ConfigPtr = XHdcp22Rng_LookupConfig(InstancePtr->Config.RngAddress);
-#endif
 	if (ConfigPtr == NULL) {
 		return XST_DEVICE_NOT_FOUND;
 	}
@@ -4931,7 +4923,7 @@ static int XHdcp22Tx_Dp_ReadDpRxMsg(XHdcp22_Tx_Dp *InstancePtr, u8 MessageId)
 			NumRead += InstancePtr->TxDpAuxReadCallback(
 					InstancePtr->TxDpAuxReadCallbackRef,
 					XHDCP22_TX_DP_HDCPPORT_RCVR_ID_LST_OFFSET,
-					MsgPtr->Message.RepeatAuthSendRecvIDList.ReceiverIDs,
+					(u8 *)MsgPtr->Message.RepeatAuthSendRecvIDList.ReceiverIDs,
 					XHDCP22_TX_DP_HDCPPORT_RCVR_ID_LST_MAX_SIZE);
 			if (NumRead == XHDCP22_TX_DP_HDCPPORT_RX_INFO_SIZE +
 					XHDCP22_TX_DP_HDCPPORT_SEQ_NUM_V_SIZE +

@@ -9,7 +9,7 @@
 # Ver   Who  Date     Changes
 # ----- ---- -------- -----------------------------------------------
 #        sdm 10/29/08 Added code to generate canonicals for EMC.
-#        sdm 05/12/10 Added code for generating defines in xparameters.h to 
+#        sdm 05/12/10 Added code for generating defines in xparameters.h to
 #	              distinguish  between XPS_MCH_EMC and AXI_EMC.
 #                      These defines are used by the Xil_Flash Library
 # 4.0   adk  10/12/13 Updated as per the New Tcl API's
@@ -71,7 +71,7 @@ proc xdefine_canonical_xpars {drv_handle file_name drv_string args} {
     foreach periph $periphs {
         set canonical_name [string toupper [format "%s_%s" $drv_string $device_id]]
         lappend canonicals $canonical_name
-        
+
         # Create a list of IDs of the peripherals whose hardware instance name
         # doesn't match the canonical name. These IDs can be used later to
         # generate canonical definitions

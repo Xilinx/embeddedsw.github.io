@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2014 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2022 - 2023 Advanced Micro Devices, Inc.  All rights reserved.
+* Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc.  All rights reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -11,8 +11,9 @@
 * @addtogroup zdma Overview
 * @{
 *
-* This file contains interrupt related functions of Xilinx ZDMA core.
-* Please see xzdma.h for more details of the driver.
+* @brief Implements interrupt-related functions for the ZDMA driver.
+* Implements interrupt-related functions for the ZDMA core.
+*
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -48,7 +49,7 @@
 /*****************************************************************************/
 /**
 *
-* This function is the interrupt handler for the ZDMA core.
+* @brief This function is the interrupt handler for the ZDMA core.
 *
 * This handler reads the pending interrupt from Status register, determines the
 * source of the interrupts and calls the respective callbacks for the
@@ -60,9 +61,7 @@
 * callbacks to handle interrupts and installing the callbacks using
 * XZDma_SetCallBack() during initialization phase. .
 *
-* @param	Instance is a pointer to the XZDma instance to be worked on.
-*
-* @return	None.
+* @param[in] Instance is a pointer to the XZDma instance to be worked on.
 *
 * @note		To generate interrupt required interrupts should be enabled.
 *
@@ -112,7 +111,7 @@ void XZDma_IntrHandler(void *Instance)
 /*****************************************************************************/
 /**
 *
-* This routine installs an asynchronous callback function for the given
+* @brief This routine installs an asynchronous callback function for the given
 * HandlerType.
 *
 * <pre>
@@ -123,10 +122,10 @@ void XZDma_IntrHandler(void *Instance)
 *
 * </pre>
 *
-* @param	InstancePtr is a pointer to the XZDma instance to be worked on.
-* @param	HandlerType specifies which callback is to be attached.
-* @param	CallBackFunc is the address of the callback function.
-* @param	CallBackRef is a user data item that will be passed to the
+* @param[in] InstancePtr is a pointer to the XZDma instance to be worked on.
+* @param[in] HandlerType specifies which callback is to be attached.
+* @param[in] CallBackFunc is the address of the callback function.
+* @param[in] CallBackRef is a user data item that will be passed to the
 * 		callback function when it is invoked.
 *
 * @return

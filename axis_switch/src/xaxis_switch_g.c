@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2015 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (C) 2023 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -8,10 +8,8 @@
 /**
 *
 * @file xaxis_switch_g.c
-* @addtogroup axis_switch Overview
-* @{
 *
-* This file gets generated automatically by HSI.
+* @brief Auto-generated configuration table for the AXI4-Stream Switch core.
 *
 * <pre>
 * MODIFICATION HISTORY:
@@ -21,9 +19,15 @@
 * 1.00 sha 07/15/15 Added XPAR_XAXIS_SWITCH_NUM_INSTANCES macro to control
 *                   config table parameters. Modified copyright header.
 *                   Added doxygen tag and modification history.
+* 1.9  vn   09/08/26 Align Doxygen comments with AMD standards
+* 1.9  vn   09/30/26 Update Doxygen comments to AMD standards
 * </pre>
 *
 ******************************************************************************/
+
+/** @addtogroup axis_switch Overview
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -32,8 +36,8 @@
 
 /************************** Constant Definitions *****************************/
 
-/*
-* The configuration table for devices
+/**
+* @brief Configuration table for AXI4-Stream Switch devices.
 */
 
 XAxis_Switch_Config XAxis_Switch_ConfigTable[] =

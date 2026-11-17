@@ -26,13 +26,13 @@
 ## BEGIN_CHANGELOG EDK_I
 ##
 ##  - include header files
-##    
+##
 ## END_CHANGELOG
 
 ## BEGIN_CHANGELOG EDK_H
 ##
 ##  - Initial Revision
-##    
+##
 ## END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -70,7 +70,7 @@ proc gen_include_files {swproj mhsinst} {
 		}
         } else {
             set inc_file_lines {uartlite_header.h}
-        }    
+        }
         return $inc_file_lines
     }
     return $inc_file_lines
@@ -81,8 +81,8 @@ proc gen_src_files {swproj mhsinst} {
     if {$swproj == 0} {
 	return ""
     }
-    
-   
+
+
     if {$swproj == 1} {
 	 set ipname [common::get_property IP_NAME $mhsinst]
 	 if {$ipname == "tmr_sem"} {
@@ -94,13 +94,13 @@ proc gen_src_files {swproj mhsinst} {
 	    set ifuartliteintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
 	    if {$ifuartliteintr == 1} {
 		if {$ipname == "mdm" || $ipname == "mdm_riscv"} {
-			set inc_file_lines {examples/xuartlite_selftest_example.c data/uartlite_header.h}    
+			set inc_file_lines {examples/xuartlite_selftest_example.c data/uartlite_header.h}
 		} else {
 			set inc_file_lines {examples/xuartlite_selftest_example.c examples/xuartlite_intr_tapp_example.c data/uartlite_header.h data/uartlite_intr_header.h}
 		}
-		
+
 	    } else {
-		set inc_file_lines {examples/xuartlite_selftest_example.c data/uartlite_header.h}      
+		set inc_file_lines {examples/xuartlite_selftest_example.c data/uartlite_header.h}
 	    }
 	    return $inc_file_lines
 	}
@@ -126,7 +126,7 @@ proc gen_init_code {swproj mhsinst} {
 	  set stdout [common::get_property CONFIG.STDOUT [hsi::get_os]]
 	  set isStdout [string match $stdout $mhsinst]
 	if {${isStdout} == 0} {
-	    
+
 	    set ipname [common::get_property NAME $mhsinst]
 	    set ifuartliteintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
 	    set mdm_name [common::get_property IP_NAME $mhsinst]
@@ -141,7 +141,7 @@ proc gen_init_code {swproj mhsinst} {
 		return ""
 	    }
 	}
-    }   
+    }
     return ""
 }
 
@@ -173,7 +173,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 "
      return $testfunc_call
   }
-  
+
   set deviceid [::hsi::utils::get_ip_param_name $mhsinst "DEVICE_ID"]
   set stdout [common::get_property CONFIG.STDOUT [hsi::get_os]]
   if { $stdout == "" || $stdout == "none" } {
@@ -196,7 +196,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       int status;
-      
+
       status = UartLiteSelfTestExample(${deviceid});
    }"
 
@@ -212,9 +212,9 @@ proc gen_testfunc_call {swproj mhsinst} {
 		set intr_id "XPAR_FABRIC_${ipname}_${intr_pin_name}_INTR"
 	}
 	set intr_id [string toupper $intr_id]
-	
+
       append testfunc_call "
-        
+
    {
       int Status;
       Status = UartLiteIntrExample(&${intcvar}, &${ipname}_UartLite, \\
@@ -229,7 +229,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       int status;
-      
+
       print(\"\\r\\nRunning UartLiteSelfTestExample() for ${ipname}...\\r\\n\");
       status = UartLiteSelfTestExample(${deviceid});
       if (status == 0) {
@@ -238,7 +238,7 @@ proc gen_testfunc_call {swproj mhsinst} {
       else {
          print(\"UartLiteSelfTestExample FAILED\\r\\n\");
       }
-      
+
    }"
        if {$ifuartliteintr == 1} {
         if {$mdm_name == "mdm" || $mdm_name == "mdm_riscv"} {
@@ -258,14 +258,14 @@ proc gen_testfunc_call {swproj mhsinst} {
       int Status;
 
       print(\"\\r\\n Running Interrupt Test  for ${ipname}...\\r\\n\");
-      
+
       Status = UartLiteIntrExample(&${intcvar}, &${ipname}_UartLite, \\
                                   ${deviceid}, \\
                                   ${intr_id});
-	
+
       if (Status == 0) {
          print(\"UartLite Interrupt Test PASSED\\r\\n\");
-      } 
+      }
       else {
          print(\"UartLite Interrupt Test FAILED\\r\\n\");
       }
@@ -277,4 +277,3 @@ proc gen_testfunc_call {swproj mhsinst} {
 
   return $testfunc_call
 }
-

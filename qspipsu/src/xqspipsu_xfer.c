@@ -7,11 +7,9 @@
 /*****************************************************************************/
 /**
  * @file xqspipsu_xfer.c
- * @addtogroup qspipsu_api QSPIPSU APIs
- * @{
- * @details
+ * @brief Implements the polled and interrupt mode data transfer functions.
  *
- * The xqspipsu_transfer.c contains functions to receive and transfer data
+ * The xqspipsu_xfer.c file contains functions to receive and transfer data
  * in polled and interrupt mode.
  *
  * <pre>
@@ -22,9 +20,17 @@
  * 1.18   sb  08/29/2023 Restructured the code for more modularity
  * 1.18   sb  08/29/2023 Update XQspiPsu_PolledRecvData api to fix MISRA-C warnings.
  * 1.22   sb  10/24/2025 Added cache invalidate when EL1_NONSECURE is not defined.
+ *        zm  06/18/2026 Queued whole transfer into GENFIFO to fix bus conflict.
+ *        zm  06/25/2026 Skip IO read when RxBytes is zero.
+ * 1.24   vn  08/26/26   Fix Doxygen warnings.
+ * 1.24   tb  09/30/26   Align Doxygen comments with AMD standards
  *
  * </pre>
  ******************************************************************************/
+
+/** @addtogroup qspipsu_api QSPIPSU APIs
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -34,7 +40,6 @@
 #include "xil_smc.h"
 #endif
 /************************** Constant Definitions *****************************/
-#define MAX_DELAY_CNT	1000000000U	/**< Max delay count */
 
 /**************************** Type Definitions *******************************/
 
@@ -49,16 +54,15 @@
 /*****************************************************************************/
 /**
  *
- * Transfers Tx data on the bus in polled mode.
+ * @brief Transfers Tx data on the bus in polled mode.
  *
- * @param       InstancePtr Pointer to the XQspiPsu instance.
- * @param       Msg Pointer to the structure containing transfer data.
- * @param       Index Msg index to transfer.
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in,out] Msg Pointer to the structure containing transfer data.
+ * @param[in]     Index Msg index to transfer.
  *
  * @return
- *		- XST_SUCCESS if successful.
- *		- XST_FAILURE if transfer fails.
- *
+ *		  - XST_SUCCESS if successful.
+ *		  - XST_FAILURE if transfer fails.
  *
 ******************************************************************************/
 s32 XQspiPsu_PolledSendData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
@@ -85,17 +89,16 @@ END:
 /*****************************************************************************/
 /**
  *
- * Transfers Rx data on the bus in polled mode.
+ * @brief Transfers Rx data on the bus in polled mode.
  *
- * @param       InstancePtr Pointer to the XQspiPsu instance.
- * @param       Msg Pointer to the structure containing transfer data.
- * @param       Index Msg index to transfer.
- * @param       IOPending I/O mode transfer status.
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in,out] Msg Pointer to the structure containing transfer data.
+ * @param[in]     Index Msg index to transfer.
+ * @param[out]    IOPending I/O mode transfer status.
  *
  * @return
- *		- XST_SUCCESS if successful.
- *		- XST_FAILURE if transfer fails.
- *
+ *		  - XST_SUCCESS if successful.
+ *		  - XST_FAILURE if transfer fails.
  *
 ******************************************************************************/
 s32 XQspiPsu_PolledRecvData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
@@ -136,8 +139,10 @@ s32 XQspiPsu_PolledRecvData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
 			InstancePtr->RxBytes = 0;
 		}
 	} else {
-		QspiPsuStatusReg = XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_ISR_OFFSET);
-		XQspiPsu_IORead(InstancePtr, &Msg[Index], QspiPsuStatusReg);
+		if (InstancePtr->RxBytes != 0) {
+			QspiPsuStatusReg = XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_ISR_OFFSET);
+			XQspiPsu_IORead(InstancePtr, &Msg[Index], QspiPsuStatusReg);
+		}
 	}
 	Status = (s32)XST_SUCCESS;
 END:
@@ -147,57 +152,35 @@ END:
 /*****************************************************************************/
 /**
  *
- * Performs a transfer of Tx data on the bus in interrupt mode.
+ * @brief Performs a transfer of Tx data on the bus in interrupt mode.
  *
- * @param	InstancePtr Pointer to the XQspiPsu instance.
- * @param	QspiPsuStatusReg Status QSPI status register.
- * @param	DeltaMsgCnt Message count flag.
- *
- * @return	None.
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in]     QspiPsuStatusReg Status QSPI status register.
  *
  ******************************************************************************/
-void XQspiPsu_IntrSendData(XQspiPsu *InstancePtr,
-			   u32 QspiPsuStatusReg, u8 *DeltaMsgCnt)
+void XQspiPsu_IntrSendData(XQspiPsu *InstancePtr, u32 QspiPsuStatusReg)
 {
 	s32 MsgCnt = InstancePtr->MsgCnt;
 	XQspiPsu_Msg *Msg = InstancePtr->Msg;
-	u32 TxRxFlag = Msg[MsgCnt].Flags;
 
 	if ( ((QspiPsuStatusReg & XQSPIPSU_ISR_TXNOT_FULL_MASK) != (u32)FALSE) &&
 	     (InstancePtr->TxBytes > 0)) {
 		XQspiPsu_FillTxFifo(InstancePtr, &Msg[MsgCnt], (u32)XQSPIPSU_TXD_DEPTH);
 	}
-	/*
-	 * Check if the entry is ONLY TX and increase MsgCnt.
-	 * This is to allow TX and RX together in one entry - corner case.
-	 */
-	if (  ((QspiPsuStatusReg & XQSPIPSU_ISR_TXEMPTY_MASK) != (u32)FALSE) &&
-	      ((QspiPsuStatusReg & XQSPIPSU_ISR_GENFIFOEMPTY_MASK) != (u32)FALSE) &&
-	      (InstancePtr->TxBytes == 0) &&
-	      ((TxRxFlag & XQSPIPSU_MSG_FLAG_RX) == (u32)FALSE)) {
-		MsgCnt += 1;
-		*DeltaMsgCnt = 1U;
-	}
-	InstancePtr->MsgCnt = MsgCnt;
 }
 
 /*****************************************************************************/
 /**
  *
- * Performs a transfer of Rx data on the busin interrupt mode.
+ * @brief Performs a transfer of Rx data on the bus in interrupt mode.
  *
- * @param	InstancePtr Pointer to the XQspiPsu instance.
- * @param	QspiPsuStatusReg Status QSPI status register.
- * @param	DmaIntrStatusReg Status DMA interrupt register.
- * @param	DeltaMsgCnt Message count flag.
- *
- * @return	None.
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in]     QspiPsuStatusReg Status QSPI status register.
+ * @param[in]     DmaIntrStatusReg Status DMA interrupt register.
  *
  ******************************************************************************/
 void XQspiPsu_IntrRecvData(XQspiPsu *InstancePtr,
-			   u32 QspiPsuStatusReg, u32 DmaIntrStatusReg, u8 *DeltaMsgCnt)
+			   u32 QspiPsuStatusReg, u32 DmaIntrStatusReg)
 {
 	s32 MsgCnt = InstancePtr->MsgCnt;
 	XQspiPsu_Msg *Msg = InstancePtr->Msg;
@@ -215,24 +198,17 @@ void XQspiPsu_IntrRecvData(XQspiPsu *InstancePtr,
 #else
 			Xil_DCacheInvalidateRange((INTPTR)Msg[MsgCnt].RxBfrPtr, (INTPTR)Msg[MsgCnt].ByteCount);
 #endif
-			if (XQspiPsu_SetIOMode(InstancePtr, &Msg[MsgCnt]) == (u32)TRUE) {
+			if (XQspiPsu_SetIOMode(InstancePtr, &Msg[MsgCnt])) {
 				XQspiPsu_GenFifoEntryData(InstancePtr, &Msg[MsgCnt]);
 				XQspiPsu_ManualStartEnable(InstancePtr);
 			} else {
 				InstancePtr->RxBytes = 0;
-				MsgCnt += 1;
-				*DeltaMsgCnt = 1U;
 			}
 		}
 	} else {
 		if (InstancePtr->RxBytes != 0) {
 			XQspiPsu_IORead(InstancePtr, &Msg[MsgCnt], QspiPsuStatusReg);
-			if (InstancePtr->RxBytes == 0) {
-				MsgCnt += 1;
-				*DeltaMsgCnt = 1U;
-			}
 		}
 	}
-	InstancePtr->MsgCnt = MsgCnt;
 }
 /** @} */

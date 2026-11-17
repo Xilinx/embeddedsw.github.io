@@ -1,17 +1,20 @@
 /******************************************************************************
 * Copyright (C) 2001 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
+
+#ifndef XSPI_L_H
+#define XSPI_L_H
 
 /*****************************************************************************/
 /**
 *
 * @file xspi_l.h
-* @addtogroup spi Overview
-* @{
 *
-* This header file contains identifiers, Register Definitions and  basic driver
+* @brief Contains the identifiers, registers and low-level macros of the SPI.
+*
+* This header contains identifiers, register definitions and basic driver
 * functions (or macros) that can be used to access the device.
 * Refer xspi.h for information about the driver.
 *
@@ -32,13 +35,16 @@
 * 3.01a sdm  04/23/10 Added definitions for the new slave mode interrupts.
 * 3.02a sdm  03/30/11 Added definitions for the new register bits in axi_qspi.
 * 3.04a bss  03/21/12 Added XIP Mode Register masks
-*
+* 4.17  vn   08/26/26 Fix Doxygen warnings
+* 4.17  tb   09/30/26 Align Doxygen comments with AMD documentation standards
 * </pre>
 *
 ******************************************************************************/
 
-#ifndef XSPI_L_H		/* prevent circular inclusions */
-#define XSPI_L_H		/* by using protection macros */
+/**
+* @addtogroup spi_api SPI APIs
+* @{
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,25 +58,25 @@ extern "C" {
 
 /**************************** Type Definitions *******************************/
 
-
 /***************** Macros (Inline Functions) Definitions *********************/
 
-#define XSpi_In32	Xil_In32
-#define XSpi_Out32	Xil_Out32
+#define XSpi_In32	Xil_In32	/**< 32-bit register read. */
+#define XSpi_Out32	Xil_Out32	/**< 32-bit register write. */
 
 /****************************************************************************/
 /**
 *
-* Read from the specified Spi device register.
+* @brief Reads from the specified SPI device register.
 *
-* @param	BaseAddress contains the base address of the device.
-* @param	RegOffset contains the offset from the 1st register of the
+* @param[in]	BaseAddress Base address of the device.
+* @param[in]	RegOffset Offset from the 1st register of the
 *		device to select the specific register.
 *
 * @return	The value read from the register.
 *
-* @note		C-Style signature:
-*		u32 XSpi_ReadReg(u32 BaseAddress, u32 RegOffset);
+* @note
+* C-style signature
+*	u32 XSpi_ReadReg(u32 BaseAddress, u32 RegOffset)
 *
 ******************************************************************************/
 #define XSpi_ReadReg(BaseAddress, RegOffset) \
@@ -79,18 +85,16 @@ extern "C" {
 /***************************************************************************/
 /**
 *
-* Write to the specified Spi device register.
+* @brief Writes to the specified SPI device register.
 *
-* @param	BaseAddress contains the base address of the device.
-* @param	RegOffset contains the offset from the 1st register of the
+* @param[in]	BaseAddress Base address of the device.
+* @param[in]	RegOffset Offset from the 1st register of the
 *		device to select the specific register.
-* @param	RegisterValue is the value to be written to the register.
+* @param[in]	RegisterValue Value to be written to the register.
 *
-* @return	None.
-*
-* @note		C-Style signature:
-*		void XSpi_WriteReg(u32 BaseAddress, u32 RegOffset,
-*					u32 RegisterValue);
+* @note
+* C-style signature
+*	void XSpi_WriteReg(u32 BaseAddress, u32 RegOffset, u32 RegisterValue)
 ******************************************************************************/
 #define XSpi_WriteReg(BaseAddress, RegOffset, RegisterValue) \
 	XSpi_Out32((BaseAddress) + (RegOffset), (RegisterValue))
@@ -119,8 +123,7 @@ extern "C" {
 #define XSP_TFO_OFFSET		0x74	/**< Tx FIFO occupancy */
 #define XSP_RFO_OFFSET		0x78	/**< Rx FIFO occupancy */
 
-/* @} */
-
+/** @} */
 
 /**
  * @name Global Interrupt Enable Register (GIER) mask(s)
@@ -128,8 +131,7 @@ extern "C" {
  */
 #define XSP_GINTR_ENABLE_MASK	0x80000000	/**< Global interrupt enable */
 
-/* @} */
-
+/** @} */
 
 /** @name SPI Device Interrupt Status/Enable Registers
  *
@@ -139,7 +141,7 @@ extern "C" {
  *
  * <b> Interrupt Enable Register (IPIER) </b>
  *
- * This register is used to enable interrupt sources for the Spi device.
+ * This register enables interrupt sources for the Spi device.
  * Writing a '1' to a bit in this register enables the corresponding Interrupt.
  * Writing a '0' to a bit in this register disables the corresponding Interrupt.
  *
@@ -195,13 +197,12 @@ extern "C" {
 				 XSP_INTR_RX_OVERRUN_MASK |	\
 				 XSP_INTR_SLAVE_MODE_FAULT_MASK | \
 				 XSP_INTR_CMD_ERR_MASK)
-/* @} */
+/** @} */
 
 /**
  * SPI Software Reset Register (SRR) mask.
  */
 #define XSP_SRR_RESET_MASK		0x0000000A
-
 
 /** @name SPI Control Register (CR) masks
  *
@@ -225,12 +226,12 @@ extern "C" {
  * LSB/MSB first data format select. The default data format is MSB first.
  * The LSB first data format is not available in all versions of the Xilinx Spi
  * Device whereas the MSB first data format is supported by all the versions of
- * the Xilinx Spi Devices. Please check the HW specification to see if this
+ * the Xilinx Spi Devices. Check the HW specification to see if this
  * feature is supported or not.
  */
 #define XSP_CR_LSB_MSB_FIRST_MASK	0x00000200
 
-/* @} */
+/** @} */
 
 /** @name SPI Control Register (CR) masks for XIP Mode
  *
@@ -240,10 +241,7 @@ extern "C" {
 #define XSP_CR_XIP_CLK_POLARITY_MASK	0x00000002 /**< Clock polarity
 								high or low */
 
-/* @} */
-
-
-
+/** @} */
 
 /** @name Status Register (SR) masks
  *
@@ -266,7 +264,7 @@ extern "C" {
 #define XSP_SR_LOOP_BACK_ERR_MASK  0x00000200 /**< Loop back error */
 #define XSP_SR_CMD_ERR_MASK	   0x00000400 /**< 'Invalid cmd' error */
 
-/* @} */
+/** @} */
 
 /** @name Status Register (SR) masks for XIP Mode
  *
@@ -283,26 +281,25 @@ extern "C" {
 #define XSP_SR_XIP_AXI_ERROR_MASK	0x00000010 /**< AXI Transaction
 								Error */
 
-/* @} */
-
+/** @} */
 
 /** @name SPI Transmit FIFO Occupancy (TFO) mask
  *
  * @{
  */
-/* The binary value plus one yields the occupancy.*/
+/** Tx FIFO occupancy mask. The binary value plus one yields the occupancy. */
 #define XSP_TFO_MASK		0x0000001F
 
-/* @} */
+/** @} */
 
 /** @name SPI Receive FIFO Occupancy (RFO) mask
  *
  * @{
  */
-/* The binary value plus one yields the occupancy.*/
+/** Rx FIFO occupancy mask. The binary value plus one yields the occupancy. */
 #define XSP_RFO_MASK		0x0000001F
 
-/* @} */
+/** @} */
 
 /** @name Data Width Definitions
  *
@@ -313,7 +310,7 @@ extern "C" {
 						Wide */
 #define XSP_DATAWIDTH_WORD	32  /**< Tx/Rx Reg is Word (32 bit)  Wide */
 
-/* @} */
+/** @} */
 
 /** @name SPI Modes
  *
@@ -321,11 +318,11 @@ extern "C" {
  *
  * @{
  */
-#define XSP_STANDARD_MODE	0
-#define XSP_DUAL_MODE		1
-#define XSP_QUAD_MODE		2
+#define XSP_STANDARD_MODE	0	/**< Standard SPI mode. */
+#define XSP_DUAL_MODE		1	/**< Dual SPI mode. */
+#define XSP_QUAD_MODE		2	/**< Quad SPI mode. */
 
- /*@}*/
+ /** @} */
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/

@@ -1,6 +1,6 @@
 /*******************************************************************************
 * Copyright (C) 2015 - 2020 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
@@ -28,6 +28,7 @@
  * 5.2  aad  01/24/16 XDp_RxAllocatePayloadStream now adjusts to timeslot
  *			   rearragement
  * 6.0	tu   05/30/17 Initialized variable in XDp_RxDeviceInfoToRawData
+ * 7.0	pam  09/21/26 Fixed vulnerability warnings
  * </pre>
  *
 *******************************************************************************/
@@ -192,7 +193,7 @@ static u32 XDp_Transaction2MsgFormat(u8 *Transaction, XDp_SidebandMsg *Msg);
 #endif
 
 #if XPAR_XDPRXSS_NUM_INSTANCES
-static void XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg);
+static u32 XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg);
 #endif /* XPAR_XDPRXSS_NUM_INSTANCES */
 
 #if XPAR_XDPTXSS_NUM_INSTANCES
@@ -725,8 +726,17 @@ u32 XDp_TxFindAccessibleDpDevices(XDp *InstancePtr, u8 LinkCountTotal,
 	 * this branch device. */
 	LinkCountTotal++;
 
+	/* DisplayPort limits a chain to 15 links; refuse to go deeper to avoid
+	 * writing past the 15-byte RAD buffer and unbounded recursion driven
+	 * by a malicious branch device. */
+	if (LinkCountTotal > 15) {
+		return XST_FAILURE;
+	}
+
 	u8 DownBranchesDownPorts[DeviceInfo.NumPorts];
-	for (Index = 0; Index < DeviceInfo.NumPorts; Index++) {
+	for (Index = 0; Index < DeviceInfo.NumPorts &&
+			Topology->NodeTotal < (sizeof(Topology->NodeTable) /
+				sizeof(Topology->NodeTable[0])); Index++) {
 		PortDetails = &DeviceInfo.PortDetails[Index];
 		/* Any downstream device downstream device will have the RAD of
 		 * the current branch device appended with the port number. */
@@ -1206,7 +1216,7 @@ u32 XDp_TxRemoteIicRead(XDp *InstancePtr, u8 LinkCountTotal,
 		/* Send remote I2C read sideband message. */
 		Status = XDp_TxSendSbMsgRemoteIicRead(InstancePtr,
 			LinkCountTotal, RelativeAddress, IicAddress, Offset,
-			BytesLeft, ReadData);
+			CurrBytesToRead, ReadData);
 		if (Status != XST_SUCCESS) {
 			return Status;
 		}
@@ -1785,13 +1795,15 @@ u32 XDp_TxSendSbMsgRemoteDpcdRead(XDp *InstancePtr, u8 LinkCountTotal,
 		return Status;
 	}
 
-	/* Collect body data into an array. */
-	for (Index = 3; Index < SbMsgReply.Length; Index++) {
+	/* Collect body data into an array, bounded by the caller-supplied
+	 * buffer size in case of an oversized/malicious reply. */
+	for (Index = 3; Index < SbMsgReply.Length &&
+			(u32)(Index - 3) < BytesToRead; Index++) {
 		ReadData[Index - 3] = SbMsgReply.Data[Index];
 	}
 
 	/* The number of bytes actually read does not match that requested. */
-	if (Index < BytesToRead) {
+	if ((u32)(Index - 3) < BytesToRead) {
 		return XST_DATA_LOST;
 	}
 
@@ -1976,13 +1988,15 @@ u32 XDp_TxSendSbMsgRemoteIicRead(XDp *InstancePtr, u8 LinkCountTotal,
 		return Status;
 	}
 
-	/* Collect body data into an array. */
-	for (Index = 3; Index < SbMsgReply.Length; Index++) {
+	/* Collect body data into an array, bounded by the caller-supplied
+	 * buffer size in case of an oversized/malicious reply. */
+	for (Index = 3; Index < SbMsgReply.Length &&
+			(Index - 3) < BytesToRead; Index++) {
 		ReadData[Index - 3] = SbMsgReply.Data[Index];
 	}
 
 	/* The number of bytes actually read does not match that requested. */
-	if (Index < BytesToRead) {
+	if ((Index - 3) < BytesToRead) {
 		return XST_DATA_LOST;
 	}
 
@@ -2442,6 +2456,7 @@ void XDp_TxGetGuid(XDp *InstancePtr, u8 LinkCountTotal, u8 *RelativeAddress,
 *******************************************************************************/
 u32 XDp_RxHandleDownReq(XDp *InstancePtr)
 {
+	u32 Status;
 	XDp_SidebandMsg Msg;
 
 	/* Verify arguments. */
@@ -2449,7 +2464,13 @@ u32 XDp_RxHandleDownReq(XDp *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 	Xil_AssertNonvoid(XDp_GetCoreType(InstancePtr) == XDP_RX);
 
-	XDp_RxReadDownReq(InstancePtr, &Msg);
+	Status = XDp_RxReadDownReq(InstancePtr, &Msg);
+	if (Status != XST_SUCCESS) {
+		/* The request failed length/CRC validation; NACK it instead of
+		 * dispatching on unparsed data. */
+		XDp_RxSetGenericNackReply(InstancePtr, &Msg);
+		return XDp_RxSendSbMsg(InstancePtr, &Msg);
+	}
 
 	switch (Msg.Body.MsgData[0]) {
 	case XDP_SBMSG_CLEAR_PAYLOAD_ID_TABLE:
@@ -2462,11 +2483,16 @@ u32 XDp_RxHandleDownReq(XDp *InstancePtr)
 		break;
 
 	case XDP_SBMSG_REMOTE_I2C_READ:
-		XDp_RxSetRemoteIicReadReply(InstancePtr, &Msg);
+		if (XDp_RxSetRemoteIicReadReply(InstancePtr, &Msg) != XST_SUCCESS) {
+			/* Do not echo an unmodified/failed body back as a reply. */
+			XDp_RxSetGenericNackReply(InstancePtr, &Msg);
+		}
 		break;
 
 	case XDP_SBMSG_REMOTE_DPCD_READ:
-		XDp_RxSetRemoteDpcdReadReply(InstancePtr, &Msg);
+		if (XDp_RxSetRemoteDpcdReadReply(InstancePtr, &Msg) != XST_SUCCESS) {
+			XDp_RxSetGenericNackReply(InstancePtr, &Msg);
+		}
 		break;
 
 	case XDP_SBMSG_ENUM_PATH_RESOURCES:
@@ -3217,6 +3243,13 @@ void XDp_RxAllocatePayloadStream(XDp *InstancePtr)
 		XDP_RX_MST_ALLOC_START_TS_SHIFT;
         NumTs = (RegVal & XDP_RX_MST_ALLOC_COUNT_TS_MASK) >>
 		XDP_RX_MST_ALLOC_COUNT_TS_SHIFT;
+        /* Clamp against the payload table size to prevent an OOB write. */
+        if (StartTs >= sizeof(InstancePtr->RxInstance.Topology.PayloadTable)) {
+                StartTs = sizeof(InstancePtr->RxInstance.Topology.PayloadTable) - 1;
+        }
+        if (NumTs > (sizeof(InstancePtr->RxInstance.Topology.PayloadTable) - StartTs)) {
+                NumTs = sizeof(InstancePtr->RxInstance.Topology.PayloadTable) - StartTs;
+        }
         /* Set the virtual channel payload table in software using the
 	 * MST allocation values. */
 	memset(&PayloadTable[StartTs], StreamId, NumTs);
@@ -3332,18 +3365,26 @@ static void XDp_TxIssueGuid(XDp *InstancePtr, u8 LinkCountTotal,
 		u8 *RelativeAddress, XDp_TxTopology *Topology, u8 *Guid)
 {
 	u8 GuidIndex;
+	u8 GuidTableIndex;
 
 	for (GuidIndex = 0; GuidIndex < XDP_GUID_NBYTES; GuidIndex++) {
 		if (Guid[GuidIndex]) {
 			return;
 		}
 	}
+
+	/* Clamp against the fixed-size GUID table to avoid an OOB read. */
+	GuidTableIndex = Topology->NodeTotal;
+	if (GuidTableIndex >= (sizeof(GuidTable) / sizeof(GuidTable[0]))) {
+		GuidTableIndex = (sizeof(GuidTable) / sizeof(GuidTable[0])) - 1;
+	}
+
 	/* The current GUID is all 0's; issue a GUID to the device. */
 	XDp_TxWriteGuid(InstancePtr, LinkCountTotal, RelativeAddress,
-						GuidTable[Topology->NodeTotal]);
+					GuidTable[GuidTableIndex]);
 
 	for (GuidIndex = 0; GuidIndex < XDP_GUID_NBYTES; GuidIndex++) {
-		Guid[GuidIndex] = GuidTable[Topology->NodeTotal][GuidIndex];
+		Guid[GuidIndex] = GuidTable[GuidTableIndex][GuidIndex];
 	}
 }
 
@@ -3370,11 +3411,17 @@ static void XDp_TxAddBranchToList(XDp *InstancePtr,
 			u8 LinkCountTotal, u8 *RelativeAddress)
 {
 	u8 Index;
+	XDp_TxTopology *Topology = &InstancePtr->TxInstance.Topology;
 	XDp_TxTopologyNode *TopologyNode;
 
+	/* Reject the device if the fixed-size node table is already full. */
+	if (Topology->NodeTotal >= (sizeof(Topology->NodeTable) /
+					sizeof(Topology->NodeTable[0]))) {
+		return;
+	}
+
 	/* Add this node to the topology's node list. */
-	TopologyNode = &InstancePtr->TxInstance.Topology.NodeTable[
-				InstancePtr->TxInstance.Topology.NodeTotal];
+	TopologyNode = &Topology->NodeTable[Topology->NodeTotal];
 
 	for (Index = 0; Index < XDP_GUID_NBYTES; Index++) {
 		TopologyNode->Guid[Index] = DeviceInfo->Guid[Index];
@@ -3388,7 +3435,7 @@ static void XDp_TxAddBranchToList(XDp *InstancePtr,
 	TopologyNode->MsgCapStatus = 1;
 
 	/* The branch device has been added to the topology node list. */
-	InstancePtr->TxInstance.Topology.NodeTotal++;
+	Topology->NodeTotal++;
 }
 
 /******************************************************************************/
@@ -3417,6 +3464,14 @@ static void XDp_TxAddSinkToList(XDp *InstancePtr,
 	u8 Index;
 	XDp_TxTopology *Topology = &InstancePtr->TxInstance.Topology;
 	XDp_TxTopologyNode *TopologyNode;
+
+	/* Reject the device if the node or sink table is already full. */
+	if ((Topology->NodeTotal >= (sizeof(Topology->NodeTable) /
+					sizeof(Topology->NodeTable[0]))) ||
+	    (Topology->SinkTotal >= (sizeof(Topology->SinkList) /
+					sizeof(Topology->SinkList[0])))) {
+		return;
+	}
 
 	/* Add this node to the topology's node list. */
 	TopologyNode = &Topology->NodeTable[Topology->NodeTotal];
@@ -3478,6 +3533,10 @@ static void XDp_TxGetDeviceInfoFromSbMsgLinkAddress(XDp_SidebandReply
 	}
 
 	FormatReply->NumPorts = SbReply->Data[ReplyIndex++];
+	if (FormatReply->NumPorts > XDP_MAX_NPORTS) {
+		/* Clamp against the fixed-size PortDetails array. */
+		FormatReply->NumPorts = XDP_MAX_NPORTS;
+	}
 
 	/* For each port of the current device, obtain the details. */
 	for (Index = 0; Index < FormatReply->NumPorts; Index++) {
@@ -3670,7 +3729,7 @@ static u32 XDp_SendSbMsgFragment(XDp *InstancePtr, XDp_SidebandMsg *Msg)
  * @note	None.
  *
 *******************************************************************************/
-static void XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg)
+static u32 XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg)
 {
 	u8 Data[XDP_MAX_LENGTH_SBMSG];
 	u8 Index;
@@ -3681,7 +3740,7 @@ static void XDp_RxReadDownReq(XDp *InstancePtr, XDp_SidebandMsg *Msg)
 	}
 
 	Msg->FragmentNum = 0;
-	XDp_Transaction2MsgFormat(Data, Msg);
+	return XDp_Transaction2MsgFormat(Data, Msg);
 }
 #endif /* XPAR_XDPrXSS_NUM_INSTANCES */
 
@@ -3905,6 +3964,14 @@ static u32 XDp_Transaction2MsgFormat(u8 *Transaction, XDp_SidebandMsg *Msg)
 	if (CrcCheck != Header->Crc) {
 		/* The calculated CRC for the header did not match the
 		 * response. */
+		return XST_FAILURE;
+	}
+
+	/* Reject a zero-length body, and reject a header/body combination
+	 * that would overrun a single sideband message transaction buffer. */
+	if ((Header->MsgBodyLength == 0) ||
+			((u32)Header->MsgHeaderLength + Header->MsgBodyLength >
+				XDP_MAX_LENGTH_SBMSG)) {
 		return XST_FAILURE;
 	}
 

@@ -8,10 +8,8 @@
 /**
 *
 * @file xi3cpsx_slave.c
-* @addtogroup Overview
-* @{
 *
-* Handles init functions.
+* @brief Implements I3C slave transfer APIs.
 *
 * <pre> MODIFICATION HISTORY:
 *
@@ -21,9 +19,15 @@
 * 1.1   sd  14/12/22 Fix warnings
 * 1.2   sd  1/2/23   Write to resume bit
 * 1.3 	sd   1/30/24  Moved prints under DEBUG flag.
+* 1.8   tb  09/22/26 Align Doxygen comments with AMD documentation standards
 * </pre>
 *
 ******************************************************************************/
+
+/**
+* @addtogroup i3cpsx_api I3CPSX APIs
+* @{
+*/
 
 /***************************** Include Files *********************************/
 
@@ -43,19 +47,15 @@
 
 /*****************************************************************************/
 /**
-* @brief
-* This function sets up the device to be a slave.
+* @brief Sets up the device to be a slave.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	SlaveAddr is the static address of the slave we are receiving from.
+* @param[in] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] SlaveAddr The static address of the slave we are receiving from.
 *
-* @return	None.
-*
-* @note
-*	Interrupt is always enabled no matter the transfer is interrupt-
-*	driven or polled mode. Whether device will be interrupted or not
-*	depends on whether the device is connected to an interrupt
-*	controller and interrupt for the device is enabled.
+* @note Interrupt is always enabled no matter the transfer is interrupt- driven
+*       or polled mode. Whether the device is interrupted or not depends on
+*       whether the device is connected to an interrupt controller and interrupt
+*       for the device is enabled.
 *
 ****************************************************************************/
 void XI3cPsx_SetupSlave(XI3cPsx *InstancePtr, u16 SlaveAddr)
@@ -111,17 +111,15 @@ void XI3cPsx_SetupSlave(XI3cPsx *InstancePtr, u16 SlaveAddr)
 
 /*****************************************************************************/
 /**
-* @brief
-* This function setup a slave interrupt-driven receive.
+* @brief Sets up a slave interrupt-driven receive.
+*
 * Data processing for the receive is handled by the interrupt handler.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	MsgPtr is the pointer to the receive buffer.
-* @param	ByteCount is the number of bytes to be received.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[out] MsgPtr Pointer to the receive buffer.
+* @param[in] ByteCount The number of bytes to be received.
 *
-* @return	None.
-*
-* @note		This routine is for interrupt-driven transfer only.
+* @note This routine is for interrupt-driven transfer only.
 *
 ****************************************************************************/
 void XI3cPsx_SlaveRecv(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount)
@@ -134,24 +132,85 @@ void XI3cPsx_SlaveRecv(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount)
 	Xil_AssertVoid(InstancePtr->IsReady == (u32)XIL_COMPONENT_IS_READY);
 	Xil_AssertVoid(ByteCount != 0);
 
+	InstancePtr->RecvBufferPtr = MsgPtr;
+	InstancePtr->RecvByteCount = (u16)ByteCount;
+	InstancePtr->IsSend = 0;
+
+	XI3cPsx_EnableInterrupts(InstancePtr->Config.BaseAddress,
+				 XI3CPSX_INTR_RX_THLD | XI3CPSX_INTR_RESP_READY |
+				 XI3CPSX_INTR_TRANSFER_ERR | XI3CPSX_INTR_TRANSFER_ABORT);
 }
 
 /*****************************************************************************/
 /**
-* @brief
-* This function sends  a buffer in polled mode as a slave.
+* @brief Sets up a slave interrupt-driven send.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	MsgPtr is the pointer to the send buffer.
-* @param	ByteCount is the number of bytes to be sent.
-* @param	Cmds is the instance of XI3cPsx_Cmd.
+* Data processing for the send is handled by the interrupt handler.
+*
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] MsgPtr Pointer to the send buffer.
+* @param[in] ByteCount The number of bytes to be sent.
+*
+* @note This routine is for interrupt-driven transfer only.
+*
+****************************************************************************/
+void XI3cPsx_SlaveSend(XI3cPsx *InstancePtr, u8 *MsgPtr, s32 ByteCount)
+{
+	XI3cPsx_Cmd Cmd;
+	u16 WrFifoSpace;
+	u32 DataLen;
+
+	/*
+	 * Assert validates the input arguments.
+	 */
+	Xil_AssertVoid(InstancePtr != NULL);
+	Xil_AssertVoid(MsgPtr != NULL);
+	Xil_AssertVoid(InstancePtr->IsReady == (u32)XIL_COMPONENT_IS_READY);
+	Xil_AssertVoid(ByteCount > 0);
+	Xil_AssertVoid(ByteCount < COMMAND_PORT_ARG_DATA_LEN_MAX);
+
+	InstancePtr->SendBufferPtr = MsgPtr;
+	InstancePtr->SendByteCount = (u16)ByteCount;
+	InstancePtr->IsSend = 1;
+
+	DataLen = (u32)ByteCount;
+
+	WrFifoSpace = XI3cPsx_WrFifoLevel(InstancePtr);
+
+	if (XI3CPSX_WORD_TO_BYTES(WrFifoSpace) > InstancePtr->SendByteCount)
+		ByteCount = InstancePtr->SendByteCount;
+	else
+		ByteCount = XI3CPSX_WORD_TO_BYTES(WrFifoSpace);
+
+	if (ByteCount)
+		XI3cPsx_WrTxFifo(InstancePtr, (u32 *)MsgPtr, ByteCount);
+
+	Cmd.TransArg = 0U;
+	Cmd.TransCmd = COMMAND_PORT_TID(0) |
+		       COMMAND_PORT_ARG_DATA_LEN(DataLen);
+	Cmd.RxBuf = NULL;
+	XI3cPsx_WrCmdFifo(InstancePtr, &Cmd);
+
+	XI3cPsx_EnableInterrupts(InstancePtr->Config.BaseAddress,
+				 XI3CPSX_INTR_TX_THLD | XI3CPSX_INTR_RESP_READY |
+				 XI3CPSX_INTR_TRANSFER_ERR | XI3CPSX_INTR_TRANSFER_ABORT);
+}
+
+/*****************************************************************************/
+/**
+* @brief Sends a buffer in polled mode as a slave.
+*
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[in] MsgPtr Pointer to the send buffer.
+* @param[in] ByteCount The number of bytes to be sent.
+* @param[in] Cmds The instance of XI3cPsx_Cmd.
 *
 * @return
-*		- XST_SUCCESS if everything went well.
-*		- XST_FAILURE if master sends us data or master terminates the
-*		transfer before all data has sent out.
+*        - XST_SUCCESS if everything went well.
+*        - XST_FAILURE if master sends us data or master terminates the transfer
+*          before all data has sent out.
 *
-* @note		This send routine is for polled mode transfer only.
+* @note This send routine is for polled mode transfer only.
 *
 ****************************************************************************/
 s32 XI3cPsx_SlaveSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr,
@@ -160,6 +219,7 @@ s32 XI3cPsx_SlaveSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr,
 	s32 Status = XST_FAILURE;
 	u16 WrFifoSpace;
 	u32 Response;
+	u32 DataLen;
 
 	/*
 	 * Assert validates the input arguments
@@ -175,6 +235,7 @@ s32 XI3cPsx_SlaveSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr,
 		if (ByteCount >= COMMAND_PORT_ARG_DATA_LEN_MAX)
 			return XST_SEND_ERROR;
 
+		DataLen = (u32)ByteCount;
 		InstancePtr->SendByteCount = (u16)ByteCount;
 		InstancePtr->SendBufferPtr = MsgPtr;
 
@@ -194,6 +255,10 @@ s32 XI3cPsx_SlaveSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr,
 		/*
 		 * Fill Tx command
 		 */
+		Cmds.TransArg = 0U;
+		Cmds.TransCmd = (Cmds.TransCmd & COMMAND_PORT_TID(0xFU)) |
+				COMMAND_PORT_ARG_DATA_LEN(DataLen);
+		Cmds.RxBuf = NULL;
 		XI3cPsx_WrCmdFifo(InstancePtr, &Cmds);
 
 		XferStatus = !!(XI3cPsx_ReadReg(InstancePtr->Config.BaseAddress, XI3CPSX_INTR_STATUS)
@@ -240,18 +305,19 @@ s32 XI3cPsx_SlaveSendPolled(XI3cPsx *InstancePtr, u8 *MsgPtr,
 
 /*****************************************************************************/
 /**
-* @brief
-* This function receives a buffer in polled mode as a slave.
+* @brief Receives a buffer in polled mode as a slave.
 *
-* @param	InstancePtr is a pointer to the XI3cPsx instance.
-* @param	MsgPtr is the pointer to the receive buffer.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
+* @param[out] MsgPtr Pointer to the receive buffer.
 *
 * @return
-*		- XST_SUCCESS if everything went well.
-*		- XST_FAILURE if timed out.
+*        - XST_SUCCESS if everything went well.
+*        - XST_FAILURE if timed out.
 *
-* @note		This receive routine is for polled mode transfer only.
-* 		All the FIFO operations are in terms of words.
+* @note This receive routine is for polled mode transfer only. All the FIFO
+*       operations are in terms of words, so MsgPtr must hold a word
+*       rounded count. The number of bytes received is reported in
+*       CurrByteCount.
 *
 ****************************************************************************/
 s32 XI3cPsx_SlaveRecvPolled(XI3cPsx *InstancePtr, u8 *MsgPtr)
@@ -302,20 +368,31 @@ s32 XI3cPsx_SlaveRecvPolled(XI3cPsx *InstancePtr, u8 *MsgPtr)
 		XI3cPsx_RdRxFifo(InstancePtr, (u32 *)MsgPtr, InstancePtr->RecvByteCount);
 	}
 
-	if (Response & XI3CPSX_TRANSFER_ERROR)
+	InstancePtr->CurrByteCount = TotalRecvCount;
+
+	if (Response & XI3CPSX_TRANSFER_ERROR) {
+		InstancePtr->Error = (u8)((Response & XI3CPSX_RESPONSE_ERR_STS_MASK) >>
+					  XI3CPSX_RESPONSE_ERR_STS_SHIFT);
 		Status = XST_RECV_ERROR;
-	else
+	} else {
 		Status = XST_SUCCESS;
+	}
 
 	XI3cPsx_DisableInterrupts(InstancePtr->Config.BaseAddress,
 				  XI3CPSX_INTR_RESP_READY);
+
+	if (Status != XST_SUCCESS) {
+		XI3cPsx_RecoverFromError(InstancePtr);
+	}
+
 	return Status;
 }
 
 /*****************************************************************************/
 /**
-* The interrupt handler for slave mode. It does the protocol handling for
-* the interrupt-driven transfers.
+* @brief Handles interrupts in slave mode.
+*
+* It does the protocol handling for the interrupt-driven transfers.
 *
 * Completion events and errors are signaled to upper layer for proper
 * handling.
@@ -343,16 +420,17 @@ s32 XI3cPsx_SlaveRecvPolled(XI3cPsx *InstancePtr, u8 *MsgPtr)
 * - Other interrupts
 *	These interrupts are marked as error.
 *
-*
-* @param	InstancePtr is a pointer to the XIicPs instance.
-*
-* @return	None.
-*
-* @note 	None.
+* @param[in,out] InstancePtr Pointer to the XI3cPsx instance.
 *
 ****************************************************************************/
 void XI3cPsx_SlaveInterruptHandler(XI3cPsx *InstancePtr)
 {
+	u32 IntrStatusReg;
+	u16 RxDataAvailable, WrFifoSpace;
+	s32 ByteCount;
+	u32 ResponseData;
+	u32 StatusEvent = 0U;
+	u32 Reported = 0U;
 
 	/*
 	 * Assert validates the input arguments.
@@ -360,5 +438,112 @@ void XI3cPsx_SlaveInterruptHandler(XI3cPsx *InstancePtr)
 	Xil_AssertVoid(InstancePtr != NULL);
 	Xil_AssertVoid(InstancePtr->IsReady == (u32)XIL_COMPONENT_IS_READY);
 
+	/*
+	 * Read the Interrupt status register.
+	 */
+	IntrStatusReg = XI3cPsx_ReadReg(InstancePtr->Config.BaseAddress, XI3CPSX_INTR_STATUS);
+
+	/*
+	 * Write the status back to clear the interrupts so no events are
+	 * missed while processing this interrupt.
+	 */
+	XI3cPsx_WriteReg(InstancePtr->Config.BaseAddress, (u32)XI3CPSX_INTR_STATUS, IntrStatusReg);
+
+	/*
+	 * Tx threshold - write data to FIFO
+	 */
+	if (IntrStatusReg & XI3CPSX_INTR_TX_THLD) {
+
+		WrFifoSpace = XI3cPsx_WrFifoLevel(InstancePtr);
+
+		if (XI3CPSX_WORD_TO_BYTES(WrFifoSpace) > InstancePtr->SendByteCount)
+			ByteCount = InstancePtr->SendByteCount;
+		else
+			ByteCount = XI3CPSX_WORD_TO_BYTES(WrFifoSpace);
+
+		if (ByteCount)
+			XI3cPsx_WrTxFifo(InstancePtr, (u32 *)InstancePtr->SendBufferPtr, ByteCount);
+
+		if (InstancePtr->SendByteCount == 0) {
+			XI3cPsx_DisableInterrupts(InstancePtr->Config.BaseAddress,
+						  XI3CPSX_INTR_TX_THLD);
+		}
+	}
+
+	/*
+	 * Rx threshold - read available data from FIFO
+	 */
+	if (IntrStatusReg & XI3CPSX_INTR_RX_THLD) {
+		RxDataAvailable = XI3cPsx_RdFifoLevel(InstancePtr);
+
+		if (XI3CPSX_WORD_TO_BYTES(RxDataAvailable) > InstancePtr->RecvByteCount)
+			ByteCount = InstancePtr->RecvByteCount;
+		else
+			ByteCount = XI3CPSX_WORD_TO_BYTES(RxDataAvailable);
+
+		if (ByteCount)
+			XI3cPsx_RdRxFifo(InstancePtr, (u32 *)InstancePtr->RecvBufferPtr, ByteCount);
+		if (InstancePtr->RecvByteCount == 0) {
+			XI3cPsx_DisableInterrupts(InstancePtr->Config.BaseAddress,
+						  XI3CPSX_INTR_RX_THLD);
+		}
+	}
+
+	/*
+	 * Response ready - transfer complete, read any remaining data
+	 */
+	if (IntrStatusReg & XI3CPSX_INTR_RESP_READY) {
+		if (InstancePtr->RecvByteCount > 0) {
+			RxDataAvailable = XI3cPsx_RdFifoLevel(InstancePtr);
+
+			if (XI3CPSX_WORD_TO_BYTES(RxDataAvailable) > InstancePtr->RecvByteCount)
+				ByteCount = InstancePtr->RecvByteCount;
+			else
+				ByteCount = XI3CPSX_WORD_TO_BYTES(RxDataAvailable);
+
+			if (ByteCount)
+				XI3cPsx_RdRxFifo(InstancePtr, (u32 *)InstancePtr->RecvBufferPtr, ByteCount);
+		}
+
+		ResponseData = XI3cPsx_ReadReg(InstancePtr->Config.BaseAddress,
+					       XI3CPSX_RESPONSE_QUEUE_PORT);
+		InstancePtr->Error = (ResponseData & XI3CPSX_RESPONSE_ERR_STS_MASK) >> XI3CPSX_RESPONSE_ERR_STS_SHIFT;
+
+		/*
+		 * The word based FIFO cannot tell how many bytes of the last
+		 * word are valid, so take the byte count from the response.
+		 */
+		if (!InstancePtr->IsSend) {
+			InstancePtr->CurrByteCount = (u16)(ResponseData & XI3CPSX_DATA_LEN);
+		}
+
+		XI3cPsx_DisableInterrupts(InstancePtr->Config.BaseAddress,
+					  XI3CPSX_INTR_TX_THLD | XI3CPSX_INTR_RX_THLD | XI3CPSX_INTR_RESP_READY |
+					  XI3CPSX_INTR_TRANSFER_ERR | XI3CPSX_INTR_TRANSFER_ABORT);
+
+		/* The error halts the core, so unhalt it before reporting. */
+		if (InstancePtr->Error != 0U) {
+			XI3cPsx_RecoverFromError(InstancePtr);
+			Reported = 1U;
+		}
+
+		InstancePtr->StatusHandler(InstancePtr->CallBackRef, InstancePtr->Error);
+	}
+	/*
+	 * Transfer Error interrupt, pass this information to application
+	 * unless the response has already reported the same failure.
+	 */
+	if ((0U != (IntrStatusReg & XI3CPSX_INTR_STATUS_TRANSFER_ERR_STS_MASK)) &&
+	    (Reported == 0U)) {
+		StatusEvent = XI3CPSX_EVENT_TRANSF_ERR;
+		XI3cPsx_RecoverFromError(InstancePtr);
+		InstancePtr->StatusHandler(InstancePtr->CallBackRef,
+					   StatusEvent);
+	}
+	if (0U != (IntrStatusReg & XI3CPSX_INTR_STATUS_TRANSFER_ABORT_STS_MASK)) {
+		StatusEvent = XI3CPSX_EVENT_TRANSF_ABORT;
+		InstancePtr->StatusHandler(InstancePtr->CallBackRef,
+					   StatusEvent);
+	}
 }
 /** @} */

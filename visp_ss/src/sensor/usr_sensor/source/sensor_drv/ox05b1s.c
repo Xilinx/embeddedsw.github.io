@@ -1,5 +1,5 @@
 /******************************************************************************\
-|* Copyright (C) 2024 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+|* Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 |* Copyright (c) 2020 by VeriSilicon Holdings Co., Ltd. ("VeriSilicon")       *|
 |* All Rights Reserved.                                                       *|
 |*                                                                            *|
@@ -120,7 +120,12 @@ void enable_IR_power(IsiSensorHandle_t handle)
 {
 	Ox05b1s_Context_t *pOx05b1sCtx = (Ox05b1s_Context_t *) handle;
 	if (pOx05b1sCtx == NULL)
-		return RET_NULL_POINTER;
+		return;
+
+	if (pOx05b1sCtx->sensorDevId >= MAX_SENSOR_COUNT ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId]->writeIIC == NULL)
+		return;
 
 	uint32_t register_addr = 0x04;
 	uint8_t wr_data[2];
@@ -133,7 +138,7 @@ void enable_IR_power(IsiSensorHandle_t handle)
 		 IR_POWER_DEVICE_SLAVE_ADDRESS, register_addr, 0x1, wr_data[0], 1);
 	if (Status != RET_SUCCESS) {
 		xil_printf("%s: IR write sensor register error!\n", __func__);
-		return (RET_FAILURE);
+		return;
 	}
 
 	register_addr = 0x02;
@@ -160,6 +165,13 @@ static RESULT Ox05b1s_IsiReadRegIss(IsiSensorHandle_t handle, const uint16_t add
 	if (pOx05b1sCtx == NULL)
 		return RET_NULL_POINTER;
 
+	if (pOx05b1sCtx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (pValue == NULL || g_fmc_single.sensor_array[pOx05b1sCtx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId]->readIIC == NULL)
+		return RET_NULL_POINTER;
+
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx05b1sCtx->sensorDevId]->sensor_alias_addr) >> 1;
 	result = g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId]->readIIC(pOx05b1sCtx->i2cId,
 		 slave_addr, addr, 0x2, pValue, 1);
@@ -180,6 +192,13 @@ static RESULT Ox05b1s_IsiWriteRegIss(IsiSensorHandle_t handle, const uint16_t ad
 
 	Ox05b1s_Context_t *pOx05b1sCtx = (Ox05b1s_Context_t *) handle;
 	if (pOx05b1sCtx == NULL)
+		return RET_NULL_POINTER;
+
+	if (pOx05b1sCtx->sensorDevId >= MAX_SENSOR_COUNT)
+		return RET_OUTOFRANGE;
+	if (g_fmc_single.sensor_array[pOx05b1sCtx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId] == NULL ||
+	    g_fmc_single.accessiic_array[pOx05b1sCtx->sensorDevId]->writeIIC == NULL)
 		return RET_NULL_POINTER;
 
 	u8 slave_addr = (g_fmc_single.sensor_array[pOx05b1sCtx->sensorDevId]->sensor_alias_addr) >> 1;
@@ -269,6 +288,11 @@ static RESULT Ox05b1s_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	RESULT result = RET_SUCCESS;
 	uint32_t desId = 0, pipeId = 0;
 	xil_printf("%s (enter)\n", __func__);
+	if (pConfig == NULL || pHandle == NULL)
+		return RET_NULL_POINTER;
+	*pHandle = NULL;
+	if (pConfig->cameraDevId >= MAX_SENSOR_COUNT)
+		return RET_UNSUPPORT_ID;
 
 	Ox05b1s_Context_t *pOx05b1sCtx = (Ox05b1s_Context_t *) osMalloc(sizeof(Ox05b1s_Context_t));
 	if (!pOx05b1sCtx) {
@@ -292,8 +316,6 @@ static RESULT Ox05b1s_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 	pOx05b1sCtx->sensorDevId = 12;
 	pipeId = pOx05b1sCtx->sensorDevId;
 
-	*pHandle = (IsiSensorHandle_t) pOx05b1sCtx;
-
 	// result = init_MUX();
 	// if (result != XST_SUCCESS) {
 	// xil_printf("\n\rIIC Init Failed \n\r");
@@ -302,22 +324,42 @@ static RESULT Ox05b1s_IsiCreateIss(IsiSensorInstanceConfig_t *pConfig, IsiSensor
 
 	if (pipeId != IN_PIPE_12) {
 		xil_printf("%s: sensor device ID %d is mot support!\n", __func__, pipeId);
+		MEMSET(pOx05b1sCtx, 0, sizeof(Ox05b1s_Context_t));
+		osFree(pOx05b1sCtx);
 		return RET_UNSUPPORT_ID;
 	}
-	desId = MAPPING_INPIPE_TO_DES_ID(pipeId);
 
-	init_iic_access(pOx05b1sCtx->i2cId, pipeId);
+	*pHandle = (IsiSensorHandle_t) pOx05b1sCtx;
+
+	desId = MAPPING_INPIPE_TO_DES_ID(pipeId);
+	if (desId >= DS_MAX) {
+		result = RET_OUTOFRANGE;
+		goto fail;
+	}
+
+	result = init_iic_access(pOx05b1sCtx->i2cId, pipeId);
+	if (result != RET_SUCCESS)
+		goto fail;
 
 	static int8_t mcmABmode_initCount = 0;
 
 	if (mcmABmode_initCount <= 0) {
 		init_des(desId);
-		init_sensor(pipeId, desId);
+		result = init_sensor(pipeId, desId);
+		if (result != RET_SUCCESS)
+			goto fail_iic;
 	}
 	mcmABmode_initCount ++;
 
 	xil_printf("%s (exit)\n", __func__);
 	return (result);
+
+fail_iic:
+	release_iic_access(pipeId);
+fail:
+	osFree(pOx05b1sCtx);
+	*pHandle = NULL;
+	return result;
 }
 
 static RESULT Ox05b1s_AecSetModeParameters(IsiSensorHandle_t handle, Ox05b1s_Context_t *pOx05b1sCtx)
@@ -996,7 +1038,7 @@ RESULT Ox05b1s_IsiGetDGainIss(IsiSensorHandle_t handle, IsiSensorGain_t *pSensor
 	return (result);
 }
 
-RESULT Ox05b1s_IsiSetIntTimeIss(IsiSensorHandle_t handle, IsiSensorIntTime_t *pSensorIntTime)
+RESULT Ox05b1s_IsiSetIntTimeIss(IsiSensorHandle_t handle, const IsiSensorIntTime_t *pSensorIntTime)
 {
 	RESULT result = RET_SUCCESS;
 	xil_printf("%s: (enter)\n", __func__);

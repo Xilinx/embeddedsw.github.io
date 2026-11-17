@@ -27,26 +27,20 @@ extern "C" {
 #include <xparameters.h>
 #include <xstatus.h>
 #include <xtmrctr.h>
+#if !defined(XPS_BOARD_VCK190) && !defined(XPS_BOARD_VEK385_1) /* Added for VCK190/VEK385 support */
 #include <xvphy.h>
 #include <xvphy_dp.h>
 #include <xvphy_hw.h>
+#endif /* Added for VCK190/VEK385 support */
 
 #ifdef XPAR_INTC_0_DEVICE_ID
 /* For MicroBlaze systems. */
-#ifndef SDT
-#include "xintc.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #else
 /*
  * For ARM/Zynq SoC systems.
  */
-#ifndef SDT
-#include "xscugic.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #endif /**< XPAR_INTC_0_DEVICE_ID */
 
 /*
@@ -58,11 +52,7 @@ extern "C" {
 #define VIDEO_CRC_BASEADDR 	XPAR_DP_RX_HIER_0_VIDEO_FRAME_CRC_0_BASEADDR
 #define UARTLITE_BASEADDR 	XPAR_PSU_UART_0_BASEADDR
 
-#ifndef SDT
-#define VIDPHY_BASEADDR 	XPAR_VPHY_0_BASEADDR
-#else
 #define VIDPHY_BASEADDR 	XPAR_XVPHY_0_BASEADDR
-#endif
 
 #define VID_EDID_BASEADDR 	XPAR_DP_RX_HIER_0_VID_EDID_0_BASEADDR
 #define IIC_DEVICE_ID 		XPAR_IIC_0_DEVICE_ID
@@ -162,6 +152,9 @@ void Dp21RxSs_Pt_RxTrainingLostHandler(void *InstancePtr);
 void Dp21RxSs_Pt_RxVideoHandler(void *InstancePtr);
 void Dp21RxSs_Pt_RxInfoPacketHandler(void *InstancePtr);
 void Dp21RxSs_Pt_RxExtPacketHandler(void *InstancePtr);
+void Dp21RxSs_Pt_RxPrint_InfoPkt(void);
+void Dp21RxSs_Pt_RxPrint_ExtPkt(void);
+void Dp21RxSs_Pt_RxPrint_HdrInfoPkt(void);
 void Dp21RxSs_Pt_RxTrainingDoneHandler(void *InstancePtr);
 void Dp21RxSs_Pt_RxUnplugHandler(void *InstancePtr);
 void Dp21RxSs_Pt_RxLinkBandwidthHandler(void *InstancePtr);

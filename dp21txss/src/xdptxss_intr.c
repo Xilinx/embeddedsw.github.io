@@ -174,6 +174,7 @@ void XDpTxSs_HpdEventProcess(void *InstancePtr)
 	u8 max_cap_local = 0;
 	u8 ext_dpcd_rd = 0;
 	u8 Dpcd_ext [16];
+	u8 lttpr_cap[10];
 	XDpTxSs *XDpTxSsPtr = (XDpTxSs *)InstancePtr;
 
 	/* Verify arguments. */
@@ -183,6 +184,13 @@ void XDpTxSs_HpdEventProcess(void *InstancePtr)
 
 	if (XDp_TxIsConnected(XDpTxSsPtr->DpPtr)) {
 		/* From here is the requirement per DP spec */
+
+		/* CTS requires the PHY Repeater (LTTPR) capability at
+		 * F0000h-F0009h to be read as the first AUX transaction after
+		 * HPD, in a single transaction, before any other DPCD.
+		 */
+		Status |= XDp_TxAuxRead(XDpTxSsPtr->DpPtr,
+				XDP_DPCD_LTTPR_CAPABILITY, 10, lttpr_cap);
 
 		Status |= XDp_TxAuxRead(XDpTxSsPtr->DpPtr,
 				XDP_DPCD_TRAIN_AUX_RD_INTERVAL, 1, &ext_cap);
@@ -381,15 +389,29 @@ void XDpTxSs_HpdPulseProcess(void *InstancePtr)
 void XDpTxSs_WriteVscExtPktProcess(void *InstancePtr)
 {
 	int i;
+	u8 Stream;
+	u32 ExtDataOffset[4] = {0,
+			       XDP_TX_AUDIO_EXT_DATA_STREAM2_OFFSET,
+			       XDP_TX_AUDIO_EXT_DATA_STREAM3_OFFSET,
+			       XDP_TX_AUDIO_EXT_DATA_STREAM4_OFFSET};
 	XDpTxSs *XDpTxSsPtr = (XDpTxSs *)InstancePtr;
 	XDp *XDpPtr = XDpTxSsPtr->DpPtr;
 
-	if (XDpPtr->TxInstance.ColorimetryThroughVsc) {
-		XDp_WriteReg(XDpPtr->Config.BaseAddr, XDP_TX_AUDIO_EXT_DATA(1),
-			XDpPtr->TxInstance.VscPacket.Header);
+	/* Refresh the VSC SDP buffer for every stream that transmits
+	 * colorimetry through VSC. In single stream mode only stream 1 (index 0)
+	 * is enabled; in multi stream mode each enabled stream has its own
+	 * extended-packet buffer. */
+	for (Stream = 0; Stream < 4; Stream++) {
+		if (!XDpPtr->TxInstance.ColorimetryThroughVsc[Stream])
+			continue;
+
+		XDp_WriteReg(XDpPtr->Config.BaseAddr,
+			     XDP_TX_AUDIO_EXT_DATA(1) + ExtDataOffset[Stream],
+			     XDpPtr->TxInstance.VscPacket[Stream].Header);
 		for (i = 0; i < XDPTXSS_EXT_DATA_2ND_TO_9TH_WORD; i++) {
-			XDp_WriteReg(XDpPtr->Config.BaseAddr, XDP_TX_AUDIO_EXT_DATA(i+2),
-					XDpPtr->TxInstance.VscPacket.Payload[i]);
+			XDp_WriteReg(XDpPtr->Config.BaseAddr,
+				     XDP_TX_AUDIO_EXT_DATA(i + 2) + ExtDataOffset[Stream],
+				     XDpPtr->TxInstance.VscPacket[Stream].Payload[i]);
 		}
 	}
 }
@@ -479,11 +501,30 @@ u32 XDpTxSs_SetCallBack(XDpTxSs *InstancePtr, u32 HandlerType,
 			break;
 
 		case XDPTXSS_HANDLER_DP_LINK_RATE_CHG:
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+			if (InstancePtr->Config.IncludeClkWiz) {
+				InstancePtr->LinkRateChangeCallback =
+					(XDp_IntrHandler)CallbackFunc;
+				InstancePtr->LinkRateChangeCallbackRef =
+					CallbackRef;
+			} else
+#endif
+			{
+				XDp_TxSetCallback(InstancePtr->DpPtr,
+					XDP_TX_HANDLER_LINKRATECHANGE,
+					CallbackFunc, CallbackRef);
+			}
+			Status = XST_SUCCESS;
+			break;
+
+#if (XPAR_XCLK_WIZ_NUM_INSTANCES > 0)
+		case XDPTXSS_DRV_HANDLER_DP_LINK_RATE_CHG:
 			XDp_TxSetCallback(InstancePtr->DpPtr,
 				XDP_TX_HANDLER_LINKRATECHANGE,
 				CallbackFunc, CallbackRef);
 			Status = XST_SUCCESS;
 			break;
+#endif
 
 		case XDPTXSS_HANDLER_DP_PE_VS_ADJUST:
 			XDp_TxSetCallback(InstancePtr->DpPtr,

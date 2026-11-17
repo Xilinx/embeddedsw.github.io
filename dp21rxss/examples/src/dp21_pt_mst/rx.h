@@ -35,20 +35,12 @@ extern "C" {
 /*
  * For MicroBlaze systems.
  */
-#ifndef SDT
-#include "xintc.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #else
 /*
  * For ARM/Zynq SoC systems.
  */
-#ifndef SDT
-#include "xscugic.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 #endif /**< XPAR_INTC_0_DEVICE_ID */
 
 /*
@@ -59,11 +51,7 @@ extern "C" {
 #define VIDEO_CRC_BASEADDR 	XPAR_DP_RX_HIER_0_VIDEO_FRAME_CRC_0_BASEADDR
 #define UARTLITE_BASEADDR 	XPAR_PSU_UART_0_BASEADDR
 
-#ifndef SDT
-#define VIDPHY_BASEADDR 	XPAR_VPHY_0_BASEADDR
-#else
 #define VIDPHY_BASEADDR 	XPAR_XVPHY_0_BASEADDR
-#endif
 
 #define VID_EDID_BASEADDR 	XPAR_DP_RX_HIER_0_VID_EDID_0_BASEADDR
 #define IIC_DEVICE_ID 		XPAR_IIC_0_DEVICE_ID
@@ -157,6 +145,9 @@ void DpRxSs_TrainingLostHandler(void *InstancePtr);
 void DpRxSs_VideoHandler(void *InstancePtr);
 void DpRxSs_InfoPacketHandler(void *InstancePtr);
 void DpRxSs_ExtPacketHandler(void *InstancePtr);
+void DpRxSs_ExtPacketHandlerStream2(void *InstancePtr);
+void DpRxSs_ExtPacketHandlerStream3(void *InstancePtr);
+void DpRxSs_ExtPacketHandlerStream4(void *InstancePtr);
 void DpRxSs_TrainingDoneHandler(void *InstancePtr);
 void DpRxSs_UnplugHandler(void *InstancePtr);
 void DpRxSs_LinkBandwidthHandler(void *InstancePtr);
@@ -174,6 +165,8 @@ void Dprx_InterruptHandlerDownReq(void *InstancePtr);
 void Dprx_InterruptHandlerDownReply(void *InstancePtr);
 void Dprx_InterruptHandlerPayloadAlloc(void *InstancePtr);
 void Dprx_InterruptHandlerActRx(void *InstancePtr);
+void Dp21RxSs_PtMst_RxPrint_ExtPkt(void);
+void Dp21RxSs_PtMst_RxPrint_HdrInfoPkt(void);
 
 /************************** Variable Definitions *****************************/
 #define XACR_WriteReg(BaseAddress, RegOffset, Data)   \

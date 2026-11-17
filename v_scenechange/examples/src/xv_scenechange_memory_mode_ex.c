@@ -40,11 +40,7 @@
 #include "xil_cache.h"
 #include "sleep.h"
 #include "xv_scenechange.h"
-#ifndef SDT
-#include "xscugic.h"
-#else
 #include "xinterrupt_wrap.h"
-#endif
 
 /************************** Constant Definitions *****************************/
 
@@ -66,24 +62,25 @@
  */
 #define MAX_PATTERNS		8
 
-#if defined XPAR_PSU_ACPU_GIC_DEVICE_ID
-#define PS_ACPU_GIC_DEVICE_ID XPAR_PSU_ACPU_GIC_DEVICE_ID
-#elif defined XPAR_SCUGIC_0_DEVICE_ID
-#define PS_ACPU_GIC_DEVICE_ID XPAR_SCUGIC_0_DEVICE_ID
-#else
-#warning No GIC Device ID found
-#endif
-
 #if defined XPAR_GPIO_0_BASEADDR
 #define GPIO_BASE XPAR_GPIO_0_BASEADDR
+#elif defined XPAR_XGPIO_0_BASEADDR
+#define GPIO_BASE XPAR_XGPIO_0_BASEADDR
+#endif
+
+/**
+ * Base of the frame buffer region. On MicroBlaze RISC-V platforms DDR does
+ * not start at 0, and its beginning holds the application image.
+ */
+#if defined(__riscv) && defined(XPAR_LPDDRMC_0_BASEADDR)
+#define FRAME_BUF_BASE		(XPAR_LPDDRMC_0_BASEADDR + 0x10000000)
+#else
+#define FRAME_BUF_BASE		0x10000000
 #endif
 
 
 /************************** Function Prototypes ******************************/
 void SceneChangeDetectedCallback(void *CallbackRef);
-#ifndef SDT
-static int SetupInterruptSystem(void);
-#endif
 int XV_SceneChange_init(void);
 void reset_pipe(void);
 
@@ -93,8 +90,10 @@ volatile u32 local_mem[8] = {0xFF00FF, 0xFFFF00, 0xFF0000, 0x00FFFF,
 	0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFF0000};
 
 /* Different memory location for the streams */
-u64 memaddr[8] = {0x10000000, 0x20000000, 0x20400000, 0x20800000,
-	0x30000000, 0x30400000, 0x30800000, 0x40000000};
+u64 memaddr[8] = {FRAME_BUF_BASE, FRAME_BUF_BASE + 0x10000000,
+	FRAME_BUF_BASE + 0x10400000, FRAME_BUF_BASE + 0x10800000,
+	FRAME_BUF_BASE + 0x20000000, FRAME_BUF_BASE + 0x20400000,
+	FRAME_BUF_BASE + 0x20800000, FRAME_BUF_BASE + 0x30000000};
 
 /* below are the configurable parameters: user can give height and width
  * to 4320, 8192 and stride value, histbits, color format, threshold is
@@ -108,7 +107,6 @@ u32 scd_clrfmt[XV_SCD_IP_MAX_STREAMS]	= {XV_SCD_HAS_Y8, 0, 0, 0, 0, 0, 0, 0};
 u32 scd_threshold[XV_SCD_IP_MAX_STREAMS] = {1, 0, 0, 0, 0, 0, 0, 0};
 
 volatile u8 is_detected, sc_detected;
-XScuGic    Intc;
 XV_scenechange ScdPtr;
 
 /*****************************************************************************/
@@ -128,52 +126,6 @@ void ClearScreen(void)
 	xil_printf("%c\[2J", 27);
 	xil_printf("%c\033[0;0H", 27);
 }
-
-#ifndef SDT
-/*****************************************************************************/
-/**
- * @brief Setup the interrupt system for SceneChange
- *
- * This function initializes the GIC (Generic Interrupt Controller) and
- * registers the exception handler. It configures the interrupt controller
- * to handle interrupts from the SceneChange IP.
- *
- * @return XST_SUCCESS if interrupt system setup succeeds
- *         XST_DEVICE_NOT_FOUND if interrupt controller not found
- *         XST_FAILURE if initialization fails
- *
- * @note This function is only used in non-SDT builds.
- *
- *******************************************************************************/
-static int SetupInterruptSystem(void)
-{
-	int Status;
-	XScuGic *IntcInstPtr = &Intc;
-
-	XScuGic_Config *IntcCfgPtr;
-	IntcCfgPtr = XScuGic_LookupConfig(PS_ACPU_GIC_DEVICE_ID);
-	if (!IntcCfgPtr) {
-		xil_printf("ERR:: Interrupt Controller not found");
-		return XST_DEVICE_NOT_FOUND;
-	}
-	Status = XScuGic_CfgInitialize(IntcInstPtr,
-			IntcCfgPtr,
-			IntcCfgPtr->CpuBaseAddress);
-
-	if (Status != XST_SUCCESS) {
-		xil_printf("Intc initialization failed!\r\n");
-		return XST_FAILURE;
-	}
-
-	Xil_ExceptionInit();
-
-	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-			(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-			(XScuGic *)IntcInstPtr);
-
-	return XST_SUCCESS;
-}
-#endif
 
 /*****************************************************************************/
 /**
@@ -218,20 +170,12 @@ int XV_SceneChange_init()
 	int Status = 0;
 	u32 streams = 0;
 
-#ifndef SDT
-	ScdConfig = XV_scenechange_LookupConfig(XPAR_XV_SCENECHANGE_0_DEVICE_ID);
-#else
 	ScdConfig = XV_scenechange_LookupConfig(XPAR_XV_SCENECHANGE_0_BASEADDR);
-#endif
 	if (ScdConfig == NULL)
 		return XST_FAILURE;
 
 	/* Initialize top level and all included sub-cores */
-#ifndef SDT
-	Status = XV_scenechange_Initialize(&ScdPtr, XPAR_XV_SCENECHANGE_0_DEVICE_ID);
-#else
 	Status = XV_scenechange_Initialize(&ScdPtr, XPAR_XV_SCENECHANGE_0_BASEADDR);
-#endif
 	if (Status != XST_SUCCESS)
 		return XST_FAILURE;
 
@@ -257,28 +201,11 @@ int XV_SceneChange_init()
 				xil_printf("ERR:: Unable to configure SD Layer\r\n");
 				return XST_FAILURE;
 			}
-			memset((char *)memaddr[streams], local_mem[streams],
+			memset((char *)(UINTPTR)memaddr[streams], local_mem[streams],
 					scd_height[streams] * scd_width[streams]);
 		}
 	}
 
-#ifndef SDT
-	Status = SetupInterruptSystem();
-	if (Status != XST_SUCCESS) {
-		xil_printf("SetupInterruptSystem() is Failed.\r\n");
-		return XST_FAILURE;
-	}
-	Status |= XScuGic_Connect(&Intc,
-			XPAR_FABRIC_V_SCENECHANGE_0_VEC_ID,
-			(XInterruptHandler)XV_scenechange_InterruptHandler,
-			(void *)&ScdPtr);
-	if (Status == XST_SUCCESS) {
-		XScuGic_Enable(&Intc, XPAR_FABRIC_V_SCENECHANGE_0_VEC_ID);
-	} else {
-		xil_printf("ERR:: Unable to register SD interrupt handler");
-		return XST_FAILURE;
-	}
-#else
 	Status = XSetupInterruptSystem(&ScdPtr,&XV_scenechange_InterruptHandler,
 				       ScdPtr.ScdConfig->IntrId,
 				       ScdPtr.ScdConfig->IntrParent,
@@ -287,7 +214,6 @@ int XV_SceneChange_init()
 		xil_printf("XSetupInterruptSystem() is Failed.\r\n");
 		return XST_FAILURE;
 	}
-#endif
 
 	XV_scenechange_SetCallback(&ScdPtr, SceneChangeDetectedCallback,
 			(void *) &ScdPtr);
@@ -317,8 +243,8 @@ int XV_SceneChange_init()
 void reset_pipe(void)
 {
 
-#if defined XPAR_GPIO_0_BASEADDR
-	u32 count;
+#if defined GPIO_BASE
+	volatile u32 count;
 	*(u32 *)(GPIO_BASE) = 0xFF;
 	for (count = 0; count <1000; count++);
 	*(u32 *)(GPIO_BASE) = 0x0;
@@ -395,7 +321,7 @@ int main()
 		}
 
 		/* pattern is changing on Layer-0 to test - used can configure*/
-		memset((char *)memaddr[SCD_LAYER_0], local_mem[state],
+		memset((char *)(UINTPTR)memaddr[SCD_LAYER_0], local_mem[state],
 				scd_height[SCD_LAYER_0] * scd_width[SCD_LAYER_0]);
 		sleep(1);
 	} while(1);

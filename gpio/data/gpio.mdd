@@ -1,6 +1,6 @@
 ###############################################################################
 # Copyright (C) 2005 - 2021 Xilinx, Inc.  All rights reserved.
-# Copyright (C) 2022 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (C) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 # SPDX-License-Identifier: MIT
 #
 ###############################################################################
@@ -14,13 +14,13 @@
 ## @BEGIN_CHANGELOG EDK_M
 ##
 ## 21/11/09 ktn Removed support for opb_gpio and plb_gpio
-##    
+##
 ## @END_CHANGELOG
 
 ## @BEGIN_CHANGELOG EDK_MS3
 ##
 ## 06/16/10 sv Added support for axi_gpio
-##    
+##
 ## @END_CHANGELOG
 
 
@@ -31,7 +31,7 @@ BEGIN driver gpio
   OPTION supported_peripherals = (axi_gpio);
   OPTION driver_state = ACTIVE;
    OPTION copyfiles = all;
-     OPTION VERSION = 4.13;
+     OPTION VERSION = 4.14;
   OPTION NAME = gpio;
 
 END driver

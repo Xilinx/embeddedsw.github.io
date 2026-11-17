@@ -26,9 +26,8 @@ libs:
 	$(ARCHIVER) -r ${RELEASEDIR}/${LIB} $(OBJECTS)
 	make clean
 
-include: 
+include:
 	${CP} $(INCLUDEFILES) $(INCLUDEDIR)
 
 clean:
 	rm -rf ${OBJECTS}
-

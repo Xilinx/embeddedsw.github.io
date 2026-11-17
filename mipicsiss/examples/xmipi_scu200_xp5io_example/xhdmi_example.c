@@ -48,6 +48,16 @@
 #ifdef SDT
 #include "xinterrupt_wrap.h"
 #endif
+#include "sensor_cfgs.h"
+
+/* Pipeline_Cfg.VideoDestn (owned by xmipi_scu200_xp5io_example.c) tells the
+ * async HDMI cable-connect/EDID callbacks below whether HDMI is actually the
+ * active output right now, so their diagnostic prints can be muted while
+ * DSI is selected -- these callbacks fire on real cable-state interrupts
+ * regardless of which output is selected, so without this check they print
+ * in the middle of/after the DSI selection menu. */
+extern XPipeline_Cfg Pipeline_Cfg;
+
 /***************** Macros (Inline Functions) Definitions *********************/
 #define AUX_FIFO_CLEAR 1
 
@@ -1988,7 +1998,9 @@ void XV_Tx_HdmiTrigCb_CableConnectionChange(void *InstancePtr)
 	xhdmi_exdes_ctrlr.SystemEvent = FALSE;
 
 	if (HdmiTxSs1Ptr->IsStreamConnected == (FALSE)) {
-		xil_printf("TX Is Stream COnnected FALSE\n\r");
+		if (Pipeline_Cfg.VideoDestn == XVIDDES_HDMI) {
+			xil_printf("TX Is Stream COnnected FALSE\n\r");
+		}
 #if AUX_FIFO_CLEAR
 		/* If the RX is present we assume that before the tx
 		 * was disconnected the system was in pass-through.
@@ -2002,30 +2014,43 @@ void XV_Tx_HdmiTrigCb_CableConnectionChange(void *InstancePtr)
 		xhdmi_exdes_ctrlr.IsTxPresent = FALSE;
 	} else {
 
-		if (Exdes_CheckDwnstrmSinkCaps() == XST_SUCCESS) {
-			XV_Tx_SetEdidParsingDone(xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
-						 TRUE);
-			xil_printf("EDID Parsing Pass\r\n");
+		/* Exdes_CheckDwnstrmSinkCaps() -> EdidScdcCheck() reaches deep
+		 * into vendor driver code (xhdmi_edid.c, xvidc_parse_edid.c,
+		 * xv_hdmitx1[_frl].c) that prints unconditionally -- some of
+		 * it inside the pre-built BSP static library, which app-level
+		 * compiler defines can't reach at all. The only clean way to
+		 * silence all of it is to not call this chain while DSI is
+		 * the active output: HDMI isn't being driven right now, so
+		 * there's nothing to gain from re-parsing EDID/SCDC live, and
+		 * whatever state this call would have refreshed gets
+		 * re-established the next time the user actually selects
+		 * HDMI (via config_hdmi()/start_hdmi()). */
+		if (Pipeline_Cfg.VideoDestn == XVIDDES_HDMI) {
+			if (Exdes_CheckDwnstrmSinkCaps() == XST_SUCCESS) {
+				XV_Tx_SetEdidParsingDone(xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
+							 TRUE);
+				xil_printf("EDID Parsing Pass\r\n");
 
-			if ((EdidHdmi_t.EdidCtrlParam.MaxFrlRateSupp > 0) &&
-			    (EdidHdmi_t.EdidCtrlParam.IsSCDCPresent ==
-			     XVIDC_SUPPORTED)) {
-				/* System event has already been set to
-				 * true by default.
-				 * When the downstream supports FRL, we must
-				 * complete FRL training first and then resume
-				 * the system operations.
-				 */
-				XV_Tx_SetFrlEdidInfo(
-					xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
-					EdidHdmi_t.EdidCtrlParam.IsSCDCPresent,
-					EdidHdmi_t.EdidCtrlParam.MaxFrlRateSupp);
-				xhdmi_exdes_ctrlr.SystemEvent = FALSE;
+				if ((EdidHdmi_t.EdidCtrlParam.MaxFrlRateSupp > 0) &&
+				    (EdidHdmi_t.EdidCtrlParam.IsSCDCPresent ==
+				     XVIDC_SUPPORTED)) {
+					/* System event has already been set to
+					 * true by default.
+					 * When the downstream supports FRL, we must
+					 * complete FRL training first and then resume
+					 * the system operations.
+					 */
+					XV_Tx_SetFrlEdidInfo(
+						xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
+						EdidHdmi_t.EdidCtrlParam.IsSCDCPresent,
+						EdidHdmi_t.EdidCtrlParam.MaxFrlRateSupp);
+					xhdmi_exdes_ctrlr.SystemEvent = FALSE;
+				}
+			} else {
+				XV_Tx_SetEdidParsingDone(xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
+							 FALSE);
+				xil_printf("EDID Parsing Fails\r\n");
 			}
-		} else {
-			XV_Tx_SetEdidParsingDone(xhdmi_exdes_ctrlr.hdmi_tx_ctlr,
-						 FALSE);
-			xil_printf("EDID Parsing Fails\r\n");
 		}
 
 		xhdmi_exdes_ctrlr.IsTxPresent = TRUE;
@@ -3132,30 +3157,7 @@ int config_hdmi()
 #endif
 
 	xil_printf("\r\n\r\n");
-	xil_printf("------------------------------------------\r\n");
-#ifndef SDT
-#if defined (XPAR_XV_FRMBUFRD_NUM_INSTANCES) && \
-                      (XPAR_XV_FRMBUFWR_NUM_INSTANCES)
-	xil_printf("--- HDMI 2.1 SS + HdmiPhy VRR Example v%d.%d ---\r\n",
-			APP_MAJ_VERSION, APP_MIN_VERSION);
-#else
-	xil_printf("--- HDMI 2.1 SS + HdmiPhy Example v%d.%d---\r\n",
-			APP_MAJ_VERSION, APP_MIN_VERSION);
-#endif
-#else
-#if defined (XPAR_XV_FRMBUF_RD_NUM_INSTANCES) && \
-                      (XPAR_XV_FRMBUF_WR_NUM_INSTANCES)
-	xil_printf("--- HDMI 2.1 SS + HdmiPhy VRR Example v%d.%d ---\r\n",
-			APP_MAJ_VERSION, APP_MIN_VERSION);
-#else
-	xil_printf("--- HDMI 2.1 SS + HdmiPhy Example v%d.%d---\r\n",
-			APP_MAJ_VERSION, APP_MIN_VERSION);
-#endif
-#endif
-	xil_printf("---    (c) 2019 by Xilinx, Inc.        ---\r\n");
-	xil_printf("------------------------------------------\r\n");
-	xil_printf("Build %s - %s\r\n", __DATE__, __TIME__);
-	xil_printf("------------------------------------------\r\n");
+
 
 #ifdef XPAR_XV_HDMITXSS1_NUM_INSTANCES
 	xhdmi_exdes_ctrlr.TxBusy            = (TRUE);
@@ -3247,7 +3249,6 @@ int config_hdmi()
 	Status = Vfmc_HdmiInit(&Vfmc[0], XPAR_HDMI_TXSS_HIER_0_VFMC_CTLR_SS_0_VFMC_GPIO_BASEADDR,
                  &Iic, VFMC_HPC0);
 #endif
-
 
 
 	if (Status == XST_FAILURE) {

@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright (C) 2020 - 2022 Xilinx, Inc.  All rights reserved.
-* Copyright (c) 2022 - 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+* Copyright (c) 2022 - 2026 Advanced Micro Devices, Inc. All Rights Reserved.
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
@@ -9,11 +9,10 @@
 /**
  *
  * @file xqspipsu_control.c
- * @addtogroup qspipsu_api QSPIPSU APIs
- * @{
+ * @brief Implements the intermediate control functions of the QSPIPSU driver.
  *
- * The xqspipsu_control.c file contains intermediate control functions used by functions
- * in xqspipsu.c and xqspipsu_options.c files.
+ * The xqspipsu_control.c file contains intermediate control functions used by
+ * functions in xqspipsu.c and xqspipsu_options.c files.
  *
  * <pre>
  * MODIFICATION HISTORY:
@@ -29,9 +28,20 @@
  *                      XQspiPsu_IntrDummyDataTransfer functions.
  * 1.18   sb   09/11/23 Fix MISRA-C violation 8.13.
  * 1.18   sb   09/11/23 Update XQspiPsu_PolledMessageTransfer api to fix MISRA-C warnings.
+ *        zm   06/18/26 Queued whole transfer into GENFIFO to fix bus conflict.
+ *        zm   06/25/26 Restrict IO mode demotion to RX messages, guard Msg[]
+ *                      indexing against MsgCnt == NumMsg and skip IO reads
+ *                      when RxBytes is zero.
+ * 1.24   vn   08/26/26 Fix Doxygen warnings.
+ * 1.24   tb   09/30/26 Align Doxygen comments with AMD standards
+ * 1.24   zm   09/29/26 Added XQspiPsu_StartDmaMsgTransfer function.
  * </pre>
  *
  ******************************************************************************/
+
+/** @addtogroup qspipsu_api QSPIPSU APIs
+ * @{
+ */
 
 /***************************** Include Files *********************************/
 
@@ -52,16 +62,10 @@
 /*****************************************************************************/
 /**
  *
- * Writes the GENFIFO entries to transmit the messages requested.
+ * @brief Writes the GENFIFO entries to transmit the messages requested.
  *
- * @param	InstancePtr Pointer to the XQspiPsu instance.
- * @param	Msg Pointer to the structure containing transfer data.
- *
- * @return
- *		- XST_SUCCESS if successful.
- *		- XST_FAILURE if transfer fails.
- *		- XST_DEVICE_BUSY if a transfer is already in progress.
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in,out] Msg Pointer to the structure containing transfer data.
  *
  ******************************************************************************/
 void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
@@ -90,8 +94,9 @@ void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
 	} else {
 		GenFifoEntry &= ~XQSPIPSU_GENFIFO_STRIPE;
 	}
-	/* If Byte Count is less than 8 bytes do the transfer in IO mode */
+	/* If Byte Count is less than 8 bytes do the RX transfer in IO mode */
 	if ((Msg->ByteCount < 8U) &&
+	    ((Msg->Flags & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE) &&
 	    (InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA)) {
 		InstancePtr->ReadMode = XQSPIPSU_READMODE_IO;
 		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
@@ -118,15 +123,10 @@ void XQspiPsu_GenFifoEntryData(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
 /*****************************************************************************/
 /**
  *
- * Enables the polling functionality of controller.
+ * @brief Enables the polling functionality of the controller.
  *
- * @param	InstancePtr Pointer to the XQspiPsu instance.
- *
- *
- * @param	FlashMsg Pointer to the structure containing transfer data.
- *
- * @return	None
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in]     FlashMsg Pointer to the structure containing transfer data.
  *
  ******************************************************************************/
 void XQspiPsu_PollDataConfig(XQspiPsu *InstancePtr, XQspiPsu_Msg *FlashMsg)
@@ -205,17 +205,17 @@ void XQspiPsu_PollDataConfig(XQspiPsu *InstancePtr, XQspiPsu_Msg *FlashMsg)
 /*****************************************************************************/
 /**
 *
-* Configures the clock according to the prescaler passed.
+* @brief Configures the clock according to the prescaler passed.
 *
-*
-* @param	InstancePtr Pointer to the XQspiPsu instance.
-* @param	Prescaler Clock prescaler.
+* @param[in]    InstancePtr Pointer to the XQspiPsu instance.
+* @param[in]    Prescaler Clock prescaler.
 *
 * @return
 *		- XST_SUCCESS if successful.
 *		- XST_DEVICE_BUSY if the device is currently transferring data.
-*		The transfer must complete or be aborted before setting Tapdelay.
-*
+*		  The transfer must complete or be aborted before setting
+*		  Tapdelay.
+*		- XST_FAILURE if the clock frequency is not supported.
 *
 ******************************************************************************/
 s32 XQspipsu_Calculate_Tapdelay(const XQspiPsu *InstancePtr, u8 Prescaler)
@@ -285,24 +285,76 @@ END:
 /*****************************************************************************/
 /**
  *
- * Performs a transfer on the bus in polled mode. The messages
- * passed are all transferred on the bus between one CS assert and de-assert.
+ * @brief Queues one message in GENFIFO for a DMA transfer.
  *
- * @param	InstancePtr Pointer to the XQspiPsu instance.
- * @param	Msg Pointer to the structure containing transfer data.
- * @param	NumMsg Number of messages to be transferred.
+ * Except for DMA-mode RX, waits for GENFIFO and TX FIFO to drain.
+ *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in,out] Msg Pointer to the structure containing transfer data.
  *
  * @return
- *		- XST_SUCCESS if successful.
- *		- XST_FAILURE if transfer fails.
+ *		  - XST_SUCCESS if successful.
+ *		  - XST_FAILURE if the transfer times out.
  *
+ ******************************************************************************/
+s32 XQspiPsu_StartDmaMsgTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg)
+{
+	InstancePtr->Msg = Msg;
+	XQspiPsu_GenFifoEntryData(InstancePtr, Msg);
+	if (InstancePtr->IsManualstart == (u32)TRUE) {
+#ifdef DEBUG
+		xil_printf("\nManual Start\r\n");
+#endif
+		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
+				  XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress,
+						   XQSPIPSU_CFG_OFFSET) |
+				  XQSPIPSU_CFG_START_GEN_FIFO_MASK);
+	}
+	do {
+		if ((InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA) &&
+		    ((Msg->Flags & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE)) {
+			break;
+		}
+		if (Xil_WaitForEvent((InstancePtr->Config.BaseAddress + XQSPIPSU_ISR_OFFSET),
+				     (XQSPIPSU_ISR_GENFIFOEMPTY_MASK | XQSPIPSU_ISR_TXEMPTY_MASK),
+				     (XQSPIPSU_ISR_GENFIFOEMPTY_MASK | XQSPIPSU_ISR_TXEMPTY_MASK),
+				     MAX_DELAY_CNT) != (u32)XST_SUCCESS) {
+			return (s32)XST_FAILURE;
+		}
+
+	} while (InstancePtr->TxBytes != 0);
+	if (InstancePtr->ReadMode == XQSPIPSU_READMODE_IO) {
+		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress,
+				  XQSPIPSU_CFG_OFFSET, (XQspiPsu_ReadReg(
+						  InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
+						XQSPIPSU_CFG_MODE_EN_DMA_MASK));
+		InstancePtr->ReadMode = XQSPIPSU_READMODE_DMA;
+	}
+	return (s32)XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+ *
+ * @brief Performs a transfer on the bus in polled mode.
+ *
+ * The messages passed are all transferred on the bus between one CS assert
+ * and de-assert.
+ *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in,out] Msg Pointer to the structure containing transfer data.
+ * @param[in]     NumMsg Number of messages to be transferred.
+ *
+ * @return
+ *		  - XST_SUCCESS if successful.
+ *		  - XST_FAILURE if transfer fails.
  *
  ******************************************************************************/
 s32 XQspiPsu_PolledMessageTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
 				   u32 NumMsg)
 {
 	s32 Index;
-	u32 QspiPsuStatusReg;
+	u32 QspiPsuStatusReg = 0;
 	u32 IOPending = (u32)FALSE;
 	s32 Status;
 
@@ -311,46 +363,45 @@ s32 XQspiPsu_PolledMessageTransfer(XQspiPsu *InstancePtr, XQspiPsu_Msg *Msg,
 
 	while (Index < (s32)NumMsg) {
 		XQspiPsu_GenFifoEntryData(InstancePtr, &Msg[Index]);
-		XQspiPsu_ManualStartEnable(InstancePtr);
-		/* Use thresholds here */
-		/* If there is more data to be transmitted */
-		do {
-			if ((Msg[Index].Flags & XQSPIPSU_MSG_FLAG_TX) != (u32)FALSE) {
-				Status = XQspiPsu_PolledSendData(InstancePtr, Msg, Index);
-				if (Status != (s32)XST_SUCCESS) {
-					goto END;
-				}
+		Index++;
+	}
+	XQspiPsu_ManualStartEnable(InstancePtr);
+	Index -= 1;
+	/* Use thresholds here */
+	/* If there is more data to be transmitted */
+	do {
+		if ((Msg[Index].Flags & XQSPIPSU_MSG_FLAG_TX) != (u32)FALSE) {
+			Status = XQspiPsu_PolledSendData(InstancePtr, Msg, Index);
+			if (Status != (s32)XST_SUCCESS) {
+				goto END;
 			}
-			if ((Msg[Index].Flags & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE) {
-				Status = XQspiPsu_PolledRecvData(InstancePtr, Msg, Index, &IOPending);
-				if (Status != (s32)XST_SUCCESS) {
-					goto END;
-				}
-				if (IOPending == (u32)TRUE) {
-					break;
-				}
+		}
+		if ((Msg[Index].Flags & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE) {
+			Status = XQspiPsu_PolledRecvData(InstancePtr, Msg, Index, &IOPending);
+			if (Status != (s32)XST_SUCCESS) {
+				goto END;
 			}
-
-			QspiPsuStatusReg = XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_ISR_OFFSET);
-
-		} while (((QspiPsuStatusReg &
-			   XQSPIPSU_ISR_GENFIFOEMPTY_MASK) == (u32)FALSE) ||
-			 (InstancePtr->TxBytes != 0) ||
-			 ((QspiPsuStatusReg & XQSPIPSU_ISR_TXEMPTY_MASK) == (u32)FALSE) ||
-			 (InstancePtr->RxBytes != 0));
-
-		if ((InstancePtr->IsUnaligned != 0) && (IOPending == (u32)FALSE)) {
-			InstancePtr->IsUnaligned = 0;
-			XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
-					  (XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
-					   XQSPIPSU_CFG_MODE_EN_DMA_MASK));
-			InstancePtr->ReadMode = XQSPIPSU_READMODE_DMA;
+			if (IOPending == (u32)TRUE) {
+				XQspiPsu_GenFifoEntryData(InstancePtr, &Msg[Index]);
+				XQspiPsu_ManualStartEnable(InstancePtr);
+				IOPending = (u32)FALSE;
+				continue;
+			}
 		}
-		if (IOPending == (u32)TRUE) {
-			IOPending = (u32)FALSE;
-		} else {
-			Index++;
-		}
+		QspiPsuStatusReg = XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_ISR_OFFSET);
+
+	} while (((QspiPsuStatusReg &
+		   XQSPIPSU_ISR_GENFIFOEMPTY_MASK) == (u32)FALSE) ||
+		 (InstancePtr->TxBytes != 0) ||
+		 ((QspiPsuStatusReg & XQSPIPSU_ISR_TXEMPTY_MASK) == (u32)FALSE) ||
+		 (InstancePtr->RxBytes != 0));
+
+	if ((InstancePtr->IsUnaligned != 0) && (IOPending == (u32)FALSE)) {
+		InstancePtr->IsUnaligned = 0;
+		XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
+				  (XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
+				   XQSPIPSU_CFG_MODE_EN_DMA_MASK));
+		InstancePtr->ReadMode = XQSPIPSU_READMODE_DMA;
 	}
 	Status = (s32) XST_SUCCESS;
 END:
@@ -360,24 +411,19 @@ END:
 /*****************************************************************************/
 /**
  *
- * Transfers Tx and Rx data.
+ * @brief Transfers Tx and Rx data.
  *
- * @param       InstancePtr Pointer to the XQspiPsu instance.
- * @param       QspiPsuStatusReg Status of QSPI status register.
- * @param       DeltaMsgCnt Message count flag.
- *
- * @return      None.
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[out]    QspiPsuStatusReg Status of QSPI status register.
  *
 ******************************************************************************/
-void XQspiPsu_IntrDataTransfer(XQspiPsu *InstancePtr,
-			       u32 *QspiPsuStatusReg, u8 *DeltaMsgCnt)
+void XQspiPsu_IntrDataTransfer(XQspiPsu *InstancePtr, u32 *QspiPsuStatusReg)
 {
 	u32 DmaIntrStatusReg = 0;
 	const XQspiPsu_Msg *Msg = InstancePtr->Msg;
 	s32 NumMsg = InstancePtr->NumMsg;
 	s32 MsgCnt = InstancePtr->MsgCnt;
-	u32 TxRxFlag = Msg[MsgCnt].Flags;
+	u32 TxRxFlag = (MsgCnt < NumMsg) ? Msg[MsgCnt].Flags : 0U;
 	UINTPTR BaseAddr = InstancePtr->Config.BaseAddress;
 
 	/* QSPIPSU Intr cleared on read */
@@ -388,73 +434,47 @@ void XQspiPsu_IntrDataTransfer(XQspiPsu *InstancePtr,
 						    XQSPIPSU_QSPIDMA_DST_I_STS_OFFSET);
 		XQspiPsu_WriteReg(BaseAddr, XQSPIPSU_QSPIDMA_DST_I_STS_OFFSET,
 				  DmaIntrStatusReg);
-	}
-	if (((DmaIntrStatusReg & XQSPIPSU_QSPIDMA_DST_INTR_ERR_MASK) != (u32)FALSE)) {
-		/* Call status handler to indicate error */
-		InstancePtr->StatusHandler(InstancePtr->StatusRef,
-					   XST_SPI_COMMAND_ERROR, 0);
+		if (((DmaIntrStatusReg & XQSPIPSU_QSPIDMA_DST_INTR_ERR_MASK) != (u32)FALSE)) {
+			/* Call status handler to indicate error */
+			InstancePtr->StatusHandler(InstancePtr->StatusRef,
+						   XST_SPI_COMMAND_ERROR, 0);
+		}
 	}
 	/* Fill more data to be txed if required */
-	if ((MsgCnt < NumMsg) && ((TxRxFlag & XQSPIPSU_MSG_FLAG_TX) != (u32)FALSE) ) {
-		XQspiPsu_IntrSendData(InstancePtr, *QspiPsuStatusReg, DeltaMsgCnt);
+	if ((TxRxFlag & XQSPIPSU_MSG_FLAG_TX) != (u32)FALSE) {
+		XQspiPsu_IntrSendData(InstancePtr, *QspiPsuStatusReg);
 	}
-	MsgCnt = InstancePtr->MsgCnt ;
-	if ((MsgCnt < NumMsg) &&
-	    ((TxRxFlag & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE)) {
-		XQspiPsu_IntrRecvData(InstancePtr, *QspiPsuStatusReg, DmaIntrStatusReg, DeltaMsgCnt);
+	if ((TxRxFlag & XQSPIPSU_MSG_FLAG_RX) != (u32)FALSE) {
+		XQspiPsu_IntrRecvData(InstancePtr, *QspiPsuStatusReg, DmaIntrStatusReg);
 	}
 }
 
 /*****************************************************************************/
 /**
  *
- * Transfers Dummy byte
+ * @brief Transfers the dummy byte.
  *
- * @param       InstancePtr Pointer to the XQspiPsu instance.
- * @param       QspiPsuStatusReg Status of QSPI status register.
- * @param       DeltaMsgCnt Message count flag.
- *
- * @return      None.
- *
+ * @param[in,out] InstancePtr Pointer to the XQspiPsu instance.
+ * @param[in]     QspiPsuStatusReg Status of QSPI status register.
  *
 ******************************************************************************/
-void XQspiPsu_IntrDummyDataTransfer(XQspiPsu *InstancePtr, u32 QspiPsuStatusReg,
-				    u8 DeltaMsgCnt)
+void XQspiPsu_IntrDummyDataTransfer(XQspiPsu *InstancePtr, u32 QspiPsuStatusReg)
 {
-	XQspiPsu_Msg *Msg = InstancePtr->Msg;
 	s32 NumMsg = InstancePtr->NumMsg;
 	s32 MsgCnt = InstancePtr->MsgCnt;
-	UINTPTR BaseAddr = InstancePtr->Config.BaseAddress;
 
-	/*
-	 * DeltaMsgCnt is to handle conditions where genfifo empty can be set
-	 * while tx is still not empty or rx dma is not yet done.
-	 * MsgCnt > NumMsg indicates CS de-assert entry was also executed.
-	 */
 	if (((QspiPsuStatusReg & XQSPIPSU_ISR_GENFIFOEMPTY_MASK) != (u32)FALSE) &&
-	    ((DeltaMsgCnt != (u8)FALSE) || (MsgCnt > NumMsg))) {
+	    ((QspiPsuStatusReg & XQSPIPSU_ISR_TXEMPTY_MASK) != (u32)FALSE) &&
+	    (InstancePtr->TxBytes == 0) && (InstancePtr->RxBytes == 0))  {
 		if (MsgCnt < NumMsg) {
-			if (InstancePtr->IsUnaligned != 0) {
-				InstancePtr->IsUnaligned = 0;
-				XQspiPsu_WriteReg(BaseAddr,
-						  XQSPIPSU_CFG_OFFSET, (XQspiPsu_ReadReg(
-								  BaseAddr, XQSPIPSU_CFG_OFFSET) |
-									XQSPIPSU_CFG_MODE_EN_DMA_MASK));
-				InstancePtr->ReadMode = XQSPIPSU_READMODE_DMA;
-			}
-			/* This might not work if not manual start */
-			XQspiPsu_GenFifoEntryData(InstancePtr, &Msg[MsgCnt]);
-			XQspiPsu_ManualStartEnable(InstancePtr);
-		} else if (MsgCnt == NumMsg) {
-			/* This is just to keep track of the de-assert entry */
 			MsgCnt += 1;
 			InstancePtr->MsgCnt = MsgCnt;
 			/* De-select slave */
 			XQspiPsu_GenFifoEntryCSDeAssert(InstancePtr);
 			XQspiPsu_ManualStartEnable(InstancePtr);
-		} else {
+		} else if (MsgCnt == NumMsg) {
 			/* Disable interrupts */
-			XQspiPsu_WriteReg(BaseAddr, XQSPIPSU_IDR_OFFSET,
+			XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_IDR_OFFSET,
 					  (u32)XQSPIPSU_IER_TXNOT_FULL_MASK |
 					  (u32)XQSPIPSU_IER_TXEMPTY_MASK |
 					  (u32)XQSPIPSU_IER_RXNEMPTY_MASK |
@@ -464,7 +484,7 @@ void XQspiPsu_IntrDummyDataTransfer(XQspiPsu *InstancePtr, u32 QspiPsuStatusReg,
 			dmb();
 #endif
 			if (InstancePtr->ReadMode == XQSPIPSU_READMODE_DMA) {
-				XQspiPsu_WriteReg(BaseAddr,
+				XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress,
 						  XQSPIPSU_QSPIDMA_DST_I_DIS_OFFSET,
 						  XQSPIPSU_QSPIDMA_DST_I_EN_DONE_MASK);
 			}
@@ -478,6 +498,13 @@ void XQspiPsu_IntrDummyDataTransfer(XQspiPsu *InstancePtr, u32 QspiPsuStatusReg,
 			/* Call status handler to indicate completion */
 			InstancePtr->StatusHandler(InstancePtr->StatusRef,
 						   XST_SPI_TRANSFER_DONE, 0);
+		}
+		if (InstancePtr->IsUnaligned != 0) {
+			InstancePtr->IsUnaligned = 0;
+			XQspiPsu_WriteReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET,
+					  (XQspiPsu_ReadReg(InstancePtr->Config.BaseAddress, XQSPIPSU_CFG_OFFSET) |
+					   XQSPIPSU_CFG_MODE_EN_DMA_MASK));
+			InstancePtr->ReadMode = XQSPIPSU_READMODE_DMA;
 		}
 	}
 }

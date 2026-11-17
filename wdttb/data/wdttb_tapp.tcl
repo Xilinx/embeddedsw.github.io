@@ -20,7 +20,7 @@
 
 ## BEGIN_CHANGELOG EDK_Im_SP2
 ##
-##  - Added Interrupt support 
+##  - Added Interrupt support
 ##
 ## END_CHANGELOG
 
@@ -35,7 +35,7 @@
 ##  - Added support for generation of multiple applications.
 ##    All TCL procedures are now required to have a software
 ##    project type as its first argument
-##    
+##
 ## END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -69,8 +69,8 @@ proc gen_include_files {swproj mhsinst} {
                set inc_file_lines {xwdttb.h wdttb_header.h}
             }
         } else {
-            set inc_file_lines {xwdttb.h wdttb_header.h}      
-        }    
+            set inc_file_lines {xwdttb.h wdttb_header.h}
+        }
         return $inc_file_lines
     }
 }
@@ -83,7 +83,7 @@ proc gen_src_files {swproj mhsinst} {
     set wwdt [common::get_property CONFIG.ENABLE_WINDOW_WDT [::hsi::get_cells -hier $mhsinst]]
     if {$swproj == 1} {
         set iftmrintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
-        
+
         if {$iftmrintr == 1} {
             if {$ps_wdt == 0} {
                 set intcname [get_intcname $mhsinst]
@@ -120,7 +120,7 @@ proc gen_init_code {swproj mhsinst} {
         return ""
     }
     if {$swproj == 1} {
-        
+
       set ps_wdt [isps_wdttb $mhsinst]
       set ipname [common::get_property NAME $mhsinst]
       set intr_pin_name [hsi::get_pins -of_objects [hsi::get_cells -hier $ipname] WDT_INTERRUPT]
@@ -143,7 +143,7 @@ proc gen_testfunc_call {swproj mhsinst} {
   if {$swproj == 0} {
     return ""
   }
- 
+
   set ps_wdt [isps_wdttb $mhsinst]
   set iftmrintr [::hsi::utils::is_ip_interrupting_current_proc $mhsinst]
   set ipname [common::get_property NAME $mhsinst]
@@ -155,14 +155,14 @@ proc gen_testfunc_call {swproj mhsinst} {
   } else {
        set hasStdout 1
   }
-  
+
   if {$iftmrintr == 1} {
        set intr_pin_name [hsi::get_pins -of_objects [hsi::get_cells -hier $ipname] WDT_INTERRUPT]
        set intcname [::hsi::utils::get_connected_intr_cntrl $ipname  $intr_pin_name]
        set intcvar intc
        set proc [common::get_property IP_NAME [hsi::get_cells -hier [hsi::get_sw_processor]]]
   }
-  
+
   set testfunc_call ""
 
   if {${hasStdout} == 0} {
@@ -171,9 +171,9 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       int status;
-                  
+
       status = WdtTbSelfTestExample(${deviceid});
-      
+
    }"
       if {$iftmrintr == 1 && $ps_wdt == 0} {
         if {
@@ -182,7 +182,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 		 set intr_id "XPAR_${intcname}_${ipname}_${intr_pin_name}_INTR"
 	} else {
 		set intr_id "XPAR_FABRIC_${ipname}_${intr_pin_name}_INTR"
-	}  
+	}
           set intr_id [string toupper $intr_id]
 
           if {$intcname == ""} {
@@ -217,7 +217,7 @@ proc gen_testfunc_call {swproj mhsinst} {
    }"
              } else {
           append testfunc_call "
-        
+
    {
       int Status;
       Status = WdtTbIntrExample(&${intcvar}, &${ipname}_Wdttb, \\
@@ -225,7 +225,7 @@ proc gen_testfunc_call {swproj mhsinst} {
                                  ${intr_id});
    }"
             }
-          
+
       }
    } else {
      if {$ps_wdt == 1 && $iftmrintr == 1} {
@@ -245,11 +245,11 @@ proc gen_testfunc_call {swproj mhsinst} {
 
    {
       int status;
-      
+
       print(\"\\r\\n Running WdtTbSelfTestExample() for ${ipname}...\\r\\n\");
-      
+
       status = WdtTbSelfTestExample(${deviceid});
-      
+
       if (status == 0) {
          print(\"WdtTbSelfTestExample PASSED\\r\\n\");
       }
@@ -264,7 +264,7 @@ proc gen_testfunc_call {swproj mhsinst} {
 		 set intr_id "XPAR_${intcname}_${ipname}_${intr_pin_name}_INTR"
 	} else {
 		set intr_id "XPAR_FABRIC_${ipname}_${intr_pin_name}_INTR"
-	} 
+	}
           set intr_id [string toupper $intr_id]
           if {$intcname == ""} {
              if {$wwdt == 1} {
@@ -325,19 +325,19 @@ proc gen_testfunc_call {swproj mhsinst} {
    }"
            } else {
           append testfunc_call "
-        
+
    {
       int Status;
-      
+
       print(\"\\r\\n Running Interrupt Test  for ${ipname}...\\r\\n\");
-      
+
       Status = WdtTbIntrExample(&${intcvar}, &${ipname}_Wdttb, \\
                                  ${deviceid}, \\
                                  ${intr_id});
-	
+
       if (Status == 0) {
          print(\"Wdttb Interrupt Test PASSED\\r\\n\");
-      } 
+      }
       else {
          print(\"Wdttb Interrupt Test FAILED\\r\\n\");
       }

@@ -12,7 +12,7 @@
 ## @BEGIN_CHANGELOG EDK_K_SP2
 ##
 ##  - Initial Revision
-##    
+##
 ## @END_CHANGELOG
 
 # Uses $XILINX_EDK/bin/lib/xillib_sw.tcl
@@ -71,12 +71,12 @@ proc gen_testfunc_call {swproj mhsinst} {
     }
 
     set deviceid "XPAR_${ipname}_TESTAPP_ID"
-    
+
     append testfunc_call "
 
     {
         XStatus status;
-      
+
         print(\"\\r\\nRunning MutexExample() for ${ipname}...\\r\\n\");
         status = MutexExample(${deviceid});
         if (status == 0) {
@@ -89,4 +89,3 @@ proc gen_testfunc_call {swproj mhsinst} {
 
     return $testfunc_call
 }
-
